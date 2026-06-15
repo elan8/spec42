@@ -7,6 +7,7 @@ pub mod diagrams;
 pub mod domain_libraries;
 pub mod elk_layout;
 pub mod environment;
+pub mod library_bundle;
 pub mod mcp;
 pub mod reports;
 pub mod stdlib;
@@ -486,6 +487,12 @@ fn print_doctor_report(report: &environment::DoctorReport) {
         "resolved stdlib: {}",
         report.resolved_stdlib_path.as_deref().unwrap_or("(none)")
     );
+    if !report.stdlib_roots.is_empty() {
+        println!("stdlib library roots ({}):", report.stdlib_roots.len());
+        for root in &report.stdlib_roots {
+            println!("  - {root}");
+        }
+    }
     println!(
         "stdlib source: {}",
         report.stdlib_source.as_deref().unwrap_or("(none)")

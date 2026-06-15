@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
-# Fetch the pinned SysML v2 Release archive for embedded stdlib builds.
-# Tries GitHub's zip archive first; falls back to a shallow git clone when archive
-# downloads fail (GitHub archive URLs often return 504 for large tags).
+# Fetch the pinned OMG sysml.library.kpar archives for embedded stdlib builds.
+# Uses a sparse git checkout of only sysml.library.kpar/ at the pinned release tag.
 
 set -euo pipefail
 
@@ -16,47 +15,50 @@ fi
 cd "${repo_root}"
 version="$(node -p "require('./config/standard-library.json').version")"
 repo="$(node -p "require('./config/standard-library.json').repo")"
-out="${SPEC42_STDLIB_BUNDLE_ZIP:-${repo_root}/.cache/sysml-v2-release-${version}.zip}"
-archive_url="https://github.com/${repo}/archive/refs/tags/${version}.zip"
-root_dir="SysML-v2-Release-${version}"
+out="${SPEC42_STDLIB_KPAR_DIR:-${repo_root}/.cache/sysml-stdlib-kpar-${version}}"
 
-mkdir -p "$(dirname "${out}")"
+kpar_cache_is_valid() {
+  local count=0
+  shopt -s nullglob
+  local files=("${out}"/*.kpar)
+  shopt -u nullglob
+  if [[ ${#files[@]} -eq 0 ]]; then
+    return 1
+  fi
+  for file in "${files[@]}"; do
+    unzip -tq "${file}" >/dev/null 2>&1 || return 1
+    count=$((count + 1))
+  done
+  [[ "${count}" -gt 0 ]]
+}
 
-if [[ -f "${out}" ]] && unzip -tq "${out}" >/dev/null 2>&1; then
-  echo "Using existing stdlib bundle at ${out}"
+if kpar_cache_is_valid; then
+  echo "Using existing stdlib KPAR cache at ${out}"
   exit 0
 fi
 
-fetch_via_archive() {
-  echo "Fetching stdlib bundle from ${archive_url}"
-  curl --fail --location \
-    --retry 5 --retry-delay 5 --retry-all-errors \
-    --connect-timeout 30 --max-time 600 \
-    --output "${out}" "${archive_url}"
-  unzip -tq "${out}" >/dev/null
-}
-
-fetch_via_git() {
+fetch_via_sparse_git() {
   local tmp
   tmp="$(mktemp -d)"
   trap 'rm -rf "${tmp}"' RETURN
 
-  echo "Archive download failed; falling back to shallow git clone of ${repo}@${version}"
-  git clone --depth 1 --branch "${version}" "https://github.com/${repo}.git" "${tmp}/${root_dir}"
-  test -d "${tmp}/${root_dir}/sysml.library"
+  echo "Fetching sysml.library.kpar from ${repo}@${version} via sparse git checkout"
+  git clone --depth 1 --filter=blob:none --sparse \
+    --branch "${version}" "https://github.com/${repo}.git" "${tmp}/checkout"
+  git -C "${tmp}/checkout" sparse-checkout set sysml.library.kpar
+  test -d "${tmp}/checkout/sysml.library.kpar"
 
-  rm -f "${out}"
-  (cd "${tmp}" && zip -qr "${out}" "${root_dir}")
-  unzip -tq "${out}" >/dev/null
+  rm -rf "${out}"
+  mkdir -p "${out}"
+  cp "${tmp}/checkout/sysml.library.kpar/"*.kpar "${out}/"
 }
 
-if fetch_via_archive; then
-  echo "Fetched stdlib bundle via GitHub archive"
-elif fetch_via_git; then
-  echo "Fetched stdlib bundle via git clone fallback"
+if fetch_via_sparse_git; then
+  kpar_cache_is_valid
+  echo "Fetched stdlib KPAR archives via sparse git checkout"
 else
-  echo "Failed to fetch stdlib bundle for ${repo}@${version}" >&2
+  echo "Failed to fetch stdlib KPAR archives for ${repo}@${version}" >&2
   exit 1
 fi
 
-echo "Stdlib bundle ready at ${out}"
+echo "Stdlib KPAR cache ready at ${out}"

@@ -1,5 +1,5 @@
 use std::fs;
-use std::io::{self, Cursor, Write};
+use std::io::{self, Write};
 use std::path::{Path, PathBuf};
 use std::thread;
 use std::time::{Duration, Instant, SystemTime, UNIX_EPOCH};
@@ -7,13 +7,19 @@ use std::time::{Duration, Instant, SystemTime, UNIX_EPOCH};
 use directories::ProjectDirs;
 use serde::{Deserialize, Serialize};
 
+use crate::library_bundle::{
+    self, discover_library_roots, is_embedded_stdlib_kpar_bundle, is_kpar_bytes,
+    materialize_embedded_stdlib_kpar_bundle, materialize_kpar_bytes, normalize_content_path,
+};
+
 pub const DEFAULT_STDLIB_VERSION: &str = env!("SPEC42_STDLIB_VERSION");
 pub const DEFAULT_STDLIB_REPO: &str = env!("SPEC42_STDLIB_REPO");
 pub const DEFAULT_STDLIB_CONTENT_PATH: &str = env!("SPEC42_STDLIB_CONTENT_PATH");
+pub const DEFAULT_STDLIB_FORMAT: &str = env!("SPEC42_STDLIB_FORMAT");
 /// Recorded in `metadata.toml` when the tree was materialized from the binary-embedded zip.
 pub const EMBEDDED_STDLIB_REPO: &str = "embedded";
 
-/// Minimal zip produced by `build.rs` (only `sysml.library/`). Empty when `embed-stdlib` is disabled.
+/// Minimal zip produced by `build.rs` (`bundled-sysml-kpar/*.kpar`). Empty when `embed-stdlib` is disabled.
 #[cfg(feature = "embed-stdlib")]
 pub const EMBEDDED_STDLIB_ARCHIVE: &[u8] =
     include_bytes!(concat!(env!("OUT_DIR"), "/sysml.library.embedded.zip"));
@@ -26,6 +32,18 @@ pub struct StandardLibraryConfig {
     pub version: String,
     pub repo: String,
     pub content_path: String,
+    #[serde(default = "default_stdlib_format")]
+    pub format: String,
+}
+
+fn default_stdlib_format() -> String {
+    DEFAULT_STDLIB_FORMAT.to_string()
+}
+
+impl StandardLibraryConfig {
+    pub fn is_kpar(&self) -> bool {
+        self.format.eq_ignore_ascii_case(library_bundle::FORMAT_KPAR)
+    }
 }
 
 impl Default for StandardLibraryConfig {
@@ -34,6 +52,7 @@ impl Default for StandardLibraryConfig {
             version: DEFAULT_STDLIB_VERSION.to_string(),
             repo: DEFAULT_STDLIB_REPO.to_string(),
             content_path: DEFAULT_STDLIB_CONTENT_PATH.to_string(),
+            format: DEFAULT_STDLIB_FORMAT.to_string(),
         }
     }
 }
@@ -45,6 +64,12 @@ pub struct StandardLibraryMetadata {
     pub installed_at: String,
     pub repo: String,
     pub content_path: String,
+    #[serde(default)]
+    pub format: String,
+    #[serde(default)]
+    pub library_roots: Vec<String>,
+    #[serde(default)]
+    pub project_name: Option<String>,
 }
 
 #[derive(Debug, Clone, Serialize)]
@@ -84,11 +109,28 @@ pub fn managed_install_path(
     paths: &StandardLibraryPaths,
     config: &StandardLibraryConfig,
 ) -> PathBuf {
+    let content = "kpar".to_string();
     paths
         .managed_root
         .join("versions")
         .join(&config.version)
-        .join(normalize_content_path(&config.content_path))
+        .join(content)
+}
+
+pub fn stdlib_library_roots(
+    install_path: &Path,
+    metadata: Option<&StandardLibraryMetadata>,
+) -> Vec<PathBuf> {
+    if let Some(metadata) = metadata {
+        if !metadata.library_roots.is_empty() {
+            return metadata
+                .library_roots
+                .iter()
+                .map(PathBuf::from)
+                .collect();
+        }
+    }
+    discover_library_roots(install_path)
 }
 
 pub fn load_managed_metadata(
@@ -284,6 +326,12 @@ fn metadata_for_ready_install(
         installed_at,
         repo: config.repo.clone(),
         content_path: normalized_content_path.to_string(),
+        format: config.format.clone(),
+        library_roots: stdlib_library_roots(install_path, None)
+            .into_iter()
+            .map(|path| path.display().to_string())
+            .collect(),
+        project_name: None,
     };
     save_managed_metadata(paths, &metadata)?;
     Ok(metadata)
@@ -294,10 +342,7 @@ pub fn install_standard_library_from_bytes(
     config: &StandardLibraryConfig,
     archive_bytes: &[u8],
 ) -> Result<StandardLibraryMetadata, String> {
-    let normalized_content_path = normalize_content_path(&config.content_path);
-    if normalized_content_path.is_empty() {
-        return Err("Standard library content path must not be empty.".to_string());
-    }
+    let normalized_content_path = "kpar".to_string();
 
     ensure_directory_path(&paths.managed_root, "Managed standard-library root")?;
 
@@ -342,11 +387,25 @@ pub fn install_standard_library_from_bytes(
         &staging_install_path,
         "Managed standard-library staging path",
     )?;
-    extract_archive_subset(
-        archive_bytes,
-        &normalized_content_path,
-        &staging_install_path,
-    )?;
+
+    let (project_name, library_roots) = if is_kpar_bytes(archive_bytes) {
+        let materialized = materialize_kpar_bytes(archive_bytes, &staging_install_path)?;
+        (
+            Some(materialized.project.name),
+            vec![staging_install_path.display().to_string()],
+        )
+    } else if is_embedded_stdlib_kpar_bundle(archive_bytes) {
+        let roots = materialize_embedded_stdlib_kpar_bundle(archive_bytes, &staging_install_path)?;
+        (
+            None,
+            roots
+                .into_iter()
+                .map(|path| path.display().to_string())
+                .collect(),
+        )
+    } else {
+        return Err("Expected a KPAR archive for standard library installation.".to_string());
+    };
     if version_root.exists() {
         fs::remove_dir_all(version_root).map_err(|err| {
             format!(
@@ -375,7 +434,22 @@ pub fn install_standard_library_from_bytes(
         ));
     }
 
-    metadata_for_ready_install(paths, config, &normalized_content_path, &install_path)
+    let installed_at = SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .map(|duration| duration.as_secs().to_string())
+        .unwrap_or_else(|_| "0".to_string());
+    let metadata = StandardLibraryMetadata {
+        installed_version: config.version.clone(),
+        install_path: install_path.display().to_string(),
+        installed_at,
+        repo: config.repo.clone(),
+        content_path: normalized_content_path,
+        format: config.format.clone(),
+        library_roots,
+        project_name,
+    };
+    save_managed_metadata(paths, &metadata)?;
+    Ok(metadata)
 }
 
 pub fn remove_standard_library(paths: &StandardLibraryPaths) -> Result<bool, String> {
@@ -445,10 +519,6 @@ fn legacy_vscode_base_dir() -> Option<PathBuf> {
         .find(|path| path.is_dir())
 }
 
-fn normalize_content_path(path: &str) -> String {
-    path.trim_matches('/').trim_matches('\\').to_string()
-}
-
 pub fn install_path_is_ready(path: &Path) -> bool {
     path.is_dir()
         && fs::read_dir(path)
@@ -460,63 +530,40 @@ fn canonicalize_lossy(path: &Path) -> PathBuf {
     path.canonicalize().unwrap_or_else(|_| path.to_path_buf())
 }
 
-fn extract_archive_subset(
-    archive_bytes: &[u8],
-    content_path: &str,
-    destination_root: &Path,
-) -> Result<(), String> {
-    let cursor = Cursor::new(archive_bytes);
-    let mut archive = zip::ZipArchive::new(cursor)
-        .map_err(|err| format!("Failed to open standard library archive: {err}"))?;
-    if archive.is_empty() {
-        return Err("Downloaded standard library archive is empty.".to_string());
-    }
-
-    let root_prefix = {
-        let first = archive
-            .by_index(0)
-            .map_err(|err| format!("Failed to inspect archive: {err}"))?;
-        first
-            .name()
-            .split('/')
-            .next()
-            .ok_or_else(|| "Downloaded standard library archive is malformed.".to_string())?
-            .to_string()
-    };
-    let wanted_prefix = format!("{root_prefix}/{content_path}/");
-    let mut extracted_any = false;
-    for index in 0..archive.len() {
-        let mut entry = archive
-            .by_index(index)
-            .map_err(|err| format!("Failed to read archive entry: {err}"))?;
-        let name = entry.name().to_string();
-        if !name.starts_with(&wanted_prefix) || name.ends_with('/') {
-            continue;
-        }
-        let relative = name.trim_start_matches(&wanted_prefix);
-        let destination = destination_root.join(relative);
-        if let Some(parent) = destination.parent() {
-            fs::create_dir_all(parent)
-                .map_err(|err| format!("Failed to create {}: {err}", parent.display()))?;
-        }
-        let mut file = fs::File::create(&destination)
-            .map_err(|err| format!("Failed to create {}: {err}", destination.display()))?;
-        std::io::copy(&mut entry, &mut file)
-            .map_err(|err| format!("Failed to extract {}: {err}", destination.display()))?;
-        extracted_any = true;
-    }
-    if !extracted_any {
-        return Err(format!(
-            "Path '{content_path}' was not found in the downloaded standard library archive."
-        ));
-    }
-    Ok(())
-}
-
 #[cfg(test)]
 mod tests {
     use super::*;
-    use std::io::Write;
+    use kpar::pack::{build_kpar, PackOptions};
+    use kpar::schema::Project;
+
+    fn minimal_stdlib_kpar_bytes(work: &Path) -> Vec<u8> {
+        let lib = work.join("lib");
+        fs::create_dir_all(&lib).expect("create lib dir");
+        fs::write(
+            lib.join("ScalarValues.sysml"),
+            b"standard library package ScalarValues { attribute def Real; }",
+        )
+        .expect("write model");
+        let kpar_path = work.join("stdlib.kpar");
+        let project = Project {
+            name: "TestStdlib".to_string(),
+            version: "1.0.0".to_string(),
+            description: None,
+            license: None,
+            publisher: None,
+            maintainer: vec![],
+            website: None,
+            topic: vec![],
+            usage: vec![],
+        };
+        let options = PackOptions {
+            project,
+            source_roots: vec![lib],
+            excludes: vec![],
+        };
+        build_kpar(&options, &kpar_path).expect("pack kpar");
+        fs::read(&kpar_path).expect("read kpar")
+    }
 
     #[test]
     fn legacy_vscode_path_is_computed_from_appdata() {
@@ -538,52 +585,10 @@ mod tests {
     }
 
     #[test]
-    fn extract_archive_subset_only_extracts_requested_content_path() {
-        let temp = tempfile::tempdir().expect("temp dir");
-        let archive_path = temp.path().join("archive.zip");
-        let release_prefix = format!("release-{DEFAULT_STDLIB_VERSION}");
-        {
-            let file = fs::File::create(&archive_path).expect("create zip");
-            let mut zip = zip::ZipWriter::new(file);
-            let options = zip::write::SimpleFileOptions::default();
-            zip.start_file(format!("{release_prefix}/sysml.library/A.sysml"), options)
-                .expect("start file");
-            zip.write_all(b"package A {}").expect("write file");
-            zip.start_file(format!("{release_prefix}/other/B.sysml"), options)
-                .expect("start other");
-            zip.write_all(b"package B {}").expect("write other");
-            zip.finish().expect("finish zip");
-        }
-
-        let bytes = fs::read(&archive_path).expect("read archive");
-        let destination = temp.path().join("extract");
-        extract_archive_subset(&bytes, "sysml.library", &destination).expect("extract subset");
-
-        assert!(destination.join("A.sysml").is_file());
-        assert!(!destination.join("B.sysml").exists());
-    }
-
-    #[test]
     fn install_from_bytes_writes_metadata_and_reports_ready_status() {
         let temp = tempfile::tempdir().expect("temp dir");
         let paths = standard_library_paths_from_data_dir(temp.path().to_path_buf());
-        let archive_path = temp.path().join("archive.zip");
-        let release_prefix = format!("release-{DEFAULT_STDLIB_VERSION}");
-        {
-            let file = fs::File::create(&archive_path).expect("create zip");
-            let mut zip = zip::ZipWriter::new(file);
-            let options = zip::write::SimpleFileOptions::default();
-            zip.start_file(
-                format!("{release_prefix}/sysml.library/ScalarValues.sysml"),
-                options,
-            )
-            .expect("start file");
-            zip.write_all(b"standard library package ScalarValues { attribute def Real; }")
-                .expect("write file");
-            zip.finish().expect("finish zip");
-        }
-
-        let bytes = fs::read(&archive_path).expect("read archive");
+        let bytes = minimal_stdlib_kpar_bytes(temp.path());
         let config = StandardLibraryConfig::default();
         let metadata =
             install_standard_library_from_bytes(&paths, &config, &bytes).expect("install");
@@ -606,7 +611,7 @@ mod tests {
             .managed_root
             .join("versions")
             .join("2026-02")
-            .join(DEFAULT_STDLIB_CONTENT_PATH);
+            .join("kpar");
         fs::create_dir_all(&stale_install_path).expect("create stale install path");
         fs::write(
             stale_install_path.join("ScalarValues.sysml"),
@@ -620,7 +625,10 @@ mod tests {
                 install_path: stale_install_path.display().to_string(),
                 installed_at: "0".to_string(),
                 repo: EMBEDDED_STDLIB_REPO.to_string(),
-                content_path: DEFAULT_STDLIB_CONTENT_PATH.to_string(),
+                content_path: "kpar".to_string(),
+                format: DEFAULT_STDLIB_FORMAT.to_string(),
+                library_roots: vec![stale_install_path.display().to_string()],
+                project_name: None,
             },
         )
         .expect("save stale metadata");
@@ -642,23 +650,7 @@ mod tests {
     fn install_from_bytes_is_idempotent_when_install_is_already_ready() {
         let temp = tempfile::tempdir().expect("temp dir");
         let paths = standard_library_paths_from_data_dir(temp.path().to_path_buf());
-        let archive_path = temp.path().join("archive.zip");
-        let release_prefix = format!("release-{DEFAULT_STDLIB_VERSION}");
-        {
-            let file = fs::File::create(&archive_path).expect("create zip");
-            let mut zip = zip::ZipWriter::new(file);
-            let options = zip::write::SimpleFileOptions::default();
-            zip.start_file(
-                format!("{release_prefix}/sysml.library/ScalarValues.sysml"),
-                options,
-            )
-            .expect("start file");
-            zip.write_all(b"standard library package ScalarValues { attribute def Real; }")
-                .expect("write file");
-            zip.finish().expect("finish zip");
-        }
-
-        let bytes = fs::read(&archive_path).expect("read archive");
+        let bytes = minimal_stdlib_kpar_bytes(temp.path());
         let config = StandardLibraryConfig::default();
         let first = install_standard_library_from_bytes(&paths, &config, &bytes).expect("install");
         let second =
@@ -675,23 +667,7 @@ mod tests {
         let paths = standard_library_paths_from_data_dir(temp.path().to_path_buf());
         fs::write(&paths.managed_root, "not a directory").expect("write blocking file");
 
-        let archive_path = temp.path().join("archive.zip");
-        let release_prefix = format!("release-{DEFAULT_STDLIB_VERSION}");
-        {
-            let file = fs::File::create(&archive_path).expect("create zip");
-            let mut zip = zip::ZipWriter::new(file);
-            let options = zip::write::SimpleFileOptions::default();
-            zip.start_file(
-                format!("{release_prefix}/sysml.library/ScalarValues.sysml"),
-                options,
-            )
-            .expect("start file");
-            zip.write_all(b"standard library package ScalarValues { attribute def Real; }")
-                .expect("write file");
-            zip.finish().expect("finish zip");
-        }
-
-        let bytes = fs::read(&archive_path).expect("read archive");
+        let bytes = minimal_stdlib_kpar_bytes(temp.path());
         let err =
             install_standard_library_from_bytes(&paths, &StandardLibraryConfig::default(), &bytes)
                 .expect_err("expected managed-root error");

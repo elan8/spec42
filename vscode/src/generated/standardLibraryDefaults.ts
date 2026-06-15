@@ -2,5 +2,6 @@
 export const STANDARD_LIBRARY_DEFAULTS = {
   version: "2026-04",
   repo: "Systems-Modeling/SysML-v2-Release",
-  contentPath: "sysml.library",
+  format: "kpar",
+  contentPath: "sysml.library.kpar",
 } as const;

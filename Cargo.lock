@@ -1027,6 +1027,21 @@ dependencies = [
 ]
 
 [[package]]
+name = "kpar"
+version = "0.31.0"
+dependencies = [
+ "chrono",
+ "clap",
+ "serde",
+ "serde_json",
+ "sha2",
+ "tempfile",
+ "thiserror 2.0.18",
+ "walkdir",
+ "zip",
+]
+
+[[package]]
 name = "lazy_static"
 version = "1.5.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1938,6 +1953,7 @@ dependencies = [
  "directories",
  "http-body-util",
  "kernel",
+ "kpar",
  "reqwest",
  "rmcp",
  "rquickjs",

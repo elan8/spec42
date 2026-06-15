@@ -5,9 +5,29 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
-
 ## [0.31.0] - 2026-06-15
+
+### Added
+
+- **KPAR crate (`crates/kpar`)** — Read, validate, and materialize KerML Project Archives (`.project.json`, `.meta.json`, SHA-256 checksums, textual `.sysml`/`.kerml` sources). `kpar-pack` binary packs Elan8 domain libraries for release; `extract_archive_subset` lives in `legacy.rs` for zip subset helpers used in tests.
+- **Domain libraries via KPAR** — Bundled domain libraries ship as `elan8-domain-libraries-{version}.kpar`. `config/domain-libraries.json` pins `format`, `version`, and release `artifact`. Runtime materializes the embedded KPAR on first use; managed install path no longer uses a `tree/` subdirectory when `contentPath` is empty.
+- **Standard library via OMG KPAR** — Bundled stdlib embeds the OMG `sysml.library.kpar` archives from the pinned SysML v2 Release tag. Multiple KPAR subroots are materialized and mounted for semantic indexing (`stdlib_roots` in environment resolution).
+- **Domain library release automation** — GitHub Action on [elan8/sysml-domain-libraries](https://github.com/elan8/sysml-domain-libraries) (`release-kpar.yml`) builds and publishes the KPAR asset plus `SHA256SUMS.txt` on `v*` tags.
+
+### Changed
+
+- **Library distribution format** — Standard and domain libraries use KPAR only. Tree-format zip extraction and repack fallbacks removed from `build.rs`, `stdlib.rs`, `domain_libraries.rs`, and fetch scripts.
+- **Stdlib fetch (KPAR-only)** — `scripts/fetch-stdlib-bundle.sh` sparse-checkouts only `sysml.library.kpar/` from the pinned OMG release tag (not the full release zip and not `master`). All embed KPAR inputs live under repo-root `.cache/` (stdlib subdirectory + domain `.kpar` file).
+- **Domain library fetch** — `scripts/fetch-domain-libraries-bundle.sh` downloads the release `.kpar` asset or packs locally from `SPEC42_DOMAIN_LIBRARIES_SOURCE_DIR` / sibling `../sysml-domain-libraries`.
+- **Build embed pipeline** — `build.rs` embeds `bundled-sysml-kpar/*.kpar` for the OMG standard library and raw `.kpar` bytes for domain libraries. Maintainer override: `SPEC42_STDLIB_KPAR_DIR` (replaces `SPEC42_STDLIB_BUNDLE_ZIP`).
+- **Library path resolution** — `spec42 doctor` and environment resolution expose multiple stdlib roots when using the KPAR distribution; VS Code library settings sync `format: kpar` from `config/*.json`.
+- **CI and release workflows** — `ci.yml`, `release.yml`, and `nightly.yml` cache embed KPAR inputs under `.cache/` (`SPEC42_STDLIB_KPAR_DIR` and `SPEC42_DOMAIN_LIBRARIES_BUNDLE_ZIP`). OMG ratchet jobs in `nightly.yml` still clone the full `SysML-v2-Release` checkout separately.
+- **Local build cache** — `.cache/` at the repository root is gitignored; KPAR build inputs are never committed.
+
+### Removed
+
+- **Tree-format library bundles** — No support for textual `sysml.library/` trees or git-archive zip repack as embed input. Installation from bytes requires KPAR archives.
+- **`SPEC42_STDLIB_BUNDLE_ZIP`** — Replaced by `SPEC42_STDLIB_KPAR_DIR` pointing at a directory of OMG `.kpar` files.
 
 ### Added
 

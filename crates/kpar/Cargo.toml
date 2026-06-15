@@ -1,0 +1,24 @@
+[package]
+name = "kpar"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
+description = "KerML Project Archive (KPAR) read, pack, and validate for Spec42"
+
+[dependencies]
+chrono = { version = "0.4", default-features = false, features = ["clock"] }
+clap = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+sha2 = "0.10"
+thiserror = { workspace = true }
+walkdir = "2"
+zip = { version = "2", default-features = false, features = ["deflate"] }
+
+[[bin]]
+name = "kpar-pack"
+path = "src/bin/kpar-pack.rs"
+
+[dev-dependencies]
+tempfile = "3"

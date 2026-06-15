@@ -1,23 +1,23 @@
-//! Build script: repack a local SysML v2 Release zip into a minimal `sysml.library/`
-//! archive for `include_bytes!` (see `stdlib.rs`).
+//! Build script: embed SysML standard library and domain libraries for `include_bytes!`.
 //!
 //! Override inputs:
-//! - `SPEC42_STDLIB_BUNDLE_ZIP`: path to a local copy of the **full** GitHub release zip.
-//! - `CARGO_FEATURE_EMBED_STDLIB`: unset when `embed-stdlib` feature is disabled — writes an empty file.
+//! - `SPEC42_STDLIB_KPAR_DIR`: directory of OMG `.kpar` archives for the pinned stdlib tag.
+//! - `SPEC42_DOMAIN_LIBRARIES_BUNDLE_ZIP`: path to a `.kpar` bundle.
+//! - `SPEC42_DOMAIN_LIBRARIES_SOURCE_DIR`: pack a KPAR on the fly from a checkout.
 
 use std::fs::{self, File};
-use std::io::Cursor;
+use std::io::{Cursor, Write};
 use std::path::{Path, PathBuf};
 use std::process;
 
+use kpar::pack::{build_kpar, PackOptions};
+use kpar::schema::Project;
 use serde::Deserialize;
 use sha2::{Digest, Sha256};
 use zip::read::ZipArchive;
 use zip::write::{SimpleFileOptions, ZipWriter};
 
-/// Single top-level folder prefix inside the embedded zip (must match `extract_archive_subset` in stdlib.rs).
-const EMBED_ROOT: &str = "bundled-sysml-release";
-const DOMAIN_EMBED_ROOT: &str = "bundled-domain-libraries";
+const STDLIB_KPAR_EMBED_PREFIX: &str = "bundled-sysml-kpar/";
 
 #[derive(Debug, Deserialize)]
 struct LibraryBundleConfig {
@@ -25,12 +25,25 @@ struct LibraryBundleConfig {
     repo: String,
     #[serde(rename = "contentPath")]
     content_path: String,
+    #[serde(default = "default_kpar_format")]
+    format: String,
+    #[serde(default)]
+    artifact: Option<String>,
+}
+
+fn default_kpar_format() -> String {
+    "kpar".to_string()
 }
 
 type StandardLibraryConfig = LibraryBundleConfig;
 type DomainLibrariesConfig = LibraryBundleConfig;
 
 fn main() {
+    embed_stdlib();
+    embed_domain_libraries();
+}
+
+fn embed_stdlib() {
     let config = load_stdlib_config();
     println!("cargo:rustc-env=SPEC42_STDLIB_VERSION={}", config.version);
     println!("cargo:rustc-env=SPEC42_STDLIB_REPO={}", config.repo);
@@ -38,11 +51,12 @@ fn main() {
         "cargo:rustc-env=SPEC42_STDLIB_CONTENT_PATH={}",
         config.content_path
     );
-    println!("cargo:rerun-if-env-changed=SPEC42_STDLIB_BUNDLE_ZIP");
+    println!("cargo:rustc-env=SPEC42_STDLIB_FORMAT={}", config.format);
+    println!("cargo:rerun-if-env-changed=SPEC42_STDLIB_KPAR_DIR");
     println!("cargo:rerun-if-changed=build.rs");
 
-    let local_cache_relative_path = format!("cache/sysml-v2-release-{}.zip", config.version);
-    println!("cargo:rerun-if-changed={local_cache_relative_path}");
+    let rerun_path = format!("../../.cache/sysml-stdlib-kpar-{}", config.version);
+    println!("cargo:rerun-if-changed={rerun_path}");
 
     let out_dir = std::env::var("OUT_DIR").expect("OUT_DIR");
     let out_zip = Path::new(&out_dir).join("sysml.library.embedded.zip");
@@ -56,20 +70,13 @@ fn main() {
         return;
     }
 
-    let Some(local_zip) = resolve_local_stdlib_zip(&local_cache_relative_path) else {
-        if out_zip.exists() {
-            if embedded_archive_is_usable(&out_zip) {
-                eprintln!(
-                    "spec42 build: reusing cached embedded stdlib archive at {}",
-                    out_zip.display()
-                );
-                let _embedded_digest = format!("{:x}", Sha256::digest(fs::read(&out_zip).unwrap()));
-                return;
-            }
+    let Some(kpar_dir) = resolve_stdlib_kpar_dir(&config.version) else {
+        if out_zip.exists() && embedded_stdlib_archive_is_usable(&out_zip) {
             eprintln!(
-                "spec42 build: ignoring unusable cached embedded stdlib archive at {}",
+                "spec42 build: reusing cached embedded stdlib archive at {}",
                 out_zip.display()
             );
+            return;
         }
         if let Some(cached_embedded_zip) = find_cached_embedded_zip(&out_zip) {
             fs::copy(&cached_embedded_zip, &out_zip).unwrap_or_else(|e| {
@@ -83,43 +90,27 @@ fn main() {
                 "spec42 build: reused cached embedded stdlib archive from {}",
                 cached_embedded_zip.display()
             );
-            let _embedded_digest = format!("{:x}", Sha256::digest(fs::read(&out_zip).unwrap()));
             return;
         }
 
         eprintln!(
-            "spec42 build: embedded stdlib requires a local SysML v2 Release {} zip.",
+            "spec42 build: embedded stdlib requires local KPAR archives for {}.",
             config.version
         );
         eprintln!(
-            "spec42 build: set SPEC42_STDLIB_BUNDLE_ZIP to the full release zip path, or place it at crates/server/{local_cache_relative_path}."
+            "spec42 build: set SPEC42_STDLIB_KPAR_DIR or place .kpar files at .cache/sysml-stdlib-kpar-{}/.",
+            config.version
         );
-        eprintln!(
-            "spec42 build: download URL: https://github.com/{}/archive/refs/tags/{}.zip",
-            config.repo, config.version
-        );
-        eprintln!("spec42 build: for development without embedded stdlib, run `cargo test -p spec42 --no-default-features`.");
+        eprintln!("spec42 build: run scripts/fetch-stdlib-bundle.sh");
         process::exit(1);
     };
 
-    let full_zip_bytes = fs::read(&local_zip).unwrap_or_else(|e| {
-        eprintln!(
-            "spec42 build: failed to read stdlib release zip {}: {e}",
-            local_zip.display()
-        );
-        process::exit(1);
-    });
-
-    let _digest = format!("{:x}", Sha256::digest(&full_zip_bytes));
-
-    repack_sysml_library(&full_zip_bytes, &out_zip).unwrap_or_else(|e| {
-        eprintln!("spec42 build: failed to repack sysml.library: {e}");
+    embed_stdlib_from_kpar_dir(&kpar_dir, &out_zip).unwrap_or_else(|e| {
+        eprintln!("spec42 build: failed to embed standard library KPAR: {e}");
         process::exit(1);
     });
 
     let _embedded_digest = format!("{:x}", Sha256::digest(fs::read(&out_zip).unwrap()));
-
-    embed_domain_libraries();
 }
 
 fn embed_domain_libraries() {
@@ -136,210 +127,145 @@ fn embed_domain_libraries() {
         "cargo:rustc-env=SPEC42_DOMAIN_LIBRARIES_CONTENT_PATH={}",
         config.content_path
     );
+    println!(
+        "cargo:rustc-env=SPEC42_DOMAIN_LIBRARIES_FORMAT={}",
+        config.format
+    );
     println!("cargo:rerun-if-env-changed=SPEC42_DOMAIN_LIBRARIES_BUNDLE_ZIP");
     println!("cargo:rerun-if-env-changed=SPEC42_DOMAIN_LIBRARIES_SOURCE_DIR");
 
-    let local_cache_relative_path = format!("cache/sysml-domain-libraries-{}.zip", config.version);
-    println!("cargo:rerun-if-changed={local_cache_relative_path}");
+    let cache_name = domain_cache_filename(&config);
+    let rerun_path = format!("../../.cache/{cache_name}");
+    println!("cargo:rerun-if-changed={rerun_path}");
 
     let out_dir = std::env::var("OUT_DIR").expect("OUT_DIR");
-    let out_zip = Path::new(&out_dir).join("domain-libraries.embedded.zip");
+    let out_kpar = Path::new(&out_dir).join("domain-libraries.embedded.kpar");
 
     let embed_enabled = std::env::var("CARGO_FEATURE_EMBED_DOMAIN_LIBRARIES").is_ok();
     if !embed_enabled {
-        fs::write(&out_zip, []).unwrap_or_else(|e| {
-            eprintln!("spec42 build: failed to write empty domain libraries stub zip: {e}");
+        fs::write(&out_kpar, []).unwrap_or_else(|e| {
+            eprintln!("spec42 build: failed to write empty domain libraries stub: {e}");
             process::exit(1);
         });
         return;
     }
 
-    if out_zip.exists() && domain_embedded_archive_is_usable(&out_zip) {
+    if out_kpar.exists() && domain_embedded_kpar_is_usable(&out_kpar) {
         eprintln!(
-            "spec42 build: reusing cached embedded domain libraries archive at {}",
-            out_zip.display()
+            "spec42 build: reusing cached embedded domain libraries KPAR at {}",
+            out_kpar.display()
         );
         return;
     }
 
     if let Some(source_dir) = resolve_domain_libraries_source_dir() {
-        repack_domain_libraries_from_dir(&source_dir, &config.content_path, &out_zip)
-            .unwrap_or_else(|e| {
-                eprintln!("spec42 build: failed to repack domain libraries from directory: {e}");
-                process::exit(1);
-            });
+        pack_domain_kpar_from_dir(&source_dir, &config, &out_kpar).unwrap_or_else(|e| {
+            eprintln!("spec42 build: failed to pack domain libraries from directory: {e}");
+            process::exit(1);
+        });
         return;
     }
 
-    let Some(local_zip) = resolve_domain_libraries_bundle_zip(&local_cache_relative_path) else {
-        if let Some(cached_embedded_zip) = find_cached_domain_embedded_zip(&out_zip) {
-            fs::copy(&cached_embedded_zip, &out_zip).unwrap_or_else(|e| {
+    let manifest_dir =
+        PathBuf::from(std::env::var("CARGO_MANIFEST_DIR").expect("CARGO_MANIFEST_DIR"));
+    let sibling = manifest_dir.join("../../../sysml-domain-libraries");
+    if sibling.is_dir() {
+        pack_domain_kpar_from_dir(&sibling, &config, &out_kpar).unwrap_or_else(|e| {
+            eprintln!(
+                "spec42 build: failed to pack domain libraries from sibling checkout: {e}"
+            );
+            process::exit(1);
+        });
+        eprintln!(
+            "spec42 build: packed domain libraries KPAR from sibling checkout {}",
+            sibling.display()
+        );
+        return;
+    }
+
+    let Some(local_bundle) = resolve_domain_libraries_bundle(&cache_name) else {
+        if let Some(cached) = find_cached_domain_embedded_kpar(&out_kpar) {
+            fs::copy(&cached, &out_kpar).unwrap_or_else(|e| {
                 eprintln!(
-                    "spec42 build: failed to reuse cached embedded domain libraries archive {}: {e}",
-                    cached_embedded_zip.display()
+                    "spec42 build: failed to reuse cached embedded domain KPAR {}: {e}",
+                    cached.display()
                 );
                 process::exit(1);
             });
             eprintln!(
-                "spec42 build: reused cached embedded domain libraries archive from {}",
-                cached_embedded_zip.display()
+                "spec42 build: reused cached embedded domain KPAR from {}",
+                cached.display()
             );
             return;
         }
 
         eprintln!(
-            "spec42 build: embedded domain libraries require a local bundle or source directory for {}.",
+            "spec42 build: embedded domain libraries require a local KPAR bundle for {}.",
             config.version
         );
         eprintln!(
-            "spec42 build: set SPEC42_DOMAIN_LIBRARIES_BUNDLE_ZIP, SPEC42_DOMAIN_LIBRARIES_SOURCE_DIR, place a bundle at crates/server/{local_cache_relative_path}, or check out ../sysml-domain-libraries next to the repo."
+            "spec42 build: set SPEC42_DOMAIN_LIBRARIES_BUNDLE_ZIP, SPEC42_DOMAIN_LIBRARIES_SOURCE_DIR, or place a bundle at .cache/{cache_name}."
         );
-        eprintln!("spec42 build: download via scripts/fetch-domain-libraries-bundle.sh");
-        eprintln!(
-            "spec42 build: for development without embedded domain libraries, run `cargo test -p spec42 --no-default-features`."
-        );
+        eprintln!("spec42 build: run scripts/fetch-domain-libraries-bundle.sh");
         process::exit(1);
     };
 
-    let full_zip_bytes = fs::read(&local_zip).unwrap_or_else(|e| {
+    if !local_bundle.extension().is_some_and(|ext| ext == "kpar") {
         eprintln!(
-            "spec42 build: failed to read domain libraries bundle {}: {e}",
-            local_zip.display()
+            "spec42 build: expected a .kpar bundle at {}",
+            local_bundle.display()
+        );
+        process::exit(1);
+    }
+
+    fs::copy(&local_bundle, &out_kpar).unwrap_or_else(|e| {
+        eprintln!(
+            "spec42 build: failed to copy domain KPAR {}: {e}",
+            local_bundle.display()
         );
         process::exit(1);
     });
+}
 
-    repack_domain_libraries_from_zip(&full_zip_bytes, &config.content_path, &out_zip)
-        .unwrap_or_else(|e| {
-            eprintln!("spec42 build: failed to repack domain libraries: {e}");
-            process::exit(1);
-        });
+fn domain_cache_filename(config: &DomainLibrariesConfig) -> String {
+    config
+        .artifact
+        .clone()
+        .unwrap_or_else(|| format!("elan8-domain-libraries-{}.kpar", config.version))
+}
+
+fn pack_domain_kpar_from_dir(
+    source_dir: &Path,
+    config: &DomainLibrariesConfig,
+    out_kpar: &Path,
+) -> Result<(), String> {
+    let project = Project {
+        name: "elan8-domain-libraries".to_string(),
+        version: config.version.clone(),
+        description: Some("Elan8 SysML v2 domain libraries".to_string()),
+        license: Some("MIT".to_string()),
+        publisher: Some("elan8".to_string()),
+        maintainer: vec![],
+        website: None,
+        topic: vec![],
+        usage: vec![],
+    };
+    let options = PackOptions::domain_libraries_defaults(project, source_dir);
+    build_kpar(&options, out_kpar).map_err(|e| e.to_string())
 }
 
 fn load_stdlib_config() -> StandardLibraryConfig {
-    let manifest_dir =
-        PathBuf::from(std::env::var("CARGO_MANIFEST_DIR").expect("CARGO_MANIFEST_DIR"));
-    let config_path = manifest_dir.join("../../config/standard-library.json");
-    println!("cargo:rerun-if-changed={}", config_path.display());
-    let raw = fs::read_to_string(&config_path).unwrap_or_else(|e| {
-        eprintln!(
-            "spec42 build: failed to read {}: {e}",
-            config_path.display()
-        );
-        process::exit(1);
-    });
-    serde_json::from_str(&raw).unwrap_or_else(|e| {
-        eprintln!(
-            "spec42 build: failed to parse {}: {e}",
-            config_path.display()
-        );
-        process::exit(1);
-    })
-}
-
-fn resolve_local_stdlib_zip(local_cache_relative_path: &str) -> Option<PathBuf> {
-    if let Ok(path) = std::env::var("SPEC42_STDLIB_BUNDLE_ZIP") {
-        let trimmed = path.trim();
-        if !trimmed.is_empty() {
-            return Some(PathBuf::from(trimmed));
-        }
-    }
-
-    let manifest_dir =
-        PathBuf::from(std::env::var("CARGO_MANIFEST_DIR").expect("CARGO_MANIFEST_DIR"));
-    let cached = manifest_dir.join(local_cache_relative_path);
-    cached.exists().then_some(cached)
-}
-
-fn find_cached_embedded_zip(out_zip: &Path) -> Option<PathBuf> {
-    let build_root = out_zip.parent()?.parent()?.parent()?;
-    let entries = fs::read_dir(build_root).ok()?;
-    for entry in entries.flatten() {
-        let candidate = entry.path().join("out/sysml.library.embedded.zip");
-        if candidate != out_zip && candidate.is_file() && embedded_archive_is_usable(&candidate) {
-            return Some(candidate);
-        }
-    }
-    None
-}
-
-fn embedded_archive_is_usable(path: &Path) -> bool {
-    let Ok(bytes) = fs::read(path) else {
-        return false;
-    };
-    let Ok(mut archive) = ZipArchive::new(Cursor::new(bytes)) else {
-        return false;
-    };
-    for i in 0..archive.len() {
-        let Ok(entry) = archive.by_index(i) else {
-            return false;
-        };
-        let name = entry.name();
-        if name.starts_with(&format!("{EMBED_ROOT}/sysml.library/")) && !name.ends_with('/') {
-            return true;
-        }
-    }
-    false
-}
-
-fn repack_sysml_library(full_zip_bytes: &[u8], out_path: &Path) -> Result<(), String> {
-    let cursor = Cursor::new(full_zip_bytes);
-    let mut archive = ZipArchive::new(cursor).map_err(|e| format!("open release zip: {e}"))?;
-    if archive.is_empty() {
-        return Err("release zip is empty".to_string());
-    }
-
-    let root = {
-        let first = archive.by_index(0).map_err(|e| format!("read zip: {e}"))?;
-        first
-            .name()
-            .split('/')
-            .next()
-            .filter(|s| !s.is_empty())
-            .ok_or_else(|| "malformed zip: missing root folder".to_string())?
-            .to_string()
-    };
-
-    let wanted_prefix = format!("{root}/sysml.library/");
-    let out_file =
-        File::create(out_path).map_err(|e| format!("create {}: {e}", out_path.display()))?;
-    let mut writer = ZipWriter::new(out_file);
-    let options = SimpleFileOptions::default();
-
-    let mut count = 0usize;
-    for i in 0..archive.len() {
-        let mut entry = archive
-            .by_index(i)
-            .map_err(|e| format!("zip entry {i}: {e}"))?;
-        let name = entry.name().to_string();
-        if !name.starts_with(&wanted_prefix) || name.ends_with('/') {
-            continue;
-        }
-        let relative = name.trim_start_matches(&wanted_prefix);
-        if relative.is_empty() {
-            continue;
-        }
-        let out_name = format!("{EMBED_ROOT}/sysml.library/{relative}");
-        writer
-            .start_file(&out_name, options)
-            .map_err(|e| format!("start_file {out_name}: {e}"))?;
-        std::io::copy(&mut entry, &mut writer).map_err(|e| format!("copy {out_name}: {e}"))?;
-        count += 1;
-    }
-    writer.finish().map_err(|e| format!("finish zip: {e}"))?;
-    if count == 0 {
-        return Err(format!(
-            "no files found under prefix '{wanted_prefix}' in release zip"
-        ));
-    }
-    let _count = count;
-    Ok(())
+    load_config("../../config/standard-library.json")
 }
 
 fn load_domain_libraries_config() -> DomainLibrariesConfig {
+    load_config("../../config/domain-libraries.json")
+}
+
+fn load_config(relative: &str) -> LibraryBundleConfig {
     let manifest_dir =
         PathBuf::from(std::env::var("CARGO_MANIFEST_DIR").expect("CARGO_MANIFEST_DIR"));
-    let config_path = manifest_dir.join("../../config/domain-libraries.json");
+    let config_path = manifest_dir.join(relative);
     println!("cargo:rerun-if-changed={}", config_path.display());
     let raw = fs::read_to_string(&config_path).unwrap_or_else(|e| {
         eprintln!(
@@ -357,18 +283,51 @@ fn load_domain_libraries_config() -> DomainLibrariesConfig {
     })
 }
 
-fn resolve_domain_libraries_bundle_zip(local_cache_relative_path: &str) -> Option<PathBuf> {
+fn embed_cache_dir() -> PathBuf {
+    PathBuf::from(std::env::var("CARGO_MANIFEST_DIR").expect("CARGO_MANIFEST_DIR"))
+        .join("../../.cache")
+}
+
+fn resolve_stdlib_kpar_dir(version: &str) -> Option<PathBuf> {
+    if let Ok(path) = std::env::var("SPEC42_STDLIB_KPAR_DIR") {
+        let trimmed = path.trim();
+        if !trimmed.is_empty() {
+            let candidate = PathBuf::from(trimmed);
+            if stdlib_kpar_dir_is_usable(&candidate) {
+                return Some(candidate);
+            }
+        }
+    }
+    let cached = embed_cache_dir().join(format!("sysml-stdlib-kpar-{version}"));
+    stdlib_kpar_dir_is_usable(&cached).then_some(cached)
+}
+
+fn stdlib_kpar_dir_is_usable(path: &Path) -> bool {
+    if !path.is_dir() {
+        return false;
+    }
+    fs::read_dir(path)
+        .ok()
+        .into_iter()
+        .flatten()
+        .flatten()
+        .any(|entry| {
+            entry
+                .path()
+                .extension()
+                .is_some_and(|ext| ext == "kpar")
+        })
+}
+
+fn resolve_domain_libraries_bundle(cache_name: &str) -> Option<PathBuf> {
     if let Ok(path) = std::env::var("SPEC42_DOMAIN_LIBRARIES_BUNDLE_ZIP") {
         let trimmed = path.trim();
         if !trimmed.is_empty() {
             return Some(PathBuf::from(trimmed));
         }
     }
-
-    let manifest_dir =
-        PathBuf::from(std::env::var("CARGO_MANIFEST_DIR").expect("CARGO_MANIFEST_DIR"));
-    let cached = manifest_dir.join(local_cache_relative_path);
-    cached.exists().then_some(cached)
+    let cached = embed_cache_dir().join(cache_name);
+    cached.is_file().then_some(cached)
 }
 
 fn resolve_domain_libraries_source_dir() -> Option<PathBuf> {
@@ -381,21 +340,14 @@ fn resolve_domain_libraries_source_dir() -> Option<PathBuf> {
             }
         }
     }
-
-    let manifest_dir =
-        PathBuf::from(std::env::var("CARGO_MANIFEST_DIR").expect("CARGO_MANIFEST_DIR"));
-    let git_sibling = manifest_dir.join("../../../sysml-domain-libraries");
-    git_sibling.is_dir().then_some(git_sibling)
+    None
 }
 
-fn find_cached_domain_embedded_zip(out_zip: &Path) -> Option<PathBuf> {
+fn find_cached_embedded_zip(out_zip: &Path) -> Option<PathBuf> {
     let build_root = out_zip.parent()?.parent()?.parent()?;
-    let entries = fs::read_dir(build_root).ok()?;
-    for entry in entries.flatten() {
-        let candidate = entry.path().join("out/domain-libraries.embedded.zip");
-        if candidate != out_zip
-            && candidate.is_file()
-            && domain_embedded_archive_is_usable(&candidate)
+    for entry in fs::read_dir(build_root).ok()?.flatten() {
+        let candidate = entry.path().join("out/sysml.library.embedded.zip");
+        if candidate != out_zip && candidate.is_file() && embedded_stdlib_archive_is_usable(&candidate)
         {
             return Some(candidate);
         }
@@ -403,149 +355,82 @@ fn find_cached_domain_embedded_zip(out_zip: &Path) -> Option<PathBuf> {
     None
 }
 
-fn domain_embedded_archive_is_usable(path: &Path) -> bool {
+fn find_cached_domain_embedded_kpar(out_kpar: &Path) -> Option<PathBuf> {
+    let build_root = out_kpar.parent()?.parent()?.parent()?;
+    for entry in fs::read_dir(build_root).ok()?.flatten() {
+        let candidate = entry.path().join("out/domain-libraries.embedded.kpar");
+        if candidate != out_kpar
+            && candidate.is_file()
+            && domain_embedded_kpar_is_usable(&candidate)
+        {
+            return Some(candidate);
+        }
+    }
+    None
+}
+
+fn embedded_stdlib_archive_is_usable(path: &Path) -> bool {
     let Ok(bytes) = fs::read(path) else {
         return false;
     };
     let Ok(mut archive) = ZipArchive::new(Cursor::new(bytes)) else {
         return false;
     };
-    let prefix = format!("{DOMAIN_EMBED_ROOT}/");
     for i in 0..archive.len() {
         let Ok(entry) = archive.by_index(i) else {
             return false;
         };
         let name = entry.name();
-        if name.starts_with(&prefix) && !name.ends_with('/') {
+        if name.starts_with(STDLIB_KPAR_EMBED_PREFIX)
+            && name.ends_with(".kpar")
+            && !name.ends_with('/')
+        {
             return true;
         }
     }
     false
 }
 
-fn repack_domain_libraries_from_zip(
-    full_zip_bytes: &[u8],
-    content_path: &str,
-    out_path: &Path,
-) -> Result<(), String> {
-    let cursor = Cursor::new(full_zip_bytes);
-    let mut archive =
-        ZipArchive::new(cursor).map_err(|e| format!("open domain bundle zip: {e}"))?;
-    if archive.is_empty() {
-        return Err("domain bundle zip is empty".to_string());
-    }
-
-    let source_root = {
-        let first = archive.by_index(0).map_err(|e| format!("read zip: {e}"))?;
-        first
-            .name()
-            .split('/')
-            .next()
-            .filter(|s| !s.is_empty())
-            .ok_or_else(|| "malformed zip: missing root folder".to_string())?
-            .to_string()
+fn domain_embedded_kpar_is_usable(path: &Path) -> bool {
+    let Ok(bytes) = fs::read(path) else {
+        return false;
     };
+    !bytes.is_empty() && kpar::is_kpar_archive(&bytes)
+}
 
-    let source_prefix = format!("{source_root}/");
+fn embed_stdlib_from_kpar_dir(kpar_dir: &Path, out_path: &Path) -> Result<(), String> {
+    let mut kpar_files: Vec<PathBuf> = fs::read_dir(kpar_dir)
+        .map_err(|e| format!("read {}: {e}", kpar_dir.display()))?
+        .flatten()
+        .map(|entry| entry.path())
+        .filter(|path| path.extension().is_some_and(|ext| ext == "kpar"))
+        .collect();
+    kpar_files.sort();
+    if kpar_files.is_empty() {
+        return Err(format!(
+            "no .kpar files found in {}",
+            kpar_dir.display()
+        ));
+    }
+
     let out_file =
         File::create(out_path).map_err(|e| format!("create {}: {e}", out_path.display()))?;
     let mut writer = ZipWriter::new(out_file);
     let options = SimpleFileOptions::default();
-    let out_prefix = format!("{DOMAIN_EMBED_ROOT}/{content_path}/");
-    let mut count = 0usize;
-
-    for i in 0..archive.len() {
-        let mut entry = archive
-            .by_index(i)
-            .map_err(|e| format!("zip entry {i}: {e}"))?;
-        let name = entry.name().to_string();
-        if !name.starts_with(&source_prefix) || name.ends_with('/') {
-            continue;
-        }
-        let relative = name.trim_start_matches(&source_prefix);
-        if relative.is_empty() || relative.starts_with(".git/") {
-            continue;
-        }
-        let out_name = format!("{out_prefix}{relative}");
+    for path in kpar_files {
+        let file_name = path
+            .file_name()
+            .and_then(|name| name.to_str())
+            .ok_or_else(|| format!("invalid kpar file name {}", path.display()))?;
+        let out_name = format!("{STDLIB_KPAR_EMBED_PREFIX}{file_name}");
         writer
             .start_file(&out_name, options)
             .map_err(|e| format!("start_file {out_name}: {e}"))?;
-        std::io::copy(&mut entry, &mut writer).map_err(|e| format!("copy {out_name}: {e}"))?;
-        count += 1;
-    }
-    writer.finish().map_err(|e| format!("finish zip: {e}"))?;
-    if count == 0 {
-        return Err(format!(
-            "no files found under prefix '{source_prefix}' in domain bundle zip"
-        ));
-    }
-    Ok(())
-}
-
-fn repack_domain_libraries_from_dir(
-    source_dir: &Path,
-    content_path: &str,
-    out_path: &Path,
-) -> Result<(), String> {
-    let out_file =
-        File::create(out_path).map_err(|e| format!("create {}: {e}", out_path.display()))?;
-    let mut writer = ZipWriter::new(out_file);
-    let options = SimpleFileOptions::default();
-    let out_prefix = format!("{DOMAIN_EMBED_ROOT}/{content_path}/");
-    let mut count = 0usize;
-    collect_domain_files(
-        source_dir,
-        source_dir,
-        &out_prefix,
-        &mut writer,
-        options,
-        &mut count,
-    )?;
-    writer.finish().map_err(|e| format!("finish zip: {e}"))?;
-    if count == 0 {
-        return Err(format!(
-            "no files found under source directory {}",
-            source_dir.display()
-        ));
-    }
-    Ok(())
-}
-
-fn collect_domain_files(
-    source_root: &Path,
-    current: &Path,
-    out_prefix: &str,
-    writer: &mut ZipWriter<File>,
-    options: SimpleFileOptions,
-    count: &mut usize,
-) -> Result<(), String> {
-    for entry in
-        fs::read_dir(current).map_err(|e| format!("read_dir {}: {e}", current.display()))?
-    {
-        let entry = entry.map_err(|e| format!("dir entry: {e}"))?;
-        let path = entry.path();
-        if path.file_name().is_some_and(|name| name == ".git") {
-            continue;
-        }
-        if path.is_dir() {
-            collect_domain_files(source_root, &path, out_prefix, writer, options, count)?;
-            continue;
-        }
-        if !path.is_file() {
-            continue;
-        }
-        let relative = path
-            .strip_prefix(source_root)
-            .map_err(|_| "strip_prefix failed".to_string())?
-            .to_string_lossy()
-            .replace('\\', "/");
-        let out_name = format!("{out_prefix}{relative}");
+        let bytes = fs::read(&path).map_err(|e| format!("read {}: {e}", path.display()))?;
         writer
-            .start_file(&out_name, options)
-            .map_err(|e| format!("start_file {out_name}: {e}"))?;
-        let mut file = File::open(&path).map_err(|e| format!("open {}: {e}", path.display()))?;
-        std::io::copy(&mut file, writer).map_err(|e| format!("copy {out_name}: {e}"))?;
-        *count += 1;
+            .write_all(&bytes)
+            .map_err(|e| format!("write {out_name}: {e}"))?;
     }
+    writer.finish().map_err(|e| format!("finish zip: {e}"))?;
     Ok(())
 }

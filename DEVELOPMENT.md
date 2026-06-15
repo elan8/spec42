@@ -64,7 +64,7 @@ See [docs/engineering/STEDIN-PERFORMANCE-ANALYSIS.md](docs/engineering/STEDIN-PE
 
 ### Embedded standard library bundle
 
-The `spec42` crate embeds the SysML v2 standard library by default. Builds are deterministic and do not download this archive implicitly.
+The `spec42` crate embeds the SysML v2 standard library by default. Builds are deterministic and do not download KPAR archives implicitly.
 
 The pinned standard-library release is defined once in `config/standard-library.json`.
 After changing that file, run:
@@ -73,25 +73,29 @@ After changing that file, run:
 node scripts/sync-standard-library-config.mjs
 ```
 
-For normal embedded builds, provide the full SysML v2 Release zip for the pinned tag in one of these ways:
+For normal embedded builds, fetch or place KPAR archives under the unified local cache:
+
+```text
+.cache/
+  sysml-stdlib-kpar-<version>/     # OMG .kpar files (one per library)
+  elan8-domain-libraries-<version>.kpar
+```
+
+Refresh the OMG stdlib archives with:
+
+```bash
+bash scripts/fetch-stdlib-bundle.sh
+bash scripts/fetch-domain-libraries-bundle.sh
+```
+
+Optional override for a custom stdlib cache directory:
 
 ```powershell
-$env:SPEC42_STDLIB_BUNDLE_ZIP = 'C:\path\to\SysML-v2-Release-<version>.zip'
+$env:SPEC42_STDLIB_KPAR_DIR = 'C:\path\to\sysml-stdlib-kpar-2026-04'
 cargo build -p spec42
 ```
 
-or place the zip at:
-
-```text
-crates/server/cache/sysml-v2-release-<version>.zip
-```
-
-Maintainers can refresh that cache from:
-
-```text
-https://github.com/<repo>/archive/refs/tags/<version>.zip
-```
-
+The stdlib fetch script sparse-checkouts `sysml.library.kpar/` at the pinned release tag (not `master`).
 Use the `version` and `repo` values from `config/standard-library.json`.
 
 For development checks that do not need the embedded library:
@@ -305,14 +309,22 @@ Example workspaces are versioned as a Git submodule at the **repository root**:
 
 - `examples/` → [elan8/sysml-examples](https://github.com/elan8/sysml-examples)
 
-Elan8 domain libraries are **bundled inside the Spec42 server binary** (same pipeline as the OMG standard library). The pinned revision lives in `config/domain-libraries.json`. CI fetches the archive with `scripts/fetch-domain-libraries-bundle.sh` before building.
+Elan8 domain libraries are **bundled inside the Spec42 server binary** as a **KPAR** (KerML Project Archive). The pinned version lives in `config/domain-libraries.json`. CI fetches or packs the archive with `scripts/fetch-domain-libraries-bundle.sh` before building.
+
+The OMG standard library is bundled from `sysml.library.kpar` at the pinned SysML v2 Release tag (see `config/standard-library.json`). CI fetches only that directory via sparse git checkout in `scripts/fetch-stdlib-bundle.sh` before building.
 
 For local development, `build.rs` prefers, in order:
 
-1. `SPEC42_DOMAIN_LIBRARIES_BUNDLE_ZIP` (CI/release)
-2. `SPEC42_DOMAIN_LIBRARIES_SOURCE_DIR` (explicit checkout)
-3. A sibling checkout at `../sysml-domain-libraries` (typical layout: `C:\Git\spec42` + `C:\Git\sysml-domain-libraries`)
-4. Cached `.cache/sysml-domain-libraries-{version}.zip`
+1. `SPEC42_DOMAIN_LIBRARIES_BUNDLE_ZIP` (path to `.kpar`, CI/release)
+2. `SPEC42_DOMAIN_LIBRARIES_SOURCE_DIR` (pack on the fly with `kpar-pack`)
+3. A sibling checkout at `../sysml-domain-libraries` (packed to KPAR when no cached bundle exists)
+4. Cached `.cache/elan8-domain-libraries-{version}.kpar`
+
+Domain library releases are published from [elan8/sysml-domain-libraries](https://github.com/elan8/sysml-domain-libraries) via the `release-kpar` GitHub Action when a `v*` tag is pushed. Pack locally with:
+
+```bash
+cargo run -p kpar --bin kpar-pack -- --root ../sysml-domain-libraries --version 0.1.0 --output elan8-domain-libraries-0.1.0.kpar
+```
 
 `vscode/.gitignore` ignores `vscode/examples` so duplicate checkouts under `vscode/` are not committed. If you see the same example folders twice in the Spec42 **Examples** view, remove the extra copy under `vscode/examples` and keep the root submodule.
 

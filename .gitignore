@@ -14,5 +14,5 @@ internal_docs/
 scripts/code-scanning-export/
 code-scanning-export/
 tmp/
+.cache/
 crates/kernel/tests/output/*
-crates/server/cache/*.zip

@@ -14,7 +14,8 @@ use crate::domain_libraries::{
 };
 use crate::stdlib::{
     install_embedded_standard_library, legacy_vscode_stdlib_path, load_managed_metadata,
-    managed_status, project_dirs, standard_library_paths_from_data_dir, StandardLibraryConfig,
+    managed_status, project_dirs, standard_library_paths_from_data_dir, stdlib_library_roots,
+    StandardLibraryConfig,
     StandardLibraryPaths, StandardLibraryStatus, EMBEDDED_STDLIB_ARCHIVE, EMBEDDED_STDLIB_REPO,
 };
 use crate::sysand::{dependency_roots_from_status, detect_sysand_status, SysandStatus};
@@ -36,6 +37,7 @@ pub struct ResolvedEnvironment {
     pub data_dir: PathBuf,
     pub library_paths: Vec<PathBuf>,
     pub stdlib_path: Option<PathBuf>,
+    pub stdlib_roots: Vec<PathBuf>,
     pub stdlib_source: Option<String>,
     pub used_legacy_vscode_fallback: bool,
     pub domain_libraries_path: Option<PathBuf>,
@@ -55,6 +57,7 @@ pub struct DoctorReport {
     pub config_dir: String,
     pub data_dir: String,
     pub resolved_stdlib_path: Option<String>,
+    pub stdlib_roots: Vec<String>,
     pub stdlib_source: Option<String>,
     pub stdlib_source_kind: String,
     pub used_legacy_vscode_fallback: bool,
@@ -140,7 +143,7 @@ fn resolve_environment_with_dirs(
         &explicit_config,
         &default_config,
         &sysand_dependency_roots,
-        stdlib_resolution.path.as_ref(),
+        &stdlib_resolution.roots,
         domain_libraries_resolution.path.as_ref(),
     );
 
@@ -150,6 +153,7 @@ fn resolve_environment_with_dirs(
         data_dir,
         library_paths,
         stdlib_path: stdlib_resolution.path,
+        stdlib_roots: stdlib_resolution.roots,
         stdlib_source: stdlib_resolution.source,
         used_legacy_vscode_fallback: stdlib_resolution.used_legacy_vscode_fallback,
         domain_libraries_path: domain_libraries_resolution.path,
@@ -222,6 +226,11 @@ pub fn build_doctor_report(
             .stdlib_path
             .as_ref()
             .map(|path| path.display().to_string()),
+        stdlib_roots: environment
+            .stdlib_roots
+            .iter()
+            .map(|path| path.display().to_string())
+            .collect(),
         stdlib_source: environment.stdlib_source.clone(),
         stdlib_source_kind: if environment.stdlib_source.as_deref() == Some("managed") {
             "canonical-managed".to_string()
@@ -314,7 +323,7 @@ fn resolve_library_paths(
     explicit_config: &ConfigFile,
     default_config: &ConfigFile,
     sysand_dependency_roots: &[PathBuf],
-    stdlib_path: Option<&PathBuf>,
+    stdlib_roots: &[PathBuf],
     domain_libraries_path: Option<&PathBuf>,
 ) -> Vec<PathBuf> {
     let mut paths = if !cli.library_paths.is_empty() {
@@ -341,9 +350,7 @@ fn resolve_library_paths(
     };
 
     paths.extend(sysand_dependency_roots.iter().cloned());
-    if let Some(stdlib_path) = stdlib_path {
-        paths.push(stdlib_path.clone());
-    }
+    paths.extend(stdlib_roots.iter().cloned());
     if let Some(domain_libraries_path) = domain_libraries_path {
         paths.push(domain_libraries_path.clone());
     }
@@ -425,6 +432,7 @@ fn resolve_domain_libraries_config(
 
 struct StdlibResolution {
     path: Option<PathBuf>,
+    roots: Vec<PathBuf>,
     source: Option<String>,
     used_legacy_vscode_fallback: bool,
 }
@@ -445,42 +453,51 @@ fn resolve_stdlib_path(
     if no_stdlib {
         return Ok(StdlibResolution {
             path: None,
+            roots: Vec::new(),
             source: Some("disabled".to_string()),
             used_legacy_vscode_fallback: false,
         });
     }
 
     if let Some(path) = cli.stdlib_path.as_ref() {
+        let path = canonicalize_lossy(path);
         return Ok(StdlibResolution {
-            path: Some(canonicalize_lossy(path)),
+            roots: stdlib_resolution_roots(&path, None),
+            path: Some(path),
             source: Some("flag".to_string()),
             used_legacy_vscode_fallback: false,
         });
     }
     if let Some(value) = std::env::var_os("SPEC42_STDLIB_PATH") {
+        let path = canonicalize_lossy(&PathBuf::from(value));
         return Ok(StdlibResolution {
-            path: Some(canonicalize_lossy(&PathBuf::from(value))),
+            roots: stdlib_resolution_roots(&path, None),
+            path: Some(path),
             source: Some("env".to_string()),
             used_legacy_vscode_fallback: false,
         });
     }
     if let Some(path) = explicit_config.stdlib_path.as_ref() {
+        let path = canonicalize_lossy(&PathBuf::from(path));
         return Ok(StdlibResolution {
-            path: Some(canonicalize_lossy(&PathBuf::from(path))),
+            roots: stdlib_resolution_roots(&path, None),
+            path: Some(path),
             source: Some("config".to_string()),
             used_legacy_vscode_fallback: false,
         });
     }
     if let Some(path) = default_config.stdlib_path.as_ref() {
+        let path = canonicalize_lossy(&PathBuf::from(path));
         return Ok(StdlibResolution {
-            path: Some(canonicalize_lossy(&PathBuf::from(path))),
+            roots: stdlib_resolution_roots(&path, None),
+            path: Some(path),
             source: Some("user-config".to_string()),
             used_legacy_vscode_fallback: false,
         });
     }
 
     if let Some(metadata) = load_managed_metadata(standard_library_paths)? {
-        let managed_path = PathBuf::from(metadata.install_path);
+        let managed_path = PathBuf::from(&metadata.install_path);
         let expected_path =
             crate::stdlib::managed_install_path(standard_library_paths, standard_library);
         let metadata_is_current = metadata.installed_version == standard_library.version
@@ -492,6 +509,7 @@ fn resolve_stdlib_path(
                 "managed".to_string()
             };
             return Ok(StdlibResolution {
+                roots: stdlib_resolution_roots(&managed_path, Some(&metadata)),
                 path: Some(managed_path),
                 source: Some(source),
                 used_legacy_vscode_fallback: false,
@@ -504,11 +522,15 @@ fn resolve_stdlib_path(
     #[allow(clippy::const_is_empty)]
     if !EMBEDDED_STDLIB_ARCHIVE.is_empty() {
         return match install_embedded_standard_library(standard_library_paths, standard_library) {
-            Ok(metadata) => Ok(StdlibResolution {
-                path: Some(PathBuf::from(metadata.install_path)),
-                source: Some("bundled".to_string()),
-                used_legacy_vscode_fallback: false,
-            }),
+            Ok(metadata) => {
+                let path = PathBuf::from(&metadata.install_path);
+                Ok(StdlibResolution {
+                    roots: stdlib_resolution_roots(&path, Some(&metadata)),
+                    path: Some(path),
+                    source: Some("bundled".to_string()),
+                    used_legacy_vscode_fallback: false,
+                })
+            }
             Err(e) => Err(format!(
                 "Failed to materialize embedded SysML standard library: {e}"
             )),
@@ -517,6 +539,7 @@ fn resolve_stdlib_path(
 
     if let Some(path) = legacy_vscode_stdlib_path(standard_library) {
         return Ok(StdlibResolution {
+            roots: stdlib_resolution_roots(&path, None),
             path: Some(path),
             source: Some("legacy-vscode".to_string()),
             used_legacy_vscode_fallback: true,
@@ -525,9 +548,22 @@ fn resolve_stdlib_path(
 
     Ok(StdlibResolution {
         path: None,
+        roots: Vec::new(),
         source: None,
         used_legacy_vscode_fallback: false,
     })
+}
+
+fn stdlib_resolution_roots(
+    install_path: &Path,
+    metadata: Option<&crate::stdlib::StandardLibraryMetadata>,
+) -> Vec<PathBuf> {
+    let roots = stdlib_library_roots(install_path, metadata);
+    if roots.is_empty() {
+        vec![install_path.to_path_buf()]
+    } else {
+        roots
+    }
 }
 
 fn load_config_file_if_present(path: &Path) -> Result<ConfigFile, String> {
@@ -632,7 +668,7 @@ mod tests {
             &ConfigFile::default(),
             &ConfigFile::default(),
             &[],
-            None,
+            &[],
             None,
         );
         assert_eq!(paths, vec![PathBuf::from("C:/models/lib")]);
@@ -738,7 +774,7 @@ mod tests {
             .managed_root
             .join("versions")
             .join(crate::stdlib::DEFAULT_STDLIB_VERSION)
-            .join(crate::stdlib::DEFAULT_STDLIB_CONTENT_PATH);
+            .join("kpar");
         std::fs::create_dir_all(&install_path).expect("create install path");
         std::fs::write(
             install_path.join("ScalarValues.sysml"),
@@ -752,7 +788,10 @@ mod tests {
                 install_path: install_path.display().to_string(),
                 installed_at: "0".to_string(),
                 repo: crate::stdlib::DEFAULT_STDLIB_REPO.to_string(),
-                content_path: crate::stdlib::DEFAULT_STDLIB_CONTENT_PATH.to_string(),
+                content_path: "kpar".to_string(),
+                format: crate::stdlib::DEFAULT_STDLIB_FORMAT.to_string(),
+                library_roots: vec![install_path.display().to_string()],
+                project_name: None,
             },
         )
         .expect("save metadata");
@@ -791,7 +830,7 @@ mod tests {
             .managed_root
             .join("versions")
             .join("2026-02")
-            .join(DEFAULT_STDLIB_CONTENT_PATH);
+            .join("kpar");
         std::fs::create_dir_all(&stale_install_path).expect("create stale install path");
         save_managed_metadata(
             &paths,
@@ -800,7 +839,10 @@ mod tests {
                 install_path: stale_install_path.display().to_string(),
                 installed_at: "0".to_string(),
                 repo: EMBEDDED_STDLIB_REPO.to_string(),
-                content_path: DEFAULT_STDLIB_CONTENT_PATH.to_string(),
+                content_path: "kpar".to_string(),
+                format: crate::stdlib::DEFAULT_STDLIB_FORMAT.to_string(),
+                library_roots: vec![stale_install_path.display().to_string()],
+                project_name: None,
             },
         )
         .expect("save metadata");
@@ -839,7 +881,7 @@ mod tests {
             .managed_root
             .join("versions")
             .join("2026-02")
-            .join(DEFAULT_STDLIB_CONTENT_PATH);
+            .join("kpar");
         std::fs::create_dir_all(&stale_install_path).expect("create stale install path");
         save_managed_metadata(
             &paths,
@@ -848,7 +890,10 @@ mod tests {
                 install_path: stale_install_path.display().to_string(),
                 installed_at: "0".to_string(),
                 repo: EMBEDDED_STDLIB_REPO.to_string(),
-                content_path: DEFAULT_STDLIB_CONTENT_PATH.to_string(),
+                content_path: "kpar".to_string(),
+                format: crate::stdlib::DEFAULT_STDLIB_FORMAT.to_string(),
+                library_roots: vec![stale_install_path.display().to_string()],
+                project_name: None,
             },
         )
         .expect("save metadata");

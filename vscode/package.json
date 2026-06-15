@@ -593,18 +593,28 @@
         },
         "spec42.standardLibrary.contentPath": {
           "type": "string",
-          "default": "sysml.library",
-          "description": "Legacy: folder name inside the official release (bundled by the server)."
+          "default": "sysml.library.kpar",
+          "description": "Display-only: content path inside the official release (bundled by the server)."
+        },
+        "spec42.standardLibrary.format": {
+          "type": "string",
+          "default": "kpar",
+          "description": "Display-only: bundled standard library distribution format (kpar)."
         },
         "spec42.domainLibraries.version": {
           "type": "string",
-          "default": "dc378a9",
-          "description": "Display-only: pinned revision of the bundled Elan8 domain libraries."
+          "default": "0.1.0",
+          "description": "Display-only: version of the bundled Elan8 domain libraries KPAR."
         },
         "spec42.domainLibraries.repo": {
           "type": "string",
           "default": "elan8/sysml-domain-libraries",
           "description": "Display-only: source repository for bundled domain libraries."
+        },
+        "spec42.domainLibraries.format": {
+          "type": "string",
+          "default": "kpar",
+          "description": "Display-only: bundled domain libraries distribution format (kpar)."
         },
         "spec42.statusBar.enabled": {
           "type": "boolean",

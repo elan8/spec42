@@ -1,22 +1,24 @@
 use std::fs;
-use std::io::{self, Cursor, Write};
+use std::io::{self, Write};
 use std::path::{Path, PathBuf};
 use std::thread;
 use std::time::{Duration, Instant, SystemTime, UNIX_EPOCH};
 
 use serde::{Deserialize, Serialize};
 
+use crate::library_bundle::{is_kpar_bytes, materialize_kpar_bytes, normalize_content_path};
 use crate::stdlib::install_path_is_ready;
 
 pub const DEFAULT_DOMAIN_LIBRARIES_VERSION: &str = env!("SPEC42_DOMAIN_LIBRARIES_VERSION");
 pub const DEFAULT_DOMAIN_LIBRARIES_REPO: &str = env!("SPEC42_DOMAIN_LIBRARIES_REPO");
 pub const DEFAULT_DOMAIN_LIBRARIES_CONTENT_PATH: &str =
     env!("SPEC42_DOMAIN_LIBRARIES_CONTENT_PATH");
+pub const DEFAULT_DOMAIN_LIBRARIES_FORMAT: &str = env!("SPEC42_DOMAIN_LIBRARIES_FORMAT");
 pub const EMBEDDED_DOMAIN_LIBRARIES_REPO: &str = "embedded";
 
 #[cfg(feature = "embed-domain-libraries")]
 pub const EMBEDDED_DOMAIN_LIBRARIES_ARCHIVE: &[u8] =
-    include_bytes!(concat!(env!("OUT_DIR"), "/domain-libraries.embedded.zip"));
+    include_bytes!(concat!(env!("OUT_DIR"), "/domain-libraries.embedded.kpar"));
 
 #[cfg(not(feature = "embed-domain-libraries"))]
 pub const EMBEDDED_DOMAIN_LIBRARIES_ARCHIVE: &[u8] = &[];
@@ -26,6 +28,20 @@ pub struct DomainLibrariesConfig {
     pub version: String,
     pub repo: String,
     pub content_path: String,
+    #[serde(default = "default_domain_libraries_format")]
+    pub format: String,
+    #[serde(default)]
+    pub artifact: Option<String>,
+}
+
+fn default_domain_libraries_format() -> String {
+    DEFAULT_DOMAIN_LIBRARIES_FORMAT.to_string()
+}
+
+impl DomainLibrariesConfig {
+    pub fn is_kpar(&self) -> bool {
+        self.format.eq_ignore_ascii_case(crate::library_bundle::FORMAT_KPAR)
+    }
 }
 
 impl Default for DomainLibrariesConfig {
@@ -34,6 +50,8 @@ impl Default for DomainLibrariesConfig {
             version: DEFAULT_DOMAIN_LIBRARIES_VERSION.to_string(),
             repo: DEFAULT_DOMAIN_LIBRARIES_REPO.to_string(),
             content_path: DEFAULT_DOMAIN_LIBRARIES_CONTENT_PATH.to_string(),
+            format: DEFAULT_DOMAIN_LIBRARIES_FORMAT.to_string(),
+            artifact: None,
         }
     }
 }
@@ -45,6 +63,10 @@ pub struct DomainLibrariesMetadata {
     pub installed_at: String,
     pub repo: String,
     pub content_path: String,
+    #[serde(default)]
+    pub format: String,
+    #[serde(default)]
+    pub project_name: Option<String>,
 }
 
 #[derive(Debug, Clone, Serialize)]
@@ -79,11 +101,13 @@ pub fn managed_install_path(
     paths: &DomainLibrariesPaths,
     config: &DomainLibrariesConfig,
 ) -> PathBuf {
-    paths
-        .managed_root
-        .join("versions")
-        .join(&config.version)
-        .join(normalize_content_path(&config.content_path))
+    let content = normalize_content_path(&config.content_path);
+    let version_root = paths.managed_root.join("versions").join(&config.version);
+    if content.is_empty() {
+        version_root
+    } else {
+        version_root.join(content)
+    }
 }
 
 pub fn load_managed_metadata(
@@ -205,9 +229,6 @@ pub fn install_domain_libraries_from_bytes(
     archive_bytes: &[u8],
 ) -> Result<DomainLibrariesMetadata, String> {
     let normalized_content_path = normalize_content_path(&config.content_path);
-    if normalized_content_path.is_empty() {
-        return Err("Domain libraries content path must not be empty.".to_string());
-    }
 
     ensure_directory_path(&paths.managed_root, "Managed domain-libraries root")?;
 
@@ -221,9 +242,14 @@ pub fn install_domain_libraries_from_bytes(
         return metadata_for_ready_install(paths, config, &normalized_content_path, &install_path);
     }
 
-    let version_root = install_path
-        .parent()
-        .ok_or_else(|| "Managed install root is malformed.".to_string())?;
+    let version_root = if normalized_content_path.is_empty() {
+        install_path.clone()
+    } else {
+        install_path
+            .parent()
+            .ok_or_else(|| "Managed install root is malformed.".to_string())?
+            .to_path_buf()
+    };
     let managed_versions_root = paths.managed_root.join("versions");
     if !version_root.starts_with(&managed_versions_root) {
         return Err(format!(
@@ -247,32 +273,40 @@ pub fn install_domain_libraries_from_bytes(
             .map_err(|err| format!("Failed to clear {}: {err}", staging_root.display()))?;
     }
     let staging_version_root = staging_root.join(&config.version);
-    let staging_install_path = staging_version_root.join(&normalized_content_path);
+    let staging_install_path = if normalized_content_path.is_empty() {
+        staging_version_root.clone()
+    } else {
+        staging_version_root.join(&normalized_content_path)
+    };
     ensure_directory_path(
         &staging_install_path,
         "Managed domain-libraries staging path",
     )?;
-    extract_archive_subset(
-        archive_bytes,
-        &normalized_content_path,
-        &staging_install_path,
-    )?;
+
+    let project_name = if is_kpar_bytes(archive_bytes) {
+        let materialized = materialize_kpar_bytes(archive_bytes, &staging_install_path)?;
+        Some(materialized.project.name)
+    } else {
+        return Err("Expected a KPAR archive for domain libraries installation.".to_string());
+    };
     if version_root.exists() {
-        fs::remove_dir_all(version_root).map_err(|err| {
+        let remove_target = version_root.display().to_string();
+        fs::remove_dir_all(&version_root).map_err(|err| {
             format!(
                 "Failed to replace corrupt managed domain libraries directory {}: {err}",
-                version_root.display()
+                remove_target
             )
         })?;
     }
     if let Some(parent) = version_root.parent() {
         ensure_directory_path(parent, "Managed domain-libraries versions root")?;
     }
-    fs::rename(&staging_version_root, version_root).map_err(|err| {
+    let rename_target = version_root.display().to_string();
+    fs::rename(&staging_version_root, &version_root).map_err(|err| {
         format!(
             "Failed replacing managed domain libraries version directory {} with {}: {err}",
             staging_version_root.display(),
-            version_root.display()
+            rename_target
         )
     })?;
     if staging_root.exists() {
@@ -285,7 +319,21 @@ pub fn install_domain_libraries_from_bytes(
         ));
     }
 
-    metadata_for_ready_install(paths, config, &normalized_content_path, &install_path)
+    let installed_at = SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .map(|duration| duration.as_secs().to_string())
+        .unwrap_or_else(|_| "0".to_string());
+    let metadata = DomainLibrariesMetadata {
+        installed_version: config.version.clone(),
+        install_path: install_path.display().to_string(),
+        installed_at,
+        repo: config.repo.clone(),
+        content_path: normalized_content_path,
+        format: config.format.clone(),
+        project_name,
+    };
+    save_managed_metadata(paths, &metadata)?;
+    Ok(metadata)
 }
 
 pub fn remove_domain_libraries(paths: &DomainLibrariesPaths) -> Result<bool, String> {
@@ -295,9 +343,14 @@ pub fn remove_domain_libraries(paths: &DomainLibrariesPaths) -> Result<bool, Str
     };
     let install_path = PathBuf::from(&metadata.install_path);
     let managed_versions_root = paths.managed_root.join("versions");
-    let version_root = install_path
-        .parent()
-        .ok_or_else(|| "Managed install root is malformed.".to_string())?;
+    let version_root = if metadata.content_path.is_empty() {
+        install_path.clone()
+    } else {
+        install_path
+            .parent()
+            .ok_or_else(|| "Managed install root is malformed.".to_string())?
+            .to_path_buf()
+    };
     if !version_root.starts_with(&managed_versions_root) {
         return Err(format!(
             "Refusing to remove {} because it is outside {}.",
@@ -306,8 +359,9 @@ pub fn remove_domain_libraries(paths: &DomainLibrariesPaths) -> Result<bool, Str
         ));
     }
     if version_root.exists() {
-        fs::remove_dir_all(version_root)
-            .map_err(|err| format!("Failed to remove {}: {err}", version_root.display()))?;
+        let remove_target = version_root.display().to_string();
+        fs::remove_dir_all(&version_root)
+            .map_err(|err| format!("Failed to remove {}: {err}", remove_target))?;
     }
     remove_managed_metadata(paths)?;
     Ok(true)
@@ -380,6 +434,8 @@ fn metadata_for_ready_install(
         installed_at,
         repo: config.repo.clone(),
         content_path: normalized_content_path.to_string(),
+        format: config.format.clone(),
+        project_name: None,
     };
     save_managed_metadata(paths, &metadata)?;
     Ok(metadata)
@@ -395,65 +451,8 @@ fn ensure_directory_path(path: &Path, role: &str) -> Result<(), String> {
     fs::create_dir_all(path).map_err(|err| format!("Failed to create {}: {err}", path.display()))
 }
 
-fn normalize_content_path(path: &str) -> String {
-    path.trim_matches('/').trim_matches('\\').to_string()
-}
-
 fn canonicalize_lossy(path: &Path) -> PathBuf {
     path.canonicalize().unwrap_or_else(|_| path.to_path_buf())
-}
-
-fn extract_archive_subset(
-    archive_bytes: &[u8],
-    content_path: &str,
-    destination_root: &Path,
-) -> Result<(), String> {
-    let cursor = Cursor::new(archive_bytes);
-    let mut archive = zip::ZipArchive::new(cursor)
-        .map_err(|err| format!("Failed to open domain libraries archive: {err}"))?;
-    if archive.is_empty() {
-        return Err("Domain libraries archive is empty.".to_string());
-    }
-
-    let root_prefix = {
-        let first = archive
-            .by_index(0)
-            .map_err(|err| format!("Failed to inspect archive: {err}"))?;
-        first
-            .name()
-            .split('/')
-            .next()
-            .ok_or_else(|| "Domain libraries archive is malformed.".to_string())?
-            .to_string()
-    };
-    let wanted_prefix = format!("{root_prefix}/{content_path}/");
-    let mut extracted_any = false;
-    for index in 0..archive.len() {
-        let mut entry = archive
-            .by_index(index)
-            .map_err(|err| format!("Failed to read archive entry: {err}"))?;
-        let name = entry.name().to_string();
-        if !name.starts_with(&wanted_prefix) || name.ends_with('/') {
-            continue;
-        }
-        let relative = name.trim_start_matches(&wanted_prefix);
-        let destination = destination_root.join(relative);
-        if let Some(parent) = destination.parent() {
-            fs::create_dir_all(parent)
-                .map_err(|err| format!("Failed to create {}: {err}", parent.display()))?;
-        }
-        let mut file = fs::File::create(&destination)
-            .map_err(|err| format!("Failed to create {}: {err}", destination.display()))?;
-        std::io::copy(&mut entry, &mut file)
-            .map_err(|err| format!("Failed to extract {}: {err}", destination.display()))?;
-        extracted_any = true;
-    }
-    if !extracted_any {
-        return Err(format!(
-            "Path '{content_path}' was not found in the domain libraries archive."
-        ));
-    }
-    Ok(())
 }
 
 #[cfg(test)]
@@ -464,11 +463,13 @@ mod tests {
     fn managed_install_path_uses_content_subdirectory() {
         let paths = domain_libraries_paths_from_data_dir(PathBuf::from("/tmp/spec42-data"));
         let config = DomainLibrariesConfig {
-            version: "dc378a9".to_string(),
+            version: "0.1.0".to_string(),
             repo: "elan8/sysml-domain-libraries".to_string(),
-            content_path: "tree".to_string(),
+            content_path: String::new(),
+            format: "kpar".to_string(),
+            artifact: Some("elan8-domain-libraries-0.1.0.kpar".to_string()),
         };
         let install = managed_install_path(&paths, &config);
-        assert!(install.ends_with("versions/dc378a9/tree"));
+        assert!(install.ends_with("versions/0.1.0"));
     }
 }

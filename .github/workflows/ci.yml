@@ -40,13 +40,13 @@ jobs:
         run: |
           VERSION=$(node -p "require('./config/standard-library.json').version")
           echo "SPEC42_STDLIB_VERSION=${VERSION}" >> $GITHUB_ENV
-          echo "SPEC42_STDLIB_BUNDLE_ZIP=${{ github.workspace }}/.cache/sysml-v2-release-${VERSION}.zip" >> $GITHUB_ENV
+          echo "SPEC42_STDLIB_KPAR_DIR=${{ github.workspace }}/.cache/sysml-stdlib-kpar-${VERSION}" >> $GITHUB_ENV
 
       - name: Restore SysML stdlib bundle cache
         uses: actions/cache/restore@v4
         id: stdlib-cache
         with:
-          path: .cache/sysml-v2-release-${{ env.SPEC42_STDLIB_VERSION }}.zip
+          path: .cache/sysml-stdlib-kpar-${{ env.SPEC42_STDLIB_VERSION }}
           key: sysml-stdlib-${{ env.SPEC42_STDLIB_VERSION }}
 
       - name: Fetch SysML stdlib bundle
@@ -57,20 +57,20 @@ jobs:
         if: steps.stdlib-cache.outputs.cache-hit != 'true'
         uses: actions/cache/save@v4
         with:
-          path: .cache/sysml-v2-release-${{ env.SPEC42_STDLIB_VERSION }}.zip
+          path: .cache/sysml-stdlib-kpar-${{ env.SPEC42_STDLIB_VERSION }}
           key: sysml-stdlib-${{ env.SPEC42_STDLIB_VERSION }}
 
       - name: Prepare domain libraries bundle
         run: |
           VERSION=$(node -p "require('./config/domain-libraries.json').version")
           echo "SPEC42_DOMAIN_LIBRARIES_VERSION=${VERSION}" >> $GITHUB_ENV
-          echo "SPEC42_DOMAIN_LIBRARIES_BUNDLE_ZIP=${{ github.workspace }}/.cache/sysml-domain-libraries-${VERSION}.zip" >> $GITHUB_ENV
+          echo "SPEC42_DOMAIN_LIBRARIES_BUNDLE_ZIP=${{ github.workspace }}/.cache/elan8-domain-libraries-${VERSION}.kpar" >> $GITHUB_ENV
 
       - name: Restore domain libraries bundle cache
         uses: actions/cache/restore@v4
         id: domain-libraries-cache
         with:
-          path: .cache/sysml-domain-libraries-${{ env.SPEC42_DOMAIN_LIBRARIES_VERSION }}.zip
+          path: .cache/elan8-domain-libraries-${{ env.SPEC42_DOMAIN_LIBRARIES_VERSION }}.kpar
           key: sysml-domain-libraries-${{ env.SPEC42_DOMAIN_LIBRARIES_VERSION }}
 
       - name: Fetch domain libraries bundle
@@ -81,7 +81,7 @@ jobs:
         if: steps.domain-libraries-cache.outputs.cache-hit != 'true'
         uses: actions/cache/save@v4
         with:
-          path: .cache/sysml-domain-libraries-${{ env.SPEC42_DOMAIN_LIBRARIES_VERSION }}.zip
+          path: .cache/elan8-domain-libraries-${{ env.SPEC42_DOMAIN_LIBRARIES_VERSION }}.kpar
           key: sysml-domain-libraries-${{ env.SPEC42_DOMAIN_LIBRARIES_VERSION }}
 
       - name: Conformance matrix is current
@@ -119,13 +119,13 @@ jobs:
         run: |
           VERSION=$(node -p "require('./config/standard-library.json').version")
           echo "SPEC42_STDLIB_VERSION=${VERSION}" >> $GITHUB_ENV
-          echo "SPEC42_STDLIB_BUNDLE_ZIP=${{ github.workspace }}/.cache/sysml-v2-release-${VERSION}.zip" >> $GITHUB_ENV
+          echo "SPEC42_STDLIB_KPAR_DIR=${{ github.workspace }}/.cache/sysml-stdlib-kpar-${VERSION}" >> $GITHUB_ENV
 
       - name: Restore SysML stdlib bundle cache
         uses: actions/cache/restore@v4
         id: stdlib-cache
         with:
-          path: .cache/sysml-v2-release-${{ env.SPEC42_STDLIB_VERSION }}.zip
+          path: .cache/sysml-stdlib-kpar-${{ env.SPEC42_STDLIB_VERSION }}
           key: sysml-stdlib-${{ env.SPEC42_STDLIB_VERSION }}
 
       - name: Fetch SysML stdlib bundle
@@ -136,20 +136,20 @@ jobs:
         if: steps.stdlib-cache.outputs.cache-hit != 'true'
         uses: actions/cache/save@v4
         with:
-          path: .cache/sysml-v2-release-${{ env.SPEC42_STDLIB_VERSION }}.zip
+          path: .cache/sysml-stdlib-kpar-${{ env.SPEC42_STDLIB_VERSION }}
           key: sysml-stdlib-${{ env.SPEC42_STDLIB_VERSION }}
 
       - name: Prepare domain libraries bundle
         run: |
           VERSION=$(node -p "require('./config/domain-libraries.json').version")
           echo "SPEC42_DOMAIN_LIBRARIES_VERSION=${VERSION}" >> $GITHUB_ENV
-          echo "SPEC42_DOMAIN_LIBRARIES_BUNDLE_ZIP=${{ github.workspace }}/.cache/sysml-domain-libraries-${VERSION}.zip" >> $GITHUB_ENV
+          echo "SPEC42_DOMAIN_LIBRARIES_BUNDLE_ZIP=${{ github.workspace }}/.cache/elan8-domain-libraries-${VERSION}.kpar" >> $GITHUB_ENV
 
       - name: Restore domain libraries bundle cache
         uses: actions/cache/restore@v4
         id: domain-libraries-cache
         with:
-          path: .cache/sysml-domain-libraries-${{ env.SPEC42_DOMAIN_LIBRARIES_VERSION }}.zip
+          path: .cache/elan8-domain-libraries-${{ env.SPEC42_DOMAIN_LIBRARIES_VERSION }}.kpar
           key: sysml-domain-libraries-${{ env.SPEC42_DOMAIN_LIBRARIES_VERSION }}
 
       - name: Fetch domain libraries bundle
@@ -160,7 +160,7 @@ jobs:
         if: steps.domain-libraries-cache.outputs.cache-hit != 'true'
         uses: actions/cache/save@v4
         with:
-          path: .cache/sysml-domain-libraries-${{ env.SPEC42_DOMAIN_LIBRARIES_VERSION }}.zip
+          path: .cache/elan8-domain-libraries-${{ env.SPEC42_DOMAIN_LIBRARIES_VERSION }}.kpar
           key: sysml-domain-libraries-${{ env.SPEC42_DOMAIN_LIBRARIES_VERSION }}
 
       - name: Agent/API surface integration tests
@@ -254,13 +254,13 @@ jobs:
         run: |
           VERSION=$(node -p "require('./config/standard-library.json').version")
           echo "SPEC42_STDLIB_VERSION=${VERSION}" >> $GITHUB_ENV
-          echo "SPEC42_STDLIB_BUNDLE_ZIP=${{ github.workspace }}/.cache/sysml-v2-release-${VERSION}.zip" >> $GITHUB_ENV
+          echo "SPEC42_STDLIB_KPAR_DIR=${{ github.workspace }}/.cache/sysml-stdlib-kpar-${VERSION}" >> $GITHUB_ENV
 
       - name: Restore SysML stdlib bundle cache
         uses: actions/cache/restore@v4
         id: stdlib-cache
         with:
-          path: .cache/sysml-v2-release-${{ env.SPEC42_STDLIB_VERSION }}.zip
+          path: .cache/sysml-stdlib-kpar-${{ env.SPEC42_STDLIB_VERSION }}
           key: sysml-stdlib-${{ env.SPEC42_STDLIB_VERSION }}
 
       - name: Fetch SysML stdlib bundle
@@ -271,20 +271,20 @@ jobs:
         if: steps.stdlib-cache.outputs.cache-hit != 'true'
         uses: actions/cache/save@v4
         with:
-          path: .cache/sysml-v2-release-${{ env.SPEC42_STDLIB_VERSION }}.zip
+          path: .cache/sysml-stdlib-kpar-${{ env.SPEC42_STDLIB_VERSION }}
           key: sysml-stdlib-${{ env.SPEC42_STDLIB_VERSION }}
 
       - name: Prepare domain libraries bundle
         run: |
           VERSION=$(node -p "require('./config/domain-libraries.json').version")
           echo "SPEC42_DOMAIN_LIBRARIES_VERSION=${VERSION}" >> $GITHUB_ENV
-          echo "SPEC42_DOMAIN_LIBRARIES_BUNDLE_ZIP=${{ github.workspace }}/.cache/sysml-domain-libraries-${VERSION}.zip" >> $GITHUB_ENV
+          echo "SPEC42_DOMAIN_LIBRARIES_BUNDLE_ZIP=${{ github.workspace }}/.cache/elan8-domain-libraries-${VERSION}.kpar" >> $GITHUB_ENV
 
       - name: Restore domain libraries bundle cache
         uses: actions/cache/restore@v4
         id: domain-libraries-cache
         with:
-          path: .cache/sysml-domain-libraries-${{ env.SPEC42_DOMAIN_LIBRARIES_VERSION }}.zip
+          path: .cache/elan8-domain-libraries-${{ env.SPEC42_DOMAIN_LIBRARIES_VERSION }}.kpar
           key: sysml-domain-libraries-${{ env.SPEC42_DOMAIN_LIBRARIES_VERSION }}
 
       - name: Fetch domain libraries bundle
@@ -295,7 +295,7 @@ jobs:
         if: steps.domain-libraries-cache.outputs.cache-hit != 'true'
         uses: actions/cache/save@v4
         with:
-          path: .cache/sysml-domain-libraries-${{ env.SPEC42_DOMAIN_LIBRARIES_VERSION }}.zip
+          path: .cache/elan8-domain-libraries-${{ env.SPEC42_DOMAIN_LIBRARIES_VERSION }}.kpar
           key: sysml-domain-libraries-${{ env.SPEC42_DOMAIN_LIBRARIES_VERSION }}
 
       - name: Build server (debug for extension test host)
@@ -379,13 +379,13 @@ jobs:
         run: |
           VERSION=$(node -p "require('./config/standard-library.json').version")
           echo "SPEC42_STDLIB_VERSION=${VERSION}" >> $GITHUB_ENV
-          echo "SPEC42_STDLIB_BUNDLE_ZIP=${{ github.workspace }}/.cache/sysml-v2-release-${VERSION}.zip" >> $GITHUB_ENV
+          echo "SPEC42_STDLIB_KPAR_DIR=${{ github.workspace }}/.cache/sysml-stdlib-kpar-${VERSION}" >> $GITHUB_ENV
 
       - name: Restore SysML stdlib bundle cache
         uses: actions/cache/restore@v4
         id: stdlib-cache
         with:
-          path: .cache/sysml-v2-release-${{ env.SPEC42_STDLIB_VERSION }}.zip
+          path: .cache/sysml-stdlib-kpar-${{ env.SPEC42_STDLIB_VERSION }}
           key: sysml-stdlib-${{ env.SPEC42_STDLIB_VERSION }}
 
       - name: Fetch SysML stdlib bundle
@@ -396,20 +396,20 @@ jobs:
         if: steps.stdlib-cache.outputs.cache-hit != 'true'
         uses: actions/cache/save@v4
         with:
-          path: .cache/sysml-v2-release-${{ env.SPEC42_STDLIB_VERSION }}.zip
+          path: .cache/sysml-stdlib-kpar-${{ env.SPEC42_STDLIB_VERSION }}
           key: sysml-stdlib-${{ env.SPEC42_STDLIB_VERSION }}
 
       - name: Prepare domain libraries bundle
         run: |
           VERSION=$(node -p "require('./config/domain-libraries.json').version")
           echo "SPEC42_DOMAIN_LIBRARIES_VERSION=${VERSION}" >> $GITHUB_ENV
-          echo "SPEC42_DOMAIN_LIBRARIES_BUNDLE_ZIP=${{ github.workspace }}/.cache/sysml-domain-libraries-${VERSION}.zip" >> $GITHUB_ENV
+          echo "SPEC42_DOMAIN_LIBRARIES_BUNDLE_ZIP=${{ github.workspace }}/.cache/elan8-domain-libraries-${VERSION}.kpar" >> $GITHUB_ENV
 
       - name: Restore domain libraries bundle cache
         uses: actions/cache/restore@v4
         id: domain-libraries-cache
         with:
-          path: .cache/sysml-domain-libraries-${{ env.SPEC42_DOMAIN_LIBRARIES_VERSION }}.zip
+          path: .cache/elan8-domain-libraries-${{ env.SPEC42_DOMAIN_LIBRARIES_VERSION }}.kpar
           key: sysml-domain-libraries-${{ env.SPEC42_DOMAIN_LIBRARIES_VERSION }}
 
       - name: Fetch domain libraries bundle
@@ -420,7 +420,7 @@ jobs:
         if: steps.domain-libraries-cache.outputs.cache-hit != 'true'
         uses: actions/cache/save@v4
         with:
-          path: .cache/sysml-domain-libraries-${{ env.SPEC42_DOMAIN_LIBRARIES_VERSION }}.zip
+          path: .cache/elan8-domain-libraries-${{ env.SPEC42_DOMAIN_LIBRARIES_VERSION }}.kpar
           key: sysml-domain-libraries-${{ env.SPEC42_DOMAIN_LIBRARIES_VERSION }}
 
       - name: Build server (release for packaging)

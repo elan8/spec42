@@ -1,5 +1,7 @@
 {
-  "version": "dc378a9",
+  "version": "0.1.0",
   "repo": "elan8/sysml-domain-libraries",
-  "contentPath": "tree"
+  "format": "kpar",
+  "artifact": "elan8-domain-libraries-0.1.0.kpar",
+  "contentPath": ""
 }

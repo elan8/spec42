@@ -27,10 +27,12 @@ serde = { workspace = true }
 serde_json = { workspace = true }
 sha2 = "0.10"
 zip = { version = "2", default-features = false, features = ["deflate"] }
+kpar = { path = "../kpar" }
 
 [dependencies]
 kernel = { path = "../kernel" }
 semantic_core = { path = "../semantic_core" }
+kpar = { path = "../kpar" }
 tokio = { version = "1", features = ["full"] }
 serde_json = { workspace = true }
 clap = { workspace = true }
