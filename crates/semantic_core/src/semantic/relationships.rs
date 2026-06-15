@@ -314,14 +314,14 @@ pub fn resolve_pending_relationships_for_uri(g: &mut SemanticGraph, uri: &Url) {
         }
         let source_id = NodeId::new(uri, &pending_edge.source_qualified);
         let mut target_id = NodeId::new(uri, &pending_edge.target_qualified);
-        if g.node_index_by_id.get(&target_id).is_none() {
+        if !g.node_index_by_id.contains_key(&target_id) {
             if let Some(ids) = g.node_ids_for_qualified_name(&pending_edge.target_qualified) {
                 if ids.len() == 1 {
                     target_id = ids[0].clone();
                 }
             }
         }
-        if g.node_index_by_id.get(&target_id).is_none() {
+        if !g.node_index_by_id.contains_key(&target_id) {
             if let Some(source_node) = g.get_node(&source_id) {
                 let resolved = if let Some(ref target_kinds) = pending_edge.target_kinds {
                     if target_kinds.is_empty() {

@@ -208,7 +208,7 @@ fn embed_domain_libraries() {
         process::exit(1);
     };
 
-    if !local_bundle.extension().is_some_and(|ext| ext == "kpar") {
+    if local_bundle.extension().is_none_or(|ext| ext != "kpar") {
         eprintln!(
             "spec42 build: expected a .kpar bundle at {}",
             local_bundle.display()

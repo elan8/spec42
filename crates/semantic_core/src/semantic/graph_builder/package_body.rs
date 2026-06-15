@@ -1124,7 +1124,7 @@ pub(super) fn build_from_package_body_element(
                     uri,
                     container_prefix,
                     parent_id,
-                    &mu_node,
+                    mu_node,
                     &mu_node.span,
                 );
             }

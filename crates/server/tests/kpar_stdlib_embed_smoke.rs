@@ -83,23 +83,6 @@ fn embedded_kpar_stdlib_resolves_scalar_values_import() {
         };
 
         let report = perform_check(&cli, &args).expect("check");
-        eprintln!("roots: {:?}", doctor.stdlib_roots);
-        {
-            use semantic_core::{resolve_library_closure, LibraryClosureOptions, WorkspaceSource};
-            let loaded = resolve_library_closure(
-                &[WorkspaceSource {
-                    path: "kpar-smoke.sysml",
-                    content: SMOKE_MODEL,
-                }],
-                &report.resolved_library_paths,
-                &LibraryClosureOptions::default(),
-            )
-            .expect("closure");
-            eprintln!(
-                "closure: {:?}",
-                loaded.iter().map(|f| f.path.as_str()).collect::<Vec<_>>()
-            );
-        }
         let codes = diagnostic_codes(&report);
         assert!(
             !codes.iter().any(|code| code == "unresolved_type_reference"),

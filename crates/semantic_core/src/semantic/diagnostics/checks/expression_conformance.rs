@@ -55,11 +55,8 @@ fn enum_contains_value(graph: &SemanticGraph, enum_type_ref: &str, literal: &str
 
 fn expected_unit_dimension_for_type(type_name: &str) -> Option<String> {
     let base = type_name.rsplit("::").next()?.trim();
-    if base.ends_with("Value") {
-        Some(format!("{}Unit", &base[..base.len() - "Value".len()]))
-    } else {
-        None
-    }
+    base.strip_suffix("Value")
+        .map(|stripped| format!("{stripped}Unit"))
 }
 
 fn quantity_type_names_for_attribute(

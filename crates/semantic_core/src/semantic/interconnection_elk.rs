@@ -300,9 +300,7 @@ fn compute_ibd_leaf_height(node: &PreparedSceneNode, port_rows: usize) -> f64 {
     } else {
         port_rows as f64 * port_spacing + 22.0
     };
-    (header_height + ports_height)
-        .max(IBD_NODE_HEIGHT)
-        .min(340.0)
+    (header_height + ports_height).clamp(IBD_NODE_HEIGHT, 340.0)
 }
 
 fn layout_options_json(pairs: &[(&str, &str)]) -> Value {

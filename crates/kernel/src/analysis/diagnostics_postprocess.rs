@@ -4,19 +4,10 @@ use tower_lsp::lsp_types::{
     Diagnostic, DiagnosticRelatedInformation, DiagnosticSeverity, Location, NumberOrString, Url,
 };
 
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone, Copy, Default)]
 pub struct DiagnosticsPostprocessOptions {
     pub suppress_semantic_after_parse_error: bool,
     pub skip_semantic_on_parse_error: bool,
-}
-
-impl Default for DiagnosticsPostprocessOptions {
-    fn default() -> Self {
-        Self {
-            suppress_semantic_after_parse_error: false,
-            skip_semantic_on_parse_error: false,
-        }
-    }
 }
 
 pub fn postprocess_document_diagnostics(

@@ -36,7 +36,7 @@ pub fn build_and_link_graph(
         workspace_packages.extend(declared_packages_in_content(&document.content));
     }
 
-    for document in workspace_docs.into_iter().chain(library_docs.into_iter()) {
+    for document in workspace_docs.into_iter().chain(library_docs) {
         let parse_start = Instant::now();
         let Ok(parsed) = sysml_v2_parser::parse(&document.content) else {
             continue;

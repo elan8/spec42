@@ -171,9 +171,7 @@ fn state_graph_has_cycle(
 fn state_def_ancestor(graph: &SemanticGraph, node: &SemanticNode) -> Option<String> {
     let mut current = node.parent_id.as_ref()?;
     loop {
-        let Some(parent) = graph.get_node(current) else {
-            return None;
-        };
+        let parent = graph.get_node(current)?;
         if parent.element_kind == "state def" {
             return Some(parent.id.qualified_name.clone());
         }

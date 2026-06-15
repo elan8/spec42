@@ -431,7 +431,7 @@ pub(in crate::semantic::diagnostics) fn collect_requirement_case_conformance_dia
                 .into_iter()
                 .filter(|child| child.element_kind == "analysis result")
                 .count();
-            let has_inherited_result = node.attributes.get("analysisExpression").is_some()
+            let has_inherited_result = node.attributes.contains_key("analysisExpression")
                 || objectives.iter().any(|objective| {
                     objective
                         .attributes
