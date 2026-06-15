@@ -3,10 +3,40 @@
 use crate::semantic::ast_util::identification_name;
 use serde::Serialize;
 use sysml_v2_parser::ast::{
-    ActionDefBody, ActionDefBodyElement, PackageBody, PackageBodyElement, PartDefBody,
-    PartDefBodyElement, PartUsageBody, PartUsageBodyElement, RootElement,
+    ActionDefBody, ActionDefBodyElement, FlowUsageKind, PackageBody, PackageBodyElement,
+    PartDefBody, PartDefBodyElement, PartUsageBody, PartUsageBodyElement, RootElement,
 };
 use sysml_v2_parser::{RootNamespace, Span};
+
+fn normalized_type_name(type_name: &str) -> String {
+    type_name
+        .split("::")
+        .last()
+        .unwrap_or(type_name)
+        .replace([' ', '_'], "")
+        .to_lowercase()
+}
+
+fn control_state_type(type_name: &str) -> Option<&'static str> {
+    match normalized_type_name(type_name).as_str() {
+        "decision" => Some("decision"),
+        "merge" => Some("merge"),
+        "fork" => Some("fork"),
+        "join" => Some("join"),
+        "terminate" => Some("terminate"),
+        "accept" => Some("accept"),
+        "send" => Some("send"),
+        _ => None,
+    }
+}
+
+fn flow_guard_for_usage(kind: FlowUsageKind) -> &'static str {
+    match kind {
+        FlowUsageKind::SuccessionFlow => "succession",
+        FlowUsageKind::Message => "message",
+        FlowUsageKind::Flow => "flow",
+    }
+}
 
 fn expr_to_string(n: &sysml_v2_parser::Node<sysml_v2_parser::Expression>) -> String {
     use sysml_v2_parser::Expression;
@@ -318,7 +348,18 @@ pub struct StateMachineDto {
     pub uri: Option<String>,
     pub states: Vec<StateNodeDto>,
     pub transitions: Vec<StateTransitionDto>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub regions: Vec<RegionDto>,
     pub range: RangeDto,
+}
+
+#[derive(Debug, Clone, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct RegionDto {
+    pub id: String,
+    pub name: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub parent_id: Option<String>,
 }
 
 #[derive(Debug, Clone, Serialize)]
@@ -368,6 +409,8 @@ pub struct StateTransitionDto {
     pub effect: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub accept: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub send: Option<String>,
     pub self_loop: bool,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub uri: Option<String>,
@@ -760,6 +803,7 @@ fn extract_activity_from_action(
     let mut actions = Vec::new();
     let mut flows = Vec::new();
     let mut states = Vec::new();
+    let mut decisions = Vec::new();
     let mut interface_inputs = Vec::new();
     let mut interface_outputs = Vec::new();
     let mut previous_then_action: Option<String> = None;
@@ -809,9 +853,26 @@ fn extract_activity_from_action(
                 }
                 ActionDefBodyElement::ActionUsage(usage) => {
                     let u = usage.as_ref();
+                    let control = control_state_type(&u.type_name);
+                    let step_kind = control.unwrap_or("action");
                     let mut inputs = Vec::new();
                     if let Some(ref accept) = &u.accept {
                         inputs.push(accept.name.clone());
+                    }
+                    if control == Some("decision") {
+                        decisions.push(DecisionNodeDto {
+                            name: u.name.clone(),
+                            condition: String::new(),
+                            branches: Vec::new(),
+                            range: span_to_range_dto(&u.span),
+                        });
+                    }
+                    if control.is_some() {
+                        states.push(ActivityStateDto {
+                            name: u.name.clone(),
+                            state_type: step_kind.to_string(),
+                            range: span_to_range_dto(&u.span),
+                        });
                     }
                     actions.push(ActivityActionDto {
                         id: Some(format!(
@@ -821,9 +882,7 @@ fn extract_activity_from_action(
                         )),
                         name: u.name.clone(),
                         action_type: "action".to_string(),
-                        // VS Code Action Flow view filters allowed node kinds. Use a compatible kind
-                        // for action usages so they appear as regular action nodes.
-                        kind: Some("action".to_string()),
+                        kind: Some(step_kind.to_string()),
                         inputs: if inputs.is_empty() {
                             None
                         } else {
@@ -834,6 +893,95 @@ fn extract_activity_from_action(
                         uri: None,
                         swim_lane: None,
                     });
+                }
+                ActionDefBodyElement::Assign(assign) => {
+                    let value = &assign.value;
+                    let step_name = format!("assign_{}", value.lhs);
+                    states.push(ActivityStateDto {
+                        name: step_name.clone(),
+                        state_type: "assign".to_string(),
+                        range: span_to_range_dto(&assign.span),
+                    });
+                    actions.push(ActivityActionDto {
+                        id: Some(format!(
+                            "{}::{}",
+                            join_segments(&qualified_segments),
+                            step_name
+                        )),
+                        name: step_name.clone(),
+                        action_type: "action".to_string(),
+                        kind: Some("assign".to_string()),
+                        inputs: None,
+                        outputs: None,
+                        range: Some(span_to_range_dto(&assign.span)),
+                        uri: None,
+                        swim_lane: None,
+                    });
+                    if value.is_then {
+                        if let Some(previous) = previous_then_action.take() {
+                            flows.push(ControlFlowDto {
+                                from: previous,
+                                to: step_name.clone(),
+                                condition: Some(value.rhs.clone()),
+                                guard: Some("flow".to_string()),
+                                range: span_to_range_dto(&assign.span),
+                            });
+                        }
+                    }
+                    previous_then_action = Some(step_name);
+                }
+                ActionDefBodyElement::ForLoop(for_loop) => {
+                    let fl = &for_loop.value;
+                    let loop_name = format!("for_{}", fl.var);
+                    states.push(ActivityStateDto {
+                        name: loop_name.clone(),
+                        state_type: "for-loop".to_string(),
+                        range: span_to_range_dto(&for_loop.span),
+                    });
+                    if let ActionDefBody::Brace { elements } = &fl.body {
+                        for (j, inner) in elements.iter().enumerate() {
+                            if let ActionDefBodyElement::ThenAction(then_action) = &inner.value {
+                                let action = &then_action.value.action.value;
+                                let perform_name = if action.name.trim().is_empty() {
+                                    format!("for_body_{j}")
+                                } else {
+                                    action.name.clone()
+                                };
+                                if let Some(previous) = previous_then_action.take() {
+                                    flows.push(ControlFlowDto {
+                                        from: previous,
+                                        to: perform_name.clone(),
+                                        condition: None,
+                                        guard: Some("flow".to_string()),
+                                        range: span_to_range_dto(&then_action.span),
+                                    });
+                                }
+                                flows.push(ControlFlowDto {
+                                    from: loop_name.clone(),
+                                    to: perform_name.clone(),
+                                    condition: None,
+                                    guard: Some("flow".to_string()),
+                                    range: span_to_range_dto(&for_loop.span),
+                                });
+                                actions.push(ActivityActionDto {
+                                    id: Some(format!(
+                                        "{}::{}",
+                                        join_segments(&qualified_segments),
+                                        perform_name
+                                    )),
+                                    name: perform_name.clone(),
+                                    action_type: "action".to_string(),
+                                    kind: Some("action".to_string()),
+                                    inputs: None,
+                                    outputs: None,
+                                    range: Some(span_to_range_dto(&then_action.span)),
+                                    uri: None,
+                                    swim_lane: None,
+                                });
+                                previous_then_action = Some(perform_name);
+                            }
+                        }
+                    }
                 }
                 ActionDefBodyElement::Bind(bind) => {
                     let left = expr_to_string(&bind.value.left);
@@ -853,11 +1001,16 @@ fn extract_activity_from_action(
                         let from = expr_to_string(from_expr);
                         let to = expr_to_string(to_expr);
                         if !from.is_empty() && !to.is_empty() {
+                            let condition = flow
+                                .value
+                                .payload
+                                .as_ref()
+                                .map(|payload| expr_to_string(payload));
                             flows.push(ControlFlowDto {
                                 from,
                                 to,
-                                condition: None,
-                                guard: Some("flow".to_string()),
+                                condition,
+                                guard: Some(flow_guard_for_usage(flow.value.kind).to_string()),
                                 range: span_to_range_dto(&flow.span),
                             });
                         }
@@ -1020,7 +1173,7 @@ fn extract_activity_from_action(
         uri: None,
         actions,
         interface,
-        decisions: vec![],
+        decisions,
         flows,
         states,
         range,
@@ -1158,6 +1311,49 @@ mod tests {
         assert!(
             diagram.states.iter().any(|s| s.state_type == "merge"),
             "expected merge node"
+        );
+    }
+
+    #[test]
+    fn extract_activity_diagrams_includes_decision_assign_and_for_loop() {
+        let input = r#"
+            package P {
+                action def Route;
+                action def Pipeline {
+                    then action validate : Route;
+                    action checkRoute : Decision;
+                    then assign status := "ok";
+                    for item in items {
+                        then action validate : Route;
+                    }
+                }
+            }
+        "#;
+
+        let root = parse(input).expect("parse");
+        let diagrams = extract_activity_diagrams(&root);
+        let diagram = diagrams
+            .iter()
+            .find(|d| d.name == "Pipeline")
+            .expect("diagram");
+
+        assert!(
+            diagram.decisions.iter().any(|decision| decision.name == "checkRoute"),
+            "expected decision node"
+        );
+        assert!(
+            diagram
+                .states
+                .iter()
+                .any(|state| state.state_type == "assign" && state.name == "assign_status"),
+            "expected assign state"
+        );
+        assert!(
+            diagram
+                .states
+                .iter()
+                .any(|state| state.state_type == "for-loop" && state.name == "for_item"),
+            "expected for-loop state"
         );
     }
 

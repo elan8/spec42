@@ -5,7 +5,8 @@ use std::collections::{HashMap, HashSet};
 use url::Url;
 
 use crate::semantic::extracted_model::{
-    PositionDto, RangeDto, StateMachineDto, StateNodeDto, StateNodeElementDto, StateTransitionDto,
+    PositionDto, RangeDto, RegionDto, StateMachineDto, StateNodeDto, StateNodeElementDto,
+    StateTransitionDto,
 };
 use crate::semantic::graph::SemanticGraph;
 use crate::semantic::model::{NodeId, RelationshipKind, SemanticNode};
@@ -85,6 +86,8 @@ fn build_machine(graph: &SemanticGraph, root: &SemanticNode) -> Option<StateMach
 
     let transitions = collect_transitions(graph, root, &state_ids, &initial_targets);
     apply_initial_state_kinds(&mut state_nodes, &transitions, &initial_targets);
+    let regions = build_regions(&state_nodes);
+    assign_region_ids(&mut state_nodes, &regions);
 
     Some(StateMachineDto {
         id: root.id.qualified_name.clone(),
@@ -93,8 +96,50 @@ fn build_machine(graph: &SemanticGraph, root: &SemanticNode) -> Option<StateMach
         uri: Some(root.id.uri.as_str().to_string()),
         states: state_nodes,
         transitions,
+        regions,
         range: text_range_to_dto(root.range),
     })
+}
+
+fn normalized_type_name(type_name: &str) -> String {
+    type_name
+        .split("::")
+        .last()
+        .unwrap_or(type_name)
+        .replace([' ', '_'], "")
+        .to_lowercase()
+}
+
+fn is_terminate_state(node: &SemanticNode) -> bool {
+    attr_str(node, "stateType")
+        .map(|value| normalized_type_name(&value))
+        .is_some_and(|value| value == "terminate")
+}
+
+fn build_regions(states: &[StateNodeDto]) -> Vec<RegionDto> {
+    states
+        .iter()
+        .filter(|state| state.kind == "composite")
+        .map(|state| RegionDto {
+            id: format!("{}::region_1", state.id),
+            name: "1".to_string(),
+            parent_id: Some(state.id.clone()),
+        })
+        .collect()
+}
+
+fn assign_region_ids(states: &mut [StateNodeDto], regions: &[RegionDto]) {
+    for state in states.iter_mut() {
+        let Some(parent_id) = state.parent_id.clone() else {
+            continue;
+        };
+        if let Some(region) = regions
+            .iter()
+            .find(|region| region.parent_id.as_deref() == Some(parent_id.as_str()))
+        {
+            state.region_id = Some(region.id.clone());
+        }
+    }
 }
 
 fn initial_state_targets(graph: &SemanticGraph, root: &SemanticNode) -> HashSet<String> {
@@ -175,6 +220,8 @@ fn collect_state_nodes(
                     .any(|node| matches!(node.element_kind.as_str(), "state" | "final state"));
                 let kind = if child.element_kind == "final state" {
                     "final".to_string()
+                } else if is_terminate_state(child) {
+                    "terminate".to_string()
                 } else if has_nested_states {
                     "composite".to_string()
                 } else {
@@ -288,7 +335,16 @@ fn transition_from_node(
     let accept = attr_str(transition, "acceptName")
         .or_else(|| attr_str(transition, "acceptExpression"))
         .or_else(|| attr_str(transition, "payloadName"));
-    let label = transition_label(transition, guard.as_deref(), accept.as_deref());
+    let send = attr_str(transition, "sendName")
+        .or_else(|| attr_str(transition, "sendExpression"))
+        .or_else(|| effect.as_deref().and_then(send_from_effect_expression));
+    let label = transition_label(
+        transition,
+        guard.as_deref(),
+        accept.as_deref(),
+        send.as_deref(),
+        effect.as_deref(),
+    );
 
     Some(StateTransitionDto {
         id: transition.id.qualified_name.clone(),
@@ -299,26 +355,53 @@ fn transition_from_node(
         guard,
         effect,
         accept,
+        send,
         self_loop: source == target,
         uri: Some(transition.id.uri.as_str().to_string()),
         range: text_range_to_dto(transition.range),
     })
 }
 
+fn send_from_effect_expression(effect: &str) -> Option<String> {
+    let trimmed = effect.trim();
+    let lower = trimmed.to_ascii_lowercase();
+    if lower.starts_with("send ") {
+        let payload = trimmed[5..].trim();
+        if !payload.is_empty() {
+            return Some(payload.to_string());
+        }
+    }
+    None
+}
+
 fn transition_label(
     transition: &SemanticNode,
     guard: Option<&str>,
     accept: Option<&str>,
+    send: Option<&str>,
+    effect: Option<&str>,
 ) -> String {
     let name = transition.name.trim();
     if !name.is_empty() && !name.starts_with("transition_") {
         return name.to_string();
     }
+    let mut parts = Vec::new();
     if let Some(guard) = guard.filter(|value| !value.trim().is_empty()) {
-        return guard.to_string();
+        parts.push(format!("[{guard}]"));
+    }
+    if let Some(effect) = effect.filter(|value| !value.trim().is_empty()) {
+        if send.is_none() || !effect.to_ascii_lowercase().starts_with("send ") {
+            parts.push(effect.to_string());
+        }
     }
     if let Some(accept) = accept.filter(|value| !value.trim().is_empty()) {
-        return accept.to_string();
+        parts.push(format!("accept {accept}"));
+    }
+    if let Some(send) = send.filter(|value| !value.trim().is_empty()) {
+        parts.push(format!("send {send}"));
+    }
+    if !parts.is_empty() {
+        return parts.join(" / ");
     }
     name.to_string()
 }

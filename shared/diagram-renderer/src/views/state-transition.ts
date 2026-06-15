@@ -179,12 +179,14 @@ export async function renderStateTransitionView(ctx: BehaviorSceneContext): Prom
     const guard = String(edgeAttrs.guard ?? "").trim();
     const effect = String(edgeAttrs.effect ?? "").trim();
     const accept = String(edgeAttrs.accept ?? "").trim();
+    const send = String(edgeAttrs.send ?? "").trim();
     edgeLayer
       .append("path")
       .attr("class", "state-transition-edge")
       .attr("data-guard", guard || null)
       .attr("data-effect", effect || null)
       .attr("data-accept", accept || null)
+      .attr("data-send", send || null)
       .attr("d", path)
       .style("fill", "none")
       .style("stroke", ctx.theme.edge.default)

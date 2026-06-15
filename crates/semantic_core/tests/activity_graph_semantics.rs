@@ -125,3 +125,78 @@ fn enrich_does_not_promote_interface_parameters_to_action_steps() {
         diagram.actions.iter().map(|a| &a.name).collect::<Vec<_>>()
     );
 }
+
+#[test]
+fn ast_extract_includes_decision_merge_assign_and_conditional_succession() {
+    let input = r#"package P {
+  action def Route;
+  action def Deliver;
+  action def Pipeline {
+    then action validate : Route;
+    action checkRoute : Decision;
+    then assign status := "ok";
+    for item in items {
+      then action deliver : Deliver;
+    }
+    merge validate;
+    succession validate to checkRoute of status == "ok";
+  }
+}"#;
+    let root = parse(input).expect("parse");
+    let diagrams = extract_activity_diagrams(&root);
+    let diagram = diagrams
+        .iter()
+        .find(|d| d.name == "Pipeline")
+        .expect("diagram");
+    assert!(
+        diagram.decisions.iter().any(|d| d.name == "checkRoute"),
+        "expected decision node; decisions={:?}",
+        diagram.decisions
+    );
+    assert!(
+        diagram.states.iter().any(|s| s.state_type == "merge"),
+        "expected merge state"
+    );
+    assert!(
+        diagram.states.iter().any(|s| s.state_type == "assign"),
+        "expected assign state"
+    );
+    assert!(
+        diagram.states.iter().any(|s| s.state_type == "for-loop"),
+        "expected for-loop state"
+    );
+}
+
+#[test]
+fn enrich_control_nodes_from_graph_after_ast_extraction() {
+    let content = r#"package P {
+  action def Step;
+  action def Pipeline {
+    then action step1 : Step;
+    action route : Decision;
+    merge step1;
+  }
+}"#;
+    let doc = workspace_doc("control.sysml", content);
+    let uri = doc.uri.clone();
+    let (graph, parsed_docs) = build_semantic_graph_from_documents(&[doc]).expect("graph");
+    let mut diagrams = extract_activity_diagrams(&parsed_docs[0].parsed);
+    for diagram in &mut diagrams {
+        diagram.uri = Some(uri.as_str().to_string());
+    }
+    enrich_activity_diagrams_from_graph(&mut diagrams, &graph, &[uri]);
+
+    let diagram = diagrams
+        .iter()
+        .find(|d| d.name == "Pipeline")
+        .expect("pipeline");
+    assert!(
+        diagram.states.iter().any(|s| s.state_type == "decision"),
+        "graph enrichment should surface decision control node; states={:?}",
+        diagram.states
+    );
+    assert!(
+        diagram.states.iter().any(|s| s.state_type == "merge"),
+        "graph enrichment should surface merge control node"
+    );
+}

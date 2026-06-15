@@ -1199,6 +1199,38 @@ describe("shared renderer", () => {
     expect(target.querySelectorAll(".action-flow-edge").length).toBe(2);
   });
 
+  it("renders action-flow decision diamond and conditional succession labels", async () => {
+    const target = document.createElement("div");
+    Object.defineProperty(target, "clientWidth", { value: 1200, configurable: true });
+    Object.defineProperty(target, "clientHeight", { value: 800, configurable: true });
+
+    await renderVisualization(target, {
+      title: "Decision Flow",
+      view: "action-flow-view",
+      nodes: [
+        { id: "start", label: "start", kind: "initial" },
+        { id: "route", label: "validate", kind: "action" },
+        { id: "check", label: "checkRoute", kind: "decision" },
+        { id: "done", label: "done", kind: "final" },
+      ],
+      edges: [
+        { id: "f1", source: "start", target: "route", label: "" },
+        {
+          id: "f2",
+          source: "route",
+          target: "check",
+          label: "status == ok",
+          attributes: { guard: "succession", succession: true, conditional: true },
+        },
+        { id: "f3", source: "check", target: "done", label: "" },
+      ],
+    });
+
+    expect(target.querySelector("path.node-background[d]")).toBeTruthy();
+    expect(target.querySelector(".aflow-conditional")).toBeTruthy();
+    expect(target.textContent).toContain("[status == ok]");
+  });
+
   it("renders state-transition view with pseudostates", async () => {
     const target = document.createElement("div");
     Object.defineProperty(target, "clientWidth", { value: 1200, configurable: true });
@@ -1258,6 +1290,40 @@ describe("shared renderer", () => {
     expect(target.textContent).toContain("entry / arm");
     expect(target.textContent).toContain("do / monitor");
     expect(target.textContent).toContain("exit / safe");
+    expect(target.querySelector(".terminate-state-x")).toBeTruthy();
+  });
+
+  it("renders state-transition guard effect accept send labels", async () => {
+    const target = document.createElement("div");
+    Object.defineProperty(target, "clientWidth", { value: 1200, configurable: true });
+    Object.defineProperty(target, "clientHeight", { value: 800, configurable: true });
+
+    await renderVisualization(target, {
+      title: "Transitions",
+      view: "state-transition-view",
+      nodes: [
+        { id: "idle", label: "idle", kind: "state" },
+        { id: "running", label: "running", kind: "state" },
+      ],
+      edges: [
+        {
+          id: "t1",
+          source: "idle",
+          target: "running",
+          label: "[armed] / start / accept StartPressed / send Notification",
+          attributes: {
+            guard: "armed",
+            effect: "start",
+            accept: "StartPressed",
+            send: "Notification",
+          },
+        },
+      ],
+    });
+
+    expect(target.textContent).toContain("[armed]");
+    expect(target.textContent).toContain("accept StartPressed");
+    expect(target.textContent).toContain("send Notification");
   });
 
   it("highlights action-flow nodes on click when onNodeClick is wired", async () => {

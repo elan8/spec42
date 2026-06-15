@@ -5,7 +5,8 @@ use std::collections::{HashMap, HashSet};
 use url::Url;
 
 use crate::semantic::extracted_model::{
-    ActivityActionDto, ActivityDiagramDto, ControlFlowDto, PositionDto, RangeDto,
+    ActivityActionDto, ActivityDiagramDto, ActivityStateDto, ControlFlowDto, DecisionNodeDto,
+    PositionDto, RangeDto,
 };
 use crate::semantic::graph::SemanticGraph;
 use crate::semantic::model::{RelationshipKind, SemanticNode};
@@ -25,7 +26,75 @@ fn text_range_to_dto(range: TextRange) -> RangeDto {
 }
 
 fn is_action_step_kind(kind: &str) -> bool {
-    kind == "action"
+    matches!(kind, "action" | "perform")
+}
+
+fn normalized_type_name(type_name: &str) -> String {
+    type_name
+        .split("::")
+        .last()
+        .unwrap_or(type_name)
+        .replace([' ', '_'], "")
+        .to_lowercase()
+}
+
+fn control_state_type(type_name: &str) -> Option<&'static str> {
+    match normalized_type_name(type_name).as_str() {
+        "decision" => Some("decision"),
+        "merge" => Some("merge"),
+        "fork" => Some("fork"),
+        "join" => Some("join"),
+        "terminate" => Some("terminate"),
+        "accept" => Some("accept"),
+        "send" => Some("send"),
+        _ => None,
+    }
+}
+
+fn control_kind_from_graph_node(node: &SemanticNode) -> Option<&'static str> {
+    match node.element_kind.as_str() {
+        "merge" => Some("merge"),
+        "assign" => Some("assign"),
+        "for loop" => Some("for-loop"),
+        "action" | "perform" => node
+            .attributes
+            .get("actionType")
+            .and_then(|value| value.as_str())
+            .and_then(control_state_type),
+        _ => None,
+    }
+}
+
+fn is_activity_step_node(node: &SemanticNode) -> bool {
+    is_action_step_kind(&node.element_kind)
+        || matches!(node.element_kind.as_str(), "assign" | "merge" | "for loop")
+        || control_kind_from_graph_node(node).is_some()
+}
+
+fn activity_step_name(node: &SemanticNode) -> String {
+    if let Some(kind) = control_kind_from_graph_node(node) {
+        match kind {
+            "assign" => {
+                let lhs = node
+                    .attributes
+                    .get("lhs")
+                    .and_then(|value| value.as_str())
+                    .unwrap_or("assign");
+                format!("assign_{lhs}")
+            }
+            "for-loop" => format!("for_{}", node.name),
+            "merge" => node
+                .attributes
+                .get("mergeTarget")
+                .and_then(|value| value.as_str())
+                .filter(|target| !target.is_empty())
+                .map(str::to_string)
+                .unwrap_or_else(|| node.name.clone()),
+            _ => node.name.clone(),
+        }
+    } else {
+        node.name.clone()
+    }
 }
 
 fn default_swim_lane(diagram: &ActivityDiagramDto) -> Option<String> {
@@ -86,8 +155,9 @@ fn collect_action_step_nodes<'a>(
     out: &mut HashMap<String, &'a SemanticNode>,
 ) {
     for child in graph.children_of(parent) {
-        if is_action_step_kind(&child.element_kind) {
-            out.insert(child.name.clone(), child);
+        if is_activity_step_node(child) {
+            let step_name = activity_step_name(child);
+            out.insert(step_name, child);
             collect_action_step_nodes(graph, child, out);
         }
     }
@@ -135,10 +205,10 @@ fn merge_graph_flows(
 
     let def_range = text_range_to_dto(action_def.range);
     for target in graph.outgoing_targets_by_kind(action_def, RelationshipKind::Perform) {
-        if is_action_step_kind(&target.element_kind) {
+        if is_activity_step_node(target) {
             push_flow(
                 &action_def.name,
-                &target.name,
+                &activity_step_name(target),
                 "perform",
                 text_range_to_dto(target.range),
             );
@@ -147,12 +217,13 @@ fn merge_graph_flows(
 
     for node in step_nodes.values() {
         for (target, kind) in graph.outgoing_relationships(node) {
+            let target_name = activity_step_name(target);
             if (kind == RelationshipKind::Flow || kind == RelationshipKind::Bind)
-                && step_nodes.contains_key(&target.name)
+                && step_nodes.contains_key(&target_name)
             {
                 push_flow(
-                    &node.name,
-                    &target.name,
+                    &activity_step_name(node),
+                    &target_name,
                     flow_guard_for_kind(&kind),
                     text_range_to_dto(node.range),
                 );
@@ -173,17 +244,20 @@ fn enrich_diagram(diagram: &mut ActivityDiagramDto, graph: &SemanticGraph) {
     let graph_actions: Vec<ActivityActionDto> = graph
         .children_of(action_def)
         .into_iter()
-        .filter(|child| is_action_step_kind(&child.element_kind))
-        .map(|child| ActivityActionDto {
-            id: Some(child.id.qualified_name.clone()),
-            name: child.name.clone(),
-            action_type: "action".to_string(),
-            kind: Some("action".to_string()),
-            inputs: None,
-            outputs: None,
-            range: Some(text_range_to_dto(child.range)),
-            uri: Some(uri_string.clone()),
-            swim_lane: swim_lane_for_action(child, default_lane.as_deref()),
+        .filter(|child| is_activity_step_node(child))
+        .map(|child| {
+            let step_kind = control_kind_from_graph_node(child).unwrap_or("action");
+            ActivityActionDto {
+                id: Some(child.id.qualified_name.clone()),
+                name: activity_step_name(child),
+                action_type: "action".to_string(),
+                kind: Some(step_kind.to_string()),
+                inputs: None,
+                outputs: None,
+                range: Some(text_range_to_dto(child.range)),
+                uri: Some(uri_string.clone()),
+                swim_lane: swim_lane_for_action(child, default_lane.as_deref()),
+            }
         })
         .collect();
 
@@ -208,8 +282,54 @@ fn enrich_diagram(diagram: &mut ActivityDiagramDto, graph: &SemanticGraph) {
 
     let mut step_nodes: HashMap<String, &SemanticNode> = HashMap::new();
     collect_action_step_nodes(graph, action_def, &mut step_nodes);
+    enrich_control_nodes_from_graph(diagram, graph, action_def);
     merge_graph_flows(diagram, action_def, &step_nodes, graph);
     propagate_interface_parameters(diagram, action_def, graph);
+}
+
+fn enrich_control_nodes_from_graph(
+    diagram: &mut ActivityDiagramDto,
+    graph: &SemanticGraph,
+    action_def: &SemanticNode,
+) {
+    collect_control_nodes_recursive(diagram, graph, action_def);
+}
+
+fn collect_control_nodes_recursive(
+    diagram: &mut ActivityDiagramDto,
+    graph: &SemanticGraph,
+    parent: &SemanticNode,
+) {
+    for child in graph.children_of(parent) {
+        if let Some(state_type) = control_kind_from_graph_node(child) {
+            let name = activity_step_name(child);
+            let range = text_range_to_dto(child.range);
+            if !diagram
+                .states
+                .iter()
+                .any(|state| state.name == name && state.state_type == state_type)
+            {
+                diagram.states.push(ActivityStateDto {
+                    name: name.clone(),
+                    state_type: state_type.to_string(),
+                    range: range.clone(),
+                });
+            }
+            if state_type == "decision"
+                && !diagram.decisions.iter().any(|decision| decision.name == name)
+            {
+                diagram.decisions.push(DecisionNodeDto {
+                    name,
+                    condition: String::new(),
+                    branches: Vec::new(),
+                    range,
+                });
+            }
+        }
+        if is_activity_step_node(child) {
+            collect_control_nodes_recursive(diagram, graph, child);
+        }
+    }
 }
 
 fn propagate_interface_parameters(

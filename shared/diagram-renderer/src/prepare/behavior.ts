@@ -12,7 +12,21 @@ function activityDiagramCatalog(visualization: VisualizationPayload): UnknownRec
 }
 
 function collectActivityNodes(diagram: UnknownRecord): PreparedNode[] {
-  const allowedKinds = new Set(["action", "perform", "decision", "merge", "fork", "join", "initial", "final"]);
+  const allowedKinds = new Set([
+    "action",
+    "perform",
+    "assign",
+    "for-loop",
+    "decision",
+    "merge",
+    "fork",
+    "join",
+    "initial",
+    "final",
+    "terminate",
+    "accept",
+    "send",
+  ]);
   const decisions = asArray(diagram.decisions).map((nodeRaw, index) => {
     const node = asRecord(nodeRaw);
     return buildBehaviorNode(node, index, {
@@ -32,7 +46,9 @@ function collectActivityNodes(diagram: UnknownRecord): PreparedNode[] {
       });
     })
     .filter((node) =>
-      ["initial", "final", "decision", "merge", "fork", "join"].some((token) => node.kind.includes(token)),
+      ["initial", "final", "decision", "merge", "fork", "join", "assign", "for-loop", "terminate", "accept", "send"].some(
+        (token) => node.kind.includes(token),
+      ),
     );
   const actions = asArray(diagram.nodes ?? diagram.actions ?? diagram.steps).map((nodeRaw, index) => {
     const node = asRecord(nodeRaw);
@@ -47,7 +63,17 @@ function collectActivityNodes(diagram: UnknownRecord): PreparedNode[] {
             ? "fork"
             : kind.includes("join")
               ? "join"
-              : kind.includes("initial")
+              : kind.includes("assign")
+                ? "assign"
+                : kind.includes("for-loop") || kind.includes("forloop")
+                  ? "for-loop"
+                  : kind.includes("terminate")
+                    ? "terminate"
+                    : kind.includes("accept")
+                      ? "accept"
+                      : kind.includes("send")
+                        ? "send"
+                        : kind.includes("initial")
                 ? "initial"
                 : kind.includes("final")
                   ? "final"
@@ -210,6 +236,57 @@ function attachCompositeRegions(nodes: PreparedNode[]): PreparedNode[] {
   });
 }
 
+function attachExplicitRegions(nodes: PreparedNode[], machine: UnknownRecord): PreparedNode[] {
+  const regions = asArray(machine.regions).map(asRecord);
+  if (regions.length === 0) {
+    return attachCompositeRegions(nodes);
+  }
+  const regionsByParent = new Map<string, UnknownRecord[]>();
+  for (const region of regions) {
+    const parentId = asString(region.parentId ?? region.parent_id, "");
+    if (!parentId) continue;
+    const bucket = regionsByParent.get(parentId) ?? [];
+    bucket.push(region);
+    regionsByParent.set(parentId, bucket);
+  }
+  return nodes.map((node) => {
+    if (!node.kind.includes("composite")) {
+      return node;
+    }
+    const explicit = regionsByParent.get(node.id) ?? [];
+    if (explicit.length === 0) {
+      return node;
+    }
+    return {
+      ...node,
+      attributes: {
+        ...(node.attributes ?? {}),
+        regions: explicit.map((region, index) => ({
+          id: asString(region.id, `region-${index}`),
+          name: asString(region.name, `region ${index + 1}`),
+        })),
+      },
+    };
+  });
+}
+
+function formatStateTransitionLabel(edge: UnknownRecord): string {
+  const parts: string[] = [];
+  const guard = asString(edge.guard, "").trim();
+  const effect = asString(edge.effect, "").trim();
+  const accept = asString(edge.accept, "").trim();
+  const send = asString(edge.send, "").trim();
+  const label = asString(edge.label, "").trim();
+  if (guard) parts.push(`[${guard}]`);
+  if (effect) parts.push(effect);
+  if (accept) parts.push(`accept ${accept}`);
+  if (send) parts.push(`send ${send}`);
+  if (parts.length > 0) {
+    return parts.join(" / ");
+  }
+  return label;
+}
+
 function collectStateMachineNodes(machine: UnknownRecord): PreparedNode[] {
   const nodes = asArray(machine.states).map((stateRaw, index) => {
     const state = asRecord(stateRaw);
@@ -234,11 +311,13 @@ function collectStateMachineNodes(machine: UnknownRecord): PreparedNode[] {
       label: "State",
       kind: kind.includes("initial")
         ? "initial"
-        : kind.includes("final")
-          ? "final"
-          : kind.includes("composite")
-            ? "composite"
-            : "state",
+        : kind.includes("terminate")
+          ? "terminate"
+          : kind.includes("final")
+            ? "final"
+            : kind.includes("composite")
+              ? "composite"
+              : "state",
     });
     const entry = asString(merged.entry, "");
     const doAction = asString(merged.do, "");
@@ -255,7 +334,7 @@ function collectStateMachineNodes(machine: UnknownRecord): PreparedNode[] {
     }
     return behaviorNode;
   });
-  return attachCompositeRegions(nodes);
+  return attachExplicitRegions(nodes, machine);
 }
 
 function prepareStateMachine(machine: UnknownRecord, visualization: VisualizationPayload): PreparedView {
@@ -267,14 +346,7 @@ function prepareStateMachine(machine: UnknownRecord, visualization: Visualizatio
       const edge = asRecord(edgeRaw);
       const source = resolveActivityNodeRef(edge.source ?? edge.sourceName ?? edge.from, aliases);
       const target = resolveActivityNodeRef(edge.target ?? edge.targetName ?? edge.to, aliases);
-      const labelParts = [
-        asString(edge.label, ""),
-        asString(edge.guard, ""),
-        asString(edge.effect, ""),
-        asString(edge.accept, ""),
-        asString(edge.name, ""),
-      ].filter((part) => part && part.toLowerCase() !== "entry");
-      const label = Array.from(new Set(labelParts)).join(" / ");
+      const label = formatStateTransitionLabel(edge);
       return {
         id: asString(edge.id, `transition-${index}`),
         source,
@@ -285,6 +357,7 @@ function prepareStateMachine(machine: UnknownRecord, visualization: Visualizatio
           guard: edge.guard,
           effect: edge.effect,
           accept: edge.accept,
+          send: edge.send,
         },
       };
     })

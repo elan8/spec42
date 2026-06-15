@@ -82,3 +82,76 @@ fn final_state_fixture_marks_initial_and_final_states() {
         "fixture only materializes final state nodes"
     );
 }
+
+#[test]
+fn composite_state_machine_exposes_regions() {
+    let content = r#"package Regions {
+    state def CompositeMachine {
+        state operating {
+            state nominal;
+            state fault;
+        }
+        transition start first nominal then fault;
+    }
+}"#;
+    let doc = workspace_doc("regions.sysml", content);
+    let uri = doc.uri.clone();
+    let (graph, _) = build_semantic_graph_from_documents(&[doc]).expect("graph");
+    let machines = build_workspace_state_machines(&graph, &[uri]);
+    let machine = machines
+        .iter()
+        .find(|machine| machine.name == "CompositeMachine")
+        .expect("CompositeMachine");
+    let composite = machine
+        .states
+        .iter()
+        .find(|state| state.kind == "composite")
+        .expect("composite state");
+    assert!(
+        machine
+            .regions
+            .iter()
+            .any(|region| region.parent_id.as_deref() == Some(composite.id.as_str())),
+        "expected explicit region for composite parent; regions={:?}",
+        machine.regions
+    );
+    assert!(
+        machine
+            .states
+            .iter()
+            .filter(|state| state.parent_id.as_deref() == Some(composite.id.as_str()))
+            .all(|state| state.region_id.is_some()),
+        "nested states should reference a region id"
+    );
+}
+
+#[test]
+fn terminate_state_kind_is_distinct_from_final() {
+    let content = r#"package TerminateDemo {
+    state def Active;
+    state def ShutdownMachine {
+        state active : Active;
+        state flowEnd : Terminate;
+    }
+}"#;
+    let doc = workspace_doc("terminate.sysml", content);
+    let uri = doc.uri.clone();
+    let (graph, _) = build_semantic_graph_from_documents(&[doc]).expect("graph");
+    let machines = build_workspace_state_machines(&graph, &[uri]);
+    let machine = machines
+        .iter()
+        .find(|machine| machine.name == "ShutdownMachine")
+        .expect("ShutdownMachine");
+    assert!(
+        machine
+            .states
+            .iter()
+            .any(|state| state.name == "flowEnd" && state.kind == "terminate"),
+        "expected terminate kind for Terminate-typed state; states={:?}",
+        machine
+            .states
+            .iter()
+            .map(|state| (&state.name, &state.kind))
+            .collect::<Vec<_>>()
+    );
+}

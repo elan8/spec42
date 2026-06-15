@@ -206,7 +206,7 @@ export async function renderActionFlowView(ctx: BehaviorSceneContext): Promise<{
     laneExtents.set(lane, current);
   }
   laneExtents.forEach((extent, lane) => {
-    if (lane === "default" && laneExtents.size === 1) {
+    if (laneExtents.size <= 1) {
       return;
     }
     laneLayer
