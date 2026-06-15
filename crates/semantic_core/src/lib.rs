@@ -22,6 +22,7 @@ pub use semantic::explicit_views::{
     renderer_view_for_view_type, EvaluatedView, ExposeSpec, FilterExpr, ViewCatalog,
     ViewDefinitionSpec, ViewUsageSpec,
 };
+pub use semantic::standard_view_defaults::merge_usage_default_filters;
 pub use semantic::standard_views::{
     is_standard_view_type, renderer_for_standard_view_type, STANDARD_VIEW_TYPES,
 };

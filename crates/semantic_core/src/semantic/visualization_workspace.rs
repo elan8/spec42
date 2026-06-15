@@ -1680,11 +1680,24 @@ pub fn build_sysml_visualization_from_artifacts(
     let (projected_ids, edge_predicate, projection_hints) =
         if let Some(evaluated) = selected_evaluated {
             let projected = project_view(evaluated, graph);
-            let hints = projected.hints.grid_layout.map(|layout| {
-                SysmlVisualizationProjectionHintsDto {
-                    grid_layout: Some(layout),
-                }
-            });
+            let hints = if projected.hints.grid_layout.is_some()
+                || projected.hints.grid_subtype.is_some()
+                || projected.hints.browser_layout.is_some()
+                || !projected.hints.tree_roots.is_empty()
+                || projected.hints.geometry_mode.is_some()
+                || projected.hints.geometry_projection.is_some()
+            {
+                Some(SysmlVisualizationProjectionHintsDto {
+                    grid_layout: projected.hints.grid_layout,
+                    grid_subtype: projected.hints.grid_subtype,
+                    browser_layout: projected.hints.browser_layout,
+                    tree_roots: projected.hints.tree_roots,
+                    geometry_mode: projected.hints.geometry_mode,
+                    geometry_projection: projected.hints.geometry_projection,
+                })
+            } else {
+                None
+            };
             (projected.node_ids, projected.edge_predicate, hints)
         } else {
             (

@@ -167,6 +167,8 @@ pub struct ActivityActionDto {
     pub range: Option<RangeDto>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub uri: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub swim_lane: Option<String>,
 }
 
 #[derive(Debug, Clone, Serialize)]
@@ -328,6 +330,8 @@ pub struct StateNodeDto {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub parent_id: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
+    pub region_id: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub entry: Option<String>,
     #[serde(rename = "do", skip_serializing_if = "Option::is_none")]
     pub do_action: Option<String>,
@@ -443,6 +447,7 @@ fn extract_performer_diagram_from_performs(
                 outputs: None,
                 range: Some(span_to_range_dto(&perform.span)),
                 uri: None,
+                swim_lane: None,
             }
         })
         .collect::<Vec<_>>();
@@ -797,9 +802,10 @@ fn extract_activity_from_action(
                         kind: Some("perform".to_string()),
                         inputs: None,
                         outputs: None,
-                        range: Some(span_to_range_dto(&perform.span)),
-                        uri: None,
-                    });
+                range: Some(span_to_range_dto(&perform.span)),
+                uri: None,
+                swim_lane: None,
+            });
                 }
                 ActionDefBodyElement::ActionUsage(usage) => {
                     let u = usage.as_ref();
@@ -826,6 +832,7 @@ fn extract_activity_from_action(
                         outputs: None,
                         range: Some(span_to_range_dto(&u.span)),
                         uri: None,
+                        swim_lane: None,
                     });
                 }
                 ActionDefBodyElement::Bind(bind) => {
@@ -910,6 +917,7 @@ fn extract_activity_from_action(
                         outputs: None,
                         range: Some(span_to_range_dto(&then_action.span)),
                         uri: None,
+                        swim_lane: None,
                     });
                     previous_then_action = Some(perform_name);
                 }
@@ -988,6 +996,7 @@ fn extract_activity_from_action(
             outputs: None,
             range: None,
             uri: None,
+            swim_lane: None,
         });
     }
 

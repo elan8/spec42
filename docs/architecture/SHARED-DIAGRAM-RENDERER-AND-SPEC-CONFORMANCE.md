@@ -30,9 +30,9 @@ The removed `spec42.visualization.useSharedRenderer` setting must not be reintro
 | `action-flow-view` | Action Flow View | `views/action-flow.ts` | Partial — graph-first `ActivityDiagramDto` with then-action AST and graph enrichment; see [ACTION-STATE-BNF-SIGNOFF.md](../archive/ACTION-STATE-BNF-SIGNOFF.md) |
 | `state-transition-view` | State Transition View | `views/state-transition.ts` | Partial — graph-first `StateMachineDto` on LSP payload; see [ACTION-STATE-BNF-SIGNOFF.md](../archive/ACTION-STATE-BNF-SIGNOFF.md) |
 | `sequence-view` | Sequence View | `views/sequence.ts` | Shared behavior renderer with lifelines, messages, activations, fragments, return messages, and self messages |
-| `browser-view` | Browser View | `views/standard-views.ts` | Provisional standard-view renderer |
-| `grid-view` | Grid View | `views/standard-views.ts` | Provisional standard-view renderer |
-| `geometry-view` / `geometric-view` | Geometry View | `views/standard-views.ts` | Provisional standard-view renderer |
+| `browser-view` | Browser View | `views/standard-views.ts` | Partial — hierarchy projection + collapsible tree |
+| `grid-view` | Grid View | `views/standard-views.ts` | Partial — element table + relationship matrix |
+| `geometry-view` / `geometric-view` | Geometry View | `views/standard-views.ts` | Partial — backend spatial filters + 2D orthographic preview |
 | Case-style filtered views | Filtered standard views | mapped to `general-view` | Mapped |
 
 ## Routing
@@ -58,7 +58,7 @@ Visualization payloads are built by `semantic_core` and normalized in `shared/di
 | Action perform nodes and parameter badges | Implemented | `views/action-flow.ts` |
 | State composite regions and entry/do/exit compartments | Implemented | `views/state-transition.ts` |
 | Sequence fragments, activations, self/return messages | Implemented | `views/sequence.ts` |
-| Browser/Grid/Geometry top-level views | Provisional | `views/standard-views.ts` |
+| Browser/Grid/Geometry top-level views | Partial | `views/standard-views.ts` |
 | Annotation/comment nodes and n-ary hub graphics | Deferred | Shared renderer + projection |
 | Full per-kind long-tail silhouettes | Partial | `node-notation.ts` |
 

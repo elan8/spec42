@@ -28,6 +28,8 @@ Spec42 resolves effective renderer selection in this order:
 
 **Requirement traceability is a filtered `GeneralView`:** SysML v2 §9.2.20.2.3 does not define a separate `RequirementView` standard view type. Traceability diagrams should use `: GeneralView` with filters on requirement/verification kinds; [`view_projection.rs`](../../crates/semantic_core/src/semantic/view_projection.rs) applies relationship closure and trace-edge filtering when those filters are present.
 
+**Standard view defaults:** When a view usage omits explicit `filter` members, [`standard_view_defaults.rs`](../../crates/semantic_core/src/semantic/standard_view_defaults.rs) supplies stdlib-backed or documented fallback filters for BrowserView, GridView, and GeometryView.
+
 **Standard view types only:** Spec42 implements exactly the eight view definitions from §9.2.20 Table 34 via [`standard_views.rs`](../../crates/semantic_core/src/semantic/standard_views.rs). Legacy names such as `RequirementView`, `CaseView`, or `StructureView` on a view usage (without a local `view def`) are rejected as unsupported.
 
 ## Reference model

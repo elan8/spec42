@@ -28,6 +28,31 @@ fn is_action_step_kind(kind: &str) -> bool {
     kind == "action"
 }
 
+fn default_swim_lane(diagram: &ActivityDiagramDto) -> Option<String> {
+    if diagram.source_kind == "performer" && !diagram.name.is_empty() {
+        return Some(diagram.name.clone());
+    }
+    let segment = diagram
+        .package_path
+        .split('.')
+        .filter(|part| !part.is_empty())
+        .last()
+        .map(str::to_string);
+    segment.filter(|value| !value.is_empty())
+}
+
+fn swim_lane_for_action(node: &SemanticNode, default_lane: Option<&str>) -> Option<String> {
+    for key in ["performer", "owner", "performedBy"] {
+        if let Some(value) = node.attributes.get(key).and_then(|v| v.as_str()) {
+            let trimmed = value.trim();
+            if !trimmed.is_empty() {
+                return Some(trimmed.to_string());
+            }
+        }
+    }
+    default_lane.map(str::to_string)
+}
+
 fn find_action_def_for_diagram<'a>(
     graph: &'a SemanticGraph,
     diagram: &ActivityDiagramDto,
@@ -144,6 +169,7 @@ fn enrich_diagram(diagram: &mut ActivityDiagramDto, graph: &SemanticGraph) {
     };
 
     let uri_string = diagram.uri.clone().unwrap_or_default();
+    let default_lane = default_swim_lane(diagram);
     let graph_actions: Vec<ActivityActionDto> = graph
         .children_of(action_def)
         .into_iter()
@@ -157,6 +183,7 @@ fn enrich_diagram(diagram: &mut ActivityDiagramDto, graph: &SemanticGraph) {
             outputs: None,
             range: Some(text_range_to_dto(child.range)),
             uri: Some(uri_string.clone()),
+            swim_lane: swim_lane_for_action(child, default_lane.as_deref()),
         })
         .collect();
 

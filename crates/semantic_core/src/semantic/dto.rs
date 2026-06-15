@@ -151,6 +151,16 @@ pub struct SysmlVisualizationGroupDto {
 pub struct SysmlVisualizationProjectionHintsDto {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub grid_layout: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub grid_subtype: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub browser_layout: Option<String>,
+    #[serde(skip_serializing_if = "Vec::is_empty")]
+    pub tree_roots: Vec<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub geometry_mode: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub geometry_projection: Option<String>,
 }
 
 #[derive(Debug, Clone, Serialize)]

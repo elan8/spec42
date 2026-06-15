@@ -185,7 +185,49 @@ export async function renderActionFlowView(ctx: BehaviorSceneContext): Promise<{
     .text(ctx.prepared.title || "Action Flow");
 
   const flowLayer = ctx.root.append("g").attr("class", "activity-flows");
+  const laneLayer = ctx.root.insert("g", ".activity-flows").attr("class", "activity-swim-lanes");
   const nodeLayer = ctx.root.append("g").attr("class", "activity-actions");
+
+  const laneExtents = new Map<string, { minX: number; maxX: number; minY: number; maxY: number }>();
+  for (const node of ctx.prepared.nodes) {
+    const position = layout.positions.get(node.id);
+    if (!position) continue;
+    const lane = String((node.attributes as Record<string, unknown> | undefined)?.swimLane ?? "default");
+    const current = laneExtents.get(lane) ?? {
+      minX: position.x,
+      maxX: position.x + position.width,
+      minY: position.y,
+      maxY: position.y + position.height,
+    };
+    current.minX = Math.min(current.minX, position.x);
+    current.maxX = Math.max(current.maxX, position.x + position.width);
+    current.minY = Math.min(current.minY, position.y);
+    current.maxY = Math.max(current.maxY, position.y + position.height);
+    laneExtents.set(lane, current);
+  }
+  laneExtents.forEach((extent, lane) => {
+    if (lane === "default" && laneExtents.size === 1) {
+      return;
+    }
+    laneLayer
+      .append("rect")
+      .attr("x", extent.minX - 24)
+      .attr("y", extent.minY - 36)
+      .attr("width", extent.maxX - extent.minX + 48)
+      .attr("height", extent.maxY - extent.minY + 56)
+      .attr("rx", 8)
+      .style("fill", ctx.theme.canvasBackground)
+      .style("stroke", ctx.theme.frame.stroke)
+      .style("stroke-dasharray", "6,4");
+    laneLayer
+      .append("text")
+      .attr("x", extent.minX - 12)
+      .attr("y", extent.minY - 18)
+      .style("font-size", "10px")
+      .style("font-weight", "700")
+      .style("fill", ctx.theme.textSecondary)
+      .text(truncateLabel(lane, 24));
+  });
 
   for (const edge of ctx.prepared.edges) {
     const source = layout.positions.get(edge.source);
@@ -195,10 +237,18 @@ export async function renderActionFlowView(ctx: BehaviorSceneContext): Promise<{
     const fallback = fallbackEdgePath(source, target, horizontal);
     const edgeAttrs = (edge.attributes ?? {}) as Record<string, unknown>;
     const guard = String(edgeAttrs.guard ?? edge.label ?? "").toLowerCase();
-    const succession = guard === "flow" || guard === "first" || guard === "succession";
+    const succession = Boolean(edgeAttrs.succession) || guard === "flow" || guard === "first" || guard === "succession";
+    const conditional = Boolean(edgeAttrs.conditional);
     flowLayer
       .append("path")
-      .attr("class", succession ? "activity-flow action-flow-edge aflow-succession" : "activity-flow action-flow-edge")
+      .attr(
+        "class",
+        succession
+          ? conditional
+            ? "activity-flow action-flow-edge aflow-succession aflow-conditional"
+            : "activity-flow action-flow-edge aflow-succession"
+          : "activity-flow action-flow-edge",
+      )
       .attr("d", pathFromSections(sections) || fallback.path)
       .style("fill", "none")
       .style("stroke", ctx.theme.edge.default)

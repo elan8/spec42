@@ -48,6 +48,11 @@ export interface SharedVisualizationPayload {
   ibd?: SharedIbdPayload;
   projectionHints?: {
     gridLayout?: string;
+    gridSubtype?: string;
+    browserLayout?: string;
+    treeRoots?: string[];
+    geometryMode?: string;
+    geometryProjection?: string;
   };
   /** Normalized behavior diagrams (extension prepare or server DTO). */
   diagrams?: unknown[];

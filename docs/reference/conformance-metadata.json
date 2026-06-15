@@ -17,12 +17,12 @@
   "views": [
     { "id": "general-view", "standardViewType": "GeneralView", "renderer": "shared", "status": "complete", "notes": "§9.2.20.2.3; filtered specializations include requirement traceability (expose + filter)." },
     { "id": "interconnection-view", "standardViewType": "InterconnectionView", "renderer": "shared", "status": "complete", "notes": "§9.2.20.2.6; IBD pipeline with connection-focused projection." },
-    { "id": "action-flow-view", "standardViewType": "ActionFlowView", "renderer": "shared", "status": "partial", "notes": "§9.2.20.2.1; graph-first activity DTO. Gaps: swim lanes, full control-node BNF, conditional succession notation." },
+    { "id": "action-flow-view", "standardViewType": "ActionFlowView", "renderer": "shared", "status": "partial", "notes": "§9.2.20.2.1; swim lanes, conditional succession, control-node BNF improved; fork/join deferred." },
     { "id": "sequence-view", "standardViewType": "SequenceView", "renderer": "shared", "status": "complete", "notes": "§9.2.20.2.7; lifelines, fragments, activations." },
-    { "id": "state-transition-view", "standardViewType": "StateTransitionView", "renderer": "shared", "status": "partial", "notes": "§9.2.20.2.8; StateMachineDto from semantic graph. Gaps: full region/transition BNF sign-off." },
-    { "id": "browser-view", "standardViewType": "BrowserView", "renderer": "shared", "status": "provisional", "notes": "§9.2.20.2.2; tree projection without ancestor injection. Gaps: collapsible tree notation, filter expressions from stdlib." },
-    { "id": "grid-view", "standardViewType": "GridView", "renderer": "shared", "status": "provisional", "notes": "§9.2.20.2.5; tabular element table. Gaps: relationship matrix, data-value tabular subtypes." },
-    { "id": "geometry-view", "standardViewType": "GeometryView", "renderer": "shared", "status": "provisional", "notes": "§9.2.20.2.4; spatial item preview. Gaps: 2D/3D view params, color maps, shape rendering per spec." }
+    { "id": "state-transition-view", "standardViewType": "StateTransitionView", "renderer": "shared", "status": "partial", "notes": "§9.2.20.2.8; region_id on nested states; transition guard/effect/accept on DTO path." },
+    { "id": "browser-view", "standardViewType": "BrowserView", "renderer": "shared", "status": "partial", "notes": "§9.2.20.2.2; parentId hierarchy projection + collapsible tree renderer." },
+    { "id": "grid-view", "standardViewType": "GridView", "renderer": "shared", "status": "partial", "notes": "§9.2.20.2.5; element table + relationship matrix subtype via projectionHints." },
+    { "id": "geometry-view", "standardViewType": "GeometryView", "renderer": "shared", "status": "partial", "notes": "§9.2.20.2.4; backend spatial default filters; 2D orthographic preview; 3D deferred." }
   ],
   "cliReporting": [
     { "feature": "check text/json", "status": "supported" },

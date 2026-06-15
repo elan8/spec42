@@ -196,6 +196,9 @@ fn collect_state_nodes(
                     parent_id: parent
                         .filter(|node| node.id != machine_root.id)
                         .map(|node| node.id.qualified_name.clone()),
+                    region_id: parent
+                        .filter(|node| node.id != machine_root.id)
+                        .map(|node| node.id.qualified_name.clone()),
                     entry,
                     do_action,
                     exit,

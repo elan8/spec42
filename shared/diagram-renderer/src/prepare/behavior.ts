@@ -58,7 +58,21 @@ function collectActivityNodes(diagram: UnknownRecord): PreparedNode[] {
       kind: normalizedKind,
     });
   });
-  return [...actions, ...decisions, ...states].filter((node) => allowedKinds.has(node.kind));
+  const enriched = [...actions, ...decisions, ...states].map((node) => {
+    const attrs = asRecord(node.attributes);
+    const swimLane = asString(attrs.swimLane ?? attrs.swim_lane, "");
+    if (!swimLane) {
+      return node;
+    }
+    return {
+      ...node,
+      attributes: {
+        ...(node.attributes ?? {}),
+        swimLane,
+      },
+    };
+  });
+  return enriched.filter((node) => allowedKinds.has(node.kind));
 }
 
 function buildActivityNodeAliasMap(nodes: PreparedNode[]): Map<string, string> {
@@ -110,12 +124,23 @@ export function prepareActivity(visualization: VisualizationPayload): PreparedVi
       const source = resolveActivityNodeRef(edge.from ?? edge.source ?? edge.sourceId, aliases);
       const target = resolveActivityNodeRef(edge.to ?? edge.target ?? edge.targetId, aliases);
       const guard = asString(edge.guard ?? edge.type, "");
+      const condition = asString(edge.condition, "");
+      const guardLower = guard.toLowerCase();
+      const succession = guardLower === "flow" || guardLower === "first" || guardLower === "succession";
+      const conditional =
+        condition.length > 0
+        || (guard.length > 0 && !["flow", "first", "bind", "perform", "succession"].includes(guardLower));
       return {
         id: asString(edge.id, `flow-${index}`),
         source,
         target,
-        label: asString(edge.name ?? edge.label ?? guard, ""),
-        attributes: guard ? { guard } : undefined,
+        label: asString(edge.name ?? edge.label ?? condition ?? guard, ""),
+        attributes: {
+          ...(guard ? { guard } : {}),
+          ...(condition ? { condition } : {}),
+          succession,
+          conditional,
+        },
       };
     })
     .filter(
@@ -126,6 +151,13 @@ export function prepareActivity(visualization: VisualizationPayload): PreparedVi
         nodeIds.has(edge.source) &&
         nodeIds.has(edge.target),
     );
+  const swimLanes = Array.from(
+    new Set(
+      nodes
+        .map((node) => asString(asRecord(node.attributes).swimLane, ""))
+        .filter(Boolean),
+    ),
+  );
   return {
     title: asString(diagram.name ?? visualization?.selectedViewName, "Action Flow View"),
     view: "action-flow-view",
@@ -138,6 +170,7 @@ export function prepareActivity(visualization: VisualizationPayload): PreparedVi
       layoutDirection: asString(visualization?.activityLayoutDirection, "vertical"),
       activityDiagram: effective,
       parentContext: asString(diagram.name),
+      swimLanes,
     },
   };
 }
@@ -150,8 +183,35 @@ function stateMachineCatalog(visualization: VisualizationPayload): UnknownRecord
   return asArray(visualization.stateDiagrams).map(asRecord);
 }
 
+function attachCompositeRegions(nodes: PreparedNode[]): PreparedNode[] {
+  const childrenByRegion = new Map<string, PreparedNode[]>();
+  for (const node of nodes) {
+    const regionId = asString(asRecord(node.attributes).regionId, "");
+    if (!regionId) continue;
+    const bucket = childrenByRegion.get(regionId) ?? [];
+    bucket.push(node);
+    childrenByRegion.set(regionId, bucket);
+  }
+  return nodes.map((node) => {
+    if (!node.kind.includes("composite")) {
+      return node;
+    }
+    const children = childrenByRegion.get(node.id) ?? [];
+    if (children.length === 0) {
+      return node;
+    }
+    return {
+      ...node,
+      attributes: {
+        ...(node.attributes ?? {}),
+        regions: children.map((child) => ({ name: child.label, id: child.id })),
+      },
+    };
+  });
+}
+
 function collectStateMachineNodes(machine: UnknownRecord): PreparedNode[] {
-  return asArray(machine.states).map((stateRaw, index) => {
+  const nodes = asArray(machine.states).map((stateRaw, index) => {
     const state = asRecord(stateRaw);
     const element = asRecord(state.element);
     const merged = {
@@ -166,6 +226,7 @@ function collectStateMachineNodes(machine: UnknownRecord): PreparedNode[] {
       do: state.do ?? element.do,
       exit: state.exit ?? element.exit,
       parentId: state.parentId ?? state.parent_id ?? element.parentId,
+      regionId: state.regionId ?? state.region_id ?? element.regionId,
     };
     const kind = asString(state.kind ?? state.type ?? element.type, "state").toLowerCase();
     const behaviorNode = buildBehaviorNode(asRecord(merged), index, {
@@ -182,16 +243,19 @@ function collectStateMachineNodes(machine: UnknownRecord): PreparedNode[] {
     const entry = asString(merged.entry, "");
     const doAction = asString(merged.do, "");
     const exit = asString(merged.exit, "");
-    if (entry || doAction || exit) {
+    const regionId = asString(merged.regionId, "");
+    if (entry || doAction || exit || regionId) {
       behaviorNode.attributes = {
         ...(behaviorNode.attributes ?? {}),
         ...(entry ? { entry } : {}),
         ...(doAction ? { do: doAction } : {}),
         ...(exit ? { exit } : {}),
+        ...(regionId ? { regionId } : {}),
       };
     }
     return behaviorNode;
   });
+  return attachCompositeRegions(nodes);
 }
 
 function prepareStateMachine(machine: UnknownRecord, visualization: VisualizationPayload): PreparedView {

@@ -49,13 +49,21 @@ function nodeFromMeta(row: Record<string, unknown>, fallback: PreparedNode[]): P
   return fallback.find((node) => node.id === id || node.label === asString(row.label ?? row.name));
 }
 
+function shortMatrixLabel(id: string): string {
+  const segments = id.split("::").filter(Boolean);
+  return truncateLabel(segments[segments.length - 1] ?? id, 10);
+}
+
 export function renderBrowserView(ctx: BehaviorSceneContext): { minX: number; minY: number; maxX: number; maxY: number } {
   const rows = asArray(ctx.prepared.meta?.rows).map(asRecord);
   const sourceRows = rows.length > 0 ? rows : ctx.prepared.nodes.map((node) => ({ id: node.id, label: node.label, kind: node.kind }));
+  const hierarchyLayout = Boolean(ctx.prepared.meta?.hierarchyLayout);
   const rowHeight = 28;
   const left = 52;
   const top = 88;
   const width = Math.max(520, Math.min(920, ctx.width - 120));
+  const collapsed = new Set<string>();
+
   ctx.root
     .append("text")
     .attr("x", 24)
@@ -64,56 +72,111 @@ export function renderBrowserView(ctx: BehaviorSceneContext): { minX: number; mi
     .style("font-weight", "700")
     .style("fill", ctx.theme.textPrimary)
     .text(ctx.prepared.title || "Browser View");
-  drawProvisionalBadge(ctx.root, ctx.theme);
+  if (!hierarchyLayout) {
+    drawProvisionalBadge(ctx.root, ctx.theme);
+  }
 
   const layer = ctx.root.append("g").attr("class", "browser-view-rows");
-  sourceRows.forEach((row, index) => {
-    const y = top + index * rowHeight;
-    const qualified = asString(row.qualifiedName);
-    const depth = Math.max(0, qualified.split("::").filter(Boolean).length - 1);
-    const preparedNode = nodeFromMeta(row, ctx.prepared.nodes);
-    const item = layer
-      .append("g")
-      .attr("class", "browser-row")
-      .attr("data-node-id", preparedNode?.id ?? asString(row.id, `browser-row-${index}`))
-      .attr("transform", `translate(${left},${y})`);
-    item
-      .append("rect")
-      .attr("class", "node-background")
-      .attr("data-original-stroke", ctx.theme.nodeBorder)
-      .attr("data-original-width", "1px")
-      .attr("width", width)
-      .attr("height", rowHeight - 3)
-      .attr("rx", 4)
-      .style("fill", index % 2 === 0 ? ctx.theme.nodeFill : ctx.theme.canvasBackground)
-      .style("stroke", ctx.theme.nodeBorder)
-      .style("stroke-width", "1px")
-      .style("opacity", 0.9);
-    item
-      .append("text")
-      .attr("x", 14 + depth * 16)
-      .attr("y", 18)
-      .style("font-size", "11px")
-      .style("font-weight", "600")
-      .style("fill", ctx.theme.textPrimary)
-      .text(truncateLabel(asString(row.label ?? row.name ?? row.id, "Unnamed"), 48));
-    item
-      .append("text")
-      .attr("x", width - 14)
-      .attr("y", 18)
-      .attr("text-anchor", "end")
-      .style("font-size", "10px")
-      .style("fill", ctx.theme.textSecondary)
-      .text(truncateLabel(asString(row.kind, "element"), 24));
-    if (preparedNode) {
-      attachBehaviorNodeClick(item, preparedNode, ctx.theme, ctx.options ?? {}, ctx.root);
-    }
-  });
 
-  return { minX: 0, minY: 0, maxX: left + width + 80, maxY: top + sourceRows.length * rowHeight + 80 };
+  const isRowVisible = (row: Record<string, unknown>, index: number): boolean => {
+    if (!hierarchyLayout) return true;
+    const parentId = asString(row.parentId);
+    if (!parentId) return true;
+    for (let cursor = index - 1; cursor >= 0; cursor -= 1) {
+      const ancestor = asRecord(sourceRows[cursor]);
+      if (asString(ancestor.id) !== parentId) continue;
+      if (!isRowVisible(ancestor, cursor) || collapsed.has(parentId)) {
+        return false;
+      }
+      return true;
+    }
+    return !collapsed.has(parentId);
+  };
+
+  const redraw = (): void => {
+    layer.selectAll("*").remove();
+    let visibleIndex = 0;
+    sourceRows.forEach((row, index) => {
+      if (!isRowVisible(row, index)) return;
+      const y = top + visibleIndex * rowHeight;
+      visibleIndex += 1;
+      const depth = hierarchyLayout ? Number(row.depth ?? 0) : Math.max(0, asString(row.qualifiedName).split("::").filter(Boolean).length - 1);
+      const hasChildren = Boolean(row.hasChildren);
+      const preparedNode = nodeFromMeta(row, ctx.prepared.nodes);
+      const rowId = preparedNode?.id ?? asString(row.id, `browser-row-${index}`);
+      const item = layer
+        .append("g")
+        .attr("class", "browser-row")
+        .attr("data-node-id", rowId)
+        .attr("transform", `translate(${left},${y})`);
+      item
+        .append("rect")
+        .attr("class", "node-background")
+        .attr("data-original-stroke", ctx.theme.nodeBorder)
+        .attr("data-original-width", "1px")
+        .attr("width", width)
+        .attr("height", rowHeight - 3)
+        .attr("rx", 4)
+        .style("fill", visibleIndex % 2 === 0 ? ctx.theme.nodeFill : ctx.theme.canvasBackground)
+        .style("stroke", ctx.theme.nodeBorder)
+        .style("stroke-width", "1px")
+        .style("opacity", 0.9);
+      if (hasChildren) {
+        const toggle = item
+          .append("text")
+          .attr("x", 8 + depth * 16)
+          .attr("y", 18)
+          .attr("class", "browser-toggle")
+          .style("font-size", "11px")
+          .style("font-weight", "700")
+          .style("fill", ctx.theme.textSecondary)
+          .style("cursor", "pointer")
+          .text(collapsed.has(rowId) ? "▸" : "▾");
+        toggle.on("click", (event) => {
+          event.stopPropagation();
+          if (collapsed.has(rowId)) {
+            collapsed.delete(rowId);
+          } else {
+            collapsed.add(rowId);
+          }
+          redraw();
+        });
+      }
+      item
+        .append("text")
+        .attr("x", 14 + depth * 16 + (hasChildren ? 12 : 0))
+        .attr("y", 18)
+        .style("font-size", "11px")
+        .style("font-weight", "600")
+        .style("fill", ctx.theme.textPrimary)
+        .text(truncateLabel(asString(row.label ?? row.name ?? row.id, "Unnamed"), 48));
+      item
+        .append("text")
+        .attr("x", width - 14)
+        .attr("y", 18)
+        .attr("text-anchor", "end")
+        .style("font-size", "10px")
+        .style("fill", ctx.theme.textSecondary)
+        .text(truncateLabel(asString(row.kind, "element"), 24));
+      if (preparedNode) {
+        attachBehaviorNodeClick(item, preparedNode, ctx.theme, ctx.options ?? {}, ctx.root);
+      }
+    });
+  };
+
+  redraw();
+  const visibleCount = hierarchyLayout
+    ? sourceRows.filter((row, index) => isRowVisible(row, index)).length
+    : sourceRows.length;
+  return { minX: 0, minY: 0, maxX: left + width + 80, maxY: top + visibleCount * rowHeight + 80 };
 }
 
 export function renderGridView(ctx: BehaviorSceneContext): { minX: number; minY: number; maxX: number; maxY: number } {
+  const relationshipMatrix = Boolean(ctx.prepared.meta?.relationshipMatrix);
+  if (relationshipMatrix) {
+    return renderRelationshipMatrix(ctx);
+  }
+
   const cells = asArray(ctx.prepared.meta?.cells).map(asRecord);
   const rows = cells.length > 0 ? cells : ctx.prepared.nodes.map((node) => asRecord(node.attributes));
   const left = 52;
@@ -143,7 +206,9 @@ export function renderGridView(ctx: BehaviorSceneContext): { minX: number; minY:
     .style("font-weight", "700")
     .style("fill", ctx.theme.textPrimary)
     .text(ctx.prepared.title || "Grid View");
-  drawProvisionalBadge(ctx.root, ctx.theme);
+  if (Boolean(ctx.prepared.meta?.provisional)) {
+    drawProvisionalBadge(ctx.root, ctx.theme);
+  }
 
   const table = ctx.root.append("g").attr("class", "grid-view-table").attr("transform", `translate(${left},${top})`);
   let x = 0;
@@ -200,12 +265,91 @@ export function renderGridView(ctx: BehaviorSceneContext): { minX: number; minY:
   return { minX: 0, minY: 0, maxX: left + tableWidth + 80, maxY: top + (rows.length + 2) * rowHeight + 80 };
 }
 
+function renderRelationshipMatrix(ctx: BehaviorSceneContext): { minX: number; minY: number; maxX: number; maxY: number } {
+  const rowIds = asArray(ctx.prepared.meta?.matrixRowIds).map((value) => asString(value)).filter(Boolean);
+  const colIds = asArray(ctx.prepared.meta?.matrixColIds).map((value) => asString(value)).filter(Boolean);
+  const matrixCells = asArray(ctx.prepared.meta?.matrixCells).map(asRecord);
+  const cellSize = 34;
+  const headerSize = 120;
+  const left = 180;
+  const top = 92;
+
+  ctx.root
+    .append("text")
+    .attr("x", 24)
+    .attr("y", 28)
+    .style("font-size", "14px")
+    .style("font-weight", "700")
+    .style("fill", ctx.theme.textPrimary)
+    .text(ctx.prepared.title || "Relationship Matrix");
+
+  const layer = ctx.root.append("g").attr("class", "grid-relationship-matrix").attr("transform", `translate(${left},${top})`);
+  colIds.forEach((colId, colIndex) => {
+    layer
+      .append("text")
+      .attr("x", headerSize + colIndex * cellSize + cellSize / 2)
+      .attr("y", 16)
+      .attr("text-anchor", "middle")
+      .attr("transform", `rotate(-35, ${headerSize + colIndex * cellSize + cellSize / 2}, 16)`)
+      .style("font-size", "9px")
+      .style("fill", ctx.theme.textSecondary)
+      .text(shortMatrixLabel(colId));
+  });
+  rowIds.forEach((rowId, rowIndex) => {
+    layer
+      .append("text")
+      .attr("x", headerSize - 8)
+      .attr("y", headerSize + rowIndex * cellSize + cellSize / 2 + 4)
+      .attr("text-anchor", "end")
+      .style("font-size", "10px")
+      .style("fill", ctx.theme.textPrimary)
+      .text(shortMatrixLabel(rowId));
+    colIds.forEach((colId, colIndex) => {
+      const cell = matrixCells.find(
+        (entry) => asString(entry.source) === rowId && asString(entry.target) === colId,
+      );
+      const present = Boolean(cell?.present);
+      const x = headerSize + colIndex * cellSize;
+      const y = headerSize + rowIndex * cellSize;
+      layer
+        .append("rect")
+        .attr("x", x)
+        .attr("y", y)
+        .attr("width", cellSize - 2)
+        .attr("height", cellSize - 2)
+        .style("fill", present ? ctx.theme.nodeFill : ctx.theme.canvasBackground)
+        .style("stroke", ctx.theme.nodeBorder)
+        .style("stroke-width", "1px");
+      if (present) {
+        layer
+          .append("text")
+          .attr("x", x + (cellSize - 2) / 2)
+          .attr("y", y + (cellSize - 2) / 2 + 4)
+          .attr("text-anchor", "middle")
+          .style("font-size", "12px")
+          .style("font-weight", "700")
+          .style("fill", ctx.theme.edge.default)
+          .text("●");
+      }
+    });
+  });
+
+  const width = headerSize + colIds.length * cellSize + 40;
+  const height = headerSize + rowIds.length * cellSize + 40;
+  return { minX: 0, minY: 0, maxX: left + width, maxY: top + height };
+}
+
 export function renderGeometryView(ctx: BehaviorSceneContext): { minX: number; minY: number; maxX: number; maxY: number } {
   const elements = asArray(ctx.prepared.meta?.elements).map(asRecord);
   const nodes = elements.length > 0 ? elements : ctx.prepared.nodes.map((node) => ({ id: node.id, label: node.label, kind: node.kind }));
-  const centerX = Math.max(280, ctx.width / 2);
-  const centerY = Math.max(240, ctx.height / 2 + 30);
-  const radius = Math.max(130, Math.min(300, nodes.length * 22));
+  const geometryMode = asString(ctx.prepared.meta?.geometryMode, "2d");
+  const geometryProjection = asString(ctx.prepared.meta?.geometryProjection, "orthographic");
+  const left = 64;
+  const top = 88;
+  const cellWidth = 128;
+  const cellHeight = 72;
+  const columns = Math.max(1, Math.ceil(Math.sqrt(nodes.length)));
+
   ctx.root
     .append("text")
     .attr("x", 24)
@@ -214,21 +358,25 @@ export function renderGeometryView(ctx: BehaviorSceneContext): { minX: number; m
     .style("font-weight", "700")
     .style("fill", ctx.theme.textPrimary)
     .text(ctx.prepared.title || "Geometry View");
-  drawProvisionalBadge(ctx.root, ctx.theme, "provisional geometry notation");
+  if (Boolean(ctx.prepared.meta?.provisional)) {
+    drawProvisionalBadge(ctx.root, ctx.theme, `${geometryMode} ${geometryProjection} preview`);
+  }
 
-  const layer = ctx.root.append("g").attr("class", "geometry-view-scene");
+  const layer = ctx.root.append("g").attr("class", "geometry-view-scene").attr("transform", `translate(${left},${top})`);
   layer
-    .append("circle")
-    .attr("cx", centerX)
-    .attr("cy", centerY)
-    .attr("r", radius + 44)
+    .append("rect")
+    .attr("width", columns * cellWidth + 24)
+    .attr("height", Math.ceil(nodes.length / columns) * cellHeight + 24)
+    .attr("rx", 8)
     .style("fill", "none")
     .style("stroke", ctx.theme.frame.stroke)
     .style("stroke-dasharray", "8,6");
+
   nodes.forEach((node, index) => {
-    const angle = nodes.length <= 1 ? -Math.PI / 2 : (index / nodes.length) * Math.PI * 2 - Math.PI / 2;
-    const x = centerX + Math.cos(angle) * radius;
-    const y = centerY + Math.sin(angle) * radius;
+    const col = index % columns;
+    const row = Math.floor(index / columns);
+    const x = col * cellWidth + 12;
+    const y = row * cellHeight + 12;
     const preparedNode = nodeFromMeta(node, ctx.prepared.nodes);
     const item = layer
       .append("g")
@@ -240,26 +388,26 @@ export function renderGeometryView(ctx: BehaviorSceneContext): { minX: number; m
       .attr("class", "node-background")
       .attr("data-original-stroke", ctx.theme.nodeBorder)
       .attr("data-original-width", "1.5px")
-      .attr("x", -54)
-      .attr("y", -24)
-      .attr("width", 108)
-      .attr("height", 48)
+      .attr("width", cellWidth - 20)
+      .attr("height", cellHeight - 16)
       .attr("rx", 6)
       .style("fill", ctx.theme.nodeFill)
       .style("stroke", ctx.theme.nodeBorder)
       .style("stroke-width", "1.5px");
     item
       .append("text")
+      .attr("x", (cellWidth - 20) / 2)
+      .attr("y", 24)
       .attr("text-anchor", "middle")
-      .attr("y", -2)
       .style("font-size", "10px")
       .style("font-weight", "700")
       .style("fill", ctx.theme.textPrimary)
       .text(truncateLabel(asString(node.label ?? node.name ?? node.id), 16));
     item
       .append("text")
+      .attr("x", (cellWidth - 20) / 2)
+      .attr("y", 42)
       .attr("text-anchor", "middle")
-      .attr("y", 14)
       .style("font-size", "8px")
       .style("fill", ctx.theme.textSecondary)
       .text(truncateLabel(asString(node.kind, "element"), 18));
@@ -267,10 +415,8 @@ export function renderGeometryView(ctx: BehaviorSceneContext): { minX: number; m
       attachBehaviorNodeClick(item, preparedNode, ctx.theme, ctx.options ?? {}, ctx.root);
     }
   });
-  return {
-    minX: centerX - radius - 120,
-    minY: centerY - radius - 120,
-    maxX: centerX + radius + 120,
-    maxY: centerY + radius + 120,
-  };
+
+  const width = columns * cellWidth + 80;
+  const height = Math.ceil(nodes.length / columns) * cellHeight + 120;
+  return { minX: 0, minY: 0, maxX: left + width, maxY: top + height };
 }

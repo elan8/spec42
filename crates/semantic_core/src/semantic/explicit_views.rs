@@ -375,7 +375,8 @@ pub fn evaluate_views(
         .iter()
         .map(|usage| {
             let mut issues = usage.issues.clone();
-            let mut filters = usage.filters.clone();
+            let usage_filters = usage.filters.clone();
+            let mut filters = usage_filters.clone();
             let mut conforms_to = usage.conforms_to.clone();
             let effective_view_type = Some(resolve_effective_view_type(usage, catalog));
             if usage.definition_id.is_none() {
@@ -391,6 +392,17 @@ pub fn evaluate_views(
             if let Some(definition_id) = usage.definition_id.as_deref() {
                 if let Some(definition) = catalog.definitions.get(definition_id) {
                     filters.extend(definition.filters.clone());
+                }
+            }
+            if usage_filters.is_empty() {
+                if let Some(view_type) = effective_view_type.as_deref() {
+                    filters.extend(
+                        crate::semantic::standard_view_defaults::merge_usage_default_filters(
+                            view_type,
+                            &[],
+                            Some(semantic_graph),
+                        ),
+                    );
                 }
             }
             for expose in &usage.exposes {
@@ -642,7 +654,7 @@ fn span_to_range_dto(span: &Span) -> RangeDto {
     }
 }
 
-fn parse_filter_text(text: &str) -> FilterExpr {
+pub(crate) fn parse_filter_text(text: &str) -> FilterExpr {
     let tokens = tokenize_filter(text);
     let mut parser = FilterParser { tokens, index: 0 };
     parser.parse_expr()

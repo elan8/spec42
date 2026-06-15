@@ -11,6 +11,7 @@ use std::collections::{HashMap, HashSet};
 
 use crate::semantic::dto::{GraphEdgeDto, GraphNodeDto, SysmlGraphDto};
 use crate::semantic::explicit_views::{node_matches_all_filters, EvaluatedView, FilterExpr};
+use crate::semantic::standard_view_defaults::grid_subtype_for_filters;
 
 /// Which relationship edges belong in the projected graph.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -21,10 +22,15 @@ pub enum EdgePredicate {
     TraceabilityOnly,
 }
 
-/// Presentation hints for provisional standard-view renderers (grid layout, etc.).
+/// Presentation hints for standard-view renderers (grid layout, browser tree, geometry params).
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct ProjectionHints {
     pub grid_layout: Option<String>,
+    pub grid_subtype: Option<String>,
+    pub browser_layout: Option<String>,
+    pub tree_roots: Vec<String>,
+    pub geometry_mode: Option<String>,
+    pub geometry_projection: Option<String>,
 }
 
 /// Result of projecting an evaluated view onto the semantic graph.
@@ -85,6 +91,13 @@ pub fn project_view(evaluated: &EvaluatedView, graph: &SysmlGraphDto) -> Project
         edge_predicate: strategy.edge_predicate,
         hints: ProjectionHints {
             grid_layout: strategy.grid_layout.map(str::to_string),
+            grid_subtype: grid_subtype_for_filters(&evaluated.filters)
+                .map(str::to_string)
+                .or_else(|| strategy.grid_subtype.map(str::to_string)),
+            browser_layout: strategy.browser_layout.map(str::to_string),
+            tree_roots: evaluated.exposed_ids.iter().cloned().collect(),
+            geometry_mode: strategy.geometry_mode.map(str::to_string),
+            geometry_projection: strategy.geometry_projection.map(str::to_string),
         },
     }
 }
@@ -119,6 +132,10 @@ struct ProjectionStrategy {
     include_ancestors: bool,
     edge_predicate: EdgePredicate,
     grid_layout: Option<&'static str>,
+    grid_subtype: Option<&'static str>,
+    browser_layout: Option<&'static str>,
+    geometry_mode: Option<&'static str>,
+    geometry_projection: Option<&'static str>,
 }
 
 #[derive(Debug, Clone, Copy)]
@@ -145,6 +162,10 @@ fn traceability_projection_strategy() -> ProjectionStrategy {
         include_ancestors: false,
         edge_predicate: EdgePredicate::TraceabilityOnly,
         grid_layout: Some("traceability"),
+        grid_subtype: None,
+        browser_layout: None,
+        geometry_mode: None,
+        geometry_projection: None,
     }
 }
 
@@ -199,6 +220,10 @@ fn projection_strategy(normalized_view_type: &str) -> ProjectionStrategy {
             include_ancestors: false,
             edge_predicate: EdgePredicate::All,
             grid_layout: None,
+            grid_subtype: None,
+            browser_layout: Some("hierarchy"),
+            geometry_mode: None,
+            geometry_projection: None,
         },
         "actionflowview" | "statetransitionview" => ProjectionStrategy {
             scope: ScopeStrategy::Descendants,
@@ -206,6 +231,10 @@ fn projection_strategy(normalized_view_type: &str) -> ProjectionStrategy {
             include_ancestors: false,
             edge_predicate: EdgePredicate::All,
             grid_layout: None,
+            grid_subtype: None,
+            browser_layout: None,
+            geometry_mode: None,
+            geometry_projection: None,
         },
         "gridview" => ProjectionStrategy {
             scope: ScopeStrategy::Structural,
@@ -213,6 +242,10 @@ fn projection_strategy(normalized_view_type: &str) -> ProjectionStrategy {
             include_ancestors: true,
             edge_predicate: EdgePredicate::All,
             grid_layout: None,
+            grid_subtype: Some("element_table"),
+            browser_layout: None,
+            geometry_mode: None,
+            geometry_projection: None,
         },
         "geometryview" => ProjectionStrategy {
             scope: ScopeStrategy::Structural,
@@ -220,6 +253,10 @@ fn projection_strategy(normalized_view_type: &str) -> ProjectionStrategy {
             include_ancestors: true,
             edge_predicate: EdgePredicate::All,
             grid_layout: None,
+            grid_subtype: None,
+            browser_layout: None,
+            geometry_mode: Some("2d"),
+            geometry_projection: Some("orthographic"),
         },
         "interconnectionview" => ProjectionStrategy {
             scope: ScopeStrategy::Structural,
@@ -227,6 +264,10 @@ fn projection_strategy(normalized_view_type: &str) -> ProjectionStrategy {
             include_ancestors: true,
             edge_predicate: EdgePredicate::All,
             grid_layout: None,
+            grid_subtype: None,
+            browser_layout: None,
+            geometry_mode: None,
+            geometry_projection: None,
         },
         _ => ProjectionStrategy {
             scope: ScopeStrategy::Structural,
@@ -234,6 +275,10 @@ fn projection_strategy(normalized_view_type: &str) -> ProjectionStrategy {
             include_ancestors: true,
             edge_predicate: EdgePredicate::All,
             grid_layout: None,
+            grid_subtype: None,
+            browser_layout: None,
+            geometry_mode: None,
+            geometry_projection: None,
         },
     }
 }
@@ -290,6 +335,7 @@ fn expand_traceability_scope(
         }
     }
 
+    visible.extend(seed_ids.iter().cloned());
     visible
 }
 

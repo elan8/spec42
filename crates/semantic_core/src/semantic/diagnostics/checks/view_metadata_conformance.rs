@@ -6,6 +6,7 @@ use crate::semantic::diagnostics::checks::import_resolution::import_target_resol
 use crate::semantic::diagnostics::helpers::{
     diag, diagnostic_range, is_synthetic, is_unknown_range, parse_attribute_text_range,
 };
+use crate::semantic::standard_views::is_non_standard_explicit_view_type;
 use crate::semantic::diagnostics::types::DiagnosticSeverity;
 use crate::semantic::model::RelationshipKind;
 use crate::semantic::reference_resolution::{resolve_expose_target, ExposeTargetResolution};
@@ -34,6 +35,30 @@ pub(in crate::semantic::diagnostics) fn collect_view_metadata_conformance_diagno
 ) -> Vec<SemanticDiagnostic> {
     let mut diagnostics = Vec::new();
     let mut seen = HashSet::new();
+
+    for node in graph.nodes_for_uri(uri) {
+        if node.element_kind != "view" || is_synthetic(node) {
+            continue;
+        }
+        if let Some(view_type) = node.attributes.get("viewType").and_then(|value| value.as_str()) {
+            if is_non_standard_explicit_view_type(view_type) {
+                let key = format!("view_type_non_standard|{}|{}", node.id.qualified_name, view_type);
+                if seen.insert(key) {
+                    diagnostics.push(diag(
+                        uri,
+                        diagnostic_range(graph, node, None),
+                        DiagnosticSeverity::Warning,
+                        "semantic",
+                        "view_type_non_standard",
+                        format!(
+                            "View '{}' uses non-standard view type '{}'; use a SysML v2 standard view definition from §9.2.20 Table 34.",
+                            node.name, view_type
+                        ),
+                    ));
+                }
+            }
+        }
+    }
 
     for node in graph.nodes_for_uri(uri) {
         if node.element_kind != "view" || is_synthetic(node) {

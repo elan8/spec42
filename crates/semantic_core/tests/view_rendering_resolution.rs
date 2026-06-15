@@ -270,4 +270,67 @@ fn browser_view_projection_omits_ancestors_outside_scope() {
     };
     let projected = semantic_core::project_view(&view, &graph_dto);
     assert!(!projected.node_ids.iter().any(|id| id == "Pkg"));
+    assert_eq!(projected.hints.browser_layout.as_deref(), Some("hierarchy"));
+    assert!(projected.hints.tree_roots.iter().any(|id| id.contains("robot")));
+}
+
+#[test]
+fn geometry_view_without_usage_filter_gets_spatial_defaults() {
+    let view = semantic_core::EvaluatedView {
+        id: "Pkg::geom".to_string(),
+        name: "geom".to_string(),
+        effective_view_type: Some("GeometryView".to_string()),
+        exposed_ids: std::collections::HashSet::from(["Pkg::robot".to_string()]),
+        conforms_to: Vec::new(),
+        filters: semantic_core::merge_usage_default_filters(
+            "GeometryView",
+            &[],
+            None,
+        ),
+        visible_ids: std::collections::HashSet::new(),
+        issues: Vec::new(),
+    };
+    assert!(view.filters.iter().any(|filter| matches!(
+        filter,
+        semantic_core::FilterExpr::Or(_, _)
+    )));
+    let projected = semantic_core::project_view(
+        &view,
+        &semantic_core::SysmlGraphDto {
+            nodes: vec![],
+            edges: vec![],
+        },
+    );
+    assert_eq!(projected.hints.geometry_mode.as_deref(), Some("2d"));
+    assert_eq!(
+        projected.hints.geometry_projection.as_deref(),
+        Some("orthographic")
+    );
+}
+
+#[test]
+fn grid_view_connection_filter_selects_relationship_matrix_subtype() {
+    let view = semantic_core::EvaluatedView {
+        id: "Pkg::matrix".to_string(),
+        name: "matrix".to_string(),
+        effective_view_type: Some("GridView".to_string()),
+        exposed_ids: std::collections::HashSet::from(["Pkg::a".to_string()]),
+        conforms_to: Vec::new(),
+        filters: vec![semantic_core::FilterExpr::Matches(
+            "@SysML::ConnectionUsage".to_string(),
+        )],
+        visible_ids: std::collections::HashSet::new(),
+        issues: Vec::new(),
+    };
+    let projected = semantic_core::project_view(
+        &view,
+        &semantic_core::SysmlGraphDto {
+            nodes: vec![],
+            edges: vec![],
+        },
+    );
+    assert_eq!(
+        projected.hints.grid_subtype.as_deref(),
+        Some("relationship_matrix")
+    );
 }
