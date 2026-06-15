@@ -23,6 +23,11 @@ async fn perf_logging_enabled(state: &Arc<RwLock<ServerState>>) -> bool {
     locked.perf_logging_enabled
 }
 
+async fn diagnostics_publication_ready(state: &Arc<RwLock<ServerState>>) -> bool {
+    let locked = state.read().await;
+    locked.semantic_lifecycle.supports_semantic_queries()
+}
+
 fn semantic_diagnostic_code(diagnostic: &Diagnostic) -> Option<&str> {
     if diagnostic.source.as_deref() != Some("semantic") {
         return None;
@@ -61,6 +66,16 @@ pub(crate) async fn publish_document_diagnostics(
     text: &str,
 ) {
     let started_at = Instant::now();
+    if !diagnostics_publication_ready(state).await {
+        if perf_logging_enabled(state).await {
+            info!(
+                event = "diagnostics:document:deferred",
+                uri = %uri,
+                elapsed_ms = started_at.elapsed().as_millis() as u64
+            );
+        }
+        return;
+    }
     let diagnostics = collect_diagnostics_for_document(state, config, &uri, text).await;
     if perf_logging_enabled(state).await {
         info!(
@@ -80,6 +95,16 @@ pub(crate) async fn publish_workspace_diagnostics(
     target_uris: Option<&[Url]>,
 ) {
     let started_at = Instant::now();
+    if !diagnostics_publication_ready(state).await {
+        if perf_logging_enabled(state).await {
+            info!(
+                event = "diagnostics:workspace:deferred",
+                target_uris = target_uris.map(|uris| uris.len()).unwrap_or(0),
+                elapsed_ms = started_at.elapsed().as_millis() as u64
+            );
+        }
+        return;
+    }
     let docs: Vec<(Url, String)> = {
         let st = state.read().await;
         if let Some(targets) = target_uris {

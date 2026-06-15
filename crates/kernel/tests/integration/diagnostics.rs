@@ -1997,6 +1997,133 @@ fn workspace_scan_publishes_diagnostics_for_unopened_file() {
 }
 
 #[test]
+fn startup_defers_diagnostics_until_semantic_index_ready() {
+    let temp = tempfile::tempdir().expect("temp dir");
+    let root = temp.path().canonicalize().expect("canonical root");
+    let bad_path = root.join("bad.sysml");
+    let bad_text = "package P { } }";
+    fs::write(&bad_path, bad_text).expect("write invalid fixture");
+
+    let root_uri = url::Url::from_file_path(&root).expect("root uri");
+    let bad_uri = url::Url::from_file_path(&bad_path)
+        .expect("bad uri")
+        .to_string();
+
+    let mut child = spawn_server();
+    let mut stdin = child.stdin.take().expect("stdin");
+    let mut stdout = child.stdout.take().expect("stdout");
+
+    let init_id = next_id();
+    send_message(
+        &mut stdin,
+        &serde_json::json!({
+            "jsonrpc": "2.0",
+            "id": init_id,
+            "method": "initialize",
+            "params": {
+                "processId": null,
+                "rootUri": root_uri.as_str(),
+                "capabilities": {},
+                "clientInfo": { "name": "test", "version": "0.1.0" }
+            }
+        })
+        .to_string(),
+    );
+    let _ = read_message(&mut stdout).expect("init response");
+    send_message(
+        &mut stdin,
+        &serde_json::json!({ "jsonrpc": "2.0", "method": "initialized", "params": {} }).to_string(),
+    );
+    send_message(
+        &mut stdin,
+        &serde_json::json!({
+            "jsonrpc": "2.0",
+            "method": "textDocument/didOpen",
+            "params": {
+                "textDocument": {
+                    "uri": bad_uri,
+                    "languageId": "sysml",
+                    "version": 1,
+                    "text": bad_text
+                }
+            }
+        })
+        .to_string(),
+    );
+
+    loop {
+        let msg = read_message(&mut stdout).expect("expected message before semantic index ready");
+        let json: serde_json::Value = serde_json::from_str(&msg).unwrap_or_default();
+        assert_ne!(
+            json["method"].as_str(),
+            Some("textDocument/publishDiagnostics"),
+            "diagnostics must not be published before semantic index readiness: {json:#?}"
+        );
+        if json["method"].as_str() == Some("spec42/semanticIndexReady") {
+            break;
+        }
+    }
+
+    send_message(
+        &mut stdin,
+        &serde_json::json!({
+            "jsonrpc": "2.0",
+            "method": "textDocument/didChange",
+            "params": {
+                "textDocument": { "uri": bad_uri, "version": 2 },
+                "contentChanges": [{ "text": bad_text }]
+            }
+        })
+        .to_string(),
+    );
+
+    let mut saw_ready_diagnostics = false;
+    let deadline = std::time::Instant::now() + std::time::Duration::from_secs(3);
+    while std::time::Instant::now() < deadline && !saw_ready_diagnostics {
+        let barrier_id = next_id();
+        send_message(
+            &mut stdin,
+            &serde_json::json!({
+                "jsonrpc": "2.0",
+                "id": barrier_id,
+                "method": "textDocument/hover",
+                "params": {
+                    "textDocument": { "uri": bad_uri },
+                    "position": { "line": 0, "character": 0 }
+                }
+            })
+            .to_string(),
+        );
+
+        loop {
+            let msg =
+                read_message(&mut stdout).expect("expected message after semantic index ready");
+            let json: serde_json::Value = serde_json::from_str(&msg).unwrap_or_default();
+            if json["method"].as_str() == Some("textDocument/publishDiagnostics")
+                && json["params"]["uri"]
+                    .as_str()
+                    .map(|uri| uri.eq_ignore_ascii_case(bad_uri.as_str()))
+                    .unwrap_or(false)
+            {
+                saw_ready_diagnostics = json["params"]["diagnostics"]
+                    .as_array()
+                    .map(|diagnostics| !diagnostics.is_empty())
+                    .unwrap_or(false);
+            }
+            if json["id"].as_i64() == Some(barrier_id) {
+                break;
+            }
+        }
+    }
+
+    assert!(
+        saw_ready_diagnostics,
+        "expected diagnostics to publish after semantic index readiness for {bad_uri}"
+    );
+    let _ = child.kill();
+}
+
+#[test]
 fn public_import_reexport_clears_unresolved_type_diagnostic() {
     let mut child = spawn_server();
     let mut stdin = child.stdin.take().expect("stdin");
