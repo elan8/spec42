@@ -91,8 +91,7 @@ fn build_webshop_documents(
             let path = Path::new(&file.root).join(&file.path);
             let doc = SysmlDocument::from_memory_path(
                 "webshop-lib",
-                path
-                    .file_name()
+                path.file_name()
                     .and_then(|name| name.to_str())
                     .unwrap_or("library.sysml"),
                 file.content,

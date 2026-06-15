@@ -126,12 +126,7 @@ pub(super) fn add_connection_edges_from_end_typing(
                         .get("endType")
                         .and_then(|value| value.as_str())
                         .and_then(|end_type| {
-                            resolve_expression_endpoint_qualified(
-                                g,
-                                uri,
-                                scope_prefix,
-                                end_type,
-                            )
+                            resolve_expression_endpoint_qualified(g, uri, scope_prefix, end_type)
                         })
                 })
         })

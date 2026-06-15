@@ -812,7 +812,10 @@ fn elk_layout_options(view: &str) -> std::collections::BTreeMap<String, String> 
     ]);
     match view {
         "interconnection-view" => {
-            options.insert("elk.hierarchyHandling".to_string(), "INCLUDE_CHILDREN".to_string());
+            options.insert(
+                "elk.hierarchyHandling".to_string(),
+                "INCLUDE_CHILDREN".to_string(),
+            );
             options.insert("elk.direction".to_string(), "RIGHT".to_string());
             options.insert("elk.spacing.nodeNode".to_string(), "150".to_string());
             options.insert(

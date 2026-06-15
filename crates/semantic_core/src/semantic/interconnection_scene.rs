@@ -2,7 +2,8 @@ use serde::{Deserialize, Serialize};
 
 use crate::semantic::ibd::{
     enrich_connector_endpoint_refs, qualified_name_to_dot, resolve_owner_part_qn_for_endpoint,
-    resolve_port_id_for_endpoint, IbdConnectorDto, IbdContainerGroupDto, IbdDataDto, IbdPartDto, IbdPortDto,
+    resolve_port_id_for_endpoint, IbdConnectorDto, IbdContainerGroupDto, IbdDataDto, IbdPartDto,
+    IbdPortDto,
 };
 use crate::semantic::visualization_workspace::IbdScopeTrace;
 
@@ -130,7 +131,11 @@ fn connector_kind(rel_type: &str) -> String {
     }
 }
 
-fn owner_node_id_for_port(port_id: &str, ports: &[IbdPortDto], parts: &[IbdPartDto]) -> Option<String> {
+fn owner_node_id_for_port(
+    port_id: &str,
+    ports: &[IbdPortDto],
+    parts: &[IbdPartDto],
+) -> Option<String> {
     let port_dot = qualified_name_to_dot(port_id);
     ports
         .iter()
@@ -140,8 +145,7 @@ fn owner_node_id_for_port(port_id: &str, ports: &[IbdPortDto], parts: &[IbdPartD
         })
         .map(|port| scene_node_id(&port.parent_id))
         .or_else(|| {
-            resolve_owner_part_qn_for_endpoint(port_id, parts)
-                .map(|owner| scene_node_id(&owner))
+            resolve_owner_part_qn_for_endpoint(port_id, parts).map(|owner| scene_node_id(&owner))
         })
 }
 
@@ -198,7 +202,9 @@ pub fn validate_connector_invariants(
                 diagnostics.push(InterconnectionSceneDiagnosticDto {
                     severity: "warning".to_string(),
                     code: "connector_port_id_missing".to_string(),
-                    message: format!("Endpoint {endpoint} resolves to a port but {role}PortId is missing"),
+                    message: format!(
+                        "Endpoint {endpoint} resolves to a port but {role}PortId is missing"
+                    ),
                     connector_id: Some(connector_id.clone()),
                 });
             }
@@ -303,7 +309,12 @@ pub fn build_interconnection_scene(
     let part_scene_ids: std::collections::HashMap<String, String> = ibd
         .parts
         .iter()
-        .map(|part| (part.qualified_name.clone(), scene_node_id(&part.qualified_name)))
+        .map(|part| {
+            (
+                part.qualified_name.clone(),
+                scene_node_id(&part.qualified_name),
+            )
+        })
         .collect();
 
     let nodes = ibd
@@ -348,47 +359,46 @@ pub fn build_interconnection_scene(
         })
         .collect();
 
-    let edges = connectors
-        .iter()
-        .enumerate()
-        .filter_map(|(index, connector)| {
-            let source_port = connector
-                .source_port_id
-                .clone()
-                .or_else(|| resolve_port_id_for_endpoint(&connector.source_id, &ibd.ports))?;
-            let target_port = connector
-                .target_port_id
-                .clone()
-                .or_else(|| resolve_port_id_for_endpoint(&connector.target_id, &ibd.ports))?;
-            let source_owner = connector
-                .source_part_id
-                .clone()
-                .or_else(|| resolve_owner_part_qn_for_endpoint(&connector.source_id, &ibd.parts))?;
-            let target_owner = connector
-                .target_part_id
-                .clone()
-                .or_else(|| resolve_owner_part_qn_for_endpoint(&connector.target_id, &ibd.parts))?;
-            Some(InterconnectionEdgeDto {
-                id: format!(
-                    "edge:{}->{}:{}",
-                    qualified_name_to_dot(&source_port),
-                    qualified_name_to_dot(&target_port),
-                    index
-                ),
-                kind: connector_kind(&connector.rel_type),
-                source_port_id: scene_port_id(&source_port),
-                target_port_id: scene_port_id(&target_port),
-                source_node_id: scene_node_id(&source_owner),
-                target_node_id: scene_node_id(&target_owner),
-                semantic_id: Some(format!(
-                    "{}->{}",
-                    qualified_name_to_dot(&connector.source_id),
-                    qualified_name_to_dot(&connector.target_id)
-                )),
-                label: None,
+    let edges =
+        connectors
+            .iter()
+            .enumerate()
+            .filter_map(|(index, connector)| {
+                let source_port = connector
+                    .source_port_id
+                    .clone()
+                    .or_else(|| resolve_port_id_for_endpoint(&connector.source_id, &ibd.ports))?;
+                let target_port = connector
+                    .target_port_id
+                    .clone()
+                    .or_else(|| resolve_port_id_for_endpoint(&connector.target_id, &ibd.ports))?;
+                let source_owner = connector.source_part_id.clone().or_else(|| {
+                    resolve_owner_part_qn_for_endpoint(&connector.source_id, &ibd.parts)
+                })?;
+                let target_owner = connector.target_part_id.clone().or_else(|| {
+                    resolve_owner_part_qn_for_endpoint(&connector.target_id, &ibd.parts)
+                })?;
+                Some(InterconnectionEdgeDto {
+                    id: format!(
+                        "edge:{}->{}:{}",
+                        qualified_name_to_dot(&source_port),
+                        qualified_name_to_dot(&target_port),
+                        index
+                    ),
+                    kind: connector_kind(&connector.rel_type),
+                    source_port_id: scene_port_id(&source_port),
+                    target_port_id: scene_port_id(&target_port),
+                    source_node_id: scene_node_id(&source_owner),
+                    target_node_id: scene_node_id(&target_owner),
+                    semantic_id: Some(format!(
+                        "{}->{}",
+                        qualified_name_to_dot(&connector.source_id),
+                        qualified_name_to_dot(&connector.target_id)
+                    )),
+                    label: None,
+                })
             })
-        })
-        .collect();
+            .collect();
 
     for connector in &connectors {
         let connector_id = format!(
@@ -472,7 +482,11 @@ mod tests {
                     "a",
                     "Grid.northSouthRing.ringSegmentBtoC",
                 ),
-                test_port("Grid.txStationB.mvConnection", "mvConnection", "Grid.txStationB"),
+                test_port(
+                    "Grid.txStationB.mvConnection",
+                    "mvConnection",
+                    "Grid.txStationB",
+                ),
             ],
             connectors: vec![IbdConnectorDto {
                 source: "Grid.txStationB.mvConnection".to_string(),
@@ -492,7 +506,13 @@ mod tests {
             root_views: HashMap::new(),
         };
 
-        let scene = build_interconnection_scene(&ibd, "view-1", "systemContext", &["Grid.northSouthRing".to_string()], None);
+        let scene = build_interconnection_scene(
+            &ibd,
+            "view-1",
+            "systemContext",
+            &["Grid.northSouthRing".to_string()],
+            None,
+        );
         assert_eq!(scene.schema_version, 1);
         assert_eq!(scene.edges.len(), 1);
         assert_eq!(

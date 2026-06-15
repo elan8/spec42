@@ -15,7 +15,6 @@ pub enum ResolveResult<T> {
     Unresolved,
 }
 
-
 fn resolve_context_node_for_prefix<'a>(
     g: &'a SemanticGraph,
     uri: &Url,
@@ -323,8 +322,9 @@ pub fn resolve_inherited_member_via_type(
     member: &str,
 ) -> ResolveResult<NodeId> {
     let mut visited: HashSet<NodeId> = HashSet::new();
-    let mut queue: VecDeque<NodeId> =
-        effective_typing_or_specializes_target_ids(g, owner).into_iter().collect();
+    let mut queue: VecDeque<NodeId> = effective_typing_or_specializes_target_ids(g, owner)
+        .into_iter()
+        .collect();
 
     while let Some(type_id) = queue.pop_front() {
         if !visited.insert(type_id.clone()) {

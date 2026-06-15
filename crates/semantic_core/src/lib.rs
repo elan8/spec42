@@ -27,13 +27,11 @@ pub use semantic::graph_builder::build_graph_from_doc;
 pub use semantic::ibd::{
     build_ibd_for_uri, finalize_merged_ibd_connectors, merge_ibd_payloads, IbdDataDto,
 };
-pub use semantic::interconnection_elk::build_elk_graph_from_scene;
-pub use semantic::interconnection_scene::{
-    build_interconnection_scene, InterconnectionSceneDto,
-};
 pub use semantic::import_resolution::{
     resolve_imported_node_ids_for_simple_name, resolve_type_reference_targets,
 };
+pub use semantic::interconnection_elk::build_elk_graph_from_scene;
+pub use semantic::interconnection_scene::{build_interconnection_scene, InterconnectionSceneDto};
 pub use semantic::library_loader::{
     declared_packages_in_content, resolve_library_closure, LibraryClosureOptions,
     LoadedLibraryFile, WorkspaceSource,
@@ -41,6 +39,7 @@ pub use semantic::library_loader::{
 pub use semantic::model::{
     ConnectStatementDetail, NodeId, RelationshipKind, SemanticEdge, SemanticNode,
 };
+pub use semantic::pipeline::build_and_link_graph;
 pub use semantic::reference_resolution::{
     parse_expose_target_suffix, resolve_expose_target, resolve_expression_endpoint_strict,
     resolve_expression_endpoint_workspace, resolve_inherited_member_via_type,
@@ -71,7 +70,6 @@ pub use semantic::visualization_workspace::{
     workspace_uris_for_root, IbdScopeTrace, VisualizationBuildMeta, VisualizationBuildOptions,
     WorkspaceVisualizationArtifacts,
 };
-pub use semantic::pipeline::build_and_link_graph;
 pub use semantic::workspace_graph::{
     build_semantic_graph_from_documents, build_semantic_graph_with_provider,
     WorkspaceParsedDocument,

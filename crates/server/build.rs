@@ -171,9 +171,7 @@ fn embed_domain_libraries() {
     let sibling = manifest_dir.join("../../../sysml-domain-libraries");
     if sibling.is_dir() {
         pack_domain_kpar_from_dir(&sibling, &config, &out_kpar).unwrap_or_else(|e| {
-            eprintln!(
-                "spec42 build: failed to pack domain libraries from sibling checkout: {e}"
-            );
+            eprintln!("spec42 build: failed to pack domain libraries from sibling checkout: {e}");
             process::exit(1);
         });
         eprintln!(
@@ -311,12 +309,7 @@ fn stdlib_kpar_dir_is_usable(path: &Path) -> bool {
         .into_iter()
         .flatten()
         .flatten()
-        .any(|entry| {
-            entry
-                .path()
-                .extension()
-                .is_some_and(|ext| ext == "kpar")
-        })
+        .any(|entry| entry.path().extension().is_some_and(|ext| ext == "kpar"))
 }
 
 fn resolve_domain_libraries_bundle(cache_name: &str) -> Option<PathBuf> {
@@ -347,7 +340,9 @@ fn find_cached_embedded_zip(out_zip: &Path) -> Option<PathBuf> {
     let build_root = out_zip.parent()?.parent()?.parent()?;
     for entry in fs::read_dir(build_root).ok()?.flatten() {
         let candidate = entry.path().join("out/sysml.library.embedded.zip");
-        if candidate != out_zip && candidate.is_file() && embedded_stdlib_archive_is_usable(&candidate)
+        if candidate != out_zip
+            && candidate.is_file()
+            && embedded_stdlib_archive_is_usable(&candidate)
         {
             return Some(candidate);
         }
@@ -407,10 +402,7 @@ fn embed_stdlib_from_kpar_dir(kpar_dir: &Path, out_path: &Path) -> Result<(), St
         .collect();
     kpar_files.sort();
     if kpar_files.is_empty() {
-        return Err(format!(
-            "no .kpar files found in {}",
-            kpar_dir.display()
-        ));
+        return Err(format!("no .kpar files found in {}", kpar_dir.display()));
     }
 
     let out_file =

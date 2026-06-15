@@ -84,12 +84,8 @@ fn resolve_pending_target(
     if resolved.is_empty() {
         if let Some(simple_name) = target_qualified.rsplit("::").next() {
             if simple_name != target_qualified {
-                resolved = resolve_type_reference_targets(
-                    graph,
-                    source_node,
-                    simple_name,
-                    allowed_kinds,
-                );
+                resolved =
+                    resolve_type_reference_targets(graph, source_node, simple_name, allowed_kinds);
             }
         }
     }
@@ -331,8 +327,7 @@ pub fn resolve_pending_relationships_for_uri(g: &mut SemanticGraph, uri: &Url) {
                     if target_kinds.is_empty() {
                         Vec::new()
                     } else {
-                        let allowed: Vec<&str> =
-                            target_kinds.iter().map(String::as_str).collect();
+                        let allowed: Vec<&str> = target_kinds.iter().map(String::as_str).collect();
                         resolve_pending_target(
                             g,
                             source_node,

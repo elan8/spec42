@@ -6,9 +6,8 @@ use std::time::{Duration, Instant};
 
 use super::harness::{next_id, read_message, read_response, send_message, spawn_server};
 use super::perf_report::{
-    collect_fixture_perf, emit_perf_report, graph_edge_count, graph_node_count,
-    latest_perf_event, request_with_perf_capture, slowest_phase_entries, value_ms,
-    workspace_loaded_files,
+    collect_fixture_perf, emit_perf_report, graph_edge_count, graph_node_count, latest_perf_event,
+    request_with_perf_capture, slowest_phase_entries, value_ms, workspace_loaded_files,
 };
 use kernel::common::util;
 

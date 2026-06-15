@@ -9,14 +9,14 @@ use crate::semantic::diagnostics::helpers::{
     resolves_to_enum_def, unresolved_type_diagnostic_range,
 };
 use crate::semantic::diagnostics::kind_rules::{
-    allowed_subset_redefine_target_kinds, is_compatible_specializes_target,
-    allowed_typing_target_kinds, expected_typing_definition_label, is_compatible_kind,
+    allowed_subset_redefine_target_kinds, allowed_typing_target_kinds,
+    expected_typing_definition_label, is_compatible_kind, is_compatible_specializes_target,
 };
+use crate::semantic::diagnostics::types::DiagnosticSeverity;
 use crate::semantic::kinds::{
     is_metadata_restriction_attribute, is_reflective_sysml_usage_type,
     is_semantic_metadata_base_type_redefine,
 };
-use crate::semantic::diagnostics::types::DiagnosticSeverity;
 use crate::semantic::relationships::SPECIALIZES_TARGET_KINDS;
 use crate::{
     resolve_inherited_member_via_type, resolve_type_reference_targets, ResolveResult,
@@ -186,8 +186,7 @@ pub(in crate::semantic::diagnostics) fn collect_kind_compatibility_diagnostics(
                         if is_reflective_sysml_usage_type(type_ref, target) {
                             continue;
                         }
-                        if !allowed.is_empty()
-                            && !is_compatible_kind(&target.element_kind, allowed)
+                        if !allowed.is_empty() && !is_compatible_kind(&target.element_kind, allowed)
                         {
                             let key = format!(
                                 "type|{}|{}|{}",
@@ -196,8 +195,7 @@ pub(in crate::semantic::diagnostics) fn collect_kind_compatibility_diagnostics(
                             if seen.insert(key) {
                                 let range = unresolved_type_diagnostic_range(node, type_ref)
                                     .unwrap_or_else(|| diagnostic_range(graph, node, None));
-                                let expected =
-                                    expected_typing_definition_label(&node.element_kind);
+                                let expected = expected_typing_definition_label(&node.element_kind);
                                 diagnostics.push(diag(
                                     uri,
                                     range,
@@ -227,9 +225,7 @@ pub(in crate::semantic::diagnostics) fn collect_kind_compatibility_diagnostics(
             let edge_targets: Vec<_> = graph
                 .outgoing_typing_or_specializes_targets(node)
                 .into_iter()
-                .filter(|target| {
-                    is_compatible_specializes_target(&node.element_kind, target)
-                })
+                .filter(|target| is_compatible_specializes_target(&node.element_kind, target))
                 .collect();
             if !edge_targets.is_empty() {
                 continue;

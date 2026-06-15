@@ -42,7 +42,8 @@ fn default_stdlib_format() -> String {
 
 impl StandardLibraryConfig {
     pub fn is_kpar(&self) -> bool {
-        self.format.eq_ignore_ascii_case(library_bundle::FORMAT_KPAR)
+        self.format
+            .eq_ignore_ascii_case(library_bundle::FORMAT_KPAR)
     }
 }
 
@@ -123,11 +124,14 @@ pub fn stdlib_library_roots(
 ) -> Vec<PathBuf> {
     if let Some(metadata) = metadata {
         if !metadata.library_roots.is_empty() {
-            return metadata
+            let roots = metadata
                 .library_roots
                 .iter()
                 .map(PathBuf::from)
-                .collect();
+                .collect::<Vec<_>>();
+            if roots.iter().all(|path| path.is_dir()) {
+                return roots;
+            }
         }
     }
     discover_library_roots(install_path)
@@ -388,21 +392,12 @@ pub fn install_standard_library_from_bytes(
         "Managed standard-library staging path",
     )?;
 
-    let (project_name, library_roots) = if is_kpar_bytes(archive_bytes) {
+    let project_name = if is_kpar_bytes(archive_bytes) {
         let materialized = materialize_kpar_bytes(archive_bytes, &staging_install_path)?;
-        (
-            Some(materialized.project.name),
-            vec![staging_install_path.display().to_string()],
-        )
+        Some(materialized.project.name)
     } else if is_embedded_stdlib_kpar_bundle(archive_bytes) {
-        let roots = materialize_embedded_stdlib_kpar_bundle(archive_bytes, &staging_install_path)?;
-        (
-            None,
-            roots
-                .into_iter()
-                .map(|path| path.display().to_string())
-                .collect(),
-        )
+        materialize_embedded_stdlib_kpar_bundle(archive_bytes, &staging_install_path)?;
+        None
     } else {
         return Err("Expected a KPAR archive for standard library installation.".to_string());
     };
@@ -433,6 +428,11 @@ pub fn install_standard_library_from_bytes(
             install_path.display()
         ));
     }
+
+    let library_roots = stdlib_library_roots(&install_path, None)
+        .into_iter()
+        .map(|path| path.display().to_string())
+        .collect();
 
     let installed_at = SystemTime::now()
         .duration_since(UNIX_EPOCH)
@@ -520,10 +520,7 @@ fn legacy_vscode_base_dir() -> Option<PathBuf> {
 }
 
 pub fn install_path_is_ready(path: &Path) -> bool {
-    path.is_dir()
-        && fs::read_dir(path)
-            .map(|mut entries| entries.next().is_some())
-            .unwrap_or(false)
+    path.is_dir() && !discover_library_roots(path).is_empty()
 }
 
 fn canonicalize_lossy(path: &Path) -> PathBuf {
@@ -594,6 +591,20 @@ mod tests {
             install_standard_library_from_bytes(&paths, &config, &bytes).expect("install");
 
         assert!(Path::new(&metadata.install_path).is_dir());
+        assert!(
+            metadata
+                .library_roots
+                .iter()
+                .all(|root| !root.contains("staging")),
+            "library roots must point at the final install location, got {:?}",
+            metadata.library_roots
+        );
+        for root in &metadata.library_roots {
+            assert!(
+                Path::new(root).is_dir(),
+                "library root should exist on disk: {root}"
+            );
+        }
         let status = managed_status(&paths, &config).expect("status");
         assert!(status.is_installed);
         assert!(status.is_canonical_managed);
@@ -672,5 +683,41 @@ mod tests {
             install_standard_library_from_bytes(&paths, &StandardLibraryConfig::default(), &bytes)
                 .expect_err("expected managed-root error");
         assert!(err.contains("exists as a file"));
+    }
+
+    #[cfg(feature = "embed-stdlib")]
+    #[test]
+    fn embedded_install_materializes_scalar_values_and_records_stem_roots() {
+        if EMBEDDED_STDLIB_ARCHIVE.is_empty() {
+            return;
+        }
+        let temp = tempfile::tempdir().expect("temp dir");
+        let paths = standard_library_paths_from_data_dir(temp.path().to_path_buf());
+        let metadata = install_embedded_standard_library(&paths, &StandardLibraryConfig::default())
+            .expect("install embedded stdlib");
+
+        let install_path = PathBuf::from(&metadata.install_path);
+        let scalar_values = install_path
+            .join("Kernel_Data_Type_Library-1.0.0")
+            .join("ScalarValues.kerml");
+        assert!(
+            scalar_values.is_file(),
+            "expected ScalarValues.kerml at {}, roots {:?}",
+            scalar_values.display(),
+            metadata.library_roots
+        );
+        assert!(
+            metadata.library_roots.len() >= 2,
+            "expected per-KPAR library roots, got {:?}",
+            metadata.library_roots
+        );
+        assert!(
+            metadata
+                .library_roots
+                .iter()
+                .all(|root| !root.contains("staging")),
+            "library roots must not reference staging paths: {:?}",
+            metadata.library_roots
+        );
     }
 }

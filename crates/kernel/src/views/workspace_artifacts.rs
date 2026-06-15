@@ -4,8 +4,8 @@ use std::collections::HashMap;
 use std::time::Instant;
 
 use semantic_core::{
-    build_sysml_visualization_from_artifacts, build_workspace_visualization_artifacts,
-    IbdDataDto, VisualizationBuildMeta, VisualizationBuildOptions, WorkspaceParsedDocument,
+    build_sysml_visualization_from_artifacts, build_workspace_visualization_artifacts, IbdDataDto,
+    VisualizationBuildMeta, VisualizationBuildOptions, WorkspaceParsedDocument,
     WorkspaceVisualizationArtifacts,
 };
 use tower_lsp::lsp_types::Url;
@@ -55,7 +55,9 @@ fn response_cache_valid(
         && workspace_root_matches(&entry.workspace_root_uri, root)
 }
 
-fn visualization_response_is_cacheable(response: &semantic_core::SysmlVisualizationResultDto) -> bool {
+fn visualization_response_is_cacheable(
+    response: &semantic_core::SysmlVisualizationResultDto,
+) -> bool {
     if !response.model_ready {
         return false;
     }
@@ -196,15 +198,9 @@ pub(crate) fn build_visualization_with_cache(
             .insert(cache_key, response.clone());
     }
 
-    Ok(VisualizationBuildOutcome {
-        response,
-        meta,
-    })
+    Ok(VisualizationBuildOutcome { response, meta })
 }
 
 pub(crate) fn primary_workspace_root(state: &ServerState) -> Option<Url> {
-    state
-        .workspace_roots
-        .first()
-        .map(util::normalize_file_uri)
+    state.workspace_roots.first().map(util::normalize_file_uri)
 }

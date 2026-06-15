@@ -752,7 +752,11 @@ pub(crate) fn rebuild_semantic_graph_staged(
 ) {
     let total_start = Instant::now();
     let (workspace_uris, library_uris) = semantic_graph_uris_split(index, library_paths);
-    let uris: Vec<Url> = workspace_uris.iter().chain(library_uris.iter()).cloned().collect();
+    let uris: Vec<Url> = workspace_uris
+        .iter()
+        .chain(library_uris.iter())
+        .cloned()
+        .collect();
 
     let rebuild_graphs_start = Instant::now();
     let mut semantic_graph = semantic::SemanticGraph::new();

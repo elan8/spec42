@@ -390,7 +390,13 @@ fn resolve_import_targets_named(
     let mut out = Vec::new();
     for candidate in import_namespace_target_candidates(graph, import, target) {
         let resolved = if is_import_all(import) {
-            resolve_namespace_import_named(graph, &candidate, is_recursive(import), simple_name, stack)
+            resolve_namespace_import_named(
+                graph,
+                &candidate,
+                is_recursive(import),
+                simple_name,
+                stack,
+            )
         } else {
             resolve_membership_import_named(
                 graph,

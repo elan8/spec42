@@ -6,9 +6,7 @@ use url::Url;
 use crate::semantic::ast_util::span_to_range;
 use crate::semantic::graph::SemanticGraph;
 use crate::semantic::model::{ConnectStatementDetail, NodeId, RelationshipKind, SemanticEdge};
-use crate::semantic::reference_resolution::{
-    resolve_expression_endpoint_strict, ResolveResult,
-};
+use crate::semantic::reference_resolution::{resolve_expression_endpoint_strict, ResolveResult};
 use crate::semantic::relationships::{
     add_edge_if_both_exist, add_pending_expression_relationship, add_typing_edge_if_exists,
 };

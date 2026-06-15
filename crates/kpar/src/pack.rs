@@ -51,10 +51,7 @@ pub fn build_kpar(options: &PackOptions, dest: &Path) -> Result<()> {
         if !root.is_dir() {
             continue;
         }
-        let root_name = root
-            .file_name()
-            .and_then(|n| n.to_str())
-            .unwrap_or("src");
+        let root_name = root.file_name().and_then(|n| n.to_str()).unwrap_or("src");
         collect_sources(root, root, root_name, &options.excludes, &mut files)?;
     }
     if files.is_empty() {
@@ -64,15 +61,14 @@ pub fn build_kpar(options: &PackOptions, dest: &Path) -> Result<()> {
     }
     files.sort_by(|a, b| a.0.cmp(&b.0));
 
-    let mut index = HashMap::new();
+    let index = build_index(&files);
     let mut checksum = HashMap::new();
     for (path, bytes) in &files {
-        index.insert(path.clone(), path.clone());
         checksum.insert(
             path.clone(),
             ChecksumEntry {
                 value: sha256_hex(bytes),
-                algorithm: "sha-256".to_string(),
+                algorithm: "SHA256".to_string(),
             },
         );
     }
@@ -125,9 +121,7 @@ pub fn build_kpar(options: &PackOptions, dest: &Path) -> Result<()> {
             .map_err(|e| KparError::Zip(e.to_string()))?;
     }
 
-    writer
-        .finish()
-        .map_err(|e| KparError::Zip(e.to_string()))?;
+    writer.finish().map_err(|e| KparError::Zip(e.to_string()))?;
     Ok(())
 }
 
@@ -191,7 +185,160 @@ fn is_model_file(path: &Path) -> bool {
     )
 }
 
+fn build_index(files: &[(String, Vec<u8>)]) -> HashMap<String, String> {
+    let mut candidates = Vec::new();
+    let mut counts = HashMap::<String, usize>::new();
+    for (path, bytes) in files {
+        let logical_name = std::str::from_utf8(bytes)
+            .ok()
+            .and_then(extract_package_name)
+            .unwrap_or_else(|| path.clone());
+        *counts.entry(logical_name.clone()).or_default() += 1;
+        candidates.push((logical_name, path.clone()));
+    }
+
+    candidates
+        .into_iter()
+        .map(|(logical_name, path)| {
+            if counts.get(&logical_name).copied().unwrap_or(0) == 1 {
+                (logical_name, path)
+            } else {
+                (path.clone(), path)
+            }
+        })
+        .collect()
+}
+
+fn extract_package_name(content: &str) -> Option<String> {
+    for line in content.lines().take(80) {
+        let trimmed = line.trim();
+        let rest = trimmed
+            .strip_prefix("standard library package ")
+            .or_else(|| trimmed.strip_prefix("library package "))
+            .or_else(|| trimmed.strip_prefix("package "));
+        if let Some(rest) = rest {
+            let name = rest
+                .split(|c: char| !c.is_ascii_alphanumeric() && c != ':' && c != '_')
+                .next()
+                .unwrap_or("")
+                .trim();
+            if !name.is_empty() {
+                return Some(name.to_string());
+            }
+        }
+    }
+    None
+}
+
 fn sha256_hex(bytes: &[u8]) -> String {
     let digest = Sha256::digest(bytes);
     digest.iter().map(|b| format!("{b:02x}")).collect()
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::read::{materialize, open_kpar_path, verify_checksums};
+    use tempfile::tempdir;
+
+    fn test_project() -> Project {
+        Project {
+            name: "elan8-domain-libraries".to_string(),
+            version: "0.1.0".to_string(),
+            description: Some("Elan8 SysML v2 domain libraries".to_string()),
+            license: Some("MIT".to_string()),
+            publisher: Some("elan8".to_string()),
+            maintainer: vec![],
+            website: None,
+            topic: vec![],
+            usage: vec![],
+        }
+    }
+
+    #[test]
+    fn domain_libraries_defaults_pack_expected_roots_and_materialize() {
+        let repo = tempdir().expect("temp repo");
+        let monetary_units = repo
+            .path()
+            .join("generic")
+            .join("units")
+            .join("MonetaryUnits.sysml");
+        fs::create_dir_all(monetary_units.parent().unwrap()).expect("generic units dir");
+        fs::write(
+            &monetary_units,
+            "package MonetaryUnits { attribute <EUR> 'euro'; }",
+        )
+        .expect("write monetary units");
+
+        let robotics_core = repo
+            .path()
+            .join("domain")
+            .join("robotics")
+            .join("RoboticsCore.sysml");
+        fs::create_dir_all(robotics_core.parent().unwrap()).expect("robotics dir");
+        fs::write(&robotics_core, "package RoboticsCore {}").expect("write robotics");
+
+        let software_core = repo
+            .path()
+            .join("technical")
+            .join("software")
+            .join("SoftwareCore.sysml");
+        fs::create_dir_all(software_core.parent().unwrap()).expect("software dir");
+        fs::write(&software_core, "package SoftwareCore {}").expect("write software");
+
+        let duplicate_core = repo
+            .path()
+            .join("technical")
+            .join("software")
+            .join("duplicate")
+            .join("SoftwareCore.sysml");
+        fs::create_dir_all(duplicate_core.parent().unwrap()).expect("duplicate dir");
+        fs::write(&duplicate_core, "package SoftwareCore {}").expect("write duplicate");
+
+        let example = repo.path().join("examples").join("Ignored.sysml");
+        fs::create_dir_all(example.parent().unwrap()).expect("examples dir");
+        fs::write(&example, "package Ignored {}").expect("write ignored example");
+
+        let options = PackOptions::domain_libraries_defaults(test_project(), repo.path());
+        let kpar_path = repo.path().join("elan8-domain-libraries-0.1.0.kpar");
+        build_kpar(&options, &kpar_path).expect("pack domain libraries");
+        verify_checksums(&fs::read(&kpar_path).expect("read kpar")).expect("checksums");
+
+        let archive = open_kpar_path(&kpar_path).expect("open kpar");
+        assert_eq!(archive.project.name, "elan8-domain-libraries");
+        assert_eq!(
+            archive.meta.index.get("MonetaryUnits"),
+            Some(&"generic/units/MonetaryUnits.sysml".to_string())
+        );
+        assert_eq!(
+            archive
+                .meta
+                .checksum
+                .get("generic/units/MonetaryUnits.sysml")
+                .map(|entry| entry.algorithm.as_str()),
+            Some("SHA256")
+        );
+        assert!(archive.meta.index.contains_key("RoboticsCore"));
+        assert!(archive
+            .meta
+            .index
+            .contains_key("technical/software/SoftwareCore.sysml"));
+        assert!(archive
+            .meta
+            .index
+            .contains_key("technical/software/duplicate/SoftwareCore.sysml"));
+        assert!(!archive.meta.index.contains_key("SoftwareCore"));
+        assert!(!archive.meta.index.contains_key("examples/Ignored.sysml"));
+
+        let out = repo.path().join("out");
+        let materialized =
+            materialize(&fs::read(&kpar_path).expect("read kpar"), &out).expect("materialize");
+        assert_eq!(materialized.source_files.len(), 4);
+        assert!(out.join("generic/units/MonetaryUnits.sysml").is_file());
+        assert!(out.join("domain/robotics/RoboticsCore.sysml").is_file());
+        assert!(out.join("technical/software/SoftwareCore.sysml").is_file());
+        assert!(out
+            .join("technical/software/duplicate/SoftwareCore.sysml")
+            .is_file());
+    }
 }

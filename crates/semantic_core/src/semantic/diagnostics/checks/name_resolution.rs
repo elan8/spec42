@@ -9,7 +9,9 @@ use crate::semantic::diagnostics::helpers::{
 };
 use crate::semantic::diagnostics::types::DiagnosticSeverity;
 use crate::semantic::import_resolution::resolve_imported_node_ids_for_simple_name;
-use crate::semantic::kinds::{is_metadata_restriction_attribute, is_namespace, RULE6_ALLOWED_KINDS};
+use crate::semantic::kinds::{
+    is_metadata_restriction_attribute, is_namespace, RULE6_ALLOWED_KINDS,
+};
 use crate::semantic::relationships::SPECIALIZES_TARGET_KINDS;
 use crate::{resolve_type_reference_targets, SemanticDiagnostic, SemanticGraph, SemanticNode};
 

@@ -545,7 +545,8 @@ fn filter_ibd_by_root_prefixes(ibd: &IbdDataDto, root_prefixes: &HashSet<String>
             return false;
         }
         if strict_part_expose {
-            return matches_any_root(&connector.source_id) && matches_any_root(&connector.target_id);
+            return matches_any_root(&connector.source_id)
+                && matches_any_root(&connector.target_id);
         }
         if architecture_scope.is_some() {
             return true;
@@ -557,7 +558,8 @@ fn filter_ibd_by_root_prefixes(ibd: &IbdDataDto, root_prefixes: &HashSet<String>
         .parts
         .iter()
         .filter(|part| {
-            endpoint_in_architecture_scope(&part.qualified_name) && matches_any_root(&part.qualified_name)
+            endpoint_in_architecture_scope(&part.qualified_name)
+                && matches_any_root(&part.qualified_name)
         })
         .cloned()
         .collect();
@@ -1447,11 +1449,8 @@ pub fn build_workspace_visualization_artifacts(
     } else {
         explicit_views::evaluate_views(&catalog, semantic_graph, &graph)
     };
-    let view_candidates = explicit_views::build_view_candidates(
-        &evaluated_views,
-        &HashMap::new(),
-        &HashMap::new(),
-    );
+    let view_candidates =
+        explicit_views::build_view_candidates(&evaluated_views, &HashMap::new(), &HashMap::new());
     Ok(WorkspaceVisualizationArtifacts {
         workspace_root_uri: workspace_root_uri.as_str().to_string(),
         workspace_uris,
@@ -1576,8 +1575,7 @@ pub fn build_sysml_visualization_from_artifacts(
     }
 
     let view_eval_start = Instant::now();
-    let Some(selected_candidate) =
-        select_view_candidate(&view_candidates, view, selected_view)
+    let Some(selected_candidate) = select_view_candidate(&view_candidates, view, selected_view)
     else {
         return Ok((
             SysmlVisualizationResultDto {
@@ -1731,12 +1729,7 @@ pub fn build_sysml_visualization_from_artifacts(
     meta.scene_ms = scene_start.elapsed().as_millis().max(1) as u32;
 
     let activity_diagrams = if renderer_uses_activity_diagrams(resolved_view.as_str()) {
-        build_activity_diagrams_for_view(
-            semantic_graph,
-            documents,
-            workspace_uris,
-            &selected_graph,
-        )
+        build_activity_diagrams_for_view(semantic_graph, documents, workspace_uris, &selected_graph)
     } else {
         Vec::new()
     };
@@ -1756,12 +1749,7 @@ pub fn build_sysml_visualization_from_artifacts(
     let state_machines = if renderer_uses_state_machines(resolved_view.as_str()) {
         selected_evaluated
             .map(|evaluated| {
-                build_state_machines_for_view(
-                    semantic_graph,
-                    graph,
-                    evaluated,
-                    workspace_uris,
-                )
+                build_state_machines_for_view(semantic_graph, graph, evaluated, workspace_uris)
             })
             .unwrap_or_default()
     } else {

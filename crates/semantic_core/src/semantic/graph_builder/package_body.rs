@@ -63,8 +63,7 @@ fn add_kerml_library_decl_node(
     } else {
         "kermlDecl"
     };
-    let qualified =
-        qualified_name_for_node(g, uri, container_prefix, &display_name, element_kind);
+    let qualified = qualified_name_for_node(g, uri, container_prefix, &display_name, element_kind);
     let mut attrs = HashMap::new();
     attrs.insert(
         "bnfProduction".to_string(),
@@ -152,8 +151,7 @@ fn add_kerml_library_feature_node(
             return;
         }
     }
-    let qualified =
-        qualified_name_for_node(g, uri, container_prefix, &display_name, "kermlDecl");
+    let qualified = qualified_name_for_node(g, uri, container_prefix, &display_name, "kermlDecl");
     let mut attrs = HashMap::new();
     attrs.insert(
         "bnfProduction".to_string(),

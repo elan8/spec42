@@ -223,10 +223,14 @@ fn part_def_anonymous_flow_emits_flow_edge() {
     );
     let uri = doc.uri.clone();
     let (graph, _parsed) = build_semantic_graph_from_documents(&[doc]).expect("graph");
-    let has_flow = graph.edges_for_uri_as_strings(&uri).iter().any(|(_, _, k, _)| {
-        *k == RelationshipKind::Flow
-    });
-    assert!(has_flow, "expected Flow edge from anonymous part-def flow usage");
+    let has_flow = graph
+        .edges_for_uri_as_strings(&uri)
+        .iter()
+        .any(|(_, _, k, _)| *k == RelationshipKind::Flow);
+    assert!(
+        has_flow,
+        "expected Flow edge from anonymous part-def flow usage"
+    );
 }
 
 #[test]
@@ -253,9 +257,10 @@ fn package_named_flow_emits_flow_edge() {
             .and_then(|v| v.as_str()),
         Some("flow")
     );
-    let has_flow = graph.edges_for_uri_as_strings(&uri).iter().any(|(_, _, k, _)| {
-        *k == RelationshipKind::Flow
-    });
+    let has_flow = graph
+        .edges_for_uri_as_strings(&uri)
+        .iter()
+        .any(|(_, _, k, _)| *k == RelationshipKind::Flow);
     assert!(has_flow, "expected Flow edge for named package flow");
 }
 
@@ -278,7 +283,10 @@ fn robot_vacuum_style_nested_feature_flow_builds_graph() {
         .find(|n| n.element_kind == "part def")
         .expect("part def Robot");
     assert!(
-        graph.children_of(&robot).iter().any(|c| c.element_kind == "part"),
+        graph
+            .children_of(&robot)
+            .iter()
+            .any(|c| c.element_kind == "part"),
         "expected nested parts under Robot"
     );
 }
@@ -297,8 +305,9 @@ fn occurrence_def_body_flow_emits_flow_edge() {
     );
     let uri = doc.uri.clone();
     let (graph, _parsed) = build_semantic_graph_from_documents(&[doc]).expect("graph");
-    let has_flow = graph.edges_for_uri_as_strings(&uri).iter().any(|(_, _, k, _)| {
-        *k == RelationshipKind::Flow
-    });
+    let has_flow = graph
+        .edges_for_uri_as_strings(&uri)
+        .iter()
+        .any(|(_, _, k, _)| *k == RelationshipKind::Flow);
     assert!(has_flow, "expected Flow edge from occurrence def body flow");
 }

@@ -60,7 +60,10 @@ pub fn materialize(bytes: &[u8], destination_root: &Path) -> Result<Materialized
 }
 
 /// Materialize every `.kpar` file in `directory` into subdirectories named after the file stem.
-pub fn materialize_kpar_directory(directory: &Path, destination_root: &Path) -> Result<Vec<PathBuf>> {
+pub fn materialize_kpar_directory(
+    directory: &Path,
+    destination_root: &Path,
+) -> Result<Vec<PathBuf>> {
     let mut roots = Vec::new();
     let entries = fs::read_dir(directory).map_err(|source| KparError::Io {
         path: directory.display().to_string(),
@@ -162,32 +165,35 @@ impl KparArchive {
         let entries = read_zip_entries(&self.bytes)?;
         let mut source_files = Vec::new();
 
-        let paths: Vec<String> = if self.meta.index.is_empty() {
+        let paths: Vec<(String, String)> = if self.meta.index.is_empty() {
             entries
                 .keys()
                 .filter(|p| is_source_path(p))
-                .cloned()
+                .map(|path| (path.clone(), path.clone()))
                 .collect()
         } else {
-            self.meta.index.keys().cloned().collect()
+            self.meta
+                .index
+                .iter()
+                .filter_map(|(logical_path, archive_path)| {
+                    if is_source_path(logical_path) {
+                        Some((logical_path.clone(), archive_path.clone()))
+                    } else if is_source_path(archive_path) {
+                        Some((archive_path.clone(), archive_path.clone()))
+                    } else {
+                        None
+                    }
+                })
+                .collect()
         };
 
-        for logical_path in paths {
-            let archive_path = self
-                .meta
-                .index
-                .get(&logical_path)
-                .cloned()
-                .unwrap_or_else(|| logical_path.clone());
+        for (logical_path, archive_path) in paths {
             let normalized = normalize_zip_path(&archive_path);
             let Some(bytes) = entries.get(&normalized) else {
                 return Err(KparError::InvalidArchive(format!(
                     "missing archive entry '{normalized}' for '{logical_path}'"
                 )));
             };
-            if !is_source_path(&logical_path) {
-                continue;
-            }
             let dest = destination_root.join(&logical_path);
             if let Some(parent) = dest.parent() {
                 fs::create_dir_all(parent).map_err(|source| KparError::Io {
@@ -256,9 +262,7 @@ fn normalize_zip_path(path: &str) -> String {
 
 fn is_source_path(path: &str) -> bool {
     let lower = path.to_ascii_lowercase();
-    SOURCE_EXTENSIONS
-        .iter()
-        .any(|ext| lower.ends_with(ext))
+    SOURCE_EXTENSIONS.iter().any(|ext| lower.ends_with(ext))
 }
 
 pub fn sha256_hex(bytes: &[u8]) -> String {
@@ -326,5 +330,49 @@ mod tests {
         }
         let bytes = fs::read(&path).expect("read");
         assert!(!is_kpar_archive(&bytes));
+    }
+
+    #[test]
+    fn materialize_omg_style_index_entries() {
+        let source = tempdir().expect("tempdir");
+        let path = source.path().join("omg-style.kpar");
+        let scalar_values = b"standard library package ScalarValues { attribute def Real; }";
+        {
+            use std::io::Write;
+            use zip::write::{SimpleFileOptions, ZipWriter};
+            let file = fs::File::create(&path).expect("create");
+            let mut zip = ZipWriter::new(file);
+            let options = SimpleFileOptions::default();
+            zip.start_file(PROJECT_FILE, options)
+                .expect("project start");
+            zip.write_all(br#"{"name":"Kernel Data Type Library","version":"1.0.0"}"#)
+                .expect("project write");
+            zip.start_file(META_FILE, options).expect("meta start");
+            let meta = format!(
+                r#"{{
+  "index": {{"ScalarValues": "ScalarValues.kerml"}},
+  "created": "2025-03-13T00:00:00Z",
+  "checksum": {{
+    "ScalarValues.kerml": {{"value": "{}", "algorithm": "SHA256"}}
+  }}
+}}"#,
+                sha256_hex(scalar_values)
+            );
+            zip.write_all(meta.as_bytes()).expect("meta write");
+            zip.start_file("ScalarValues.kerml", options)
+                .expect("source start");
+            zip.write_all(scalar_values).expect("source write");
+            zip.finish().expect("finish");
+        }
+
+        let bytes = fs::read(&path).expect("read");
+        let dest = source.path().join("out");
+        let materialized = materialize(&bytes, &dest).expect("materialize");
+
+        assert!(dest.join("ScalarValues.kerml").is_file());
+        assert_eq!(
+            materialized.source_files,
+            vec![dest.join("ScalarValues.kerml")]
+        );
     }
 }

@@ -50,9 +50,11 @@ tower-http = { version = "0.6", features = ["cors", "trace"] }
 serde_yaml = "0.9"
 
 [dev-dependencies]
+kernel = { path = "../kernel" }
 sysml-v2-parser = { workspace = true }
 serde_json = { workspace = true }
 tempfile = "3"
+tower-lsp = "0.20"
 url = "2"
 rmcp = { workspace = true, features = ["client", "server", "transport-child-process"] }
 anyhow = "1"

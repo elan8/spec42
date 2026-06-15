@@ -262,23 +262,24 @@ fn evaluate_analysis_constraints(graph: &mut SemanticGraph, units: UnitRegistry)
                     value = Some(Value::Bool(is_pass));
                     passed = Some(is_pass);
                 } else {
-                limit = evaluate_analysis_limit_quantity(&mut engine, &node_id, expr);
-                match evaluate_analysis_expression(&mut engine, &node_id, expr) {
-                    Ok(bool_value) => {
-                        status = if bool_value {
-                            STATUS_OK.to_string()
-                        } else {
-                            "failed_constraint".to_string()
-                        };
-                        value = Some(Value::Bool(bool_value));
-                        passed = Some(bool_value);
-                        computed = evaluate_analysis_display_quantity(&mut engine, &node_id, expr);
+                    limit = evaluate_analysis_limit_quantity(&mut engine, &node_id, expr);
+                    match evaluate_analysis_expression(&mut engine, &node_id, expr) {
+                        Ok(bool_value) => {
+                            status = if bool_value {
+                                STATUS_OK.to_string()
+                            } else {
+                                "failed_constraint".to_string()
+                            };
+                            value = Some(Value::Bool(bool_value));
+                            passed = Some(bool_value);
+                            computed =
+                                evaluate_analysis_display_quantity(&mut engine, &node_id, expr);
+                        }
+                        Err(err) => {
+                            status = err.status.as_str().to_string();
+                            error = Some(err.message);
+                        }
                     }
-                    Err(err) => {
-                        status = err.status.as_str().to_string();
-                        error = Some(err.message);
-                    }
-                }
                 }
             }
 

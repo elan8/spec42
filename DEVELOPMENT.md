@@ -192,6 +192,8 @@ cargo test -p spec42 \
 | `mcp_binary` | `spec42-mcp` stdio binary |
 | `cli_ai_tools` | CLI JSON parity with MCP |
 | `kitchen_timer_check` | `perform_check` smoke on bundled example |
+| `kpar_stdlib_embed_smoke` | Embedded OMG KPAR stdlib resolves `ScalarValues::Real` |
+| `multi_file_check` | Multi-file workspace import smoke |
 
 CI runs core and agent/API layers as separate jobs (see `.github/workflows/ci.yml`).
 

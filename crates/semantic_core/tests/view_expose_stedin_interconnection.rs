@@ -1,5 +1,7 @@
 use std::path::{Path, PathBuf};
 
+use semantic_core::semantic::dto::SysmlGraphDto;
+use semantic_core::semantic::ibd::IbdDataDto;
 use semantic_core::{
     build_ibd_for_uri, build_interconnection_scene, build_semantic_graph_from_documents,
     build_view_catalog, build_workspace_graph_dto_for_uris, evaluate_views,
@@ -7,8 +9,6 @@ use semantic_core::{
     select_interconnection_ibd_scope, EvaluatedView, InterconnectionSceneDto, SemanticGraph,
     SysmlDocument, SysmlDocumentSourceKind, WorkspaceParsedDocument,
 };
-use semantic_core::semantic::dto::SysmlGraphDto;
-use semantic_core::semantic::ibd::IbdDataDto;
 
 fn load_stedin_workspace() -> Option<(
     Vec<SysmlDocument>,
@@ -67,7 +67,8 @@ fn build_stedin_scene(
     view: &EvaluatedView,
 ) -> InterconnectionSceneDto {
     let projected = project_ids_for_renderer(view, graph_dto, "interconnection-view");
-    let scoped_ibd = select_interconnection_ibd_scope(full_ibd, &projected, Some(&view.exposed_ids));
+    let scoped_ibd =
+        select_interconnection_ibd_scope(full_ibd, &projected, Some(&view.exposed_ids));
     let root_ids = view
         .exposed_ids
         .iter()
@@ -200,8 +201,12 @@ fn stedin_grid_connections_ibd_includes_feeder_and_cable_connectors() {
     );
     assert!(
         ibd.connectors.iter().all(|connector| {
-            connector.source_id.contains("rijnmondExpansionProject.architecture")
-                && connector.target_id.contains("rijnmondExpansionProject.architecture")
+            connector
+                .source_id
+                .contains("rijnmondExpansionProject.architecture")
+                && connector
+                    .target_id
+                    .contains("rijnmondExpansionProject.architecture")
         }),
         "gridConnections connectors should stay under architecture instance paths, got {:?}",
         ibd.connectors
@@ -386,7 +391,8 @@ fn stedin_grid_connections_ibd_includes_feeder_and_cable_connectors() {
     assert!(
         scene.edges.iter().any(|edge| {
             edge.target_node_id.ends_with("ringSegmentBtoC")
-                || edge.semantic_id
+                || edge
+                    .semantic_id
                     .as_deref()
                     .is_some_and(|id| id.contains("ringSegmentBtoC.a"))
         }),
@@ -438,9 +444,9 @@ fn export_stedin_grid_connections_scene() {
 
     assert!(
         !scene.edges.iter().any(|edge| {
-            edge.semantic_id
-                .as_deref()
-                .is_some_and(|id| id.contains(".Variants.") || id.contains(".expansionAlternatives."))
+            edge.semantic_id.as_deref().is_some_and(|id| {
+                id.contains(".Variants.") || id.contains(".expansionAlternatives.")
+            })
         }),
         "gridConnections scene should not include variant connectors, got {:?}",
         scene.edges
@@ -457,7 +463,8 @@ fn export_stedin_grid_connections_scene() {
     assert!(
         scene.edges.iter().any(|edge| {
             edge.target_node_id.ends_with("ringSegmentBtoC")
-                || edge.semantic_id
+                || edge
+                    .semantic_id
                     .as_deref()
                     .is_some_and(|id| id.contains("ringSegmentBtoC.a"))
         }),

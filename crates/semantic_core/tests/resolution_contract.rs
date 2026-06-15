@@ -91,7 +91,9 @@ fn contract_sysml_qualified_metadata_restrictions_resolve_without_warnings() {
         .expect("UserRequirementRole");
 
     assert!(
-        !graph.outgoing_typing_or_specializes_targets(user_role).is_empty(),
+        !graph
+            .outgoing_typing_or_specializes_targets(user_role)
+            .is_empty(),
         "expected specializes edge on UserRequirementRole"
     );
 
@@ -128,9 +130,10 @@ fn contract_derivation_connection_has_derivation_edge_not_connection_context_inv
     let (graph, _parsed) = build_semantic_graph_from_documents(&[doc]).expect("graph");
 
     let has_derivation = graph.graph.edge_indices().any(|edge_index| {
-        graph.graph.edge_weight(edge_index).is_some_and(|edge| {
-            edge.kind == RelationshipKind::Derivation
-        })
+        graph
+            .graph
+            .edge_weight(edge_index)
+            .is_some_and(|edge| edge.kind == RelationshipKind::Derivation)
     });
     assert!(has_derivation, "expected Derivation edge");
 
@@ -188,7 +191,10 @@ fn contract_sibling_import_resolves_sysml_requirement_usage() {
     let diagnostics = collect_diagnostics_from_graph(&graph, &uri, DiagnosticsOptions::default());
     assert_no_semantic_codes(
         &diagnostics,
-        &["invalid_qualified_name_segment", "unresolved_type_reference"],
+        &[
+            "invalid_qualified_name_segment",
+            "unresolved_type_reference",
+        ],
         "SysML sibling import",
     );
 }
@@ -268,24 +274,20 @@ fn contract_omg_style_fmea_metadata_block_no_metadata_typing_warnings() {
         include_str!("fixtures/stdlib/omg_14c_metadata_slice.sysml"),
     );
     let uri = workspace.uri.clone();
-    let (graph, _parsed) = build_semantic_graph_from_documents(&[workspace, sysml, metaobjects])
-        .expect("graph");
+    let (graph, _parsed) =
+        build_semantic_graph_from_documents(&[workspace, sysml, metaobjects]).expect("graph");
 
-    let semantic_metadata = graph
-        .nodes_by_uri
-        .values()
-        .flatten()
-        .find_map(|id| {
-            graph.get_node(id).filter(|node| {
-                node.name == "SemanticMetadata"
-                    && node.element_kind == "metadata def"
-                    && node
-                        .attributes
-                        .get("metaclassRole")
-                        .and_then(|value| value.as_str())
-                        == Some("SemanticMetadata")
-            })
-        });
+    let semantic_metadata = graph.nodes_by_uri.values().flatten().find_map(|id| {
+        graph.get_node(id).filter(|node| {
+            node.name == "SemanticMetadata"
+                && node.element_kind == "metadata def"
+                && node
+                    .attributes
+                    .get("metaclassRole")
+                    .and_then(|value| value.as_str())
+                    == Some("SemanticMetadata")
+        })
+    });
     assert!(
         semantic_metadata.is_some(),
         "expected SemanticMetadata as metadata def with metaclassRole"
@@ -343,7 +345,9 @@ fn contract_imported_semantic_metadata_specializes_without_warnings() {
         .expect("UserRole");
 
     assert!(
-        !graph.outgoing_typing_or_specializes_targets(user_role).is_empty(),
+        !graph
+            .outgoing_typing_or_specializes_targets(user_role)
+            .is_empty(),
         "expected specializes edge on UserRole"
     );
 

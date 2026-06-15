@@ -279,10 +279,7 @@ pub fn declared_packages_in_content(content: &str) -> HashSet<String> {
     defined
 }
 
-fn for_each_package_in_content(
-    content: &str,
-    mut visit: impl FnMut(String, &PackageBody),
-) {
+fn for_each_package_in_content(content: &str, mut visit: impl FnMut(String, &PackageBody)) {
     let Ok(parsed) = sysml_v2_parser::parse(content) else {
         return;
     };

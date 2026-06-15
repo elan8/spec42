@@ -68,11 +68,7 @@ fn elk_id_for(node_id: &str) -> String {
 }
 
 fn port_id_for(node_id: &str, port_name: &str) -> String {
-    format!(
-        "{}__port__{}",
-        sanitize_id(node_id),
-        sanitize_id(port_name)
-    )
+    format!("{}__port__{}", sanitize_id(node_id), sanitize_id(port_name))
 }
 
 fn normalize_endpoint(value: &str) -> String {
@@ -191,9 +187,11 @@ fn connector_port_name(node: &PreparedSceneNode, endpoint: &str) -> Option<Strin
     if endpoint_text.is_empty() {
         return None;
     }
-    if let Some(port) = node.ports.iter().find(|port| {
-        port.id == endpoint_text || port.scene_port_id == endpoint_text
-    }) {
+    if let Some(port) = node
+        .ports
+        .iter()
+        .find(|port| port.id == endpoint_text || port.scene_port_id == endpoint_text)
+    {
         return Some(port.name.clone());
     }
     let endpoint_leaf = endpoint_text
@@ -203,7 +201,9 @@ fn connector_port_name(node: &PreparedSceneNode, endpoint: &str) -> Option<Strin
         .trim();
     node.ports
         .iter()
-        .find(|port| port.name == endpoint_leaf || endpoint_text.ends_with(&format!(".{}", port.name)))
+        .find(|port| {
+            port.name == endpoint_leaf || endpoint_text.ends_with(&format!(".{}", port.name))
+        })
         .map(|port| port.name.clone())
 }
 
@@ -249,7 +249,12 @@ fn side_for_port(
     PortSide::East
 }
 
-fn compare_ports(a: &PortDetail, b: &PortDetail, usage_a: PortUsage, usage_b: PortUsage) -> std::cmp::Ordering {
+fn compare_ports(
+    a: &PortDetail,
+    b: &PortDetail,
+    usage_a: PortUsage,
+    usage_b: PortUsage,
+) -> std::cmp::Ordering {
     let degree_a = usage_a.source_count + usage_a.target_count;
     let degree_b = usage_b.source_count + usage_b.target_count;
     degree_b.cmp(&degree_a).then_with(|| a.name.cmp(&b.name))
@@ -333,7 +338,10 @@ fn to_elk_node(
         .len()
         .max(east_ports.len())
         .max(if node.ports.is_empty() { 0 } else { 1 });
-    let child_ids = children_by_parent.get(&node.id).cloned().unwrap_or_default();
+    let child_ids = children_by_parent
+        .get(&node.id)
+        .cloned()
+        .unwrap_or_default();
     let children: Vec<Value> = child_ids
         .iter()
         .filter_map(|child_id| nodes_by_id.get(child_id))
@@ -364,7 +372,12 @@ fn to_elk_node(
     if is_container && !children.is_empty() {
         let child_width_sum: f64 = children
             .iter()
-            .map(|child| child.get("width").and_then(Value::as_f64).unwrap_or(IBD_NODE_WIDTH))
+            .map(|child| {
+                child
+                    .get("width")
+                    .and_then(Value::as_f64)
+                    .unwrap_or(IBD_NODE_WIDTH)
+            })
             .sum();
         width = width.max((child_width_sum + children.len() as f64 * 72.0).min(1040.0));
         height = ROOT_HEADER_HEIGHT + (58.0 + children.len() as f64 * 14.0).clamp(72.0, 132.0);
@@ -524,7 +537,7 @@ mod tests {
         }
     }
 
-  fn edge_signatures(value: &Value) -> Vec<(String, String, String)> {
+    fn edge_signatures(value: &Value) -> Vec<(String, String, String)> {
         value
             .get("edges")
             .and_then(Value::as_array)

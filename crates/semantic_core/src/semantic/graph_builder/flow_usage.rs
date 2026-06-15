@@ -73,13 +73,7 @@ pub(super) fn materialize_flow_usage(
             add_typing_edge_if_exists(g, uri, &qualified, type_name, container_prefix);
         }
         let node_id = NodeId::new(uri, &qualified);
-        definition_body::build_from_definition_body(
-            &flow.body,
-            uri,
-            Some(&qualified),
-            &node_id,
-            g,
-        );
+        definition_body::build_from_definition_body(&flow.body, uri, Some(&qualified), &node_id, g);
     }
 
     if let (Some(from), Some(to)) = (&flow.from, &flow.to) {

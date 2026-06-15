@@ -40,7 +40,8 @@ fn default_domain_libraries_format() -> String {
 
 impl DomainLibrariesConfig {
     pub fn is_kpar(&self) -> bool {
-        self.format.eq_ignore_ascii_case(crate::library_bundle::FORMAT_KPAR)
+        self.format
+            .eq_ignore_ascii_case(crate::library_bundle::FORMAT_KPAR)
     }
 }
 

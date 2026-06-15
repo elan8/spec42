@@ -151,14 +151,15 @@ fn verification_case_cross_package_verify_requirement_resolves_via_import() {
             .collect::<Vec<_>>()
     );
 
-    let has_subject_to_requirement = graph
-        .edges_for_uri_as_strings(&uri)
-        .iter()
-        .any(|(src, tgt, kind, _)| {
-            *kind == RelationshipKind::Subject
-                && src.ends_with("::verifyCleaningCoverage")
-                && tgt.ends_with("::coverFloor")
-        });
+    let has_subject_to_requirement =
+        graph
+            .edges_for_uri_as_strings(&uri)
+            .iter()
+            .any(|(src, tgt, kind, _)| {
+                *kind == RelationshipKind::Subject
+                    && src.ends_with("::verifyCleaningCoverage")
+                    && tgt.ends_with("::coverFloor")
+            });
     assert!(
         has_subject_to_requirement,
         "expected Subject edge from verification case to imported requirement"
@@ -203,14 +204,15 @@ fn cross_package_verify_requirement_resolves_via_import() {
             .collect::<Vec<_>>()
     );
 
-    let has_subject_to_requirement = graph
-        .edges_for_uri_as_strings(&uri)
-        .iter()
-        .any(|(src, tgt, kind, _)| {
-            *kind == RelationshipKind::Subject
-                && src.ends_with("::VerifyCoverage")
-                && tgt.ends_with("::coverFloor")
-        });
+    let has_subject_to_requirement =
+        graph
+            .edges_for_uri_as_strings(&uri)
+            .iter()
+            .any(|(src, tgt, kind, _)| {
+                *kind == RelationshipKind::Subject
+                    && src.ends_with("::VerifyCoverage")
+                    && tgt.ends_with("::coverFloor")
+            });
     assert!(
         has_subject_to_requirement,
         "expected Subject edge from verify requirement to imported requirement"

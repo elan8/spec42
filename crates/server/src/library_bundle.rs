@@ -54,9 +54,9 @@ pub fn is_kpar_bytes(bytes: &[u8]) -> bool {
 pub fn is_embedded_stdlib_kpar_bundle(bytes: &[u8]) -> bool {
     read_zip_entry_names(bytes)
         .map(|names| {
-            names.iter().any(|name| {
-                name.starts_with(STDLIB_KPAR_EMBED_PREFIX) && name.ends_with(".kpar")
-            })
+            names
+                .iter()
+                .any(|name| name.starts_with(STDLIB_KPAR_EMBED_PREFIX) && name.ends_with(".kpar"))
         })
         .unwrap_or(false)
 }
@@ -108,8 +108,7 @@ pub fn materialize_embedded_stdlib_kpar_bundle(
 
 fn read_zip_entry_names(bytes: &[u8]) -> Result<Vec<String>, String> {
     let cursor = Cursor::new(bytes);
-    let mut archive =
-        ZipArchive::new(cursor).map_err(|e| format!("open zip archive: {e}"))?;
+    let mut archive = ZipArchive::new(cursor).map_err(|e| format!("open zip archive: {e}"))?;
     let mut names = Vec::new();
     for index in 0..archive.len() {
         let entry = archive
@@ -127,10 +126,6 @@ pub fn discover_library_roots(install_path: &Path) -> Vec<PathBuf> {
     if !install_path.is_dir() {
         return roots;
     }
-    if directory_contains_models(install_path) {
-        roots.push(install_path.to_path_buf());
-        return roots;
-    }
     if let Ok(entries) = fs::read_dir(install_path) {
         for entry in entries.flatten() {
             let path = entry.path();
@@ -138,6 +133,9 @@ pub fn discover_library_roots(install_path: &Path) -> Vec<PathBuf> {
                 roots.push(path);
             }
         }
+    }
+    if roots.is_empty() && directory_contains_models(install_path) {
+        roots.push(install_path.to_path_buf());
     }
     roots.sort();
     roots
@@ -165,4 +163,66 @@ fn directory_contains_models(path: &Path) -> bool {
         false
     }
     walk(path)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[cfg(feature = "embed-stdlib")]
+    #[test]
+    fn materialize_embedded_stdlib_kpar_bundle_writes_scalar_values() {
+        fn list_files(root: &Path) -> Vec<String> {
+            fn walk(dir: &Path, root: &Path, out: &mut Vec<String>) {
+                let Ok(entries) = std::fs::read_dir(dir) else {
+                    return;
+                };
+                for entry in entries.flatten() {
+                    let path = entry.path();
+                    if path.is_file() {
+                        out.push(path.strip_prefix(root).unwrap().display().to_string());
+                    } else if path.is_dir() {
+                        walk(&path, root, out);
+                    }
+                }
+            }
+            let mut out = Vec::new();
+            walk(root, root, &mut out);
+            out.sort();
+            out
+        }
+
+        let archive = crate::stdlib::EMBEDDED_STDLIB_ARCHIVE;
+        if archive.is_empty() {
+            return;
+        }
+        let temp = tempfile::tempdir().expect("tempdir");
+        let dest = temp.path().join("kpar");
+        let roots =
+            materialize_embedded_stdlib_kpar_bundle(archive, &dest).expect("materialize bundle");
+        assert!(
+            !roots.is_empty(),
+            "expected materialized KPAR roots under {}",
+            dest.display()
+        );
+        let scalar_values = dest
+            .join("Kernel_Data_Type_Library-1.0.0")
+            .join("ScalarValues.kerml");
+        if !scalar_values.is_file() {
+            panic!(
+                "expected ScalarValues.kerml on disk, roots {:?}, files {:?}",
+                roots,
+                list_files(&dest)
+            );
+        }
+        assert!(
+            discover_library_roots(&dest).iter().any(|root| {
+                root.file_name()
+                    .and_then(|name| name.to_str())
+                    .is_some_and(|name| name.starts_with("Kernel_Data_Type_Library"))
+            }),
+            "discovered roots {:?}",
+            discover_library_roots(&dest)
+        );
+    }
 }

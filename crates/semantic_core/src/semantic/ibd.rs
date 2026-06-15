@@ -414,7 +414,10 @@ fn endpoint_matches_part(endpoint: &str, part_qn_dot: &str) -> bool {
     endpoint == part_qn_dot || endpoint.starts_with(&format!("{part_qn_dot}."))
 }
 
-pub(crate) fn resolve_owner_part_qn_for_endpoint(endpoint: &str, parts: &[IbdPartDto]) -> Option<String> {
+pub(crate) fn resolve_owner_part_qn_for_endpoint(
+    endpoint: &str,
+    parts: &[IbdPartDto],
+) -> Option<String> {
     let endpoint = qualified_name_to_dot(endpoint);
     parts
         .iter()
@@ -2076,9 +2079,7 @@ fn split_architecture_scope_root(qualified_name: &str) -> Option<(&str, &str)> {
     }
     if let Some(pos) = qualified_name.rfind(".RijnmondGridArchitecture") {
         let end = pos + ".RijnmondGridArchitecture".len();
-        let tail = qualified_name[end..]
-            .strip_prefix('.')
-            .unwrap_or_default();
+        let tail = qualified_name[end..].strip_prefix('.').unwrap_or_default();
         return Some((&qualified_name[..end], tail));
     }
     None
@@ -2092,7 +2093,9 @@ fn architecture_package_prefix(qualified_name: &str) -> Option<&str> {
         return Some(&qualified_name[..pos]);
     }
     if let Some(pos) = qualified_name.rfind(".RijnmondGridArchitecture") {
-        return qualified_name[..pos].rsplit_once('.').map(|(prefix, _)| prefix);
+        return qualified_name[..pos]
+            .rsplit_once('.')
+            .map(|(prefix, _)| prefix);
     }
     None
 }

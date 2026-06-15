@@ -209,8 +209,10 @@ pub fn is_namespace(element_kind: &str) -> bool {
 }
 
 pub fn is_part_like(element_kind: &str) -> bool {
-    matches!(element_kind, "part" | "part def" | "item def" | "occurrence def")
-        || element_kind.contains("part")
+    matches!(
+        element_kind,
+        "part" | "part def" | "item def" | "occurrence def"
+    ) || element_kind.contains("part")
 }
 
 pub fn is_port_like(element_kind: &str) -> bool {
@@ -237,10 +239,7 @@ pub fn is_known_metadata_redefine(node: &SemanticNode) -> bool {
 
 pub fn is_reflective_sysml_usage_type(type_ref: &str, target: &SemanticNode) -> bool {
     type_ref.contains("SysML::")
-        && matches!(
-            target.element_kind.as_str(),
-            "metadata def" | "kermlDecl"
-        )
+        && matches!(target.element_kind.as_str(), "metadata def" | "kermlDecl")
 }
 
 pub fn is_kerml_metadata_supertype(target: &SemanticNode) -> bool {
@@ -281,7 +280,10 @@ pub fn is_compatible_kind(target_kind: &str, allowed: &[&str]) -> bool {
 }
 
 pub fn is_compatible_specializes_target(def_kind: &str, target: &SemanticNode) -> bool {
-    if is_compatible_kind(&target.element_kind, allowed_specializes_target_kinds(def_kind)) {
+    if is_compatible_kind(
+        &target.element_kind,
+        allowed_specializes_target_kinds(def_kind),
+    ) {
         return true;
     }
     def_kind == "metadata def" && is_kerml_metadata_supertype(target)

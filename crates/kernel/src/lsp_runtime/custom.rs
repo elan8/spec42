@@ -44,20 +44,17 @@ pub(crate) async fn sysml_model_result(
     if workspace_visualization_requested && crate::views::ibd_requested(&scope) {
         if let Some(root) = crate::views::workspace_artifacts::primary_workspace_root(state) {
             if crate::views::workspace_artifacts::cached_merged_ibd(state, &root).is_none() {
-                let _ =
-                    crate::views::workspace_artifacts::ensure_workspace_artifacts(state, &root);
+                let _ = crate::views::workspace_artifacts::ensure_workspace_artifacts(state, &root);
             }
         }
     }
-    let cached_workspace_ibd = if workspace_visualization_requested
-        && crate::views::ibd_requested(&scope)
-    {
-        crate::views::workspace_artifacts::primary_workspace_root(state).and_then(|root| {
-            crate::views::workspace_artifacts::cached_merged_ibd(state, &root)
-        })
-    } else {
-        None
-    };
+    let cached_workspace_ibd =
+        if workspace_visualization_requested && crate::views::ibd_requested(&scope) {
+            crate::views::workspace_artifacts::primary_workspace_root(state)
+                .and_then(|root| crate::views::workspace_artifacts::cached_merged_ibd(state, &root))
+        } else {
+            None
+        };
     let index_lookup_start = Instant::now();
     let (effective_uri, entry) = match state.index.get(&uri) {
         Some(e) => (uri.clone(), e),
@@ -247,7 +244,10 @@ pub(crate) fn sysml_feature_inspector_result(
 pub(crate) fn sysml_visualization_result(
     state: &mut ServerState,
     params: serde_json::Value,
-) -> Result<(SysmlVisualizationResultDto, semantic_core::VisualizationBuildMeta)> {
+) -> Result<(
+    SysmlVisualizationResultDto,
+    semantic_core::VisualizationBuildMeta,
+)> {
     let (workspace_root_uri, view, selected_view) =
         crate::views::parse_sysml_visualization_params(&params)?;
     if !state.semantic_lifecycle.supports_semantic_queries() {
@@ -264,11 +264,7 @@ pub(crate) fn sysml_visualization_result(
             SemanticLifecycle::Ready => "SysML model is not ready.",
         };
         return Ok((
-            visualization_model_not_ready(
-                workspace_root_uri.as_str(),
-                &view,
-                message,
-            ),
+            visualization_model_not_ready(workspace_root_uri.as_str(), &view, message),
             semantic_core::VisualizationBuildMeta::default(),
         ));
     }
@@ -283,12 +279,10 @@ pub(crate) fn sysml_visualization_result(
             slim_interconnection_payload: true,
         },
     )
-    .map_err(|error| {
-        tower_lsp::jsonrpc::Error {
-            code: tower_lsp::jsonrpc::ErrorCode::InternalError,
-            message: error.into(),
-            data: None,
-        }
+    .map_err(|error| tower_lsp::jsonrpc::Error {
+        code: tower_lsp::jsonrpc::ErrorCode::InternalError,
+        message: error.into(),
+        data: None,
     })?;
     Ok((outcome.response, outcome.meta))
 }

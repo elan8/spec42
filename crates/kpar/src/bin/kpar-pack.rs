@@ -5,7 +5,10 @@ use kpar::pack::{build_kpar, PackOptions};
 use kpar::schema::Project;
 
 #[derive(Debug, Parser)]
-#[command(name = "kpar-pack", about = "Pack SysML/KerML sources into a KPAR archive")]
+#[command(
+    name = "kpar-pack",
+    about = "Pack SysML/KerML sources into a KPAR archive"
+)]
 struct Args {
     /// Repository root containing domain/, technical/, generic/ (or use --source).
     #[arg(long, default_value = ".")]

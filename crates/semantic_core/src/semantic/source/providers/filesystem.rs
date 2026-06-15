@@ -41,9 +41,8 @@ impl SysmlDocumentProvider for FileSystemDocumentProvider {
 
         if workspace_root.exists() {
             for path in collect_sysml_files(&workspace_root)? {
-                let content = fs::read_to_string(&path).map_err(|err| {
-                    format!("failed to read {}: {err}", path.display())
-                })?;
+                let content = fs::read_to_string(&path)
+                    .map_err(|err| format!("failed to read {}: {err}", path.display()))?;
                 let path_hint = path
                     .strip_prefix(&workspace_root)
                     .ok()
@@ -73,7 +72,11 @@ impl SysmlDocumentProvider for FileSystemDocumentProvider {
         let library_roots: Vec<String> = self
             .library_paths
             .iter()
-            .map(|path| canonicalize_or_self(path).to_string_lossy().replace('\\', "/"))
+            .map(|path| {
+                canonicalize_or_self(path)
+                    .to_string_lossy()
+                    .replace('\\', "/")
+            })
             .collect();
         if !library_roots.is_empty() && !workspace_file_contents.is_empty() {
             let workspace_sources: Vec<WorkspaceSource<'_>> = workspace_path_hints
@@ -225,11 +228,9 @@ package Local {
                 .unwrap_or(0),
             1
         );
-        assert!(
-            graph
-                .node_ids_for_qualified_name("Unused::NeverLoaded")
-                .is_none()
-        );
+        assert!(graph
+            .node_ids_for_qualified_name("Unused::NeverLoaded")
+            .is_none());
     }
 
     #[test]
@@ -258,11 +259,8 @@ package Demo {
         )
         .expect("library duplicate");
 
-        let provider = FileSystemDocumentProvider::new(
-            workspace.clone(),
-            Some(workspace.clone()),
-            vec![lib],
-        );
+        let provider =
+            FileSystemDocumentProvider::new(workspace.clone(), Some(workspace.clone()), vec![lib]);
         let (graph, _) = build_semantic_graph_with_provider(&provider).expect("graph");
         assert_eq!(
             graph

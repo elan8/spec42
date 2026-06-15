@@ -172,6 +172,7 @@ jobs:
             --test mcp_protocol \
             --test mcp_binary \
             --test kitchen_timer_check \
+            --test kpar_stdlib_embed_smoke \
             --test multi_file_check
 
       - name: Build spec42-mcp binary

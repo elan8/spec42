@@ -531,7 +531,13 @@ pub(super) fn build_from_use_case_body(
                 );
             }
             UCBE::FlowUsage(flow) => {
-                super::flow_usage::materialize_flow_usage(flow, uri, container_prefix, parent_id, g);
+                super::flow_usage::materialize_flow_usage(
+                    flow,
+                    uri,
+                    container_prefix,
+                    parent_id,
+                    g,
+                );
             }
             UCBE::MetadataKeywordUsage(mk_node) => {
                 super::metadata_keyword::add_metadata_keyword_node(

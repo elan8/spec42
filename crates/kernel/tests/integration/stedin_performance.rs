@@ -20,9 +20,9 @@ use tower_lsp::lsp_types::Url;
 
 use super::harness::{next_id, read_message, send_message, spawn_server};
 use super::perf_report::{
-    collect_fixture_perf, emit_perf_report, graph_edge_count, graph_node_count,
-    latest_perf_event, request_with_perf_capture, slowest_phase_entries, value_ms,
-    visualization_model_build_time_ms, wait_for_startup_scan, workspace_loaded_files,
+    collect_fixture_perf, emit_perf_report, graph_edge_count, graph_node_count, latest_perf_event,
+    request_with_perf_capture, slowest_phase_entries, value_ms, visualization_model_build_time_ms,
+    wait_for_startup_scan, workspace_loaded_files,
 };
 
 fn stedin_repo_root() -> PathBuf {
@@ -73,9 +73,11 @@ fn collect_visualization_phase_breakdown(repo_root: &Path) -> VisualizationPhase
         build_semantic_graph_with_provider(&provider).expect("semantic graph");
     let semantic_graph_build_ms = graph_start.elapsed().as_millis();
 
-    let workspace_root_uri = Url::from_directory_path(repo_root.canonicalize().unwrap_or_else(
-        |_| repo_root.to_path_buf(),
-    ))
+    let workspace_root_uri = Url::from_directory_path(
+        repo_root
+            .canonicalize()
+            .unwrap_or_else(|_| repo_root.to_path_buf()),
+    )
     .expect("workspace root uri");
     let workspace_uris =
         semantic_core::workspace_uris_for_root(&semantic_graph, &[], &workspace_root_uri);
@@ -301,8 +303,10 @@ fn stedin_system_context_performance_report() {
         }),
     );
     perf_events.extend(warm_visualization_capture.perf_events.clone());
-    let warm_visualization_event =
-        latest_perf_event(&warm_visualization_capture.perf_events, "backend:sysmlVisualizationRequest");
+    let warm_visualization_event = latest_perf_event(
+        &warm_visualization_capture.perf_events,
+        "backend:sysmlVisualizationRequest",
+    );
     assert!(
         warm_visualization_event
             .and_then(|event| event.get("cacheHit"))
@@ -356,7 +360,10 @@ fn stedin_system_context_performance_report() {
             phase_breakdown.workspace_graph_dto_ms,
         ),
         ("phaseIbdPerUri", phase_breakdown.ibd_per_uri_ms),
-        ("phaseIbdMergeFinalize", phase_breakdown.ibd_merge_finalize_ms),
+        (
+            "phaseIbdMergeFinalize",
+            phase_breakdown.ibd_merge_finalize_ms,
+        ),
         ("phaseViewCatalog", phase_breakdown.view_catalog_ms),
         ("phaseEvaluateViews", phase_breakdown.evaluate_views_ms),
         ("phaseProjectAllViews", phase_breakdown.project_all_views_ms),
@@ -372,7 +379,10 @@ fn stedin_system_context_performance_report() {
             "phaseColdHeadlessVisualization",
             phase_breakdown.cold_headless_visualization_ms,
         ),
-        ("startupParseWorkers", value_ms(startup_event, "parseWorkersMs")),
+        (
+            "startupParseWorkers",
+            value_ms(startup_event, "parseWorkersMs"),
+        ),
         ("relinkTotal", value_ms(startup_event, "relinkTotalMs")),
         ("diagnostics", value_ms(startup_event, "diagnosticsMs")),
         ("workspaceModelRequest", workspace_model_capture.elapsed_ms),
