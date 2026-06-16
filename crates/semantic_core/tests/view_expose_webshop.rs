@@ -15,23 +15,18 @@ const WEBSHOP_FILES: &[&str] = &[
     "Views.sysml",
 ];
 
-fn load_webshop_workspace() -> Option<(
+type WebshopWorkspace = (
     Vec<SysmlDocument>,
     Vec<url::Url>,
     semantic_core::SemanticGraph,
     Vec<semantic_core::WorkspaceParsedDocument>,
-)> {
+);
+
+fn load_webshop_workspace() -> Option<WebshopWorkspace> {
     build_webshop_documents(false)
 }
 
-fn build_webshop_documents(
-    include_domain_libraries: bool,
-) -> Option<(
-    Vec<SysmlDocument>,
-    Vec<url::Url>,
-    semantic_core::SemanticGraph,
-    Vec<semantic_core::WorkspaceParsedDocument>,
-)> {
+fn build_webshop_documents(include_domain_libraries: bool) -> Option<WebshopWorkspace> {
     let workspace_root = Path::new(r"C:\Git\sysml-examples\webshop");
     if !workspace_root.is_dir() {
         return None;
@@ -203,7 +198,6 @@ fn webshop_views_expose_non_empty_elements() {
         &views_uri,
         DiagnosticsOptions {
             include_hints: true,
-            ..Default::default()
         },
     );
     let ambiguous: Vec<_> = diagnostics

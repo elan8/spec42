@@ -1874,18 +1874,29 @@ pub fn build_sysml_visualization_workspace(
     Ok(response)
 }
 
+pub struct WorkspaceVisualizationRequest<'a> {
+    pub library_paths: &'a [Url],
+    pub workspace_root_uri: &'a Url,
+    pub view: &'a str,
+    pub selected_view: Option<&'a str>,
+    pub build_start: Instant,
+    pub options: VisualizationBuildOptions,
+}
+
 /// Full visualization response with perf metadata (tests and LSP).
-#[allow(clippy::too_many_arguments)]
 pub fn build_sysml_visualization_workspace_with_meta(
     semantic_graph: &SemanticGraph,
     documents: &[WorkspaceParsedDocument],
-    library_paths: &[Url],
-    workspace_root_uri: &Url,
-    view: &str,
-    selected_view: Option<&str>,
-    build_start: Instant,
-    options: VisualizationBuildOptions,
+    request: WorkspaceVisualizationRequest<'_>,
 ) -> Result<(SysmlVisualizationResultDto, VisualizationBuildMeta), String> {
+    let WorkspaceVisualizationRequest {
+        library_paths,
+        workspace_root_uri,
+        view,
+        selected_view,
+        build_start,
+        options,
+    } = request;
     let ibd_start = Instant::now();
     let artifacts = build_workspace_visualization_artifacts(
         semantic_graph,

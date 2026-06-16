@@ -10,6 +10,13 @@ use semantic_core::{
     SysmlDocument, SysmlDocumentSourceKind, WorkspaceParsedDocument,
 };
 
+type PowersystemsWorkspace = (
+    Vec<SysmlDocument>,
+    Vec<url::Url>,
+    SemanticGraph,
+    Vec<WorkspaceParsedDocument>,
+);
+
 fn optional_external_grid_fixture_sysml_root() -> Option<PathBuf> {
     let repo_root = PathBuf::from(std::env::var_os("SYSML_POWERSYSTEMS_DIR")?);
     let nested = repo_root.join("sysml");
@@ -22,12 +29,7 @@ fn optional_external_grid_fixture_sysml_root() -> Option<PathBuf> {
     }
 }
 
-fn load_powersystems_workspace() -> Option<(
-    Vec<SysmlDocument>,
-    Vec<url::Url>,
-    SemanticGraph,
-    Vec<WorkspaceParsedDocument>,
-)> {
+fn load_powersystems_workspace() -> Option<PowersystemsWorkspace> {
     let workspace_root = optional_external_grid_fixture_sysml_root()?;
 
     let mut documents = Vec::new();

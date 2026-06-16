@@ -49,17 +49,26 @@ fn semantic_metadata_metaclass_role(display_name: &str, text: &str) -> Option<&'
     }
 }
 
-#[allow(clippy::too_many_arguments)]
-fn add_kerml_library_decl_node(
-    g: &mut SemanticGraph,
-    uri: &Url,
-    container_prefix: Option<&str>,
-    parent_id: &NodeId,
+struct KermlLibraryNodeInput<'a> {
+    uri: &'a Url,
+    container_prefix: Option<&'a str>,
+    parent_id: &'a NodeId,
     display_name: String,
-    bnf_production: &str,
-    text: &str,
-    span: &sysml_v2_parser::Span,
-) {
+    bnf_production: &'a str,
+    text: &'a str,
+    span: &'a sysml_v2_parser::Span,
+}
+
+fn add_kerml_library_decl_node(g: &mut SemanticGraph, input: KermlLibraryNodeInput<'_>) {
+    let KermlLibraryNodeInput {
+        uri,
+        container_prefix,
+        parent_id,
+        display_name,
+        bnf_production,
+        text,
+        span,
+    } = input;
     if bnf_production.eq_ignore_ascii_case("attribute") {
         if let Some(parsed) = unit_type_promotion::try_parse_unit_attribute_def(text) {
             unit_type_promotion::materialize_unit_attribute_def_from_kerml(
@@ -123,17 +132,16 @@ fn add_kerml_library_decl_node(
     }
 }
 
-#[allow(clippy::too_many_arguments)]
-fn add_kerml_library_feature_node(
-    g: &mut SemanticGraph,
-    uri: &Url,
-    container_prefix: Option<&str>,
-    parent_id: &NodeId,
-    display_name: String,
-    bnf_production: &str,
-    text: &str,
-    span: &sysml_v2_parser::Span,
-) {
+fn add_kerml_library_feature_node(g: &mut SemanticGraph, input: KermlLibraryNodeInput<'_>) {
+    let KermlLibraryNodeInput {
+        uri,
+        container_prefix,
+        parent_id,
+        display_name,
+        bnf_production,
+        text,
+        span,
+    } = input;
     if let Some(parent) = g.get_node(parent_id) {
         if parent.element_kind == "metadata def"
             && parent
@@ -647,13 +655,15 @@ pub(super) fn build_from_package_body_element(
             if let Some(parent_id) = semantic_metadata_parent {
                 add_kerml_library_feature_node(
                     g,
-                    uri,
-                    container_prefix,
-                    parent_id,
-                    name,
-                    &fv.keyword,
-                    &fv.text,
-                    &feature_node.span,
+                    KermlLibraryNodeInput {
+                        uri,
+                        container_prefix,
+                        parent_id,
+                        display_name: name,
+                        bnf_production: &fv.keyword,
+                        text: &fv.text,
+                        span: &feature_node.span,
+                    },
                 );
             } else {
                 let qualified =
@@ -2011,13 +2021,15 @@ pub(super) fn build_from_package_body_element(
                         extract_modeled_decl_name(&kv.bnf_production, &kv.text, "_kermlSemantic");
                     add_kerml_library_decl_node(
                         g,
-                        uri,
-                        container_prefix,
-                        pid,
-                        display_name,
-                        &kv.bnf_production,
-                        &kv.text,
-                        &k.span,
+                        KermlLibraryNodeInput {
+                            uri,
+                            container_prefix,
+                            parent_id: pid,
+                            display_name,
+                            bnf_production: &kv.bnf_production,
+                            text: &kv.text,
+                            span: &k.span,
+                        },
                     );
                 }
             }
@@ -2029,13 +2041,15 @@ pub(super) fn build_from_package_body_element(
                     extract_modeled_decl_name(&kv.bnf_production, &kv.text, "_kermlFeature");
                 add_kerml_library_feature_node(
                     g,
-                    uri,
-                    container_prefix,
-                    pid,
-                    display_name,
-                    &kv.bnf_production,
-                    &kv.text,
-                    &k.span,
+                    KermlLibraryNodeInput {
+                        uri,
+                        container_prefix,
+                        parent_id: pid,
+                        display_name,
+                        bnf_production: &kv.bnf_production,
+                        text: &kv.text,
+                        span: &k.span,
+                    },
                 );
             }
         }
@@ -2046,13 +2060,15 @@ pub(super) fn build_from_package_body_element(
                     extract_modeled_decl_name(&kv.bnf_production, &kv.text, "_extendedLibrary");
                 add_kerml_library_decl_node(
                     g,
-                    uri,
-                    container_prefix,
-                    pid,
-                    display_name,
-                    &kv.bnf_production,
-                    &kv.text,
-                    &k.span,
+                    KermlLibraryNodeInput {
+                        uri,
+                        container_prefix,
+                        parent_id: pid,
+                        display_name,
+                        bnf_production: &kv.bnf_production,
+                        text: &kv.text,
+                        span: &k.span,
+                    },
                 );
             }
         }

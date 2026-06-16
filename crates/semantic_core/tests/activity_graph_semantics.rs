@@ -32,7 +32,7 @@ fn enrich_then_action_chain_actions_have_graph_ranges() {
     for diagram in &mut diagrams {
         diagram.uri = Some(uri.as_str().to_string());
     }
-    enrich_activity_diagrams_from_graph(&mut diagrams, &graph, &[uri.clone()]);
+    enrich_activity_diagrams_from_graph(&mut diagrams, &graph, std::slice::from_ref(&uri));
 
     let diagram = diagrams
         .iter()

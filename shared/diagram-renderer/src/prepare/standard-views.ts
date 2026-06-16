@@ -55,6 +55,16 @@ function treeRootHints(visualization: VisualizationPayload): string[] {
   return asArray(projectionHints(visualization).treeRoots).map((value) => asString(value)).filter(Boolean);
 }
 
+// Standard-view payloads normalize nullable graph fields to `undefined`
+// so PreparedNode contracts remain consistent across renderers.
+function optionalUri(node: UnknownRecord): string | undefined {
+  return nodeUri(node) ?? undefined;
+}
+
+function optionalRange(node: UnknownRecord): UnknownRecord | undefined {
+  return nodeRange(node) ?? undefined;
+}
+
 interface BrowserRow {
   id: string;
   label: string;
@@ -146,8 +156,8 @@ export function prepareBrowser(visualization: VisualizationPayload): PreparedVie
     kind: elementTypeOf(node) || "element",
     parentId: asString(node.parent_id ?? node.parentId ?? asRecord(node.attributes).parentId),
     qualifiedName: qualifiedNameOf(node),
-    uri: nodeUri(node) ?? undefined,
-    range: nodeRange(node) ?? undefined,
+    uri: optionalUri(node),
+    range: optionalRange(node),
   }));
   const hierarchyLayout = browserLayoutHint(visualization) === "hierarchy";
   const rows = hierarchyLayout
@@ -191,8 +201,8 @@ export function prepareGrid(visualization: VisualizationPayload): PreparedView {
         attributeCount: asArray(attrs.attributes).length,
         partCount: asArray(attrs.parts).length,
         portCount: asArray(attrs.ports).length,
-        uri: nodeUri(node),
-        range: nodeRange(node),
+        uri: optionalUri(node),
+        range: optionalRange(node),
       };
     })
     .sort((left, right) => left.qualifiedName.localeCompare(right.qualifiedName));
@@ -231,8 +241,8 @@ export function prepareGeometry(visualization: VisualizationPayload): PreparedVi
     label: asString(node.name ?? node.qualifiedName ?? node.id, "Unnamed"),
     kind: elementTypeOf(node) || "element",
     qualifiedName: qualifiedNameOf(node),
-    uri: nodeUri(node),
-    range: nodeRange(node),
+    uri: optionalUri(node),
+    range: optionalRange(node),
   }));
   const nodeIds = new Set(elements.map((element) => element.id));
   return {
