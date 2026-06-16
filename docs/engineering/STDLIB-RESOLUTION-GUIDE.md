@@ -23,17 +23,25 @@ Spec42 ships the official `sysml.library` tree (pinned version, currently **`202
 
 The CLI and LSP always prepend this path unless overridden.
 
-### 1.2 Import-scoped loading
+### 1.2 Import- and typing-scoped loading
 
-Library files are **not** merged into the graph by default. They enter only through workspace `import` closure:
+Library files are **not** merged into the graph by default. They enter through workspace **import closure** plus optional **typing/specialization closure**:
 
 ```
 workspace sources
-  → collect import targets
+  → collect import targets and type/specialization references
   → transitive closure (library_loader.rs)
   → parse + merge library documents
   → link + diagnostics
 ```
+
+`resolve_library_closure` seeds packages from:
+
+- explicit `import` statements (transitive),
+- part/port/attribute type references and `:>` specializations in workspace text (`bootstrap_typing_references`, default on),
+- `SysML::` qualified names and unit literals (existing bootstrap rules).
+
+Disable typing seeds with `LibraryClosureOptions { bootstrap_typing_references: false, .. }`. Full library tree scans remain available via `SPEC42_LIBRARY_FULL_SCAN` (dev override only).
 
 Key file: `crates/semantic_core/src/semantic/library_loader.rs`
 

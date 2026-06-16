@@ -2929,6 +2929,50 @@ mod tests {
     }
 
     #[test]
+    fn build_ibd_expands_library_typed_part_usage() {
+        let library = SysmlDocument::from_memory_path(
+            "library",
+            "Domain.sysml",
+            r#"package Domain {
+  part def Robot {
+    part motor;
+  }
+}"#
+            .to_string(),
+            SysmlDocumentSourceKind::Library,
+            None,
+            None,
+        )
+        .expect("library doc");
+        let workspace = SysmlDocument::from_memory_path(
+            "workspace",
+            "Architecture.sysml",
+            r#"package Architecture {
+  part robot : Domain::Robot;
+}"#
+            .to_string(),
+            SysmlDocumentSourceKind::Workspace,
+            None,
+            None,
+        )
+        .expect("workspace doc");
+        let uri = workspace.uri.clone();
+        let (graph, _) = build_semantic_graph_from_documents(&[workspace, library])
+            .expect("semantic graph should build");
+        let ibd = super::build_ibd_for_uri(&graph, &uri);
+        assert!(
+            ibd.root_candidates.iter().any(|root| root == "robot"),
+            "expected robot as IBD root, got {:?}",
+            ibd.root_candidates
+        );
+        assert!(
+            ibd.parts.iter().any(|part| part.name == "motor"),
+            "expected library-defined motor part in expanded tree, got {:?}",
+            ibd.parts.iter().map(|part| part.name.as_str()).collect::<Vec<_>>()
+        );
+    }
+
+    #[test]
     fn build_ibd_materializes_pending_connection_endpoints_for_untyped_connects() {
         let doc = SysmlDocument::from_memory_path(
             "workspace",

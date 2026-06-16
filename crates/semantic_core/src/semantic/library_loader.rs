@@ -1,22 +1,24 @@
-//! Import-scoped loading of SysML/KerML library files from configured roots.
+//! Import- and typing-scoped loading of SysML/KerML library files from configured roots.
 //!
-//! Library files are never merged into the semantic graph by default. They enter only
-//! through the SysML `import` mechanism:
+//! Library files are never merged into the semantic graph by default. They enter through:
 //!
-//! 1. Collect `import` targets from workspace sources.
-//! 2. Walk the transitive import closure.
+//! 1. Collect `import` targets and (optionally) type/specialization references from workspace sources.
+//! 2. Walk the transitive closure over imports and typing references.
 //! 3. When a package name is already declared in the workspace, that declaration
 //!    satisfies the import and the walker continues through the workspace package body.
 //! 4. Only otherwise-unresolved package names are loaded from library roots.
 //!
-//! Unit catalogs and optional `sysml` namespace bootstrap are the only deliberate
-//! exceptions to step 4.
+//! Unit catalogs and optional `sysml` namespace bootstrap are deliberate exceptions to step 4.
 
 use std::collections::{HashMap, HashSet, VecDeque};
 use std::path::PathBuf;
 
 use sysml_v2_parser::ast::{
-    Identification, Import, LibraryPackage, Package, PackageBody, PackageBodyElement, RootElement,
+    AttributeBody, AttributeBodyElement, AttributeDef, AttributeUsage, Identification, Import,
+    ItemUsage, LibraryPackage, MetadataDef, MetadataUsage, Package, PackageBody,
+    PackageBodyElement, PartDef, PartDefBody, PartDefBodyElement, PartUsage, PartUsageBody,
+    PartUsageBodyElement, PortDef, PortDefBody, PortDefBodyElement, PortUsage, PortBody,
+    PortBodyElement, RefDecl, RootElement,
 };
 use sysml_v2_parser::{Node, RootNamespace as ParsedRoot};
 use walkdir::WalkDir;
@@ -50,12 +52,15 @@ struct IndexedFile {
 pub struct LibraryClosureOptions {
     /// When workspace imports `sysml::*` (or `sysml`), load packages under `sysml.library` / `kerml` roots.
     pub bootstrap_sysml_namespace: bool,
+    /// Seed closure from part/port/attribute type references and `:>` specializations in workspace text.
+    pub bootstrap_typing_references: bool,
 }
 
 impl Default for LibraryClosureOptions {
     fn default() -> Self {
         Self {
             bootstrap_sysml_namespace: true,
+            bootstrap_typing_references: true,
         }
     }
 }
@@ -87,6 +92,13 @@ pub fn resolve_library_closure(
                 seeds.insert(PackageKey(key));
             }
         }
+        if options.bootstrap_typing_references {
+            for target in collect_type_reference_targets_from_content(source.content) {
+                for key in package_keys_for_import_target(&target) {
+                    seeds.insert(PackageKey(key));
+                }
+            }
+        }
         if workspace_contains_unit_literal(source.content) {
             for pkg in QUANTITY_UNIT_CLOSURE_PACKAGES {
                 seeds.insert(PackageKey(pkg.to_string()));
@@ -107,14 +119,14 @@ pub fn resolve_library_closure(
     let mut files = Vec::<LoadedLibraryFile>::new();
     let mut visited_packages = HashSet::<PackageKey>::new();
     let mut queue: VecDeque<PackageKey> = seeds.into_iter().collect();
-    enqueue_imports_from_workspace_packages(workspace, &workspace_declared_packages, &mut queue);
+    enqueue_imports_from_workspace_packages(workspace, &workspace_declared_packages, options, &mut queue);
     while let Some(pkg) = queue.pop_front() {
         if !visited_packages.insert(pkg.clone()) {
             continue;
         }
         if workspace_declared_packages.contains(&pkg) {
             // Import target is satisfied by a workspace package: follow its imports only.
-            enqueue_imports_from_workspace_package(workspace, &pkg, &mut queue);
+            enqueue_imports_from_workspace_package(workspace, &pkg, options, &mut queue);
             continue;
         }
         let Some(indexed) = index.packages.get(&pkg) else {
@@ -129,11 +141,7 @@ pub fn resolve_library_closure(
             let content = std::fs::read_to_string(&full_path).map_err(|err| {
                 format!("failed to read library file {}: {err}", full_path.display())
             })?;
-            for target in collect_import_targets_from_content(&content) {
-                for next in package_keys_for_import_target(&target) {
-                    queue.push_back(PackageKey(next));
-                }
-            }
+            enqueue_closure_targets_from_content(&content, options, &mut queue);
             files.push(LoadedLibraryFile {
                 root: entry.root.clone(),
                 path: entry.path.clone(),
@@ -413,19 +421,40 @@ fn content_contains_unit_definition(content: &str) -> bool {
     })
 }
 
+fn enqueue_closure_targets_from_content(
+    content: &str,
+    options: &LibraryClosureOptions,
+    queue: &mut VecDeque<PackageKey>,
+) {
+    for target in collect_import_targets_from_content(content) {
+        for next in package_keys_for_import_target(&target) {
+            queue.push_back(PackageKey(next));
+        }
+    }
+    if options.bootstrap_typing_references {
+        for target in collect_type_reference_targets_from_content(content) {
+            for next in package_keys_for_import_target(&target) {
+                queue.push_back(PackageKey(next));
+            }
+        }
+    }
+}
+
 fn enqueue_imports_from_workspace_packages(
     workspace: &[WorkspaceSource<'_>],
     workspace_declared_packages: &HashSet<PackageKey>,
+    options: &LibraryClosureOptions,
     queue: &mut VecDeque<PackageKey>,
 ) {
     for pkg in workspace_declared_packages {
-        enqueue_imports_from_workspace_package(workspace, pkg, queue);
+        enqueue_imports_from_workspace_package(workspace, pkg, options, queue);
     }
 }
 
 fn enqueue_imports_from_workspace_package(
     workspace: &[WorkspaceSource<'_>],
     pkg: &PackageKey,
+    options: &LibraryClosureOptions,
     queue: &mut VecDeque<PackageKey>,
 ) {
     for source in workspace {
@@ -436,6 +465,15 @@ fn enqueue_imports_from_workspace_package(
             for target in collect_import_targets_from_package_body(body) {
                 for next in package_keys_for_import_target(&target) {
                     queue.push_back(PackageKey(next));
+                }
+            }
+            if options.bootstrap_typing_references {
+                let mut type_targets = Vec::new();
+                collect_type_reference_targets_from_package_body(body, &mut type_targets);
+                for target in type_targets {
+                    for next in package_keys_for_import_target(&target) {
+                        queue.push_back(PackageKey(next));
+                    }
                 }
             }
         });
@@ -488,6 +526,241 @@ fn push_import_target(import: &Node<Import>, out: &mut Vec<String>) {
     if !target.is_empty() {
         out.push(target.to_string());
     }
+}
+
+fn push_type_reference(target: &str, out: &mut Vec<String>) {
+    let target = target.trim();
+    if target.is_empty() || target.starts_with("checks meta ") {
+        return;
+    }
+    out.push(target.to_string());
+}
+
+fn push_optional_type_reference(target: Option<&str>, out: &mut Vec<String>) {
+    if let Some(target) = target {
+        push_type_reference(target, out);
+    }
+}
+
+fn collect_type_reference_targets_from_content(content: &str) -> Vec<String> {
+    let Ok(parsed) = sysml_v2_parser::parse(content) else {
+        return Vec::new();
+    };
+    let mut out = Vec::new();
+    collect_type_reference_targets_from_root(&parsed, &mut out);
+    out
+}
+
+fn collect_type_reference_targets_from_root(root: &ParsedRoot, out: &mut Vec<String>) {
+    for element in &root.elements {
+        match &element.value {
+            RootElement::Package(package) => walk_package_type_refs(package, out),
+            RootElement::LibraryPackage(package) => walk_library_package_type_refs(package, out),
+            _ => {}
+        }
+    }
+}
+
+fn collect_type_reference_targets_from_package_body(body: &PackageBody, out: &mut Vec<String>) {
+    let PackageBody::Brace { elements } = body else {
+        return;
+    };
+    for member in elements {
+        walk_package_body_element_type_refs(&member.value, out);
+    }
+}
+
+fn walk_package_type_refs(package: &Node<Package>, out: &mut Vec<String>) {
+    collect_type_reference_targets_from_package_body(&package.value.body, out);
+}
+
+fn walk_library_package_type_refs(package: &Node<LibraryPackage>, out: &mut Vec<String>) {
+    collect_type_reference_targets_from_package_body(&package.value.body, out);
+}
+
+fn walk_package_body_element_type_refs(element: &PackageBodyElement, out: &mut Vec<String>) {
+    match element {
+        PackageBodyElement::Package(nested) => walk_package_type_refs(nested, out),
+        PackageBodyElement::LibraryPackage(nested) => walk_library_package_type_refs(nested, out),
+        PackageBodyElement::PartDef(part_def) => walk_part_def_type_refs(&part_def.value, out),
+        PackageBodyElement::PartUsage(part_usage) => walk_part_usage_type_refs(&part_usage.value, out),
+        PackageBodyElement::PortDef(port_def) => walk_port_def_type_refs(&port_def.value, out),
+        PackageBodyElement::ItemDef(item_def) => {
+            push_optional_type_reference(item_def.value.specializes.as_deref(), out);
+        }
+        PackageBodyElement::MetadataDef(metadata_def) => {
+            walk_metadata_def_type_refs(&metadata_def.value, out);
+        }
+        PackageBodyElement::MetadataUsage(metadata_usage) => {
+            walk_metadata_usage_type_refs(&metadata_usage.value, out);
+        }
+        _ => {}
+    }
+}
+
+fn walk_part_def_type_refs(part_def: &PartDef, out: &mut Vec<String>) {
+    push_optional_type_reference(part_def.specializes.as_deref(), out);
+    let PartDefBody::Brace { elements } = &part_def.body else {
+        return;
+    };
+    for member in elements {
+        walk_part_def_body_element_type_refs(&member.value, out);
+    }
+}
+
+fn walk_part_def_body_element_type_refs(element: &PartDefBodyElement, out: &mut Vec<String>) {
+    match element {
+        PartDefBodyElement::PartDef(part_def) => walk_part_def_type_refs(&part_def.value, out),
+        PartDefBodyElement::PartUsage(part_usage) => {
+            walk_part_usage_type_refs(&part_usage.value, out);
+        }
+        PartDefBodyElement::PortUsage(port_usage) => walk_port_usage_type_refs(&port_usage.value, out),
+        PartDefBodyElement::AttributeDef(attribute_def) => {
+            walk_attribute_def_type_refs(&attribute_def.value, out);
+        }
+        PartDefBodyElement::AttributeUsage(attribute_usage) => {
+            walk_attribute_usage_type_refs(&attribute_usage.value, out);
+        }
+        PartDefBodyElement::ItemDef(item_def) => {
+            push_optional_type_reference(item_def.value.specializes.as_deref(), out);
+        }
+        PartDefBodyElement::ItemUsage(item_usage) => {
+            walk_item_usage_type_refs(&item_usage.value, out);
+        }
+        PartDefBodyElement::Ref(ref_decl) => walk_ref_decl_type_refs(&ref_decl.value, out),
+        PartDefBodyElement::ExhibitState(exhibit_state) => {
+            push_optional_type_reference(exhibit_state.value.type_name.as_deref(), out);
+        }
+        PartDefBodyElement::Connection(connection) => {
+            push_optional_type_reference(connection.value.type_name.as_deref(), out);
+            push_optional_type_reference(connection.value.subsets.as_deref(), out);
+            push_optional_type_reference(connection.value.redefines.as_deref(), out);
+        }
+        _ => {}
+    }
+}
+
+fn walk_part_usage_type_refs(part_usage: &PartUsage, out: &mut Vec<String>) {
+    push_type_reference(&part_usage.type_name, out);
+    push_optional_type_reference(part_usage.redefines.as_deref(), out);
+    if let Some((subsets, _)) = &part_usage.subsets {
+        push_type_reference(subsets, out);
+    }
+    let PartUsageBody::Brace { elements } = &part_usage.body else {
+        return;
+    };
+    for member in elements {
+        walk_part_usage_body_element_type_refs(&member.value, out);
+    }
+}
+
+fn walk_part_usage_body_element_type_refs(element: &PartUsageBodyElement, out: &mut Vec<String>) {
+    match element {
+        PartUsageBodyElement::PartUsage(part_usage) => {
+            walk_part_usage_type_refs(&part_usage.value, out);
+        }
+        PartUsageBodyElement::PortUsage(port_usage) => walk_port_usage_type_refs(&port_usage.value, out),
+        PartUsageBodyElement::AttributeUsage(attribute_usage) => {
+            walk_attribute_usage_type_refs(&attribute_usage.value, out);
+        }
+        PartUsageBodyElement::Ref(ref_decl) => walk_ref_decl_type_refs(&ref_decl.value, out),
+        _ => {}
+    }
+}
+
+fn walk_port_def_type_refs(port_def: &PortDef, out: &mut Vec<String>) {
+    push_optional_type_reference(port_def.specializes.as_deref(), out);
+    let PortDefBody::Brace { elements } = &port_def.body else {
+        return;
+    };
+    for member in elements {
+        match &member.value {
+            PortDefBodyElement::PortUsage(port_usage) => {
+                walk_port_usage_type_refs(&port_usage.value, out);
+            }
+            PortDefBodyElement::AttributeDef(attribute_def) => {
+                walk_attribute_def_type_refs(&attribute_def.value, out);
+            }
+            PortDefBodyElement::AttributeUsage(attribute_usage) => {
+                walk_attribute_usage_type_refs(&attribute_usage.value, out);
+            }
+            PortDefBodyElement::ItemUsage(item_usage) => {
+                walk_item_usage_type_refs(&item_usage.value, out);
+            }
+            _ => {}
+        }
+    }
+}
+
+fn walk_port_usage_type_refs(port_usage: &PortUsage, out: &mut Vec<String>) {
+    push_optional_type_reference(port_usage.type_name.as_deref(), out);
+    push_optional_type_reference(port_usage.redefines.as_deref(), out);
+    push_optional_type_reference(port_usage.references.as_deref(), out);
+    push_optional_type_reference(port_usage.crosses.as_deref(), out);
+    if let Some((subsets, _)) = &port_usage.subsets {
+        push_type_reference(subsets, out);
+    }
+    let PortBody::Brace { elements } = &port_usage.body else {
+        return;
+    };
+    for member in elements {
+        match &member.value {
+            PortBodyElement::PortUsage(nested) => walk_port_usage_type_refs(&nested.value, out),
+            _ => {}
+        }
+    }
+}
+
+fn walk_attribute_def_type_refs(attribute_def: &AttributeDef, out: &mut Vec<String>) {
+    push_optional_type_reference(attribute_def.typing.as_deref(), out);
+    walk_attribute_body_type_refs(&attribute_def.body, out);
+}
+
+fn walk_attribute_usage_type_refs(attribute_usage: &AttributeUsage, out: &mut Vec<String>) {
+    push_optional_type_reference(attribute_usage.typing.as_deref(), out);
+    push_optional_type_reference(attribute_usage.redefines.as_deref(), out);
+    push_optional_type_reference(attribute_usage.references.as_deref(), out);
+    push_optional_type_reference(attribute_usage.crosses.as_deref(), out);
+    walk_attribute_body_type_refs(&attribute_usage.body, out);
+}
+
+fn walk_attribute_body_type_refs(body: &AttributeBody, out: &mut Vec<String>) {
+    let AttributeBody::Brace { elements } = body else {
+        return;
+    };
+    for member in elements {
+        match &member.value {
+            AttributeBodyElement::AttributeDef(attribute_def) => {
+                walk_attribute_def_type_refs(&attribute_def.value, out);
+            }
+            AttributeBodyElement::AttributeUsage(attribute_usage) => {
+                walk_attribute_usage_type_refs(&attribute_usage.value, out);
+            }
+            _ => {}
+        }
+    }
+}
+
+fn walk_item_usage_type_refs(item_usage: &ItemUsage, out: &mut Vec<String>) {
+    push_optional_type_reference(item_usage.type_name.as_deref(), out);
+    walk_attribute_body_type_refs(&item_usage.body, out);
+}
+
+fn walk_ref_decl_type_refs(ref_decl: &RefDecl, out: &mut Vec<String>) {
+    push_type_reference(&ref_decl.type_name, out);
+}
+
+fn walk_metadata_def_type_refs(metadata_def: &MetadataDef, out: &mut Vec<String>) {
+    push_optional_type_reference(metadata_def.specializes.as_deref(), out);
+    walk_attribute_body_type_refs(&metadata_def.body, out);
+}
+
+fn walk_metadata_usage_type_refs(metadata_usage: &MetadataUsage, out: &mut Vec<String>) {
+    push_optional_type_reference(metadata_usage.type_name.as_deref(), out);
+    for target in &metadata_usage.about_targets {
+        push_type_reference(target, out);
+    }
+    walk_attribute_body_type_refs(&metadata_usage.body, out);
 }
 
 fn package_keys_for_import_target(target: &str) -> Vec<String> {
@@ -734,6 +1007,90 @@ package Views {
         assert!(
             !loaded.iter().any(|f| f.path.contains("Unused.sysml")),
             "unused library file should not load"
+        );
+    }
+
+    #[test]
+    fn closure_loads_library_package_for_qualified_part_type_without_import() {
+        let temp = tempfile::tempdir().expect("tempdir");
+        let lib = temp.path().join("lib");
+        fs::create_dir_all(&lib).expect("lib dir");
+        fs::write(
+            lib.join("Domain.sysml"),
+            "package Domain { part def Robot { part motor; } }",
+        )
+        .expect("domain");
+        let workspace = [WorkspaceSource {
+            path: "model.sysml",
+            content: "package App { part app : Domain::Robot; }",
+        }];
+        let roots = vec![lib.to_string_lossy().replace('\\', "/")];
+        let loaded = resolve_library_closure(&workspace, &roots, &LibraryClosureOptions::default())
+            .expect("closure");
+        assert!(
+            loaded.iter().any(|f| f.path.contains("Domain.sysml")),
+            "expected Domain.sysml for qualified part type, got {:?}",
+            loaded.iter().map(|f| &f.path).collect::<Vec<_>>()
+        );
+    }
+
+    #[test]
+    fn closure_loads_transitive_specialization_packages() {
+        let temp = tempfile::tempdir().expect("tempdir");
+        let lib = temp.path().join("lib");
+        fs::create_dir_all(&lib).expect("lib dir");
+        fs::write(
+            lib.join("OtherPkg.sysml"),
+            "package OtherPkg { part def Base { attribute x; } }",
+        )
+        .expect("other");
+        fs::write(
+            lib.join("Domain.sysml"),
+            "package Domain { part def Robot :> OtherPkg::Base { part motor; } }",
+        )
+        .expect("domain");
+        let workspace = [WorkspaceSource {
+            path: "model.sysml",
+            content: "package App { part app : Domain::Robot; }",
+        }];
+        let roots = vec![lib.to_string_lossy().replace('\\', "/")];
+        let loaded = resolve_library_closure(&workspace, &roots, &LibraryClosureOptions::default())
+            .expect("closure");
+        let paths: Vec<_> = loaded.iter().map(|f| f.path.as_str()).collect();
+        assert!(
+            paths.iter().any(|p| p.contains("Domain.sysml")),
+            "expected Domain.sysml, got {paths:?}"
+        );
+        assert!(
+            paths.iter().any(|p| p.contains("OtherPkg.sysml")),
+            "expected OtherPkg.sysml via specializes closure, got {paths:?}"
+        );
+    }
+
+    #[test]
+    fn closure_typing_reference_bootstrap_can_be_disabled() {
+        let temp = tempfile::tempdir().expect("tempdir");
+        let lib = temp.path().join("lib");
+        fs::create_dir_all(&lib).expect("lib dir");
+        fs::write(
+            lib.join("Domain.sysml"),
+            "package Domain { part def Robot { part motor; } }",
+        )
+        .expect("domain");
+        let workspace = [WorkspaceSource {
+            path: "model.sysml",
+            content: "package App { part app : Domain::Robot; }",
+        }];
+        let roots = vec![lib.to_string_lossy().replace('\\', "/")];
+        let options = LibraryClosureOptions {
+            bootstrap_sysml_namespace: true,
+            bootstrap_typing_references: false,
+        };
+        let loaded = resolve_library_closure(&workspace, &roots, &options).expect("closure");
+        assert!(
+            !loaded.iter().any(|f| f.path.contains("Domain.sysml")),
+            "typing bootstrap disabled should not load Domain, got {:?}",
+            loaded.iter().map(|f| &f.path).collect::<Vec<_>>()
         );
     }
 

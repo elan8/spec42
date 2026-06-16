@@ -31,6 +31,10 @@ Unified role allowlists: `kinds::allowed_for_role(ResolutionRole::…)`.
 
 When workspace content contains `SysML::` qualified references, or imports `sysml` / `sysml::*`, the library closure seeds the `SysML` package (and optionally full stdlib slice). See `library_loader.rs`.
 
+### Typing/specialization library closure
+
+IBD and other graph consumers traverse `Typing` / `Specializes` edges into library part definitions. The loader therefore also seeds closure from type references in workspace and loaded library bodies (part usages, defs, ports, attributes). This is narrower than a full library scan but wider than import-only closure. Controlled by `LibraryClosureOptions::bootstrap_typing_references` (default `true`).
+
 ### Parent-qualified sibling imports
 
 Inside package `P`, import `Sibling::*` resolves to `P::Sibling::*` before a top-level `Sibling` lookup. Implemented in `import_namespace_target_candidates`.
