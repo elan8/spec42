@@ -20,6 +20,7 @@ Use this index to find the right document for the job. Public compatibility page
 | AST and semantic coverage priorities | [engineering/AST-SEMANTIC-COVERAGE.md](engineering/AST-SEMANTIC-COVERAGE.md) |
 | Nightly performance guardrails | [engineering/PERFORMANCE-GUARDRAILS.md](engineering/PERFORMANCE-GUARDRAILS.md) |
 | 1.0 competitive roadmap | [engineering/COMPETITIVE-ROADMAP.md](engineering/COMPETITIVE-ROADMAP.md) |
+| Diagram export quality (VS Code vs CLI vs BNF) | [engineering/DIAGRAM-EXPORT-QUALITY-ANALYSIS.md](engineering/DIAGRAM-EXPORT-QUALITY-ANALYSIS.md) |
 
 ## Architecture
 
@@ -27,6 +28,8 @@ Use this index to find the right document for the job. Public compatibility page
 | --- | --- |
 | Semantic core architecture | [architecture/SEMANTIC_CORE_ARCHITECTURE.md](architecture/SEMANTIC_CORE_ARCHITECTURE.md) |
 | Shared renderer and graphical notation contract | [architecture/SHARED-DIAGRAM-RENDERER-AND-SPEC-CONFORMANCE.md](architecture/SHARED-DIAGRAM-RENDERER-AND-SPEC-CONFORMANCE.md) |
+| Diagram export quality (VS Code vs CLI vs BNF) | [engineering/DIAGRAM-EXPORT-QUALITY-ANALYSIS.md](engineering/DIAGRAM-EXPORT-QUALITY-ANALYSIS.md) |
+| IBD / interconnection pipeline | [ibd-interconnection-pipeline-analysis.md](ibd-interconnection-pipeline-analysis.md) |
 | Read-only HTTP API | [api/README.md](api/README.md) |
 | Architecture decisions | [adr/README.md](adr/README.md) |
 

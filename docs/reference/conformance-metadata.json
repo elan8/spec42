@@ -29,7 +29,16 @@
     { "feature": "check sarif/junit", "status": "supported" },
     { "feature": "warnings-as-errors", "status": "supported" },
     { "feature": "diagnostic baseline", "status": "supported" },
-    { "feature": "diagram export svg/json", "status": "supported", "notes": "Rust-owned export: ELK.js via QuickJS for General, Interconnection, Action Flow, and State Transition SVG; native deterministic SVG for Sequence, Browser, Grid, and Geometry." },
+    {
+      "feature": "diagram export json",
+      "status": "supported",
+      "notes": "Full SysmlVisualizationResultDto; suitable for headless render with shared/diagram-renderer."
+    },
+    {
+      "feature": "diagram export svg",
+      "status": "partial",
+      "notes": "CLI and POST /v1/diagrams/export use a simplified Rust SVG path (ELK layout + generic boxes), not shared-diagram-renderer BNF notation. Use VS Code export or JSON + shared renderer for publication-quality SVG. See docs/engineering/DIAGRAM-EXPORT-QUALITY-ANALYSIS.md."
+    },
     { "feature": "read-only http api", "status": "supported" }
   ],
   "sysand": [

@@ -11,6 +11,7 @@ Related docs:
 - [`docs/reference/SYSML-NOTATION-INVENTORY.md`](../reference/SYSML-NOTATION-INVENTORY.md)
 - [`docs/archive/GENERAL-IBD-BNF-SIGNOFF.md`](../archive/GENERAL-IBD-BNF-SIGNOFF.md)
 - [`docs/archive/LEGACY-RENDERER-SUNSET.md`](../archive/LEGACY-RENDERER-SUNSET.md)
+- [`docs/engineering/DIAGRAM-EXPORT-QUALITY-ANALYSIS.md`](../engineering/DIAGRAM-EXPORT-QUALITY-ANALYSIS.md) — VS Code vs CLI/API export vs BNF graphical notation
 
 ## Current Renderer Contract
 

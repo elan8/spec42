@@ -32,7 +32,13 @@ lines.push("Generated from `docs/reference/conformance-metadata.json`. Do not ed
 section("Language Coverage", ["Area", "Status", "Notes"], metadata.languageCoverage.map((row) => [row.area, row.status, row.notes]));
 section("Semantic Validation", ["Category", "Status", "Diagnostic codes"], metadata.semanticValidation.map((row) => [row.category, row.status, row.codes.join(", ")]));
 section("View And Rendering Coverage", ["View", "Renderer", "Status", "Notes"], metadata.views.map((row) => [row.id, row.renderer, row.status, row.notes]));
-section("CLI And Reporting", ["Feature", "Status"], metadata.cliReporting.map((row) => [row.feature, row.status]));
+const cliReportingHeaders = cliHeaders(metadata.cliReporting);
+const cliReportingHasNotes = cliReportingHeaders.includes("Notes");
+section(
+  "CLI And Reporting",
+  cliReportingHeaders,
+  metadata.cliReporting.map((row) => cliRow(row, cliReportingHasNotes)),
+);
 section("Sysand Integration", ["Feature", "Status"], metadata.sysand.map((row) => [row.feature, row.status]));
 lines.push("");
 
@@ -58,4 +64,20 @@ function section(title, headers, rows) {
 
 function cell(value) {
   return String(value ?? "").replaceAll("|", "\\|");
+}
+
+function cliHeaders(rows) {
+  const headers = ["Feature", "Status"];
+  if (rows.some((row) => row.notes)) {
+    headers.push("Notes");
+  }
+  return headers;
+}
+
+function cliRow(row, includeNotes) {
+  const cells = [row.feature, row.status];
+  if (includeNotes) {
+    cells.push(row.notes ?? "");
+  }
+  return cells;
 }
