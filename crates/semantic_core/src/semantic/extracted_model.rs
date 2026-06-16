@@ -846,10 +846,10 @@ fn extract_activity_from_action(
                         kind: Some("perform".to_string()),
                         inputs: None,
                         outputs: None,
-                range: Some(span_to_range_dto(&perform.span)),
-                uri: None,
-                swim_lane: None,
-            });
+                        range: Some(span_to_range_dto(&perform.span)),
+                        uri: None,
+                        swim_lane: None,
+                    });
                 }
                 ActionDefBodyElement::ActionUsage(usage) => {
                     let u = usage.as_ref();
@@ -1001,11 +1001,7 @@ fn extract_activity_from_action(
                         let from = expr_to_string(from_expr);
                         let to = expr_to_string(to_expr);
                         if !from.is_empty() && !to.is_empty() {
-                            let condition = flow
-                                .value
-                                .payload
-                                .as_ref()
-                                .map(|payload| expr_to_string(payload));
+                            let condition = flow.value.payload.as_ref().map(expr_to_string);
                             flows.push(ControlFlowDto {
                                 from,
                                 to,
@@ -1338,7 +1334,10 @@ mod tests {
             .expect("diagram");
 
         assert!(
-            diagram.decisions.iter().any(|decision| decision.name == "checkRoute"),
+            diagram
+                .decisions
+                .iter()
+                .any(|decision| decision.name == "checkRoute"),
             "expected decision node"
         );
         assert!(

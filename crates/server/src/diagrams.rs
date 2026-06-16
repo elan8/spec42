@@ -9,8 +9,8 @@ use semantic_core::{
 use serde::{Deserialize, Serialize};
 
 use crate::cli::{DiagramExportArgs, DiagramExportFormat};
-use crate::headless_renderer::render_shared_svg;
 use crate::elk_layout::layout_elk_graph;
+use crate::headless_renderer::render_shared_svg;
 
 const EXPORTABLE_VIEWS: &[&str] = &[
     "general-view",
@@ -57,8 +57,9 @@ pub fn render_diagram(
             Ok((raw, "application/json"))
         }
         DiagramExportFormat::Svg => {
-            let raw = serde_json::to_string(payload)
-                .map_err(|err| format!("Failed to serialize diagram payload for SVG export: {err}"))?;
+            let raw = serde_json::to_string(payload).map_err(|err| {
+                format!("Failed to serialize diagram payload for SVG export: {err}")
+            })?;
             let svg = render_shared_svg(&raw)?;
             Ok((svg, "image/svg+xml"))
         }

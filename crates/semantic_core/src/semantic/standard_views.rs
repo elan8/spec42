@@ -59,7 +59,13 @@ mod tests {
     fn lists_exactly_eight_standard_view_types() {
         assert_eq!(STANDARD_VIEW_TYPES.len(), 8);
         let renderers: Vec<_> = STANDARD_VIEW_TYPES.iter().map(|(_, r)| *r).collect();
-        assert_eq!(renderers.len(), renderers.iter().collect::<std::collections::HashSet<_>>().len());
+        assert_eq!(
+            renderers.len(),
+            renderers
+                .iter()
+                .collect::<std::collections::HashSet<_>>()
+                .len()
+        );
     }
 
     #[test]

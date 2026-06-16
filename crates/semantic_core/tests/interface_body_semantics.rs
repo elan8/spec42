@@ -36,7 +36,7 @@ fn interface_def_body_materializes_ends_with_port_type() {
         .expect("interface def");
 
     let ends: Vec<_> = graph
-        .children_of(&iface)
+        .children_of(iface)
         .into_iter()
         .filter(|child| child.element_kind == "interface end")
         .collect();

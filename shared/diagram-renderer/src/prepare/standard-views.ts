@@ -146,8 +146,8 @@ export function prepareBrowser(visualization: VisualizationPayload): PreparedVie
     kind: elementTypeOf(node) || "element",
     parentId: asString(node.parent_id ?? node.parentId ?? asRecord(node.attributes).parentId),
     qualifiedName: qualifiedNameOf(node),
-    uri: nodeUri(node),
-    range: nodeRange(node),
+    uri: nodeUri(node) ?? undefined,
+    range: nodeRange(node) ?? undefined,
   }));
   const hierarchyLayout = browserLayoutHint(visualization) === "hierarchy";
   const rows = hierarchyLayout
@@ -164,7 +164,7 @@ export function prepareBrowser(visualization: VisualizationPayload): PreparedVie
       kind: row.kind,
       uri: row.uri,
       range: row.range,
-      attributes: row,
+      attributes: { ...row },
     })),
     edges: [],
     meta: { rows, hierarchyLayout, provisional: !hierarchyLayout },

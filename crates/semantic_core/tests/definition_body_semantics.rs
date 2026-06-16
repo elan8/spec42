@@ -89,7 +89,7 @@ fn flow_def_body_materializes_inner_attribute() {
         .find(|node| node.element_kind == "flow def")
         .expect("flow def");
     assert!(
-        graph.children_of(&flow_def).iter().any(|child| {
+        graph.children_of(flow_def).iter().any(|child| {
             (child.element_kind == "attribute" || child.element_kind == "attribute def")
                 && child.name == "rate"
         }),
@@ -137,7 +137,7 @@ fn allocation_def_body_materializes_inner_attribute() {
         .find(|node| node.element_kind == "allocation def")
         .expect("allocation def");
     assert!(
-        graph.children_of(&allocation_def).iter().any(|child| {
+        graph.children_of(allocation_def).iter().any(|child| {
             (child.element_kind == "attribute" || child.element_kind == "attribute def")
                 && child.name == "id"
         }),
@@ -163,7 +163,7 @@ fn flow_usage_brace_body_materializes_inner_attribute() {
         .find(|node| node.element_kind == "flow")
         .expect("flow usage");
     assert!(
-        graph.children_of(&flow_usage).iter().any(|child| {
+        graph.children_of(flow_usage).iter().any(|child| {
             (child.element_kind == "attribute" || child.element_kind == "attribute def")
                 && child.name == "weight"
         }),
@@ -189,7 +189,7 @@ fn occurrence_usage_brace_body_materializes_inner_attribute() {
         .find(|node| node.element_kind == "occurrence")
         .expect("occurrence usage");
     assert!(
-        graph.children_of(&occurrence_usage).iter().any(|child| {
+        graph.children_of(occurrence_usage).iter().any(|child| {
             (child.element_kind == "attribute" || child.element_kind == "attribute def")
                 && child.name == "id"
         }),
@@ -214,7 +214,7 @@ fn rendering_def_body_materializes_filter_and_view_rendering() {
         .into_iter()
         .find(|node| node.element_kind == "rendering def")
         .expect("rendering def");
-    let children = graph.children_of(&rendering_def);
+    let children = graph.children_of(rendering_def);
     assert!(
         children.iter().any(|child| child.element_kind == "filter"),
         "expected filter child under rendering def"
@@ -261,12 +261,12 @@ fn use_case_def_body_materializes_first_succession_and_then_use_case() {
         Some("start")
     );
     assert!(
-        child_with_kind(&graph, &use_case_def, "succession", "start").is_some(),
+        child_with_kind(&graph, use_case_def, "succession", "start").is_some(),
         "expected materialized start succession node"
     );
     assert!(
         graph
-            .children_of(&use_case_def)
+            .children_of(use_case_def)
             .iter()
             .any(|child| child.element_kind == "use case" && child.name == "step"),
         "expected then use case child"
@@ -310,12 +310,12 @@ fn use_case_def_vacuum_succession_chain_resolves_flow_edges() {
         .expect("use case def");
 
     assert!(
-        child_with_kind(&graph, &use_case_def, "succession", "start").is_some(),
+        child_with_kind(&graph, use_case_def, "succession", "start").is_some(),
         "expected start succession node"
     );
-    assert!(child_with_kind(&graph, &use_case_def, "action", "doCheckSuctionChamber").is_some());
-    assert!(child_with_kind(&graph, &use_case_def, "action", "doCheckBatteryCharge").is_some());
-    assert!(child_with_kind(&graph, &use_case_def, "verdict", "done").is_some());
+    assert!(child_with_kind(&graph, use_case_def, "action", "doCheckSuctionChamber").is_some());
+    assert!(child_with_kind(&graph, use_case_def, "action", "doCheckBatteryCharge").is_some());
+    assert!(child_with_kind(&graph, use_case_def, "verdict", "done").is_some());
 
     let has_edge = |source_suffix: &str, target_suffix: &str, kind: RelationshipKind| {
         graph
@@ -376,7 +376,7 @@ fn analysis_def_body_materializes_ref_redefinition() {
         .find(|node| node.element_kind == "analysis def")
         .expect("analysis def");
     assert!(
-        graph.children_of(&analysis_def).iter().any(|child| {
+        graph.children_of(analysis_def).iter().any(|child| {
             child.element_kind == "ref redefinition" && child.name == "withinBudget"
         }),
         "expected ref redefinition child under analysis def"
@@ -403,7 +403,7 @@ fn occurrence_def_assert_constraint_materializes_child_node() {
         .expect("occurrence def");
     assert!(
         graph
-            .children_of(&occurrence_def)
+            .children_of(occurrence_def)
             .iter()
             .any(|child| child.element_kind == "assert constraint"),
         "expected assert constraint child under occurrence def"

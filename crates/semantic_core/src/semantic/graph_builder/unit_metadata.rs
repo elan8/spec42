@@ -312,12 +312,11 @@ fn parse_factor_expression(raw: &str) -> Option<f64> {
 
 fn strip_quotes(value: &str) -> String {
     let mut out = value.trim().to_string();
-    if out.len() > 1 {
-        if (out.starts_with('\'') && out.ends_with('\''))
-            || (out.starts_with('"') && out.ends_with('"'))
-        {
-            out = out[1..out.len() - 1].to_string();
-        }
+    if out.len() > 1
+        && ((out.starts_with('\'') && out.ends_with('\''))
+            || (out.starts_with('"') && out.ends_with('"')))
+    {
+        out = out[1..out.len() - 1].to_string();
     }
     out
 }

@@ -89,7 +89,7 @@ fn port_def_directed_item_inout_materializes_nested_attributes() {
     );
 
     for name in ["vol", "mass"] {
-        let under_item = graph.children_of(&item).iter().any(|node| {
+        let under_item = graph.children_of(item).iter().any(|node| {
             (node.element_kind == "attribute" || node.element_kind == "attribute def")
                 && node.name == name
         });
@@ -97,7 +97,7 @@ fn port_def_directed_item_inout_materializes_nested_attributes() {
             under_item,
             "expected nested attribute '{name}' under item; item children: {:?}",
             graph
-                .children_of(&item)
+                .children_of(item)
                 .iter()
                 .map(|node| (&node.name, &node.element_kind))
                 .collect::<Vec<_>>()

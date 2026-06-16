@@ -6,13 +6,13 @@ use crate::semantic::diagnostics::checks::import_resolution::import_target_resol
 use crate::semantic::diagnostics::helpers::{
     diag, diagnostic_range, is_synthetic, is_unknown_range, parse_attribute_text_range,
 };
-use crate::semantic::standard_views::is_non_standard_explicit_view_type;
 use crate::semantic::diagnostics::types::DiagnosticSeverity;
 use crate::semantic::model::RelationshipKind;
 use crate::semantic::reference_resolution::{resolve_expose_target, ExposeTargetResolution};
 use crate::semantic::relationships::{
     resolve_type_target_in_workspace, ANNOTATED_ELEMENT_TARGET_KINDS,
 };
+use crate::semantic::standard_views::is_non_standard_explicit_view_type;
 use crate::semantic::text_span::TextRange;
 use crate::{SemanticDiagnostic, SemanticGraph};
 
@@ -40,9 +40,16 @@ pub(in crate::semantic::diagnostics) fn collect_view_metadata_conformance_diagno
         if node.element_kind != "view" || is_synthetic(node) {
             continue;
         }
-        if let Some(view_type) = node.attributes.get("viewType").and_then(|value| value.as_str()) {
+        if let Some(view_type) = node
+            .attributes
+            .get("viewType")
+            .and_then(|value| value.as_str())
+        {
             if is_non_standard_explicit_view_type(view_type) {
-                let key = format!("view_type_non_standard|{}|{}", node.id.qualified_name, view_type);
+                let key = format!(
+                    "view_type_non_standard|{}|{}",
+                    node.id.qualified_name, view_type
+                );
                 if seen.insert(key) {
                     diagnostics.push(diag(
                         uri,

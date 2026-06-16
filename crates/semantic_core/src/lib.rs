@@ -22,13 +22,6 @@ pub use semantic::explicit_views::{
     renderer_view_for_view_type, EvaluatedView, ExposeSpec, FilterExpr, ViewCatalog,
     ViewDefinitionSpec, ViewUsageSpec,
 };
-pub use semantic::standard_view_defaults::merge_usage_default_filters;
-pub use semantic::standard_views::{
-    is_standard_view_type, renderer_for_standard_view_type, STANDARD_VIEW_TYPES,
-};
-pub use semantic::view_projection::{
-    apply_edge_predicate, project_view, EdgePredicate, ProjectedView, ProjectionHints,
-};
 pub use semantic::extracted_model::extract_activity_diagrams;
 pub use semantic::graph::{PendingExpressionRelationship, PendingRelationship, SemanticGraph};
 pub use semantic::graph_builder::build_graph_from_doc;
@@ -68,8 +61,15 @@ pub use semantic::source::providers::filesystem::FileSystemDocumentProvider;
 pub use semantic::source::{
     InMemoryDocumentProvider, SysmlDocument, SysmlDocumentProvider, SysmlDocumentSourceKind,
 };
+pub use semantic::standard_view_defaults::merge_usage_default_filters;
+pub use semantic::standard_views::{
+    is_standard_view_type, renderer_for_standard_view_type, STANDARD_VIEW_TYPES,
+};
 pub use semantic::state_views::build_workspace_state_machines;
 pub use semantic::text_span::{TextPosition, TextRange};
+pub use semantic::view_projection::{
+    apply_edge_predicate, project_view, EdgePredicate, ProjectedView, ProjectionHints,
+};
 pub use semantic::visualization_entry::build_sysml_visualization_from_graph;
 pub use semantic::visualization_workspace::{
     attach_ibd_package_container_groups, build_ibd_package_container_groups,

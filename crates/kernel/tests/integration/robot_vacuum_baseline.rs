@@ -122,14 +122,9 @@ fn robot_vacuum_showcase_model_views_are_supported() {
         );
     }
 
-    let probe = build_sysml_visualization_for_paths(
-        &model_dir,
-        Some(&root),
-        &[],
-        "general-view",
-        None,
-    )
-    .expect("robot vacuum visualization probe");
+    let probe =
+        build_sysml_visualization_for_paths(&model_dir, Some(&root), &[], "general-view", None)
+            .expect("robot vacuum visualization probe");
 
     let model_views: Vec<_> = probe
         .view_candidates
@@ -164,7 +159,8 @@ fn robot_vacuum_showcase_model_views_are_supported() {
         product_structure.empty_state_message
     );
     assert_eq!(
-        product_structure.view_candidates
+        product_structure
+            .view_candidates
             .iter()
             .find(|c| c.name == "productStructure")
             .and_then(|c| c.renderer_view.as_deref()),

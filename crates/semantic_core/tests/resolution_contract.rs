@@ -227,7 +227,7 @@ fn contract_metadata_redefine_shorthand_annotated_element_no_incompatible_type_k
         .find(|node| node.element_kind == "metadata def" && node.name == "Role")
         .expect("Role metadata def");
     let annotated = graph
-        .children_of(&role)
+        .children_of(role)
         .into_iter()
         .find(|child| child.name == "annotatedElement")
         .expect("annotatedElement attribute");

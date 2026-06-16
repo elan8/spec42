@@ -49,6 +49,7 @@ fn semantic_metadata_metaclass_role(display_name: &str, text: &str) -> Option<&'
     }
 }
 
+#[allow(clippy::too_many_arguments)]
 fn add_kerml_library_decl_node(
     g: &mut SemanticGraph,
     uri: &Url,
@@ -122,6 +123,7 @@ fn add_kerml_library_decl_node(
     }
 }
 
+#[allow(clippy::too_many_arguments)]
 fn add_kerml_library_feature_node(
     g: &mut SemanticGraph,
     uri: &Url,

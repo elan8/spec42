@@ -25,13 +25,13 @@ use crate::semantic::ibd::{
 use crate::semantic::interconnection_projection::occurrence_id_for_qualified_name;
 use crate::semantic::interconnection_scene::build_interconnection_scene;
 use crate::semantic::model_projection::{self, canonical_general_view_graph};
-use crate::semantic::view_projection::{apply_edge_predicate, project_view};
 use crate::semantic::sequence_views::{
     build_workspace_sequence_diagrams, filter_sequence_diagrams_by_exposed_ids,
 };
 use crate::semantic::state_views::{
     build_workspace_state_machines, filter_state_machines_by_exposed_ids,
 };
+use crate::semantic::view_projection::{apply_edge_predicate, project_view};
 use crate::semantic::workspace_graph::WorkspaceParsedDocument;
 use crate::SemanticGraph;
 
@@ -1875,6 +1875,7 @@ pub fn build_sysml_visualization_workspace(
 }
 
 /// Full visualization response with perf metadata (tests and LSP).
+#[allow(clippy::too_many_arguments)]
 pub fn build_sysml_visualization_workspace_with_meta(
     semantic_graph: &SemanticGraph,
     documents: &[WorkspaceParsedDocument],

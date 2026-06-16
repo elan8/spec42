@@ -378,9 +378,9 @@ fn expand_structural_scope(
             }
         }
 
-        let follows_typing = node_by_id
-            .get(current.as_str())
-            .is_some_and(|node| is_part_like(&node.element_type) || is_action_like(&node.element_type));
+        let follows_typing = node_by_id.get(current.as_str()).is_some_and(|node| {
+            is_part_like(&node.element_type) || is_action_like(&node.element_type)
+        });
         if follows_typing {
             if let Some(targets) = typing_targets.get(current.as_str()) {
                 for target in targets {
@@ -554,10 +554,7 @@ mod tests {
         assert!(projected.node_ids.contains("Pkg::req"));
         assert!(!projected.node_ids.contains("Pkg::part"));
         assert_eq!(projected.edge_predicate, EdgePredicate::TraceabilityOnly);
-        assert_eq!(
-            projected.hints.grid_layout.as_deref(),
-            Some("traceability")
-        );
+        assert_eq!(projected.hints.grid_layout.as_deref(), Some("traceability"));
     }
 
     #[test]

@@ -33,7 +33,7 @@ fn part_def_enum_usage_materializes_inner_attribute() {
         .find(|node| node.element_kind == "part def")
         .expect("part def");
     let enum_usage = graph
-        .children_of(&vehicle)
+        .children_of(vehicle)
         .into_iter()
         .find(|child| child.element_kind == "enumeration" && child.name == "status")
         .expect("enumeration usage");
@@ -66,7 +66,7 @@ fn part_def_item_usage_materializes_inner_attribute() {
         .find(|node| node.element_kind == "part def")
         .expect("part def");
     let item_usage = graph
-        .children_of(&vehicle)
+        .children_of(vehicle)
         .into_iter()
         .find(|child| child.element_kind == "item" && child.name == "cargo")
         .expect("item usage");
@@ -98,13 +98,13 @@ fn part_def_nested_part_def_materializes_as_child_of_part_def() {
         .find(|node| node.element_kind == "part def")
         .expect("part def");
     let cell = graph
-        .children_of(&accumulator)
+        .children_of(accumulator)
         .into_iter()
         .find(|child| child.element_kind == "part def" && child.name == "Cell")
         .expect("nested part def");
     assert_eq!(cell.parent_id.as_ref(), Some(&accumulator.id));
     assert!(
-        graph.children_of(&cell).iter().any(|child| {
+        graph.children_of(cell).iter().any(|child| {
             (child.element_kind == "attribute" || child.element_kind == "attribute def")
                 && child.name == "capacity"
         }),
@@ -130,13 +130,13 @@ fn part_def_nested_item_def_materializes_as_child_of_part_def() {
         .find(|node| node.element_kind == "part def")
         .expect("part def");
     let energy = graph
-        .children_of(&accumulator)
+        .children_of(accumulator)
         .into_iter()
         .find(|child| child.element_kind == "item def" && child.name == "Energy")
         .expect("nested item def");
     assert_eq!(energy.parent_id.as_ref(), Some(&accumulator.id));
     assert!(
-        graph.children_of(&accumulator).iter().any(|child| {
+        graph.children_of(accumulator).iter().any(|child| {
             (child.element_kind == "attribute" || child.element_kind == "attribute def")
                 && child.name == "mass"
         }),
@@ -163,12 +163,12 @@ fn part_def_nested_item_def_body_materializes_inner_attribute() {
         .find(|node| node.element_kind == "part def")
         .expect("part def");
     let energy = graph
-        .children_of(&accumulator)
+        .children_of(accumulator)
         .into_iter()
         .find(|child| child.element_kind == "item def" && child.name == "Energy")
         .expect("nested item def");
     assert!(
-        graph.children_of(&energy).iter().any(|child| {
+        graph.children_of(energy).iter().any(|child| {
             (child.element_kind == "attribute" || child.element_kind == "attribute def")
                 && child.name == "density"
         }),
@@ -196,7 +196,7 @@ fn part_def_occurrence_usage_brace_body_materializes_attribute() {
         .find(|node| node.element_kind == "part def")
         .expect("part def");
     let occurrence_usage = graph
-        .children_of(&process)
+        .children_of(process)
         .into_iter()
         .find(|child| child.element_kind == "occurrence" && child.name == "step")
         .expect("occurrence usage");
@@ -284,7 +284,7 @@ fn robot_vacuum_style_nested_feature_flow_builds_graph() {
         .expect("part def Robot");
     assert!(
         graph
-            .children_of(&robot)
+            .children_of(robot)
             .iter()
             .any(|c| c.element_kind == "part"),
         "expected nested parts under Robot"

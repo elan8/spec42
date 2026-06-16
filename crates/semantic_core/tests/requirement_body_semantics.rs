@@ -35,7 +35,7 @@ fn requirement_subject_decl_emits_subject_edge() {
         .expect("requirement def");
 
     let subject = graph
-        .children_of(&req)
+        .children_of(req)
         .into_iter()
         .find(|child| child.element_kind == "subject")
         .expect("subject child");
@@ -77,7 +77,7 @@ fn requirement_verify_member_materializes_verified_requirement_node() {
 
     assert!(
         graph
-            .children_of(&verify_def)
+            .children_of(verify_def)
             .iter()
             .any(|child| child.element_kind == "verified requirement"),
         "expected verified requirement child on requirement def"
@@ -233,13 +233,13 @@ fn viewpoint_body_materializes_stakeholder_and_purpose_nodes() {
         .expect("viewpoint def");
 
     let kinds: Vec<_> = graph
-        .children_of(&viewpoint)
+        .children_of(viewpoint)
         .into_iter()
         .map(|child| child.element_kind.as_str())
         .collect();
-    assert!(kinds.iter().any(|kind| *kind == "stakeholder"));
-    assert!(kinds.iter().any(|kind| *kind == "purpose"));
-    assert!(kinds.iter().any(|kind| *kind == "frame"));
+    assert!(kinds.contains(&"stakeholder"));
+    assert!(kinds.contains(&"purpose"));
+    assert!(kinds.contains(&"frame"));
     let _ = uri;
 }
 
@@ -276,7 +276,7 @@ fn requirement_require_constraint_stays_on_analysis_constraints_attr() {
 
     assert!(
         graph
-            .children_of(&req)
+            .children_of(req)
             .iter()
             .any(|child| child.element_kind == "require constraint"),
         "expected require constraint child node on requirement def"

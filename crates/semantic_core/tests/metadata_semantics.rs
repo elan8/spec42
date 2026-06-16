@@ -99,7 +99,7 @@ fn requirement_body_metadata_annotation_materializes_on_graph() {
         .expect("requirement def");
     assert!(
         graph
-            .children_of(&requirement)
+            .children_of(requirement)
             .iter()
             .any(|child| child.element_kind == "metadata usage" && child.name == "reviewTag"),
         "expected metadata usage under requirement def body"
@@ -442,7 +442,7 @@ fn metadata_redefine_shorthand_projects_subsets_feature_for_annotated_element() 
         .find(|node| node.element_kind == "metadata def" && node.name == "Role")
         .expect("Role metadata def");
     let annotated = graph
-        .children_of(&role)
+        .children_of(role)
         .into_iter()
         .find(|child| child.name == "annotatedElement")
         .expect("annotatedElement");

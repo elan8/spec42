@@ -1,5 +1,5 @@
 use semantic_core::{
-    build_semantic_graph_from_documents, build_view_catalog, build_view_candidates,
+    build_semantic_graph_from_documents, build_view_candidates, build_view_catalog,
     build_workspace_graph_dto_for_uris, evaluate_views, SysmlDocument, SysmlDocumentSourceKind,
 };
 
@@ -29,8 +29,14 @@ fn evaluate_fixture(content: &str, view_name: &str) -> semantic_core::EvaluatedV
         .unwrap_or_else(|| panic!("view '{view_name}' not found"))
 }
 
-fn candidate_for(evaluated: &semantic_core::EvaluatedView) -> semantic_core::SysmlVisualizationViewCandidateDto {
-    let candidates = build_view_candidates(std::slice::from_ref(evaluated), &Default::default(), &Default::default());
+fn candidate_for(
+    evaluated: &semantic_core::EvaluatedView,
+) -> semantic_core::SysmlVisualizationViewCandidateDto {
+    let candidates = build_view_candidates(
+        std::slice::from_ref(evaluated),
+        &Default::default(),
+        &Default::default(),
+    );
     candidates
         .into_iter()
         .find(|candidate| candidate.id == evaluated.id)
@@ -50,10 +56,16 @@ fn rendering_only_view_resolves_to_interconnection_renderer() {
         }
     "#;
     let view = evaluate_fixture(content, "connections");
-    assert_eq!(view.effective_view_type.as_deref(), Some("InterconnectionView"));
+    assert_eq!(
+        view.effective_view_type.as_deref(),
+        Some("InterconnectionView")
+    );
     let candidate = candidate_for(&view);
     assert!(candidate.supported);
-    assert_eq!(candidate.renderer_view.as_deref(), Some("interconnection-view"));
+    assert_eq!(
+        candidate.renderer_view.as_deref(),
+        Some("interconnection-view")
+    );
 }
 
 #[test]
@@ -122,10 +134,16 @@ fn typed_interconnection_view_regression() {
         }
     "#;
     let view = evaluate_fixture(content, "connections");
-    assert_eq!(view.effective_view_type.as_deref(), Some("InterconnectionView"));
+    assert_eq!(
+        view.effective_view_type.as_deref(),
+        Some("InterconnectionView")
+    );
     let candidate = candidate_for(&view);
     assert!(candidate.supported);
-    assert_eq!(candidate.renderer_view.as_deref(), Some("interconnection-view"));
+    assert_eq!(
+        candidate.renderer_view.as_deref(),
+        Some("interconnection-view")
+    );
 }
 
 #[test]
@@ -177,10 +195,11 @@ fn general_view_part_usage_filter_excludes_non_part_elements() {
             semantic_core::build_semantic_graph_from_documents(&[doc]).expect("graph");
         let parsed_doc = parsed.into_iter().find(|e| e.uri == uri).expect("parsed");
         let catalog = build_view_catalog(std::slice::from_ref(&uri), &[parsed_doc]);
-        let _ = evaluate_views(&catalog, &graph, &semantic_core::build_workspace_graph_dto_for_uris(
+        let _ = evaluate_views(
+            &catalog,
             &graph,
-            std::slice::from_ref(&uri),
-        ));
+            &semantic_core::build_workspace_graph_dto_for_uris(&graph, std::slice::from_ref(&uri)),
+        );
         semantic_core::build_workspace_graph_dto_for_uris(&graph, std::slice::from_ref(&uri))
     };
     let projected = semantic_core::project_view(&view, &graph_dto);
@@ -190,7 +209,9 @@ fn general_view_part_usage_filter_excludes_non_part_elements() {
         .filter(|node| projected.node_ids.contains(&node.id))
         .map(|node| node.element_type.to_lowercase())
         .collect();
-    assert!(node_kinds.iter().any(|kind| kind.contains("part") && !kind.contains("def")));
+    assert!(node_kinds
+        .iter()
+        .any(|kind| kind.contains("part") && !kind.contains("def")));
     assert!(!node_kinds.iter().any(|kind| kind.contains("port")));
 }
 
@@ -226,18 +247,14 @@ fn general_view_requirement_filter_projection_follows_traceability_links() {
         )
         .expect("document");
         let uri = doc.uri.clone();
-        let (graph, _) =
-            semantic_core::build_semantic_graph_from_documents(&[doc]).expect("graph");
+        let (graph, _) = semantic_core::build_semantic_graph_from_documents(&[doc]).expect("graph");
         semantic_core::build_workspace_graph_dto_for_uris(&graph, std::slice::from_ref(&uri))
     };
     let projected = semantic_core::project_view(&view, &graph_dto);
     assert!(projected.node_ids.iter().any(|id| id.contains("need")));
     assert!(projected.node_ids.iter().any(|id| id.contains("req")));
     assert!(projected.node_ids.iter().any(|id| id.contains("design")));
-    assert_eq!(
-        projected.hints.grid_layout.as_deref(),
-        Some("traceability")
-    );
+    assert_eq!(projected.hints.grid_layout.as_deref(), Some("traceability"));
 }
 
 #[test]
@@ -264,14 +281,17 @@ fn browser_view_projection_omits_ancestors_outside_scope() {
         )
         .expect("document");
         let uri = doc.uri.clone();
-        let (graph, _) =
-            semantic_core::build_semantic_graph_from_documents(&[doc]).expect("graph");
+        let (graph, _) = semantic_core::build_semantic_graph_from_documents(&[doc]).expect("graph");
         semantic_core::build_workspace_graph_dto_for_uris(&graph, std::slice::from_ref(&uri))
     };
     let projected = semantic_core::project_view(&view, &graph_dto);
     assert!(!projected.node_ids.iter().any(|id| id == "Pkg"));
     assert_eq!(projected.hints.browser_layout.as_deref(), Some("hierarchy"));
-    assert!(projected.hints.tree_roots.iter().any(|id| id.contains("robot")));
+    assert!(projected
+        .hints
+        .tree_roots
+        .iter()
+        .any(|id| id.contains("robot")));
 }
 
 #[test]
@@ -282,18 +302,14 @@ fn geometry_view_without_usage_filter_gets_spatial_defaults() {
         effective_view_type: Some("GeometryView".to_string()),
         exposed_ids: std::collections::HashSet::from(["Pkg::robot".to_string()]),
         conforms_to: Vec::new(),
-        filters: semantic_core::merge_usage_default_filters(
-            "GeometryView",
-            &[],
-            None,
-        ),
+        filters: semantic_core::merge_usage_default_filters("GeometryView", &[], None),
         visible_ids: std::collections::HashSet::new(),
         issues: Vec::new(),
     };
-    assert!(view.filters.iter().any(|filter| matches!(
-        filter,
-        semantic_core::FilterExpr::Or(_, _)
-    )));
+    assert!(view
+        .filters
+        .iter()
+        .any(|filter| matches!(filter, semantic_core::FilterExpr::Or(_, _))));
     let projected = semantic_core::project_view(
         &view,
         &semantic_core::SysmlGraphDto {

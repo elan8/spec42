@@ -104,8 +104,7 @@ fn default_swim_lane(diagram: &ActivityDiagramDto) -> Option<String> {
     let segment = diagram
         .package_path
         .split('.')
-        .filter(|part| !part.is_empty())
-        .last()
+        .rfind(|part| !part.is_empty())
         .map(str::to_string);
     segment.filter(|value| !value.is_empty())
 }
@@ -316,7 +315,10 @@ fn collect_control_nodes_recursive(
                 });
             }
             if state_type == "decision"
-                && !diagram.decisions.iter().any(|decision| decision.name == name)
+                && !diagram
+                    .decisions
+                    .iter()
+                    .any(|decision| decision.name == name)
             {
                 diagram.decisions.push(DecisionNodeDto {
                     name,

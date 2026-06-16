@@ -33,7 +33,7 @@ fn item_def_body_materializes_inner_attributes() {
 
     for name in ["timestamp", "id"] {
         let child = graph
-            .children_of(&item_def)
+            .children_of(item_def)
             .into_iter()
             .find(|node| node.name == name)
             .unwrap_or_else(|| panic!("expected attribute member '{name}'"));
@@ -45,7 +45,7 @@ fn item_def_body_materializes_inner_attributes() {
     }
 
     let timestamp = graph
-        .children_of(&item_def)
+        .children_of(item_def)
         .into_iter()
         .find(|node| node.name == "timestamp")
         .expect("timestamp attribute def");
@@ -71,7 +71,7 @@ fn individual_def_body_materializes_attribute_usage() {
         .expect("individual def");
 
     assert!(
-        graph.children_of(&individual).iter().any(|child| {
+        graph.children_of(individual).iter().any(|child| {
             (child.element_kind == "attribute" || child.element_kind == "attribute def")
                 && child.name == "name"
         }),

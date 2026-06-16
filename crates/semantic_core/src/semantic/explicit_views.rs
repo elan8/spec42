@@ -217,11 +217,11 @@ fn walk_package_body(
                                 filter: parse_expose_filter(content, &member.span),
                                 range: span_to_range_dto(&member.span),
                             }),
-                            ViewBodyElement::ViewRendering(rendering) => {
-                                if rendering_ref.is_none() {
-                                    rendering_ref = Some(rendering.value.name.clone());
-                                    rendering_type = rendering.value.type_name.clone();
-                                }
+                            ViewBodyElement::ViewRendering(rendering)
+                                if rendering_ref.is_none() =>
+                            {
+                                rendering_ref = Some(rendering.value.name.clone());
+                                rendering_type = rendering.value.type_name.clone();
                             }
                             _ => {}
                         }
@@ -339,12 +339,15 @@ fn resolve_effective_view_type(usage: &ViewUsageSpec, catalog: &ViewCatalog) -> 
     )
     .or_else(|| {
         usage.definition_id.as_deref().and_then(|definition_id| {
-            catalog.definitions.get(definition_id).and_then(|definition| {
-                view_type_for_stdlib_rendering(
-                    definition.rendering_ref.as_deref(),
-                    definition.rendering_type.as_deref(),
-                )
-            })
+            catalog
+                .definitions
+                .get(definition_id)
+                .and_then(|definition| {
+                    view_type_for_stdlib_rendering(
+                        definition.rendering_ref.as_deref(),
+                        definition.rendering_type.as_deref(),
+                    )
+                })
         })
     })
     .map(str::to_string)

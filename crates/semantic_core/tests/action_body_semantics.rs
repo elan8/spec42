@@ -106,7 +106,7 @@ fn action_def_body_materializes_metadata_annotation() {
         .expect("pipeline action def");
     assert!(
         graph
-            .children_of(&pipeline)
+            .children_of(pipeline)
             .iter()
             .any(|child| { child.element_kind == "metadata usage" && child.name == "safetyTag" }),
         "expected metadata usage child under action def body"

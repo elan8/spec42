@@ -1075,7 +1075,7 @@ mod tests {
         let rebuilt_diagnostics = compute_semantic_diagnostics(
             &state.semantic_graph,
             &importer_uri,
-            crate::DiagnosticsHostContext::default(),
+            crate::DiagnosticsHostContext,
         );
         assert!(
             rebuilt_diagnostics.iter().all(|d| {
@@ -1128,7 +1128,7 @@ mod tests {
         let rebuilt_diagnostics = compute_semantic_diagnostics(
             &state.semantic_graph,
             &importer_uri,
-            crate::DiagnosticsHostContext::default(),
+            crate::DiagnosticsHostContext,
         );
         assert!(
             rebuilt_diagnostics.iter().all(|d| {

@@ -498,12 +498,11 @@ fn unit_token_symbol(token: &str) -> String {
 
 fn strip_quotes(value: &str) -> String {
     let mut out = value.trim().to_string();
-    if out.len() > 1 {
-        if (out.starts_with('\'') && out.ends_with('\''))
-            || (out.starts_with('"') && out.ends_with('"'))
-        {
-            out = out[1..out.len() - 1].to_string();
-        }
+    if out.len() > 1
+        && ((out.starts_with('\'') && out.ends_with('\''))
+            || (out.starts_with('"') && out.ends_with('"')))
+    {
+        out = out[1..out.len() - 1].to_string();
     }
     out
 }
@@ -646,9 +645,9 @@ package SIPrefixes {
     fn fahrenheit_short_name_materializes_on_graph() {
         use crate::semantic::graph_builder::unit_metadata::{SHORT_NAME_KEY, UNIT_CONVERSION_KEY};
 
-        let content = with_prefixes(&format!(
-            "attribute <K> kelvin : TemperatureDifferenceUnit;\nattribute <'\u{00B0}F'> 'degree Fahrenheit' : TemperatureDifferenceUnit {{ :>> unitConversion: ConversionByConvention {{ :>> referenceUnit = K; :>> conversionFactor = 5/9; }} }}"
-        ));
+        let content = with_prefixes(
+            "attribute <K> kelvin : TemperatureDifferenceUnit;\nattribute <'\u{00B0}F'> 'degree Fahrenheit' : TemperatureDifferenceUnit { :>> unitConversion: ConversionByConvention { :>> referenceUnit = K; :>> conversionFactor = 5/9; } }",
+        );
         let uri = Url::parse("file:///test/units.sysml").expect("uri");
         let parsed = parse(&content).expect("parse");
         let graph = build_graph_from_doc(&parsed, &uri);
@@ -672,9 +671,9 @@ package SIPrefixes {
 
     #[test]
     fn parses_fractional_conversion_factor() {
-        let registry = registry_from_sysml(&with_prefixes(&format!(
-            "attribute <K> 'kelvin' : TemperatureDifferenceUnit;\nattribute <'\u{00B0}F'> 'degree Fahrenheit' : TemperatureDifferenceUnit {{ :>> unitConversion: ConversionByConvention {{ :>> referenceUnit = K; :>> conversionFactor = 5/9; :>> isExact = true; }} }}"
-        )));
+        let registry = registry_from_sysml(&with_prefixes(
+            "attribute <K> 'kelvin' : TemperatureDifferenceUnit;\nattribute <'\u{00B0}F'> 'degree Fahrenheit' : TemperatureDifferenceUnit { :>> unitConversion: ConversionByConvention { :>> referenceUnit = K; :>> conversionFactor = 5/9; :>> isExact = true; } }",
+        ));
         assert!(
             registry.has_symbol("K"),
             "kelvin shortName K should be indexed"
