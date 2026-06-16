@@ -4,6 +4,7 @@ pub mod ai_tools;
 pub mod api;
 pub mod cli;
 pub mod diagrams;
+pub mod headless_renderer;
 pub mod domain_libraries;
 pub mod elk_layout;
 pub mod environment;

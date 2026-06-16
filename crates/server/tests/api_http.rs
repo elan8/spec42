@@ -91,6 +91,29 @@ async fn post_json(app: &axum::Router, uri: &str, body: Value) -> (StatusCode, V
     (status, value)
 }
 
+async fn post_raw(app: &axum::Router, uri: &str, body: Value) -> (StatusCode, String) {
+    let response = app
+        .clone()
+        .oneshot(
+            Request::builder()
+                .method("POST")
+                .uri(uri)
+                .header("content-type", "application/json")
+                .body(Body::from(body.to_string()))
+                .expect("request"),
+        )
+        .await
+        .expect("response");
+    let status = response.status();
+    let bytes = response
+        .into_body()
+        .collect()
+        .await
+        .expect("body")
+        .to_bytes();
+    (status, String::from_utf8_lossy(&bytes).to_string())
+}
+
 #[tokio::test]
 async fn api_health_returns_ok() {
     with_isolated_data_dir_async(|| async {
@@ -179,6 +202,29 @@ async fn api_model_summary_matches_mcp() {
                 .and_then(|t| t.get("nodes_returned"))
                 .and_then(|v| v.as_u64())
         );
+    })
+    .await;
+}
+
+#[tokio::test]
+async fn api_diagram_svg_uses_shared_renderer() {
+    with_isolated_data_dir_async(|| async {
+        let state = build_test_state(example_workspace_root()).await;
+        let app = router(state);
+        let (status, body) = post_raw(
+            &app,
+            "/v1/diagrams/export",
+            serde_json::json!({
+                "path": "KitchenTimer.sysml",
+                "view": "general-view",
+                "format": "svg"
+            }),
+        )
+        .await;
+        assert_eq!(status, StatusCode::OK);
+        assert!(body.contains("viz-node--"));
+        assert!(body.contains("general-d3-"));
+        assert!(!body.contains("data-layout-engine=\"elkjs-quickjs\""));
     })
     .await;
 }

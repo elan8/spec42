@@ -28,6 +28,7 @@
     "./renderer": "./src/renderer.ts",
     "./sysml-node-builder": "./src/sysml-node-builder.ts",
     "./behavior-interaction": "./src/views/behavior-interaction.ts",
+    "./headless-export": "./src/headless-export.ts",
     "./pipeline-export": "./src/pipeline-export.ts"
   }
 }

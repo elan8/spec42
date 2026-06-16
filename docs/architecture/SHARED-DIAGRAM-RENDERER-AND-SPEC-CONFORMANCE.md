@@ -18,6 +18,7 @@ Related docs:
 | Layer | Scope |
 |-------|-------|
 | Shared renderer | All `SYSML_ENABLED_VIEWS`: general, interconnection, action-flow, state-transition, sequence, browser, grid, geometry |
+| Headless SVG export | CLI and HTTP API render SVG through a bundled `shared/diagram-renderer` headless entrypoint |
 | SysML v2 spec target | Strict standard-view ambition for shipped views, with Browser/Grid/Geometry marked provisional while upstream graphical details settle |
 
 The removed `spec42.visualization.useSharedRenderer` setting must not be reintroduced. New SysML notation belongs in `shared/diagram-renderer`, not in VS Code host-specific renderer branches.
@@ -38,7 +39,7 @@ The removed `spec42.visualization.useSharedRenderer` setting must not be reintro
 
 ## Routing
 
-`vscode/src/visualization/webview/orchestrator.ts` routes every view in `SYSML_ENABLED_VIEWS` to `renderSharedView()`. There is no SysML legacy fallback.
+`vscode/src/visualization/webview/orchestrator.ts` routes every view in `SYSML_ENABLED_VIEWS` to `renderSharedView()`. `spec42 diagrams export --format svg` and `POST /v1/diagrams/export` call the headless shared-renderer bundle through `crates/server/src/headless_renderer.rs`. There is no public SysML legacy fallback.
 
 Visualization payloads are built by `semantic_core` and normalized in `shared/diagram-renderer/src/prepare.ts`:
 
@@ -92,4 +93,10 @@ Manual acceptance:
 
 ```bash
 cd vscode && npm run build:webview
+```
+
+4. Rebuild the headless renderer bundle after shared renderer changes:
+
+```bash
+cd vscode && npm run build:headless-renderer
 ```

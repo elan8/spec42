@@ -2,7 +2,7 @@
 
 Date: 2026-06-16
 
-Status: engineering analysis (not a conformance claim)
+Status: resolved architecture note (not a full OMG BNF conformance claim)
 
 Related:
 
@@ -16,14 +16,14 @@ Normative graphical reference: `SysML-v2-Release/bnf/images/` (284 SVG figures i
 
 ## Executive summary
 
-Spec42 has **one semantic visualization pipeline** (`semantic_core` → `SysmlVisualizationResultDto`) but **two independent SVG renderers**:
+Spec42 has **one semantic visualization pipeline** (`semantic_core` → `SysmlVisualizationResultDto`) and now uses `shared/diagram-renderer` for publication SVG across VS Code, CLI, and HTTP API:
 
 | Surface | Renderer | SysML v2 graphical notation | Suitable for publication |
 | --- | --- | --- | --- |
 | VS Code visualizer + export | `shared/diagram-renderer` (TypeScript, D3, ELK.js) | Partial — core structural and behavior views | Yes, for supported views |
-| `spec42 diagrams export` and `POST /v1/diagrams/export` | `crates/server/src/diagrams.rs` (Rust, QuickJS ELK + simplified SVG) | No — generic boxes and blue edges | Smoke tests and layout probes only |
+| `spec42 diagrams export` and `POST /v1/diagrams/export` | Headless `shared/diagram-renderer` bundle via QuickJS | Same shipped-view notation path as VS Code | Yes, for supported views |
 
-**CLI/API diagram export is not parity with the VS Code extension.** Public docs and conformance metadata describe CLI export as “supported” and ELK-backed, which is true for *layout*, but misleading for *graphical fidelity*. Committing CLI SVGs into downstream repos (for example README figures) will not match what users see in the editor and will not satisfy BNF graphical notation.
+**CLI/API diagram export is parity with the VS Code extension for the shared renderer surface.** The SVG now contains shared renderer structure such as `viz-node--definition`, `viz-node--usage`, `viz-node--reference`, edge marker defs, compartments, IBD ports, and package/container frames. Browser, Grid, and Geometry remain provisional because their shared renderers are still partial.
 
 The VS Code path itself is only a **partial** implementation of the full BNF figure set (~35 primary notations marked **shared** out of 284 inventory entries; many more are compartment-only or **WONTFIX**). CLI export implements **none** of that notation layer.
 
@@ -55,13 +55,13 @@ flowchart TB
 
   subgraph headless [CLI / HTTP API path]
     CLI["spec42 diagrams export\nPOST /v1/diagrams/export"]
-    RUST["diagrams.rs\nbuild_elk_source → layout_elk_graph"]
-    EXP_CLI["render_elk_svg / native_svg\nsimplified SVG"]
+    RUST["diagrams.rs\nheadless_renderer.rs"]
+    EXP_CLI["shared/diagram-renderer\nheadless exportSvg()"]
   end
 
   SYSML --> PROJ --> DTO
   DTO --> LSP --> WEB --> SHARED --> EXP_VSC
-  DTO --> CLI --> RUST --> EXP_CLI
+  DTO --> CLI --> RUST --> SHARED --> EXP_CLI
 ```
 
 ### Shared layer (identical inputs)
@@ -73,7 +73,7 @@ All surfaces call `build_sysml_visualization_for_paths` in `kernel` / `semantic_
 - `activity_diagrams`, `state_machines`, `sequence_diagrams` for behavior views
 - `view_candidates` when exporting `--view model-views`
 
-**View semantics are shared.** Differences appear only after the DTO is handed to a renderer.
+**View semantics are shared.** SVG drawing is now shared too; differences are limited to host shell behavior such as VS Code computed-style inlining and interactive zoom wiring.
 
 ### VS Code path (reference quality)
 
@@ -88,7 +88,7 @@ Exported SVG contains structure classes such as `viz-node--definition`, `viz-nod
 
 ### CLI and HTTP API path (headless shortcut)
 
-`crates/server/src/diagrams.rs` implements export:
+Before the headless shared-renderer migration, `crates/server/src/diagrams.rs` implemented export with a simplified Rust SVG path:
 
 | Step | Implementation | Notes |
 | --- | --- | --- |
@@ -99,29 +99,29 @@ Exported SVG contains structure classes such as `viz-node--definition`, `viz-nod
 | Sequence / browser / grid / geometry | `native_svg` — vertical list of rectangles | Deterministic smoke output |
 | Output markers | `data-spec42-view`, `data-layout-engine="elkjs-quickjs"` | No `viz-node--*` classes |
 
-`render_elk_svg` draws each node as a single rounded rectangle with a name line and an element-type subtitle. Edges are plain blue orthogonal paths. There is no `sysml-node-builder`, no compartments, no ports, no edge markers, no package frames.
+That legacy path drew each node as a single rounded rectangle with a name line and an element-type subtitle. Edges were plain blue orthogonal paths. It did not use `sysml-node-builder`, compartments, ports, edge markers, or package frames.
 
-The HTTP API handler (`POST /v1/diagrams/export` in `crates/server/src/api/handlers.rs`) calls the same `diagrams::render_diagram_for_path` function — **API export quality equals CLI export quality**.
+The HTTP API handler (`POST /v1/diagrams/export` in `crates/server/src/api/handlers.rs`) still calls the same `diagrams::render_diagram_for_path` function, but SVG rendering now delegates to `crates/server/src/headless_renderer.rs`, which evaluates the bundled `shared/diagram-renderer` headless entrypoint.
 
 ## Per-view comparison
 
 | View id | Standard view type (§9.2.20) | VS Code shared renderer | CLI/API export | BNF graphical target |
 | --- | --- | --- | --- | --- |
-| `general-view` (+ filtered model views) | GeneralView | Hierarchical ELK, def/usage/ref chrome, compartments, relationship markers, package containers | Flat ELK, generic boxes | `part-def.svg`, `part.svg`, `definition.svg`, `extended-usage.svg`, compartment figures — **shared** in VS Code only |
-| `interconnection-view` | InterconnectionView | Full IBD: nested usage frames, ports, connector styles (bind, flow, interface) | Scene-based ELK + simplified boxes/edges; no port notation | `port-usage.svg`, `connection.svg`, `binding-connection.svg`, … — **shared** in VS Code only |
-| `action-flow-view` | ActionFlowView | Decision/merge/assign/for-loop nodes, perform badges, conditional succession | Flat action rectangles + control-flow edges | Action-flow BNF set — **shared** in VS Code; fork/join **WONTFIX** |
-| `state-transition-view` | StateTransitionView | Regions, entry/do/exit, terminate vs final, guarded transitions | Simplified state boxes | State BNF set — **shared** in VS Code |
-| `sequence-view` | SequenceView | Lifelines, fragments, activations, messages | `native_svg` list layout | Sequence BNF — **shared** in VS Code |
-| `browser-view` | BrowserView | Provisional tree | `native_svg` list | `asTreeDiagram` rendering kind — partial |
-| `grid-view` | GridView | Provisional table/matrix | `native_svg` list | `asElementTable` / GridView — partial |
-| `geometry-view` | GeometryView | Provisional 2D preview | `native_svg` list | GeometryView — partial |
+| `general-view` (+ filtered model views) | GeneralView | Hierarchical ELK, def/usage/ref chrome, compartments, relationship markers, package containers | Same headless shared renderer | Shipped-view notation |
+| `interconnection-view` | InterconnectionView | Full IBD: nested usage frames, ports, connector styles (bind, flow, interface) | Same headless shared renderer | Shipped-view notation |
+| `action-flow-view` | ActionFlowView | Decision/merge/assign/for-loop nodes, perform badges, conditional succession | Same headless shared renderer | Shipped-view notation; fork/join WONTFIX |
+| `state-transition-view` | StateTransitionView | Regions, entry/do/exit, terminate vs final, guarded transitions | Same headless shared renderer | Shipped-view notation |
+| `sequence-view` | SequenceView | Lifelines, fragments, activations, messages | Same headless shared renderer | Shipped-view notation |
+| `browser-view` | BrowserView | Provisional tree | Same headless shared renderer | Partial |
+| `grid-view` | GridView | Provisional table/matrix | Same headless shared renderer | Partial |
+| `geometry-view` | GeometryView | Provisional 2D preview | Same headless shared renderer | Partial |
 
 ### Explicit model views (`--selected-view`)
 
 When exporting `view productStructure : GeneralView { expose …; filter … }`:
 
 - **VS Code** resolves the view usage, applies expose/filter/traceability projection, and renders with General View notation.
-- **CLI** passes `selected_view` into the same projector but renders the resulting graph with the simplified exporter. Structural relationships may appear as anonymous `contains` / `typing` edges without BNF markers.
+- **CLI/API** pass `selected_view` into the same projector and render the resulting graph through the headless shared renderer.
 
 Default CLI flag `--view` is `all`; with `--selected-view` the first exportable renderer view (`general-view`) is used. This is usually correct for `GeneralView` usages but is easy to misconfigure for views that map to other renderer ids.
 
@@ -148,68 +148,67 @@ Sign-off checklist: [GENERAL-IBD-BNF-SIGNOFF.md](../archive/GENERAL-IBD-BNF-SIGN
 
 3. **Rendering usages in the model** — `Views.sysml` defines `rendering asTreeDiagram`, `asInterconnectionDiagram`, `asElementTable`, and so on. Models may omit explicit `render` (`viewRendering [0..1]`). Tools choose a default renderer for the view definition kind; Spec42 maps standard view defs to renderer ids in `semantic_core`.
 
-**CLI export does not implement layer 2.** Claiming BNF conformance for CLI SVG would be incorrect.
+**CLI/API SVG now implements the same layer-2 renderer as VS Code.** Claiming full OMG BNF coverage for all 284 figures would still be incorrect; the claim is limited to shipped views and documented partial/provisional views.
 
 ### Documented vs actual CLI positioning
 
 | Source | Claim | Reality |
 | --- | --- | --- |
 | [COMPETITIVE-ROADMAP.md](COMPETITIVE-ROADMAP.md) | Updated 2026-06-16: CLI SVG is partial; JSON is full DTO | See acceptance criteria in that doc |
-| [conformance-metadata.json](../reference/conformance-metadata.json) | `diagram export json` → **supported**; `diagram export svg` → **partial** | Matches operational vs notation reality |
+| [conformance-metadata.json](../reference/conformance-metadata.json) | `diagram export json` → **supported**; `diagram export svg` → **supported** | SVG uses headless shared renderer; provisional views remain partial |
 | [CONFORMANCE-MATRIX.md](../reference/CONFORMANCE-MATRIX.md) | Views table lists renderer **shared** | Applies to VS Code / payload contract, not CLI SVG |
 
-Interconnection is the **closest** CLI parity story: Rust `build_elk_graph_from_scene` is tested against TypeScript ELK input goldens, and layout positions can match within ±2px when layout goldens exist (`interconnection_elk_layout_matches_typescript_golden_when_present`). Even there, **SVG drawing** remains the simplified `render_elk_svg` path, not `drawing.ts`.
+Interconnection still keeps Rust ELK layout probes (`interconnection_elk_layout_matches_typescript_golden_when_present`) for internal diagnostics, but public SVG drawing uses `drawing.ts` through the headless bundle.
 
-## Observable differences (checklist)
+## Observable parity (checklist)
 
-Use these markers to identify export source:
+Use these markers to verify shared-renderer output across VS Code, CLI, and HTTP API:
 
-| Signal | VS Code export | CLI/API export |
-| --- | --- | --- |
-| CSS classes | `viz-node--definition`, `viz-node--usage`, `viz-node--reference` | None |
-| Node shape | Sharp vs rounded vs dotted per kind; compartments | Single `<rect class="node" rx="4">` |
-| Edge markers | SVG `<marker>` defs (`general-d3-specializes`, `ibd-flow-arrow`, …) | `<path class="edge">` only |
-| Package / IBD frames | `drawGeneralPackageContainers`, dashed container borders | Absent |
-| Ports | `drawIbdPorts`, port side attachment | Absent (except unused port rects in some ELK paths) |
-| Layout | Nested ELK hierarchy for General/IBD | General view: **flat** node list at root |
-| Attributes | `data-layout-engine` absent or webview-specific | `data-layout-engine="elkjs-quickjs"` |
-| Width on large models | Moderate; nested layout | Often extreme horizontal span (flat layered graph) |
+| Signal | Expected SVG evidence |
+| --- | --- |
+| CSS classes | `viz-node--definition`, `viz-node--usage`, `viz-node--reference` |
+| Node shape | Sharp vs rounded vs dotted per kind; compartments |
+| Edge markers | SVG `<marker>` defs (`general-d3-specializes`, `ibd-flow-arrow`, …) |
+| Package / IBD frames | `drawGeneralPackageContainers`, dashed container borders |
+| Ports | IBD `port-icon` elements with side attachment metadata |
+| Layout | Shared ELK layout via `shared/diagram-renderer` |
+| Legacy marker absence | No `data-layout-engine="elkjs-quickjs"` simplified Rust SVG marker |
 
 ## Testing and quality gates today
 
 | Gate | What it proves | What it does **not** prove |
 | --- | --- | --- |
-| `shared/diagram-renderer` Vitest | Notation chrome, IBD routing, export SVG structure from shared renderer | CLI SVG parity |
-| `vscode/src/test/suite/*visualization*.test.ts` | LSP payload + webview export contains expected SVG fragments | CLI parity |
-| `diagrams.rs` unit tests | `data-element-id` preserved; interconnection ELK produces edges | BNF notation |
-| `interconnection_elk_layout_matches_typescript_golden` | Layout coordinates ≈ TS | Drawing parity |
-| `spec42 diagrams export` in consumer repos | Smoke: view resolves, file written | Publication quality |
+| `shared/diagram-renderer` Vitest | Notation chrome, IBD routing, headless export SVG structure | Rust host integration |
+| `vscode/src/test/suite/*visualization*.test.ts` | LSP payload + webview export contains expected SVG fragments | CLI process invocation |
+| `diagrams.rs` unit tests | `render_diagram(...Svg)` invokes headless shared renderer and emits shared markers | Full workspace coverage |
+| `api_http` diagram export test | HTTP API SVG contains shared renderer markers and omits legacy layout marker | Visual pixel parity |
+| `interconnection_elk_layout_matches_typescript_golden` | Internal legacy layout probe | Public drawing path |
 
-**Gap:** No CI job compares CLI SVG to VS Code `exportSvg()` for the same workspace/view.
+**Remaining gap:** no pixel-level CLI-vs-VS Code screenshot diff; current gates assert structural SVG parity markers.
 
 ## Recommendations
 
 ### For Spec42 product
 
-1. **Document honestly** — Treat CLI/API SVG as *layout smoke output* until parity ships. Update `conformance-metadata.json` notes (separate *operation supported* from *notation parity*).
+1. **Document honestly** — Treat SVG export as shared-renderer parity for shipped views, not full coverage of all 284 OMG BNF figures.
 
-2. **Single drawing implementation** — Preferred: headless `shared/diagram-renderer` (Node driver or WASM bundle) invoked from `diagrams export`. Alternative: port `drawing.ts` / `node-notation.ts` rules to Rust (high cost, drift risk).
+2. **Single drawing implementation** — Keep new notation in `shared/diagram-renderer`; do not reintroduce Rust drawing branches for public SVG.
 
-3. **General view CLI** — Replace `build_graph_elk_source` flat list with the same hierarchical ELK input builder used in `shared/diagram-renderer/src/render/layout.ts` (package groups, parent/child nesting).
+3. **Headless bundle maintenance** — Rebuild `crates/server/assets/diagram-renderer/headless-renderer.js` after shared renderer changes using `npm run build:headless-renderer` from `vscode/`.
 
 4. **Parity regression** — Golden test: export same fixture via webview `exportSvg` and CLI; diff structural markers (node classes, marker ids, edge types). Block release on regression for `general-view` and `interconnection-view`.
 
-5. **JSON export as interchange** — `diagrams export --format json` already emits the full DTO; document a workflow: CI exports JSON, publication pipeline renders with shared renderer.
+5. **JSON export as interchange** — `diagrams export --format json` remains the full DTO interchange format for custom renderers and CI probes.
 
 ### For downstream repos (showcases, CI)
 
-1. **Do not commit CLI SVG** as model documentation unless labeled *non-normative preview*.
+1. **Use CLI/API SVG for publication** when the view is one of the shipped complete renderers.
 
-2. **Publication** — Export from VS Code visualizer, or export JSON and render with `shared/diagram-renderer` in a script.
+2. **Use JSON export** when a downstream pipeline wants to render with custom themes or non-SVG targets.
 
-3. **CI** — Use `spec42 diagrams export --format json` or `spec42 check` for validation; use diagram export SVG only as a *smoke* step (file exists, non-empty, expected node count).
+3. **CI** — Use `spec42 check` for model validity and SVG export for diagram artifact generation/regression checks.
 
-4. **README figures** — Prefer photos, simplified diagrams, or VS Code exports — not CLI rectangles.
+4. **README figures** — CLI/API SVG should visually match VS Code shared-renderer output for shipped views.
 
 ### Suggested conformance-metadata change (applied 2026-06-16)
 
@@ -223,8 +222,8 @@ Use these markers to identify export source:
 },
 {
   "feature": "diagram export svg",
-  "status": "partial",
-  "notes": "CLI/API simplified SVG; not shared-diagram-renderer notation. See DIAGRAM-EXPORT-QUALITY-ANALYSIS.md."
+  "status": "supported",
+  "notes": "CLI and POST /v1/diagrams/export render SVG through shared/diagram-renderer, matching the VS Code notation path for shipped views. Browser/Grid/Geometry remain provisional where their shared renderers are partial."
 }
 ```
 
@@ -234,9 +233,9 @@ Regenerate with `node scripts/generate-conformance-matrix.mjs`.
 
 | Work item | Effort | Impact |
 | --- | --- | --- |
-| Clarify docs + conformance metadata | Small | Stops false expectations |
-| CLI General View hierarchical ELK input | Medium | Layout closer to VS Code |
-| Headless shared-renderer SVG export | Large | True CLI/editor parity |
+| Clarify docs + conformance metadata | Done | Stops false expectations |
+| CLI General View hierarchical ELK input | Superseded | Headless shared renderer owns layout |
+| Headless shared-renderer SVG export | Done | True CLI/editor parity |
 | BNF long-tail notation in shared renderer | Ongoing | Closer to OMG figures |
 | CLI vs VS Code golden parity tests | Medium | Prevents regression |
 
@@ -245,7 +244,9 @@ Regenerate with `node scripts/generate-conformance-matrix.mjs`.
 | Component | Path |
 | --- | --- |
 | CLI/API export entry | `crates/server/src/diagrams.rs` |
-| QuickJS ELK layout | `crates/server/src/elk_layout.rs` |
+| Headless renderer runner | `crates/server/src/headless_renderer.rs` |
+| Headless renderer bundle | `crates/server/assets/diagram-renderer/headless-renderer.js` |
+| QuickJS ELK layout probes | `crates/server/src/elk_layout.rs` |
 | Visualization DTO builder | `crates/semantic_core/src/semantic/visualization_workspace.rs` |
 | Interconnection scene | `crates/semantic_core/src/semantic/interconnection_scene.rs` |
 | Shared renderer entry | `shared/diagram-renderer/src/renderer.ts` |
@@ -256,8 +257,6 @@ Regenerate with `node scripts/generate-conformance-matrix.mjs`.
 
 ## Conclusion
 
-- **VS Code** is Spec42’s reference for SysML v2 diagram *quality*; it implements a meaningful subset of BNF graphical notation via `shared/diagram-renderer`.
-- **CLI and HTTP API** reuse the same *semantic* view projection but render with a separate, intentionally minimal SVG generator suitable for smoke tests and automation — **not** for human-facing model documentation or BNF conformance claims.
-- Treating CLI SVG as interchangeable with the editor misrepresents the product and will confuse showcase repos, educators, and integrators.
-
-Until headless shared-renderer export exists, any workflow that needs spec-aligned diagrams should use the VS Code export path or render from exported JSON with `shared/diagram-renderer`.
+- **VS Code, CLI, and HTTP API** now share the same SysML diagram renderer for SVG output.
+- The shared renderer implements a meaningful shipped-view subset of SysML v2 graphical notation; it is not a claim of full coverage for every OMG BNF figure.
+- Browser, Grid, and Geometry remain provisional until their shared renderers graduate from partial status.

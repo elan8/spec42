@@ -1,3 +1,5 @@
+#![allow(dead_code)] // Legacy Rust SVG helpers are retained for internal layout probes while public SVG uses shared renderer.
+
 use std::path::{Path, PathBuf};
 
 use kernel::build_sysml_visualization_for_paths;
@@ -7,6 +9,7 @@ use semantic_core::{
 use serde::{Deserialize, Serialize};
 
 use crate::cli::{DiagramExportArgs, DiagramExportFormat};
+use crate::headless_renderer::render_shared_svg;
 use crate::elk_layout::layout_elk_graph;
 
 const EXPORTABLE_VIEWS: &[&str] = &[
@@ -47,7 +50,6 @@ pub fn render_diagram(
     payload: &SysmlVisualizationResultDto,
     format: DiagramExportFormat,
 ) -> Result<(String, &'static str), String> {
-    let export_view = payload.view.as_str();
     match format {
         DiagramExportFormat::Json => {
             let raw = serde_json::to_string_pretty(payload)
@@ -55,11 +57,9 @@ pub fn render_diagram(
             Ok((raw, "application/json"))
         }
         DiagramExportFormat::Svg => {
-            let svg = if uses_elk_layout(export_view) {
-                elk_svg(payload, export_view)?
-            } else {
-                native_svg(payload, export_view)
-            };
+            let raw = serde_json::to_string(payload)
+                .map_err(|err| format!("Failed to serialize diagram payload for SVG export: {err}"))?;
+            let svg = render_shared_svg(&raw)?;
             Ok((svg, "image/svg+xml"))
         }
     }
@@ -219,13 +219,6 @@ fn requested_renderer_views(view: &str) -> Result<Vec<&'static str>, String> {
                 EXPORTABLE_VIEWS.join(", ")
             )
         })
-}
-
-fn uses_elk_layout(view: &str) -> bool {
-    matches!(
-        view,
-        "general-view" | "interconnection-view" | "action-flow-view" | "state-transition-view"
-    )
 }
 
 fn native_svg(payload: &SysmlVisualizationResultDto, export_view: &str) -> String {
@@ -1104,7 +1097,7 @@ fn xml_escape(value: &str) -> String {
 mod tests {
     use super::*;
     use semantic_core::{
-        GraphNodeDto, InterconnectionSceneDto, PositionDto, RangeDto, SysmlGraphDto,
+        GraphEdgeDto, GraphNodeDto, InterconnectionSceneDto, PositionDto, RangeDto, SysmlGraphDto,
     };
     use std::collections::HashMap;
 
@@ -1159,6 +1152,65 @@ mod tests {
         assert!(svg.contains("data-element-id=\"P::x\""));
         assert!(svg.contains("data-spec42-view=\"general-view\""));
         assert!(svg.contains("data-layout-engine=\"native\""));
+    }
+
+    #[test]
+    fn public_svg_export_uses_shared_renderer_markup() {
+        let payload = SysmlVisualizationResultDto {
+            version: 1,
+            view: "general-view".to_string(),
+            workspace_root_uri: "file:///demo".to_string(),
+            model_ready: true,
+            view_candidates: Vec::new(),
+            selected_view: None,
+            selected_view_name: Some("General".to_string()),
+            empty_state_message: None,
+            package_groups: None,
+            graph: Some(SysmlGraphDto {
+                nodes: vec![
+                    GraphNodeDto {
+                        id: "P::Vehicle".to_string(),
+                        element_type: "part def".to_string(),
+                        name: "Vehicle".to_string(),
+                        uri: None,
+                        parent_id: None,
+                        range: zero_range(),
+                        attributes: HashMap::new(),
+                    },
+                    GraphNodeDto {
+                        id: "P::vehicle".to_string(),
+                        element_type: "part".to_string(),
+                        name: "vehicle".to_string(),
+                        uri: None,
+                        parent_id: None,
+                        range: zero_range(),
+                        attributes: HashMap::new(),
+                    },
+                ],
+                edges: vec![GraphEdgeDto {
+                    source: "P::vehicle".to_string(),
+                    target: "P::Vehicle".to_string(),
+                    rel_type: "typing".to_string(),
+                    name: Some("typing".to_string()),
+                }],
+            }),
+            general_view_graph: None,
+            workspace_model: None,
+            activity_diagrams: None,
+            sequence_diagrams: None,
+            state_machines: None,
+            ibd: None,
+            interconnection_scene: None,
+            stats: None,
+            projection_hints: None,
+        };
+        let (svg, content_type) =
+            render_diagram(&payload, DiagramExportFormat::Svg).expect("shared renderer svg");
+        assert_eq!(content_type, "image/svg+xml");
+        assert!(svg.contains("viz-node--definition"));
+        assert!(svg.contains("viz-node--usage"));
+        assert!(svg.contains("general-d3-specializes"));
+        assert!(!svg.contains("data-layout-engine=\"elkjs-quickjs\""));
     }
 
     #[test]
