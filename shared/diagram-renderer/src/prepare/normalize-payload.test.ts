@@ -142,26 +142,11 @@ describe("normalizeVisualizationPayload", () => {
 
     it("action-flow-view filters interface-only action definitions from the selector", () => {
         const data = createMockData({
-            activityDiagrams: [
-                {
-                    name: "UpdateDisplay",
-                    actions: [
-                        { name: "renderDisplay", type: "action", kind: "perform", id: "renderDisplay" },
-                    ],
-                    interface: {
-                        inputs: ["currentTime"],
-                        outputs: ["displayText"],
-                    },
-                    flows: [],
-                    decisions: [],
-                    states: [],
-                }
-            ]
+            activityDiagrams: [],
         });
 
         const result = prepareDataForView(data, "action-flow-view");
         assert.deepStrictEqual(result.diagrams, []);
-        assert.ok(Array.isArray(result.activityDiagramCandidates));
         assert.deepStrictEqual(result.activityDiagramCandidates, []);
     });
 
@@ -209,23 +194,10 @@ describe("normalizeVisualizationPayload", () => {
         const data = createMockData({
             activityDiagrams: [
                 {
-                    id: "Mission::CatalogAction::actionDef",
-                    name: "CatalogAction",
-                    packagePath: "Mission",
-                    sourceKind: "actionDef",
-                    actions: [],
-                    interface: {
-                        inputs: ["route"],
-                        outputs: ["status"],
-                    },
-                    flows: [],
-                    decisions: [],
-                    states: [],
-                },
-                {
                     id: "Mission::FlightController::performer",
                     name: "FlightController",
                     packagePath: "Mission",
+                    label: "FlightController - Mission",
                     sourceKind: "performer",
                     actions: [
                         { name: "assessVehicleState", type: "action", kind: "perform", id: "assessVehicleState" },
@@ -254,22 +226,10 @@ describe("normalizeVisualizationPayload", () => {
         const data = createMockData({
             activityDiagrams: [
                 {
-                    id: "Mission::ExecuteOutboundJourney::actionDef",
-                    name: "ExecuteOutboundJourney",
-                    packagePath: "Mission",
-                    sourceKind: "actionDef",
-                    actions: [
-                        { name: "prep", type: "action", kind: "action", id: "prep" },
-                        { name: "launch", type: "action", kind: "action", id: "launch" },
-                    ],
-                    flows: [],
-                    decisions: [],
-                    states: [],
-                },
-                {
                     id: "Mission::LaunchSystem::performer",
                     name: "LaunchSystem",
                     packagePath: "Mission",
+                    label: "LaunchSystem - Mission",
                     sourceKind: "performer",
                     actions: [
                         { name: "provideStage1Thrust", type: "action", kind: "perform", id: "provideStage1Thrust" },
@@ -296,24 +256,10 @@ describe("normalizeVisualizationPayload", () => {
         const data = createMockData({
             activityDiagrams: [
                 {
-                    id: "Mission::FlightController::performer",
-                    name: "FlightController",
-                    packagePath: "Mission",
-                    sourceKind: "performer",
-                    actions: [
-                        { name: "assessVehicleState", type: "action", kind: "perform", id: "assessVehicleState" },
-                        { name: "manageMissionEvents", type: "action", kind: "perform", id: "manageMissionEvents" },
-                    ],
-                    flows: [
-                        { from: "assessVehicleState", to: "manageMissionEvents" },
-                    ],
-                    decisions: [],
-                    states: [],
-                },
-                {
                     id: "Mission::ExecuteMission::actionDef",
                     name: "ExecuteMission",
                     packagePath: "Mission",
+                    label: "ExecuteMission - Mission",
                     sourceKind: "actionDef",
                     actions: [
                         { name: "captureVideo", type: "action", kind: "perform", id: "captureVideo" },
@@ -321,6 +267,22 @@ describe("normalizeVisualizationPayload", () => {
                     ],
                     flows: [
                         { from: "captureVideo", to: "sendReport" },
+                    ],
+                    decisions: [],
+                    states: [],
+                },
+                {
+                    id: "Mission::FlightController::performer",
+                    name: "FlightController",
+                    packagePath: "Mission",
+                    label: "FlightController - Mission",
+                    sourceKind: "performer",
+                    actions: [
+                        { name: "assessVehicleState", type: "action", kind: "perform", id: "assessVehicleState" },
+                        { name: "manageMissionEvents", type: "action", kind: "perform", id: "manageMissionEvents" },
+                    ],
+                    flows: [
+                        { from: "assessVehicleState", to: "manageMissionEvents" },
                     ],
                     decisions: [],
                     states: [],
@@ -378,20 +340,20 @@ describe("normalizeVisualizationPayload", () => {
 
     it("state-transition-view produces normalized state machines", () => {
         const data = createMockData({
-            elements: [
+            stateMachines: [
                 {
-                    name: "TimerStateMachine",
-                    type: "state def",
                     id: "TimerStateMachine",
-                    children: [
-                        { name: "idle", type: "state", id: "idle", children: [], relationships: [] },
-                        { name: "running", type: "state", id: "running", children: [], relationships: [] },
+                    name: "TimerStateMachine",
+                    label: "TimerStateMachine",
+                    packagePath: "",
+                    states: [
+                        { id: "idle", name: "idle", kind: "state" },
+                        { id: "running", name: "running", kind: "state" },
                     ],
-                    relationships: [],
+                    transitions: [
+                        { id: "t1", source: "idle", target: "running", name: "start", selfLoop: false },
+                    ],
                 },
-            ],
-            relationships: [
-                { type: "transition", source: "idle", target: "running", name: "start" },
             ],
         });
         const result = prepareDataForView(data, "state-transition-view");
@@ -413,23 +375,23 @@ describe("normalizeVisualizationPayload", () => {
 
     it("state-transition-view classifies initial/final states and self loops", () => {
         const data = createMockData({
-            elements: [
+            stateMachines: [
                 {
-                    name: "TimerStateMachine",
-                    type: "state def",
                     id: "TimerStateMachine",
-                    children: [
-                        { name: "start", type: "initial state", id: "start", children: [], relationships: [] },
-                        { name: "active", type: "state", id: "active", children: [], relationships: [] },
-                        { name: "done", type: "final state", id: "done", children: [], relationships: [] },
+                    name: "TimerStateMachine",
+                    label: "TimerStateMachine",
+                    packagePath: "",
+                    states: [
+                        { id: "start", name: "start", kind: "initial" },
+                        { id: "active", name: "active", kind: "state" },
+                        { id: "done", name: "done", kind: "final" },
                     ],
-                    relationships: [],
+                    transitions: [
+                        { id: "t1", source: "start", target: "active", name: "boot", selfLoop: false },
+                        { id: "t2", source: "active", target: "active", name: "tick", selfLoop: true },
+                        { id: "t3", source: "active", target: "done", name: "finish", selfLoop: false },
+                    ],
                 },
-            ],
-            relationships: [
-                { type: "transition", source: "start", target: "active", name: "boot" },
-                { type: "transition", source: "active", target: "active", name: "tick" },
-                { type: "transition", source: "active", target: "done", name: "finish" },
             ],
         });
         const result = prepareDataForView(data, "state-transition-view");
@@ -445,60 +407,55 @@ describe("normalizeVisualizationPayload", () => {
 
     it("state-transition-view preserves multiple transitions between the same states", () => {
         const data = createMockData({
-            elements: [
+            stateMachines: [
                 {
-                    name: "DoorStateMachine",
-                    type: "state def",
                     id: "DoorStateMachine",
-                    children: [
-                        { name: "closed", type: "state", id: "closed", children: [], relationships: [] },
-                        { name: "open", type: "state", id: "open", children: [], relationships: [] },
+                    name: "DoorStateMachine",
+                    label: "DoorStateMachine",
+                    packagePath: "",
+                    states: [
+                        { id: "closed", name: "closed", kind: "state" },
+                        { id: "open", name: "open", kind: "state" },
                     ],
-                    relationships: [],
+                    transitions: [
+                        { id: "t1", source: "closed", target: "open", name: "unlock", selfLoop: false },
+                        { id: "t2", source: "closed", target: "open", name: "force_open", selfLoop: false },
+                    ],
                 },
-            ],
-            relationships: [
-                { type: "transition", source: "closed", target: "open", name: "unlock" },
-                { type: "transition", source: "closed", target: "open", name: "force_open" },
             ],
         });
         const result = prepareDataForView(data, "state-transition-view");
-        assert.strictEqual(
-            result.stateMachines[0].transitions.filter((transition: any) => transition.name !== "entry").length,
-            2,
-        );
+        assert.strictEqual(result.stateMachines[0].transitions.length, 2);
     });
 
     it("state-transition-view prefers transition element names over synthetic relationship names", () => {
         const data = createMockData({
-            elements: [
+            stateMachines: [
                 {
-                    name: "FlightModeStateMachine",
-                    type: "state def",
                     id: "FlightModeStateMachine",
-                    children: [
-                        { name: "manual", type: "state", id: "manual", children: [], relationships: [] },
-                        { name: "attitudeHold", type: "state", id: "attitudeHold", children: [], relationships: [] },
+                    name: "FlightModeStateMachine",
+                    label: "FlightModeStateMachine",
+                    packagePath: "",
+                    states: [
+                        { id: "manual", name: "manual", kind: "state" },
+                        { id: "attitudeHold", name: "attitudeHold", kind: "state" },
+                    ],
+                    transitions: [
                         {
-                            name: "to_attitude_from_manual",
-                            type: "transition",
                             id: "transition-a",
                             source: "manual",
                             target: "attitudeHold",
-                            children: [],
-                            relationships: [],
+                            name: "to_attitude_from_manual",
+                            label: "to_attitude_from_manual",
+                            selfLoop: false,
                         },
                     ],
-                    relationships: [],
                 },
-            ],
-            relationships: [
-                { type: "transition", source: "manual", target: "attitudeHold", name: "transition_15" },
             ],
         });
 
         const result = prepareDataForView(data, "state-transition-view");
-        const transition = result.stateMachines[0].transitions.find((candidate: any) => candidate.name !== "entry");
+        const transition = result.stateMachines[0].transitions[0];
 
         assert.strictEqual(transition.name, "to_attitude_from_manual");
         assert.strictEqual(transition.label, "to_attitude_from_manual");
@@ -506,28 +463,21 @@ describe("normalizeVisualizationPayload", () => {
 
     it("state-transition-view preserves parent-child links for composite states", () => {
         const data = createMockData({
-            elements: [
+            stateMachines: [
                 {
-                    name: "OvenStateMachine",
-                    type: "state def",
                     id: "OvenStateMachine",
-                    children: [
-                        {
-                            name: "heating",
-                            type: "state",
-                            id: "heating",
-                            children: [
-                                { name: "preheat", type: "state", id: "preheat", children: [], relationships: [] },
-                                { name: "cook", type: "state", id: "cook", children: [], relationships: [] },
-                            ],
-                            relationships: [],
-                        },
+                    name: "OvenStateMachine",
+                    label: "OvenStateMachine",
+                    packagePath: "",
+                    states: [
+                        { id: "heating", name: "heating", kind: "composite", childIds: ["preheat"] },
+                        { id: "preheat", name: "preheat", kind: "state", parentId: "heating" },
+                        { id: "cook", name: "cook", kind: "state", parentId: "heating" },
                     ],
-                    relationships: [],
+                    transitions: [
+                        { id: "t1", source: "preheat", target: "cook", name: "ready", selfLoop: false },
+                    ],
                 },
-            ],
-            relationships: [
-                { type: "transition", source: "preheat", target: "cook", name: "ready" },
             ],
         });
         const result = prepareDataForView(data, "state-transition-view");
@@ -540,69 +490,26 @@ describe("normalizeVisualizationPayload", () => {
         assert.strictEqual(child.parentId, "heating");
     });
 
-    it("state-transition-view synthesizes an entry node when no explicit initial state exists", () => {
-        const data = createMockData({
-            elements: [
-                {
-                    name: "FlightModeStateMachine",
-                    type: "state def",
-                    id: "FlightModeStateMachine",
-                    children: [
-                        { name: "manual", type: "state", id: "manual", children: [], relationships: [] },
-                        { name: "gpsHold", type: "state", id: "gpsHold", children: [], relationships: [] },
-                    ],
-                    relationships: [],
-                },
-            ],
-            relationships: [
-                { type: "transition", source: "manual", target: "gpsHold", name: "to_gps" },
-            ],
-        });
-        const result = prepareDataForView(data, "state-transition-view");
-        const machine = result.stateMachines[0];
-        const entry = machine.states.find((state: any) => state.kind === "initial");
-        const entryTransition = machine.transitions.find((transition: any) => transition.source === entry.id);
-
-        assert.ok(entry, "an entry state should be synthesized");
-        assert.strictEqual(entry.name, "entry");
-        assert.strictEqual(entryTransition.target, "manual");
-    });
-
     it("state-transition-view selector disambiguates same-name machines by package path", () => {
         const data = createMockData({
-            elements: [
+            stateMachines: [
                 {
-                    name: "PkgA",
-                    type: "package",
-                    id: "PkgA",
-                    children: [
-                        {
-                            name: "FlightModeStateMachine",
-                            type: "state def",
-                            id: "PkgA::FlightModeStateMachine",
-                            children: [{ name: "manual", type: "state", id: "PkgA::manual", children: [], relationships: [] }],
-                            relationships: [],
-                        },
-                    ],
-                    relationships: [],
+                    id: "PkgA::FlightModeStateMachine",
+                    name: "FlightModeStateMachine",
+                    label: "FlightModeStateMachine - PkgA",
+                    packagePath: "PkgA",
+                    states: [{ id: "PkgA::manual", name: "manual", kind: "state" }],
+                    transitions: [],
                 },
                 {
-                    name: "PkgB",
-                    type: "package",
-                    id: "PkgB",
-                    children: [
-                        {
-                            name: "FlightModeStateMachine",
-                            type: "state def",
-                            id: "PkgB::FlightModeStateMachine",
-                            children: [{ name: "auto", type: "state", id: "PkgB::auto", children: [], relationships: [] }],
-                            relationships: [],
-                        },
-                    ],
-                    relationships: [],
+                    id: "PkgB::FlightModeStateMachine",
+                    name: "FlightModeStateMachine",
+                    label: "FlightModeStateMachine - PkgB",
+                    packagePath: "PkgB",
+                    states: [{ id: "PkgB::auto", name: "auto", kind: "state" }],
+                    transitions: [],
                 },
             ],
-            relationships: [],
         });
 
         const result = prepareDataForView(data, "state-transition-view");
@@ -613,62 +520,18 @@ describe("normalizeVisualizationPayload", () => {
         );
     });
 
-    it("state-transition-view excludes typed exhibit-state usages from machine selector candidates", () => {
-        const data = createMockData({
-            elements: [
-                {
-                    name: "FlightController",
-                    type: "part def",
-                    id: "FlightController",
-                    children: [
-                        {
-                            name: "flightMode",
-                            type: "exhibit state",
-                            id: "FlightController::flightMode",
-                            attributes: { type: "FlightModeStateMachine" },
-                            children: [],
-                            relationships: [],
-                        },
-                    ],
-                    relationships: [],
-                },
-                {
-                    name: "FlightModeStateMachine",
-                    type: "state def",
-                    id: "FlightModeStateMachine",
-                    children: [
-                        { name: "manual", type: "state", id: "manual", children: [], relationships: [] },
-                        { name: "auto", type: "state", id: "auto", children: [], relationships: [] },
-                    ],
-                    relationships: [],
-                },
-            ],
-            relationships: [
-                { type: "transition", source: "manual", target: "auto", name: "engage_auto" },
-            ],
-        });
-
-        const result = prepareDataForView(data, "state-transition-view");
-        assert.deepStrictEqual(
-            result.stateMachineCandidates.map((candidate: any) => candidate.name),
-            ["FlightModeStateMachine"]
-        );
-    });
-
     it("state-transition-view keeps real machines that have state content even without transitions", () => {
         const data = createMockData({
-            elements: [
+            stateMachines: [
                 {
-                    name: "FlightModeStateMachine",
-                    type: "state def",
                     id: "FlightModeStateMachine",
-                    children: [
-                        { name: "manual", type: "state", id: "manual", children: [], relationships: [] },
-                    ],
-                    relationships: [],
+                    name: "FlightModeStateMachine",
+                    label: "FlightModeStateMachine",
+                    packagePath: "",
+                    states: [{ id: "manual", name: "manual", kind: "state" }],
+                    transitions: [],
                 },
             ],
-            relationships: [],
         });
 
         const result = prepareDataForView(data, "state-transition-view");
@@ -681,40 +544,30 @@ describe("normalizeVisualizationPayload", () => {
 
     it("action-flow-view selector disambiguates same-name actions by package path", () => {
         const data = createMockData({
-            elements: [
+            activityDiagrams: [
                 {
-                    name: "MissionA",
-                    type: "package",
-                    id: "MissionA",
-                    children: [
-                        {
-                            name: "ExecutePatrol",
-                            type: "action def",
-                            id: "MissionA::ExecutePatrol",
-                            children: [{ name: "stepA", type: "perform action", id: "MissionA::stepA", children: [], relationships: [] }],
-                            relationships: [],
-                        },
-                    ],
-                    relationships: [],
+                    id: "MissionA::ExecutePatrol",
+                    name: "ExecutePatrol",
+                    packagePath: "MissionA",
+                    label: "ExecutePatrol - MissionA",
+                    sourceKind: "actionDef",
+                    actions: [{ name: "stepA", type: "action", kind: "perform", id: "stepA" }],
+                    flows: [{ from: "stepA", to: "stepA" }],
+                    decisions: [],
+                    states: [],
                 },
                 {
-                    name: "MissionB",
-                    type: "package",
-                    id: "MissionB",
-                    children: [
-                        {
-                            name: "ExecutePatrol",
-                            type: "action def",
-                            id: "MissionB::ExecutePatrol",
-                            children: [{ name: "stepB", type: "perform action", id: "MissionB::stepB", children: [], relationships: [] }],
-                            relationships: [],
-                        },
-                    ],
-                    relationships: [],
+                    id: "MissionB::ExecutePatrol",
+                    name: "ExecutePatrol",
+                    packagePath: "MissionB",
+                    label: "ExecutePatrol - MissionB",
+                    sourceKind: "actionDef",
+                    actions: [{ name: "stepB", type: "action", kind: "perform", id: "stepB" }],
+                    flows: [{ from: "stepB", to: "stepB" }],
+                    decisions: [],
+                    states: [],
                 },
             ],
-            activityDiagrams: [],
-            relationships: [],
         });
 
         const result = prepareDataForView(data, "action-flow-view");

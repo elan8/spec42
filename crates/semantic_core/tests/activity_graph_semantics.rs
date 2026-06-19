@@ -1,6 +1,7 @@
 use semantic_core::{
     build_semantic_graph_from_documents, enrich_activity_diagrams_from_graph,
-    extract_activity_diagrams, SysmlDocument, SysmlDocumentSourceKind,
+    extract_activity_diagrams, finalize_activity_diagrams_for_response, SysmlDocument,
+    SysmlDocumentSourceKind,
 };
 use sysml_v2_parser::parse;
 fn workspace_doc(path: &str, content: &str) -> SysmlDocument {
@@ -198,5 +199,30 @@ fn enrich_control_nodes_from_graph_after_ast_extraction() {
     assert!(
         diagram.states.iter().any(|s| s.state_type == "merge"),
         "graph enrichment should surface merge control node"
+    );
+}
+
+#[test]
+fn finalized_activity_diagrams_drop_interface_only_definitions() {
+    let content = r#"package P {
+  action def UpdateDisplay {
+    in currentTime;
+    out displayText;
+    action renderDisplay;
+  }
+}"#;
+    let doc = workspace_doc("iface_only.sysml", content);
+    let uri = doc.uri.clone();
+    let (graph, parsed_docs) = build_semantic_graph_from_documents(&[doc]).expect("graph");
+    let mut diagrams = extract_activity_diagrams(&parsed_docs[0].parsed);
+    for diagram in &mut diagrams {
+        diagram.uri = Some(uri.as_str().to_string());
+    }
+    enrich_activity_diagrams_from_graph(&mut diagrams, &graph, std::slice::from_ref(&uri));
+    let finalized = finalize_activity_diagrams_for_response(diagrams);
+    assert!(
+        finalized.is_empty(),
+        "interface-only action defs should not be renderable: {:?}",
+        finalized
     );
 }

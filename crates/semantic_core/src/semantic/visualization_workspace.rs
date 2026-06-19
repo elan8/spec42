@@ -32,6 +32,11 @@ use crate::semantic::state_views::{
     build_workspace_state_machines, filter_state_machines_by_exposed_ids,
 };
 use crate::semantic::view_projection::{apply_edge_predicate, project_view};
+use crate::semantic::visualization::payload::{
+    finalize_activity_diagrams_for_response, finalize_sequence_diagrams_for_response,
+    finalize_state_machines_for_response, warn_if_behavior_payload_missing,
+};
+use crate::semantic::visualization::scope::{workspace_uris_for_ibd_scope, IbdBuildScope};
 use crate::semantic::workspace_graph::WorkspaceParsedDocument;
 use crate::SemanticGraph;
 
@@ -1372,6 +1377,8 @@ fn renderer_uses_state_machines(renderer: &str) -> bool {
 pub struct VisualizationBuildOptions {
     /// Omit workspace model and unused diagram families for interconnection responses.
     pub slim_interconnection_payload: bool,
+    /// Restrict merged IBD construction to URIs exposed by the selected view.
+    pub ibd_build_scope: IbdBuildScope,
 }
 
 /// Timing breakdown for visualization perf logging.
@@ -1481,7 +1488,10 @@ fn build_activity_diagrams_for_view(
     let viz_docs = workspace_parsed_documents_for_uris(documents, workspace_uris);
     let mut diagrams = build_workspace_activity_diagrams(&viz_docs, workspace_uris, None);
     enrich_activity_diagrams_from_graph(&mut diagrams, semantic_graph, workspace_uris);
-    filter_activity_diagrams_by_graph(&diagrams, selected_graph)
+    finalize_activity_diagrams_for_response(filter_activity_diagrams_by_graph(
+        &diagrams,
+        selected_graph,
+    ))
 }
 
 fn build_sequence_diagrams_for_view(
@@ -1490,7 +1500,10 @@ fn build_sequence_diagrams_for_view(
     exposed_ids: &HashSet<String>,
 ) -> Vec<SequenceDiagramDto> {
     let full_sequence_diagrams = build_workspace_sequence_diagrams(semantic_graph, workspace_uris);
-    filter_sequence_diagrams_by_exposed_ids(&full_sequence_diagrams, exposed_ids)
+    finalize_sequence_diagrams_for_response(filter_sequence_diagrams_by_exposed_ids(
+        &full_sequence_diagrams,
+        exposed_ids,
+    ))
 }
 
 fn build_state_machines_for_view(
@@ -1502,7 +1515,10 @@ fn build_state_machines_for_view(
     let state_ids =
         explicit_views::project_ids_for_renderer(evaluated, graph, "state-transition-view");
     let full_state_machines = build_workspace_state_machines(semantic_graph, workspace_uris);
-    filter_state_machines_by_exposed_ids(&full_state_machines, &state_ids)
+    finalize_state_machines_for_response(filter_state_machines_by_exposed_ids(
+        &full_state_machines,
+        &state_ids,
+    ))
 }
 
 fn select_view_candidate<'a>(
@@ -1727,10 +1743,27 @@ pub fn build_sysml_visualization_from_artifacts(
         .map(|node| node.id.clone())
         .collect();
     let mut interconnection_scope_trace: Option<IbdScopeTrace> = None;
+    let ibd_source = if options.ibd_build_scope == IbdBuildScope::ViewExposedPackages
+        && resolved_view == "interconnection-view"
+    {
+        if let Some(evaluated) = selected_evaluated {
+            let scoped_uris = workspace_uris_for_ibd_scope(
+                workspace_uris,
+                semantic_graph,
+                IbdBuildScope::ViewExposedPackages,
+                &evaluated.exposed_ids,
+            );
+            build_merged_workspace_ibd(semantic_graph, &scoped_uris)
+        } else {
+            full_ibd.clone()
+        }
+    } else {
+        full_ibd.clone()
+    };
     let filtered_ibd = attach_ibd_package_container_groups(
         if resolved_view == "interconnection-view" {
             let (scoped, scope_trace) = select_interconnection_ibd_scope_with_trace(
-                full_ibd,
+                &ibd_source,
                 &selected_ids,
                 selected_evaluated.map(|evaluated| &evaluated.exposed_ids),
             );
@@ -1740,7 +1773,7 @@ pub fn build_sysml_visualization_from_artifacts(
             interconnection_scope_trace = Some(scope_trace);
             scoped
         } else {
-            filter_ibd_by_visible_ids(full_ibd, &selected_ids)
+            filter_ibd_by_visible_ids(&ibd_source, &selected_ids)
         },
         &package_candidates,
         None,
@@ -1797,6 +1830,12 @@ pub fn build_sysml_visualization_from_artifacts(
         Vec::new()
     };
 
+    warn_if_behavior_payload_missing(
+        resolved_view.as_str(),
+        state_machines.len(),
+        activity_diagrams.len(),
+    );
+
     let slim = options.slim_interconnection_payload
         && resolved_view == "interconnection-view"
         && interconnection_scene.is_some();
@@ -1830,7 +1869,11 @@ pub fn build_sysml_visualization_from_artifacts(
             } else {
                 Some(state_machines)
             },
-            ibd: Some(filtered_ibd),
+            ibd: if slim {
+                None
+            } else {
+                Some(filtered_ibd)
+            },
             interconnection_scene,
             stats: Some(SysmlModelStatsDto {
                 total_elements: selected_graph.nodes.len() as u32,

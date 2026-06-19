@@ -202,5 +202,6 @@ Open **View → Output → SysML** and correlate:
 
 ## Changelog
 
+- **2026-06-19**: Visualization debt paydown — Rust `finalize_*` payload shaping; thin `normalize-payload.ts` (~129 lines); `IbdBuildScope::ViewExposedPackages` for interconnection LSP; slim payloads omit `ibd` when `interconnectionScene` is present.
 - **2026-06-12**: Implemented lazy visualization pipeline, workspace artifact cache, response cache, slim interconnection payload, and extended perf logging. Post-implementation LSP numbers recorded above.
 - **2026-06-12**: Initial analysis; added `powersystems_system_context_performance_report` test and phase breakdown.

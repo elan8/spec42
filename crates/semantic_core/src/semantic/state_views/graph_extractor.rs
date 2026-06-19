@@ -92,6 +92,7 @@ fn build_machine(graph: &SemanticGraph, root: &SemanticNode) -> Option<StateMach
     Some(StateMachineDto {
         id: root.id.qualified_name.clone(),
         name: root.name.clone(),
+        label: String::new(),
         package_path: package_path_for(graph, root),
         uri: Some(root.id.uri.as_str().to_string()),
         states: state_nodes,

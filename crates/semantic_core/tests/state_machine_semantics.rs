@@ -1,6 +1,6 @@
 use semantic_core::{
-    build_semantic_graph_from_documents, build_workspace_state_machines, SysmlDocument,
-    SysmlDocumentSourceKind,
+    build_semantic_graph_from_documents, build_workspace_state_machines,
+    finalize_state_machines_for_response, SysmlDocument, SysmlDocumentSourceKind,
 };
 
 fn workspace_doc(path: &str, content: &str) -> SysmlDocument {
@@ -152,6 +152,26 @@ fn terminate_state_kind_is_distinct_from_final() {
             .states
             .iter()
             .map(|state| (&state.name, &state.kind))
+            .collect::<Vec<_>>()
+    );
+}
+
+#[test]
+fn finalized_state_machines_include_selector_labels() {
+    let content = include_str!("fixtures/parser_wave/final-state.sysml");
+    let doc = workspace_doc("final-state.sysml", content);
+    let uri = doc.uri.clone();
+    let (graph, _) = build_semantic_graph_from_documents(&[doc]).expect("graph");
+    let machines = finalize_state_machines_for_response(build_workspace_state_machines(
+        &graph,
+        &[uri],
+    ));
+    assert!(
+        machines.iter().all(|machine| !machine.label.is_empty()),
+        "expected selector labels on all machines: {:?}",
+        machines
+            .iter()
+            .map(|machine| (&machine.name, &machine.label))
             .collect::<Vec<_>>()
     );
 }

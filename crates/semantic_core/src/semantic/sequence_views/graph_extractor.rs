@@ -283,6 +283,7 @@ fn build_diagram(
         id: format!("{scenario_id}::sequence"),
         name: scenario.name.clone(),
         package_path,
+        label: String::new(),
         source_kind: source_kind.to_string(),
         uri: Some(scenario_uri),
         lifelines,

@@ -159,6 +159,21 @@ Large repositories may truncate file discovery per folder pattern. The VS Code s
 - **Fixture:** [vscode/testFixture/workspaces/large-workspace](vscode/testFixture/workspaces/large-workspace) sets `maxFilesPerPattern: 2` for manual truncation testing.
 - **Integration:** `crates/kernel/tests/integration/workspace.rs` (large-workspace / perf paths pass a higher cap via LSP `initializationOptions`).
 
+## Visualization normalization parity
+
+Authoritative semantic shaping for diagram payloads lives in `semantic_core` (`crates/semantic_core/src/semantic/visualization/payload.rs`) before LSP/CLI serialization. The shared renderer's `normalizeVisualizationPayload` is a thin pass-through (aliases + candidate arrays only).
+
+| Field / behavior | Authoritative source |
+|------------------|---------------------|
+| `interconnectionScene` | `interconnection_scene.rs` |
+| `stateMachines` (labels, sort, filter) | `finalize_state_machines_for_response` |
+| `activityDiagrams` (renderability, rank, flow IDs) | `finalize_activity_diagrams_for_response` |
+| `sequenceDiagrams` (filter, rank, labels) | `finalize_sequence_diagrams_for_response` |
+| Scoped IBD URI set (interconnection LSP) | `IbdBuildScope::ViewExposedPackages` + `ibd_uri_closure_for_exposed_ids` |
+| `viewCandidates` | `explicit_views::build_view_candidates` |
+
+See [docs/architecture/PREPARE-PIPELINE-OVERLAP.md](docs/architecture/PREPARE-PIPELINE-OVERLAP.md).
+
 ## Running Tests
 
 Spec42 uses two Rust integration layers in CI:

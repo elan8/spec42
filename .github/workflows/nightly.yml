@@ -229,6 +229,48 @@ jobs:
           } >> "$GITHUB_STEP_SUMMARY"
           exit 0
 
+  powersystems-interconnection-performance:
+    name: Power systems interconnection perf (informational)
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          submodules: recursive
+
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Cache cargo
+        uses: Swatinem/rust-cache@v2
+
+      - name: Prepare SysML stdlib bundle
+        run: |
+          VERSION=$(node -p "require('./config/standard-library.json').version")
+          echo "SPEC42_STDLIB_VERSION=${VERSION}" >> $GITHUB_ENV
+          echo "SPEC42_STDLIB_KPAR_DIR=${{ github.workspace }}/.cache/sysml-stdlib-kpar-${VERSION}" >> $GITHUB_ENV
+
+      - name: Restore SysML stdlib bundle cache
+        uses: actions/cache/restore@v4
+        id: stdlib-cache
+        with:
+          path: .cache/sysml-stdlib-kpar-${{ env.SPEC42_STDLIB_VERSION }}
+          key: sysml-stdlib-${{ env.SPEC42_STDLIB_VERSION }}
+
+      - name: Fetch SysML stdlib bundle
+        if: steps.stdlib-cache.outputs.cache-hit != 'true'
+        run: bash scripts/fetch-stdlib-bundle.sh
+
+      - name: Run power systems interconnection performance report
+        env:
+          SYSML_POWERSYSTEMS_DIR: ${{ github.workspace }}/examples/power-systems
+        run: |
+          if [ ! -d "$SYSML_POWERSYSTEMS_DIR" ]; then
+            echo "Power systems fixture not present; skipping." >> "$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
+          cargo test -p kernel --test lsp_integration integration::powersystems_performance::powersystems_system_context_performance_report --release -- --ignored --nocapture
+
       - name: Summarize large workspace performance report
         if: always()
         run: |

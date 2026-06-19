@@ -277,6 +277,7 @@ pub(crate) fn sysml_visualization_result(
         build_start,
         semantic_core::VisualizationBuildOptions {
             slim_interconnection_payload: true,
+            ibd_build_scope: semantic_core::IbdBuildScope::ViewExposedPackages,
         },
     )
     .map_err(|error| tower_lsp::jsonrpc::Error {

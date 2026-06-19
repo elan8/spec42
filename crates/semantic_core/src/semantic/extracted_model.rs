@@ -167,6 +167,8 @@ pub struct ActivityDiagramDto {
     pub name: String,
     #[serde(skip_serializing_if = "String::is_empty")]
     pub package_path: String,
+    #[serde(skip_serializing_if = "String::is_empty")]
+    pub label: String,
     pub source_kind: String,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub uri: Option<String>,
@@ -255,6 +257,8 @@ pub struct SequenceDiagramDto {
     pub name: String,
     #[serde(skip_serializing_if = "String::is_empty")]
     pub package_path: String,
+    #[serde(skip_serializing_if = "String::is_empty")]
+    pub label: String,
     pub source_kind: String,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub uri: Option<String>,
@@ -343,6 +347,8 @@ pub struct SequenceFragmentDto {
 pub struct StateMachineDto {
     pub id: String,
     pub name: String,
+    #[serde(skip_serializing_if = "String::is_empty")]
+    pub label: String,
     pub package_path: String,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub uri: Option<String>,
@@ -518,6 +524,7 @@ fn extract_performer_diagram_from_performs(
             name.to_string()
         },
         package_path: package_path_from_segments(package_segments),
+        label: String::new(),
         source_kind: "performer".to_string(),
         uri: None,
         actions,
@@ -1165,6 +1172,7 @@ fn extract_activity_from_action(
             name
         },
         package_path: package_path_from_segments(package_segments),
+        label: String::new(),
         source_kind: "actionDef".to_string(),
         uri: None,
         actions,
