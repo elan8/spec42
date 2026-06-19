@@ -1,30 +1,17 @@
-use crate::common::text_span::{to_core_position, to_core_range};
-use crate::common::util;
-use crate::language::{find_reference_ranges, is_reserved_keyword, word_at_position, SymbolEntry};
-use crate::semantic::NodeId;
-use crate::semantic::ResolveResult;
-use crate::workspace::ServerState;
-use semantic_core::TextRange;
-use std::time::Instant;
+use crate::common::text_span::{to_core_position, to_lsp_range};
+use crate::workspace::{snapshot::ServerStateSnapshot, ServerState};
+use language_service::WorkspaceSnapshot;
 use tower_lsp::lsp_types::{Location, Position, Range, Url};
-use tracing::info;
-
-type LocationKey = (String, u32, u32, u32, u32);
 
 #[derive(Debug, Clone)]
 pub(crate) struct ResolvedSymbolTarget {
-    pub(crate) target_id: NodeId,
+    #[allow(dead_code)]
+    pub(crate) target_id: semantic_core::NodeId,
+    #[allow(dead_code)]
     pub(crate) name: String,
     pub(crate) definition_location: Location,
     pub(crate) identifier_range: Range,
     pub(crate) is_renameable: bool,
-}
-
-fn position_in_range(pos: Position, range: TextRange) -> bool {
-    (pos.line > range.start.line
-        || (pos.line == range.start.line && pos.character >= range.start.character))
-        && (pos.line < range.end.line
-            || (pos.line == range.end.line && pos.character <= range.end.character))
 }
 
 pub(crate) fn resolved_references_at_position(
@@ -33,36 +20,26 @@ pub(crate) fn resolved_references_at_position(
     pos: Position,
     include_declaration: bool,
 ) -> Option<Vec<Location>> {
-    let started_at = Instant::now();
-    let target = match resolve_symbol_target_at_position(state, uri_norm, pos) {
-        Some(target) => target,
-        None => return Some(Vec::new()),
-    };
-
-    let locations = collect_references_for_lookup(
-        state,
-        uri_norm,
-        &target.name,
-        vec![target.definition_location.clone()],
-        Some(std::iter::once(target.target_id.clone()).collect()),
+    let snapshot = ServerStateSnapshot::new(state);
+    let path = snapshot.path_for_uri(uri_norm);
+    let result = language_service::find_references(
+        &snapshot,
+        &path,
+        to_core_position(pos),
         include_declaration,
     );
-    let elapsed_ms = started_at.elapsed().as_millis();
-    if state.perf_logging_enabled && elapsed_ms >= 10 {
-        info!(
-            target: "kernel::lsp_runtime::references_resolver",
-            event = "referencesResolver:resolvedAtPosition",
-            uri = %uri_norm,
-            line = pos.line,
-            character = pos.character,
-            lookup_name = %target.name,
-            include_declaration,
-            locations = locations.len(),
-            elapsed_ms,
-            "resolved references at position"
-        );
-    }
-    Some(locations)
+    Some(
+        result
+            .locations
+            .into_iter()
+            .filter_map(|loc| {
+                snapshot.resolve_uri_for_path(&loc.path).map(|uri| Location {
+                    uri,
+                    range: to_lsp_range(loc.range),
+                })
+            })
+            .collect(),
+    )
 }
 
 pub(crate) fn resolve_symbol_target_at_position(
@@ -70,451 +47,23 @@ pub(crate) fn resolve_symbol_target_at_position(
     uri_norm: &Url,
     pos: Position,
 ) -> Option<ResolvedSymbolTarget> {
-    let text = state.index.get(uri_norm).map(|e| e.content.as_str())?;
-    let (line, char_start, char_end, word) = word_at_position(text, pos.line, pos.character)?;
-    if is_non_code_position(text, line, char_start) {
-        return None;
-    }
-    let lookup_name = word
-        .rsplit("::")
-        .next()
-        .map(str::to_string)
-        .unwrap_or_else(|| word.clone());
-    let qualifier = word.rsplit_once("::").map(|(q, _)| q.to_string());
-    if is_reserved_keyword(&word) || is_reserved_keyword(&lookup_name) {
-        return None;
-    }
-
-    let selected_defs =
-        select_defs_for_position(state, uri_norm, &lookup_name, qualifier.as_deref(), pos);
-    let explicit_target_ids: std::collections::HashSet<NodeId> = state
-        .semantic_graph
-        .nodes_for_uri(uri_norm)
-        .into_iter()
-        .filter(|node| node.name == lookup_name && position_in_range(pos, node.range))
-        .map(|node| node.id.clone())
-        .collect();
-
-    let mut target_ids: std::collections::HashSet<NodeId> = if explicit_target_ids.is_empty() {
-        selected_defs
-            .iter()
-            .filter_map(|entry| symbol_entry_node_id(state, entry))
-            .collect()
-    } else {
-        explicit_target_ids
-    };
-    let same_uri_target_ids: std::collections::HashSet<NodeId> = target_ids
-        .iter()
-        .filter(|id| util::normalize_file_uri(&id.uri) == *uri_norm)
-        .cloned()
-        .collect();
-    if !same_uri_target_ids.is_empty() {
-        target_ids = same_uri_target_ids;
-    }
-    if target_ids.len() != 1 {
-        return None;
-    }
-    let target_id = target_ids.into_iter().next()?;
-    let target_node = state.semantic_graph.get_node(&target_id)?;
-    let definition_location = selected_defs
-        .iter()
-        .find(|entry| symbol_entry_node_id(state, entry).as_ref() == Some(&target_id))
-        .map(|entry| Location {
-            uri: util::normalize_file_uri(&entry.uri),
-            range: entry.range,
-        })
-        .unwrap_or_else(|| Location {
-            uri: target_node.id.uri.clone(),
-            range: crate::common::text_span::to_lsp_range(target_node.range),
-        });
-
+    let snapshot = ServerStateSnapshot::new(state);
+    let target = language_service::references::resolve_symbol_target_at_position(
+        &snapshot,
+        uri_norm,
+        to_core_position(pos),
+    )?;
+    let definition_uri = snapshot
+        .resolve_uri_for_path(&target.definition_location.path)
+        .unwrap_or_else(|| uri_norm.clone());
     Some(ResolvedSymbolTarget {
-        target_id,
-        name: lookup_name,
-        definition_location,
-        identifier_range: Range::new(
-            Position::new(line, char_start),
-            Position::new(line, char_end),
-        ),
+        target_id: target.target_id,
+        name: target.name,
+        definition_location: Location {
+            uri: definition_uri,
+            range: to_lsp_range(target.definition_location.range),
+        },
+        identifier_range: to_lsp_range(target.identifier_range),
         is_renameable: true,
     })
-}
-
-fn collect_references_for_lookup(
-    state: &ServerState,
-    query_uri: &Url,
-    lookup_name: &str,
-    selected_defs: Vec<Location>,
-    explicit_target_ids: Option<std::collections::HashSet<NodeId>>,
-    include_declaration: bool,
-) -> Vec<Location> {
-    let started_at = Instant::now();
-    let mut target_ids: std::collections::HashSet<NodeId> =
-        explicit_target_ids.unwrap_or_else(|| {
-            selected_defs
-                .iter()
-                .filter_map(|location| location_node_id(state, location, lookup_name))
-                .collect()
-        });
-    let same_uri_target_ids: std::collections::HashSet<NodeId> = target_ids
-        .iter()
-        .filter(|id| util::normalize_file_uri(&id.uri) == *query_uri)
-        .cloned()
-        .collect();
-    if !same_uri_target_ids.is_empty() {
-        target_ids = same_uri_target_ids;
-    }
-    // Strict mode: if target cannot resolve to FQN, we return no references.
-    if target_ids.is_empty() {
-        return Vec::new();
-    }
-    let def_locations: std::collections::HashSet<LocationKey> = selected_defs
-        .into_iter()
-        .map(|loc| location_key_for_location(&loc))
-        .collect();
-
-    let mut locations: Vec<Location> = Vec::new();
-    for (uri, entry) in state.index.iter() {
-        for range in find_reference_ranges(&entry.content, lookup_name) {
-            if is_non_code_position(&entry.content, range.start.line, range.start.character) {
-                continue;
-            }
-            let location = Location {
-                uri: uri.clone(),
-                range,
-            };
-            let semantic_candidate_ids: std::collections::HashSet<NodeId> = state
-                .semantic_graph
-                .nodes_for_uri(uri)
-                .into_iter()
-                .filter(|node| {
-                    node.name == lookup_name && position_in_range(location.range.start, node.range)
-                })
-                .map(|node| node.id.clone())
-                .collect();
-            let (candidate_same, candidate_other) =
-                collect_symbol_matches_for_lookup(state, uri, lookup_name, None);
-            let candidate_ids: std::collections::HashSet<NodeId> = if !semantic_candidate_ids
-                .is_empty()
-            {
-                semantic_candidate_ids
-            } else {
-                let candidate_defs = if candidate_same.len() <= 1 {
-                    candidate_same
-                } else {
-                    select_defs_for_position(state, uri, lookup_name, None, location.range.start)
-                };
-                if !candidate_defs.is_empty() {
-                    candidate_defs
-                        .iter()
-                        .filter_map(|entry| symbol_entry_node_id(state, entry))
-                        .collect()
-                } else {
-                    let other_ids: std::collections::HashSet<NodeId> = candidate_other
-                        .iter()
-                        .filter_map(|entry| symbol_entry_node_id(state, entry))
-                        .collect();
-                    if other_ids.len() == 1 {
-                        other_ids
-                    } else {
-                        std::collections::HashSet::new()
-                    }
-                }
-            };
-            let candidate_ids: std::collections::HashSet<NodeId> =
-                candidate_ids.iter().cloned().collect();
-            let resolved_matches_target =
-                !candidate_ids.is_empty() && candidate_ids.iter().any(|id| target_ids.contains(id));
-            if resolved_matches_target {
-                locations.push(location);
-            }
-        }
-    }
-
-    let result = if include_declaration {
-        locations
-    } else {
-        locations
-            .into_iter()
-            .filter(|loc| !def_locations.contains(&location_key_for_location(loc)))
-            .collect()
-    };
-    let elapsed_ms = started_at.elapsed().as_millis();
-    if state.perf_logging_enabled && elapsed_ms >= 10 {
-        info!(
-            target: "kernel::lsp_runtime::references_resolver",
-            event = "referencesResolver:collect",
-            lookup_name = %lookup_name,
-            selected_defs = target_ids.len(),
-            include_declaration,
-            indexed_documents = state.index.len(),
-            symbol_table = state.symbol_table.len(),
-            locations = result.len(),
-            elapsed_ms,
-            "collect_references_for_lookup completed"
-        );
-    }
-    result
-}
-
-fn select_defs_for_position<'a>(
-    state: &'a ServerState,
-    uri_norm: &Url,
-    lookup_name: &str,
-    qualifier: Option<&str>,
-    pos: Position,
-) -> Vec<&'a SymbolEntry> {
-    let (same_file_defs, other_file_defs) =
-        collect_symbol_matches_for_lookup(state, uri_norm, lookup_name, qualifier);
-    let mut positional_same_file_defs: Vec<&SymbolEntry> = same_file_defs
-        .iter()
-        .copied()
-        .filter(|entry| {
-            let r = entry.range;
-            (pos.line > r.start.line
-                || (pos.line == r.start.line && pos.character >= r.start.character))
-                && (pos.line < r.end.line
-                    || (pos.line == r.end.line && pos.character <= r.end.character))
-        })
-        .collect();
-    if positional_same_file_defs.is_empty() {
-        if let Some(owner_member_defs) =
-            resolve_owner_member_defs(state, uri_norm, lookup_name, pos, &same_file_defs)
-        {
-            return owner_member_defs;
-        }
-        let same_line: Vec<&SymbolEntry> = same_file_defs
-            .iter()
-            .copied()
-            .filter(|entry| entry.range.start.line == pos.line)
-            .collect();
-        if let Some(best) = same_line.into_iter().min_by_key(|entry| {
-            let start_dist = pos.character.abs_diff(entry.range.start.character);
-            let end_dist = pos.character.abs_diff(entry.range.end.character);
-            start_dist.min(end_dist)
-        }) {
-            positional_same_file_defs.push(best);
-        }
-    }
-    if positional_same_file_defs.len() > 1 {
-        if let Some(owner_member_defs) = resolve_owner_member_defs(
-            state,
-            uri_norm,
-            lookup_name,
-            pos,
-            &positional_same_file_defs,
-        ) {
-            positional_same_file_defs = owner_member_defs;
-        }
-    }
-    if positional_same_file_defs.is_empty() {
-        if same_file_defs.is_empty() {
-            other_file_defs
-        } else {
-            same_file_defs
-        }
-    } else {
-        positional_same_file_defs
-    }
-}
-
-fn dotted_owner_at_position(
-    state: &ServerState,
-    uri: &Url,
-    lookup_name: &str,
-    pos: Position,
-) -> Option<String> {
-    let content = state.index.get(uri).map(|e| e.content.as_str())?;
-    let line = content.lines().nth(pos.line as usize)?;
-    let line_chars: Vec<char> = line.chars().collect();
-    let pos_char = pos.character as usize;
-    if pos_char > line_chars.len() {
-        return None;
-    }
-    let prefix: String = line_chars[..pos_char].iter().collect();
-    let mut owner = String::new();
-    let mut seen_dot = false;
-    for ch in prefix.chars().rev() {
-        if !seen_dot {
-            if ch.is_whitespace() {
-                continue;
-            }
-            if ch == '.' {
-                seen_dot = true;
-                continue;
-            }
-            // Not a dotted access for this token.
-            return None;
-        }
-        if ch.is_alphanumeric() || ch == '_' || ch == '-' {
-            owner.push(ch);
-            continue;
-        }
-        break;
-    }
-    if !seen_dot || owner.is_empty() {
-        return None;
-    }
-    let owner_ident: String = owner.chars().rev().collect();
-    if owner_ident == lookup_name {
-        return None;
-    }
-    Some(owner_ident)
-}
-
-fn resolve_owner_member_defs<'a>(
-    state: &ServerState,
-    uri: &Url,
-    lookup_name: &str,
-    pos: Position,
-    candidates: &[&'a SymbolEntry],
-) -> Option<Vec<&'a SymbolEntry>> {
-    let owner_ident = dotted_owner_at_position(state, uri, lookup_name, pos)?;
-    let owner_node = state
-        .semantic_graph
-        .find_deepest_node_at_position(uri, to_core_position(pos))
-        .or_else(|| {
-            state
-                .semantic_graph
-                .nodes_for_uri(uri)
-                .into_iter()
-                .find(|n| n.name == owner_ident)
-        })?;
-    let resolved =
-        crate::semantic::resolve_member_via_type(&state.semantic_graph, owner_node, lookup_name);
-    let resolved_id = match resolved {
-        ResolveResult::Resolved(id) => id,
-        ResolveResult::Ambiguous => return None,
-        ResolveResult::Unresolved => return None,
-    };
-    let filtered: Vec<&SymbolEntry> = candidates
-        .iter()
-        .copied()
-        .filter(|entry| symbol_entry_node_id(state, entry).as_ref() == Some(&resolved_id))
-        .collect();
-    if filtered.is_empty() {
-        None
-    } else {
-        Some(filtered)
-    }
-}
-
-fn location_key_for_location(loc: &Location) -> LocationKey {
-    (
-        loc.uri.to_string(),
-        loc.range.start.line,
-        loc.range.start.character,
-        loc.range.end.line,
-        loc.range.end.character,
-    )
-}
-
-fn collect_symbol_matches_for_lookup<'a>(
-    state: &'a ServerState,
-    uri_norm: &Url,
-    lookup_name: &str,
-    qualifier: Option<&str>,
-) -> (Vec<&'a SymbolEntry>, Vec<&'a SymbolEntry>) {
-    let mut same_file = Vec::new();
-    let mut other_files = Vec::new();
-    for entry in state.symbol_table.iter() {
-        if !symbol_matches_definition_lookup(
-            &entry.name,
-            entry.container_name.as_deref(),
-            entry.uri.path(),
-            lookup_name,
-            qualifier,
-        ) {
-            continue;
-        }
-        if util::normalize_file_uri(&entry.uri) == *uri_norm {
-            same_file.push(entry);
-        } else {
-            other_files.push(entry);
-        }
-    }
-    (same_file, other_files)
-}
-
-fn symbol_matches_definition_lookup(
-    candidate_name: &str,
-    container_name: Option<&str>,
-    candidate_path: &str,
-    lookup_name: &str,
-    qualifier: Option<&str>,
-) -> bool {
-    if candidate_name != lookup_name {
-        return false;
-    }
-    match qualifier {
-        None => true,
-        Some(q) => {
-            let q_lc = q.to_ascii_lowercase();
-            if container_name
-                .map(|c| {
-                    let c_lc = c.to_ascii_lowercase();
-                    c_lc == q_lc || c_lc.ends_with(&format!("::{}", q_lc))
-                })
-                .unwrap_or(false)
-            {
-                return true;
-            }
-            let path_lc = candidate_path.to_ascii_lowercase();
-            path_lc.ends_with(&format!("/{}.sysml", q_lc))
-                || path_lc.ends_with(&format!("/{}.kerml", q_lc))
-        }
-    }
-}
-
-fn symbol_entry_node_id(state: &ServerState, entry: &SymbolEntry) -> Option<NodeId> {
-    let entry_uri = util::normalize_file_uri(&entry.uri);
-    state
-        .semantic_graph
-        .nodes_for_uri(&entry_uri)
-        .into_iter()
-        .find(|node| node.name == entry.name && node.range == to_core_range(entry.range))
-        .map(|node| node.id.clone())
-}
-
-fn location_node_id(state: &ServerState, location: &Location, lookup_name: &str) -> Option<NodeId> {
-    let uri = util::normalize_file_uri(&location.uri);
-    state
-        .semantic_graph
-        .nodes_for_uri(&uri)
-        .into_iter()
-        .find(|node| node.name == lookup_name && node.range == to_core_range(location.range))
-        .map(|node| node.id.clone())
-}
-
-fn is_non_code_position(source: &str, line_no: u32, character: u32) -> bool {
-    let line = match source.lines().nth(line_no as usize) {
-        Some(line) => line,
-        None => return true,
-    };
-    let mut in_string = false;
-    let mut escaped = false;
-    for (idx, ch) in line.chars().enumerate() {
-        if idx as u32 >= character {
-            break;
-        }
-        if escaped {
-            escaped = false;
-            continue;
-        }
-        if ch == '\\' && in_string {
-            escaped = true;
-            continue;
-        }
-        if ch == '"' {
-            in_string = !in_string;
-            continue;
-        }
-        if !in_string && ch == '/' {
-            let next_is_slash = line.chars().nth(idx + 1) == Some('/');
-            if next_is_slash {
-                return true;
-            }
-        }
-    }
-    in_string
 }

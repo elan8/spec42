@@ -5,6 +5,7 @@ Spec42 uses lightweight ADRs to capture significant design decisions: context, t
 | ADR | Status | Title |
 | --- | --- | --- |
 | [0001](0001-read-only-systems-modeling-http-api.md) | Accepted | Read-only HTTP API for SysML v2 workspace access |
+| [0002](0002-language-service-crate.md) | Accepted | `language_service` crate for protocol-neutral editor intelligence |
 
 ## Format
 

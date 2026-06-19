@@ -1,17 +1,46 @@
 //! Helpers for hover and completion: position/word resolution, keywords, and AST name collection.
 //! Also provides definition/reference ranges for Go to definition and Find references.
 
-mod keywords;
-mod position;
 mod symbols;
 
-pub use keywords::{
-    is_reserved_keyword, keyword_doc, keyword_hover_markdown, sysml_keywords, RESERVED_KEYWORDS,
+pub use language_service::{
+    completion_prefix, is_reserved_keyword, keyword_doc, keyword_hover_markdown, line_prefix_at_position,
+    position_to_byte_offset, sysml_keywords, unit_value_suffix_at_position, word_at_position,
+    RESERVED_KEYWORDS,
 };
-pub use position::{
-    completion_prefix, line_prefix_at_position, position_to_byte_offset,
-    unit_value_suffix_at_position, word_at_position,
-};
+#[cfg(test)]
+mod position {
+    use tower_lsp::lsp_types::{Position, Range};
+
+    #[derive(Debug, Clone)]
+    pub struct SourcePosition {
+        pub line: u32,
+        pub character: u32,
+        pub length: u32,
+    }
+
+    pub fn source_position_to_range(pos: &SourcePosition) -> Range {
+        Range::new(
+            Position::new(pos.line, pos.character),
+            Position::new(pos.line, pos.character + pos.length),
+        )
+    }
+
+    #[derive(Debug, Clone)]
+    pub struct SourceRange {
+        pub start_line: u32,
+        pub start_character: u32,
+        pub end_line: u32,
+        pub end_character: u32,
+    }
+
+    pub fn source_range_to_range(r: &SourceRange) -> Range {
+        Range::new(
+            Position::new(r.start_line, r.start_character),
+            Position::new(r.end_line, r.end_character),
+        )
+    }
+}
 #[cfg(test)]
 pub use position::{source_position_to_range, source_range_to_range, SourcePosition, SourceRange};
 pub use symbols::{

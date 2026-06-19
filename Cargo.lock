@@ -1008,6 +1008,7 @@ version = "0.31.0"
 dependencies = [
  "clap",
  "glob",
+ "language_service",
  "petgraph",
  "semantic_core",
  "serde",
@@ -1039,6 +1040,18 @@ dependencies = [
  "thiserror 2.0.18",
  "walkdir",
  "zip",
+]
+
+[[package]]
+name = "language_service"
+version = "0.31.0"
+dependencies = [
+ "semantic_core",
+ "serde",
+ "serde_json",
+ "sysml-v2-parser",
+ "tempfile",
+ "url",
 ]
 
 [[package]]

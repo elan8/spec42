@@ -13,6 +13,7 @@ name = "kernel"
 default = []
 
 [dependencies]
+language_service = { path = "../language_service" }
 semantic_core = { path = "../semantic_core" }
 sysml_semantic_tokens = { path = "../sysml_semantic_tokens" }
 sysml-v2-parser = { workspace = true }

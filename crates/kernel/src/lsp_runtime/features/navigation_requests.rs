@@ -1,386 +1,21 @@
-use std::time::Instant;
-
+use language_service::WorkspaceSnapshot;
 use tower_lsp::jsonrpc::Result;
 use tower_lsp::lsp_types::*;
-use tracing::{debug, info};
 
 use crate::common::text_span::{to_core_position, to_lsp_range};
 use crate::common::util;
-use crate::language::{
-    is_reserved_keyword, keyword_hover_markdown, unit_value_suffix_at_position, word_at_position,
-};
-use crate::semantic::evaluation::UnitRegistry;
-use crate::semantic::{self, ResolveResult};
-use crate::workspace::ServerState;
+use crate::language::word_at_position;
+use crate::workspace::{snapshot::ServerStateSnapshot, ServerState};
 
-use super::super::lookup_helpers::{
-    collect_symbol_matches_for_lookup, debug_qualified_lookup_context,
-};
-use super::super::{navigation, references_resolver};
-use super::shared::TYPE_LOOKUP_KINDS;
-
-fn resolve_hover_type_reference_target<'a>(
-    state: &'a ServerState,
-    node: &crate::semantic::SemanticNode,
-    word: &str,
-    lookup_name: &str,
-) -> Option<&'a crate::semantic::SemanticNode> {
-    let mut candidates = Vec::<String>::new();
-    let mut push_candidate = |candidate: String| {
-        if !candidate.is_empty() && !candidates.iter().any(|existing| existing == &candidate) {
-            candidates.push(candidate);
-        }
-    };
-
-    push_candidate(word.to_string());
-    if lookup_name != word {
-        push_candidate(lookup_name.to_string());
-    }
-
-    if word.contains("::") {
-        for ancestor in state.semantic_graph.ancestors_of(node) {
-            push_candidate(format!("{}::{}", ancestor.id.qualified_name, word));
-        }
-    }
-
-    for candidate in candidates {
-        if let Some(target_id) = semantic::resolve_type_reference_targets(
-            &state.semantic_graph,
-            node,
-            &candidate,
-            TYPE_LOOKUP_KINDS,
-        )
-        .into_iter()
-        .next()
-        {
-            if let Some(target) = state.semantic_graph.get_node(&target_id) {
-                return Some(target);
-            }
-        }
-    }
-
-    None
-}
-
-fn resolve_hover_reference_target<'a>(
-    state: &'a ServerState,
-    uri: &Url,
-    pos: Position,
-    word: &str,
-) -> Option<&'a crate::semantic::SemanticNode> {
-    let context_node = state
-        .semantic_graph
-        .find_deepest_node_at_position(uri, to_core_position(pos))
-        .or_else(|| {
-            state
-                .semantic_graph
-                .nodes_for_uri(uri)
-                .into_iter()
-                .find(|n| n.name == word)
-        });
-
-    let context_node = context_node?;
-
-    let mut prefixes = Vec::<Option<String>>::new();
-    prefixes.push(Some(context_node.id.qualified_name.clone()));
-    if let Some(parent_id) = &context_node.parent_id {
-        prefixes.push(Some(parent_id.qualified_name.clone()));
-    }
-    for ancestor in state.semantic_graph.ancestors_of(context_node) {
-        prefixes.push(Some(ancestor.id.qualified_name.clone()));
-    }
-    prefixes.push(None);
-
-    for prefix in prefixes {
-        let resolved = semantic::resolve_expression_endpoint_strict(
-            &state.semantic_graph,
-            uri,
-            prefix.as_deref(),
-            word,
-        );
-        if let ResolveResult::Resolved(target_id) = resolved {
-            if let Some(target) = state.semantic_graph.get_node(&target_id) {
-                return Some(target);
-            }
-        }
-    }
-
-    None
-}
-
-fn unit_registry_for_hover(state: &ServerState) -> UnitRegistry {
-    UnitRegistry::from_graph(&state.semantic_graph)
-}
-
-fn unit_literal_hover_markdown(state: &ServerState, text: &str, pos: Position) -> Option<String> {
-    let unit_expr = unit_value_suffix_at_position(text, pos.line, pos.character)?;
-    let registry = unit_registry_for_hover(state);
-    Some(
-        registry
-            .hover_markdown_for_unit_literal(&unit_expr)
-            .unwrap_or_else(|| UnitRegistry::hover_markdown_for_unknown_unit_literal(&unit_expr)),
-    )
-}
+use crate::lsp_runtime::navigation;
+use crate::lsp_runtime::references_resolver;
 
 pub(crate) fn hover(state: &ServerState, uri: Url, pos: Position) -> Result<Option<Hover>> {
-    let started_at = Instant::now();
     let uri_norm = util::normalize_file_uri(&uri);
-    let text = match state
-        .index
-        .get(&uri_norm)
-        .map(|entry| entry.content.clone())
-    {
-        Some(text) => text,
-        None => return Ok(None),
-    };
-    let (line, char_start, char_end, word) = match word_at_position(&text, pos.line, pos.character)
-    {
-        Some(parts) => parts,
-        None => return Ok(None),
-    };
-    let lookup_name = word
-        .rsplit("::")
-        .next()
-        .map(str::to_string)
-        .unwrap_or_else(|| word.clone());
-    let qualifier = word.rsplit_once("::").map(|(q, _)| q.to_string());
-    let range = Range::new(
-        Position::new(line, char_start),
-        Position::new(line, char_end),
-    );
-
-    if let Some(md) = keyword_hover_markdown(&lookup_name.to_lowercase()) {
-        let response = Some(Hover {
-            contents: HoverContents::Markup(MarkupContent {
-                kind: MarkupKind::Markdown,
-                value: md,
-            }),
-            range: Some(range),
-        });
-        log_hover_result(
-            state.perf_logging_enabled,
-            &uri_norm,
-            pos,
-            &lookup_name,
-            started_at,
-            "hover resolved via keyword docs",
-        );
-        return Ok(response);
-    }
-
-    if let Some(md) = unit_literal_hover_markdown(state, &text, pos) {
-        let response = Some(Hover {
-            contents: HoverContents::Markup(MarkupContent {
-                kind: MarkupKind::Markdown,
-                value: md,
-            }),
-            range: Some(range),
-        });
-        log_hover_result(
-            state.perf_logging_enabled,
-            &uri_norm,
-            pos,
-            &lookup_name,
-            started_at,
-            "hover resolved via unit literal catalog",
-        );
-        return Ok(response);
-    }
-
-    if let Some(node) = state
-        .semantic_graph
-        .find_deepest_node_at_position(&uri_norm, to_core_position(pos))
-    {
-        let target_match = state
-            .semantic_graph
-            .outgoing_typing_or_specializes_targets(node)
-            .into_iter()
-            .find(|target| {
-                target.name == lookup_name
-                    || target
-                        .id
-                        .qualified_name
-                        .ends_with(&format!("::{}", lookup_name))
-            });
-        let markdown = if let Some(target) = target_match.as_ref() {
-            semantic::hover_markdown_for_node(
-                &state.semantic_graph,
-                target,
-                target.id.uri != uri_norm,
-            )
-        } else {
-            semantic::hover_markdown_for_node(&state.semantic_graph, node, node.id.uri != uri_norm)
-        };
-        let markdown = if target_match.is_none() && word != node.name {
-            match resolve_hover_type_reference_target(state, node, &word, &lookup_name) {
-                Some(target) => semantic::hover_markdown_for_node(
-                    &state.semantic_graph,
-                    target,
-                    target.id.uri != uri_norm,
-                ),
-                None => unit_literal_hover_markdown(state, &text, pos).unwrap_or_else(|| {
-                    format!(
-                        "**Unresolved reference** `{}`\n\nSpec42 could not resolve this name in the current scope, imports, or indexed workspace symbols.",
-                        lookup_name
-                    )
-                }),
-            }
-        } else {
-            markdown
-        };
-        let response = Some(Hover {
-            contents: HoverContents::Markup(MarkupContent {
-                kind: MarkupKind::Markdown,
-                value: markdown,
-            }),
-            range: Some(range),
-        });
-        log_hover_result(
-            state.perf_logging_enabled,
-            &uri_norm,
-            pos,
-            &lookup_name,
-            started_at,
-            "hover resolved via semantic graph",
-        );
-        return Ok(response);
-    }
-
-    if let Some(target) = resolve_hover_reference_target(state, &uri_norm, pos, &word) {
-        let response = Some(Hover {
-            contents: HoverContents::Markup(MarkupContent {
-                kind: MarkupKind::Markdown,
-                value: semantic::hover_markdown_for_node(
-                    &state.semantic_graph,
-                    target,
-                    target.id.uri != uri_norm,
-                ),
-            }),
-            range: Some(range),
-        });
-        log_hover_result(
-            state.perf_logging_enabled,
-            &uri_norm,
-            pos,
-            &lookup_name,
-            started_at,
-            "hover resolved via context-aware reference lookup",
-        );
-        return Ok(response);
-    }
-
-    let (same_file, other_files) =
-        collect_symbol_matches_for_lookup(state, &uri_norm, &lookup_name, qualifier.as_deref());
-    let all_matches = if same_file.is_empty() {
-        &other_files
-    } else {
-        &same_file
-    };
-    if let Some(entry) = all_matches.first() {
-        let value = if all_matches.len() > 1 {
-            let mut md = format!(
-                "**{}** - {} definitions (use Go to Definition to choose):\n\n",
-                lookup_name,
-                all_matches.len()
-            );
-            for entry in all_matches {
-                let kind = entry.detail.as_deref().unwrap_or("element");
-                let container = entry.container_name.as_deref().unwrap_or("(top level)");
-                md.push_str(&format!("- `{}` in `{}`\n", kind, container));
-            }
-            md.push('\n');
-            md.push_str(&util::symbol_hover_markdown(entry, entry.uri != uri_norm));
-            md
-        } else {
-            util::symbol_hover_markdown(entry, entry.uri != uri_norm)
-        };
-        let response = Some(Hover {
-            contents: HoverContents::Markup(MarkupContent {
-                kind: MarkupKind::Markdown,
-                value,
-            }),
-            range: Some(range),
-        });
-        let elapsed_ms = started_at.elapsed().as_millis();
-        if state.perf_logging_enabled && elapsed_ms >= 10 {
-            info!(
-                target: "kernel::lsp_runtime::features",
-                event = "feature:hover",
-                uri = %uri_norm,
-                line = pos.line,
-                character = pos.character,
-                lookup_name = %lookup_name,
-                same_file_matches = same_file.len(),
-                other_file_matches = other_files.len(),
-                elapsed_ms,
-                "hover resolved via symbol lookup"
-            );
-        }
-        return Ok(response);
-    }
-
-    if let Some(md) = unit_literal_hover_markdown(state, &text, pos) {
-        let response = Some(Hover {
-            contents: HoverContents::Markup(MarkupContent {
-                kind: MarkupKind::Markdown,
-                value: md,
-            }),
-            range: Some(range),
-        });
-        log_hover_result(
-            state.perf_logging_enabled,
-            &uri_norm,
-            pos,
-            &lookup_name,
-            started_at,
-            "hover resolved via unit literal catalog (fallback)",
-        );
-        return Ok(response);
-    }
-
-    let unresolved = Some(Hover {
-        contents: HoverContents::Markup(MarkupContent {
-            kind: MarkupKind::Markdown,
-            value: format!(
-                "**Unresolved reference** `{}`\n\nSpec42 could not resolve this name in the current scope, imports, or indexed workspace symbols.",
-                lookup_name
-            ),
-        }),
-        range: Some(range),
-    });
-
-    log_hover_result(
-        state.perf_logging_enabled,
-        &uri_norm,
-        pos,
-        &lookup_name,
-        started_at,
-        "hover completed with unresolved reference fallback",
-    );
-    Ok(unresolved)
-}
-
-fn log_hover_result(
-    perf_logging_enabled: bool,
-    uri: &Url,
-    pos: Position,
-    lookup_name: &str,
-    started_at: Instant,
-    message: &str,
-) {
-    let elapsed_ms = started_at.elapsed().as_millis();
-    if perf_logging_enabled && elapsed_ms >= 10 {
-        info!(
-            target: "kernel::lsp_runtime::features",
-            event = "feature:hover",
-            uri = %uri,
-            line = pos.line,
-            character = pos.character,
-            lookup_name = %lookup_name,
-            elapsed_ms,
-            "{message}"
-        );
-    }
+    let snapshot = ServerStateSnapshot::new(state);
+    let path = snapshot.path_for_uri(&uri_norm);
+    let result = language_service::hover(&snapshot, &path, to_core_position(pos));
+    Ok(result.map(map_hover_to_lsp))
 }
 
 pub(crate) fn goto_definition(
@@ -388,202 +23,11 @@ pub(crate) fn goto_definition(
     uri: Url,
     pos: Position,
 ) -> Result<Option<GotoDefinitionResponse>> {
-    let started_at = Instant::now();
     let uri_norm = util::normalize_file_uri(&uri);
-    let text = match state
-        .index
-        .get(&uri_norm)
-        .map(|entry| entry.content.clone())
-    {
-        Some(text) => text,
-        None => return Ok(None),
-    };
-    let (_, _, _, word) = match word_at_position(&text, pos.line, pos.character) {
-        Some(parts) => parts,
-        None => return Ok(None),
-    };
-    let lookup_name = word
-        .rsplit("::")
-        .next()
-        .map(str::to_string)
-        .unwrap_or_else(|| word.clone());
-    let qualifier = word.rsplit_once("::").map(|(q, _)| q.to_string());
-    debug!(
-        uri = %uri_norm,
-        line = pos.line,
-        character = pos.character,
-        word = %word,
-        lookup_name = %lookup_name,
-        qualifier = ?qualifier,
-        "goto_definition tokenized input"
-    );
-
-    if is_reserved_keyword(&word) || is_reserved_keyword(&lookup_name) {
-        return Ok(None);
-    }
-
-    if let Some(node) = state
-        .semantic_graph
-        .find_node_at_position(&uri_norm, to_core_position(pos))
-    {
-        for target in state
-            .semantic_graph
-            .outgoing_typing_or_specializes_targets(node)
-        {
-            if target.name == lookup_name
-                || target
-                    .id
-                    .qualified_name
-                    .ends_with(&format!("::{}", lookup_name))
-            {
-                return goto_definition_response(
-                    state.perf_logging_enabled,
-                    &uri_norm,
-                    pos,
-                    &lookup_name,
-                    started_at,
-                    Some(GotoDefinitionResponse::Scalar(Location {
-                        uri: target.id.uri.clone(),
-                        range: to_lsp_range(target.range),
-                    })),
-                    "goto definition resolved via semantic graph",
-                );
-            }
-        }
-        if word != node.name {
-            if let Some(target) = semantic::resolve_type_reference_targets(
-                &state.semantic_graph,
-                node,
-                &word,
-                TYPE_LOOKUP_KINDS,
-            )
-            .into_iter()
-            .find_map(|target_id| state.semantic_graph.get_node(&target_id))
-            {
-                return goto_definition_response(
-                    state.perf_logging_enabled,
-                    &uri_norm,
-                    pos,
-                    &lookup_name,
-                    started_at,
-                    Some(GotoDefinitionResponse::Scalar(Location {
-                        uri: target.id.uri.clone(),
-                        range: to_lsp_range(target.range),
-                    })),
-                    "goto definition resolved via import-aware semantic graph",
-                );
-            }
-        }
-    }
-
-    let (same_file_matches, other_file_matches) =
-        collect_symbol_matches_for_lookup(state, &uri_norm, &lookup_name, qualifier.as_deref());
-    let same_file_match_count = same_file_matches.len();
-    let other_file_match_count = other_file_matches.len();
-    let same_file: Vec<Location> = same_file_matches
-        .into_iter()
-        .map(|entry| Location {
-            uri: entry.uri.clone(),
-            range: entry.range,
-        })
-        .collect();
-    let other_files: Vec<Location> = other_file_matches
-        .into_iter()
-        .map(|entry| Location {
-            uri: entry.uri.clone(),
-            range: entry.range,
-        })
-        .collect();
-    let locations = if same_file.is_empty() {
-        other_files
-    } else {
-        same_file
-    };
-    if let [location] = locations.as_slice() {
-        let response = Some(GotoDefinitionResponse::Scalar(location.clone()));
-        let elapsed_ms = started_at.elapsed().as_millis();
-        if state.perf_logging_enabled && elapsed_ms >= 10 {
-            info!(
-                target: "kernel::lsp_runtime::features",
-                event = "feature:gotoDefinition",
-                uri = %uri_norm,
-                line = pos.line,
-                character = pos.character,
-                lookup_name = %lookup_name,
-                same_file_matches = same_file_match_count,
-                other_file_matches = other_file_match_count,
-                locations = 1,
-                elapsed_ms,
-                "goto definition resolved to single location"
-            );
-        }
-        return Ok(response);
-    }
-    if !locations.is_empty() {
-        let location_count = locations.len();
-        let response = Some(GotoDefinitionResponse::Array(locations));
-        let elapsed_ms = started_at.elapsed().as_millis();
-        if state.perf_logging_enabled && elapsed_ms >= 10 {
-            info!(
-                target: "kernel::lsp_runtime::features",
-                event = "feature:gotoDefinition",
-                uri = %uri_norm,
-                line = pos.line,
-                character = pos.character,
-                lookup_name = %lookup_name,
-                same_file_matches = same_file_match_count,
-                other_file_matches = other_file_match_count,
-                locations = location_count,
-                elapsed_ms,
-                "goto definition resolved to multiple locations"
-            );
-        }
-        return Ok(response);
-    }
-    if let Some(qualifier) = qualifier.as_deref() {
-        debug_qualified_lookup_context(state, &lookup_name, qualifier, &uri_norm);
-    }
-    let elapsed_ms = started_at.elapsed().as_millis();
-    if state.perf_logging_enabled && elapsed_ms >= 10 {
-        info!(
-            target: "kernel::lsp_runtime::features",
-            event = "feature:gotoDefinition",
-            uri = %uri_norm,
-            line = pos.line,
-            character = pos.character,
-            lookup_name = %lookup_name,
-            same_file_matches = same_file_match_count,
-            other_file_matches = other_file_match_count,
-            elapsed_ms,
-            "goto definition completed with no result"
-        );
-    }
-    Ok(None)
-}
-
-fn goto_definition_response(
-    perf_logging_enabled: bool,
-    uri: &Url,
-    pos: Position,
-    lookup_name: &str,
-    started_at: Instant,
-    response: Option<GotoDefinitionResponse>,
-    message: &str,
-) -> Result<Option<GotoDefinitionResponse>> {
-    let elapsed_ms = started_at.elapsed().as_millis();
-    if perf_logging_enabled && elapsed_ms >= 10 {
-        info!(
-            target: "kernel::lsp_runtime::features",
-            event = "feature:gotoDefinition",
-            uri = %uri,
-            line = pos.line,
-            character = pos.character,
-            lookup_name = %lookup_name,
-            elapsed_ms,
-            "{message}"
-        );
-    }
-    Ok(response)
+    let snapshot = ServerStateSnapshot::new(state);
+    let path = snapshot.path_for_uri(&uri_norm);
+    let result = language_service::goto_definition(&snapshot, &path, to_core_position(pos));
+    Ok(map_definition_to_lsp(&snapshot, result))
 }
 
 pub(crate) fn references(
@@ -592,29 +36,16 @@ pub(crate) fn references(
     pos: Position,
     include_declaration: bool,
 ) -> Result<Option<Vec<Location>>> {
-    let started_at = Instant::now();
     let uri_norm = util::normalize_file_uri(&uri);
-    let locations = references_resolver::resolved_references_at_position(
-        state,
-        &uri_norm,
-        pos,
+    let snapshot = ServerStateSnapshot::new(state);
+    let path = snapshot.path_for_uri(&uri_norm);
+    let result = language_service::find_references(
+        &snapshot,
+        &path,
+        to_core_position(pos),
         include_declaration,
     );
-    let elapsed_ms = started_at.elapsed().as_millis();
-    if state.perf_logging_enabled && elapsed_ms >= 10 {
-        info!(
-            target: "kernel::lsp_runtime::features",
-            event = "feature:references",
-            uri = %uri_norm,
-            line = pos.line,
-            character = pos.character,
-            include_declaration,
-            locations = locations.as_ref().map(|items| items.len()).unwrap_or(0),
-            elapsed_ms,
-            "references request completed"
-        );
-    }
-    Ok(locations)
+    Ok(Some(map_references_to_lsp(&snapshot, result)))
 }
 
 pub(crate) fn document_link(state: &ServerState, uri: Url) -> Result<Option<Vec<DocumentLink>>> {
@@ -643,11 +74,11 @@ pub(crate) fn document_highlight(
     pos: Position,
 ) -> Result<Option<Vec<DocumentHighlight>>> {
     let uri_norm = util::normalize_file_uri(&uri);
-    let locations =
-        match references_resolver::resolved_references_at_position(state, &uri_norm, pos, true) {
-            Some(locations) if !locations.is_empty() => locations,
-            _ => return Ok(None),
-        };
+    let locations = references_resolver::resolved_references_at_position(state, &uri_norm, pos, true);
+    let locations = match locations {
+        Some(locations) if !locations.is_empty() => locations,
+        _ => return Ok(None),
+    };
     let highlights = locations
         .into_iter()
         .filter(|location| util::normalize_file_uri(&location.uri) == uri_norm)
@@ -678,4 +109,52 @@ pub(crate) fn selection_range(
         &positions,
         word_at_position,
     )))
+}
+
+fn map_hover_to_lsp(result: language_service::HoverResult) -> Hover {
+    Hover {
+        contents: HoverContents::Markup(MarkupContent {
+            kind: MarkupKind::Markdown,
+            value: result.contents,
+        }),
+        range: result.range.map(to_lsp_range),
+    }
+}
+
+fn map_definition_to_lsp(
+    snapshot: &ServerStateSnapshot<'_>,
+    result: language_service::DefinitionResult,
+) -> Option<GotoDefinitionResponse> {
+    let locations: Vec<Location> = result
+        .locations
+        .into_iter()
+        .filter_map(|loc| map_source_location(snapshot, loc))
+        .collect();
+    match locations.as_slice() {
+        [] => None,
+        [location] => Some(GotoDefinitionResponse::Scalar(location.clone())),
+        _ => Some(GotoDefinitionResponse::Array(locations)),
+    }
+}
+
+fn map_references_to_lsp(
+    snapshot: &ServerStateSnapshot<'_>,
+    result: language_service::ReferencesResult,
+) -> Vec<Location> {
+    result
+        .locations
+        .into_iter()
+        .filter_map(|loc| map_source_location(snapshot, loc))
+        .collect()
+}
+
+fn map_source_location(
+    snapshot: &ServerStateSnapshot<'_>,
+    location: language_service::SourceLocation,
+) -> Option<Location> {
+    let uri = snapshot.resolve_uri_for_path(&location.path)?;
+    Some(Location {
+        uri,
+        range: to_lsp_range(location.range),
+    })
 }

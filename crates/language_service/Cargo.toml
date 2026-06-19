@@ -1,0 +1,17 @@
+[package]
+name = "language_service"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
+description = "Protocol-neutral SysML editor language services for Spec42 hosts"
+
+[dependencies]
+semantic_core = { path = "../semantic_core" }
+sysml-v2-parser = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+url = "2"
+
+[dev-dependencies]
+tempfile = "3"

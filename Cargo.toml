@@ -2,6 +2,7 @@
 resolver = "2"
 members = [
   "crates/diagram_core",
+  "crates/language_service",
   "crates/kernel",
   "crates/kpar",
   "crates/server",

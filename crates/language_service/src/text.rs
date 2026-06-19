@@ -1,13 +1,10 @@
-//! Position and word resolution for LSP (line/character to byte offset, word at cursor, etc.).
+//! Position and word resolution for editor services (line/character to byte offset, word at cursor, etc.).
 
-#[cfg(test)]
-use tower_lsp::lsp_types::{Position, Range};
-
-/// Converts an LSP (line, character) position to a byte offset in `text`.
-/// LSP positions are expressed in UTF-16 code units, so this helper only returns offsets that
+/// Converts an LSP-style (line, character) position to a byte offset in `text`.
+/// Positions are expressed in UTF-16 code units, so this helper only returns offsets that
 /// land on valid UTF-8 boundaries.
-pub fn position_to_byte_offset(text: &str, line: u32, character: u32) -> Option<usize> {
-    let lines: Vec<&str> = text.split('\n').collect();
+pub fn position_to_byte_offset(source: &str, line: u32, character: u32) -> Option<usize> {
+    let lines: Vec<&str> = source.split('\n').collect();
     let line_str = *lines.get(line as usize)?;
     let target_utf16 = character;
     let mut seen_utf16 = 0u32;
@@ -35,8 +32,7 @@ pub fn position_to_byte_offset(text: &str, line: u32, character: u32) -> Option<
         .sum::<usize>();
     Some(line_start + byte_in_line)
 }
-
-/// Returns the LSP (line, start_char, end_char) and the word at the given position.
+/// Returns the (line, start_char, end_char) and the word at the given position.
 /// A word is a contiguous run of identifier characters (alphanumeric, underscore, or `:` for qualified names).
 pub fn word_at_position(text: &str, line: u32, character: u32) -> Option<(u32, u32, u32, String)> {
     fn is_ident_char(c: char) -> bool {
@@ -133,7 +129,6 @@ pub fn line_prefix_at_position(text: &str, line: u32, character: u32) -> String 
 }
 
 /// Returns the last token (identifier or keyword prefix) before the cursor for completion.
-/// Iterates by character to handle multi-byte UTF-8 correctly.
 pub fn completion_prefix(line_prefix: &str) -> &str {
     fn is_ident_char(c: char) -> bool {
         c.is_alphanumeric() || c == '_' || c == ':' || c == '>'
@@ -160,39 +155,22 @@ pub fn completion_prefix(line_prefix: &str) -> &str {
     trimmed.get(byte_start..).unwrap_or("")
 }
 
-/// Simple position for tests. 0-based line and character.
 #[cfg(test)]
-#[derive(Debug, Clone)]
-pub struct SourcePosition {
-    pub line: u32,
-    pub character: u32,
-    pub length: u32,
-}
+mod tests {
+    use super::*;
 
-/// Converts AST source position to an LSP Range.
-#[cfg(test)]
-pub fn source_position_to_range(pos: &SourcePosition) -> Range {
-    Range::new(
-        Position::new(pos.line, pos.character),
-        Position::new(pos.line, pos.character + pos.length),
-    )
-}
+    #[test]
+    fn test_position_to_byte_offset() {
+        let text = "abc\ndef\nghi";
+        assert_eq!(position_to_byte_offset(text, 0, 0), Some(0));
+        assert_eq!(position_to_byte_offset(text, 0, 2), Some(2));
+        assert_eq!(position_to_byte_offset(text, 1, 0), Some(4));
+    }
 
-/// Simple range for tests. 0-based.
-#[cfg(test)]
-#[derive(Debug, Clone)]
-pub struct SourceRange {
-    pub start_line: u32,
-    pub start_character: u32,
-    pub end_line: u32,
-    pub end_character: u32,
-}
-
-/// Converts AST source range to an LSP Range.
-#[cfg(test)]
-pub fn source_range_to_range(r: &SourceRange) -> Range {
-    Range::new(
-        Position::new(r.start_line, r.start_character),
-        Position::new(r.end_line, r.end_character),
-    )
+    #[test]
+    fn test_word_at_position() {
+        let text = "  part foo : Bar  ";
+        let (_, _, _, word) = word_at_position(text, 0, 5).unwrap();
+        assert_eq!(word, "part");
+    }
 }

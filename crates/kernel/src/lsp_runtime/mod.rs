@@ -5,7 +5,6 @@ mod documents;
 mod features;
 mod hierarchy;
 mod lifecycle;
-mod lookup_helpers;
 mod navigation;
 mod references_resolver;
 mod symbols;

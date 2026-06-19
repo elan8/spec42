@@ -114,20 +114,31 @@ flowchart TD
 - `semantic_core` owns semantic and reusable projection logic.
 - Hosts (`kernel`, `babel42`) decide transport/runtime concerns and final response wiring.
 
+This enables multiple ingestion backends (filesystem, DB, in-memory) while preserving one semantic pipeline.
+
 ## Consumer Boundaries
+
+### `language_service` (editor intelligence)
+
+- sits between `semantic_core` and protocol adapters (`kernel` LSP, future Babel42 HTTP/Monaco)
+- exposes navigation APIs against logical document paths and `TextPosition` / `TextRange`
+- no dependency on `tower-lsp`, `tokio`, or `kernel`
+- `InMemoryWorkspace` supports headless tests and Babel42-style in-memory document pipelines
 
 ### `kernel` (LSP/runtime host)
 
 - uses filesystem provider for workspace scans
 - uses semantic graph and helper projections for model/visualization endpoints
 - maps semantic-core diagnostics into LSP diagnostics at the boundary
-- keeps LSP protocol/runtime behavior outside semantic_core
+- delegates navigation (hover, definition, references) to `language_service` via `WorkspaceSnapshot`
+- keeps LSP protocol/runtime behavior outside semantic_core and language_service
 
 ### `babel42` (service/API host)
 
 - can use in-memory (or future DB) providers
 - avoids temporary workspace-only coupling for semantic graph creation
 - consumes graph-first visualization metadata API from semantic_core
+- can depend on `language_service` for editor navigation without the LSP stack
 - maps semantic-core diagnostics into `babel42_core::DiagnosticDto` for storage/API responses
 
 ## Data Contracts
