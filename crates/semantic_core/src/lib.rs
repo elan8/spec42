@@ -76,13 +76,14 @@ pub use semantic::visualization_workspace::{
     build_merged_workspace_ibd, build_package_groups_from_graph,
     build_sysml_visualization_from_artifacts, build_sysml_visualization_from_graph_and_documents,
     build_sysml_visualization_workspace, build_sysml_visualization_workspace_with_meta,
+    WorkspaceVisualizationRequest,
     build_workspace_activity_diagrams, build_workspace_graph_dto_for_uris,
     build_workspace_visualization_artifacts, filter_ibd_by_visible_ids,
     select_interconnection_ibd_scope, select_interconnection_ibd_scope_with_trace, uri_under_root,
     workspace_uris_for_root, IbdScopeTrace, VisualizationBuildMeta, VisualizationBuildOptions,
     WorkspaceVisualizationArtifacts,
 };
-pub use semantic::visualization::scope::IbdBuildScope;
+pub use semantic::visualization::scope::{workspace_uris_for_ibd_scope, IbdBuildScope};
 pub use semantic::visualization::payload::{
     finalize_activity_diagrams_for_response, finalize_sequence_diagrams_for_response,
     finalize_state_machines_for_response,

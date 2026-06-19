@@ -1,6 +1,11 @@
-//! Report-only performance drill-down against an optional external grid fixture checkout.
+//! Report-only performance drill-down for interconnection visualization.
 //!
-//! Run (requires `SYSML_POWERSYSTEMS_DIR`):
+//! CI smoke (in-repo drone example):
+//! ```text
+//! cargo test -p kernel --test lsp_integration integration::powersystems_performance::drone_interconnection_performance_smoke_report -- --nocapture
+//! ```
+//!
+//! Optional grid drill-down (requires `SYSML_POWERSYSTEMS_DIR`):
 //! ```text
 //! cargo test -p kernel --test lsp_integration integration::powersystems_performance::powersystems_system_context_performance_report -- --ignored --nocapture
 //! ```
@@ -11,10 +16,13 @@ use std::time::{Duration, Instant};
 
 use kernel::build_sysml_visualization_for_paths;
 use semantic_core::{
-    build_ibd_for_uri, build_interconnection_scene, build_semantic_graph_with_provider,
-    build_sysml_visualization_workspace, build_view_catalog, build_workspace_graph_dto_for_uris,
-    evaluate_views, finalize_merged_ibd_connectors, merge_ibd_payloads, project_ids_for_renderer,
-    select_interconnection_ibd_scope, FileSystemDocumentProvider, WorkspaceParsedDocument,
+    build_ibd_for_uri, build_interconnection_scene, build_merged_workspace_ibd,
+    build_semantic_graph_with_provider, build_sysml_visualization_workspace,
+    build_sysml_visualization_workspace_with_meta, build_view_catalog,
+    build_workspace_graph_dto_for_uris, evaluate_views, finalize_merged_ibd_connectors,
+    merge_ibd_payloads, project_ids_for_renderer, select_interconnection_ibd_scope,
+    FileSystemDocumentProvider, IbdBuildScope, VisualizationBuildOptions,
+    WorkspaceParsedDocument, WorkspaceVisualizationRequest,
 };
 use tower_lsp::lsp_types::Url;
 
@@ -25,6 +33,11 @@ use super::perf_report::{
     wait_for_startup_scan, workspace_loaded_files,
 };
 
+fn repo_examples_drone_dir() -> PathBuf {
+    Path::new(env!("CARGO_MANIFEST_DIR"))
+        .join("../../examples/drone")
+}
+
 fn powersystems_repo_root() -> Option<PathBuf> {
     let repo_root = PathBuf::from(std::env::var_os("SYSML_POWERSYSTEMS_DIR")?);
     if repo_root.is_dir() {
@@ -34,7 +47,7 @@ fn powersystems_repo_root() -> Option<PathBuf> {
     }
 }
 
-fn powersystems_sysml_root(repo_root: &Path) -> PathBuf {
+fn fixture_scan_root(repo_root: &Path) -> PathBuf {
     let nested = repo_root.join("sysml");
     if nested.is_dir() {
         nested
@@ -48,22 +61,29 @@ struct VisualizationPhaseBreakdown {
     workspace_graph_dto_ms: u128,
     ibd_per_uri_ms: u128,
     ibd_merge_finalize_ms: u128,
+    scoped_ibd_per_uri_ms: u128,
+    scoped_uri_count: usize,
     view_catalog_ms: u128,
     evaluate_views_ms: u128,
     project_all_views_ms: u128,
     interconnection_scene_ms: u128,
     full_visualization_workspace_ms: u128,
+    scoped_visualization_workspace_ms: u128,
+    slim_payload_bytes: usize,
     cold_headless_visualization_ms: u128,
     workspace_file_count: usize,
     workspace_uri_count: usize,
     evaluated_view_count: usize,
-    system_context_part_count: usize,
-    system_context_connector_count: usize,
-    system_context_scene_edge_count: usize,
+    selected_view_part_count: usize,
+    selected_view_connector_count: usize,
+    selected_view_scene_edge_count: usize,
 }
 
-fn collect_visualization_phase_breakdown(repo_root: &Path) -> VisualizationPhaseBreakdown {
-    let scan_root = powersystems_sysml_root(repo_root);
+fn collect_visualization_phase_breakdown(
+    repo_root: &Path,
+    selected_view_name: &str,
+) -> VisualizationPhaseBreakdown {
+    let scan_root = fixture_scan_root(repo_root);
     let provider = FileSystemDocumentProvider::new(
         scan_root.clone(),
         Some(repo_root.to_path_buf()),
@@ -118,28 +138,47 @@ fn collect_visualization_phase_breakdown(repo_root: &Path) -> VisualizationPhase
     }
     let project_all_views_ms = project_start.elapsed().as_millis();
 
-    let system_context = evaluated_views
+    let selected_view = evaluated_views
         .iter()
-        .find(|view| view.name == "systemContext")
-        .expect("systemContext view");
+        .find(|view| view.name == selected_view_name)
+        .unwrap_or_else(|| {
+            panic!(
+                "expected {selected_view_name} view; available: {:?}",
+                evaluated_views
+                    .iter()
+                    .map(|view| view.name.as_str())
+                    .collect::<Vec<_>>()
+            )
+        });
     let projected_ids =
-        project_ids_for_renderer(system_context, &workspace_graph, "interconnection-view");
+        project_ids_for_renderer(selected_view, &workspace_graph, "interconnection-view");
     let scoped_ibd = select_interconnection_ibd_scope(
         &full_ibd,
         &projected_ids,
-        Some(&system_context.exposed_ids),
+        Some(&selected_view.exposed_ids),
     );
-    let root_ids = system_context
+    let root_ids = selected_view
         .exposed_ids
         .iter()
         .map(|id| id.replace("::", "."))
         .collect::<Vec<_>>();
 
+    let scoped_uris = semantic_core::workspace_uris_for_ibd_scope(
+        &workspace_uris,
+        &semantic_graph,
+        IbdBuildScope::ViewExposedPackages,
+        &selected_view.exposed_ids,
+    );
+    let scoped_uri_count = scoped_uris.len();
+    let scoped_ibd_start = Instant::now();
+    let _scoped_merged_ibd = build_merged_workspace_ibd(&semantic_graph, &scoped_uris);
+    let scoped_ibd_per_uri_ms = scoped_ibd_start.elapsed().as_millis();
+
     let scene_start = Instant::now();
     let scene = build_interconnection_scene(
         &scoped_ibd,
-        &system_context.id,
-        &system_context.name,
+        &selected_view.id,
+        &selected_view.name,
         &root_ids,
         None,
     );
@@ -152,11 +191,32 @@ fn collect_visualization_phase_breakdown(repo_root: &Path) -> VisualizationPhase
         &[],
         &workspace_root_uri,
         "interconnection-view",
-        Some("systemContext"),
+        Some(selected_view_name),
         full_viz_start,
     )
     .expect("full visualization");
     let full_visualization_workspace_ms = full_viz_start.elapsed().as_millis();
+
+    let scoped_viz_start = Instant::now();
+    let (scoped_viz, _) = build_sysml_visualization_workspace_with_meta(
+        &semantic_graph,
+        &viz_docs,
+        WorkspaceVisualizationRequest {
+            library_paths: &[],
+            workspace_root_uri: &workspace_root_uri,
+            view: "interconnection-view",
+            selected_view: Some(selected_view_name),
+            build_start: scoped_viz_start,
+            options: VisualizationBuildOptions {
+                slim_interconnection_payload: true,
+                ibd_build_scope: IbdBuildScope::ViewExposedPackages,
+            },
+        },
+    )
+    .expect("scoped visualization");
+    let scoped_visualization_workspace_ms = scoped_viz_start.elapsed().as_millis();
+    let slim_payload_bytes =
+        serde_json::to_string(&scoped_viz).map(|payload| payload.len()).unwrap_or(0);
 
     let cold_start = Instant::now();
     let _cold = build_sysml_visualization_for_paths(
@@ -164,7 +224,7 @@ fn collect_visualization_phase_breakdown(repo_root: &Path) -> VisualizationPhase
         Some(repo_root),
         &[],
         "interconnection-view",
-        Some("systemContext"),
+        Some(selected_view_name),
     )
     .expect("cold headless visualization");
     let cold_headless_visualization_ms = cold_start.elapsed().as_millis();
@@ -174,49 +234,47 @@ fn collect_visualization_phase_breakdown(repo_root: &Path) -> VisualizationPhase
         workspace_graph_dto_ms,
         ibd_per_uri_ms,
         ibd_merge_finalize_ms,
+        scoped_ibd_per_uri_ms,
+        scoped_uri_count,
         view_catalog_ms,
         evaluate_views_ms,
         project_all_views_ms,
         interconnection_scene_ms,
         full_visualization_workspace_ms,
+        scoped_visualization_workspace_ms,
+        slim_payload_bytes,
         cold_headless_visualization_ms,
         workspace_file_count: viz_docs.len(),
         workspace_uri_count: workspace_uris.len(),
         evaluated_view_count: evaluated_views.len(),
-        system_context_part_count: scoped_ibd.parts.len(),
-        system_context_connector_count: scoped_ibd.connectors.len(),
-        system_context_scene_edge_count: scene.edges.len(),
+        selected_view_part_count: scoped_ibd.parts.len(),
+        selected_view_connector_count: scoped_ibd.connectors.len(),
+        selected_view_scene_edge_count: scene.edges.len(),
     }
 }
 
-#[test]
-#[ignore = "report-only drill-down; set SYSML_POWERSYSTEMS_DIR to an external grid fixture checkout"]
-fn powersystems_system_context_performance_report() {
-    let Some(repo_root) = powersystems_repo_root() else {
-        eprintln!(
-            "Skipping powersystems_system_context_performance_report: SYSML_POWERSYSTEMS_DIR is unset or not a directory"
-        );
-        return;
-    };
+struct InterconnectionPerfReportConfig<'a> {
+    fixture_name: &'a str,
+    report_file: &'a str,
+    repo_root: &'a Path,
+    selected_view: &'a str,
+    views_uri: Url,
+    warm_cache_budget_ms: u128,
+}
 
-    let scan_root = powersystems_sysml_root(&repo_root);
+fn run_interconnection_lsp_performance_report(config: InterconnectionPerfReportConfig<'_>) {
+    let scan_root = fixture_scan_root(config.repo_root);
     let fixture_perf = collect_fixture_perf(&scan_root);
-    let phase_breakdown = collect_visualization_phase_breakdown(&repo_root);
+    let phase_breakdown =
+        collect_visualization_phase_breakdown(config.repo_root, config.selected_view);
 
     let root_uri = url::Url::from_directory_path(
-        repo_root
+        config
+            .repo_root
             .canonicalize()
-            .unwrap_or_else(|_| repo_root.clone()),
+            .unwrap_or_else(|_| config.repo_root.to_path_buf()),
     )
-    .expect("power systems root uri");
-    let views_uri = url::Url::from_file_path(
-        repo_root
-            .join("sysml")
-            .join("projects")
-            .join("regional-grid-expansion")
-            .join("Views.sysml"),
-    )
-    .expect("Views.sysml uri");
+    .expect("workspace root uri");
 
     let mut child = spawn_server();
     let mut stdin = child.stdin.take().expect("stdin");
@@ -235,7 +293,7 @@ fn powersystems_system_context_performance_report() {
                 "performanceLogging": { "enabled": true },
                 "workspace": { "maxFilesPerPattern": 1000 }
             },
-            "clientInfo": { "name": "powersystems-perf-report", "version": "0.1.0" }
+            "clientInfo": { "name": "interconnection-perf-report", "version": "0.1.0" }
         }
     });
     send_message(&mut stdin, &init_req.to_string());
@@ -246,7 +304,7 @@ fn powersystems_system_context_performance_report() {
     );
 
     let workspace_model_params = serde_json::json!({
-        "textDocument": { "uri": views_uri.as_str() },
+        "textDocument": { "uri": config.views_uri.as_str() },
         "scope": ["graph", "stats", "workspaceVisualization"]
     });
     let workspace_model_capture = {
@@ -287,7 +345,7 @@ fn powersystems_system_context_performance_report() {
         serde_json::json!({
             "workspaceRootUri": root_uri.as_str(),
             "view": "interconnection-view",
-            "selectedView": "systemContext"
+            "selectedView": config.selected_view
         }),
     );
     perf_events.extend(visualization_capture.perf_events.clone());
@@ -299,7 +357,7 @@ fn powersystems_system_context_performance_report() {
         serde_json::json!({
             "workspaceRootUri": root_uri.as_str(),
             "view": "interconnection-view",
-            "selectedView": "systemContext"
+            "selectedView": config.selected_view
         }),
     );
     perf_events.extend(warm_visualization_capture.perf_events.clone());
@@ -315,8 +373,9 @@ fn powersystems_system_context_performance_report() {
         "expected warm sysml/visualization cache hit, got {warm_visualization_event:#?}"
     );
     assert!(
-        warm_visualization_capture.elapsed_ms < 500,
-        "expected warm visualization request under 500ms, got {}ms",
+        warm_visualization_capture.elapsed_ms < config.warm_cache_budget_ms,
+        "expected warm visualization request under {}ms, got {}ms",
+        config.warm_cache_budget_ms,
         warm_visualization_capture.elapsed_ms
     );
 
@@ -331,6 +390,7 @@ fn powersystems_system_context_performance_report() {
     );
 
     let visualization_result = &visualization_capture.json["result"];
+    let has_ibd = visualization_result.get("ibd").is_some_and(|value| !value.is_null());
     let ibd_parts = visualization_result["ibd"]["parts"]
         .as_array()
         .map(Vec::len)
@@ -343,6 +403,9 @@ fn powersystems_system_context_performance_report() {
         .as_array()
         .map(Vec::len)
         .unwrap_or(0);
+    let has_interconnection_scene = visualization_result
+        .get("interconnectionScene")
+        .is_some_and(|value| !value.is_null());
     let view_candidates = visualization_result["viewCandidates"]
         .as_array()
         .map(Vec::len)
@@ -364,6 +427,10 @@ fn powersystems_system_context_performance_report() {
             "phaseIbdMergeFinalize",
             phase_breakdown.ibd_merge_finalize_ms,
         ),
+        (
+            "phaseScopedIbdPerUri",
+            phase_breakdown.scoped_ibd_per_uri_ms,
+        ),
         ("phaseViewCatalog", phase_breakdown.view_catalog_ms),
         ("phaseEvaluateViews", phase_breakdown.evaluate_views_ms),
         ("phaseProjectAllViews", phase_breakdown.project_all_views_ms),
@@ -374,6 +441,10 @@ fn powersystems_system_context_performance_report() {
         (
             "phaseFullVisualizationWorkspace",
             phase_breakdown.full_visualization_workspace_ms,
+        ),
+        (
+            "phaseScopedVisualizationWorkspace",
+            phase_breakdown.scoped_visualization_workspace_ms,
         ),
         (
             "phaseColdHeadlessVisualization",
@@ -401,14 +472,11 @@ fn powersystems_system_context_performance_report() {
         ),
     ]);
 
-    let slowest_files_by_parse = fixture_perf.slowest_files_by_parse.clone();
-    let largest_files = fixture_perf.largest_files.clone();
-
     let report = serde_json::json!({
-        "schemaVersion": 2,
+        "schemaVersion": 3,
         "fixture": {
-            "name": "grid-system-context",
-            "path": repo_root.to_string_lossy(),
+            "name": config.fixture_name,
+            "path": config.repo_root.to_string_lossy(),
             "scanRoot": scan_root.to_string_lossy(),
             "files": fixture_perf.files,
             "totalBytes": fixture_perf.total_bytes,
@@ -425,18 +493,22 @@ fn powersystems_system_context_performance_report() {
             "workspaceGraphDtoMs": phase_breakdown.workspace_graph_dto_ms,
             "ibdPerUriMs": phase_breakdown.ibd_per_uri_ms,
             "ibdMergeFinalizeMs": phase_breakdown.ibd_merge_finalize_ms,
+            "scopedIbdPerUriMs": phase_breakdown.scoped_ibd_per_uri_ms,
+            "scopedUriCount": phase_breakdown.scoped_uri_count,
+            "workspaceUriCount": phase_breakdown.workspace_uri_count,
             "viewCatalogMs": phase_breakdown.view_catalog_ms,
             "evaluateViewsMs": phase_breakdown.evaluate_views_ms,
             "projectAllViewsMs": phase_breakdown.project_all_views_ms,
             "interconnectionSceneMs": phase_breakdown.interconnection_scene_ms,
             "fullVisualizationWorkspaceMs": phase_breakdown.full_visualization_workspace_ms,
+            "scopedVisualizationWorkspaceMs": phase_breakdown.scoped_visualization_workspace_ms,
+            "slimPayloadBytes": phase_breakdown.slim_payload_bytes,
             "coldHeadlessVisualizationMs": phase_breakdown.cold_headless_visualization_ms,
             "workspaceFileCount": phase_breakdown.workspace_file_count,
-            "workspaceUriCount": phase_breakdown.workspace_uri_count,
             "evaluatedViewCount": phase_breakdown.evaluated_view_count,
-            "systemContextParts": phase_breakdown.system_context_part_count,
-            "systemContextConnectors": phase_breakdown.system_context_connector_count,
-            "systemContextSceneEdges": phase_breakdown.system_context_scene_edge_count,
+            "selectedViewParts": phase_breakdown.selected_view_part_count,
+            "selectedViewConnectors": phase_breakdown.selected_view_connector_count,
+            "selectedViewSceneEdges": phase_breakdown.selected_view_scene_edge_count,
         },
         "phases": {
             "startup": startup_event.cloned().unwrap_or_else(|| serde_json::json!({})),
@@ -455,11 +527,13 @@ fn powersystems_system_context_performance_report() {
         },
         "visualization": {
             "view": "interconnection-view",
-            "selectedView": "systemContext",
+            "selectedView": config.selected_view,
             "elapsedMs": visualization_capture.elapsed_ms,
             "responseBytes": visualization_capture.raw.len(),
             "modelBuildTimeMs": visualization_model_build_time_ms(&visualization_capture.json),
             "viewCandidates": view_candidates,
+            "hasIbd": has_ibd,
+            "hasInterconnectionScene": has_interconnection_scene,
             "ibdParts": ibd_parts,
             "ibdConnectors": ibd_connectors,
             "sceneEdges": scene_edges,
@@ -484,17 +558,18 @@ fn powersystems_system_context_performance_report() {
             "mode": "report-only",
             "workspaceModelRequestMs": 5000,
             "visualizationRequestMs": 1500,
-            "visualizationModelBuildMs": 1500
+            "visualizationModelBuildMs": 1500,
+            "warmVisualizationCacheHitMs": config.warm_cache_budget_ms
         },
         "bottlenecks": {
             "slowestPhases": slowest_phase_entries(&phases),
-            "slowestFilesByParse": slowest_files_by_parse,
-            "largestFiles": largest_files
+            "slowestFilesByParse": fixture_perf.slowest_files_by_parse,
+            "largestFiles": fixture_perf.largest_files
         },
         "events": perf_events
     });
 
-    emit_perf_report(&report, "grid-system-context-performance.json");
+    emit_perf_report(&report, config.report_file);
 
     assert!(
         workspace_loaded_files(&workspace_model_capture.json) > 0,
@@ -502,10 +577,71 @@ fn powersystems_system_context_performance_report() {
     );
     assert_eq!(
         visualization_result["selectedViewName"].as_str(),
-        Some("systemContext")
+        Some(config.selected_view)
     );
-    assert!(ibd_parts > 0, "expected non-empty systemContext ibd");
-    assert!(scene_edges > 0, "expected non-empty systemContext scene");
+    assert!(
+        has_interconnection_scene,
+        "expected interconnectionScene in slim LSP payload"
+    );
+    assert!(
+        !has_ibd,
+        "expected slim LSP payload to omit ibd when interconnectionScene is present"
+    );
+    assert!(scene_edges > 0, "expected non-empty interconnection scene");
+    assert!(
+        phase_breakdown.scoped_uri_count <= phase_breakdown.workspace_uri_count,
+        "scoped URI count should not exceed workspace URI count"
+    );
 
     let _ = child.kill();
+}
+
+#[test]
+fn drone_interconnection_performance_smoke_report() {
+    let repo_root = repo_examples_drone_dir();
+    assert!(
+        repo_root.is_dir(),
+        "expected drone example at {}",
+        repo_root.display()
+    );
+    let views_uri =
+        url::Url::from_file_path(repo_root.join("Views.sysml")).expect("Views.sysml uri");
+
+    run_interconnection_lsp_performance_report(InterconnectionPerfReportConfig {
+        fixture_name: "drone-connections",
+        report_file: "drone-interconnection-performance.json",
+        repo_root: &repo_root,
+        selected_view: "connections",
+        views_uri,
+        warm_cache_budget_ms: 1500,
+    });
+}
+
+#[test]
+#[ignore = "report-only drill-down; set SYSML_POWERSYSTEMS_DIR to an external grid fixture checkout"]
+fn powersystems_system_context_performance_report() {
+    let Some(repo_root) = powersystems_repo_root() else {
+        eprintln!(
+            "Skipping powersystems_system_context_performance_report: SYSML_POWERSYSTEMS_DIR is unset or not a directory"
+        );
+        return;
+    };
+
+    let views_uri = url::Url::from_file_path(
+        repo_root
+            .join("sysml")
+            .join("projects")
+            .join("regional-grid-expansion")
+            .join("Views.sysml"),
+    )
+    .expect("Views.sysml uri");
+
+    run_interconnection_lsp_performance_report(InterconnectionPerfReportConfig {
+        fixture_name: "grid-system-context",
+        report_file: "grid-system-context-performance.json",
+        repo_root: &repo_root,
+        selected_view: "systemContext",
+        views_uri,
+        warm_cache_budget_ms: 500,
+    });
 }

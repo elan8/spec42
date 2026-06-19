@@ -25,6 +25,18 @@ cargo test -p kernel --test lsp_integration integration::powersystems_performanc
 
 Output: `target/spec42-perf/grid-system-context-performance.json`.
 
+### Interconnection smoke (nightly CI, in-repo)
+
+The nightly job runs the drone example smoke test (no external fixture):
+
+```bash
+cargo test -p kernel --test lsp_integration integration::powersystems_performance::drone_interconnection_performance_smoke_report -- --nocapture
+```
+
+Output: `target/spec42-perf/drone-interconnection-performance.json` (includes `scopedIbdPerUriMs`, scoped URI counts, and slim-payload sizes).
+
+Optional grid drill-down in nightly CI: set repository variable `SYSML_POWERSYSTEMS_DIR` to a checkout path on the runner (or mount via self-hosted runner).
+
 See [POWER-SYSTEMS-PERFORMANCE-ANALYSIS.md](./POWER-SYSTEMS-PERFORMANCE-ANALYSIS.md) for findings and improvement plan.
 
 ## Initial Budgets

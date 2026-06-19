@@ -15,6 +15,7 @@ mod experimental_requests;
 mod feature_inspector;
 mod harness;
 mod hover;
+mod interconnection_visualization;
 mod lifecycle;
 mod mbse_vacuum_baseline;
 mod model;

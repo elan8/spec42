@@ -229,8 +229,8 @@ jobs:
           } >> "$GITHUB_STEP_SUMMARY"
           exit 0
 
-  powersystems-interconnection-performance:
-    name: Power systems interconnection perf (informational)
+  interconnection-visualization-performance:
+    name: Interconnection visualization perf (informational)
     runs-on: ubuntu-latest
     continue-on-error: true
     steps:
@@ -261,57 +261,68 @@ jobs:
         if: steps.stdlib-cache.outputs.cache-hit != 'true'
         run: bash scripts/fetch-stdlib-bundle.sh
 
-      - name: Run power systems interconnection performance report
-        env:
-          SYSML_POWERSYSTEMS_DIR: ${{ github.workspace }}/examples/power-systems
+      - name: Run drone interconnection performance smoke
         run: |
-          if [ ! -d "$SYSML_POWERSYSTEMS_DIR" ]; then
-            echo "Power systems fixture not present; skipping." >> "$GITHUB_STEP_SUMMARY"
+          cargo test -p kernel --test lsp_integration integration::powersystems_performance::drone_interconnection_performance_smoke_report --release -- --nocapture
+
+      - name: Run grid interconnection performance report (optional)
+        env:
+          SYSML_POWERSYSTEMS_DIR: ${{ vars.SYSML_POWERSYSTEMS_DIR }}
+        run: |
+          if [ -z "$SYSML_POWERSYSTEMS_DIR" ] || [ ! -d "$SYSML_POWERSYSTEMS_DIR" ]; then
+            echo "Grid fixture not configured; skipping optional grid drill-down." >> "$GITHUB_STEP_SUMMARY"
             exit 0
           fi
           cargo test -p kernel --test lsp_integration integration::powersystems_performance::powersystems_system_context_performance_report --release -- --ignored --nocapture
 
-      - name: Summarize large workspace performance report
+      - name: Summarize interconnection performance reports
         if: always()
         run: |
           node <<'NODE' >> "$GITHUB_STEP_SUMMARY"
           const fs = require("fs");
-          const reportPath = "target/spec42-perf/large-workspace-performance.json";
-          if (!fs.existsSync(reportPath)) {
-            console.log("No structured performance JSON report was produced.");
-            process.exit(0);
+          const path = require("path");
+          const reportDir = "target/spec42-perf";
+          const candidates = [
+            "drone-interconnection-performance.json",
+            "grid-system-context-performance.json",
+          ];
+          console.log("### Interconnection performance reports");
+          console.log("");
+          let found = false;
+          for (const name of candidates) {
+            const reportPath = path.join(reportDir, name);
+            if (!fs.existsSync(reportPath)) {
+              continue;
+            }
+            found = true;
+            const report = JSON.parse(fs.readFileSync(reportPath, "utf8"));
+            const phase = report.phaseBreakdown ?? {};
+            const visualization = report.visualization ?? {};
+            console.log(`#### ${report.fixture?.name ?? name}`);
+            console.log("");
+            console.log("| Metric | Value |");
+            console.log("| --- | ---: |");
+            console.log(`| Workspace URIs | ${phase.workspaceUriCount ?? 0} |`);
+            console.log(`| Scoped URIs | ${phase.scopedUriCount ?? 0} |`);
+            console.log(`| Full IBD per-uri (ms) | ${phase.ibdPerUriMs ?? 0} |`);
+            console.log(`| Scoped IBD build (ms) | ${phase.scopedIbdPerUriMs ?? 0} |`);
+            console.log(`| LSP visualization bytes | ${visualization.responseBytes ?? 0} |`);
+            console.log(`| Slim payload bytes (in-process) | ${phase.slimPayloadBytes ?? 0} |`);
+            console.log(`| Scene edges | ${visualization.sceneEdges ?? phase.selectedViewSceneEdges ?? 0} |`);
+            console.log(`| Has IBD in LSP payload | ${visualization.hasIbd ?? false} |`);
+            console.log("");
           }
-          const report = JSON.parse(fs.readFileSync(reportPath, "utf8"));
-          const workspace = report.modelRequests?.workspace ?? {};
-          const document = report.modelRequests?.document ?? {};
-          const visualization = report.visualization ?? {};
-          console.log("### Structured performance breakdown");
-          console.log("");
-          console.log(`Fixture: ${report.fixture?.files ?? 0} files, ${report.fixture?.totalBytes ?? 0} bytes`);
-          console.log("");
-          console.log("| Area | Time | Size / Count |");
-          console.log("| --- | ---: | ---: |");
-          console.log(`| Workspace model request | ${workspace.elapsedMs ?? 0} ms | ${workspace.responseBytes ?? 0} bytes |`);
-          console.log(`| Document model request | ${document.elapsedMs ?? 0} ms | ${document.responseBytes ?? 0} bytes |`);
-          console.log(`| Visualization request | ${visualization.elapsedMs ?? 0} ms | ${visualization.responseBytes ?? 0} bytes |`);
-          console.log(`| Local fixture parse | ${report.phases?.fixtureScanParse?.parseTotalMs ?? 0} ms | p95 ${report.phases?.fixtureScanParse?.parseP95Ms ?? 0} ms |`);
-          console.log("");
-          console.log("Top bottleneck phases:");
-          for (const phase of report.bottlenecks?.slowestPhases ?? []) {
-            console.log(`- ${phase.name}: ${phase.ms} ms`);
-          }
-          console.log("");
-          console.log("Slowest files by parse time:");
-          for (const file of report.bottlenecks?.slowestFilesByParse ?? []) {
-            console.log(`- ${file.path}: ${file.parse_ms} ms (${file.bytes} bytes)`);
+          if (!found) {
+            console.log("No structured interconnection performance JSON report was produced.");
           }
           NODE
 
-      - name: Upload performance report artifact
+      - name: Upload interconnection performance report artifact
         uses: actions/upload-artifact@v4
+        if: always()
         with:
-          name: large-workspace-performance-report
-          if-no-files-found: error
+          name: interconnection-performance-report
+          if-no-files-found: warn
           path: |
-            large-workspace-perf.txt
-            target/spec42-perf/large-workspace-performance.json
+            target/spec42-perf/drone-interconnection-performance.json
+            target/spec42-perf/grid-system-context-performance.json

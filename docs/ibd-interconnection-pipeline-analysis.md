@@ -11,6 +11,8 @@ Post–Phase 5 stabilization (same day):
 - **Extension plumbing** — [modelFetcher.ts](../vscode/src/visualization/modelFetcher.ts) forwards `interconnectionScene` to the webview (Phase 5 had made the renderer scene-only, but the field was dropped on the update message).
 - **Nested-port routing** — [ibd-route.ts](../shared/diagram-renderer/src/render/ibd-route.ts) restores port-center–driven offset selection (`edgeOwnerOffset`, `lcaOffset`) for ELK sections that arrive in container-local coordinates; [layout.ts](../shared/diagram-renderer/src/render/layout.ts) collects edges from the full ELK tree and stores owner/LCA offsets. Orthogonal endpoint stitching fixed for non-axis-aligned port joins.
 
+**2026-06-19 validation:** Scoped IBD build (`ViewExposedPackages`) parity-tested against full-workspace filter; LSP interconnection responses omit `ibd` when `interconnectionScene` is present; nightly CI runs drone perf smoke with scoped IBD metrics.
+
 ### Landed
 
 - **`InterconnectionSceneDto`** — built in Rust ([interconnection_scene.rs](../crates/semantic_core/src/semantic/interconnection_scene.rs)), attached to LSP visualization payloads.
@@ -35,6 +37,9 @@ Post–Phase 5 stabilization (same day):
 | `interconnection_elk_svg_from_scene_fixture` | `server` | CLI/API interconnection SVG from `interconnectionScene` (no ibd heuristic fallback) |
 | `interconnection_elk_layout_matches_typescript_golden_when_present` | `server` | Rust ELK.js layout positions within ±2px of TS goldens (when `*-elk-layout.json` present) |
 | `view_expose_powersystems_interconnection` | `semantic_core` | Semantic scoping, connector invariants, scene export (skipped if power systems repo absent) |
+| `scoped_ibd_parity` | `semantic_core` | Scoped vs full-workspace IBD interconnection scene parity on `examples/drone` (CI) |
+| `drone_interconnection_performance_smoke_report` | `kernel` | Nightly in-repo perf smoke: scoped IBD timing, slim LSP payload bytes |
+| `lsp_interconnection_visualization_returns_slim_scene_only_payload_for_drone` | `kernel` | LSP `sysml/visualization` omits `ibd` when `interconnectionScene` is present |
 | `powersystems.visualization.test.ts` | `vscode` | LSP scene + `exportInterconnectionPipeline` route summary (optional soak; requires power systems workspace) |
 
 Local pipeline debug: `sysml.debug.exportInterconnectionPipeline` in VS Code, or `npm test` in `shared/diagram-renderer` against scene fixtures.

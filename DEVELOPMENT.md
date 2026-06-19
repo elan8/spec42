@@ -170,6 +170,8 @@ Authoritative semantic shaping for diagram payloads lives in `semantic_core` (`c
 | `activityDiagrams` (renderability, rank, flow IDs) | `finalize_activity_diagrams_for_response` |
 | `sequenceDiagrams` (filter, rank, labels) | `finalize_sequence_diagrams_for_response` |
 | Scoped IBD URI set (interconnection LSP) | `IbdBuildScope::ViewExposedPackages` + `ibd_uri_closure_for_exposed_ids` |
+| Scoped vs full IBD scene parity | `crates/semantic_core/tests/scoped_ibd_parity.rs` (CI on `examples/drone`) |
+| Slim interconnection LSP payload (`ibd` omitted) | `VisualizationBuildOptions::slim_interconnection_payload`; tested in `interconnection_visualization.rs` |
 | `viewCandidates` | `explicit_views::build_view_candidates` |
 
 See [docs/architecture/PREPARE-PIPELINE-OVERLAP.md](docs/architecture/PREPARE-PIPELINE-OVERLAP.md).

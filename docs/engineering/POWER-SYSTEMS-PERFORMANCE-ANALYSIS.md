@@ -41,10 +41,14 @@ F5 **Launch Extension** stages `target/debug/spec42.exe` by default.
 Run locally:
 
 ```powershell
+# In-repo CI smoke (always available)
+cargo test -p kernel --test lsp_integration integration::powersystems_performance::drone_interconnection_performance_smoke_report -- --nocapture
+
+# Optional grid drill-down (external checkout)
 cargo test -p kernel --test lsp_integration integration::powersystems_performance::powersystems_system_context_performance_report -- --ignored --nocapture
 ```
 
-Requires `SYSML_POWERSYSTEMS_DIR` pointing at an external grid fixture checkout (not bundled with spec42). Report written to `target/spec42-perf/grid-system-context-performance.json`.
+Requires `SYSML_POWERSYSTEMS_DIR` for the grid drill-down only (not bundled with spec42). Reports written to `target/spec42-perf/drone-interconnection-performance.json` and `target/spec42-perf/grid-system-context-performance.json`.
 
 **Phase breakdown** (in-process, semantic graph already built):
 
@@ -155,10 +159,22 @@ flowchart TB
 
 | # | Change | Expected impact | Effort |
 |---|--------|-----------------|--------|
-| 8 | Incremental IBD: scope to exposed packages for selected view | Reduce `ibdPerUri` from 22 files to 2–3 | Large |
+| 8 | Incremental IBD: scope to exposed packages for selected view | Reduce `ibdPerUri` from 22 files to 2–3 | **Implemented** — `IbdBuildScope::ViewExposedPackages` |
 | 9 | Parallel IBD in visualization path (already done for `sysml/model` workspace scope) | ~2× on IBD phase | Medium |
-| 10 | Nightly CI: run `powersystems_system_context_performance_report` on release build | Regression guard | Small |
+| 10 | Nightly CI: interconnection perf smoke on in-repo drone example; optional grid drill-down | Regression guard | **Done** — `drone_interconnection_performance_smoke_report` |
 | 11 | Debounce or scope startup diagnostics for large workspaces | Reduce 612 ms+ startup tax | Medium |
+
+### Validation pass (June 2026)
+
+| Check | Location | Result (drone `connections`, Linux debug test) |
+|-------|----------|--------------------------------------------------|
+| Scoped vs full IBD scene parity | `crates/semantic_core/tests/scoped_ibd_parity.rs` | Pass — CI gate on `examples/drone` |
+| Scoped IBD URI reduction | perf report `phaseBreakdown` | 6 workspace URIs → 1 scoped URI |
+| Scoped IBD build time | `scopedIbdPerUriMs` vs `ibdPerUriMs` | 81 ms vs 301 ms (in-process) |
+| Slim LSP payload | `visualization.hasIbd` / `hasInterconnectionScene` | Scene present; `ibd` omitted (~123 KB response) |
+| Warm visualization cache | LSP `cacheHit` | Pass under 1500 ms budget (drone smoke) |
+
+Optional grid drill-down (`SYSML_POWERSYSTEMS_DIR`): run `powersystems_system_context_performance_report` locally or set repository variable `SYSML_POWERSYSTEMS_DIR` in nightly CI.
 
 ### Success criteria
 
@@ -166,7 +182,8 @@ flowchart TB
 |--------|-------:|---------------------------:|-------:|
 | `sysml/visualization` `systemContext` (warm, indexed) | ~3.6 s | **~150 ms** first / **~2 ms** cache hit | &lt;1.5 s |
 | `sysml/visualization` repeat (response cache) | ~3.6 s | **~2 ms** Rust / **~50 ms** LSP | &lt;200 ms |
-| Visualization response bytes | ~911 KB | **~680 KB** | &lt;200 KB (partial; further slimming possible) |
+| Visualization response bytes | ~911 KB | **~123 KB** drone / **~680 KB** grid (slim, no `ibd`) | &lt;200 KB (partial; grid still above target) |
+| Scoped IBD build vs full workspace | 22 URIs | **2–3 URIs** expected on grid; **1 URI** on drone | Scoped ≤ full |
 | VS Code open folder → rendered diagram (release server) | ~15–25 s | not re-measured in VS Code yet | &lt;5 s |
 
 ## Profiling in VS Code
@@ -194,14 +211,18 @@ Open **View → Output → SysML** and correlate:
 
 | Path | Purpose |
 |------|---------|
-| `crates/kernel/tests/integration/powersystems_performance.rs` | Drill-down perf test |
+| `crates/semantic_core/tests/scoped_ibd_parity.rs` | Scoped vs full IBD interconnection scene parity (CI) |
+| `crates/kernel/tests/integration/powersystems_performance.rs` | Drill-down perf test + drone smoke |
+| `crates/kernel/tests/integration/interconnection_visualization.rs` | LSP slim payload contract |
 | `crates/kernel/tests/integration/perf_report.rs` | Shared perf report helpers |
-| `target/spec42-perf/grid-system-context-performance.json` | Latest machine-local report |
+| `target/spec42-perf/drone-interconnection-performance.json` | Latest in-repo smoke report |
+| `target/spec42-perf/grid-system-context-performance.json` | Latest grid drill-down report |
 | `docs/engineering/PERFORMANCE-GUARDRAILS.md` | Nightly large-workspace budgets |
 | `vscode/src/test/suite/powersystems.visualization.test.ts` | Integration test for diagram correctness |
 
 ## Changelog
 
+- **2026-06-19 (validation)**: Added `scoped_ibd_parity` CI test; extended perf reports with `scopedIbdPerUriMs`, scoped URI counts, and slim-payload byte counts; nightly runs drone interconnection smoke; LSP integration test asserts slim payload omits `ibd`.
 - **2026-06-19**: Visualization debt paydown — Rust `finalize_*` payload shaping; thin `normalize-payload.ts` (~129 lines); `IbdBuildScope::ViewExposedPackages` for interconnection LSP; slim payloads omit `ibd` when `interconnectionScene` is present.
 - **2026-06-12**: Implemented lazy visualization pipeline, workspace artifact cache, response cache, slim interconnection payload, and extended perf logging. Post-implementation LSP numbers recorded above.
 - **2026-06-12**: Initial analysis; added `powersystems_system_context_performance_report` test and phase breakdown.
