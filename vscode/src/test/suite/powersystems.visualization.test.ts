@@ -197,7 +197,7 @@ describe("Power Systems Interconnection Visualization", () => {
                 (snapshot?.interconnectionScene as { edges?: unknown[] } | undefined)?.edges?.length ?? 0,
         });
         const gridScene = snapshot?.interconnectionScene as { schemaVersion?: number; edges?: unknown[] } | undefined;
-        assert.equal(gridScene?.schemaVersion, 1, "expected interconnectionScene schemaVersion 1 for gridConnections");
+        assert.equal(gridScene?.schemaVersion, 2, "expected interconnectionScene schemaVersion 2 for gridConnections");
         assert.ok(
             (gridScene?.edges?.length ?? 0) >= 15,
             `expected interconnectionScene edges for gridConnections, got ${gridScene?.edges?.length ?? 0}`
@@ -294,7 +294,7 @@ describe("Power Systems Interconnection Visualization", () => {
             assertConnectorEndpoint(snapshotConnectors, sourceSuffix, targetSuffix);
         }
         const scene = (snapshot?.interconnectionScene as { schemaVersion?: number; edges?: unknown[] } | undefined);
-        assert.equal(scene?.schemaVersion, 1, "expected interconnectionScene schemaVersion 1");
+        assert.equal(scene?.schemaVersion, 2, "expected interconnectionScene schemaVersion 2");
         assert.ok(
             (scene?.edges?.length ?? 0) >= expectedPaths.length,
             `expected interconnectionScene edges for systemContext, got ${scene?.edges?.length ?? 0}`

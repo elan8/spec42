@@ -1,6 +1,6 @@
 import * as assert from "assert";
 import * as vscode from "vscode";
-import { registerWorkspaceLifecycleSnapshotProvider } from "../../activation/workspaceLifecycle";
+import { registerWorkspaceLifecycleSnapshotProvider, resetWorkspaceLifecycleSnapshotProvider } from "../../activation/workspaceLifecycle";
 import { ModelExplorerProvider, ModelTreeItem } from "../../explorer/modelExplorerProvider";
 import { closeAllEditorsForTests } from "./testUtils";
 import type { SysMLElementDTO, SysMLModelResult } from "../../providers/sysmlModelTypes";
@@ -92,6 +92,10 @@ describe("ModelExplorerProvider", () => {
       workspaceLoadState: "ready",
       hasWorkspaceData: false,
     }));
+  });
+
+  afterEach(() => {
+    resetWorkspaceLifecycleSnapshotProvider();
   });
 
   it("sets package context and open-location command for tree actions", () => {

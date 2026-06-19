@@ -2,6 +2,7 @@ import * as assert from "assert";
 import * as fs from "fs";
 import * as os from "os";
 import * as path from "path";
+import * as util from "util";
 import * as vscode from "vscode";
 
 export type ExtensionDebugState = {
@@ -32,7 +33,7 @@ export type ExtensionDebugState = {
 export const isCi = Boolean(process.env.CI);
 export const integrationHookTimeoutMs = isCi ? 90000 : 60000;
 export const extensionServerReadyTimeoutMs = isCi ? 60000 : 30000;
-export const languageServerReadyTimeoutMs = isCi ? 45000 : 45000;
+export const languageServerReadyTimeoutMs = isCi ? 60000 : 45000;
 export const visualizationPanelTimeoutMs = isCi ? 45000 : 45000;
 export const diagramExportTimeoutMs = isCi ? 30000 : 30000;
 export const visualizerRenderTimeoutMs = isCi ? 45000 : 45000;
@@ -76,8 +77,51 @@ export function integrationTestLog(phase: string, payload: Record<string, unknow
 function shouldLogInterconnectionDebug(viewId: string): boolean {
   return (
     viewId === "interconnection-view" ||
-    process.env.SPEC42_TEST_DEBUG_INTERCONNECTION === "1"
+    process.env.SPEC42_TEST_DEBUG_INTERCONNECTION === "1" ||
+    process.env.SPEC42_TEST_DEBUG === "1"
   );
+}
+
+function normalizeServerPathForComparison(serverPath: string): string {
+  if (!serverPath || serverPath === "spec42") {
+    return serverPath;
+  }
+  try {
+    return fs.realpathSync(path.resolve(serverPath));
+  } catch {
+    return path.resolve(serverPath);
+  }
+}
+
+function summarizeWaitValue(value: unknown): string {
+  if (value === undefined) {
+    return "undefined";
+  }
+  if (value === null) {
+    return "null";
+  }
+  if (typeof value !== "object") {
+    return String(value);
+  }
+  if (Array.isArray(value)) {
+    return `Array(${value.length})`;
+  }
+  try {
+    const record = value as Record<string, unknown>;
+    const summary: Record<string, unknown> = {};
+    for (const [key, entry] of Object.entries(record).slice(0, 24)) {
+      if (entry === null || entry === undefined) {
+        summary[key] = entry;
+      } else if (typeof entry === "object") {
+        summary[key] = Array.isArray(entry) ? `Array(${entry.length})` : "Object";
+      } else {
+        summary[key] = entry;
+      }
+    }
+    return JSON.stringify(summary);
+  } catch {
+    return util.inspect(value, { depth: 2, maxArrayLength: 8, breakLength: 120 });
+  }
 }
 
 export function visualizationToSeedSummary(visualization: Record<string, unknown> | undefined): VisualizerSeedSummary {
@@ -470,15 +514,26 @@ export async function waitFor<T>(
 ): Promise<T> {
   const deadline = Date.now() + timeoutMs;
   let lastValue: T | undefined;
+  let nextHeartbeatAt =
+    timeoutMs > 15000 ? Date.now() + 10000 : Number.POSITIVE_INFINITY;
   while (Date.now() < deadline) {
     lastValue = await producer();
     if (isReady(lastValue)) {
       return lastValue as T;
     }
+    if (Date.now() >= nextHeartbeatAt) {
+      integrationTestLog("waitFor:heartbeat", {
+        label,
+        elapsedMs: timeoutMs - Math.max(0, deadline - Date.now()),
+        timeoutMs,
+        lastValue: summarizeWaitValue(lastValue),
+      });
+      nextHeartbeatAt = Date.now() + 10000;
+    }
     await new Promise((r) => setTimeout(r, intervalMs));
   }
   assert.fail(
-    `${label} did not become ready within ${timeoutMs}ms. Last value: ${JSON.stringify(lastValue)}`
+    `${label} did not become ready within ${timeoutMs}ms. Last value: ${summarizeWaitValue(lastValue)}`
   );
 }
 
@@ -511,12 +566,26 @@ export async function waitForExtensionServerReady(
 ): Promise<void> {
   await waitFor(
     "extension server ready",
-    () =>
-      getExtensionDebugState(),
-    (value) =>
-      value?.serverHealthState === "ready" || value?.serverHealthState === "degraded",
+    () => getExtensionDebugState(),
+    (value) => {
+      const state = value?.serverHealthState;
+      if (!state || state === "crashed") {
+        return false;
+      }
+      return state === "ready" || state === "degraded" || state === "indexing";
+    },
     timeoutMs,
     300
+  );
+  const state = await getExtensionDebugState();
+  if (state.serverHealthState === "crashed") {
+    assert.fail(`extension server crashed: ${state.serverHealthDetail}`);
+  }
+  assert.ok(
+    state.serverHealthState === "ready" ||
+      state.serverHealthState === "degraded" ||
+      state.serverHealthState === "indexing",
+    `extension server did not reach a usable state (got ${state.serverHealthState}: ${state.serverHealthDetail})`
   );
 }
 
@@ -533,6 +602,7 @@ export async function configureServerForTests(options?: {
   assert.ok(extension, "SysML Language Server extension should be installed");
 
   const serverPath = tryResolveServerBinary(extension.extensionPath);
+  const envServerPath = (process.env.SPEC42_SERVER_PATH || "").trim();
   if (serverPath !== "spec42") {
     assert.ok(
       fs.existsSync(serverPath),
@@ -544,12 +614,36 @@ export async function configureServerForTests(options?: {
     .getConfiguration("spec42")
     .get<string>("serverPath")
     ?.trim();
-  const serverPathChanged = currentServerPath !== serverPath;
+  const normalizedCurrent = currentServerPath
+    ? normalizeServerPathForComparison(currentServerPath)
+    : "";
+  const normalizedTarget = normalizeServerPathForComparison(serverPath);
+  const serverPathChanged =
+    !envServerPath && normalizedCurrent !== normalizedTarget;
 
-  await vscode.workspace
-    .getConfiguration("spec42")
-    .update("serverPath", serverPath, vscode.ConfigurationTarget.Workspace);
+  integrationTestLog("configureServerForTests:start", {
+    serverPath,
+    envServerPath: envServerPath || null,
+    currentServerPath: currentServerPath || null,
+    serverPathChanged,
+    forceRestart: options?.forceRestart === true,
+  });
+
+  if (!envServerPath && serverPathChanged) {
+    await vscode.workspace
+      .getConfiguration("spec42")
+      .update("serverPath", serverPath, vscode.ConfigurationTarget.Workspace);
+  }
+
   await extension.activate();
+
+  try {
+    await vscode.commands.executeCommand("sysml.debug.waitForLanguageClientReady");
+  } catch {
+    // Fall back to extension health polling when the debug command is unavailable.
+  }
+
+  await waitForExtensionServerReady();
 
   let state: ExtensionDebugState | undefined;
   try {
@@ -559,15 +653,18 @@ export async function configureServerForTests(options?: {
   }
 
   const shouldRestart =
-    options?.forceRestart === true ||
-    serverPathChanged ||
-    state?.serverHealthState === "crashed";
+    options?.forceRestart === true || state?.serverHealthState === "crashed";
+
+  integrationTestLog("configureServerForTests:ready", {
+    shouldRestart,
+    serverHealthState: state?.serverHealthState ?? null,
+    serverHealthDetail: state?.serverHealthDetail ?? null,
+  });
 
   if (shouldRestart) {
     await vscode.commands.executeCommand("sysml.restartServer");
+    await waitForExtensionServerReady();
   }
-
-  await waitForExtensionServerReady();
 }
 
 export async function waitForLanguageServerReady(

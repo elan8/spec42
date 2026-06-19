@@ -4,6 +4,7 @@ import {
   getLifecycleMessage,
   getWorkspaceLifecycle,
   registerWorkspaceLifecycleSnapshotProvider,
+  resetWorkspaceLifecycleSnapshotProvider,
   type WorkspaceLifecycleInput,
 } from "../../activation/workspaceLifecycle";
 
@@ -23,7 +24,7 @@ function input(
 
 describe("workspaceLifecycle", () => {
   afterEach(() => {
-    registerWorkspaceLifecycleSnapshotProvider(() => input());
+    resetWorkspaceLifecycleSnapshotProvider();
   });
 
   it("derives serverStarting when language client is not ready", () => {

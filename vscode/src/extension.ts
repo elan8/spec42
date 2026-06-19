@@ -17,6 +17,7 @@ import {
 } from "./activation/commands/visualizer";
 import {
   deactivateLanguageClient,
+  registerLanguageClientDebugCommands,
   registerRestartServerCommand,
   registerServerConfigChangeHandler,
   startLanguageClient,
@@ -131,6 +132,7 @@ export function activate(context: vscode.ExtensionContext): void {
     onBeforeRestart: resetSemanticIndexTracking,
     onRestartComplete: onRestartServerComplete,
   });
+  registerLanguageClientDebugCommands(context, handles);
   registerServerConfigChangeHandler(context, handles.lspModelProvider);
 
   const treeView = vscode.window.createTreeView("sysmlModelExplorer", {

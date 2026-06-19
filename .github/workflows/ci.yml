@@ -241,6 +241,8 @@ jobs:
   vscode-smoke:
     name: VS Code smoke tests
     runs-on: ubuntu-latest
+    env:
+      SPEC42_TEST_DEBUG: "1"
     steps:
       - uses: actions/checkout@v6
         with:

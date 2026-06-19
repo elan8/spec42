@@ -180,7 +180,7 @@ function routesShareEndpoint(a: ParsedRoute, b: ParsedRoute): boolean {
 describe("Interconnection Visualization", () => {
     it("passes interconnectionScene through the shared renderer input adapter", () => {
         const scene = {
-            schemaVersion: 1,
+            schemaVersion: 2,
             view: { id: "v1", name: "droneConnections", type: "InterconnectionView", rootIds: [] },
             nodes: [],
             ports: [],
@@ -190,7 +190,7 @@ describe("Interconnection Visualization", () => {
         };
         const prepared = buildSharedRendererInput({ interconnectionScene: scene }, "interconnection-view");
         const attached = prepared?.interconnectionScene as { schemaVersion?: number; edges?: unknown[] } | undefined;
-        assert.strictEqual(attached?.schemaVersion, 1);
+        assert.strictEqual(attached?.schemaVersion, 2);
         assert.strictEqual(attached?.edges?.length, 1);
     });
 
@@ -230,13 +230,13 @@ describe("Interconnection Visualization", () => {
                 const scene = visualization?.interconnectionScene as
                     | { schemaVersion?: number; edges?: unknown[] }
                     | undefined;
-                return scene?.schemaVersion === 1 && (scene.edges?.length ?? 0) > 0;
+                return scene?.schemaVersion === 2 && (scene.edges?.length ?? 0) > 0;
             },
             interconnectionExportTimeoutMs,
             DRONE_INTERCONNECTION_VIEW
         );
         const scene = snapshot?.interconnectionScene as { schemaVersion?: number; edges?: unknown[] } | undefined;
-        assert.strictEqual(scene?.schemaVersion, 1, "expected interconnectionScene schemaVersion 1 for droneConnections");
+        assert.strictEqual(scene?.schemaVersion, 2, "expected interconnectionScene schemaVersion 2 for droneConnections");
         assert.ok(
             (scene?.edges?.length ?? 0) > 0,
             `expected interconnectionScene edges for droneConnections, got ${scene?.edges?.length ?? 0}`

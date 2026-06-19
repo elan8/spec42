@@ -63,8 +63,11 @@ let client: LanguageClient | undefined;
 let languageClientReady = false;
 let restartCount = 0;
 let manualStopInProgress = false;
+let restartInProgress = false;
+let restartPromise: Promise<void> | undefined;
 let crashDialogShown = false;
 let lspModelProvider: LspModelProvider | undefined;
+let activeClientReadyPromise: Promise<void> | undefined;
 
 export function isLanguageClientReady(): boolean {
   return languageClientReady;
@@ -322,7 +325,7 @@ export function startLanguageClient(
       return { action: ErrorAction.Continue, handled: true };
     },
     closed: async () => {
-      if (manualStopInProgress) {
+      if (manualStopInProgress || restartInProgress) {
         setServerHealth(context, "starting", "Restarting SysML language server.");
         return { action: CloseAction.DoNotRestart, handled: true };
       }
@@ -422,9 +425,7 @@ export function startLanguageClient(
     })
   );
 
-  const clientReadyPromise = client
-    .start()
-    .then(() => {
+  const clientReadyPromise = client.start().then(() => {
       restartCount = 0;
       crashDialogShown = false;
       languageClientReady = true;
@@ -449,6 +450,8 @@ export function startLanguageClient(
       );
     });
 
+  activeClientReadyPromise = clientReadyPromise;
+
   log("Language client started");
   logStartupPhase("languageClient:start");
 
@@ -467,6 +470,78 @@ export function startLanguageClient(
   };
 }
 
+const restartWaitMs = () => (process.env.CI ? 30000 : 15000);
+
+async function delay(ms: number): Promise<void> {
+  await new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+async function waitForClientState(
+  languageClient: LanguageClient,
+  targetStates: ReadonlySet<State>,
+  timeoutMs: number
+): Promise<State> {
+  const deadline = Date.now() + timeoutMs;
+  while (Date.now() < deadline) {
+    const state = languageClient.state;
+    if (targetStates.has(state)) {
+      return state;
+    }
+    await delay(100);
+  }
+  throw new Error(
+    `Language client did not reach ${[...targetStates].join("|")} within ${timeoutMs}ms (current: ${languageClient.state})`
+  );
+}
+
+async function performLanguageClientRestart(
+  context: vscode.ExtensionContext,
+  handles: Pick<LspClientHandles, "client" | "lspModelProvider">,
+  callbacks: {
+    onBeforeRestart?: () => void;
+    onRestartComplete: () => void;
+  }
+): Promise<void> {
+  if (!handles.client) {
+    throw new Error("SysML language server is not running.");
+  }
+
+  const stopTimeoutMs = process.env.CI ? 20000 : 10000;
+  const waitTimeoutMs = restartWaitMs();
+
+  handles.lspModelProvider.clearModelCache();
+  callbacks.onBeforeRestart?.();
+  languageClientReady = false;
+  manualStopInProgress = true;
+  restartInProgress = true;
+  setServerHealth(context, "restarting", "Restarting SysML language server.");
+
+  try {
+    if (handles.client.state === State.Starting) {
+      await handles.client.start();
+    }
+
+    if (handles.client.state === State.Running) {
+      await handles.client.stop(stopTimeoutMs);
+      await waitForClientState(handles.client, new Set([State.Stopped]), waitTimeoutMs);
+    } else if (handles.client.state !== State.Stopped) {
+      await waitForClientState(handles.client, new Set([State.Stopped]), waitTimeoutMs);
+    }
+
+    restartCount = 0;
+    crashDialogShown = false;
+    const startPromise = handles.client.start();
+    activeClientReadyPromise = startPromise.then(() => undefined);
+    await startPromise;
+    handles.lspModelProvider.clearModelCache();
+    callbacks.onRestartComplete();
+    vscode.window.showInformationMessage("SysML language server restarted.");
+  } finally {
+    manualStopInProgress = false;
+    restartInProgress = false;
+  }
+}
+
 export function registerRestartServerCommand(
   context: vscode.ExtensionContext,
   handles: Pick<LspClientHandles, "client" | "lspModelProvider">,
@@ -481,32 +556,54 @@ export function registerRestartServerCommand(
         vscode.window.showErrorMessage("SysML language server is not running.");
         return;
       }
-      try {
-        handles.lspModelProvider.clearModelCache();
-        callbacks.onBeforeRestart?.();
-        languageClientReady = false;
-        manualStopInProgress = true;
-        setServerHealth(context, "restarting", "Restarting SysML language server.");
-        await handles.client.stop(process.env.CI ? 20000 : 10000);
-        manualStopInProgress = false;
-        restartCount = 0;
-        crashDialogShown = false;
-        await handles.client.start();
-        handles.lspModelProvider.clearModelCache();
-        languageClientReady = true;
-        callbacks.onRestartComplete();
-        vscode.window.showInformationMessage("SysML language server restarted.");
-      } catch (e) {
-        manualStopInProgress = false;
-        languageClientReady = false;
-        setServerHealth(
-          context,
-          "crashed",
-          `Restart failed: ${e instanceof Error ? e.message : String(e)}`
-        );
-        logError("restartServer failed", e);
-        vscode.window.showErrorMessage(`Failed to restart server: ${e}`);
+      if (restartPromise) {
+        return restartPromise;
       }
+      restartPromise = (async () => {
+        try {
+          await performLanguageClientRestart(context, handles, callbacks);
+        } catch (e) {
+          languageClientReady = false;
+          setServerHealth(
+            context,
+            "crashed",
+            `Restart failed: ${e instanceof Error ? e.message : String(e)}`
+          );
+          logError("restartServer failed", e);
+          vscode.window.showErrorMessage(`Failed to restart server: ${e}`);
+          throw e;
+        }
+      })().finally(() => {
+        restartPromise = undefined;
+      });
+      return restartPromise;
+    })
+  );
+}
+
+export function registerLanguageClientDebugCommands(
+  context: vscode.ExtensionContext,
+  handles: Pick<LspClientHandles, "client">
+): void {
+  context.subscriptions.push(
+    vscode.commands.registerCommand("sysml.debug.waitForLanguageClientReady", async () => {
+      if (!handles.client) {
+        throw new Error("Language client is not available.");
+      }
+      if (handles.client.state === State.Running) {
+        return;
+      }
+      if (handles.client.state === State.Starting && activeClientReadyPromise) {
+        await activeClientReadyPromise;
+        return;
+      }
+      if (handles.client.state === State.Stopped) {
+        const startPromise = handles.client.start();
+        activeClientReadyPromise = startPromise.then(() => undefined);
+        await startPromise;
+        return;
+      }
+      await waitForClientState(handles.client, new Set([State.Running]), restartWaitMs());
     })
   );
 }

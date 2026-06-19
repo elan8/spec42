@@ -1,13 +1,20 @@
 import * as assert from "assert";
 import * as path from "path";
 import * as vscode from "vscode";
+import { resetWorkspaceLifecycleSnapshotProvider } from "../../activation/workspaceLifecycle";
 import {
   BaseVisualizationPanelController,
   type BaseVisualizerRestoreState,
   type VisualizationPanelRuntimeState,
   type VisualizationPanelVariantConfig,
 } from "../../visualization/baseVisualizationPanelController";
+import { resetVisualizerRenderTracker } from "../../visualization/renderTracker";
+import {
+  setVisualizerBootstrapCompleted,
+  setVisualizerUpdateInFlight,
+} from "../../visualization/visualizerReadiness";
 import { setVisualizationGateState } from "../../visualization/visualizationGate";
+import { waitFor } from "./testUtils";
 
 function createMockPanel() {
   const messages: unknown[] = [];
@@ -46,10 +53,14 @@ function createMockPanel() {
 
 describe("BaseVisualizationPanelController", () => {
   beforeEach(() => {
+    resetWorkspaceLifecycleSnapshotProvider();
     setVisualizationGateState({
       languageClientReady: true,
       serverHealthState: "ready",
     });
+    setVisualizerBootstrapCompleted(false);
+    setVisualizerUpdateInFlight(false);
+    resetVisualizerRenderTracker();
   });
 
   it("supports documentless variants and debounces tracked refreshes", async () => {
@@ -70,6 +81,7 @@ describe("BaseVisualizationPanelController", () => {
       enabledViews: ["general-view", "interconnection-view"],
       defaultView: "general-view",
       loadingMessage: "Loading SysML visualization...",
+      waitForTrackedUriDiagnostics: async () => {},
       getRuntimeState: () => runtimeState,
       updateCurrentView: (view) => {
         runtimeState.currentView = view;
@@ -123,8 +135,14 @@ describe("BaseVisualizationPanelController", () => {
 
     await controller.updateVisualization(true, "webviewReady");
     assert.ok(fetchCount >= 1, "initial webviewReady update should fetch once");
-    // Let built-in startup retries (1200ms / 3500ms) finish so only debounced file changes add fetches.
-    await new Promise((resolve) => setTimeout(resolve, 4000));
+    // Let the built-in 2000ms startup retry finish so only debounced file changes add fetches.
+    await waitFor(
+      "startup retries settled",
+      async () => fetchCount,
+      (count) => (count ?? 0) >= 1,
+      4000,
+      100
+    );
     const settledFetchCount = fetchCount;
 
     await controller.notifyTrackedUriChanged(
@@ -133,9 +151,13 @@ describe("BaseVisualizationPanelController", () => {
     await controller.notifyTrackedUriChanged(
       vscode.Uri.file(path.join("/workspace", "parts.sysml"))
     );
-    // Debounce (500ms) plus waitForDocumentDiagnostics timeout (2500ms) before the tracked refresh fetch.
-    await new Promise((resolve) => setTimeout(resolve, 3200));
-    assert.strictEqual(fetchCount, settledFetchCount + 1);
+    await waitFor(
+      "debounced tracked-uri fetch",
+      async () => fetchCount,
+      (count) => count === settledFetchCount + 1,
+      8000,
+      50
+    );
 
     controller.dispose();
 

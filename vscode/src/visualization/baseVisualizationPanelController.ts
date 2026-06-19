@@ -38,6 +38,10 @@ export interface VisualizationPanelVariantConfig<TRestoreState extends BaseVisua
     getContentHashSource: (runtimeState: VisualizationPanelRuntimeState) => string;
     normalizeView?: (viewId: string) => string;
     shouldTrackUri?: (uri: vscode.Uri, runtimeState: VisualizationPanelRuntimeState) => boolean;
+    waitForTrackedUriDiagnostics?: (
+        uri: vscode.Uri,
+        options: { debounceMs: number; timeoutMs: number }
+    ) => Promise<void>;
 }
 
 export function parseFileUri(value: string, label: string, logError: (message: string, error?: unknown) => void): vscode.Uri | undefined {
@@ -251,7 +255,9 @@ export class BaseVisualizationPanelController<TRestoreState extends BaseVisualiz
             this._fileChangeDebounceTimer = undefined;
             void (async () => {
                 if (triggerSource === 'fileChanged') {
-                    await waitForDocumentDiagnostics(uri, {
+                    const waitForDiagnostics =
+                        this._config.waitForTrackedUriDiagnostics ?? waitForDocumentDiagnostics;
+                    await waitForDiagnostics(uri, {
                         debounceMs: 200,
                         timeoutMs: 2500,
                     });

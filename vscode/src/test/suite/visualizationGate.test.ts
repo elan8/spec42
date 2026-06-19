@@ -1,5 +1,5 @@
 import * as assert from "assert";
-import { registerWorkspaceLifecycleSnapshotProvider } from "../../activation/workspaceLifecycle";
+import { registerWorkspaceLifecycleSnapshotProvider, resetWorkspaceLifecycleSnapshotProvider } from "../../activation/workspaceLifecycle";
 import {
   evaluateClientVisualizationReadiness,
   setVisualizationGateState,
@@ -19,6 +19,10 @@ describe("visualizationGate", () => {
       workspaceLoadState: "ready",
       hasWorkspaceData: true,
     }));
+  });
+
+  afterEach(() => {
+    resetWorkspaceLifecycleSnapshotProvider();
   });
 
   it("blocks when language client is not ready", () => {

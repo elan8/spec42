@@ -42,6 +42,10 @@ export function registerWorkspaceLifecycleSnapshotProvider(
   snapshotProvider = provider;
 }
 
+export function resetWorkspaceLifecycleSnapshotProvider(): void {
+  snapshotProvider = undefined;
+}
+
 function defaultSnapshot(): WorkspaceLifecycleInput {
   return {
     languageClientReady: false,

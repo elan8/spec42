@@ -1,5 +1,6 @@
 import * as assert from "assert";
 import * as vscode from "vscode";
+import { resetWorkspaceLifecycleSnapshotProvider } from "../../activation/workspaceLifecycle";
 import { resetVisualizerRenderTracker } from "../../visualization/renderTracker";
 import { createUpdateVisualizationFlow } from "../../visualization/updateFlow";
 import {
@@ -33,6 +34,7 @@ function createMockPanel() {
 
 describe("createUpdateVisualizationFlow", () => {
   beforeEach(() => {
+    resetWorkspaceLifecycleSnapshotProvider();
     setVisualizationGateState({
       languageClientReady: true,
       serverHealthState: "ready",

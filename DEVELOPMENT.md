@@ -263,11 +263,18 @@ npm run test:interconnection     # interconnection-view integration
 npm run test:interconnection-drone
 npm run test:multi-file          # multi-file workspace smoke
 npm run test:workspace-smoke
-npm run test:ux-unit             # status bar, snippets, examples provider
+npm run test:ux-unit             # status bar, snippets, examples provider, panel controller, update flow
 npm run test:library-unit        # library status view model
 ```
 
-Default `npm test` (`.vscode-test.mjs`) runs extension smoke, visualization export, placeholder/empty-state tests, message handler tests, panel controller/update-flow/gate tests, and dtoAdapter smoke tests. Shared payload normalization tests live in `shared/diagram-renderer/src/prepare/normalize-payload.test.ts`. CI `vscode-smoke` also runs the view integration suites above.
+Default `npm test` (`.vscode-test.mjs`) runs extension smoke, visualization export, placeholder/empty-state tests, and message handler tests. Controller, update-flow, gate, dtoAdapter, and render-tracker unit tests run via `npm run test:ux-unit`. Shared payload normalization tests live in `shared/diagram-renderer/src/prepare/normalize-payload.test.ts`. CI `vscode-smoke` also runs the view integration suites above.
+
+### VS Code smoke troubleshooting
+
+- **`Server process exited with code 0` in the SysML output channel** is normal during an intentional `sysml.restartServer` stop. It does not by itself indicate failure.
+- Look instead for **`restartServer failed`**, **`extension server crashed`**, or a **`waitFor` timeout** in the test host console (`[spec42-test][...]` lines when `SPEC42_TEST_DEBUG=1`).
+- CI sets `SPEC42_SERVER_PATH` for smoke runs; test fixtures should not hardcode machine-specific `spec42.serverPath` values.
+- If a visualization integration test times out, check whether the language server reached `ready` before the visualizer opened (`configureServerForTests` logs when debug is enabled).
 
 ### Packaging Checks
 
