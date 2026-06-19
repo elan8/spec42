@@ -21,6 +21,7 @@ fn invalid_fixture_path() -> PathBuf {
 }
 
 #[test]
+#[ignore = "agent/API/MCP integration; run: cargo test -p spec42 -- --include-ignored"]
 fn mcp_tool_names_match_server_registration() {
     assert_eq!(MCP_TOOL_NAMES.len(), 4);
     assert!(MCP_TOOL_NAMES.contains(&"spec42_check"));
@@ -28,6 +29,7 @@ fn mcp_tool_names_match_server_registration() {
 }
 
 #[test]
+#[ignore = "agent/API/MCP integration; run: cargo test -p spec42 -- --include-ignored"]
 fn mcp_spec42_check_kitchen_timer() {
     with_isolated_data_dir(|| {
         let path = kitchen_timer_path();
@@ -42,6 +44,7 @@ fn mcp_spec42_check_kitchen_timer() {
 }
 
 #[test]
+#[ignore = "agent/API/MCP integration; run: cargo test -p spec42 -- --include-ignored"]
 fn mcp_spec42_check_rejects_missing_path() {
     with_isolated_data_dir(|| {
         let err = handle_spec42_check(json!({})).expect_err("missing path");
@@ -53,6 +56,7 @@ fn mcp_spec42_check_rejects_missing_path() {
 }
 
 #[test]
+#[ignore = "agent/API/MCP integration; run: cargo test -p spec42 -- --include-ignored"]
 fn mcp_spec42_check_unknown_path_returns_error() {
     with_isolated_data_dir(|| {
         let err = handle_spec42_check(json!({
@@ -70,6 +74,7 @@ fn mcp_spec42_check_unknown_path_returns_error() {
 }
 
 #[test]
+#[ignore = "agent/API/MCP integration; run: cargo test -p spec42 -- --include-ignored"]
 fn mcp_execute_tool_unknown_tool_returns_mcp_error() {
     with_isolated_data_dir(|| {
         let result = execute_tool("nope", json!({})).expect("tool result");
@@ -84,6 +89,7 @@ fn mcp_execute_tool_unknown_tool_returns_mcp_error() {
 }
 
 #[test]
+#[ignore = "agent/API/MCP integration; run: cargo test -p spec42 -- --include-ignored"]
 fn mcp_spec42_doctor_returns_version() {
     with_isolated_data_dir(|| {
         let value = handle_spec42_doctor(json!({})).expect("spec42_doctor");
@@ -93,6 +99,7 @@ fn mcp_spec42_doctor_returns_version() {
 }
 
 #[test]
+#[ignore = "agent/API/MCP integration; run: cargo test -p spec42 -- --include-ignored"]
 fn mcp_spec42_model_summary_returns_nodes() {
     with_isolated_data_dir(|| {
         let path = kitchen_timer_path();
@@ -122,6 +129,7 @@ fn mcp_spec42_model_summary_returns_nodes() {
 }
 
 #[test]
+#[ignore = "agent/API/MCP integration; run: cargo test -p spec42 -- --include-ignored"]
 fn mcp_model_summary_respects_max_nodes() {
     with_isolated_data_dir(|| {
         let path = kitchen_timer_path();
@@ -145,6 +153,7 @@ fn mcp_model_summary_respects_max_nodes() {
 }
 
 #[test]
+#[ignore = "agent/API/MCP integration; run: cargo test -p spec42 -- --include-ignored"]
 fn mcp_spec42_explain_diagnostic_catalog() {
     with_isolated_data_dir(|| {
         let value = handle_spec42_explain_diagnostic(json!({
@@ -165,6 +174,7 @@ fn mcp_spec42_explain_diagnostic_catalog() {
 }
 
 #[test]
+#[ignore = "agent/API/MCP integration; run: cargo test -p spec42 -- --include-ignored"]
 fn mcp_explain_unknown_code_has_no_catalog() {
     with_isolated_data_dir(|| {
         let value = handle_spec42_explain_diagnostic(json!({
@@ -184,6 +194,7 @@ fn mcp_explain_unknown_code_has_no_catalog() {
 }
 
 #[test]
+#[ignore = "agent/API/MCP integration; run: cargo test -p spec42 -- --include-ignored"]
 fn mcp_explain_with_invalid_model_lists_instances_when_diagnostics_exist() {
     with_isolated_data_dir(|| {
         let path = invalid_fixture_path();
@@ -228,6 +239,7 @@ fn mcp_explain_with_invalid_model_lists_instances_when_diagnostics_exist() {
 }
 
 #[test]
+#[ignore = "agent/API/MCP integration; run: cargo test -p spec42 -- --include-ignored"]
 fn mcp_spec42_check_include_semantic_model() {
     with_isolated_data_dir(|| {
         let path = kitchen_timer_path();

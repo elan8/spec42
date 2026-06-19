@@ -34,6 +34,7 @@ fn run_spec42_json(args: &[&str]) -> Value {
 }
 
 #[test]
+#[ignore = "agent/API/MCP integration; run: cargo test -p spec42 -- --include-ignored"]
 fn cli_explain_diagnostic_matches_mcp_catalog() {
     with_isolated_data_dir(|| {
         let mcp = handle_spec42_explain_diagnostic(serde_json::json!({
@@ -63,6 +64,7 @@ fn cli_explain_diagnostic_matches_mcp_catalog() {
 }
 
 #[test]
+#[ignore = "agent/API/MCP integration; run: cargo test -p spec42 -- --include-ignored"]
 fn cli_model_summary_matches_mcp_with_max_nodes_one() {
     with_isolated_data_dir(|| {
         let path = kitchen_timer_path();

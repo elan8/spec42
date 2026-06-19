@@ -211,7 +211,7 @@ describe("Interconnection Visualization", () => {
     });
 
     it("keeps the real drone interconnection view readable enough for release gating", async function () {
-        this.timeout(60000);
+        this.timeout(integrationHookTimeoutMs);
 
         const workspaceFolder = getTestWorkspaceFolder();
         const doc = await vscode.workspace.openTextDocument(DRONE_FIXTURE);

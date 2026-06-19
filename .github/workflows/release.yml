@@ -101,7 +101,8 @@ jobs:
             --test cli_ai_tools \
             --test mcp_protocol \
             --test mcp_binary \
-            --test kitchen_timer_check
+            --test kitchen_timer_check \
+            -- --include-ignored
 
       - name: Rust clippy
         run: cargo clippy --workspace --all-targets -- -W clippy::all

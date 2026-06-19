@@ -115,6 +115,7 @@ async fn post_raw(app: &axum::Router, uri: &str, body: Value) -> (StatusCode, St
 }
 
 #[tokio::test]
+#[ignore = "agent/API/MCP integration; run: cargo test -p spec42 -- --include-ignored"]
 async fn api_health_returns_ok() {
     with_isolated_data_dir_async(|| async {
         let state = build_test_state(example_workspace_root()).await;
@@ -127,6 +128,7 @@ async fn api_health_returns_ok() {
 }
 
 #[tokio::test]
+#[ignore = "agent/API/MCP integration; run: cargo test -p spec42 -- --include-ignored"]
 async fn api_ready_returns_workspace_root() {
     with_isolated_data_dir_async(|| async {
         let workspace = example_workspace_root();
@@ -144,6 +146,7 @@ async fn api_ready_returns_workspace_root() {
 }
 
 #[tokio::test]
+#[ignore = "agent/API/MCP integration; run: cargo test -p spec42 -- --include-ignored"]
 async fn api_doctor_returns_version() {
     with_isolated_data_dir_async(|| async {
         let state = build_test_state(example_workspace_root()).await;
@@ -156,6 +159,7 @@ async fn api_doctor_returns_version() {
 }
 
 #[tokio::test]
+#[ignore = "agent/API/MCP integration; run: cargo test -p spec42 -- --include-ignored"]
 async fn api_validate_workspace() {
     with_isolated_data_dir_async(|| async {
         let state = build_test_state(example_workspace_root()).await;
@@ -173,6 +177,7 @@ async fn api_validate_workspace() {
 }
 
 #[tokio::test]
+#[ignore = "agent/API/MCP integration; run: cargo test -p spec42 -- --include-ignored"]
 async fn api_model_summary_matches_mcp() {
     with_isolated_data_dir_async(|| async {
         let timer = kitchen_timer_path();
@@ -207,6 +212,7 @@ async fn api_model_summary_matches_mcp() {
 }
 
 #[tokio::test]
+#[ignore = "agent/API/MCP integration; run: cargo test -p spec42 -- --include-ignored"]
 async fn api_diagram_svg_uses_shared_renderer() {
     with_isolated_data_dir_async(|| async {
         let state = build_test_state(example_workspace_root()).await;
@@ -230,6 +236,7 @@ async fn api_diagram_svg_uses_shared_renderer() {
 }
 
 #[tokio::test]
+#[ignore = "agent/API/MCP integration; run: cargo test -p spec42 -- --include-ignored"]
 async fn api_explain_diagnostic_matches_mcp() {
     with_isolated_data_dir_async(|| async {
         let mcp = handle_spec42_explain_diagnostic(serde_json::json!({
@@ -259,6 +266,7 @@ async fn api_explain_diagnostic_matches_mcp() {
 }
 
 #[tokio::test]
+#[ignore = "agent/API/MCP integration; run: cargo test -p spec42 -- --include-ignored"]
 async fn api_openapi_json_loads() {
     with_isolated_data_dir_async(|| async {
         let state = build_test_state(example_workspace_root()).await;
@@ -271,6 +279,7 @@ async fn api_openapi_json_loads() {
 }
 
 #[tokio::test]
+#[ignore = "agent/API/MCP integration; run: cargo test -p spec42 -- --include-ignored"]
 async fn api_rejects_path_traversal() {
     with_isolated_data_dir_async(|| async {
         let state = build_test_state(example_workspace_root()).await;
@@ -293,6 +302,7 @@ async fn api_rejects_path_traversal() {
 }
 
 #[tokio::test]
+#[ignore = "agent/API/MCP integration; run: cargo test -p spec42 -- --include-ignored"]
 async fn api_diagnostic_codes_non_empty() {
     with_isolated_data_dir_async(|| async {
         let state = build_test_state(example_workspace_root()).await;

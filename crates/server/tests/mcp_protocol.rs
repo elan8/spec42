@@ -24,6 +24,7 @@ fn kitchen_timer_path() -> PathBuf {
 }
 
 #[tokio::test]
+#[ignore = "agent/API/MCP integration; run: cargo test -p spec42 -- --include-ignored"]
 async fn mcp_protocol_lists_four_tools() -> anyhow::Result<()> {
     with_isolated_data_dir_async(|| async {
         let (server_transport, client_transport) = tokio::io::duplex(4096);
@@ -51,6 +52,7 @@ async fn mcp_protocol_lists_four_tools() -> anyhow::Result<()> {
 }
 
 #[tokio::test]
+#[ignore = "agent/API/MCP integration; run: cargo test -p spec42 -- --include-ignored"]
 async fn mcp_protocol_call_spec42_check() -> anyhow::Result<()> {
     with_isolated_data_dir_async(|| async {
         let path = kitchen_timer_path();
@@ -91,6 +93,7 @@ async fn mcp_protocol_call_spec42_check() -> anyhow::Result<()> {
 }
 
 #[tokio::test]
+#[ignore = "agent/API/MCP integration; run: cargo test -p spec42 -- --include-ignored"]
 async fn mcp_protocol_unknown_tool_returns_error_result() -> anyhow::Result<()> {
     with_isolated_data_dir_async(|| async {
         let (server_transport, client_transport) = tokio::io::duplex(4096);

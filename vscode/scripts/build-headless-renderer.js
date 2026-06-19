@@ -8,6 +8,12 @@ const repoRoot = path.join(rootDir, '..');
 const entryPoint = path.join(repoRoot, 'shared', 'diagram-renderer', 'src', 'headless-export.ts');
 const outFile = path.join(repoRoot, 'crates', 'server', 'assets', 'diagram-renderer', 'headless-renderer.js');
 
+/** Resolve packages from vscode or diagram-renderer installs (package-smoke only runs npm ci in vscode). */
+const nodePaths = [
+    path.join(rootDir, 'node_modules'),
+    path.join(repoRoot, 'shared', 'diagram-renderer', 'node_modules'),
+].filter((dir) => fs.existsSync(dir));
+
 async function build() {
     try {
         fs.mkdirSync(path.dirname(outFile), { recursive: true });
@@ -21,6 +27,7 @@ async function build() {
             sourcemap: false,
             minify: false,
             globalName: 'Spec42HeadlessRendererBundle',
+            nodePaths,
             define: {
                 'process.env.NODE_ENV': '"production"',
             },

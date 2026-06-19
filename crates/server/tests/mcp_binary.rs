@@ -8,6 +8,7 @@ use rmcp::transport::TokioChildProcess;
 use rmcp::ServiceExt;
 
 #[tokio::test]
+#[ignore = "agent/API/MCP integration; run: cargo test -p spec42 -- --include-ignored"]
 async fn spec42_mcp_binary_lists_tools_and_doctor() -> anyhow::Result<()> {
     with_isolated_data_dir_async(|| async {
         let bin = env!("CARGO_BIN_EXE_spec42-mcp");

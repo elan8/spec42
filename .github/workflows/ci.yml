@@ -177,7 +177,8 @@ jobs:
             --test mcp_binary \
             --test kitchen_timer_check \
             --test kpar_stdlib_embed_smoke \
-            --test multi_file_check
+            --test multi_file_check \
+            -- --include-ignored
 
       - name: Build spec42-mcp binary
         run: cargo build -p spec42 --bin spec42-mcp

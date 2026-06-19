@@ -188,7 +188,7 @@ cargo test --workspace --no-default-features
 
 ### Rust (agent/API surfaces)
 
-CLI, MCP, and HTTP tests share the same `perform_*` engine and KitchenTimer fixtures. Run them together when changing `crates/server` agent or API code:
+CLI, MCP, and HTTP tests share the same `perform_*` engine and KitchenTimer fixtures. They are **`#[ignore]` by default** so plain `cargo test` stays fast; run them with `--include-ignored` when changing `crates/server` agent or API code:
 
 ```bash
 cargo test -p spec42 \
@@ -197,7 +197,8 @@ cargo test -p spec42 \
   --test cli_ai_tools \
   --test mcp_protocol \
   --test mcp_binary \
-  --test kitchen_timer_check
+  --test kitchen_timer_check \
+  -- --include-ignored
 ```
 
 | Integration test | Surface |
@@ -296,7 +297,8 @@ cargo test -p spec42 \
   --test cli_ai_tools \
   --test mcp_protocol \
   --test mcp_binary \
-  --test kitchen_timer_check
+  --test kitchen_timer_check \
+  -- --include-ignored
 cd vscode && npm run compile && npm run test:lm-cli-unit
 ```
 

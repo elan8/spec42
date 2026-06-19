@@ -28,13 +28,26 @@ if [[ -f "${out}" ]] && unzip -tq "${out}" >/dev/null 2>&1; then
   exit 0
 fi
 
+download_url() {
+  local url="$1"
+  local dest="$2"
+  if command -v curl >/dev/null 2>&1; then
+    curl --fail --location \
+      --retry 5 --retry-delay 5 --retry-all-errors \
+      --connect-timeout 30 --max-time 600 \
+      --output "${dest}" "${url}"
+  elif command -v wget >/dev/null 2>&1; then
+    wget --quiet --tries=5 --timeout=30 --output-document="${dest}" "${url}"
+  else
+    echo "Need curl or wget to download ${url}" >&2
+    return 1
+  fi
+}
+
 fetch_kpar_release() {
   local url="https://github.com/${repo}/releases/download/v${version}/${artifact}"
   echo "Fetching domain libraries KPAR from ${url}"
-  curl --fail --location \
-    --retry 5 --retry-delay 5 --retry-all-errors \
-    --connect-timeout 30 --max-time 600 \
-    --output "${out}" "${url}"
+  download_url "${url}" "${out}"
   unzip -tq "${out}" >/dev/null
 }
 
@@ -61,7 +74,7 @@ resolve_source_dir() {
   return 1
 }
 
-if fetch_kpar_release 2>/dev/null; then
+if fetch_kpar_release; then
   echo "Fetched domain libraries KPAR via GitHub release"
 elif source_dir="$(resolve_source_dir)"; then
   pack_kpar_from_dir "${source_dir}"
