@@ -17,8 +17,8 @@ use semantic_core::semantic::extracted_model as model;
 use semantic_core::semantic::ibd;
 use semantic_core::semantic::model_projection;
 use semantic_core::{
-    range_to_dto, GraphEdgeDto, GraphNodeDto, IbdDataDto, RelationshipDto, SysmlElementDto,
-    SysmlGraphDto, SysmlModelStatsDto, WorkspaceFileModelDto, WorkspaceModelDto,
+    range_to_dto, GraphEdgeDto, GraphNodeDto, IbdDataDto, ModelExplorerBundle, RelationshipDto,
+    SysmlElementDto, SysmlGraphDto, SysmlModelStatsDto, WorkspaceFileModelDto, WorkspaceModelDto,
     WorkspaceModelSummaryDto,
 };
 
@@ -402,7 +402,7 @@ pub async fn build_sysml_model_response(
     build_start: Instant,
     perf_logging_enabled: bool,
     client: &Client,
-    cached_workspace_ibd: Option<&IbdDataDto>,
+    model_explorer_bundle: Option<&ModelExplorerBundle>,
 ) -> SysmlModelResultDto {
     let request_phase_start = Instant::now();
     let want_graph = scope.is_empty()
@@ -421,22 +421,26 @@ pub async fn build_sysml_model_response(
     let workspace_viz = workspace_visualization_enabled(scope);
     let graph_start = Instant::now();
     let raw_graph = if want_graph && workspace_viz {
-        let graph = build_workspace_graph_dto(semantic_graph, library_paths);
-        if perf_logging_enabled {
-            client
-                .log_message(
-                    MessageType::INFO,
-                    format!(
-                        "sysml/model: workspaceVisualization=true uri={} scope={:?} -> graph nodes={} edges={}",
-                        uri.as_str(),
-                        scope,
-                        graph.nodes.len(),
-                        graph.edges.len(),
-                    ),
-                )
-                .await;
+        if let Some(bundle) = model_explorer_bundle {
+            Some(bundle.workspace_graph.clone())
+        } else {
+            let graph = build_workspace_graph_dto(semantic_graph, library_paths);
+            if perf_logging_enabled {
+                client
+                    .log_message(
+                        MessageType::INFO,
+                        format!(
+                            "sysml/model: workspaceVisualization=true uri={} scope={:?} -> graph nodes={} edges={}",
+                            uri.as_str(),
+                            scope,
+                            graph.nodes.len(),
+                            graph.edges.len(),
+                        ),
+                    )
+                    .await;
+            }
+            Some(graph)
         }
-        Some(graph)
     } else if want_graph {
         let sg_nodes = semantic_graph.nodes_for_uri(uri);
         let node_count = sg_nodes.len();
@@ -480,16 +484,22 @@ pub async fn build_sysml_model_response(
     let strip_ms = strip_start.elapsed().as_millis().max(1);
     let general_view_start = Instant::now();
     let general_view_graph = if want_general_view_graph {
-        graph
-            .as_ref()
-            .map(|g| canonical_general_view_graph(g, workspace_viz))
+        if let Some(bundle) = model_explorer_bundle {
+            Some(bundle.general_view_graph.clone())
+        } else {
+            graph
+                .as_ref()
+                .map(|g| canonical_general_view_graph(g, workspace_viz))
+        }
     } else {
         None
     };
     let general_view_ms = general_view_start.elapsed().as_millis().max(1);
     let workspace_model_start = Instant::now();
     let workspace_model = if workspace_viz {
-        Some(build_workspace_model_dto(semantic_graph, library_paths))
+        model_explorer_bundle
+            .map(|bundle| bundle.workspace_model.clone())
+            .or_else(|| Some(build_workspace_model_dto(semantic_graph, library_paths)))
     } else {
         None
     };
@@ -586,7 +596,7 @@ pub async fn build_sysml_model_response(
 
     let ibd_start = Instant::now();
     let ibd = if want_ibd && want_graph && graph.is_some() && workspace_viz {
-        cached_workspace_ibd.cloned().or_else(|| {
+        model_explorer_bundle.map(|bundle| bundle.full_ibd.clone()).or_else(|| {
             let workspace_uris = semantic_graph.workspace_uris_excluding_libraries(library_paths);
             Some(semantic_core::build_merged_workspace_ibd(
                 semantic_graph,

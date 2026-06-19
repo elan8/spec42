@@ -1151,6 +1151,8 @@ mod tests {
             interconnection_scene: None,
             stats: None,
             projection_hints: None,
+            prepared_view: None,
+            prepared_view: None,
         };
         let svg = native_svg(&payload, "general-view");
         assert!(svg.contains("data-element-id=\"P::x\""));
@@ -1210,6 +1212,7 @@ mod tests {
             interconnection_scene: None,
             stats: None,
             projection_hints: None,
+            prepared_view: None,
         };
         let (svg, content_type) =
             render_diagram(&payload, DiagramExportFormat::Svg).expect("shared renderer svg");
@@ -1262,6 +1265,7 @@ mod tests {
             interconnection_scene: Some(scene),
             stats: None,
             projection_hints: None,
+            prepared_view: None,
         };
         let svg = elk_svg(&payload, "interconnection-view").expect("interconnection svg");
         assert!(!svg.is_empty());

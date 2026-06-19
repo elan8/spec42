@@ -12,11 +12,31 @@ import {
     nodeSupportsSourceNavigation,
 } from "@spec42/diagram-renderer/behavior-interaction";
 
+function preparedViewFromPayload(payload: unknown): PreparedView | null {
+    if (!payload || typeof payload !== "object") {
+        return null;
+    }
+    const record = payload as Record<string, unknown>;
+    const prepared = record.preparedView;
+    if (!prepared || typeof prepared !== "object") {
+        return null;
+    }
+    const view = prepared as PreparedView;
+    if (typeof view.view !== "string" || !Array.isArray(view.nodes) || !Array.isArray(view.edges)) {
+        return null;
+    }
+    return view;
+}
+
 /**
  * Thin adapter around the shared renderer package to keep Spec42's
  * webview protocol and orchestration untouched during incremental adoption.
  */
 export function prepareSharedViewData(payload: unknown): PreparedView {
+    const prepared = preparedViewFromPayload(payload);
+    if (prepared) {
+        return prepared;
+    }
     return prepareViewData(payload);
 }
 

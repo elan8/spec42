@@ -45,6 +45,14 @@ pub use semantic::model::{
     ConnectStatementDetail, NodeId, RelationshipKind, SemanticEdge, SemanticNode,
 };
 pub use semantic::pipeline::build_and_link_graph;
+pub use semantic::prepared_view::{
+    prepare_interconnection_prepared_view, prepare_view_from_visualization, PreparedEdgeDto,
+    PreparedNodeDto, PreparedViewDto,
+};
+pub use semantic::render_snapshot::{
+    build_render_snapshot, build_view_index, materialize_model_explorer_bundle,
+    view_index_to_artifacts, ModelExplorerBundle, ViewBundleKey, ViewIndex, WorkspaceRenderSnapshot,
+};
 pub use semantic::reference_resolution::{
     parse_expose_target_suffix, resolve_expose_target, resolve_expression_endpoint_strict,
     resolve_expression_endpoint_workspace, resolve_inherited_member_via_type,
@@ -78,8 +86,8 @@ pub use semantic::visualization_workspace::{
     build_sysml_visualization_workspace, build_sysml_visualization_workspace_with_meta,
     WorkspaceVisualizationRequest,
     build_workspace_activity_diagrams, build_workspace_graph_dto_for_uris,
-    build_workspace_visualization_artifacts, filter_ibd_by_visible_ids,
-    select_interconnection_ibd_scope, select_interconnection_ibd_scope_with_trace, uri_under_root,
+    build_workspace_visualization_artifacts, empty_merged_ibd, filter_ibd_by_visible_ids,
+    interconnection_build_options, select_interconnection_ibd_scope, select_interconnection_ibd_scope_with_trace, uri_under_root,
     workspace_uris_for_root, IbdScopeTrace, VisualizationBuildMeta, VisualizationBuildOptions,
     WorkspaceVisualizationArtifacts,
 };

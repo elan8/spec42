@@ -100,36 +100,43 @@ fn lsp_interconnection_visualization_returns_slim_scene_only_payload_for_drone()
     assert_eq!(result["selectedViewName"].as_str(), Some("connections"));
     assert_eq!(result["view"].as_str(), Some("interconnection-view"));
 
-    let scene = result
-        .get("interconnectionScene")
-        .expect("interconnectionScene should be present");
+    let prepared = result
+        .get("preparedView")
+        .expect("preparedView should be present for interconnection LSP responses");
     assert!(
-        !scene.is_null(),
-        "interconnectionScene should not be null for connections view"
+        !prepared.is_null(),
+        "preparedView should not be null for connections view"
     );
-    let edges = scene["edges"]
+    assert_eq!(prepared["view"].as_str(), Some("interconnection-view"));
+    let edges = prepared["edges"]
         .as_array()
-        .expect("interconnectionScene.edges should be an array");
-    assert!(!edges.is_empty(), "expected non-empty interconnection scene");
+        .expect("preparedView.edges should be an array");
+    assert!(!edges.is_empty(), "expected non-empty prepared interconnection view");
+
+    let scene = result.get("interconnectionScene");
+    assert!(
+        scene.is_none() || scene.is_some_and(|value| value.is_null()),
+        "slim interconnection payload should omit interconnectionScene when preparedView is present, got: {scene:?}"
+    );
 
     let ibd = result.get("ibd");
     assert!(
         ibd.is_none() || ibd.is_some_and(|value| value.is_null()),
-        "slim interconnection payload should omit ibd when interconnectionScene is present, got: {ibd:?}"
+        "slim interconnection payload should omit ibd when preparedView is present, got: {ibd:?}"
     );
 
     let graph = result.get("graph");
     assert!(
         graph.is_none() || graph.is_some_and(|value| value.is_null()),
-        "slim interconnection payload should omit graph when interconnectionScene is present, got: {graph:?}"
+        "slim interconnection payload should omit graph when preparedView is present, got: {graph:?}"
     );
     let general_view_graph = result.get("generalViewGraph");
     assert!(
         general_view_graph.is_none() || general_view_graph.is_some_and(|value| value.is_null()),
-        "slim interconnection payload should omit generalViewGraph when interconnectionScene is present, got: {general_view_graph:?}"
+        "slim interconnection payload should omit generalViewGraph when preparedView is present, got: {general_view_graph:?}"
     );
 
-    const MAX_DRONE_SLIM_INTERCONNECTION_BYTES: usize = 45_000;
+    const MAX_DRONE_SLIM_INTERCONNECTION_BYTES: usize = 52_000;
     let response_bytes = visualization_capture.raw.len();
     assert!(
         response_bytes <= MAX_DRONE_SLIM_INTERCONNECTION_BYTES,

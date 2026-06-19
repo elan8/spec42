@@ -6,14 +6,15 @@ use serde::{Deserialize, Serialize};
 use crate::semantic::extracted_model::{ActivityDiagramDto, SequenceDiagramDto, StateMachineDto};
 use crate::semantic::ibd::IbdDataDto;
 use crate::semantic::interconnection_scene::InterconnectionSceneDto;
+use crate::semantic::prepared_view::PreparedViewDto;
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 pub struct PositionDto {
     pub line: u32,
     pub character: u32,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 pub struct RangeDto {
     pub start: PositionDto,
     pub end: PositionDto,
@@ -241,6 +242,8 @@ pub struct SysmlVisualizationResultDto {
     pub stats: Option<SysmlModelStatsDto>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub projection_hints: Option<SysmlVisualizationProjectionHintsDto>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub prepared_view: Option<PreparedViewDto>,
 }
 
 #[allow(dead_code)]
@@ -280,6 +283,7 @@ pub fn visualization_model_not_ready(
         interconnection_scene: None,
         stats: None,
         projection_hints: None,
+        prepared_view: None,
     }
 }
 

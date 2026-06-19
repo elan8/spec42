@@ -169,6 +169,7 @@ pub(crate) fn build_sysml_visualization_response(
             parse_cached: false,
         }),
         projection_hints: None,
+        prepared_view: None,
     })
 }
 

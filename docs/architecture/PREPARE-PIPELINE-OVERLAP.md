@@ -1,40 +1,44 @@
 # Prepare pipeline overlap matrix
 
-Documents how visualization payloads are shaped before `shared/diagram-renderer` `prepareViewData` runs.
+Documents how visualization payloads reach ELK layout and SVG rendering after Pass 3.
 
-## Pipeline (post-debt paydown)
+## Pipeline (Pass 3 — unified render snapshot)
 
 ```mermaid
 flowchart LR
-    Rust["semantic_core DTO + finalize_*"] --> DA["dtoAdapter: merge view field"]
-    DA --> PV["normalizeVisualizationPayload (thin)"]
-    PV --> Prep["prepareViewData dispatch"]
-    Prep --> Render["renderVisualization"]
+    Snap["WorkspaceRenderSnapshot\nViewIndex eager"] --> Rust["semantic_core\nbuild_sysml_visualization_from_artifacts"]
+    Rust --> PV["PreparedViewDto\nRust preparers"]
+    PV --> LSP["LSP response.preparedView"]
+    LSP --> Webview["sharedRendererAdapter\nlayoutPrepared when present"]
+    Webview --> Render["renderVisualization\nELK + SVG"]
+    Snap --> ME["ModelExplorerBundle\nlazy full IBD + graph"]
+    ME --> Model["sysml/model"]
 ```
 
 ## Per-view matrix
 
-| View | Rust DTO (authoritative) | `normalizeVisualizationPayload` | `prepareViewData` |
-|------|--------------------------|--------------------------------|-------------------|
-| `general-view` | `graph` / `generalViewGraph` | Pass-through | `prepareGraph` filters diagram nodes, package groups |
-| `interconnection-view` | `interconnectionScene` (+ optional scoped `ibd` for Model Explorer) | Pass-through when scene present; legacy empty ibd stub otherwise | `prepareInterconnection` requires `interconnectionScene` |
-| `action-flow-view` | `activityDiagrams` (filtered/ranked in `visualization/payload.rs`) | `diagrams` alias + `activityDiagramCandidates` | `prepareActivity` reads `diagrams` or `activityDiagrams` |
-| `state-transition-view` | `stateMachines` (labeled/sorted in `visualization/payload.rs`) | Flat `states`/`transitions` + `stateMachineCandidates` | `prepareState` / `prepareStateMachine` |
-| `sequence-view` | `sequenceDiagrams` (filtered/ranked in `visualization/payload.rs`) | `diagrams` alias + `sequenceDiagramCandidates` | `prepareSequence` |
-| Browser / Grid / Geometry | `graph` | Pass-through | `prepareBrowser` / `prepareGrid` / `prepareGeometry` |
+| View | Rust semantic assembly | Rust preparer | Webview |
+|------|------------------------|---------------|---------|
+| `general-view` | projected `graph` / `generalViewGraph` | `prepare_graph_prepared_view` | `preparedView` → layout |
+| `interconnection-view` | scoped IBD + `interconnectionScene` | `prepare_interconnection_prepared_view` | `preparedView` → layout |
+| `action-flow-view` | filtered `activityDiagrams` | `prepare_activity_prepared_view` | `preparedView` → layout |
+| `state-transition-view` | filtered `stateMachines` | `prepare_state_prepared_view` | `preparedView` → layout |
+| `sequence-view` | filtered `sequenceDiagrams` | `prepare_sequence_prepared_view` | `preparedView` → layout |
+| Browser / Grid / Geometry | projected `graph` + hints | `prepare_*_prepared_view` | `preparedView` → layout |
 
 ## Notes
 
-- **No AST fallback** in TypeScript normalization. Empty `stateMachines` / `activityDiagrams` on the LSP path log a dev warning from `warn_if_behavior_payload_missing`.
-- **Candidate arrays** (`activityDiagramCandidates`, `stateMachineCandidates`, …) are derived in normalization for prepare/tests; webview UI uses backend `viewCandidates`.
-- **IBD** — full-workspace merge stays in `WorkspaceVisualizationArtifacts`; interconnection LSP uses scoped URI build (`IbdBuildScope::ViewExposedPackages`) plus `interconnectionScene`. Slim payloads omit `ibd`.
-- **Entry-node synthesis** for state machines remains in `prepare/behavior.ts` when `synthesizeInitialState: true` (not in normalization).
+- **One snapshot** per `(semantic_state_version, workspace_root_uri)` replaces separate artifact/response caches. ViewIndex is eager; `PreparedView` bundles and Model Explorer IBD are lazy.
+- **LSP path** attaches `preparedView` on every successful diagram response. The webview uses it directly and skips TS `prepareViewData` when present.
+- **Fallback** — CLI/headless paths without `preparedView` still call TS `prepareViewData` until fully migrated.
+- **IBD** — interconnection uses scoped URI merge inside projection; Model Explorer owns full-workspace IBD via `materialize_model_explorer`.
+- **Candidate arrays** remain on the legacy DTO for selectors; render geometry comes from `preparedView` only on the LSP path.
 
-## Rust finalization (`semantic_core/src/semantic/visualization/payload.rs`)
+## Rust modules
 
-| Concern | Function |
+| Concern | Location |
 |---------|----------|
-| State labels + sort + empty filter | `finalize_state_machines_for_response` |
-| Action renderability + ranking + flow endpoint resolve | `finalize_activity_diagrams_for_response` |
-| Sequence renderability + ranking + labels | `finalize_sequence_diagrams_for_response` |
-| Incremental IBD URI closure | `ibd_uri_closure_for_exposed_ids` in `visualization/scope.rs` |
+| PreparedView DTO + preparers | `semantic_core/src/semantic/prepared_view/` |
+| Render snapshot + ViewIndex | `semantic_core/src/semantic/render_snapshot.rs` |
+| Kernel cache | `kernel/src/workspace/viz_cache.rs`, `kernel/src/views/workspace_artifacts.rs` |
+| Semantic finalization (behavior) | `semantic_core/src/semantic/visualization/payload.rs` |

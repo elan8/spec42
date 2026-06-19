@@ -48,8 +48,21 @@ use crate::semantic::visualization::projection::{
 use crate::semantic::visualization::scope::{
     workspace_uris_for_ibd_scope, workspace_uris_for_root, IbdArtifactMode, IbdBuildScope,
 };
+use crate::semantic::prepared_view::prepare_view_from_visualization;
 use crate::semantic::workspace_graph::WorkspaceParsedDocument;
 use crate::SemanticGraph;
+
+fn finalize_visualization_response(
+    mut response: SysmlVisualizationResultDto,
+) -> SysmlVisualizationResultDto {
+    if response.model_ready && response.empty_state_message.is_none() {
+        response.prepared_view = prepare_view_from_visualization(&response).ok();
+    }
+    if response.prepared_view.is_some() && response.view == "interconnection-view" {
+        response.interconnection_scene = None;
+    }
+    response
+}
 
 fn renderer_uses_activity_diagrams(renderer: &str) -> bool {
     renderer == "action-flow-view"
@@ -138,7 +151,7 @@ pub fn build_merged_workspace_ibd(
     full_ibd
 }
 
-fn empty_merged_ibd() -> IbdDataDto {
+pub fn empty_merged_ibd() -> IbdDataDto {
     IbdDataDto {
         parts: Vec::new(),
         ports: Vec::new(),
@@ -320,6 +333,7 @@ pub fn build_sysml_visualization_from_artifacts(
                     parse_cached: false,
                 }),
                 projection_hints: None,
+                prepared_view: None,
             },
             meta,
         ));
@@ -362,6 +376,7 @@ pub fn build_sysml_visualization_from_artifacts(
                     parse_cached: false,
                 }),
                 projection_hints: None,
+                prepared_view: None,
             },
             meta,
         ));
@@ -409,6 +424,7 @@ pub fn build_sysml_visualization_from_artifacts(
                     parse_cached: false,
                 }),
                 projection_hints: None,
+                prepared_view: None,
             },
             meta,
         ));
@@ -589,7 +605,7 @@ pub fn build_sysml_visualization_from_artifacts(
     };
 
     Ok((
-        SysmlVisualizationResultDto {
+        finalize_visualization_response(SysmlVisualizationResultDto {
             version: 0,
             model_ready: true,
             view: resolved_view,
@@ -639,7 +655,8 @@ pub fn build_sysml_visualization_from_artifacts(
                 parse_cached: false,
             }),
             projection_hints,
-        },
+            prepared_view: None,
+        }),
         meta,
     ))
 }

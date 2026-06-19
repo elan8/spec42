@@ -399,12 +399,12 @@ fn run_interconnection_lsp_performance_report(config: InterconnectionPerfReportC
         .as_array()
         .map(Vec::len)
         .unwrap_or(0);
-    let scene_edges = visualization_result["interconnectionScene"]["edges"]
+    let scene_edges = visualization_result["preparedView"]["edges"]
         .as_array()
         .map(Vec::len)
         .unwrap_or(0);
-    let has_interconnection_scene = visualization_result
-        .get("interconnectionScene")
+    let has_prepared_view = visualization_result
+        .get("preparedView")
         .is_some_and(|value| !value.is_null());
     let view_candidates = visualization_result["viewCandidates"]
         .as_array()
@@ -533,7 +533,7 @@ fn run_interconnection_lsp_performance_report(config: InterconnectionPerfReportC
             "modelBuildTimeMs": visualization_model_build_time_ms(&visualization_capture.json),
             "viewCandidates": view_candidates,
             "hasIbd": has_ibd,
-            "hasInterconnectionScene": has_interconnection_scene,
+            "hasPreparedView": has_prepared_view,
             "ibdParts": ibd_parts,
             "ibdConnectors": ibd_connectors,
             "sceneEdges": scene_edges,
@@ -580,12 +580,12 @@ fn run_interconnection_lsp_performance_report(config: InterconnectionPerfReportC
         Some(config.selected_view)
     );
     assert!(
-        has_interconnection_scene,
-        "expected interconnectionScene in slim LSP payload"
+        has_prepared_view,
+        "expected preparedView in slim LSP payload"
     );
     assert!(
         !has_ibd,
-        "expected slim LSP payload to omit ibd when interconnectionScene is present"
+        "expected slim LSP payload to omit ibd when preparedView is present"
     );
     let has_graph = visualization_result
         .get("graph")
@@ -595,13 +595,13 @@ fn run_interconnection_lsp_performance_report(config: InterconnectionPerfReportC
         .is_some_and(|value| !value.is_null());
     assert!(
         !has_graph,
-        "expected slim LSP payload to omit graph when interconnectionScene is present"
+        "expected slim LSP payload to omit graph when preparedView is present"
     );
     assert!(
         !has_general_view_graph,
-        "expected slim LSP payload to omit generalViewGraph when interconnectionScene is present"
+        "expected slim LSP payload to omit generalViewGraph when preparedView is present"
     );
-    const MAX_DRONE_SLIM_INTERCONNECTION_BYTES: usize = 45_000;
+    const MAX_DRONE_SLIM_INTERCONNECTION_BYTES: usize = 52_000;
     assert!(
         visualization_capture.raw.len() <= MAX_DRONE_SLIM_INTERCONNECTION_BYTES,
         "expected slim LSP payload under {MAX_DRONE_SLIM_INTERCONNECTION_BYTES} bytes on drone, got {}",
@@ -612,7 +612,7 @@ fn run_interconnection_lsp_performance_report(config: InterconnectionPerfReportC
         "expected scoped workspace slim payload under {MAX_DRONE_SLIM_INTERCONNECTION_BYTES} bytes, got {}",
         phase_breakdown.slim_payload_bytes
     );
-    assert!(scene_edges > 0, "expected non-empty interconnection scene");
+    assert!(scene_edges > 0, "expected non-empty prepared interconnection view");
     assert!(
         phase_breakdown.scoped_uri_count <= phase_breakdown.workspace_uri_count,
         "scoped URI count should not exceed workspace URI count"

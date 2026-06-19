@@ -1479,8 +1479,8 @@ mod tests {
     use crate::semantic::source::{SysmlDocument, SysmlDocumentSourceKind};
     use crate::semantic::workspace_graph::build_semantic_graph_from_documents;
 
-    use super::connectors::enrich_connector_endpoint_refs;
-    use super::dto::{
+    use crate::semantic::ibd::connectors::enrich_connector_endpoint_refs;
+    use crate::semantic::ibd::dto::{
         IbdConnectorDto, IbdDataDto, IbdPartDto, IbdPortDto,
     };
     use super::{

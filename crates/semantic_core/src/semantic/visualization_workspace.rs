@@ -24,8 +24,9 @@ pub use crate::semantic::visualization::projection::{
 pub use crate::semantic::visualization::response::{
     build_merged_workspace_ibd, build_sysml_visualization_from_artifacts,
     build_sysml_visualization_workspace, build_sysml_visualization_workspace_with_meta,
-    build_workspace_visualization_artifacts, interconnection_build_options, VisualizationBuildMeta,
-    VisualizationBuildOptions, WorkspaceVisualizationArtifacts, WorkspaceVisualizationRequest,
+    build_workspace_visualization_artifacts, empty_merged_ibd, interconnection_build_options,
+    VisualizationBuildMeta, VisualizationBuildOptions, WorkspaceVisualizationArtifacts,
+    WorkspaceVisualizationRequest,
 };
 pub use crate::semantic::visualization::scope::{uri_under_root, workspace_uris_for_root};
 

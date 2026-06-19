@@ -1,21 +1,19 @@
-//! Cached workspace visualization artifacts and response cache for the LSP server.
+//! Cached workspace render snapshot and lazy view bundles for the LSP server.
 
 use std::collections::HashMap;
 use std::time::Instant;
 
 use semantic_core::{
-    build_sysml_visualization_from_artifacts, build_merged_workspace_ibd,
-    build_workspace_visualization_artifacts, IbdArtifactMode, IbdDataDto,
-    VisualizationBuildMeta, VisualizationBuildOptions, WorkspaceParsedDocument,
-    WorkspaceVisualizationArtifacts,
+    build_merged_workspace_ibd, build_render_snapshot, build_sysml_visualization_from_artifacts,
+    materialize_model_explorer_bundle, view_index_to_artifacts, IbdArtifactMode,
+    ModelExplorerBundle, VisualizationBuildMeta, VisualizationBuildOptions,
+    WorkspaceParsedDocument, WorkspaceVisualizationArtifacts,
 };
 use tower_lsp::lsp_types::Url;
 
 use crate::common::util;
 use crate::workspace::state::{IndexEntry, ServerState};
-use crate::workspace::viz_cache::{
-    VisualizationCacheKey, VisualizationResponseCacheEntry, WorkspaceVizArtifactEntry,
-};
+use crate::workspace::viz_cache::{VisualizationCacheKey, WorkspaceRenderCacheEntry};
 
 fn workspace_parsed_documents_for_visualization(
     index: &HashMap<Url, IndexEntry>,
@@ -42,17 +40,8 @@ fn workspace_root_matches(left: &Url, right: &Url) -> bool {
     left == right
 }
 
-fn artifacts_valid(entry: &WorkspaceVizArtifactEntry, state: &ServerState, root: &Url) -> bool {
+fn render_cache_valid(entry: &WorkspaceRenderCacheEntry, state: &ServerState, root: &Url) -> bool {
     entry.semantic_state_version == state.semantic_state_version
-        && workspace_root_matches(&entry.workspace_root_uri, root)
-}
-
-fn response_cache_valid(
-    entry: &VisualizationResponseCacheEntry,
-    semantic_state_version: u64,
-    root: &Url,
-) -> bool {
-    entry.semantic_state_version == semantic_state_version
         && workspace_root_matches(&entry.workspace_root_uri, root)
 }
 
@@ -69,36 +58,26 @@ fn visualization_response_is_cacheable(
 }
 
 pub(crate) fn clear_workspace_viz_caches(state: &mut ServerState) {
-    state.workspace_viz_caches.clear();
+    state.workspace_render_cache.clear();
 }
 
-pub(crate) fn ensure_workspace_artifacts(
-    state: &mut ServerState,
+pub(crate) fn ensure_render_snapshot<'a>(
+    state: &'a mut ServerState,
     workspace_root_uri: &Url,
-    ibd_artifact_mode: IbdArtifactMode,
-) -> Result<WorkspaceVisualizationArtifacts, String> {
+) -> Result<&'a semantic_core::WorkspaceRenderSnapshot, String> {
     let workspace_root_uri = util::normalize_file_uri(workspace_root_uri);
-    if let Some(entry) = state.workspace_viz_caches.artifacts.as_ref() {
-        if artifacts_valid(entry, state, &workspace_root_uri) {
-            if ibd_artifact_mode == IbdArtifactMode::FullWorkspace
-                && entry.ibd_artifact_mode == IbdArtifactMode::Deferred
-            {
-                let mut upgraded = entry.artifacts.clone();
-                upgraded.full_ibd = build_merged_workspace_ibd(
-                    &state.semantic_graph,
-                    &upgraded.workspace_uris,
-                );
-                state.workspace_viz_caches.artifacts = Some(WorkspaceVizArtifactEntry {
-                    semantic_state_version: state.semantic_state_version,
-                    workspace_root_uri: workspace_root_uri.clone(),
-                    ibd_artifact_mode: IbdArtifactMode::FullWorkspace,
-                    artifacts: upgraded.clone(),
-                });
-                state.workspace_viz_caches.responses = None;
-                return Ok(upgraded);
-            }
-            return Ok(entry.artifacts.clone());
-        }
+    let cache_hit = state
+        .workspace_render_cache
+        .entry
+        .as_ref()
+        .is_some_and(|entry| render_cache_valid(entry, state, &workspace_root_uri));
+    if cache_hit {
+        return Ok(&state
+            .workspace_render_cache
+            .entry
+            .as_ref()
+            .expect("render cache hit")
+            .snapshot);
     }
 
     let workspace_uris = semantic_core::workspace_uris_for_root(
@@ -107,36 +86,83 @@ pub(crate) fn ensure_workspace_artifacts(
         &workspace_root_uri,
     );
     let viz_docs = workspace_parsed_documents_for_visualization(&state.index, &workspace_uris);
-    let artifacts = build_workspace_visualization_artifacts(
+    let snapshot = build_render_snapshot(
         &state.semantic_graph,
         &viz_docs,
         &state.library_paths,
         &workspace_root_uri,
-        ibd_artifact_mode,
+        state.semantic_state_version,
     )?;
-    state.workspace_viz_caches.artifacts = Some(WorkspaceVizArtifactEntry {
+    state.workspace_render_cache.entry = Some(WorkspaceRenderCacheEntry {
         semantic_state_version: state.semantic_state_version,
-        workspace_root_uri,
-        ibd_artifact_mode,
-        artifacts: artifacts.clone(),
+        workspace_root_uri: workspace_root_uri.clone(),
+        snapshot,
+        model_explorer: None,
+        prepared_views: HashMap::new(),
+        visualization_responses: HashMap::new(),
     });
-    state.workspace_viz_caches.responses = None;
-    Ok(artifacts)
+    Ok(&state
+        .workspace_render_cache
+        .entry
+        .as_ref()
+        .expect("render cache initialized")
+        .snapshot)
+}
+
+pub(crate) fn materialize_model_explorer(
+    state: &mut ServerState,
+    workspace_root_uri: &Url,
+) -> Result<ModelExplorerBundle, String> {
+    let workspace_root_uri = util::normalize_file_uri(workspace_root_uri);
+    ensure_render_snapshot(state, &workspace_root_uri)?;
+    let entry = state
+        .workspace_render_cache
+        .entry
+        .as_mut()
+        .expect("render cache initialized");
+    if entry.model_explorer.is_none() {
+        entry.model_explorer = Some(materialize_model_explorer_bundle(
+            &state.semantic_graph,
+            &entry.snapshot,
+        ));
+    }
+    Ok(entry.model_explorer.as_ref().expect("model explorer").clone())
+}
+
+pub(crate) fn ensure_workspace_artifacts(
+    state: &mut ServerState,
+    workspace_root_uri: &Url,
+    ibd_artifact_mode: IbdArtifactMode,
+) -> Result<WorkspaceVisualizationArtifacts, String> {
+    let workspace_root_uri = util::normalize_file_uri(workspace_root_uri);
+    let snapshot = ensure_render_snapshot(state, &workspace_root_uri)?.clone();
+    let full_ibd = if ibd_artifact_mode == IbdArtifactMode::FullWorkspace {
+        if let Some(bundle) = state
+            .workspace_render_cache
+            .entry
+            .as_ref()
+            .and_then(|entry| entry.model_explorer.as_ref())
+        {
+            bundle.full_ibd.clone()
+        } else {
+            build_merged_workspace_ibd(&state.semantic_graph, &snapshot.workspace_uris)
+        }
+    } else {
+        semantic_core::empty_merged_ibd()
+    };
+    Ok(view_index_to_artifacts(&snapshot.view_index, full_ibd))
 }
 
 pub(crate) fn cached_merged_ibd(
     state: &ServerState,
     workspace_root_uri: &Url,
-) -> Option<IbdDataDto> {
+) -> Option<semantic_core::IbdDataDto> {
     let workspace_root_uri = util::normalize_file_uri(workspace_root_uri);
-    let entry = state.workspace_viz_caches.artifacts.as_ref()?;
-    if !artifacts_valid(entry, state, &workspace_root_uri) {
+    let entry = state.workspace_render_cache.entry.as_ref()?;
+    if !render_cache_valid(entry, state, &workspace_root_uri) {
         return None;
     }
-    if entry.ibd_artifact_mode != IbdArtifactMode::FullWorkspace {
-        return None;
-    }
-    Some(entry.artifacts.full_ibd.clone())
+    entry.model_explorer.as_ref().map(|bundle| bundle.full_ibd.clone())
 }
 
 pub(crate) struct VisualizationBuildOutcome {
@@ -159,9 +185,10 @@ pub(crate) fn build_visualization_with_cache(
         selected_view: selected_view.map(str::to_string),
     };
 
-    if let Some(entry) = state.workspace_viz_caches.responses.as_ref() {
-        if response_cache_valid(entry, semantic_state_version, &workspace_root_uri) {
-            if let Some(cached) = entry.entries.get(&cache_key) {
+    ensure_render_snapshot(state, &workspace_root_uri)?;
+    if let Some(entry) = state.workspace_render_cache.entry.as_ref() {
+        if render_cache_valid(entry, state, &workspace_root_uri) {
+            if let Some(cached) = entry.visualization_responses.get(&cache_key) {
                 if visualization_response_is_cacheable(cached) {
                     return Ok(VisualizationBuildOutcome {
                         response: cached.clone(),
@@ -175,11 +202,14 @@ pub(crate) fn build_visualization_with_cache(
         }
     }
 
-    let workspace_uris = semantic_core::workspace_uris_for_root(
-        &state.semantic_graph,
-        &state.library_paths,
-        &workspace_root_uri,
-    );
+    let snapshot = state
+        .workspace_render_cache
+        .entry
+        .as_ref()
+        .expect("render cache initialized")
+        .snapshot
+        .clone();
+    let workspace_uris = snapshot.workspace_uris.clone();
     let viz_docs = workspace_parsed_documents_for_visualization(&state.index, &workspace_uris);
 
     let ibd_artifact_mode = if options.slim_interconnection_payload
@@ -191,8 +221,21 @@ pub(crate) fn build_visualization_with_cache(
         IbdArtifactMode::FullWorkspace
     };
 
-    let artifacts_start = Instant::now();
-    let artifacts = ensure_workspace_artifacts(state, &workspace_root_uri, ibd_artifact_mode)?;
+    let full_ibd = if ibd_artifact_mode == IbdArtifactMode::FullWorkspace {
+        if let Some(bundle) = state
+            .workspace_render_cache
+            .entry
+            .as_ref()
+            .and_then(|entry| entry.model_explorer.as_ref())
+        {
+            bundle.full_ibd.clone()
+        } else {
+            build_merged_workspace_ibd(&state.semantic_graph, &workspace_uris)
+        }
+    } else {
+        semantic_core::empty_merged_ibd()
+    };
+    let artifacts = view_index_to_artifacts(&snapshot.view_index, full_ibd);
     let (response, mut meta) = build_sysml_visualization_from_artifacts(
         &state.semantic_graph,
         &viz_docs,
@@ -203,31 +246,23 @@ pub(crate) fn build_visualization_with_cache(
         options,
     )?;
     meta.cache_hit = false;
-    if meta.ibd_ms == 0 {
-        meta.ibd_ms = artifacts_start.elapsed().as_millis().max(1) as u32;
-    }
 
-    if !state
-        .workspace_viz_caches
-        .responses
-        .as_ref()
-        .is_some_and(|entry| {
-            response_cache_valid(entry, semantic_state_version, &workspace_root_uri)
-        })
-    {
-        state.workspace_viz_caches.responses = Some(VisualizationResponseCacheEntry {
-            semantic_state_version,
-            workspace_root_uri: workspace_root_uri.clone(),
-            entries: HashMap::new(),
-        });
-    }
     if visualization_response_is_cacheable(&response) {
+        if let Some(prepared) = response.prepared_view.clone() {
+            state
+                .workspace_render_cache
+                .entry
+                .as_mut()
+                .expect("render cache initialized")
+                .prepared_views
+                .insert(cache_key.clone(), prepared);
+        }
         state
-            .workspace_viz_caches
-            .responses
+            .workspace_render_cache
+            .entry
             .as_mut()
-            .expect("response cache initialized")
-            .entries
+            .expect("render cache initialized")
+            .visualization_responses
             .insert(cache_key, response.clone());
     }
 

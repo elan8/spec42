@@ -41,21 +41,19 @@ pub(crate) async fn sysml_model_result(
     if workspace_visualization_requested && !state.semantic_lifecycle.supports_semantic_queries() {
         return Ok((crate::views::empty_model_response(build_start), None));
     }
-    if workspace_visualization_requested && crate::views::ibd_requested(&scope) {
+    if workspace_visualization_requested {
         if let Some(root) = crate::views::workspace_artifacts::primary_workspace_root(state) {
-            if crate::views::workspace_artifacts::cached_merged_ibd(state, &root).is_none() {
-                let _ = crate::views::workspace_artifacts::ensure_workspace_artifacts(
-                    state,
-                    &root,
-                    semantic_core::IbdArtifactMode::FullWorkspace,
-                );
+            let _ = crate::views::workspace_artifacts::ensure_render_snapshot(state, &root);
+            if crate::views::ibd_requested(&scope) {
+                let _ = crate::views::workspace_artifacts::materialize_model_explorer(state, &root);
             }
         }
     }
-    let cached_workspace_ibd =
-        if workspace_visualization_requested && crate::views::ibd_requested(&scope) {
-            crate::views::workspace_artifacts::primary_workspace_root(state)
-                .and_then(|root| crate::views::workspace_artifacts::cached_merged_ibd(state, &root))
+    let model_explorer_bundle =
+        if workspace_visualization_requested {
+            crate::views::workspace_artifacts::primary_workspace_root(state).and_then(|root| {
+                crate::views::workspace_artifacts::materialize_model_explorer(state, &root).ok()
+            })
         } else {
             None
         };
@@ -166,7 +164,7 @@ pub(crate) async fn sysml_model_result(
         build_start,
         state.perf_logging_enabled,
         client,
-        cached_workspace_ibd.as_ref(),
+        model_explorer_bundle.as_ref(),
     )
     .await;
     let response_build_ms = response_build_start.elapsed().as_millis().max(1);
@@ -279,10 +277,7 @@ pub(crate) fn sysml_visualization_result(
         &view,
         selected_view.as_deref(),
         build_start,
-        semantic_core::VisualizationBuildOptions {
-            slim_interconnection_payload: true,
-            ibd_build_scope: semantic_core::IbdBuildScope::ViewExposedPackages,
-        },
+        semantic_core::interconnection_build_options(&view),
     )
     .map_err(|error| tower_lsp::jsonrpc::Error {
         code: tower_lsp::jsonrpc::ErrorCode::InternalError,
