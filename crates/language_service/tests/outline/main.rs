@@ -1,5 +1,3 @@
 #[path = "../helpers/support.rs"]
 mod support;
-mod definition;
-mod hover;
-mod references;
+mod symbols;

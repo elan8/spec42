@@ -1,4 +1,4 @@
-use language_service::{dto::SourceLocation, InMemoryWorkspace};
+use language_service::{complete, dto::SourceLocation, InMemoryWorkspace};
 use semantic_core::{SysmlDocument, SysmlDocumentSourceKind, TextPosition};
 
 pub fn document(path: &str, content: &str) -> SysmlDocument {
@@ -42,6 +42,13 @@ pub fn position_for(content: &str, needle: &str) -> TextPosition {
     panic!("needle not found: {needle}");
 }
 
+/// Cursor position immediately after `needle` on the same line (matches LSP completion tests).
+pub fn position_after(content: &str, needle: &str) -> TextPosition {
+    let mut pos = position_for(content, needle);
+    pos.character += needle.chars().count() as u32;
+    pos
+}
+
 pub fn position_for_within(content: &str, needle: &str, inner: &str) -> TextPosition {
     let base = position_for(content, needle);
     let line = content
@@ -60,6 +67,22 @@ pub fn position_for_within(content: &str, needle: &str, inner: &str) -> TextPosi
 
 pub fn position_at(line: u32, character: u32) -> TextPosition {
     TextPosition { line, character }
+}
+
+pub fn completion_labels(
+    workspace: &InMemoryWorkspace,
+    path: &str,
+    position: TextPosition,
+) -> Vec<String> {
+    complete(workspace, path, position)
+        .map(|result| {
+            result
+                .items
+                .into_iter()
+                .map(|item| item.label)
+                .collect()
+        })
+        .unwrap_or_default()
 }
 
 pub fn any_on_line(locations: &[SourceLocation], line: u32) -> bool {

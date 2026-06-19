@@ -50,375 +50,112 @@ pub use symbols::{
 #[cfg(test)]
 pub use symbols::{collect_named_elements, collect_symbol_entries};
 
-use crate::syntax::ast_util::identification_name;
-use sysml_v2_parser::ast::{PackageBody, RootElement};
 use tower_lsp::lsp_types::{
     CodeAction, CodeActionKind, Command, Diagnostic, FormattingOptions, OneOf,
     OptionalVersionedTextDocumentIdentifier, Position, Range, TextDocumentEdit, TextEdit, Url,
     WorkspaceEdit,
 };
+use language_service::{
+    format_document_text, DiagnosticLine, FormatOptions, TextEditSuggestion,
+};
+
+fn suggestion_to_code_action(
+    suggestion: TextEditSuggestion,
+    uri: &Url,
+    diagnostic: Option<&Diagnostic>,
+) -> CodeAction {
+    let edits: Vec<OneOf<TextEdit, tower_lsp::lsp_types::AnnotatedTextEdit>> = suggestion
+        .edits
+        .into_iter()
+        .map(|edit| {
+            OneOf::Left(TextEdit {
+                range: crate::common::text_span::to_lsp_range(edit.range),
+                new_text: edit.replacement,
+            })
+        })
+        .collect();
+    CodeAction {
+        title: suggestion.title,
+        kind: Some(CodeActionKind::QUICKFIX),
+        diagnostics: diagnostic.map(|d| vec![d.clone()]),
+        edit: Some(WorkspaceEdit {
+            changes: None,
+            document_changes: Some(tower_lsp::lsp_types::DocumentChanges::Edits(vec![
+                TextDocumentEdit {
+                    text_document: OptionalVersionedTextDocumentIdentifier {
+                        uri: uri.clone(),
+                        version: None,
+                    },
+                    edits,
+                },
+            ])),
+            change_annotations: None,
+        }),
+        command: None,
+        is_preferred: Some(true),
+        disabled: None,
+        data: None,
+    }
+}
+
+fn wrap_refactor_action(suggestion: TextEditSuggestion, uri: &Url) -> CodeAction {
+    let edits: Vec<OneOf<TextEdit, tower_lsp::lsp_types::AnnotatedTextEdit>> = suggestion
+        .edits
+        .into_iter()
+        .map(|edit| {
+            OneOf::Left(TextEdit {
+                range: crate::common::text_span::to_lsp_range(edit.range),
+                new_text: edit.replacement,
+            })
+        })
+        .collect();
+    CodeAction {
+        title: suggestion.title,
+        kind: Some(CodeActionKind::REFACTOR),
+        diagnostics: None,
+        edit: Some(WorkspaceEdit {
+            changes: None,
+            document_changes: Some(tower_lsp::lsp_types::DocumentChanges::Edits(vec![
+                TextDocumentEdit {
+                    text_document: OptionalVersionedTextDocumentIdentifier {
+                        uri: uri.clone(),
+                        version: None,
+                    },
+                    edits,
+                },
+            ])),
+            change_annotations: None,
+        }),
+        command: None,
+        is_preferred: None,
+        disabled: None,
+        data: None,
+    }
+}
 
 /// Formats the whole document: trim trailing whitespace per line, single trailing newline, indent by brace depth.
 pub fn format_document(source: &str, options: &FormattingOptions) -> Vec<TextEdit> {
+    let new_text = format_document_text(
+        source,
+        FormatOptions {
+            tab_size: options.tab_size,
+            insert_spaces: options.insert_spaces,
+        },
+    );
     let lines: Vec<&str> = source.lines().collect();
     if lines.is_empty() {
         let range = Range::new(Position::new(0, 0), Position::new(0, 0));
-        return vec![TextEdit {
-            range,
-            new_text: "\n".to_string(),
-        }];
+        return vec![TextEdit { range, new_text }];
     }
-    let indent_unit = if options.insert_spaces {
-        " ".repeat(options.tab_size as usize)
-    } else {
-        "\t".to_string()
-    };
-    let mut depth: i32 = 0;
-    let mut formatted_lines: Vec<String> = Vec::with_capacity(lines.len());
-    for line in &lines {
-        let trimmed = line.trim();
-        let mut open_braces = 0i32;
-        let mut close_braces = 0i32;
-        let mut leading_close_braces = 0i32;
-        let mut only_leading_closes = true;
-        for ch in code_chars_before_comment(trimmed) {
-            match ch {
-                '{' => {
-                    open_braces += 1;
-                    only_leading_closes = false;
-                }
-                '}' => {
-                    close_braces += 1;
-                    if only_leading_closes {
-                        leading_close_braces += 1;
-                    }
-                }
-                c if c.is_whitespace() => {}
-                _ => {
-                    only_leading_closes = false;
-                }
-            }
-        }
-        // Only leading `}` should outdent the current line.
-        let indent_depth = (depth - leading_close_braces).max(0);
-        depth += open_braces - close_braces;
-        let indent = indent_unit.repeat(indent_depth as usize);
-        let content = if trimmed.is_empty() {
-            String::new()
-        } else {
-            format!("{}{}", indent, trimmed)
-        };
-        formatted_lines.push(content);
-    }
-    while formatted_lines.last().is_some_and(|line| line.is_empty()) {
-        formatted_lines.pop();
-    }
-    let new_text = if formatted_lines.is_empty() {
-        "\n".to_string()
-    } else {
-        format!("{}\n", formatted_lines.join("\n"))
-    };
     let last_line = (lines.len() - 1) as u32;
     let last_char = lines.last().map(|l| l.len()).unwrap_or(0) as u32;
     let range = Range::new(Position::new(0, 0), Position::new(last_line, last_char));
     vec![TextEdit { range, new_text }]
 }
 
-fn code_chars_before_comment(line: &str) -> Vec<char> {
-    let mut chars = Vec::new();
-    let mut in_string = false;
-    let mut escaped = false;
-    let mut iter = line.chars().peekable();
-    while let Some(ch) = iter.next() {
-        if escaped {
-            chars.push(ch);
-            escaped = false;
-            continue;
-        }
-        if ch == '\\' && in_string {
-            chars.push(ch);
-            escaped = true;
-            continue;
-        }
-        if ch == '"' {
-            in_string = !in_string;
-            chars.push(ch);
-            continue;
-        }
-        if !in_string && ch == '/' && iter.peek() == Some(&'/') {
-            break;
-        }
-        chars.push(ch);
-    }
-    chars
-}
-
-/// Suggests a "Wrap in package" code action when the document has top-level members (one package with empty name and members).
 pub fn suggest_wrap_in_package(source: &str, uri: &Url) -> Option<CodeAction> {
-    let root = sysml_v2_parser::parse(source).ok()?;
-    let packages: Vec<_> = root
-        .elements
-        .iter()
-        .filter_map(|n| match &n.value {
-            RootElement::Package(p) => Some(p),
-            _ => None,
-        })
-        .collect();
-    if packages.len() != 1 {
-        return None;
-    }
-    let pkg = packages[0];
-    if !identification_name(&pkg.identification).is_empty() {
-        return None;
-    }
-    let has_members = match &pkg.body {
-        PackageBody::Brace { elements } => !elements.is_empty(),
-        _ => false,
-    };
-    if !has_members {
-        return None;
-    }
-    let lines: Vec<&str> = source.lines().collect();
-    let last_line = lines.len().saturating_sub(1) as u32;
-    let last_char = lines.last().map(|l| l.len()).unwrap_or(0) as u32;
-    let range = Range::new(Position::new(0, 0), Position::new(last_line, last_char));
-    let new_text = format!("package Generated {{\n{}\n}}\n", source.trim_end());
-    let edit = WorkspaceEdit {
-        changes: None,
-        document_changes: Some(tower_lsp::lsp_types::DocumentChanges::Edits(vec![
-            TextDocumentEdit {
-                text_document: OptionalVersionedTextDocumentIdentifier {
-                    uri: uri.clone(),
-                    version: None,
-                },
-                edits: vec![OneOf::Left(TextEdit { range, new_text })],
-            },
-        ])),
-        change_annotations: None,
-    };
-    Some(CodeAction {
-        title: "Wrap in package".to_string(),
-        kind: Some(tower_lsp::lsp_types::CodeActionKind::REFACTOR),
-        diagnostics: None,
-        edit: Some(edit),
-        command: None,
-        is_preferred: None,
-        disabled: None,
-        data: None,
-    })
-}
-
-fn utf16_len(s: &str) -> u32 {
-    s.encode_utf16().count() as u32
-}
-
-fn parse_untyped_part_usage_name(raw_line: &str) -> Option<String> {
-    let code_only = raw_line.split("//").next().unwrap_or("");
-    let trimmed = code_only.trim();
-    if !trimmed.starts_with("part ") || trimmed.starts_with("part def") {
-        return None;
-    }
-    if !trimmed.ends_with(';') || trimmed.contains(':') {
-        return None;
-    }
-    let after_part = trimmed.strip_prefix("part ")?;
-    let name = after_part.strip_suffix(';')?.trim();
-    if name.is_empty() || name.contains(char::is_whitespace) {
-        return None;
-    }
-    Some(name.to_string())
-}
-
-fn to_pascal_case(name: &str) -> String {
-    let mut out = String::new();
-    let mut capitalize = true;
-    for ch in name.chars() {
-        if ch.is_alphanumeric() {
-            if capitalize {
-                for upper in ch.to_uppercase() {
-                    out.push(upper);
-                }
-                capitalize = false;
-            } else {
-                out.push(ch);
-            }
-        } else {
-            capitalize = true;
-        }
-    }
-    if out.is_empty() {
-        "GeneratedPart".to_string()
-    } else {
-        out
-    }
-}
-
-fn find_block_end(lines: &[&str], start_line: usize) -> Option<usize> {
-    let mut depth = 0i32;
-    let mut seen_open = false;
-    for (idx, line) in lines.iter().enumerate().skip(start_line) {
-        for ch in line.chars() {
-            match ch {
-                '{' => {
-                    depth += 1;
-                    seen_open = true;
-                }
-                '}' if seen_open => {
-                    depth -= 1;
-                    if depth == 0 {
-                        return Some(idx);
-                    }
-                }
-                _ => {}
-            }
-        }
-    }
-    None
-}
-
-fn find_insertion_context(lines: &[&str], target_line: usize) -> Option<(usize, usize)> {
-    for start in (0..=target_line).rev() {
-        let trimmed = lines[start].trim();
-        let is_container = (trimmed.starts_with("package ") || trimmed.starts_with("part def "))
-            && trimmed.contains('{');
-        if !is_container {
-            continue;
-        }
-        let end = find_block_end(lines, start)?;
-        if start <= target_line && target_line <= end {
-            return Some((start, end));
-        }
-    }
-    None
-}
-
-fn find_package_context(lines: &[&str], target_line: usize) -> Option<(usize, usize)> {
-    for start in (0..=target_line).rev() {
-        let trimmed = lines[start].trim();
-        if !(trimmed.starts_with("package ") && trimmed.contains('{')) {
-            continue;
-        }
-        let end = find_block_end(lines, start)?;
-        if start <= target_line && target_line <= end {
-            return Some((start, end));
-        }
-    }
-    None
-}
-
-fn leading_indent(line: &str) -> String {
-    let len = line.len().saturating_sub(line.trim_start().len());
-    line[..len].to_string()
-}
-
-/// First non-empty member line inside `start..end` (exclusive of closing `}`).
-fn member_indent_in_range(lines: &[&str], start: usize, end: usize) -> Option<String> {
-    for line in lines.iter().take(end).skip(start + 1) {
-        let trimmed = line.trim();
-        if trimmed.is_empty() || trimmed == "}" {
-            continue;
-        }
-        return Some(leading_indent(line));
-    }
-    None
-}
-
-/// Where to insert a new definition and which leading whitespace to use.
-fn resolve_definition_insert_site(
-    lines: &[&str],
-    target_line: usize,
-    container_start: usize,
-    container_end: usize,
-    usage_line: &str,
-) -> (usize, usize, usize, String) {
-    if let Some((pkg_start, pkg_end)) = find_package_context(lines, target_line) {
-        let insert_line = if container_start > pkg_start && container_start < pkg_end {
-            container_start
-        } else {
-            pkg_end
-        };
-        let insert_indent = if insert_line == container_start {
-            lines
-                .get(container_start)
-                .map(|line| leading_indent(line))
-                .unwrap_or_default()
-        } else {
-            member_indent_in_range(lines, pkg_start, pkg_end).unwrap_or_else(|| {
-                let pkg_indent = lines
-                    .get(pkg_start)
-                    .map(|line| leading_indent(line))
-                    .unwrap_or_default();
-                let step = member_indent_in_range(lines, container_start, container_end)
-                    .and_then(|member| {
-                        member
-                            .strip_prefix(&pkg_indent)
-                            .filter(|s| !s.is_empty())
-                            .map(str::to_string)
-                    })
-                    .unwrap_or_else(|| "  ".to_string());
-                format!("{pkg_indent}{step}")
-            })
-        };
-        (pkg_start, pkg_end, insert_line, insert_indent)
-    } else {
-        let insert_indent = leading_indent(usage_line);
-        (0, container_end, container_end, insert_indent)
-    }
-}
-
-fn has_matching_part_def(lines: &[&str], start: usize, end: usize, type_name: &str) -> bool {
-    let needle = format!("part def {}", type_name);
-    lines
-        .iter()
-        .take(end + 1)
-        .skip(start)
-        .any(|line| line.trim().starts_with(&needle))
-}
-
-fn has_matching_definition(
-    lines: &[&str],
-    start: usize,
-    end: usize,
-    definition_keyword: &str,
-    type_name: &str,
-) -> bool {
-    let needle = format!("{definition_keyword} {type_name}");
-    lines
-        .iter()
-        .take(end + 1)
-        .skip(start)
-        .any(|line| line.trim().starts_with(&needle))
-}
-
-fn parse_simple_unresolved_type_usage(raw_line: &str) -> Option<(&'static str, String)> {
-    let code_only = raw_line.split("//").next().unwrap_or("");
-    let trimmed = code_only.trim();
-    let (usage_keyword, definition_keyword) =
-        if trimmed.starts_with("part ") && !trimmed.starts_with("part def ") {
-            ("part", "part def")
-        } else if trimmed.starts_with("port ") && !trimmed.starts_with("port def ") {
-            ("port", "port def")
-        } else if trimmed.starts_with("attribute ") && !trimmed.starts_with("attribute def ") {
-            ("attribute", "attribute def")
-        } else {
-            return None;
-        };
-    let after_keyword = trimmed.strip_prefix(usage_keyword)?.trim_start();
-    let colon = after_keyword.find(':')?;
-    let after_colon = after_keyword[colon + 1..].trim_start();
-    let type_part = after_colon
-        .split(|ch: char| ch == ';' || ch == '{' || ch == '=' || ch.is_whitespace())
-        .next()?
-        .trim()
-        .trim_start_matches('~');
-    if type_part.is_empty()
-        || type_part.contains("::")
-        || type_part.contains('<')
-        || type_part.contains('>')
-    {
-        return None;
-    }
-    Some((definition_keyword, type_part.to_string()))
+    let path = uri.path().trim_start_matches('/').to_string();
+    language_service::suggest_wrap_in_package(source, &path).map(|s| wrap_refactor_action(s, uri))
 }
 
 pub fn suggest_create_definition_for_unresolved_type_quick_fix(
@@ -426,121 +163,15 @@ pub fn suggest_create_definition_for_unresolved_type_quick_fix(
     uri: &Url,
     diagnostic: &Diagnostic,
 ) -> Option<CodeAction> {
-    let target_line = diagnostic.range.start.line as usize;
-    let lines: Vec<&str> = source.lines().collect();
-    let raw_line = *lines.get(target_line)?;
-    let (definition_keyword, type_name) = parse_simple_unresolved_type_usage(raw_line)?;
-    let (container_start, container_end) = find_insertion_context(&lines, target_line)?;
-    let (search_start, search_end, insert_line, insert_indent) = resolve_definition_insert_site(
-        &lines,
-        target_line,
-        container_start,
-        container_end,
-        raw_line,
-    );
-    if has_matching_definition(
-        &lines,
-        search_start,
-        search_end,
-        definition_keyword,
-        &type_name,
-    ) {
-        return None;
-    }
-    let body = if definition_keyword == "part def" {
-        format!(
-            "{indent}{definition_keyword} {type_name} {{ }}\n",
-            indent = insert_indent
-        )
-    } else {
-        format!(
-            "{indent}{definition_keyword} {type_name};\n",
-            indent = insert_indent
-        )
-    };
-    let edit = WorkspaceEdit {
-        changes: None,
-        document_changes: Some(tower_lsp::lsp_types::DocumentChanges::Edits(vec![
-            TextDocumentEdit {
-                text_document: OptionalVersionedTextDocumentIdentifier {
-                    uri: uri.clone(),
-                    version: None,
-                },
-                edits: vec![OneOf::Left(TextEdit {
-                    range: Range::new(
-                        Position::new(insert_line as u32, 0),
-                        Position::new(insert_line as u32, 0),
-                    ),
-                    new_text: body,
-                })],
-            },
-        ])),
-        change_annotations: None,
-    };
-    Some(CodeAction {
-        title: format!("Create `{definition_keyword} {type_name}`"),
-        kind: Some(CodeActionKind::QUICKFIX),
-        diagnostics: Some(vec![diagnostic.clone()]),
-        edit: Some(edit),
-        command: None,
-        is_preferred: Some(true),
-        disabled: None,
-        data: None,
-    })
-}
-
-fn rewrite_untyped_part_usage_line(raw_line: &str, usage_name: &str, type_name: &str) -> String {
-    let code_only = raw_line.split("//").next().unwrap_or("");
-    let comment_part = &raw_line[code_only.len()..];
-    let leading_ws_len = code_only.len() - code_only.trim_start().len();
-    let leading = &code_only[..leading_ws_len];
-    format!(
-        "{leading}part {usage_name} : {type_name};{comment_part}",
-        leading = leading,
-        usage_name = usage_name,
-        type_name = type_name,
-        comment_part = comment_part
+    let path = uri.path().trim_start_matches('/').to_string();
+    language_service::suggest_create_definition_for_unresolved_type_quick_fix(
+        source,
+        &path,
+        DiagnosticLine {
+            line: diagnostic.range.start.line,
+        },
     )
-}
-
-fn rewrite_implicit_redefinition_line(raw_line: &str) -> Option<String> {
-    let code_only = raw_line.split("//").next().unwrap_or("");
-    let comment_part = &raw_line[code_only.len()..];
-    if !code_only.contains('=') || code_only.contains(":>>") {
-        return None;
-    }
-    let leading_ws_len = code_only.len() - code_only.trim_start().len();
-    let leading = &code_only[..leading_ws_len];
-    let trimmed = code_only.trim_start();
-    let keywords = [
-        "attribute",
-        "part",
-        "port",
-        "ref",
-        "item",
-        "actor",
-        "perform",
-        "in",
-        "out",
-        "inout",
-    ];
-    for keyword in keywords {
-        let prefix = format!("{keyword} ");
-        if trimmed.starts_with(&prefix) {
-            let remainder = &trimmed[prefix.len()..];
-            if remainder.starts_with(":>>") {
-                return None;
-            }
-            return Some(format!(
-                "{leading}{keyword} :>> {remainder}{comment_part}",
-                leading = leading,
-                keyword = keyword,
-                remainder = remainder,
-                comment_part = comment_part
-            ));
-        }
-    }
-    None
+    .map(|s| suggestion_to_code_action(s, uri, Some(diagnostic)))
 }
 
 pub fn suggest_create_matching_part_def_quick_fix(
@@ -548,66 +179,15 @@ pub fn suggest_create_matching_part_def_quick_fix(
     uri: &Url,
     diagnostic: &Diagnostic,
 ) -> Option<CodeAction> {
-    let target_line = diagnostic.range.start.line as usize;
-    let lines: Vec<&str> = source.lines().collect();
-    let raw_line = *lines.get(target_line)?;
-    let usage_name = parse_untyped_part_usage_name(raw_line)?;
-    let type_name = to_pascal_case(&usage_name);
-    let (container_start, container_end) = find_insertion_context(&lines, target_line)?;
-    let (search_start, search_end, insert_line, insert_indent) = resolve_definition_insert_site(
-        &lines,
-        target_line,
-        container_start,
-        container_end,
-        raw_line,
-    );
-
-    let mut edits: Vec<OneOf<TextEdit, tower_lsp::lsp_types::AnnotatedTextEdit>> = Vec::new();
-    if !has_matching_part_def(&lines, search_start, search_end, &type_name) {
-        edits.push(OneOf::Left(TextEdit {
-            range: Range::new(
-                Position::new(insert_line as u32, 0),
-                Position::new(insert_line as u32, 0),
-            ),
-            new_text: format!(
-                "{indent}part def {type_name} {{ }}\n",
-                indent = insert_indent
-            ),
-        }));
-    }
-
-    edits.push(OneOf::Left(TextEdit {
-        range: Range::new(
-            Position::new(target_line as u32, 0),
-            Position::new(target_line as u32, utf16_len(raw_line)),
-        ),
-        new_text: rewrite_untyped_part_usage_line(raw_line, &usage_name, &type_name),
-    }));
-
-    let edit = WorkspaceEdit {
-        changes: None,
-        document_changes: Some(tower_lsp::lsp_types::DocumentChanges::Edits(vec![
-            TextDocumentEdit {
-                text_document: OptionalVersionedTextDocumentIdentifier {
-                    uri: uri.clone(),
-                    version: None,
-                },
-                edits,
-            },
-        ])),
-        change_annotations: None,
-    };
-
-    Some(CodeAction {
-        title: format!("Create matching `part def {}` and type usage", type_name),
-        kind: Some(CodeActionKind::QUICKFIX),
-        diagnostics: Some(vec![diagnostic.clone()]),
-        edit: Some(edit),
-        command: None,
-        is_preferred: Some(true),
-        disabled: None,
-        data: None,
-    })
+    let path = uri.path().trim_start_matches('/').to_string();
+    language_service::suggest_create_matching_part_def_quick_fix(
+        source,
+        &path,
+        DiagnosticLine {
+            line: diagnostic.range.start.line,
+        },
+    )
+    .map(|s| suggestion_to_code_action(s, uri, Some(diagnostic)))
 }
 
 pub fn suggest_explicit_redefinition_quick_fix(
@@ -615,39 +195,15 @@ pub fn suggest_explicit_redefinition_quick_fix(
     uri: &Url,
     diagnostic: &Diagnostic,
 ) -> Option<CodeAction> {
-    let target_line = diagnostic.range.start.line as usize;
-    let lines: Vec<&str> = source.lines().collect();
-    let raw_line = *lines.get(target_line)?;
-    let rewritten = rewrite_implicit_redefinition_line(raw_line)?;
-    let edit = WorkspaceEdit {
-        changes: None,
-        document_changes: Some(tower_lsp::lsp_types::DocumentChanges::Edits(vec![
-            TextDocumentEdit {
-                text_document: OptionalVersionedTextDocumentIdentifier {
-                    uri: uri.clone(),
-                    version: None,
-                },
-                edits: vec![OneOf::Left(TextEdit {
-                    range: Range::new(
-                        Position::new(target_line as u32, 0),
-                        Position::new(target_line as u32, utf16_len(raw_line)),
-                    ),
-                    new_text: rewritten,
-                })],
-            },
-        ])),
-        change_annotations: None,
-    };
-    Some(CodeAction {
-        title: "Make redefinition explicit with `:>>`".to_string(),
-        kind: Some(CodeActionKind::QUICKFIX),
-        diagnostics: Some(vec![diagnostic.clone()]),
-        edit: Some(edit),
-        command: None,
-        is_preferred: Some(true),
-        disabled: None,
-        data: None,
-    })
+    let path = uri.path().trim_start_matches('/').to_string();
+    language_service::suggest_explicit_redefinition_quick_fix(
+        source,
+        &path,
+        DiagnosticLine {
+            line: diagnostic.range.start.line,
+        },
+    )
+    .map(|s| suggestion_to_code_action(s, uri, Some(diagnostic)))
 }
 
 pub fn suggest_manage_custom_libraries_quick_fix(diagnostic: &Diagnostic) -> CodeAction {

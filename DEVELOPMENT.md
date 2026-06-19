@@ -8,7 +8,7 @@ Spec42 is a Rust workspace plus a VS Code extension.
 
 - `crates/server` (`spec42`) owns the CLI, LSP binary, MCP binary, read-only HTTP API, environment resolution, and standard-library materialization.
 - `crates/kernel` owns the LSP/runtime host: document lifecycle, workspace orchestration, LSP handlers, validation wiring, DTO assembly, and host adapters.
-- `crates/language_service` owns protocol-neutral editor intelligence (navigation in phase 1: hover, go-to-definition, references). Hosts map its DTOs to LSP, HTTP, or Monaco contracts.
+- `crates/language_service` owns protocol-neutral editor intelligence: navigation, completion, document outline/folding, workspace symbol search, rename, formatting, and neutral quick-fix edits. Hosts map its DTOs to LSP, HTTP, or Monaco contracts.
 - `crates/semantic_core` owns reusable semantic logic: graph construction, cross-document linking, resolution, evaluation, diagnostics, and graph-first visualization helpers.
 - `vscode` owns the VS Code client, webviews, tests, packaging, and bundled asset staging.
 
@@ -16,16 +16,19 @@ Keep reusable semantic/model behavior in `semantic_core`; keep editor intelligen
 
 ## Language Service Structure
 
-Protocol-neutral editor APIs live in `crates/language_service`. Phase 1 covers **navigation** (hover, go-to-definition, find references).
+Protocol-neutral editor APIs live in `crates/language_service`.
 
-- `dto.rs`: serde-friendly result types (`SourceLocation`, `HoverResult`, `DefinitionResult`, `ReferencesResult`) using `semantic_core` spans
+- `dto.rs`: serde-friendly result types (`SourceLocation`, `HoverResult`, completion/rename/outline DTOs, `TextEditSuggestion`, …) using `semantic_core` spans
 - `workspace.rs`: `InMemoryWorkspace` builder and `WorkspaceSnapshot` trait
-- `navigation.rs`, `references.rs`, `lookup.rs`, `symbol.rs`: query implementation
+- `navigation.rs`, `references.rs`, `lookup.rs`, `symbol.rs`: hover, definition, references
+- `completion.rs`: context detection, candidate ranking, `complete()`
+- `outline.rs`, `workspace_symbols.rs`: document symbols, folding ranges, workspace symbol search
+- `rename.rs`, `formatting.rs`, `code_actions.rs`: rename edits, document formatting, neutral quick fixes
 - `text.rs`, `keywords.rs`: position/word helpers and keyword hover fallback
 
-`kernel::workspace::snapshot` implements `WorkspaceSnapshot` for LSP `ServerState`. `kernel::lsp_runtime/features/navigation_requests.rs` delegates to `language_service` and maps DTOs to `tower_lsp` types.
+`kernel::workspace::snapshot` implements `WorkspaceSnapshot` for LSP `ServerState`. Kernel feature modules under `lsp_runtime/features/` delegate to `language_service` and map DTOs to `tower_lsp` types (library-path policy and VS Code commands stay in kernel).
 
-Headless tests: `crates/language_service/tests/` (`navigation/` mirrors kernel LSP hover/definition/references fixtures, `inmemory_workspace`, `dto_roundtrip`, `dependency_guardrails`).
+Headless tests: `crates/language_service/tests/` (`navigation/`, `completion/`, `outline/`, `inmemory_workspace`, `dto_roundtrip`, `dependency_guardrails`).
 
 Design rationale: [docs/adr/0002-language-service-crate.md](docs/adr/0002-language-service-crate.md).
 

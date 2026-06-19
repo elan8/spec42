@@ -1,6 +1,7 @@
 use tower_lsp::jsonrpc::Result;
 use tower_lsp::lsp_types::*;
 
+use crate::common::text_span::{to_core_position, to_lsp_range};
 use crate::common::util;
 use crate::language::{
     collect_document_symbols, collect_folding_ranges, format_document,
@@ -10,6 +11,8 @@ use crate::language::{
     suggest_search_library_for_symbol_quick_fix, suggest_show_standard_library_info_quick_fix,
     suggest_wrap_in_package,
 };
+use language_service::WorkspaceSnapshot;
+use crate::workspace::snapshot::ServerStateSnapshot;
 use crate::workspace::ServerState;
 
 use super::super::references_resolver;
@@ -95,23 +98,21 @@ pub(crate) fn prepare_rename(
     if util::uri_under_any_library(&uri_norm, &state.library_paths) {
         return Ok(None);
     }
-    let target = match references_resolver::resolve_symbol_target_at_position(state, &uri_norm, pos)
-    {
-        Some(target)
-            if target.is_renameable
-                && !util::uri_under_any_library(
-                    &target.definition_location.uri,
-                    &state.library_paths,
-                ) =>
-        {
-            target
-        }
-        _ => return Ok(None),
+    let snapshot = ServerStateSnapshot::new(state);
+    let path = snapshot.path_for_uri(&uri_norm);
+    let Some(target) = language_service::rename_target(&snapshot, &path, to_core_position(pos)) else {
+        return Ok(None);
     };
-    Ok(Some(PrepareRenameResponse::Range(Range::new(
-        target.identifier_range.start,
-        target.identifier_range.end,
-    ))))
+    if let Some(def_uri) = snapshot.resolve_uri_for_path(&target.definition.path) {
+        if util::uri_under_any_library(&def_uri, &state.library_paths) {
+            return Ok(None);
+        }
+    }
+    let Some(range) = language_service::prepare_rename(&snapshot, &path, to_core_position(pos))
+    else {
+        return Ok(None);
+    };
+    Ok(Some(PrepareRenameResponse::Range(to_lsp_range(range))))
 }
 
 pub(crate) fn rename(
@@ -124,39 +125,42 @@ pub(crate) fn rename(
     if util::uri_under_any_library(&uri_norm, &state.library_paths) {
         return Ok(None);
     }
-    let _target =
-        match references_resolver::resolve_symbol_target_at_position(state, &uri_norm, pos) {
-            Some(target)
-                if target.is_renameable
-                    && !util::uri_under_any_library(
-                        &target.definition_location.uri,
-                        &state.library_paths,
-                    ) =>
-            {
-                target
-            }
-            _ => return Ok(None),
-        };
+    let snapshot = ServerStateSnapshot::new(state);
+    let path = snapshot.path_for_uri(&uri_norm);
+    if language_service::prepare_rename(&snapshot, &path, to_core_position(pos)).is_none() {
+        return Ok(None);
+    }
+    let definition_uri = language_service::rename_target(&snapshot, &path, to_core_position(pos))
+        .map(|target| {
+            snapshot
+                .resolve_uri_for_path(&target.definition.path)
+                .unwrap_or_else(|| uri_norm.clone())
+        });
+    if let Some(def_uri) = definition_uri {
+        if util::uri_under_any_library(&def_uri, &state.library_paths) {
+            return Ok(None);
+        }
+    }
 
-    let locations =
-        match references_resolver::resolved_references_at_position(state, &uri_norm, pos, true) {
-            Some(locations) if !locations.is_empty() => locations,
-            _ => return Ok(Some(WorkspaceEdit::default())),
-        };
+    let edits =
+        language_service::apply_rename(&snapshot, &path, to_core_position(pos), &new_name);
+    if edits.is_empty() {
+        return Ok(Some(WorkspaceEdit::default()));
+    }
 
     let mut changes: std::collections::HashMap<Url, Vec<TextEdit>> =
         std::collections::HashMap::new();
-    for location in locations {
-        if util::uri_under_any_library(&location.uri, &state.library_paths) {
+    for edit in edits {
+        let Some(edit_uri) = snapshot.resolve_uri_for_path(&edit.path) else {
+            continue;
+        };
+        if util::uri_under_any_library(&edit_uri, &state.library_paths) {
             continue;
         }
-        changes
-            .entry(location.uri.clone())
-            .or_default()
-            .push(TextEdit {
-                range: location.range,
-                new_text: new_name.clone(),
-            });
+        changes.entry(edit_uri).or_default().push(TextEdit {
+            range: to_lsp_range(edit.range),
+            new_text: edit.replacement,
+        });
     }
     Ok(Some(WorkspaceEdit {
         changes: Some(changes),
@@ -203,24 +207,41 @@ pub(crate) fn workspace_symbol(
     state: &ServerState,
     query: String,
 ) -> Result<Option<Vec<SymbolInformation>>> {
-    let query = query.to_lowercase();
-    let out = state
-        .symbol_table
-        .iter()
-        .filter(|entry| query.is_empty() || entry.name.to_lowercase().contains(&query))
-        .map(|entry| SymbolInformation {
-            name: entry.name.clone(),
-            kind: entry.kind,
-            tags: None,
-            deprecated: None,
-            location: Location {
-                uri: entry.uri.clone(),
-                range: entry.range,
-            },
-            container_name: entry.container_name.clone(),
+    let snapshot = ServerStateSnapshot::new(state);
+    let out = language_service::search_workspace_symbols(&snapshot, &query)
+        .into_iter()
+        .filter_map(|entry| {
+            let uri = Url::parse(&entry.uri).ok()?;
+            Some(SymbolInformation {
+                name: entry.name,
+                kind: workspace_symbol_kind(entry.detail.as_deref().unwrap_or("symbol")),
+                tags: None,
+                deprecated: None,
+                location: Location {
+                    uri,
+                    range: to_lsp_range(entry.range),
+                },
+                container_name: entry.container,
+            })
         })
         .collect();
     Ok(Some(out))
+}
+
+fn workspace_symbol_kind(kind: &str) -> SymbolKind {
+    match kind {
+        "package" | "namespace" | "library package" => SymbolKind::MODULE,
+        "part def" | "classifier decl" => SymbolKind::CLASS,
+        "port def" | "interface" | "port" => SymbolKind::INTERFACE,
+        "attribute def" | "attribute" | "feature decl" | "ref" => SymbolKind::PROPERTY,
+        "action def" => SymbolKind::FUNCTION,
+        "part" => SymbolKind::OBJECT,
+        "action" => SymbolKind::EVENT,
+        "view def" | "viewpoint def" | "rendering def" | "view" | "viewpoint" | "rendering" => {
+            SymbolKind::NAMESPACE
+        }
+        _ => SymbolKind::VARIABLE,
+    }
 }
 
 pub(crate) fn code_action(

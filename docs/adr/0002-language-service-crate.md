@@ -12,7 +12,7 @@ Spec42 exposes editor features (hover, go-to-definition, find references, comple
 
 Babel42 and future in-browser Monaco authoring need the same semantic navigation behavior without importing the LSP stack. `semantic_core` already provides graph construction, resolution, and diagnostics, but it does not expose a stable, editor-oriented API for navigation requests at a logical document path and text position.
 
-Phase 1 of the language-service extraction targets **navigation only** (hover, go-to-definition, references) as the highest-value, lowest-risk slice.
+Phase 1 of the language-service extraction targeted **navigation** (hover, go-to-definition, references). Phases 2–4 have since moved completion, outline/folding/workspace symbols, rename, formatting, and neutral quick-fix code actions into `language_service`.
 
 ## Decision
 
@@ -23,7 +23,7 @@ Introduce a new workspace crate, `crates/language_service`, that:
    - `SourceLocation`, `HoverResult`, `DefinitionResult`, `ReferencesResult`
 3. Provides **`InMemoryWorkspace`** for headless and test use, built from `SysmlDocument` / `SysmlDocumentProvider` inputs.
 4. Defines a **`WorkspaceSnapshot`** trait so hosts (`kernel::ServerState`, in-memory workspaces) expose document text, semantic graph, and symbol table without duplicating query logic.
-5. Implements navigation entry points: `hover`, `goto_definition`, `find_references`.
+5. Implements editor entry points: `hover`, `goto_definition`, `find_references`, `complete`, `document_symbols`, `folding_ranges`, `search_workspace_symbols`, `prepare_rename`, `apply_rename`, `format_document_text`, and neutral `TextEditSuggestion` quick fixes.
 
 `kernel` remains the LSP adapter: `lsp_runtime/features/navigation_requests.rs` delegates to `language_service` and maps neutral DTOs to LSP types via `kernel::common::text_span`.
 
@@ -31,7 +31,7 @@ Introduce a new workspace crate, `crates/language_service`, that:
 
 ```text
 semantic_core     — graph, resolution, diagnostics, providers
-language_service  — editor intelligence (navigation phase 1)
+language_service  — editor intelligence (navigation, completion, symbols, rename, format, quick fixes)
 kernel            — LSP/runtime adapters, document lifecycle, protocol mapping
 ```
 
@@ -52,18 +52,18 @@ kernel            — LSP/runtime adapters, document lifecycle, protocol mapping
 - Some logic is duplicated at the boundary (symbol table conversion in `kernel::workspace::snapshot`) until more features move out of `kernel`.
 - `InMemoryWorkspace` rebuilds the full workspace; incremental `didChange` updates remain in `kernel` for now.
 
-## Non-goals (this ADR / phase 1)
+## Non-goals (original phase 1)
 
-- Babel42 HTTP endpoints or Monaco providers
-- Completion, rename, formatting, code actions, folding, document symbols (later phases)
+- Babel42 HTTP endpoints or Monaco providers (optional follow-up)
 - WASM packaging
 - Replacing `semantic_core` responsibilities
 
 ## Follow-ups
 
-| Feature | Suggested phase |
+| Feature | Status |
 | --- | --- |
-| Completion | Phase 2 — extract from `lsp_runtime/features/completion.rs` |
-| Document/workspace symbols, folding | Phase 3 |
-| Rename, formatting, code actions | Phase 4 |
+| Completion | Done — `language_service::complete`, kernel LSP adapter in `lsp_runtime/features/completion.rs` |
+| Document/workspace symbols, folding | Done — `outline`, `workspace_symbols` |
+| Rename, formatting, code actions | Done — `rename`, `formatting`, `code_actions` (kernel keeps library-path guards and VS Code commands) |
 | Incremental workspace API for edit sessions | When Babel42 perf requires it |
+| Babel42 HTTP endpoints | Optional |

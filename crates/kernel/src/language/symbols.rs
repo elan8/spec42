@@ -1,14 +1,18 @@
 //! Document symbols, definition ranges, folding ranges, and symbol table helpers.
 #![allow(deprecated)] // DocumentSymbol/SymbolInformation.deprecated; use tags in future
 
+use crate::common::text_span::to_lsp_range;
 use crate::syntax::ast_util::{identification_name, span_to_range};
+use language_service::{
+    document_symbols as ls_document_symbols, folding_ranges as ls_folding_ranges, OutlineSymbol,
+};
 use sysml_v2_parser::ast::{
     PackageBody, PackageBodyElement, PartDefBody, PartDefBodyElement, PartUsageBody,
     PartUsageBodyElement, PortDefBody, PortDefBodyElement, RootElement,
 };
 use sysml_v2_parser::RootNamespace;
 use tower_lsp::lsp_types::{
-    DocumentSymbol, FoldingRange, FoldingRangeKind, Position, Range, SymbolKind, Url,
+    DocumentSymbol, FoldingRange, FoldingRangeKind, Range, SymbolKind, Url,
 };
 
 /// Collects for each defined name in the document the LSP range of its definition.
@@ -201,186 +205,6 @@ fn collect_definition_range_port_def_body(
     }
 }
 
-/// Returns all LSP ranges in `source` where `name` appears as a whole word (word boundaries).
-pub fn find_reference_ranges(source: &str, name: &str) -> Vec<Range> {
-    fn is_ident_char(c: char) -> bool {
-        c.is_alphanumeric() || c == '_' || c == '-'
-    }
-    if name.is_empty() {
-        return Vec::new();
-    }
-    let mut ranges = Vec::new();
-    for (line_no, line) in source.lines().enumerate() {
-        let line_utf8 = line;
-        let mut search_start = 0;
-        while let Some(off) = line_utf8[search_start..].find(name) {
-            let start = search_start + off;
-            let end = start + name.len();
-            let before_ok = start == 0
-                || !line_utf8[..start]
-                    .chars()
-                    .next_back()
-                    .is_some_and(is_ident_char);
-            let after_ok = end >= line_utf8.len()
-                || !line_utf8[end..].chars().next().is_some_and(is_ident_char);
-            if before_ok && after_ok {
-                let start_char = line_utf8[..start].chars().count() as u32;
-                let end_char = start_char + name.chars().count() as u32;
-                ranges.push(Range::new(
-                    Position::new(line_no as u32, start_char),
-                    Position::new(line_no as u32, end_char),
-                ));
-            }
-            search_start = end;
-        }
-    }
-    ranges
-}
-
-/// Collects document symbols (outline) from the AST.
-pub fn collect_document_symbols(root: &RootNamespace) -> Vec<DocumentSymbol> {
-    let mut out = Vec::new();
-    for node in &root.elements {
-        let sym = match &node.value {
-            RootElement::Package(p) => {
-                let name = identification_name(&p.identification);
-                let name = if name.is_empty() {
-                    "(top level)".to_string()
-                } else {
-                    name
-                };
-                let range = span_to_range(&p.span);
-                let children = match &p.body {
-                    PackageBody::Brace { elements } => elements
-                        .iter()
-                        .filter_map(document_symbol_from_element)
-                        .collect(),
-                    _ => vec![],
-                };
-                Some(DocumentSymbol {
-                    name,
-                    detail: Some("package".to_string()),
-                    kind: SymbolKind::MODULE,
-                    tags: None,
-                    deprecated: None,
-                    range,
-                    selection_range: range,
-                    children: Some(children),
-                })
-            }
-            RootElement::Namespace(n) => {
-                let name = identification_name(&n.identification);
-                let name = if name.is_empty() {
-                    "(top level)".to_string()
-                } else {
-                    name
-                };
-                let range = span_to_range(&n.span);
-                let children = match &n.body {
-                    PackageBody::Brace { elements } => elements
-                        .iter()
-                        .filter_map(document_symbol_from_element)
-                        .collect(),
-                    _ => vec![],
-                };
-                Some(DocumentSymbol {
-                    name,
-                    detail: Some("namespace".to_string()),
-                    kind: SymbolKind::MODULE,
-                    tags: None,
-                    deprecated: None,
-                    range,
-                    selection_range: range,
-                    children: Some(children),
-                })
-            }
-            RootElement::LibraryPackage(lp) => {
-                let name = identification_name(&lp.identification);
-                let name = if name.is_empty() {
-                    "(top level)".to_string()
-                } else {
-                    name
-                };
-                let range = span_to_range(&lp.span);
-                let children = match &lp.body {
-                    PackageBody::Brace { elements } => elements
-                        .iter()
-                        .filter_map(document_symbol_from_element)
-                        .collect(),
-                    _ => vec![],
-                };
-                Some(DocumentSymbol {
-                    name,
-                    detail: Some("library package".to_string()),
-                    kind: SymbolKind::MODULE,
-                    tags: None,
-                    deprecated: None,
-                    range,
-                    selection_range: range,
-                    children: Some(children),
-                })
-            }
-            RootElement::Import(_) => None,
-        };
-        if let Some(s) = sym {
-            out.push(s);
-        }
-    }
-    normalize_document_symbols(&mut out);
-    out
-}
-
-fn normalize_document_symbols(symbols: &mut [DocumentSymbol]) {
-    for symbol in symbols {
-        if symbol.name.trim().is_empty() {
-            let fallback = symbol
-                .detail
-                .as_deref()
-                .map(str::trim)
-                .filter(|value| !value.is_empty())
-                .map(|value| format!("(anonymous {value})"))
-                .unwrap_or_else(|| "(anonymous)".to_string());
-            symbol.name = fallback;
-        }
-        if let Some(children) = symbol.children.as_mut() {
-            normalize_document_symbols(children);
-        }
-    }
-}
-
-/// Collects folding ranges from the AST. This reuses the document-symbol outline ranges and
-/// produces one folding range per symbol whose extent spans multiple lines.
-pub fn collect_folding_ranges(root: &RootNamespace) -> Vec<FoldingRange> {
-    let symbols = collect_document_symbols(root);
-    let mut out = Vec::new();
-
-    fn push_symbol(symbol: &DocumentSymbol, out: &mut Vec<FoldingRange>) {
-        let start = symbol.range.start.line;
-        let end = symbol.range.end.line;
-        if end > start {
-            out.push(FoldingRange {
-                start_line: start,
-                start_character: None,
-                end_line: end,
-                end_character: None,
-                kind: Some(FoldingRangeKind::Region),
-                collapsed_text: None,
-            });
-        }
-        if let Some(children) = symbol.children.as_ref() {
-            for c in children {
-                push_symbol(c, out);
-            }
-        }
-    }
-
-    for s in &symbols {
-        push_symbol(s, &mut out);
-    }
-
-    out
-}
-
 fn modeled_decl_name(keyword: &str, text: &str, fallback: &str) -> String {
     let t = text.trim().trim_end_matches(';').trim();
     let tokens: Vec<String> = t
@@ -417,6 +241,79 @@ fn sanitize_identifier(s: &str) -> String {
         .collect()
 }
 
+/// Returns all LSP ranges in `source` where `name` appears as a whole word (word boundaries).
+pub fn find_reference_ranges(source: &str, name: &str) -> Vec<Range> {
+    use crate::common::text_span::to_lsp_range;
+
+    language_service::find_reference_ranges(source, name)
+        .into_iter()
+        .map(to_lsp_range)
+        .collect()
+}
+
+fn outline_kind_to_lsp(kind: &str) -> SymbolKind {
+    match kind {
+        "package" | "namespace" | "library package" => SymbolKind::MODULE,
+        "part def" | "classifier decl" => SymbolKind::CLASS,
+        "port def" | "interface" | "port" => SymbolKind::INTERFACE,
+        "attribute def" | "attribute" | "feature decl" | "ref" => SymbolKind::PROPERTY,
+        "action def" => SymbolKind::FUNCTION,
+        "part" => SymbolKind::OBJECT,
+        "action" => SymbolKind::EVENT,
+        "view def" | "viewpoint def" | "rendering def" | "view" | "viewpoint" | "rendering" => {
+            SymbolKind::NAMESPACE
+        }
+        _ => SymbolKind::VARIABLE,
+    }
+}
+
+fn map_outline_symbol(symbol: OutlineSymbol) -> DocumentSymbol {
+    let range = to_lsp_range(symbol.range);
+    let selection_range = to_lsp_range(symbol.selection_range);
+    let children = symbol.children.into_iter().map(map_outline_symbol).collect::<Vec<_>>();
+    DocumentSymbol {
+        name: symbol.name,
+        detail: Some(symbol.kind.clone()),
+        kind: outline_kind_to_lsp(&symbol.kind),
+        tags: None,
+        deprecated: None,
+        range,
+        selection_range,
+        children: if children.is_empty() {
+            None
+        } else {
+            Some(children)
+        },
+    }
+}
+
+/// Collects document symbols (outline) from the AST.
+pub fn collect_document_symbols(root: &RootNamespace) -> Vec<DocumentSymbol> {
+    ls_document_symbols(root)
+        .into_iter()
+        .map(map_outline_symbol)
+        .collect()
+}
+
+/// Collects folding ranges from the AST.
+pub fn collect_folding_ranges(root: &RootNamespace) -> Vec<FoldingRange> {
+    ls_folding_ranges(root)
+        .into_iter()
+        .map(|range| FoldingRange {
+            start_line: range.start_line,
+            start_character: None,
+            end_line: range.end_line,
+            end_character: None,
+            kind: range.kind.map(|kind| match kind {
+                language_service::FoldingRangeKindDto::Region => FoldingRangeKind::Region,
+                language_service::FoldingRangeKindDto::Imports => FoldingRangeKind::Imports,
+                language_service::FoldingRangeKindDto::Comment => FoldingRangeKind::Comment,
+            }),
+            collapsed_text: None,
+        })
+        .collect()
+}
+
 /// Workspace-wide symbol entry: one definable name with location and semantic info.
 #[derive(Debug, Clone)]
 pub struct SymbolEntry {
@@ -437,400 +334,6 @@ pub fn collect_symbol_entries(_root: &RootNamespace, _uri: &Url) -> Vec<SymbolEn
     vec![]
 }
 
-fn document_symbol_from_element(
-    node: &sysml_v2_parser::Node<PackageBodyElement>,
-) -> Option<DocumentSymbol> {
-    use sysml_v2_parser::ast::PackageBodyElement as PBE;
-    let range = span_to_range(&node.span);
-    match &node.value {
-        PBE::Package(p) => {
-            let name = identification_name(&p.identification);
-            let name = if name.is_empty() {
-                "(top level)".to_string()
-            } else {
-                name
-            };
-            let children = match &p.body {
-                PackageBody::Brace { elements } => elements
-                    .iter()
-                    .filter_map(document_symbol_from_element)
-                    .collect(),
-                _ => vec![],
-            };
-            Some(DocumentSymbol {
-                name,
-                detail: Some("package".to_string()),
-                kind: SymbolKind::MODULE,
-                tags: None,
-                deprecated: None,
-                range,
-                selection_range: range,
-                children: if children.is_empty() {
-                    None
-                } else {
-                    Some(children)
-                },
-            })
-        }
-        PBE::PartDef(p) => {
-            let name = identification_name(&p.identification);
-            if name.is_empty() {
-                return None;
-            }
-            let children = match &p.body {
-                PartDefBody::Brace { elements } => document_symbols_from_part_def_body(elements),
-                _ => vec![],
-            };
-            Some(DocumentSymbol {
-                name,
-                detail: Some("part def".to_string()),
-                kind: SymbolKind::CLASS,
-                tags: None,
-                deprecated: None,
-                range,
-                selection_range: range,
-                children: if children.is_empty() {
-                    None
-                } else {
-                    Some(children)
-                },
-            })
-        }
-        PBE::PartUsage(p) => {
-            let children = match &p.body {
-                PartUsageBody::Brace { elements } => {
-                    document_symbols_from_part_usage_body(elements)
-                }
-                _ => vec![],
-            };
-            Some(DocumentSymbol {
-                name: p.name.clone(),
-                detail: Some("part".to_string()),
-                kind: SymbolKind::OBJECT,
-                tags: None,
-                deprecated: None,
-                range,
-                selection_range: range,
-                children: if children.is_empty() {
-                    None
-                } else {
-                    Some(children)
-                },
-            })
-        }
-        PBE::PortDef(p) => {
-            let name = identification_name(&p.identification);
-            if name.is_empty() {
-                return None;
-            }
-            let children = match &p.body {
-                PortDefBody::Brace { elements } => document_symbols_from_port_def_body(elements),
-                _ => vec![],
-            };
-            Some(DocumentSymbol {
-                name,
-                detail: Some("port def".to_string()),
-                kind: SymbolKind::INTERFACE,
-                tags: None,
-                deprecated: None,
-                range,
-                selection_range: range,
-                children: if children.is_empty() {
-                    None
-                } else {
-                    Some(children)
-                },
-            })
-        }
-        PBE::InterfaceDef(p) => {
-            let name = identification_name(&p.identification);
-            if name.is_empty() {
-                return None;
-            }
-            Some(DocumentSymbol {
-                name,
-                detail: Some("interface".to_string()),
-                kind: SymbolKind::INTERFACE,
-                tags: None,
-                deprecated: None,
-                range,
-                selection_range: range,
-                children: None,
-            })
-        }
-        PBE::AttributeDef(p) => Some(DocumentSymbol {
-            name: p.name.clone(),
-            detail: Some("attribute def".to_string()),
-            kind: SymbolKind::PROPERTY,
-            tags: None,
-            deprecated: None,
-            range,
-            selection_range: range,
-            children: None,
-        }),
-        PBE::FeatureDecl(p) => {
-            let name = modeled_decl_name(&p.keyword, &p.text, "_feature");
-            if name.is_empty() {
-                return None;
-            }
-            Some(DocumentSymbol {
-                name,
-                detail: Some("feature decl".to_string()),
-                kind: SymbolKind::PROPERTY,
-                tags: None,
-                deprecated: None,
-                range,
-                selection_range: range,
-                children: None,
-            })
-        }
-        PBE::ClassifierDecl(p) => {
-            let name = modeled_decl_name(&p.keyword, &p.text, "_classifier");
-            if name.is_empty() {
-                return None;
-            }
-            Some(DocumentSymbol {
-                name,
-                detail: Some("classifier decl".to_string()),
-                kind: SymbolKind::CLASS,
-                tags: None,
-                deprecated: None,
-                range,
-                selection_range: range,
-                children: None,
-            })
-        }
-        PBE::ActionDef(p) => {
-            let name = identification_name(&p.identification);
-            if name.is_empty() {
-                return None;
-            }
-            Some(DocumentSymbol {
-                name,
-                detail: Some("action def".to_string()),
-                kind: SymbolKind::FUNCTION,
-                tags: None,
-                deprecated: None,
-                range,
-                selection_range: range,
-                children: None,
-            })
-        }
-        PBE::ActionUsage(p) => Some(DocumentSymbol {
-            name: p.name.clone(),
-            detail: Some("action".to_string()),
-            kind: SymbolKind::EVENT,
-            tags: None,
-            deprecated: None,
-            range,
-            selection_range: range,
-            children: None,
-        }),
-        PBE::ViewDef(p) => {
-            let name = identification_name(&p.identification);
-            if name.is_empty() {
-                return None;
-            }
-            Some(DocumentSymbol {
-                name,
-                detail: Some("view def".to_string()),
-                kind: SymbolKind::NAMESPACE,
-                tags: None,
-                deprecated: None,
-                range,
-                selection_range: range,
-                children: None,
-            })
-        }
-        PBE::ViewpointDef(p) => {
-            let name = identification_name(&p.identification);
-            if name.is_empty() {
-                return None;
-            }
-            Some(DocumentSymbol {
-                name,
-                detail: Some("viewpoint def".to_string()),
-                kind: SymbolKind::NAMESPACE,
-                tags: None,
-                deprecated: None,
-                range,
-                selection_range: range,
-                children: None,
-            })
-        }
-        PBE::RenderingDef(p) => {
-            let name = identification_name(&p.identification);
-            if name.is_empty() {
-                return None;
-            }
-            Some(DocumentSymbol {
-                name,
-                detail: Some("rendering def".to_string()),
-                kind: SymbolKind::NAMESPACE,
-                tags: None,
-                deprecated: None,
-                range,
-                selection_range: range,
-                children: None,
-            })
-        }
-        PBE::ViewUsage(p) => Some(DocumentSymbol {
-            name: p.name.clone(),
-            detail: Some("view".to_string()),
-            kind: SymbolKind::NAMESPACE,
-            tags: None,
-            deprecated: None,
-            range,
-            selection_range: range,
-            children: None,
-        }),
-        PBE::ViewpointUsage(p) => Some(DocumentSymbol {
-            name: p.name.clone(),
-            detail: Some("viewpoint".to_string()),
-            kind: SymbolKind::NAMESPACE,
-            tags: None,
-            deprecated: None,
-            range,
-            selection_range: range,
-            children: None,
-        }),
-        PBE::RenderingUsage(p) => Some(DocumentSymbol {
-            name: p.name.clone(),
-            detail: Some("rendering".to_string()),
-            kind: SymbolKind::NAMESPACE,
-            tags: None,
-            deprecated: None,
-            range,
-            selection_range: range,
-            children: None,
-        }),
-        PBE::Import(_) | PBE::AliasDef(_) => None,
-        _ => None,
-    }
-}
-
-fn document_symbols_from_part_def_body(
-    elements: &[sysml_v2_parser::Node<PartDefBodyElement>],
-) -> Vec<DocumentSymbol> {
-    let mut out = Vec::new();
-    for node in elements {
-        use sysml_v2_parser::ast::PartDefBodyElement as PDBE;
-        let range = span_to_range(&node.span);
-        match &node.value {
-            PDBE::AttributeDef(n) => out.push(DocumentSymbol {
-                name: n.name.clone(),
-                detail: Some("attribute def".to_string()),
-                kind: SymbolKind::PROPERTY,
-                tags: None,
-                deprecated: None,
-                range,
-                selection_range: range,
-                children: None,
-            }),
-            PDBE::PortUsage(n) => out.push(DocumentSymbol {
-                name: n.name.clone(),
-                detail: Some("port".to_string()),
-                kind: SymbolKind::INTERFACE,
-                tags: None,
-                deprecated: None,
-                range,
-                selection_range: range,
-                children: None,
-            }),
-            _ => {}
-        }
-    }
-    out
-}
-
-fn document_symbols_from_part_usage_body(
-    elements: &[sysml_v2_parser::Node<PartUsageBodyElement>],
-) -> Vec<DocumentSymbol> {
-    let mut out = Vec::new();
-    for node in elements {
-        use sysml_v2_parser::ast::PartUsageBodyElement as PUBE;
-        let range = span_to_range(&node.span);
-        match &node.value {
-            PUBE::AttributeUsage(n) => out.push(DocumentSymbol {
-                name: n.name.clone(),
-                detail: Some("attribute".to_string()),
-                kind: SymbolKind::PROPERTY,
-                tags: None,
-                deprecated: None,
-                range,
-                selection_range: range,
-                children: None,
-            }),
-            PUBE::PartUsage(n) => {
-                let children = match &n.body {
-                    PartUsageBody::Brace { elements } => {
-                        document_symbols_from_part_usage_body(elements)
-                    }
-                    _ => vec![],
-                };
-                out.push(DocumentSymbol {
-                    name: n.name.clone(),
-                    detail: Some("part".to_string()),
-                    kind: SymbolKind::OBJECT,
-                    tags: None,
-                    deprecated: None,
-                    range,
-                    selection_range: range,
-                    children: if children.is_empty() {
-                        None
-                    } else {
-                        Some(children)
-                    },
-                });
-            }
-            PUBE::PortUsage(n) => out.push(DocumentSymbol {
-                name: n.name.clone(),
-                detail: Some("port".to_string()),
-                kind: SymbolKind::INTERFACE,
-                tags: None,
-                deprecated: None,
-                range,
-                selection_range: range,
-                children: None,
-            }),
-            PUBE::Ref(n) => out.push(DocumentSymbol {
-                name: n.value.name.clone(),
-                detail: Some("ref".to_string()),
-                kind: SymbolKind::PROPERTY,
-                tags: None,
-                deprecated: None,
-                range,
-                selection_range: range,
-                children: None,
-            }),
-            _ => {}
-        }
-    }
-    out
-}
-
-fn document_symbols_from_port_def_body(
-    elements: &[sysml_v2_parser::Node<PortDefBodyElement>],
-) -> Vec<DocumentSymbol> {
-    let mut out = Vec::new();
-    for node in elements {
-        use sysml_v2_parser::ast::PortDefBodyElement as PDBE;
-        let range = span_to_range(&node.span);
-        if let PDBE::PortUsage(n) = &node.value {
-            out.push(DocumentSymbol {
-                name: n.name.clone(),
-                detail: Some("port".to_string()),
-                kind: SymbolKind::INTERFACE,
-                tags: None,
-                deprecated: None,
-                range,
-                selection_range: range,
-                children: None,
-            });
-        }
-    }
-    out
-}
 
 /// Collects all named elements from the document for hover/completion: (name, short_description).
 #[cfg(test)]

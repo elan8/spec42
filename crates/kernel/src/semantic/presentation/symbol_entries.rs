@@ -1,11 +1,10 @@
+use language_service::symbol_entries_for_uri as ls_symbol_entries_for_uri;
 use tower_lsp::lsp_types::{SymbolKind, Url};
 
 use crate::common::text_span::to_lsp_range;
 use crate::language::SymbolEntry;
 
 use crate::semantic::SemanticGraph;
-
-use super::signature_from_node;
 
 /// Maps element_kind from the semantic model to LSP SymbolKind.
 fn element_kind_to_symbol_kind(kind: &str) -> SymbolKind {
@@ -66,27 +65,19 @@ fn element_kind_to_symbol_kind(kind: &str) -> SymbolKind {
 
 /// Collects symbol entries for a URI from the semantic graph (replaces AST-based collect_symbol_entries).
 pub fn symbol_entries_for_uri(graph: &SemanticGraph, uri: &Url) -> Vec<SymbolEntry> {
-    let mut out = Vec::new();
-    for node in graph.nodes_for_uri(uri) {
-        let container_name = node
-            .parent_id
-            .as_ref()
-            .and_then(|pid| graph.get_node(pid))
-            .map(|p| p.name.clone());
-        let description = format!("{} '{}'", node.element_kind, node.name);
-        let signature = signature_from_node(node);
-        out.push(SymbolEntry {
-            name: node.name.clone(),
-            uri: node.id.uri.clone(),
-            range: to_lsp_range(node.range),
-            kind: element_kind_to_symbol_kind(&node.element_kind),
-            container_name,
-            detail: Some(node.element_kind.clone()),
-            description: Some(description),
-            signature,
-        });
-    }
-    out
+    ls_symbol_entries_for_uri(graph, uri)
+        .into_iter()
+        .map(|entry| SymbolEntry {
+            name: entry.name,
+            uri: entry.uri,
+            range: to_lsp_range(entry.range),
+            kind: element_kind_to_symbol_kind(entry.detail.as_deref().unwrap_or("")),
+            container_name: entry.container_name,
+            detail: entry.detail,
+            description: entry.description,
+            signature: entry.signature,
+        })
+        .collect()
 }
 
 #[cfg(test)]

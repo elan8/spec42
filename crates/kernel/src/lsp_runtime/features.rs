@@ -1,7 +1,6 @@
 mod completion;
 mod editing_features;
 mod navigation_requests;
-mod shared;
 
 use std::sync::atomic::{AtomicU64, Ordering};
 use std::time::Instant;

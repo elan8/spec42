@@ -40,6 +40,9 @@ pub trait WorkspaceSnapshot {
     fn perf_logging_enabled(&self) -> bool {
         false
     }
+    fn supports_semantic_queries(&self) -> bool {
+        true
+    }
     fn library_paths(&self) -> &[Url] {
         &[]
     }

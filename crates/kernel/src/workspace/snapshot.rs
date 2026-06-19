@@ -93,4 +93,8 @@ impl WorkspaceSnapshot for ServerStateSnapshot<'_> {
     fn library_paths(&self) -> &[Url] {
         &self.state.library_paths
     }
+
+    fn supports_semantic_queries(&self) -> bool {
+        self.state.semantic_lifecycle.supports_semantic_queries()
+    }
 }
