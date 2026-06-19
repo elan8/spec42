@@ -64,13 +64,11 @@ fn is_state_behavior_element(kind: &str) -> bool {
 }
 
 fn is_state_machine_root(graph: &SemanticGraph, node: &SemanticNode) -> bool {
-    match node.element_kind.as_str() {
-        "state def" | "exhibit state" => graph
+    node.element_kind.as_str() == "state def"
+        && graph
             .children_of(node)
             .iter()
-            .any(|child| is_state_behavior_element(&child.element_kind)),
-        _ => false,
-    }
+            .any(|child| is_state_behavior_element(&child.element_kind))
 }
 
 fn build_machine(graph: &SemanticGraph, root: &SemanticNode) -> Option<StateMachineDto> {

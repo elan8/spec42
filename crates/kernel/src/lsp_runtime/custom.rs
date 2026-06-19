@@ -44,7 +44,11 @@ pub(crate) async fn sysml_model_result(
     if workspace_visualization_requested && crate::views::ibd_requested(&scope) {
         if let Some(root) = crate::views::workspace_artifacts::primary_workspace_root(state) {
             if crate::views::workspace_artifacts::cached_merged_ibd(state, &root).is_none() {
-                let _ = crate::views::workspace_artifacts::ensure_workspace_artifacts(state, &root);
+                let _ = crate::views::workspace_artifacts::ensure_workspace_artifacts(
+                    state,
+                    &root,
+                    semantic_core::IbdArtifactMode::FullWorkspace,
+                );
             }
         }
     }

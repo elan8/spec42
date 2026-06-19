@@ -143,6 +143,7 @@ describe("normalizeVisualizationPayload", () => {
     it("action-flow-view filters interface-only action definitions from the selector", () => {
         const data = createMockData({
             activityDiagrams: [],
+            activityDiagramCandidates: [],
         });
 
         const result = prepareDataForView(data, "action-flow-view");
@@ -172,7 +173,18 @@ describe("normalizeVisualizationPayload", () => {
                     decisions: [],
                     states: [],
                 }
-            ]
+            ],
+            activityDiagramCandidates: [
+                {
+                    id: "ExecuteMission::actionDef",
+                    name: "ExecuteMission",
+                    label: "ExecuteMission - Mission::Control",
+                    packagePath: "Mission::Control",
+                    sourceKind: "actionDef",
+                    nodeCount: 2,
+                    flowCount: 1,
+                },
+            ],
         });
 
         const result = prepareDataForView(data, "action-flow-view");
@@ -209,7 +221,18 @@ describe("normalizeVisualizationPayload", () => {
                     decisions: [],
                     states: [],
                 }
-            ]
+            ],
+            activityDiagramCandidates: [
+                {
+                    id: "Mission::FlightController::performer",
+                    name: "FlightController",
+                    label: "FlightController - Mission",
+                    packagePath: "Mission",
+                    sourceKind: "performer",
+                    nodeCount: 2,
+                    flowCount: 1,
+                },
+            ],
         });
 
         const result = prepareDataForView(data, "action-flow-view");
@@ -241,7 +264,18 @@ describe("normalizeVisualizationPayload", () => {
                     decisions: [],
                     states: [],
                 }
-            ]
+            ],
+            activityDiagramCandidates: [
+                {
+                    id: "Mission::LaunchSystem::performer",
+                    name: "LaunchSystem",
+                    label: "LaunchSystem - Mission",
+                    packagePath: "Mission",
+                    sourceKind: "performer",
+                    nodeCount: 2,
+                    flowCount: 1,
+                },
+            ],
         });
 
         const result = prepareDataForView(data, "action-flow-view");
@@ -287,7 +321,27 @@ describe("normalizeVisualizationPayload", () => {
                     decisions: [],
                     states: [],
                 }
-            ]
+            ],
+            activityDiagramCandidates: [
+                {
+                    id: "Mission::ExecuteMission::actionDef",
+                    name: "ExecuteMission",
+                    label: "ExecuteMission - Mission",
+                    packagePath: "Mission",
+                    sourceKind: "actionDef",
+                    nodeCount: 2,
+                    flowCount: 1,
+                },
+                {
+                    id: "Mission::FlightController::performer",
+                    name: "FlightController",
+                    label: "FlightController - Mission",
+                    packagePath: "Mission",
+                    sourceKind: "performer",
+                    nodeCount: 2,
+                    flowCount: 1,
+                },
+            ],
         });
 
         const result = prepareDataForView(data, "action-flow-view");
@@ -326,6 +380,16 @@ describe("normalizeVisualizationPayload", () => {
                     ],
                 },
             ],
+            sequenceDiagramCandidates: [
+                {
+                    id: "OrderFlow",
+                    name: "OrderFlow",
+                    label: "OrderFlow - Examples::Software",
+                    packagePath: "Examples::Software",
+                    messageCount: 2,
+                    lifelineCount: 2,
+                },
+            ],
         });
 
         const result = prepareDataForView(data, "sequence-view");
@@ -353,6 +417,16 @@ describe("normalizeVisualizationPayload", () => {
                     transitions: [
                         { id: "t1", source: "idle", target: "running", name: "start", selfLoop: false },
                     ],
+                },
+            ],
+            stateMachineCandidates: [
+                {
+                    id: "TimerStateMachine",
+                    name: "TimerStateMachine",
+                    label: "TimerStateMachine",
+                    packagePath: "",
+                    stateCount: 2,
+                    transitionCount: 1,
                 },
             ],
         });
@@ -510,6 +584,24 @@ describe("normalizeVisualizationPayload", () => {
                     transitions: [],
                 },
             ],
+            stateMachineCandidates: [
+                {
+                    id: "PkgA::FlightModeStateMachine",
+                    name: "FlightModeStateMachine",
+                    label: "FlightModeStateMachine - PkgA",
+                    packagePath: "PkgA",
+                    stateCount: 1,
+                    transitionCount: 0,
+                },
+                {
+                    id: "PkgB::FlightModeStateMachine",
+                    name: "FlightModeStateMachine",
+                    label: "FlightModeStateMachine - PkgB",
+                    packagePath: "PkgB",
+                    stateCount: 1,
+                    transitionCount: 0,
+                },
+            ],
         });
 
         const result = prepareDataForView(data, "state-transition-view");
@@ -530,6 +622,16 @@ describe("normalizeVisualizationPayload", () => {
                     packagePath: "",
                     states: [{ id: "manual", name: "manual", kind: "state" }],
                     transitions: [],
+                },
+            ],
+            stateMachineCandidates: [
+                {
+                    id: "FlightModeStateMachine",
+                    name: "FlightModeStateMachine",
+                    label: "FlightModeStateMachine",
+                    packagePath: "",
+                    stateCount: 1,
+                    transitionCount: 0,
                 },
             ],
         });
@@ -566,6 +668,26 @@ describe("normalizeVisualizationPayload", () => {
                     flows: [{ from: "stepB", to: "stepB" }],
                     decisions: [],
                     states: [],
+                },
+            ],
+            activityDiagramCandidates: [
+                {
+                    id: "MissionA::ExecutePatrol",
+                    name: "ExecutePatrol",
+                    label: "ExecutePatrol - MissionA",
+                    packagePath: "MissionA",
+                    sourceKind: "actionDef",
+                    nodeCount: 1,
+                    flowCount: 1,
+                },
+                {
+                    id: "MissionB::ExecutePatrol",
+                    name: "ExecutePatrol",
+                    label: "ExecutePatrol - MissionB",
+                    packagePath: "MissionB",
+                    sourceKind: "actionDef",
+                    nodeCount: 1,
+                    flowCount: 1,
                 },
             ],
         });

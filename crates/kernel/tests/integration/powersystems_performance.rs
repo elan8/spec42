@@ -587,6 +587,31 @@ fn run_interconnection_lsp_performance_report(config: InterconnectionPerfReportC
         !has_ibd,
         "expected slim LSP payload to omit ibd when interconnectionScene is present"
     );
+    let has_graph = visualization_result
+        .get("graph")
+        .is_some_and(|value| !value.is_null());
+    let has_general_view_graph = visualization_result
+        .get("generalViewGraph")
+        .is_some_and(|value| !value.is_null());
+    assert!(
+        !has_graph,
+        "expected slim LSP payload to omit graph when interconnectionScene is present"
+    );
+    assert!(
+        !has_general_view_graph,
+        "expected slim LSP payload to omit generalViewGraph when interconnectionScene is present"
+    );
+    const MAX_DRONE_SLIM_INTERCONNECTION_BYTES: usize = 45_000;
+    assert!(
+        visualization_capture.raw.len() <= MAX_DRONE_SLIM_INTERCONNECTION_BYTES,
+        "expected slim LSP payload under {MAX_DRONE_SLIM_INTERCONNECTION_BYTES} bytes on drone, got {}",
+        visualization_capture.raw.len()
+    );
+    assert!(
+        phase_breakdown.slim_payload_bytes <= MAX_DRONE_SLIM_INTERCONNECTION_BYTES,
+        "expected scoped workspace slim payload under {MAX_DRONE_SLIM_INTERCONNECTION_BYTES} bytes, got {}",
+        phase_breakdown.slim_payload_bytes
+    );
     assert!(scene_edges > 0, "expected non-empty interconnection scene");
     assert!(
         phase_breakdown.scoped_uri_count <= phase_breakdown.workspace_uri_count,

@@ -6,6 +6,42 @@ use url::Url;
 
 use crate::SemanticGraph;
 
+/// Whether a document URI lies under the workspace root URI.
+pub fn uri_under_root(uri: &Url, workspace_root_uri: &Url) -> bool {
+    match (uri.to_file_path(), workspace_root_uri.to_file_path()) {
+        (Ok(uri_path), Ok(root_path)) => uri_path.starts_with(root_path),
+        _ => {
+            let root = workspace_root_uri.as_str().trim_end_matches('/');
+            uri.as_str() == root || uri.as_str().starts_with(&format!("{root}/"))
+        }
+    }
+}
+
+/// Workspace document URIs under `workspace_root_uri`, excluding library paths.
+pub fn workspace_uris_for_root(
+    semantic_graph: &SemanticGraph,
+    library_paths: &[Url],
+    workspace_root_uri: &Url,
+) -> Vec<Url> {
+    let mut uris: Vec<Url> = semantic_graph
+        .workspace_uris_excluding_libraries(library_paths)
+        .into_iter()
+        .filter(|uri| uri_under_root(uri, workspace_root_uri))
+        .collect();
+    uris.sort_by(|left, right| left.as_str().cmp(right.as_str()));
+    uris
+}
+
+/// Whether workspace visualization artifacts include a full merged IBD cache entry.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
+pub enum IbdArtifactMode {
+    /// Build and cache merged IBD for all workspace URIs (Model Explorer path).
+    #[default]
+    FullWorkspace,
+    /// Skip full-workspace IBD; scoped IBD is built on demand per visualization request.
+    Deferred,
+}
+
 /// Controls how many workspace URIs participate in merged IBD construction.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
 pub enum IbdBuildScope {

@@ -83,10 +83,13 @@ pub use semantic::visualization_workspace::{
     workspace_uris_for_root, IbdScopeTrace, VisualizationBuildMeta, VisualizationBuildOptions,
     WorkspaceVisualizationArtifacts,
 };
-pub use semantic::visualization::scope::{workspace_uris_for_ibd_scope, IbdBuildScope};
+pub use semantic::visualization::scope::{
+    workspace_uris_for_ibd_scope, IbdArtifactMode, IbdBuildScope,
+};
 pub use semantic::visualization::payload::{
-    finalize_activity_diagrams_for_response, finalize_sequence_diagrams_for_response,
-    finalize_state_machines_for_response,
+    finalize_activity_diagram_candidates_for_response, finalize_activity_diagrams_for_response,
+    finalize_sequence_diagram_candidates_for_response, finalize_sequence_diagrams_for_response,
+    finalize_state_machine_candidates_for_response, finalize_state_machines_for_response,
 };
 pub use semantic::workspace_graph::{
     build_semantic_graph_from_documents, build_semantic_graph_with_provider,

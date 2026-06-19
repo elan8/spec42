@@ -3,6 +3,12 @@
 
 use url::Url;
 
+use super::connectors::{
+    build_instance_def_mappings, dedupe_connectors, enrich_connector_endpoint_refs,
+    endpoint_under_definition_prefix, map_definition_endpoint_to_usage,
+    mirror_connectors_from_definition_document, remap_connectors_to_typed_instances,
+    IbdConnectorSink,
+};
 use super::dto::{
     IbdConnectorDto, IbdContainerGroupDto, IbdDataDto, IbdPackageContainerGroupDto, IbdPartDto,
     IbdPortDto, IbdRootViewDto,
@@ -19,7 +25,7 @@ fn is_interconnection_element_kind(kind: &str) -> bool {
     is_part_like(kind) || is_reference_element_kind(kind)
 }
 
-fn is_part_instance_kind(kind: &str) -> bool {
+pub(crate) fn is_part_instance_kind(kind: &str) -> bool {
     let k = kind.to_lowercase();
     k == "part" || k.contains("part usage")
 }
@@ -67,7 +73,7 @@ fn decorate_ibd_part_attributes(
 }
 
 /// Interconnection view (BNF): `interconnection-element = part | part-ref` — no definitions on canvas.
-fn prune_interconnection_definition_parts(
+pub(crate) fn prune_interconnection_definition_parts(
     parts: Vec<IbdPartDto>,
     ports: Vec<IbdPortDto>,
     connectors: Vec<IbdConnectorDto>,
@@ -159,7 +165,7 @@ fn canonical_port_id(parent_id: &str, port_name: &str) -> String {
     }
 }
 
-fn graph_node_for_ibd_part<'a>(
+pub(crate) fn graph_node_for_ibd_part<'a>(
     graph: &'a SemanticGraph,
     uri: &Url,
     part: &IbdPartDto,
@@ -694,346 +700,8 @@ fn prune_redundant_top_level_roots(
     (parts, ports, connectors)
 }
 
-fn map_container_endpoint_to_instance(
-    endpoint: &str,
-    container_def_dot: &str,
-    instance_prefix_dot: &str,
-) -> Option<String> {
-    if endpoint == container_def_dot {
-        return Some(instance_prefix_dot.to_string());
-    }
-    let prefixed = format!("{container_def_dot}.");
-    endpoint
-        .strip_prefix(&prefixed)
-        .map(|remainder| format!("{instance_prefix_dot}.{remainder}"))
-}
 
-fn build_instance_def_mappings(
-    graph: &SemanticGraph,
-    uri: &Url,
-    parts: &[IbdPartDto],
-) -> Vec<(String, String)> {
-    let mut mappings: Vec<(String, String)> = Vec::new();
-    for part in parts {
-        if let Some(mapping) = instance_def_mapping_for_part(graph, uri, part) {
-            mappings.push(mapping);
-        }
-    }
-    for node in graph.nodes_for_uri(uri) {
-        if !is_part_like(&node.element_kind)
-            || node.element_kind.to_lowercase().contains("part def")
-        {
-            continue;
-        }
-        let usage_dot = qualified_name_to_dot(&node.id.qualified_name);
-        if mappings
-            .iter()
-            .any(|(_, instance_dot)| instance_dot == &usage_dot)
-        {
-            continue;
-        }
-        if let Some(def_node) = graph
-            .outgoing_typing_or_specializes_targets(node)
-            .into_iter()
-            .find(|target| is_part_like(&target.element_kind))
-        {
-            let def_dot = qualified_name_to_dot(&def_node.id.qualified_name);
-            mappings.push((def_dot, usage_dot));
-        }
-    }
-    mappings.sort_by_key(|mapping| std::cmp::Reverse(mapping.0.len()));
-    mappings.dedup_by(|left, right| left.0 == right.0 && left.1 == right.1);
-    extend_instance_def_mappings_with_specializations(graph, &mut mappings);
-    mappings
-}
-
-fn instance_def_mapping_for_part(
-    graph: &SemanticGraph,
-    uri: &Url,
-    part: &IbdPartDto,
-) -> Option<(String, String)> {
-    let node = graph_node_for_ibd_part(graph, uri, part)?;
-    let def_node = graph
-        .outgoing_typing_or_specializes_targets(node)
-        .into_iter()
-        .find(|target| is_part_like(&target.element_kind))?;
-    Some((
-        qualified_name_to_dot(&def_node.id.qualified_name),
-        part.qualified_name.clone(),
-    ))
-}
-
-fn extend_instance_def_mappings_with_specializations(
-    graph: &SemanticGraph,
-    mappings: &mut Vec<(String, String)>,
-) {
-    let seed = mappings.clone();
-    for (def_dot, instance_dot) in seed {
-        let def_qn = def_dot.replace('.', "::");
-        let Some(def_ids) = graph.node_ids_for_qualified_name(&def_qn) else {
-            continue;
-        };
-        for def_id in def_ids {
-            let Some(def_node) = graph.get_node(def_id) else {
-                continue;
-            };
-            let mut stack: Vec<&SemanticNode> =
-                graph.incoming_typing_or_specializes_sources(def_node);
-            let mut visited: std::collections::HashSet<String> = std::collections::HashSet::new();
-            while let Some(source) = stack.pop() {
-                if !is_part_like(&source.element_kind)
-                    || !source.element_kind.to_lowercase().contains("part def")
-                {
-                    continue;
-                }
-                let source_dot = qualified_name_to_dot(&source.id.qualified_name);
-                if !visited.insert(source_dot.clone()) {
-                    continue;
-                }
-                mappings.push((source_dot, instance_dot.clone()));
-                for next in graph.incoming_typing_or_specializes_sources(source) {
-                    stack.push(next);
-                }
-            }
-        }
-    }
-    mappings.sort_by_key(|mapping| std::cmp::Reverse(mapping.0.len()));
-    mappings.dedup_by(|left, right| left.0 == right.0 && left.1 == right.1);
-}
-
-fn remap_connector_via_mapping(
-    connector: &IbdConnectorDto,
-    def_dot: &str,
-    instance_dot: &str,
-) -> Option<IbdConnectorDto> {
-    let source_id =
-        map_container_endpoint_to_instance(&connector.source_id, def_dot, instance_dot)?;
-    let target_id =
-        map_container_endpoint_to_instance(&connector.target_id, def_dot, instance_dot)?;
-    if source_id == connector.source_id && target_id == connector.target_id {
-        return None;
-    }
-    let mut remapped = connector.clone();
-    remapped.source_id = source_id.clone();
-    remapped.target_id = target_id.clone();
-    if remapped.source.replace("::", ".") == remapped.source_id
-        || remapped.source == remapped.source_id
-    {
-        remapped.source = source_id;
-    }
-    if remapped.target.replace("::", ".") == remapped.target_id
-        || remapped.target == remapped.target_id
-    {
-        remapped.target = target_id;
-    }
-    Some(remapped)
-}
-
-fn remap_connectors_to_typed_instances(
-    connectors: Vec<IbdConnectorDto>,
-    mappings: &[(String, String)],
-) -> Vec<IbdConnectorDto> {
-    if mappings.is_empty() {
-        return connectors;
-    }
-
-    let mut expanded = Vec::with_capacity(connectors.len());
-    for connector in &connectors {
-        let mut remapped_any = false;
-        for (def_dot, instance_dot) in mappings {
-            if let Some(remapped) = remap_connector_via_mapping(connector, def_dot, instance_dot) {
-                expanded.push(remapped);
-                remapped_any = true;
-            }
-        }
-        if !remapped_any {
-            expanded.push(connector.clone());
-        }
-    }
-    dedupe_connectors(expanded)
-}
-
-pub(crate) fn enrich_connector_endpoint_refs(
-    connectors: &mut [IbdConnectorDto],
-    parts: &[IbdPartDto],
-    ports: &[IbdPortDto],
-) {
-    for connector in connectors.iter_mut() {
-        connector.source_part_id = resolve_owner_part_qn_for_endpoint(&connector.source_id, parts);
-        connector.target_part_id = resolve_owner_part_qn_for_endpoint(&connector.target_id, parts);
-        connector.source_port_id = resolve_port_id_for_endpoint(&connector.source_id, ports);
-        connector.target_port_id = resolve_port_id_for_endpoint(&connector.target_id, ports);
-    }
-}
-
-fn dedupe_connectors(connectors: Vec<IbdConnectorDto>) -> Vec<IbdConnectorDto> {
-    let mut seen = std::collections::HashSet::new();
-    let mut out = Vec::new();
-    for connector in connectors {
-        let key = (
-            connector.source_id.clone(),
-            connector.target_id.clone(),
-            connector.rel_type.clone(),
-        );
-        if seen.insert(key) {
-            out.push(connector);
-        }
-    }
-    out
-}
-
-fn endpoint_under_definition_prefix(endpoint: &str, def_prefix: &str) -> bool {
-    let endpoint_dot = qualified_name_to_dot(endpoint);
-    let def_dot = qualified_name_to_dot(def_prefix);
-    endpoint_dot == def_dot || endpoint_dot.starts_with(&format!("{def_dot}."))
-}
-
-fn map_definition_endpoint_to_usage(
-    endpoint: &str,
-    def_prefix: &str,
-    usage_prefix_dot: &str,
-) -> Option<String> {
-    let endpoint_dot = qualified_name_to_dot(endpoint);
-    let def_dot = qualified_name_to_dot(def_prefix);
-    if endpoint_dot == def_dot {
-        return Some(usage_prefix_dot.to_string());
-    }
-    let prefixed = format!("{def_dot}.");
-    if let Some(remainder) = endpoint_dot.strip_prefix(&prefixed) {
-        if remainder.is_empty() {
-            return Some(usage_prefix_dot.to_string());
-        }
-        return Some(format!("{usage_prefix_dot}.{remainder}"));
-    }
-    None
-}
-
-fn def_container_prefixes_for_uri(graph: &SemanticGraph, uri: &Url) -> Vec<String> {
-    graph
-        .nodes_for_uri(uri)
-        .iter()
-        .filter(|node| node.element_kind.to_lowercase().contains("part def"))
-        .map(|node| node.id.qualified_name.clone())
-        .collect()
-}
-
-struct IbdConnectorSink<'a> {
-    connectors: &'a mut Vec<IbdConnectorDto>,
-    keys: &'a mut std::collections::HashSet<(String, String, String)>,
-}
-
-/// Copy connectors declared on a part definition's document onto a typed instance path.
-fn mirror_connectors_from_definition_document(
-    graph: &SemanticGraph,
-    def_uri: &Url,
-    def_prefix: &str,
-    usage_prefix_dot: &str,
-    parts: &[IbdPartDto],
-    ports: &[IbdPortDto],
-    sink: &mut IbdConnectorSink<'_>,
-) {
-    let def_prefix_dot = qualified_name_to_dot(def_prefix);
-    let def_container_prefixes = def_container_prefixes_for_uri(graph, def_uri);
-
-    let mut push_connector = |source_id: String, target_id: String| {
-        let source_id = expand_relative_endpoint_to_part_path(&source_id, parts, ports);
-        let target_id = expand_relative_endpoint_to_part_path(&target_id, parts, ports);
-        let source_id =
-            map_container_endpoint_to_instance(&source_id, &def_prefix_dot, usage_prefix_dot)
-                .unwrap_or(source_id);
-        let target_id =
-            map_container_endpoint_to_instance(&target_id, &def_prefix_dot, usage_prefix_dot)
-                .unwrap_or(target_id);
-        let key = (
-            source_id.clone(),
-            target_id.clone(),
-            "connection".to_string(),
-        );
-        if !sink.keys.insert(key) {
-            return;
-        }
-        sink.connectors.push(IbdConnectorDto {
-            source: source_id.clone(),
-            target: target_id.clone(),
-            source_id,
-            target_id,
-            source_part_id: None,
-            target_part_id: None,
-            source_port_id: None,
-            target_port_id: None,
-            rel_type: "connection".to_string(),
-        });
-    };
-
-    for (_src, _tgt, edge) in graph.connection_edges_touching_uri(def_uri) {
-        if edge.kind != RelationshipKind::Connection {
-            continue;
-        }
-        let Some(connect) = &edge.connect else {
-            continue;
-        };
-        let source_id = qualify_pending_connection_endpoint(
-            connect.container_prefix.as_deref(),
-            &connect.source_expression,
-        );
-        let target_id = qualify_pending_connection_endpoint(
-            connect.container_prefix.as_deref(),
-            &connect.target_expression,
-        );
-        let (source_id, target_id) = if source_id.is_empty() || target_id.is_empty() {
-            (
-                qualify_occurrence_endpoint(&connect.source_expression, &def_container_prefixes),
-                qualify_occurrence_endpoint(&connect.target_expression, &def_container_prefixes),
-            )
-        } else {
-            (source_id, target_id)
-        };
-        push_connector(source_id, target_id);
-    }
-
-    for pending in graph
-        .pending_expression_relationships
-        .iter()
-        .filter(|pending| pending.kind == RelationshipKind::Connection && pending.uri == *def_uri)
-    {
-        let source_id = qualify_pending_connection_endpoint(
-            pending.container_prefix.as_deref(),
-            &pending.source_expression,
-        );
-        let target_id = qualify_pending_connection_endpoint(
-            pending.container_prefix.as_deref(),
-            &pending.target_expression,
-        );
-        if source_id.is_empty() || target_id.is_empty() {
-            continue;
-        }
-        push_connector(source_id, target_id);
-    }
-
-    for (src_id, tgt_id, edge) in graph.connection_edges_touching_uri(def_uri) {
-        if edge.kind != RelationshipKind::Connection || edge.connect.is_some() {
-            continue;
-        }
-        let src = src_id.qualified_name;
-        let tgt = tgt_id.qualified_name;
-        if !endpoint_under_definition_prefix(&src, def_prefix)
-            && !endpoint_under_definition_prefix(&tgt, def_prefix)
-        {
-            continue;
-        }
-        let Some(source_id) = map_definition_endpoint_to_usage(&src, def_prefix, usage_prefix_dot)
-        else {
-            continue;
-        };
-        let Some(target_id) = map_definition_endpoint_to_usage(&tgt, def_prefix, usage_prefix_dot)
-        else {
-            continue;
-        };
-        push_connector(source_id, target_id);
-    }
-}
-
-fn qualify_pending_connection_endpoint(container_prefix: Option<&str>, endpoint: &str) -> String {
+pub(crate) fn qualify_pending_connection_endpoint(container_prefix: Option<&str>, endpoint: &str) -> String {
     let trimmed = endpoint.trim();
     if trimmed.is_empty() {
         return String::new();
@@ -1055,7 +723,7 @@ fn qualify_pending_connection_endpoint(container_prefix: Option<&str>, endpoint:
     }
 }
 
-fn qualify_occurrence_endpoint(endpoint: &str, def_container_prefixes: &[String]) -> String {
+pub(crate) fn qualify_occurrence_endpoint(endpoint: &str, def_container_prefixes: &[String]) -> String {
     let trimmed = endpoint.trim();
     if trimmed.is_empty() {
         return String::new();
@@ -1078,7 +746,7 @@ fn qualify_occurrence_endpoint(endpoint: &str, def_container_prefixes: &[String]
         .unwrap_or_else(|| trimmed.to_string())
 }
 
-fn expand_relative_endpoint_to_part_path(
+pub(crate) fn expand_relative_endpoint_to_part_path(
     endpoint: &str,
     parts: &[IbdPartDto],
     ports: &[IbdPortDto],
@@ -1800,344 +1468,7 @@ pub fn build_ibd_for_uri(graph: &SemanticGraph, uri: &Url) -> IbdDataDto {
     }
 }
 
-/// Merge multiple per-URI IBD payloads into one workspace-scoped payload.
-pub fn merge_ibd_payloads(ibds: Vec<IbdDataDto>) -> IbdDataDto {
-    let mut parts_by_id: std::collections::HashMap<String, IbdPartDto> =
-        std::collections::HashMap::new();
-    let mut ports_by_key: std::collections::HashMap<(String, String), IbdPortDto> =
-        std::collections::HashMap::new();
-    let mut connectors_by_key: std::collections::HashMap<
-        (String, String, String),
-        IbdConnectorDto,
-    > = std::collections::HashMap::new();
-    let mut root_candidates: std::collections::BTreeSet<String> = std::collections::BTreeSet::new();
-    let mut root_views: std::collections::HashMap<String, IbdRootViewDto> =
-        std::collections::HashMap::new();
-    let mut container_groups_by_id: std::collections::HashMap<String, IbdContainerGroupDto> =
-        std::collections::HashMap::new();
-    let mut package_container_groups_by_id: std::collections::HashMap<
-        String,
-        IbdPackageContainerGroupDto,
-    > = std::collections::HashMap::new();
 
-    for ibd in ibds {
-        for p in ibd.parts {
-            parts_by_id.entry(p.id.clone()).or_insert(p);
-        }
-        for p in ibd.ports {
-            ports_by_key
-                .entry((p.parent_id.clone(), p.name.clone()))
-                .or_insert(p);
-        }
-        for c in ibd.connectors {
-            connectors_by_key
-                .entry((c.source_id.clone(), c.target_id.clone(), c.rel_type.clone()))
-                .or_insert(c);
-        }
-        for group in ibd.container_groups {
-            container_groups_by_id
-                .entry(group.id.clone())
-                .and_modify(|existing| {
-                    let mut members: std::collections::HashSet<String> =
-                        existing.member_part_ids.iter().cloned().collect();
-                    for part_id in &group.member_part_ids {
-                        if members.insert(part_id.clone()) {
-                            existing.member_part_ids.push(part_id.clone());
-                        }
-                    }
-                })
-                .or_insert(group);
-        }
-        for group in ibd.package_container_groups {
-            package_container_groups_by_id
-                .entry(group.id.clone())
-                .and_modify(|existing| {
-                    let mut members: std::collections::HashSet<String> =
-                        existing.member_part_ids.iter().cloned().collect();
-                    for part_id in &group.member_part_ids {
-                        if members.insert(part_id.clone()) {
-                            existing.member_part_ids.push(part_id.clone());
-                        }
-                    }
-                })
-                .or_insert(group);
-        }
-        for root in ibd.root_candidates {
-            root_candidates.insert(root);
-        }
-        for (name, view) in ibd.root_views {
-            let merged = root_views.entry(name).or_insert_with(|| IbdRootViewDto {
-                parts: Vec::new(),
-                ports: Vec::new(),
-                connectors: Vec::new(),
-                container_groups: Vec::new(),
-                package_container_groups: Vec::new(),
-            });
-            let mut part_ids: std::collections::HashSet<String> =
-                merged.parts.iter().map(|p| p.id.clone()).collect();
-            for p in view.parts {
-                if part_ids.insert(p.id.clone()) {
-                    merged.parts.push(p);
-                }
-            }
-            let mut port_keys: std::collections::HashSet<(String, String)> = merged
-                .ports
-                .iter()
-                .map(|p| (p.parent_id.clone(), p.name.clone()))
-                .collect();
-            for p in view.ports {
-                let key = (p.parent_id.clone(), p.name.clone());
-                if port_keys.insert(key) {
-                    merged.ports.push(p);
-                }
-            }
-            let mut connector_keys: std::collections::HashSet<(String, String, String)> = merged
-                .connectors
-                .iter()
-                .map(|c| (c.source_id.clone(), c.target_id.clone(), c.rel_type.clone()))
-                .collect();
-            for c in view.connectors {
-                let key = (c.source_id.clone(), c.target_id.clone(), c.rel_type.clone());
-                if connector_keys.insert(key) {
-                    merged.connectors.push(c);
-                }
-            }
-            let mut group_ids: std::collections::HashSet<String> = merged
-                .container_groups
-                .iter()
-                .map(|group| group.id.clone())
-                .collect();
-            for group in view.container_groups {
-                if group_ids.insert(group.id.clone()) {
-                    merged.container_groups.push(group);
-                }
-            }
-            let mut package_group_ids: std::collections::HashSet<String> = merged
-                .package_container_groups
-                .iter()
-                .map(|group| group.id.clone())
-                .collect();
-            for group in view.package_container_groups {
-                if package_group_ids.insert(group.id.clone()) {
-                    merged.package_container_groups.push(group);
-                }
-            }
-        }
-    }
-
-    let parts: Vec<IbdPartDto> = parts_by_id.into_values().collect();
-    let ports: Vec<IbdPortDto> = ports_by_key.into_values().collect();
-    let connectors: Vec<IbdConnectorDto> = connectors_by_key.into_values().collect();
-    let (parts, ports, connectors) =
-        prune_interconnection_definition_parts(parts, ports, connectors);
-    let mut connectors = connectors;
-    enrich_connector_endpoint_refs(&mut connectors, &parts, &ports);
-    for view in root_views.values_mut() {
-        let (view_parts, view_ports, view_connectors) = prune_interconnection_definition_parts(
-            std::mem::take(&mut view.parts),
-            std::mem::take(&mut view.ports),
-            std::mem::take(&mut view.connectors),
-        );
-        let mut view_connectors = view_connectors;
-        enrich_connector_endpoint_refs(&mut view_connectors, &view_parts, &view_ports);
-        view.parts = view_parts;
-        view.ports = view_ports;
-        view.connectors = view_connectors;
-    }
-
-    let default_root = root_candidates
-        .iter()
-        .filter(|name| root_views.contains_key(name.as_str()))
-        .max_by_key(|name| {
-            let view = root_views.get(*name).expect("root view");
-            let connector_count = view.connectors.len();
-            let part_count = view.parts.len();
-            let is_instance = view
-                .parts
-                .iter()
-                .find(|part| part.name == **name)
-                .map(|part| is_part_instance_kind(&part.element_type))
-                .unwrap_or(false);
-            let instance_bonus = if is_instance { 1usize } else { 0usize };
-            (connector_count, instance_bonus, part_count)
-        })
-        .cloned();
-
-    IbdDataDto {
-        parts,
-        ports,
-        connectors,
-        container_groups: container_groups_by_id.into_values().collect(),
-        package_container_groups: package_container_groups_by_id.into_values().collect(),
-        root_candidates: root_candidates.into_iter().collect(),
-        default_root,
-        root_views,
-    }
-}
-
-/// After merging per-document IBD payloads, remap definition-path connectors onto typed
-/// instance paths using workspace-wide part typings.
-fn split_architecture_scope_root(qualified_name: &str) -> Option<(&str, &str)> {
-    if let Some(pos) = qualified_name.find(".architecture.") {
-        return Some((
-            &qualified_name[..pos + ".architecture".len()],
-            &qualified_name[pos + ".architecture.".len()..],
-        ));
-    }
-    if let Some(pos) = qualified_name.find(".Architecture.") {
-        let start = pos + ".Architecture.".len();
-        let tail = &qualified_name[start..];
-        let def_len = tail.find('.').unwrap_or(tail.len());
-        if def_len > 0 {
-            let end = start + def_len;
-            let remainder = qualified_name[end..].strip_prefix('.').unwrap_or_default();
-            return Some((&qualified_name[..end], remainder));
-        }
-    }
-    if let Some(pos) = qualified_name.rfind(".RegionalGridArchitecture") {
-        let end = pos + ".RegionalGridArchitecture".len();
-        let tail = qualified_name[end..].strip_prefix('.').unwrap_or_default();
-        return Some((&qualified_name[..end], tail));
-    }
-    None
-}
-
-fn architecture_package_prefix(qualified_name: &str) -> Option<&str> {
-    if let Some(pos) = qualified_name.find(".architecture") {
-        return qualified_name[..pos]
-            .rsplit_once('.')
-            .map(|(prefix, _)| prefix)
-            .or(Some(&qualified_name[..pos]));
-    }
-    if let Some(pos) = qualified_name.find(".Architecture.") {
-        return Some(&qualified_name[..pos]);
-    }
-    None
-}
-
-pub(crate) fn infer_def_instance_scope_mappings_for_ibd(ibd: &IbdDataDto) -> Vec<(String, String)> {
-    infer_def_instance_scope_mappings(&ibd.parts)
-}
-
-fn infer_def_instance_scope_mappings(parts: &[IbdPartDto]) -> Vec<(String, String)> {
-    let mut definition_roots: std::collections::HashSet<String> = std::collections::HashSet::new();
-    let mut instance_roots: std::collections::HashSet<String> = std::collections::HashSet::new();
-
-    for part in parts {
-        let Some((root, _)) = split_architecture_scope_root(&part.qualified_name) else {
-            continue;
-        };
-        if root.ends_with(".architecture") {
-            instance_roots.insert(root.to_string());
-        } else if root.contains(".Architecture.") {
-            definition_roots.insert(root.to_string());
-        }
-    }
-
-    let mut mappings: Vec<(String, String)> = Vec::new();
-    for def_root in definition_roots {
-        let Some(def_package) = architecture_package_prefix(&def_root) else {
-            continue;
-        };
-        for instance_root in &instance_roots {
-            let Some(instance_package) = architecture_package_prefix(instance_root) else {
-                continue;
-            };
-            if def_package != instance_package {
-                continue;
-            }
-            mappings.push((def_root.clone(), instance_root.clone()));
-        }
-    }
-    mappings.sort_by_key(|mapping| std::cmp::Reverse(mapping.0.len()));
-    mappings.dedup_by(|left, right| left.0 == right.0 && left.1 == right.1);
-    mappings
-}
-
-fn remap_qualified_name_with_mappings(value: &str, mappings: &[(String, String)]) -> String {
-    for (def_prefix, instance_prefix) in mappings {
-        if value == def_prefix {
-            return instance_prefix.clone();
-        }
-        let prefixed = format!("{def_prefix}.");
-        if let Some(remainder) = value.strip_prefix(&prefixed) {
-            return format!("{instance_prefix}.{remainder}");
-        }
-    }
-    value.to_string()
-}
-
-/// Align scoped IBD parts/ports with instance-centric connector endpoints.
-pub fn normalize_ibd_to_instance_paths(ibd: &mut IbdDataDto) {
-    let mappings = infer_def_instance_scope_mappings_for_ibd(ibd);
-    if mappings.is_empty() {
-        return;
-    }
-
-    let mut parts_by_qn: std::collections::HashMap<String, IbdPartDto> =
-        std::collections::HashMap::new();
-    for mut part in ibd.parts.drain(..) {
-        part.qualified_name = remap_qualified_name_with_mappings(&part.qualified_name, &mappings);
-        part.node_id = part.qualified_name.clone();
-        part.id = part.qualified_name.replace('.', "::");
-        if let Some(container_id) = part.container_id.as_mut() {
-            *container_id = remap_qualified_name_with_mappings(container_id, &mappings);
-        }
-        parts_by_qn.insert(part.qualified_name.clone(), part);
-    }
-    ibd.parts = parts_by_qn.into_values().collect();
-
-    let mut ports_by_id: std::collections::HashMap<String, IbdPortDto> =
-        std::collections::HashMap::new();
-    for mut port in ibd.ports.drain(..) {
-        port.parent_id = remap_qualified_name_with_mappings(&port.parent_id, &mappings);
-        port.port_id = remap_qualified_name_with_mappings(&port.port_id, &mappings);
-        port.id = port.port_id.replace('.', "::");
-        ports_by_id.insert(port.port_id.clone(), port);
-    }
-    ibd.ports = ports_by_id.into_values().collect();
-
-    for group in &mut ibd.container_groups {
-        group.member_part_ids = group
-            .member_part_ids
-            .iter()
-            .map(|member| remap_qualified_name_with_mappings(member, &mappings))
-            .collect();
-        if let Some(parent) = group.parent_id.as_mut() {
-            *parent = remap_qualified_name_with_mappings(parent, &mappings);
-        }
-        group.qualified_name = remap_qualified_name_with_mappings(&group.qualified_name, &mappings);
-    }
-
-    enrich_connector_endpoint_refs(&mut ibd.connectors, &ibd.parts, &ibd.ports);
-}
-
-pub fn finalize_merged_ibd_connectors(
-    graph: &SemanticGraph,
-    workspace_uris: &[Url],
-    ibd: &mut IbdDataDto,
-) {
-    let mut mappings = Vec::new();
-    for uri in workspace_uris {
-        mappings.extend(build_instance_def_mappings(graph, uri, &ibd.parts));
-    }
-    mappings.sort_by_key(|mapping| std::cmp::Reverse(mapping.0.len()));
-    mappings.dedup_by(|left, right| left.0 == right.0 && left.1 == right.1);
-
-    ibd.connectors =
-        remap_connectors_to_typed_instances(std::mem::take(&mut ibd.connectors), &mappings);
-    for view in ibd.root_views.values_mut() {
-        view.connectors =
-            remap_connectors_to_typed_instances(std::mem::take(&mut view.connectors), &mappings);
-    }
-
-    ibd.connectors = dedupe_connectors(std::mem::take(&mut ibd.connectors));
-    enrich_connector_endpoint_refs(&mut ibd.connectors, &ibd.parts, &ibd.ports);
-    for view in ibd.root_views.values_mut() {
-        view.connectors = dedupe_connectors(std::mem::take(&mut view.connectors));
-        enrich_connector_endpoint_refs(&mut view.connectors, &view.parts, &view.ports);
-    }
-}
 
 #[cfg(test)]
 mod tests {
@@ -2148,10 +1479,13 @@ mod tests {
     use crate::semantic::source::{SysmlDocument, SysmlDocumentSourceKind};
     use crate::semantic::workspace_graph::build_semantic_graph_from_documents;
 
+    use super::connectors::enrich_connector_endpoint_refs;
+    use super::dto::{
+        IbdConnectorDto, IbdDataDto, IbdPartDto, IbdPortDto,
+    };
     use super::{
         build_container_groups, infer_port_side, prune_ibd_payload_to_connected_scope,
-        prune_interconnection_definition_parts, prune_redundant_top_level_roots, IbdConnectorDto,
-        IbdDataDto, IbdPartDto, IbdPortDto,
+        prune_interconnection_definition_parts, prune_redundant_top_level_roots,
     };
 
     fn test_part(
@@ -2352,7 +1686,7 @@ mod tests {
             rel_type: "connection".to_string(),
         }];
 
-        super::enrich_connector_endpoint_refs(&mut connectors, &parts, &ports);
+        enrich_connector_endpoint_refs(&mut connectors, &parts, &ports);
 
         assert_eq!(
             connectors[0].target_part_id.as_deref(),
@@ -2646,7 +1980,7 @@ mod tests {
                 .map(|uri| super::build_ibd_for_uri(&graph, uri))
                 .collect(),
         );
-        super::finalize_merged_ibd_connectors(&graph, &uris, &mut merged);
+        super::connectors::finalize_merged_ibd_connectors(&graph, &uris, &mut merged);
         assert!(
             merged.connectors.iter().any(|connector| {
                 connector
@@ -2761,7 +2095,7 @@ mod tests {
                 .map(|uri| super::build_ibd_for_uri(&graph, uri))
                 .collect(),
         );
-        super::finalize_merged_ibd_connectors(&graph, &uris, &mut merged);
+        super::connectors::finalize_merged_ibd_connectors(&graph, &uris, &mut merged);
 
         assert!(
             merged

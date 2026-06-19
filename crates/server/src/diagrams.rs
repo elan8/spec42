@@ -1142,8 +1142,11 @@ mod tests {
             general_view_graph: None,
             workspace_model: None,
             activity_diagrams: None,
+            activity_diagram_candidates: None,
             sequence_diagrams: None,
+            sequence_diagram_candidates: None,
             state_machines: None,
+            state_machine_candidates: None,
             ibd: None,
             interconnection_scene: None,
             stats: None,
@@ -1198,8 +1201,11 @@ mod tests {
             general_view_graph: None,
             workspace_model: None,
             activity_diagrams: None,
+            activity_diagram_candidates: None,
             sequence_diagrams: None,
+            sequence_diagram_candidates: None,
             state_machines: None,
+            state_machine_candidates: None,
             ibd: None,
             interconnection_scene: None,
             stats: None,
@@ -1247,8 +1253,11 @@ mod tests {
             general_view_graph: None,
             workspace_model: None,
             activity_diagrams: None,
+            activity_diagram_candidates: None,
             sequence_diagrams: None,
+            sequence_diagram_candidates: None,
             state_machines: None,
+            state_machine_candidates: None,
             ibd: None,
             interconnection_scene: Some(scene),
             stats: None,
@@ -1258,5 +1267,55 @@ mod tests {
         assert!(!svg.is_empty());
         assert!(svg.contains("diagram-edge"));
         assert!(svg.contains("data-layout-engine=\"elkjs-quickjs\""));
+    }
+
+    #[test]
+    fn interconnection_export_matches_slim_scoped_lsp_contract_for_drone() {
+        let repo_root =
+            PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../../examples/drone");
+        assert!(
+            repo_root.is_dir(),
+            "expected drone example at {}",
+            repo_root.display()
+        );
+        let payload = build_diagram_payload(
+            &repo_root.join("Views.sysml"),
+            Some(repo_root.as_path()),
+            &[],
+            "interconnection-view",
+            Some("connections"),
+        )
+        .expect("interconnection diagram payload");
+
+        assert_eq!(payload.view, "interconnection-view");
+        assert_eq!(payload.selected_view_name.as_deref(), Some("connections"));
+        assert!(
+            payload.interconnection_scene.is_some(),
+            "CLI interconnection export should include interconnectionScene"
+        );
+        assert!(
+            payload.ibd.is_none(),
+            "CLI interconnection export should omit ibd for slim payload"
+        );
+        assert!(
+            payload.graph.is_none(),
+            "CLI interconnection export should omit graph for slim payload"
+        );
+        assert!(
+            payload.general_view_graph.is_none(),
+            "CLI interconnection export should omit generalViewGraph for slim payload"
+        );
+        assert!(
+            !payload.view_candidates.is_empty(),
+            "CLI interconnection export should retain viewCandidates"
+        );
+
+        let payload_bytes =
+            serde_json::to_string(&payload).map(|raw| raw.len()).unwrap_or(0);
+        const MAX_DRONE_SLIM_INTERCONNECTION_BYTES: usize = 45_000;
+        assert!(
+            payload_bytes <= MAX_DRONE_SLIM_INTERCONNECTION_BYTES,
+            "CLI slim interconnection payload should stay under {MAX_DRONE_SLIM_INTERCONNECTION_BYTES} bytes, got {payload_bytes}"
+        );
     }
 }

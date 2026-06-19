@@ -4,7 +4,8 @@ use std::collections::HashMap;
 use std::time::Instant;
 
 use semantic_core::{
-    build_sysml_visualization_from_artifacts, build_workspace_visualization_artifacts, IbdDataDto,
+    build_sysml_visualization_from_artifacts, build_merged_workspace_ibd,
+    build_workspace_visualization_artifacts, IbdArtifactMode, IbdDataDto,
     VisualizationBuildMeta, VisualizationBuildOptions, WorkspaceParsedDocument,
     WorkspaceVisualizationArtifacts,
 };
@@ -74,10 +75,28 @@ pub(crate) fn clear_workspace_viz_caches(state: &mut ServerState) {
 pub(crate) fn ensure_workspace_artifacts(
     state: &mut ServerState,
     workspace_root_uri: &Url,
+    ibd_artifact_mode: IbdArtifactMode,
 ) -> Result<WorkspaceVisualizationArtifacts, String> {
     let workspace_root_uri = util::normalize_file_uri(workspace_root_uri);
     if let Some(entry) = state.workspace_viz_caches.artifacts.as_ref() {
         if artifacts_valid(entry, state, &workspace_root_uri) {
+            if ibd_artifact_mode == IbdArtifactMode::FullWorkspace
+                && entry.ibd_artifact_mode == IbdArtifactMode::Deferred
+            {
+                let mut upgraded = entry.artifacts.clone();
+                upgraded.full_ibd = build_merged_workspace_ibd(
+                    &state.semantic_graph,
+                    &upgraded.workspace_uris,
+                );
+                state.workspace_viz_caches.artifacts = Some(WorkspaceVizArtifactEntry {
+                    semantic_state_version: state.semantic_state_version,
+                    workspace_root_uri: workspace_root_uri.clone(),
+                    ibd_artifact_mode: IbdArtifactMode::FullWorkspace,
+                    artifacts: upgraded.clone(),
+                });
+                state.workspace_viz_caches.responses = None;
+                return Ok(upgraded);
+            }
             return Ok(entry.artifacts.clone());
         }
     }
@@ -93,10 +112,12 @@ pub(crate) fn ensure_workspace_artifacts(
         &viz_docs,
         &state.library_paths,
         &workspace_root_uri,
+        ibd_artifact_mode,
     )?;
     state.workspace_viz_caches.artifacts = Some(WorkspaceVizArtifactEntry {
         semantic_state_version: state.semantic_state_version,
         workspace_root_uri,
+        ibd_artifact_mode,
         artifacts: artifacts.clone(),
     });
     state.workspace_viz_caches.responses = None;
@@ -110,6 +131,9 @@ pub(crate) fn cached_merged_ibd(
     let workspace_root_uri = util::normalize_file_uri(workspace_root_uri);
     let entry = state.workspace_viz_caches.artifacts.as_ref()?;
     if !artifacts_valid(entry, state, &workspace_root_uri) {
+        return None;
+    }
+    if entry.ibd_artifact_mode != IbdArtifactMode::FullWorkspace {
         return None;
     }
     Some(entry.artifacts.full_ibd.clone())
@@ -158,8 +182,17 @@ pub(crate) fn build_visualization_with_cache(
     );
     let viz_docs = workspace_parsed_documents_for_visualization(&state.index, &workspace_uris);
 
+    let ibd_artifact_mode = if options.slim_interconnection_payload
+        && options.ibd_build_scope == semantic_core::IbdBuildScope::ViewExposedPackages
+        && view == "interconnection-view"
+    {
+        IbdArtifactMode::Deferred
+    } else {
+        IbdArtifactMode::FullWorkspace
+    };
+
     let artifacts_start = Instant::now();
-    let artifacts = ensure_workspace_artifacts(state, &workspace_root_uri)?;
+    let artifacts = ensure_workspace_artifacts(state, &workspace_root_uri, ibd_artifact_mode)?;
     let (response, mut meta) = build_sysml_visualization_from_artifacts(
         &state.semantic_graph,
         &viz_docs,

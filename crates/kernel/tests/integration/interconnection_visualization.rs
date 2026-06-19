@@ -118,5 +118,27 @@ fn lsp_interconnection_visualization_returns_slim_scene_only_payload_for_drone()
         "slim interconnection payload should omit ibd when interconnectionScene is present, got: {ibd:?}"
     );
 
+    let graph = result.get("graph");
+    assert!(
+        graph.is_none() || graph.is_some_and(|value| value.is_null()),
+        "slim interconnection payload should omit graph when interconnectionScene is present, got: {graph:?}"
+    );
+    let general_view_graph = result.get("generalViewGraph");
+    assert!(
+        general_view_graph.is_none() || general_view_graph.is_some_and(|value| value.is_null()),
+        "slim interconnection payload should omit generalViewGraph when interconnectionScene is present, got: {general_view_graph:?}"
+    );
+
+    const MAX_DRONE_SLIM_INTERCONNECTION_BYTES: usize = 45_000;
+    let response_bytes = visualization_capture.raw.len();
+    assert!(
+        response_bytes <= MAX_DRONE_SLIM_INTERCONNECTION_BYTES,
+        "slim interconnection payload should stay under {MAX_DRONE_SLIM_INTERCONNECTION_BYTES} bytes on drone, got {response_bytes}"
+    );
+    assert!(
+        result.get("viewCandidates").is_some(),
+        "slim interconnection payload should retain viewCandidates for the webview selector"
+    );
+
     let _ = child.kill();
 }

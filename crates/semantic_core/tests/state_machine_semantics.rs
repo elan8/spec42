@@ -157,6 +157,41 @@ fn terminate_state_kind_is_distinct_from_final() {
 }
 
 #[test]
+fn exhibit_state_usage_does_not_duplicate_state_machine_selector_roots() {
+    let content = r#"package ExhibitDemo {
+    state def ModeMachine {
+        state idle;
+        state active;
+        transition first idle then active;
+    }
+    part def Device {
+        exhibit state deviceMode : ModeMachine {
+            state idle;
+            state active;
+            transition first idle then active;
+        }
+    }
+}"#;
+    let doc = workspace_doc("exhibit-state.sysml", content);
+    let uri = doc.uri.clone();
+    let (graph, _) = build_semantic_graph_from_documents(&[doc]).expect("graph");
+    let machines = finalize_state_machines_for_response(build_workspace_state_machines(
+        &graph,
+        &[uri],
+    ));
+    assert_eq!(
+        machines.len(),
+        1,
+        "expected one state-machine root (state def only), got: {:?}",
+        machines
+            .iter()
+            .map(|machine| (&machine.name, &machine.id))
+            .collect::<Vec<_>>()
+    );
+    assert_eq!(machines[0].name, "ModeMachine");
+}
+
+#[test]
 fn finalized_state_machines_include_selector_labels() {
     let content = include_str!("fixtures/parser_wave/final-state.sysml");
     let doc = workspace_doc("final-state.sysml", content);

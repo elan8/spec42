@@ -15,6 +15,7 @@ pub(crate) struct VisualizationCacheKey {
 pub(crate) struct WorkspaceVizArtifactEntry {
     pub semantic_state_version: u64,
     pub workspace_root_uri: Url,
+    pub ibd_artifact_mode: semantic_core::IbdArtifactMode,
     pub artifacts: WorkspaceVisualizationArtifacts,
 }
 

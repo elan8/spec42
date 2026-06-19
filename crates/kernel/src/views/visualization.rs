@@ -153,8 +153,11 @@ pub(crate) fn build_sysml_visualization_response(
         general_view_graph: Some(empty_graph),
         workspace_model: None,
         activity_diagrams: None,
+        activity_diagram_candidates: None,
         sequence_diagrams: None,
+        sequence_diagram_candidates: None,
         state_machines: None,
+        state_machine_candidates: None,
         ibd: None,
         interconnection_scene: None,
         stats: Some(SysmlModelStatsDto {

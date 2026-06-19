@@ -5,6 +5,9 @@
 use crate::semantic::extracted_model::{
     ActivityDiagramDto, SequenceDiagramDto, StateMachineDto,
 };
+use crate::semantic::dto::{
+    ActivityDiagramCandidateDto, SequenceDiagramCandidateDto, StateMachineCandidateDto,
+};
 
 /// Selector label shown in view pickers: `name - packagePath`.
 pub fn build_selector_label(name: &str, package_path: &str) -> String {
@@ -193,6 +196,67 @@ pub fn finalize_sequence_diagrams_for_response(
             })
     });
     diagrams
+}
+
+pub fn finalize_activity_diagram_candidates_for_response(
+    diagrams: &[ActivityDiagramDto],
+) -> Vec<ActivityDiagramCandidateDto> {
+    diagrams
+        .iter()
+        .map(|diagram| ActivityDiagramCandidateDto {
+            id: diagram.id.clone(),
+            name: diagram.name.clone(),
+            label: if diagram.label.is_empty() {
+                build_selector_label(&diagram.name, &diagram.package_path)
+            } else {
+                diagram.label.clone()
+            },
+            package_path: diagram.package_path.clone(),
+            source_kind: diagram.source_kind.clone(),
+            node_count: activity_node_count(diagram) as u32,
+            flow_count: diagram.flows.len() as u32,
+        })
+        .collect()
+}
+
+pub fn finalize_state_machine_candidates_for_response(
+    machines: &[StateMachineDto],
+) -> Vec<StateMachineCandidateDto> {
+    machines
+        .iter()
+        .map(|machine| StateMachineCandidateDto {
+            id: machine.id.clone(),
+            name: machine.name.clone(),
+            label: if machine.label.is_empty() {
+                build_selector_label(&machine.name, &machine.package_path)
+            } else {
+                machine.label.clone()
+            },
+            package_path: machine.package_path.clone(),
+            state_count: machine.states.len() as u32,
+            transition_count: machine.transitions.len() as u32,
+        })
+        .collect()
+}
+
+pub fn finalize_sequence_diagram_candidates_for_response(
+    diagrams: &[SequenceDiagramDto],
+) -> Vec<SequenceDiagramCandidateDto> {
+    diagrams
+        .iter()
+        .map(|diagram| SequenceDiagramCandidateDto {
+            id: diagram.id.clone(),
+            name: diagram.name.clone(),
+            label: if diagram.label.is_empty() {
+                build_selector_label(&diagram.name, &diagram.package_path)
+            } else {
+                diagram.label.clone()
+            },
+            package_path: diagram.package_path.clone(),
+            message_count: diagram.messages.len() as u32,
+            lifeline_count: diagram.lifelines.len() as u32,
+        })
+        .collect()
 }
 
 /// Log when behavior views would have relied on the TypeScript AST fallback.

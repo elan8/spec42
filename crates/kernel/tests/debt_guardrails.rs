@@ -53,7 +53,7 @@ fn frontend_normalize_payload_line_count_does_not_increase() {
         .expect("repo root");
     let normalize_path = repo_root.join("shared/diagram-renderer/src/prepare/normalize-payload.ts");
     let contents = fs::read_to_string(normalize_path).expect("normalize-payload.ts");
-    const MAX_NORMALIZE_PAYLOAD_LINES: usize = 150;
+    const MAX_NORMALIZE_PAYLOAD_LINES: usize = 100;
     let line_count = contents.lines().count();
     assert!(
         line_count <= MAX_NORMALIZE_PAYLOAD_LINES,

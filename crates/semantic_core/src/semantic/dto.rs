@@ -148,6 +148,40 @@ pub struct SysmlVisualizationGroupDto {
 
 #[derive(Debug, Clone, Serialize)]
 #[serde(rename_all = "camelCase")]
+pub struct ActivityDiagramCandidateDto {
+    pub id: String,
+    pub name: String,
+    pub label: String,
+    pub package_path: String,
+    pub source_kind: String,
+    pub node_count: u32,
+    pub flow_count: u32,
+}
+
+#[derive(Debug, Clone, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct StateMachineCandidateDto {
+    pub id: String,
+    pub name: String,
+    pub label: String,
+    pub package_path: String,
+    pub state_count: u32,
+    pub transition_count: u32,
+}
+
+#[derive(Debug, Clone, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct SequenceDiagramCandidateDto {
+    pub id: String,
+    pub name: String,
+    pub label: String,
+    pub package_path: String,
+    pub message_count: u32,
+    pub lifeline_count: u32,
+}
+
+#[derive(Debug, Clone, Serialize)]
+#[serde(rename_all = "camelCase")]
 pub struct SysmlVisualizationProjectionHintsDto {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub grid_layout: Option<String>,
@@ -190,9 +224,15 @@ pub struct SysmlVisualizationResultDto {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub activity_diagrams: Option<Vec<ActivityDiagramDto>>,
     #[serde(skip_serializing_if = "Option::is_none")]
+    pub activity_diagram_candidates: Option<Vec<ActivityDiagramCandidateDto>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub sequence_diagrams: Option<Vec<SequenceDiagramDto>>,
     #[serde(skip_serializing_if = "Option::is_none")]
+    pub sequence_diagram_candidates: Option<Vec<SequenceDiagramCandidateDto>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub state_machines: Option<Vec<StateMachineDto>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub state_machine_candidates: Option<Vec<StateMachineCandidateDto>>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub ibd: Option<IbdDataDto>,
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -231,8 +271,11 @@ pub fn visualization_model_not_ready(
         general_view_graph: Some(empty_graph),
         workspace_model: None,
         activity_diagrams: None,
+        activity_diagram_candidates: None,
         sequence_diagrams: None,
+        sequence_diagram_candidates: None,
         state_machines: None,
+        state_machine_candidates: None,
         ibd: None,
         interconnection_scene: None,
         stats: None,
