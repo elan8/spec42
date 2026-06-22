@@ -3,7 +3,6 @@ name = "spec42"
 version = "0.32.0"
 edition = "2021"
 description = "Language server for SysML v2 (LSP over stdio)"
-build = "build.rs"
 
 [[bin]]
 name = "spec42"
@@ -19,17 +18,11 @@ path = "src/lib.rs"
 
 [features]
 default = ["embed-stdlib", "embed-domain-libraries"]
-embed-stdlib = []
-embed-domain-libraries = []
-
-[build-dependencies]
-serde = { workspace = true }
-serde_json = { workspace = true }
-sha2 = "0.10"
-zip = { version = "2", default-features = false, features = ["deflate"] }
-kpar = { path = "../kpar" }
+embed-stdlib = ["spec42_host/embed-stdlib"]
+embed-domain-libraries = ["spec42_host/embed-domain-libraries"]
 
 [dependencies]
+spec42_host = { path = "../spec42_host", default-features = false }
 kernel = { path = "../kernel" }
 semantic_core = { path = "../semantic_core" }
 kpar = { path = "../kpar" }

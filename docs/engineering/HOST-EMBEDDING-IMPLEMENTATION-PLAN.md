@@ -4,7 +4,7 @@
 
 | Field | Value |
 | --- | --- |
-| **Status** | Proposed |
+| **Status** | In progress (Phase 1 complete) |
 | **Date** | 2026-06-22 |
 | **Audience** | Spec42 maintainers, embedding host integrators |
 | **Source** | External embedding integration spike and downstream host requirements |
@@ -82,7 +82,7 @@ let prepared = snapshot.prepare_view(renderer_view, selected_view)?;
 
 ## Implementation phases
 
-### Phase 1 — `spec42_host` foundation and library catalog
+### Phase 1 — `spec42_host` foundation and library catalog (complete)
 
 **Objective:** replace `Cli`-shaped environment resolution with an explicit, host-neutral library catalog and engine builder.
 
@@ -314,12 +314,15 @@ Phases 1 and 2 are the critical path for host embedding MVP. Phase 3 should star
 
 ## Documentation follow-ups
 
-When Phase 1 is accepted:
+Phase 1 complete:
 
-1. Update ADR [0003](../adr/0003-spec42-host-embedding-crate.md) status from Proposed to Accepted.
-2. Update [SEMANTIC_CORE_ARCHITECTURE.md](../architecture/SEMANTIC_CORE_ARCHITECTURE.md) consumer boundaries.
-3. Update [DEVELOPMENT.md](../../DEVELOPMENT.md) workspace layout.
-4. Add `crates/spec42_host/README.md` with concurrency and cache contracts.
+1. ADR [0003](../adr/0003-spec42-host-embedding-crate.md) accepted.
+2. [DEVELOPMENT.md](../../DEVELOPMENT.md) workspace layout updated.
+3. `crates/spec42_host/README.md` documents cache and concurrency contracts.
+
+Remaining for Phase 2:
+
+1. Update [SEMANTIC_CORE_ARCHITECTURE.md](../architecture/SEMANTIC_CORE_ARCHITECTURE.md) consumer boundaries for `spec42_host` snapshots.
 
 ## Related documents
 

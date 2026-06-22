@@ -1975,7 +1975,7 @@ dependencies = [
  "serde",
  "serde_json",
  "serde_yaml",
- "sha2",
+ "spec42_host",
  "sysml-v2-parser",
  "tempfile",
  "tokio",
@@ -1984,6 +1984,21 @@ dependencies = [
  "tower-http",
  "tower-lsp",
  "url",
+ "zip",
+]
+
+[[package]]
+name = "spec42_host"
+version = "0.32.0"
+dependencies = [
+ "directories",
+ "kpar",
+ "serde",
+ "serde_json",
+ "sha2",
+ "tempfile",
+ "thiserror 2.0.18",
+ "toml",
  "zip",
 ]
 

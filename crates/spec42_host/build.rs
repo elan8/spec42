@@ -64,7 +64,7 @@ fn embed_stdlib() {
     let embed_enabled = std::env::var("CARGO_FEATURE_EMBED_STDLIB").is_ok();
     if !embed_enabled {
         fs::write(&out_zip, []).unwrap_or_else(|e| {
-            eprintln!("spec42 build: failed to write empty stub zip: {e}");
+            eprintln!("spec42_host build: failed to write empty stub zip: {e}");
             process::exit(1);
         });
         return;
@@ -73,7 +73,7 @@ fn embed_stdlib() {
     let Some(kpar_dir) = resolve_stdlib_kpar_dir(&config.version) else {
         if out_zip.exists() && embedded_stdlib_archive_is_usable(&out_zip) {
             eprintln!(
-                "spec42 build: reusing cached embedded stdlib archive at {}",
+                "spec42_host build: reusing cached embedded stdlib archive at {}",
                 out_zip.display()
             );
             return;
@@ -81,32 +81,32 @@ fn embed_stdlib() {
         if let Some(cached_embedded_zip) = find_cached_embedded_zip(&out_zip) {
             fs::copy(&cached_embedded_zip, &out_zip).unwrap_or_else(|e| {
                 eprintln!(
-                    "spec42 build: failed to reuse cached embedded stdlib archive {}: {e}",
+                    "spec42_host build: failed to reuse cached embedded stdlib archive {}: {e}",
                     cached_embedded_zip.display()
                 );
                 process::exit(1);
             });
             eprintln!(
-                "spec42 build: reused cached embedded stdlib archive from {}",
+                "spec42_host build: reused cached embedded stdlib archive from {}",
                 cached_embedded_zip.display()
             );
             return;
         }
 
         eprintln!(
-            "spec42 build: embedded stdlib requires local KPAR archives for {}.",
+            "spec42_host build: embedded stdlib requires local KPAR archives for {}.",
             config.version
         );
         eprintln!(
-            "spec42 build: set SPEC42_STDLIB_KPAR_DIR or place .kpar files at .cache/sysml-stdlib-kpar-{}/.",
+            "spec42_host build: set SPEC42_STDLIB_KPAR_DIR or place .kpar files at .cache/sysml-stdlib-kpar-{}/.",
             config.version
         );
-        eprintln!("spec42 build: run scripts/fetch-stdlib-bundle.sh");
+        eprintln!("spec42_host build: run scripts/fetch-stdlib-bundle.sh");
         process::exit(1);
     };
 
     embed_stdlib_from_kpar_dir(&kpar_dir, &out_zip).unwrap_or_else(|e| {
-        eprintln!("spec42 build: failed to embed standard library KPAR: {e}");
+        eprintln!("spec42_host build: failed to embed standard library KPAR: {e}");
         process::exit(1);
     });
 
@@ -144,7 +144,7 @@ fn embed_domain_libraries() {
     let embed_enabled = std::env::var("CARGO_FEATURE_EMBED_DOMAIN_LIBRARIES").is_ok();
     if !embed_enabled {
         fs::write(&out_kpar, []).unwrap_or_else(|e| {
-            eprintln!("spec42 build: failed to write empty domain libraries stub: {e}");
+            eprintln!("spec42_host build: failed to write empty domain libraries stub: {e}");
             process::exit(1);
         });
         return;
@@ -152,7 +152,7 @@ fn embed_domain_libraries() {
 
     if out_kpar.exists() && domain_embedded_kpar_is_usable(&out_kpar) {
         eprintln!(
-            "spec42 build: reusing cached embedded domain libraries KPAR at {}",
+            "spec42_host build: reusing cached embedded domain libraries KPAR at {}",
             out_kpar.display()
         );
         return;
@@ -160,7 +160,7 @@ fn embed_domain_libraries() {
 
     if let Some(source_dir) = resolve_domain_libraries_source_dir() {
         pack_domain_kpar_from_dir(&source_dir, &config, &out_kpar).unwrap_or_else(|e| {
-            eprintln!("spec42 build: failed to pack domain libraries from directory: {e}");
+            eprintln!("spec42_host build: failed to pack domain libraries from directory: {e}");
             process::exit(1);
         });
         return;
@@ -171,11 +171,11 @@ fn embed_domain_libraries() {
     let sibling = manifest_dir.join("../../../sysml-domain-libraries");
     if sibling.is_dir() {
         pack_domain_kpar_from_dir(&sibling, &config, &out_kpar).unwrap_or_else(|e| {
-            eprintln!("spec42 build: failed to pack domain libraries from sibling checkout: {e}");
+            eprintln!("spec42_host build: failed to pack domain libraries from sibling checkout: {e}");
             process::exit(1);
         });
         eprintln!(
-            "spec42 build: packed domain libraries KPAR from sibling checkout {}",
+            "spec42_host build: packed domain libraries KPAR from sibling checkout {}",
             sibling.display()
         );
         return;
@@ -185,32 +185,32 @@ fn embed_domain_libraries() {
         if let Some(cached) = find_cached_domain_embedded_kpar(&out_kpar) {
             fs::copy(&cached, &out_kpar).unwrap_or_else(|e| {
                 eprintln!(
-                    "spec42 build: failed to reuse cached embedded domain KPAR {}: {e}",
+                    "spec42_host build: failed to reuse cached embedded domain KPAR {}: {e}",
                     cached.display()
                 );
                 process::exit(1);
             });
             eprintln!(
-                "spec42 build: reused cached embedded domain KPAR from {}",
+                "spec42_host build: reused cached embedded domain KPAR from {}",
                 cached.display()
             );
             return;
         }
 
         eprintln!(
-            "spec42 build: embedded domain libraries require a local KPAR bundle for {}.",
+            "spec42_host build: embedded domain libraries require a local KPAR bundle for {}.",
             config.version
         );
         eprintln!(
-            "spec42 build: set SPEC42_DOMAIN_LIBRARIES_BUNDLE_ZIP, SPEC42_DOMAIN_LIBRARIES_SOURCE_DIR, or place a bundle at .cache/{cache_name}."
+            "spec42_host build: set SPEC42_DOMAIN_LIBRARIES_BUNDLE_ZIP, SPEC42_DOMAIN_LIBRARIES_SOURCE_DIR, or place a bundle at .cache/{cache_name}."
         );
-        eprintln!("spec42 build: run scripts/fetch-domain-libraries-bundle.sh");
+        eprintln!("spec42_host build: run scripts/fetch-domain-libraries-bundle.sh");
         process::exit(1);
     };
 
     if local_bundle.extension().is_none_or(|ext| ext != "kpar") {
         eprintln!(
-            "spec42 build: expected a .kpar bundle at {}",
+            "spec42_host build: expected a .kpar bundle at {}",
             local_bundle.display()
         );
         process::exit(1);
@@ -218,7 +218,7 @@ fn embed_domain_libraries() {
 
     fs::copy(&local_bundle, &out_kpar).unwrap_or_else(|e| {
         eprintln!(
-            "spec42 build: failed to copy domain KPAR {}: {e}",
+            "spec42_host build: failed to copy domain KPAR {}: {e}",
             local_bundle.display()
         );
         process::exit(1);
@@ -267,14 +267,14 @@ fn load_config(relative: &str) -> LibraryBundleConfig {
     println!("cargo:rerun-if-changed={}", config_path.display());
     let raw = fs::read_to_string(&config_path).unwrap_or_else(|e| {
         eprintln!(
-            "spec42 build: failed to read {}: {e}",
+            "spec42_host build: failed to read {}: {e}",
             config_path.display()
         );
         process::exit(1);
     });
     serde_json::from_str(&raw).unwrap_or_else(|e| {
         eprintln!(
-            "spec42 build: failed to parse {}: {e}",
+            "spec42_host build: failed to parse {}: {e}",
             config_path.display()
         );
         process::exit(1);

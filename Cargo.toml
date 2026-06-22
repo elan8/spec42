@@ -7,6 +7,7 @@ members = [
   "crates/kpar",
   "crates/server",
   "crates/semantic_core",
+  "crates/spec42_host",
   "crates/sysml_semantic_tokens",
 ]
 

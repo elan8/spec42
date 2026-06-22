@@ -6,19 +6,21 @@ use serde::{Deserialize, Serialize};
 
 use crate::cli::Cli;
 use crate::domain_libraries::{
-    domain_libraries_paths_from_data_dir, install_embedded_domain_libraries,
-    load_managed_metadata as load_domain_libraries_metadata,
-    managed_install_path as domain_managed_install_path, managed_status as domain_managed_status,
+    domain_libraries_paths_from_data_dir, managed_status as domain_managed_status,
     DomainLibrariesConfig, DomainLibrariesPaths, DomainLibrariesStatus,
-    EMBEDDED_DOMAIN_LIBRARIES_ARCHIVE, EMBEDDED_DOMAIN_LIBRARIES_REPO,
 };
 use crate::stdlib::{
-    install_embedded_standard_library, legacy_vscode_stdlib_path, load_managed_metadata,
-    managed_status, project_dirs, standard_library_paths_from_data_dir, stdlib_library_roots,
-    StandardLibraryConfig, StandardLibraryPaths, StandardLibraryStatus, EMBEDDED_STDLIB_ARCHIVE,
-    EMBEDDED_STDLIB_REPO,
+    managed_status, project_dirs, StandardLibraryConfig,
+    StandardLibraryPaths, StandardLibraryStatus,
 };
 use crate::sysand::{dependency_roots_from_status, detect_sysand_status, SysandStatus};
+use spec42_host::{
+    catalog::{
+        resolve_domain_libraries_component_for_test, resolve_stdlib_component_for_test,
+        HostLibraryRequest,
+    },
+    EngineBuilder,
+};
 
 #[derive(Debug, Clone, Deserialize, Default)]
 pub struct ConfigFile {
@@ -94,11 +96,7 @@ fn resolve_environment_with_dirs(
     config_dir: PathBuf,
     data_dir: PathBuf,
 ) -> Result<ResolvedEnvironment, String> {
-    let project_dirs = project_dirs()?;
-    let _ = project_dirs;
-    let standard_library_paths = standard_library_paths_from_data_dir(data_dir.clone());
-    let domain_libraries_paths = domain_libraries_paths_from_data_dir(data_dir.clone());
-
+    let _project_dirs = project_dirs()?;
     let explicit_config_path = cli
         .config_path
         .as_ref()
@@ -126,43 +124,39 @@ fn resolve_environment_with_dirs(
 
     let standard_library = resolve_standard_library_config(cli, &explicit_config, &default_config);
     let domain_libraries = resolve_domain_libraries_config(cli, &explicit_config, &default_config);
-    let stdlib_resolution = resolve_stdlib_path(
-        cli,
-        &explicit_config,
-        &default_config,
-        &standard_library,
-        &standard_library_paths,
-    )?;
-    let domain_libraries_resolution =
-        resolve_domain_libraries_path(cli, &domain_libraries, &domain_libraries_paths)?;
 
     let sysand = detect_sysand_status();
     let sysand_dependency_roots = dependency_roots_from_status(&sysand);
-    let library_paths = resolve_library_paths(
+    let request = build_host_library_request(
         cli,
         &explicit_config,
         &default_config,
+        data_dir.clone(),
         &sysand_dependency_roots,
-        &stdlib_resolution.roots,
-        domain_libraries_resolution.path.as_ref(),
-    );
+        standard_library.clone(),
+        domain_libraries.clone(),
+    )?;
+    let engine = EngineBuilder::from_request(request)
+        .build()
+        .map_err(|error| error.to_string())?;
+    let catalog = engine.library_catalog();
 
     Ok(ResolvedEnvironment {
         config_file_used,
         config_dir,
         data_dir,
-        library_paths,
-        stdlib_path: stdlib_resolution.path,
-        stdlib_roots: stdlib_resolution.roots,
-        stdlib_source: stdlib_resolution.source,
-        used_legacy_vscode_fallback: stdlib_resolution.used_legacy_vscode_fallback,
-        domain_libraries_path: domain_libraries_resolution.path,
-        domain_libraries_source: domain_libraries_resolution.source,
+        library_paths: catalog.package_roots.clone(),
+        stdlib_path: catalog.stdlib.path.clone(),
+        stdlib_roots: catalog.stdlib.roots.clone(),
+        stdlib_source: catalog.stdlib.source.clone(),
+        used_legacy_vscode_fallback: catalog.stdlib.used_legacy_vscode_fallback,
+        domain_libraries_path: catalog.domain_libraries.path.clone(),
+        domain_libraries_source: catalog.domain_libraries.source.clone(),
         sysand,
         standard_library,
-        standard_library_paths,
+        standard_library_paths: catalog.standard_library_paths.clone(),
         domain_libraries,
-        domain_libraries_paths,
+        domain_libraries_paths: catalog.domain_libraries_paths.clone(),
     })
 }
 
@@ -318,6 +312,51 @@ fn resolve_standard_library_config(
     config
 }
 
+fn build_host_library_request(
+    cli: &Cli,
+    explicit_config: &ConfigFile,
+    default_config: &ConfigFile,
+    cache_dir: PathBuf,
+    sysand_dependency_roots: &[PathBuf],
+    standard_library: StandardLibraryConfig,
+    domain_libraries: DomainLibrariesConfig,
+) -> Result<HostLibraryRequest, String> {
+    let library_paths = resolve_explicit_library_paths(cli, explicit_config, default_config);
+    let config_stdlib_path = explicit_config
+        .stdlib_path
+        .as_ref()
+        .or(default_config.stdlib_path.as_ref())
+        .map(|path| canonicalize_lossy(Path::new(path)));
+    let config_no_stdlib = explicit_config.no_stdlib.unwrap_or(false)
+        || default_config.no_stdlib.unwrap_or(false);
+
+    let use_embedded_stdlib = cfg!(feature = "embed-stdlib");
+    let use_embedded_domain_libraries = cfg!(feature = "embed-domain-libraries");
+
+    Ok(HostLibraryRequest {
+        cache_dir,
+        no_stdlib: cli.no_stdlib,
+        stdlib_path_override: cli.stdlib_path.clone(),
+        domain_libraries_path_override: cli.domain_libraries_path.clone(),
+        library_paths,
+        standard_library,
+        domain_libraries,
+        use_embedded_stdlib,
+        use_embedded_domain_libraries,
+        config_stdlib_path,
+        config_no_stdlib,
+        extra_library_paths: sysand_dependency_roots.to_vec(),
+    })
+}
+
+fn resolve_explicit_library_paths(
+    cli: &Cli,
+    explicit_config: &ConfigFile,
+    default_config: &ConfigFile,
+) -> Vec<PathBuf> {
+    resolve_library_paths(cli, explicit_config, default_config, &[], &[], None)
+}
+
 fn resolve_library_paths(
     cli: &Cli,
     explicit_config: &ConfigFile,
@@ -372,53 +411,25 @@ fn resolve_domain_libraries_path(
     domain_libraries: &DomainLibrariesConfig,
     domain_libraries_paths: &DomainLibrariesPaths,
 ) -> Result<DomainLibrariesResolution, String> {
-    if let Some(path) = cli.domain_libraries_path.as_ref() {
-        return Ok(DomainLibrariesResolution {
-            path: Some(canonicalize_lossy(path)),
-            source: Some("flag".to_string()),
-        });
-    }
-    if let Some(value) = std::env::var_os("SPEC42_DOMAIN_LIBRARIES_PATH") {
-        return Ok(DomainLibrariesResolution {
-            path: Some(canonicalize_lossy(&PathBuf::from(value))),
-            source: Some("env".to_string()),
-        });
-    }
-
-    if let Some(metadata) = load_domain_libraries_metadata(domain_libraries_paths)? {
-        let managed_path = PathBuf::from(&metadata.install_path);
-        let expected_path = domain_managed_install_path(domain_libraries_paths, domain_libraries);
-        let metadata_is_current = metadata.installed_version == domain_libraries.version
-            && canonicalize_lossy(&managed_path) == canonicalize_lossy(&expected_path);
-        if metadata_is_current && crate::stdlib::install_path_is_ready(&managed_path) {
-            let source = if metadata.repo == EMBEDDED_DOMAIN_LIBRARIES_REPO {
-                "bundled".to_string()
-            } else {
-                "managed".to_string()
-            };
-            return Ok(DomainLibrariesResolution {
-                path: Some(managed_path),
-                source: Some(source),
-            });
-        }
-    }
-
-    #[allow(clippy::const_is_empty)]
-    if !EMBEDDED_DOMAIN_LIBRARIES_ARCHIVE.is_empty() {
-        return match install_embedded_domain_libraries(domain_libraries_paths, domain_libraries) {
-            Ok(metadata) => Ok(DomainLibrariesResolution {
-                path: Some(PathBuf::from(metadata.install_path)),
-                source: Some("bundled".to_string()),
-            }),
-            Err(e) => Err(format!(
-                "Failed to materialize embedded domain libraries: {e}"
-            )),
-        };
-    }
-
+    let request = HostLibraryRequest {
+        cache_dir: domain_libraries_paths.managed_root.clone(),
+        no_stdlib: true,
+        stdlib_path_override: None,
+        domain_libraries_path_override: cli.domain_libraries_path.clone(),
+        library_paths: Vec::new(),
+        standard_library: StandardLibraryConfig::default(),
+        domain_libraries: domain_libraries.clone(),
+        use_embedded_stdlib: false,
+        use_embedded_domain_libraries: cfg!(feature = "embed-domain-libraries"),
+        config_stdlib_path: None,
+        config_no_stdlib: true,
+        extra_library_paths: Vec::new(),
+    };
+    let component = resolve_domain_libraries_component_for_test(&request, domain_libraries_paths)
+        .map_err(|error| error.to_string())?;
     Ok(DomainLibrariesResolution {
-        path: None,
-        source: None,
+        path: component.path,
+        source: component.source,
     })
 }
 
@@ -444,126 +455,35 @@ fn resolve_stdlib_path(
     standard_library: &StandardLibraryConfig,
     standard_library_paths: &StandardLibraryPaths,
 ) -> Result<StdlibResolution, String> {
-    let no_stdlib = cli.no_stdlib
-        || std::env::var("SPEC42_NO_STDLIB")
-            .map(|value| matches!(value.trim(), "1" | "true" | "yes" | "on"))
-            .unwrap_or(false)
-        || explicit_config.no_stdlib.unwrap_or(false)
+    let config_stdlib_path = explicit_config
+        .stdlib_path
+        .as_ref()
+        .or(default_config.stdlib_path.as_ref())
+        .map(|path| canonicalize_lossy(Path::new(path)));
+    let config_no_stdlib = explicit_config.no_stdlib.unwrap_or(false)
         || default_config.no_stdlib.unwrap_or(false);
-    if no_stdlib {
-        return Ok(StdlibResolution {
-            path: None,
-            roots: Vec::new(),
-            source: Some("disabled".to_string()),
-            used_legacy_vscode_fallback: false,
-        });
-    }
-
-    if let Some(path) = cli.stdlib_path.as_ref() {
-        let path = canonicalize_lossy(path);
-        return Ok(StdlibResolution {
-            roots: stdlib_resolution_roots(&path, None),
-            path: Some(path),
-            source: Some("flag".to_string()),
-            used_legacy_vscode_fallback: false,
-        });
-    }
-    if let Some(value) = std::env::var_os("SPEC42_STDLIB_PATH") {
-        let path = canonicalize_lossy(&PathBuf::from(value));
-        return Ok(StdlibResolution {
-            roots: stdlib_resolution_roots(&path, None),
-            path: Some(path),
-            source: Some("env".to_string()),
-            used_legacy_vscode_fallback: false,
-        });
-    }
-    if let Some(path) = explicit_config.stdlib_path.as_ref() {
-        let path = canonicalize_lossy(&PathBuf::from(path));
-        return Ok(StdlibResolution {
-            roots: stdlib_resolution_roots(&path, None),
-            path: Some(path),
-            source: Some("config".to_string()),
-            used_legacy_vscode_fallback: false,
-        });
-    }
-    if let Some(path) = default_config.stdlib_path.as_ref() {
-        let path = canonicalize_lossy(&PathBuf::from(path));
-        return Ok(StdlibResolution {
-            roots: stdlib_resolution_roots(&path, None),
-            path: Some(path),
-            source: Some("user-config".to_string()),
-            used_legacy_vscode_fallback: false,
-        });
-    }
-
-    if let Some(metadata) = load_managed_metadata(standard_library_paths)? {
-        let managed_path = PathBuf::from(&metadata.install_path);
-        let expected_path =
-            crate::stdlib::managed_install_path(standard_library_paths, standard_library);
-        let metadata_is_current = metadata.installed_version == standard_library.version
-            && canonicalize_lossy(&managed_path) == canonicalize_lossy(&expected_path);
-        if metadata_is_current && crate::stdlib::install_path_is_ready(&managed_path) {
-            let source = if metadata.repo == EMBEDDED_STDLIB_REPO {
-                "bundled".to_string()
-            } else {
-                "managed".to_string()
-            };
-            return Ok(StdlibResolution {
-                roots: stdlib_resolution_roots(&managed_path, Some(&metadata)),
-                path: Some(managed_path),
-                source: Some(source),
-                used_legacy_vscode_fallback: false,
-            });
-        }
-    }
-
-    // Prefer materializing the embedded release into the spec42 data dir over the legacy
-    // VS Code extension install location, so resolution matches the bundled workflow.
-    #[allow(clippy::const_is_empty)]
-    if !EMBEDDED_STDLIB_ARCHIVE.is_empty() {
-        return match install_embedded_standard_library(standard_library_paths, standard_library) {
-            Ok(metadata) => {
-                let path = PathBuf::from(&metadata.install_path);
-                Ok(StdlibResolution {
-                    roots: stdlib_resolution_roots(&path, Some(&metadata)),
-                    path: Some(path),
-                    source: Some("bundled".to_string()),
-                    used_legacy_vscode_fallback: false,
-                })
-            }
-            Err(e) => Err(format!(
-                "Failed to materialize embedded SysML standard library: {e}"
-            )),
-        };
-    }
-
-    if let Some(path) = legacy_vscode_stdlib_path(standard_library) {
-        return Ok(StdlibResolution {
-            roots: stdlib_resolution_roots(&path, None),
-            path: Some(path),
-            source: Some("legacy-vscode".to_string()),
-            used_legacy_vscode_fallback: true,
-        });
-    }
-
+    let request = HostLibraryRequest {
+        cache_dir: standard_library_paths.managed_root.clone(),
+        no_stdlib: cli.no_stdlib,
+        stdlib_path_override: cli.stdlib_path.clone(),
+        domain_libraries_path_override: None,
+        library_paths: Vec::new(),
+        standard_library: standard_library.clone(),
+        domain_libraries: DomainLibrariesConfig::default(),
+        use_embedded_stdlib: cfg!(feature = "embed-stdlib"),
+        use_embedded_domain_libraries: false,
+        config_stdlib_path,
+        config_no_stdlib,
+        extra_library_paths: Vec::new(),
+    };
+    let component = resolve_stdlib_component_for_test(&request, standard_library_paths)
+        .map_err(|error| error.to_string())?;
     Ok(StdlibResolution {
-        path: None,
-        roots: Vec::new(),
-        source: None,
-        used_legacy_vscode_fallback: false,
+        path: component.path,
+        roots: component.roots,
+        source: component.source,
+        used_legacy_vscode_fallback: component.used_legacy_vscode_fallback,
     })
-}
-
-fn stdlib_resolution_roots(
-    install_path: &Path,
-    metadata: Option<&crate::stdlib::StandardLibraryMetadata>,
-) -> Vec<PathBuf> {
-    let roots = stdlib_library_roots(install_path, metadata);
-    if roots.is_empty() {
-        vec![install_path.to_path_buf()]
-    } else {
-        roots
-    }
 }
 
 fn load_config_file_if_present(path: &Path) -> Result<ConfigFile, String> {

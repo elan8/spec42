@@ -6,7 +6,8 @@ Guidance for building, testing, and contributing to Spec42.
 
 Spec42 is a Rust workspace plus a VS Code extension.
 
-- `crates/server` (`spec42`) owns the CLI, LSP binary, MCP binary, read-only HTTP API, environment resolution, and standard-library materialization.
+- `crates/spec42_host` owns the host embedding API: library catalog resolution, engine builder, and immutable snapshot construction (Phase 2).
+- `crates/server` (`spec42`) owns the CLI, LSP binary, MCP binary, read-only HTTP API, and thin adapters over `spec42_host`.
 - `crates/kernel` owns the LSP/runtime host: document lifecycle, workspace orchestration, LSP handlers, validation wiring, DTO assembly, and host adapters.
 - `crates/language_service` owns protocol-neutral editor intelligence: navigation, completion, document outline/folding, workspace symbol search, rename, formatting, and neutral quick-fix edits. Hosts map its DTOs to LSP, HTTP, or Monaco contracts.
 - `crates/semantic_core` owns reusable semantic logic: graph construction, cross-document linking, resolution, evaluation, diagnostics, and graph-first visualization helpers.

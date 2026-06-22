@@ -1,0 +1,41 @@
+[package]
+name = "spec42_host"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
+description = "Protocol-neutral host embedding API for Spec42"
+build = "build.rs"
+
+[features]
+default = ["embed-stdlib", "embed-domain-libraries"]
+embed-stdlib = []
+embed-domain-libraries = []
+
+[build-dependencies]
+serde = { workspace = true }
+serde_json = { workspace = true }
+sha2 = "0.10"
+zip = { version = "2", default-features = false, features = ["deflate"] }
+kpar = { path = "../kpar" }
+
+[dependencies]
+kpar = { path = "../kpar" }
+serde = { workspace = true }
+serde_json = { workspace = true }
+thiserror = { workspace = true }
+sha2 = "0.10"
+toml = "0.8"
+zip = { version = "2", default-features = false, features = ["deflate"] }
+directories = "5"
+
+[dev-dependencies]
+tempfile = "3"
+
+[[test]]
+name = "dependency_guardrails"
+path = "tests/dependency_guardrails.rs"
+
+[[test]]
+name = "library_source_resolution"
+path = "tests/library_source_resolution.rs"
