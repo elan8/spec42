@@ -18,11 +18,52 @@ use walkdir::WalkDir;
 
 use crate::{
     EngineBuilder, HostContext, HostFilesystemProvider, HostPipelinePhase, HostWorkspaceSnapshot,
-    Spec42Engine, WorkspaceLoadRequest,
+    Spec42Engine, ValidationTiming, WorkspaceLoadRequest,
 };
 
 const SELECTED_VIEW: &str = "productStructure";
 const RENDERER_VIEW: &str = "general-view";
+
+/// Release-profile median ceilings for the view-first embedding path (deferred validation).
+#[derive(Debug, Clone, Copy)]
+pub struct PerfRegressionThresholds {
+    pub load_workspace_ms: u128,
+    pub prepare_view_ms: u128,
+    pub total_ms: u128,
+}
+
+pub fn release_perf_thresholds() -> PerfRegressionThresholds {
+    PerfRegressionThresholds {
+        load_workspace_ms: 3_000,
+        prepare_view_ms: 2_500,
+        total_ms: 5_500,
+    }
+}
+
+pub fn assert_release_perf_thresholds(phases: &HostPhaseTimings) {
+    if cfg!(debug_assertions) {
+        return;
+    }
+    let thresholds = release_perf_thresholds();
+    assert!(
+        phases.load_workspace_total_ms <= thresholds.load_workspace_ms,
+        "load_workspace {}ms exceeded ceiling {}ms",
+        phases.load_workspace_total_ms,
+        thresholds.load_workspace_ms
+    );
+    assert!(
+        phases.prepare_view_ms <= thresholds.prepare_view_ms,
+        "prepare_view {}ms exceeded ceiling {}ms",
+        phases.prepare_view_ms,
+        thresholds.prepare_view_ms
+    );
+    assert!(
+        phases.total_ms <= thresholds.total_ms,
+        "total {}ms exceeded ceiling {}ms",
+        phases.total_ms,
+        thresholds.total_ms
+    );
+}
 
 /// Performance scenario configuration.
 #[derive(Debug, Clone, Serialize)]
@@ -173,7 +214,6 @@ fn collect_fixture_summary(model_dir: &Path) -> FixtureSummary {
 }
 
 struct PhaseRecorder {
-    run_start: Instant,
     last_phase: Option<HostPipelinePhase>,
     last_at: Instant,
     durations: HashMap<String, u128>,
@@ -183,7 +223,6 @@ impl PhaseRecorder {
     fn new() -> Self {
         let now = Instant::now();
         Self {
-            run_start: now,
             last_phase: None,
             last_at: now,
             durations: HashMap::new(),
@@ -206,10 +245,6 @@ impl PhaseRecorder {
             *self.durations.entry(key).or_default() += self.last_at.elapsed().as_millis();
         }
         std::mem::take(&mut self.durations)
-    }
-
-    fn elapsed_ms(&self) -> u128 {
-        self.run_start.elapsed().as_millis()
     }
 }
 
@@ -245,7 +280,8 @@ fn load_snapshot_with_phases(
 ) -> (Arc<HostWorkspaceSnapshot>, HashMap<String, u128>, u128) {
     let provider = HostFilesystemProvider::from_paths(model_dir, Some(root), &[]);
     let request = WorkspaceLoadRequest::single_target(model_dir.to_path_buf())
-        .with_workspace_root(Some(root.to_path_buf()));
+        .with_workspace_root(Some(root.to_path_buf()))
+        .with_validation_timing(ValidationTiming::Deferred);
 
     let recorder = Arc::new(Mutex::new(PhaseRecorder::new()));
     let progress_recorder = Arc::clone(&recorder);

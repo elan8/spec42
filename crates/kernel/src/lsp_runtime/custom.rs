@@ -277,7 +277,7 @@ pub(crate) fn sysml_visualization_result(
         &view,
         selected_view.as_deref(),
         build_start,
-        semantic_core::interconnection_build_options(&view),
+        semantic_core::visualization_build_options(&view),
     )
     .map_err(|error| tower_lsp::jsonrpc::Error {
         code: tower_lsp::jsonrpc::ErrorCode::InternalError,

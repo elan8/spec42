@@ -20,7 +20,7 @@ pub use metadata::HostArtifactMetadata;
 pub use projection::{
     HostSemanticModelNode, HostSemanticModelRelationship, HostSemanticProjection,
 };
-pub use request::WorkspaceLoadRequest;
+pub use request::{ValidationTiming, WorkspaceLoadRequest};
 pub use update::update_workspace_snapshot;
 pub use validation::{
     HostValidatedDocument, HostValidationReport, HostValidationSummary,

@@ -165,9 +165,9 @@ pub fn empty_merged_ibd() -> IbdDataDto {
 }
 
 fn ibd_artifact_mode_for_options(view: &str, options: &VisualizationBuildOptions) -> IbdArtifactMode {
-    if options.slim_interconnection_payload
-        && options.ibd_build_scope == IbdBuildScope::ViewExposedPackages
-        && view == "interconnection-view"
+    if options.ibd_build_scope == IbdBuildScope::ViewExposedPackages
+        && ((options.slim_interconnection_payload && view == "interconnection-view")
+            || view == "general-view")
     {
         IbdArtifactMode::Deferred
     } else {
@@ -488,15 +488,25 @@ pub fn build_sysml_visualization_from_artifacts(
         .map(|node| node.id.clone())
         .collect();
     let mut interconnection_scope_trace: Option<IbdScopeTrace> = None;
-    let ibd_source = if options.ibd_build_scope == IbdBuildScope::ViewExposedPackages
-        && resolved_view == "interconnection-view"
-    {
-        if let Some(evaluated) = selected_evaluated {
+    let ibd_source = if options.ibd_build_scope == IbdBuildScope::ViewExposedPackages {
+        if resolved_view == "interconnection-view" {
+            if let Some(evaluated) = selected_evaluated {
+                let scoped_uris = workspace_uris_for_ibd_scope(
+                    workspace_uris,
+                    semantic_graph,
+                    IbdBuildScope::ViewExposedPackages,
+                    &evaluated.exposed_ids,
+                );
+                build_merged_workspace_ibd(semantic_graph, &scoped_uris)
+            } else {
+                full_ibd.clone()
+            }
+        } else if resolved_view == "general-view" {
             let scoped_uris = workspace_uris_for_ibd_scope(
                 workspace_uris,
                 semantic_graph,
                 IbdBuildScope::ViewExposedPackages,
-                &evaluated.exposed_ids,
+                &selected_ids,
             );
             build_merged_workspace_ibd(semantic_graph, &scoped_uris)
         } else {
@@ -695,6 +705,18 @@ pub fn interconnection_build_options(view: &str) -> VisualizationBuildOptions {
         }
     } else {
         VisualizationBuildOptions::default()
+    }
+}
+
+/// Visualization build options for a renderer view, including scoped IBD where supported.
+pub fn visualization_build_options(view: &str) -> VisualizationBuildOptions {
+    match view {
+        "interconnection-view" => interconnection_build_options(view),
+        "general-view" => VisualizationBuildOptions {
+            slim_interconnection_payload: false,
+            ibd_build_scope: IbdBuildScope::ViewExposedPackages,
+        },
+        _ => VisualizationBuildOptions::default(),
     }
 }
 

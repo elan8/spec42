@@ -41,6 +41,7 @@ fn benchmark_single_document_incremental_vs_full_rebuild() {
         targets: paths.clone(),
         workspace_root: Some(cache.path().to_path_buf()),
         strict_diagnostics: false,
+        validation_timing: Default::default(),
     };
 
     let previous = engine

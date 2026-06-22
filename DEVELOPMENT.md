@@ -298,6 +298,8 @@ target/profiling/examples/profile_robot_vacuum --embedded-libs
 
 CPU flamegraphs need `kernel.perf_event_paranoid <= 1` (see [ROBOT-VACUUM-PERFORMANCE-ANALYSIS.md](docs/engineering/ROBOT-VACUUM-PERFORMANCE-ANALYSIS.md)).
 
+The perf harness uses `ValidationTiming::Deferred` (view-first embedding). Release regression ceilings are enforced in `robot_vacuum_host_phase_performance_report` via `release_perf_thresholds()` (load ≤ 3 s, prepare ≤ 2.5 s, total ≤ 5.5 s). Use a **release** or **profiling** binary for IDE integration — debug builds are ~5.8× slower on the same path (see analysis doc).
+
 ### SysML v2 validation suite
 
 The full validation suite over the official SysML v2 Release is ignored by default and informational in CI. To run it locally:

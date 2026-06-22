@@ -110,6 +110,10 @@ name = "incremental_benchmark"
 path = "tests/incremental_benchmark.rs"
 
 [[test]]
+name = "deferred_validation"
+path = "tests/deferred_validation.rs"
+
+[[test]]
 name = "robot_vacuum_performance"
 path = "tests/robot_vacuum_performance.rs"
 

@@ -2,14 +2,16 @@
 
 use std::collections::BTreeMap;
 use std::path::{Path, PathBuf};
-use std::sync::Arc;
+use std::sync::{Arc, OnceLock};
 use std::time::Instant;
 
 use language_service::InMemoryWorkspace;
 use semantic_core::{
-    build_render_snapshot, build_semantic_graph_from_documents, build_sysml_visualization_workspace,
-    SemanticGraph, SysmlDocument, SysmlDocumentProvider, SysmlVisualizationResultDto,
-    WorkspaceParsedDocument, WorkspaceRenderSnapshot,
+    build_render_snapshot, build_semantic_graph_from_documents,
+    build_sysml_visualization_from_render_snapshot, empty_merged_ibd, full_ibd_for_render_snapshot,
+    visualization_build_options, IbdBuildScope, IbdDataDto, SemanticGraph, SysmlDocument,
+    SysmlDocumentProvider, SysmlVisualizationResultDto, WorkspaceParsedDocument,
+    WorkspaceRenderSnapshot,
 };
 use sha2::{Digest, Sha256};
 use url::Url;
@@ -25,7 +27,7 @@ use crate::snapshot::discovery::{discover_target_files, path_to_file_url, resolv
 use crate::snapshot::facts::{collect_host_validation_report, project_host_semantic_model};
 use crate::snapshot::metadata::HostArtifactMetadata;
 use crate::snapshot::projection::HostSemanticProjection;
-use crate::snapshot::request::WorkspaceLoadRequest;
+use crate::snapshot::request::{ValidationTiming, WorkspaceLoadRequest};
 use crate::snapshot::validation::HostValidationReport;
 use crate::Spec42Engine;
 
@@ -38,13 +40,17 @@ pub struct HostWorkspaceSnapshot {
     parsed_documents: Vec<WorkspaceParsedDocument>,
     language_workspace: InMemoryWorkspace,
     render_snapshot: WorkspaceRenderSnapshot,
-    validation_report: HostValidationReport,
+    validation_report: OnceLock<HostValidationReport>,
+    validation_target_files: Vec<PathBuf>,
+    strict_diagnostics: bool,
+    validation_timing: ValidationTiming,
     semantic_projection: HostSemanticProjection,
     library_urls: Vec<Url>,
     library_paths: Vec<PathBuf>,
     workspace_root: PathBuf,
     workspace_root_uri: Url,
     build_instant: Instant,
+    full_ibd_cache: OnceLock<IbdDataDto>,
 }
 
 impl HostWorkspaceSnapshot {
@@ -85,7 +91,34 @@ impl HostWorkspaceSnapshot {
     }
 
     pub fn validation(&self) -> &HostValidationReport {
-        &self.validation_report
+        self.validation_report
+            .get()
+            .unwrap_or(empty_validation_report())
+    }
+
+    pub fn validation_ready(&self) -> bool {
+        self.validation_report.get().is_some()
+    }
+
+    pub fn ensure_validation(&self) -> HostResult<&HostValidationReport> {
+        if let Some(report) = self.validation_report.get() {
+            return Ok(report);
+        }
+        let report = collect_host_validation_report(
+            &self.semantic_graph,
+            &self.documents,
+            &self.library_urls,
+            &self.validation_target_files,
+            Some(self.workspace_root.as_path()),
+            &self.library_paths,
+            self.strict_diagnostics,
+        )?;
+        let _ = self.validation_report.set(report);
+        Ok(self.validation_report.get().expect("validation initialized"))
+    }
+
+    pub fn validation_timing(&self) -> ValidationTiming {
+        self.validation_timing
     }
 
     pub fn semantic_projection(&self) -> &HostSemanticProjection {
@@ -105,14 +138,32 @@ impl HostWorkspaceSnapshot {
         view: &str,
         selected_view: Option<&str>,
     ) -> Result<SysmlVisualizationResultDto, Spec42HostError> {
-        build_sysml_visualization_workspace(
+        let options = visualization_build_options(view);
+        let full_ibd = if options.ibd_build_scope == IbdBuildScope::ViewExposedPackages
+            && (view == "general-view"
+                || (view == "interconnection-view" && options.slim_interconnection_payload))
+        {
+            empty_merged_ibd()
+        } else {
+            self.full_ibd_cache
+                .get_or_init(|| {
+                    full_ibd_for_render_snapshot(
+                        &self.semantic_graph,
+                        &self.render_snapshot,
+                        None,
+                    )
+                })
+                .clone()
+        };
+        build_sysml_visualization_from_render_snapshot(
             &self.semantic_graph,
             &self.parsed_documents,
-            &self.library_urls,
-            &self.workspace_root_uri,
+            &self.render_snapshot,
             view,
             selected_view,
             self.build_instant,
+            full_ibd,
+            options,
         )
         .map_err(|message| map_view_error(view, message))
     }
@@ -168,8 +219,12 @@ pub(crate) fn build_workspace_snapshot(
     context.check_continue(HostPipelinePhase::BuildingGraph)?;
 
     context.check_continue(HostPipelinePhase::BuildingLanguageWorkspace)?;
-    let language_workspace =
-        InMemoryWorkspace::from_documents(documents.clone()).map_err(map_language_service_error)?;
+    let language_workspace = InMemoryWorkspace::from_graph_and_documents(
+        semantic_graph.clone(),
+        parsed_documents.clone(),
+        &documents,
+    )
+    .map_err(map_language_service_error)?;
     context.check_continue(HostPipelinePhase::BuildingLanguageWorkspace)?;
 
     context.check_continue(HostPipelinePhase::BuildingViewCatalog)?;
@@ -184,15 +239,22 @@ pub(crate) fn build_workspace_snapshot(
     context.check_continue(HostPipelinePhase::BuildingViewCatalog)?;
 
     context.check_continue(HostPipelinePhase::CollectingValidation)?;
-    let validation_report = collect_host_validation_report(
-        &semantic_graph,
-        &documents,
-        &library_urls,
-        &target_files,
-        Some(workspace_root.as_path()),
-        &library_paths,
-        request.strict_diagnostics,
-    )?;
+    let validation_report = if request.validation_timing == ValidationTiming::Eager {
+        init_validation_report(
+            ValidationTiming::Eager,
+            collect_host_validation_report(
+                &semantic_graph,
+                &documents,
+                &library_urls,
+                &target_files,
+                Some(workspace_root.as_path()),
+                &library_paths,
+                request.strict_diagnostics,
+            )?,
+        )?
+    } else {
+        OnceLock::new()
+    };
     context.check_continue(HostPipelinePhase::CollectingValidation)?;
 
     context.check_continue(HostPipelinePhase::ProjectingModel)?;
@@ -218,12 +280,16 @@ pub(crate) fn build_workspace_snapshot(
         language_workspace,
         render_snapshot,
         validation_report,
+        validation_target_files: target_files,
+        strict_diagnostics: request.strict_diagnostics,
+        validation_timing: request.validation_timing,
         semantic_projection,
         library_urls,
         library_paths,
         workspace_root,
         workspace_root_uri,
         build_instant,
+        full_ibd_cache: OnceLock::new(),
     })
 }
 
@@ -236,7 +302,10 @@ pub(crate) fn assemble_host_workspace_snapshot(
     parsed_documents: Vec<WorkspaceParsedDocument>,
     language_workspace: InMemoryWorkspace,
     render_snapshot: WorkspaceRenderSnapshot,
-    validation_report: HostValidationReport,
+    validation_report: OnceLock<HostValidationReport>,
+    validation_target_files: Vec<PathBuf>,
+    strict_diagnostics: bool,
+    validation_timing: ValidationTiming,
     semantic_projection: HostSemanticProjection,
     library_urls: Vec<Url>,
     library_paths: Vec<PathBuf>,
@@ -263,12 +332,16 @@ pub(crate) fn assemble_host_workspace_snapshot(
         language_workspace,
         render_snapshot,
         validation_report,
+        validation_target_files,
+        strict_diagnostics,
+        validation_timing,
         semantic_projection,
         library_urls,
         library_paths,
         workspace_root,
         workspace_root_uri,
         build_instant,
+        full_ibd_cache: OnceLock::new(),
     }
 }
 
@@ -280,6 +353,24 @@ pub(crate) fn enrich_document_hashes(documents: &mut [SysmlDocument]) {
         hasher.update(bytes);
         document.sha256 = Some(format!("{:x}", hasher.finalize()));
     }
+}
+
+fn empty_validation_report() -> &'static HostValidationReport {
+    static EMPTY: OnceLock<HostValidationReport> = OnceLock::new();
+    EMPTY.get_or_init(HostValidationReport::default)
+}
+
+pub(crate) fn init_validation_report(
+    timing: ValidationTiming,
+    eager_report: HostValidationReport,
+) -> HostResult<OnceLock<HostValidationReport>> {
+    let slot = OnceLock::new();
+    if timing == ValidationTiming::Eager {
+        slot.set(eager_report).map_err(|_| {
+            Spec42HostError::internal_invariant_failure("validation report slot already initialized")
+        })?;
+    }
+    Ok(slot)
 }
 
 pub fn load_workspace_snapshot(

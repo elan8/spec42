@@ -4,10 +4,10 @@ use std::collections::HashMap;
 use std::time::Instant;
 
 use semantic_core::{
-    build_merged_workspace_ibd, build_render_snapshot, build_sysml_visualization_from_artifacts,
-    materialize_model_explorer_bundle, view_index_to_artifacts, IbdArtifactMode,
-    ModelExplorerBundle, VisualizationBuildMeta, VisualizationBuildOptions,
-    WorkspaceParsedDocument, WorkspaceVisualizationArtifacts,
+    build_render_snapshot, build_sysml_visualization_from_render_snapshot_with_meta,
+    empty_merged_ibd, full_ibd_for_render_snapshot, materialize_model_explorer_bundle,
+    IbdArtifactMode, ModelExplorerBundle, VisualizationBuildMeta, VisualizationBuildOptions,
+    WorkspaceParsedDocument,
 };
 use tower_lsp::lsp_types::Url;
 
@@ -153,24 +153,24 @@ pub(crate) fn ensure_workspace_artifacts(
     state: &mut ServerState,
     workspace_root_uri: &Url,
     ibd_artifact_mode: IbdArtifactMode,
-) -> Result<WorkspaceVisualizationArtifacts, String> {
+) -> Result<semantic_core::WorkspaceVisualizationArtifacts, String> {
     let workspace_root_uri = util::normalize_file_uri(workspace_root_uri);
     let snapshot = ensure_render_snapshot(state, &workspace_root_uri)?.clone();
     let full_ibd = if ibd_artifact_mode == IbdArtifactMode::FullWorkspace {
-        if let Some(bundle) = state
+        let cached = state
             .workspace_render_cache
             .entry
             .as_ref()
             .and_then(|entry| entry.model_explorer.as_ref())
-        {
-            bundle.full_ibd.clone()
-        } else {
-            build_merged_workspace_ibd(&state.semantic_graph, &snapshot.workspace_uris)
-        }
+            .map(|bundle| &bundle.full_ibd);
+        full_ibd_for_render_snapshot(&state.semantic_graph, &snapshot, cached)
     } else {
-        semantic_core::empty_merged_ibd()
+        empty_merged_ibd()
     };
-    Ok(view_index_to_artifacts(&snapshot.view_index, full_ibd))
+    Ok(semantic_core::view_index_to_artifacts(
+        &snapshot.view_index,
+        full_ibd,
+    ))
 }
 
 pub(crate) fn cached_merged_ibd(
@@ -226,9 +226,9 @@ pub(crate) fn build_visualization_with_cache(
     let workspace_uris = snapshot.workspace_uris.clone();
     let viz_docs = workspace_parsed_documents_for_visualization(&state.index, &workspace_uris);
 
-    let ibd_artifact_mode = if options.slim_interconnection_payload
-        && options.ibd_build_scope == semantic_core::IbdBuildScope::ViewExposedPackages
-        && view == "interconnection-view"
+    let ibd_artifact_mode = if options.ibd_build_scope == semantic_core::IbdBuildScope::ViewExposedPackages
+        && ((options.slim_interconnection_payload && view == "interconnection-view")
+            || view == "general-view")
     {
         IbdArtifactMode::Deferred
     } else {
@@ -236,27 +236,24 @@ pub(crate) fn build_visualization_with_cache(
     };
 
     let full_ibd = if ibd_artifact_mode == IbdArtifactMode::FullWorkspace {
-        if let Some(bundle) = state
+        let cached = state
             .workspace_render_cache
             .entry
             .as_ref()
             .and_then(|entry| entry.model_explorer.as_ref())
-        {
-            bundle.full_ibd.clone()
-        } else {
-            build_merged_workspace_ibd(&state.semantic_graph, &workspace_uris)
-        }
+            .map(|bundle| &bundle.full_ibd);
+        full_ibd_for_render_snapshot(&state.semantic_graph, &snapshot, cached)
     } else {
-        semantic_core::empty_merged_ibd()
+        empty_merged_ibd()
     };
-    let artifacts = view_index_to_artifacts(&snapshot.view_index, full_ibd);
-    let (response, mut meta) = build_sysml_visualization_from_artifacts(
+    let (response, mut meta) = build_sysml_visualization_from_render_snapshot_with_meta(
         &state.semantic_graph,
         &viz_docs,
-        &artifacts,
+        &snapshot,
         view,
         selected_view,
         build_start,
+        full_ibd,
         options,
     )?;
     meta.cache_hit = false;

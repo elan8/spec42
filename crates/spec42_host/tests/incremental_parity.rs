@@ -15,6 +15,7 @@ fn multi_target(paths: Vec<std::path::PathBuf>) -> WorkspaceLoadRequest {
         targets: paths,
         workspace_root: None,
         strict_diagnostics: false,
+        validation_timing: Default::default(),
     }
 }
 

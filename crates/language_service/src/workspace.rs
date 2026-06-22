@@ -2,6 +2,7 @@ use std::collections::HashMap;
 
 use semantic_core::{
     build_semantic_graph_from_documents, SemanticGraph, SysmlDocument, TextPosition,
+    WorkspaceParsedDocument,
 };
 use sysml_v2_parser::RootNamespace;
 use url::Url;
@@ -52,6 +53,15 @@ impl InMemoryWorkspace {
     /// Build a workspace from pre-loaded SysML documents (workspace + optional library docs).
     pub fn from_documents(documents: Vec<SysmlDocument>) -> Result<Self, String> {
         let (semantic_graph, parsed_docs) = build_semantic_graph_from_documents(&documents)?;
+        Self::from_graph_and_documents(semantic_graph, parsed_docs, &documents)
+    }
+
+    /// Build a workspace from an already-built semantic graph and parsed documents.
+    pub fn from_graph_and_documents(
+        semantic_graph: SemanticGraph,
+        parsed_docs: Vec<WorkspaceParsedDocument>,
+        documents: &[SysmlDocument],
+    ) -> Result<Self, String> {
         let mut documents_map = HashMap::new();
         let mut path_to_uri = HashMap::new();
 

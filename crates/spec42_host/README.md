@@ -45,6 +45,23 @@ Protocol-neutral embedding API for Spec42 host services.
 4. Query `validation()`, `semantic_projection()`, `language_workspace()`, `view_catalog()`, and `prepare_view()` from the same `Arc<HostWorkspaceSnapshot>`.
 5. After editor saves, call `update_snapshot` with `DocumentChanges` instead of reloading from disk when the prior snapshot is still valid.
 
+### View-first performance
+
+For hosts that show a diagram before exporting diagnostics, defer validation during load:
+
+```rust
+use spec42_host::{ValidationTiming, WorkspaceLoadRequest};
+
+let request = WorkspaceLoadRequest::single_target(model_dir)
+    .with_validation_timing(ValidationTiming::Deferred);
+
+let snapshot = engine.load_workspace(provider, request, context)?;
+let view = snapshot.prepare_view("general-view", Some("productStructure"))?;
+let report = snapshot.ensure_validation()?; // collect diagnostics on demand
+```
+
+`prepare_view` reuses the load-time `WorkspaceRenderSnapshot` and scoped IBD for `general-view` / `interconnection-view`. See [ROBOT-VACUUM-PERFORMANCE-ANALYSIS.md](../../docs/engineering/ROBOT-VACUUM-PERFORMANCE-ANALYSIS.md) for before/after timings on the robot-vacuum fixture (~8.6 s → ~2.8 s release cold path).
+
 Snapshots are immutable after construction. Share them across worker threads with `Arc`; types are `Send + Sync`. `update_snapshot` always returns a **new** `Arc`; existing readers keep the previous snapshot until they adopt the new one.
 
 ## Incremental updates

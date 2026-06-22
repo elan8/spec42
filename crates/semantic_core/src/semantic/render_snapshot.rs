@@ -1,16 +1,20 @@
 //! Workspace render snapshot: eager view index and lazy bundle materialization hooks.
 
+use std::time::Instant;
+
 use url::Url;
 
 use crate::semantic::dto::{
-    SysmlGraphDto, SysmlModelStatsDto, SysmlVisualizationViewCandidateDto, WorkspaceModelDto,
+    SysmlGraphDto, SysmlModelStatsDto, SysmlVisualizationResultDto,
+    SysmlVisualizationViewCandidateDto, WorkspaceModelDto,
 };
 use crate::semantic::explicit_views::EvaluatedView;
 use crate::semantic::ibd::IbdDataDto;
 use crate::semantic::model_projection::canonical_general_view_graph;
 use crate::semantic::visualization::projection::build_workspace_model_dto_from_graph;
 use crate::semantic::visualization::response::{
-    build_merged_workspace_ibd, build_workspace_visualization_artifacts,
+    build_merged_workspace_ibd, build_sysml_visualization_from_artifacts,
+    build_workspace_visualization_artifacts, VisualizationBuildMeta, VisualizationBuildOptions,
 };
 use crate::semantic::visualization::scope::IbdArtifactMode;
 use crate::semantic::workspace_graph::WorkspaceParsedDocument;
@@ -133,4 +137,63 @@ pub fn view_index_to_artifacts(index: &ViewIndex, full_ibd: IbdDataDto) -> crate
         evaluated_views: index.evaluated_views.clone(),
         view_candidates: index.view_candidates.clone(),
     }
+}
+
+/// Resolve merged IBD for a render snapshot, optionally reusing a cached value.
+pub fn full_ibd_for_render_snapshot(
+    semantic_graph: &SemanticGraph,
+    snapshot: &WorkspaceRenderSnapshot,
+    cached_full_ibd: Option<&IbdDataDto>,
+) -> IbdDataDto {
+    if let Some(ibd) = cached_full_ibd {
+        return ibd.clone();
+    }
+    build_merged_workspace_ibd(semantic_graph, &snapshot.workspace_uris)
+}
+
+/// Build a single-view visualization response from a precomputed render snapshot.
+pub fn build_sysml_visualization_from_render_snapshot(
+    semantic_graph: &SemanticGraph,
+    documents: &[WorkspaceParsedDocument],
+    snapshot: &WorkspaceRenderSnapshot,
+    view: &str,
+    selected_view: Option<&str>,
+    build_start: Instant,
+    full_ibd: IbdDataDto,
+    options: VisualizationBuildOptions,
+) -> Result<SysmlVisualizationResultDto, String> {
+    let (response, _) = build_sysml_visualization_from_render_snapshot_with_meta(
+        semantic_graph,
+        documents,
+        snapshot,
+        view,
+        selected_view,
+        build_start,
+        full_ibd,
+        options,
+    )?;
+    Ok(response)
+}
+
+/// Build a single-view visualization response with perf metadata.
+pub fn build_sysml_visualization_from_render_snapshot_with_meta(
+    semantic_graph: &SemanticGraph,
+    documents: &[WorkspaceParsedDocument],
+    snapshot: &WorkspaceRenderSnapshot,
+    view: &str,
+    selected_view: Option<&str>,
+    build_start: Instant,
+    full_ibd: IbdDataDto,
+    options: VisualizationBuildOptions,
+) -> Result<(SysmlVisualizationResultDto, VisualizationBuildMeta), String> {
+    let artifacts = view_index_to_artifacts(&snapshot.view_index, full_ibd);
+    build_sysml_visualization_from_artifacts(
+        semantic_graph,
+        documents,
+        &artifacts,
+        view,
+        selected_view,
+        build_start,
+        options,
+    )
 }

@@ -365,5 +365,6 @@ Phase 5 complete:
 
 - [ADR 0003: `spec42_host` crate](../adr/0003-spec42-host-embedding-crate.md)
 - [ADR 0002: `language_service` crate](../adr/0002-language-service-crate.md)
+- [Robot vacuum performance analysis](ROBOT-VACUUM-PERFORMANCE-ANALYSIS.md) — embedding host cold-path optimizations and regression harness
 - [Standard library resolution guide](STDLIB-RESOLUTION-GUIDE.md)
 - [Semantic core architecture](../architecture/SEMANTIC_CORE_ARCHITECTURE.md)

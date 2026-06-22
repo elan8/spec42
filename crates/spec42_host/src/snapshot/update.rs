@@ -18,7 +18,7 @@ use crate::snapshot::changes::{apply_document_changes, is_workspace_document, Do
 use crate::snapshot::context::{HostContext, HostPipelinePhase};
 use crate::snapshot::discovery::discover_target_files;
 use crate::snapshot::facts::{collect_host_validation_report, project_host_semantic_model};
-use crate::snapshot::request::WorkspaceLoadRequest;
+use crate::snapshot::request::{ValidationTiming, WorkspaceLoadRequest};
 use crate::Spec42Engine;
 
 pub fn update_workspace_snapshot(
@@ -173,8 +173,12 @@ fn assemble_snapshot_from_state(
     let workspace_root_uri = previous.workspace_root_uri().clone();
 
     context.check_continue(HostPipelinePhase::BuildingLanguageWorkspace)?;
-    let language_workspace =
-        InMemoryWorkspace::from_documents(documents.to_vec()).map_err(map_language_service_error)?;
+    let language_workspace = InMemoryWorkspace::from_graph_and_documents(
+        semantic_graph.clone(),
+        parsed_documents.clone(),
+        documents,
+    )
+    .map_err(map_language_service_error)?;
     context.check_continue(HostPipelinePhase::BuildingLanguageWorkspace)?;
 
     let render_version = previous.view_catalog().version.wrapping_add(1);
@@ -190,15 +194,22 @@ fn assemble_snapshot_from_state(
     context.check_continue(HostPipelinePhase::BuildingViewCatalog)?;
 
     context.check_continue(HostPipelinePhase::CollectingValidation)?;
-    let validation_report = collect_host_validation_report(
-        &semantic_graph,
-        documents,
-        &library_urls,
-        &target_files,
-        Some(workspace_root.as_path()),
-        &library_paths,
-        request.strict_diagnostics,
-    )?;
+    let validation_report = if request.validation_timing == ValidationTiming::Eager {
+        crate::snapshot::build::init_validation_report(
+            ValidationTiming::Eager,
+            collect_host_validation_report(
+                &semantic_graph,
+                documents,
+                &library_urls,
+                &target_files,
+                Some(workspace_root.as_path()),
+                &library_paths,
+                request.strict_diagnostics,
+            )?,
+        )?
+    } else {
+        std::sync::OnceLock::new()
+    };
     context.check_continue(HostPipelinePhase::CollectingValidation)?;
 
     context.check_continue(HostPipelinePhase::ProjectingModel)?;
@@ -214,6 +225,9 @@ fn assemble_snapshot_from_state(
         language_workspace,
         render_snapshot,
         validation_report,
+        target_files,
+        request.strict_diagnostics,
+        request.validation_timing,
         semantic_projection,
         library_urls,
         library_paths,

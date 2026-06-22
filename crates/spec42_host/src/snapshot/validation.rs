@@ -16,7 +16,7 @@ pub struct HostValidationSummary {
     pub information_count: usize,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Default)]
 pub struct HostValidationReport {
     pub workspace_root: Option<String>,
     pub resolved_library_paths: Vec<String>,

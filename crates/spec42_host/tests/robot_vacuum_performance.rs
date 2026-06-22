@@ -1,5 +1,6 @@
 use spec42_host::robot_vacuum_perf::{
-    default_matrix_scenarios, emit_perf_report, run_perf_matrix, run_robot_vacuum_perf, PerfConfig,
+    assert_release_perf_thresholds, default_matrix_scenarios, emit_perf_report, run_perf_matrix,
+    run_robot_vacuum_perf, PerfConfig,
 };
 use tempfile::tempdir;
 
@@ -24,6 +25,7 @@ fn robot_vacuum_host_phase_performance_report() {
     );
     assert!(report.host_phases.load_workspace_total_ms > 0);
     assert!(report.fixture.files > 0);
+    assert_release_perf_thresholds(&report.host_phases);
 }
 
 #[test]

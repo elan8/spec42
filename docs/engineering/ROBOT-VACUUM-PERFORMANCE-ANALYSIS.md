@@ -165,6 +165,20 @@ These align with phase timers: **IBD + validation + duplicate graph build**, not
 | 5 | Release-only server binary for IDE integration | ~5× vs debug | Packaging / F5 workflow |
 | 6 | Phase 5 `update_snapshot` for edits (not cold open) | Saves reload; first open unchanged | Experimental gate |
 
+## After optimizations (June 2026)
+
+Implemented in `spec42_host`, `semantic_core`, and `kernel` (view-first embedding path with `ValidationTiming::Deferred`):
+
+| Metric | Before (release) | After (release, single run) | Change |
+| --- | ---: | ---: | --- |
+| `load_workspace` | ~3,623–3,777 ms | **949 ms** | ~−74% (graph reuse + deferred validation) |
+| `prepare_view(productStructure)` | ~4,994–5,233 ms | **1,860 ms** | ~−63% (render snapshot reuse + scoped IBD) |
+| **Cold total** | **~8,617–8,978 ms** | **2,809 ms** | **~−67%** |
+
+Regression ceilings (release, view-first harness): load ≤ 3,000 ms, prepare ≤ 2,500 ms, total ≤ 5,500 ms — see `spec42_host::robot_vacuum_perf::release_perf_thresholds()`.
+
+**Remaining headroom:** further `prepare_view` gains require IBD merge/allocation reductions; eager validation remains available via `ValidationTiming::Eager` (default) for hosts that need diagnostics at load time.
+
 ## How to reproduce
 
 ```bash
