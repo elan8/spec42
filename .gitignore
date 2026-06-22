@@ -15,4 +15,5 @@ scripts/code-scanning-export/
 code-scanning-export/
 tmp/
 .cache/
+third_party/
 crates/kernel/tests/output/*

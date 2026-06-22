@@ -251,6 +251,23 @@ cargo test -p kernel --test lsp_integration integration::model::lsp_sysml_model_
 cargo test -p kernel --test lsp_integration integration::diagnostics::unresolved_satisfy_reference_emits_semantic_diagnostic
 ```
 
+### Robot vacuum showcase (local only)
+
+The [sysml-robot-vacuum-cleaner](https://github.com/elan8/sysml-robot-vacuum-cleaner) model is vendored under `third_party/` for local integration tests. The directory is gitignored; fetch it once with:
+
+```bash
+bash scripts/fetch-robot-vacuum-cleaner.sh
+```
+
+Pinned version: `config/robot-vacuum-cleaner.json`. Override the checkout path with `SYSML_ROBOT_VACUUM_DIR` if needed.
+
+These tests stay `#[ignore]` in CI (slow; ~1–2 minutes). Run locally with `--ignored`:
+
+```bash
+cargo test -p spec42_host --test robot_vacuum_snapshot -- --ignored --nocapture
+cargo test -p kernel --test lsp_integration robot_vacuum -- --ignored --nocapture
+```
+
 ### SysML v2 validation suite
 
 The full validation suite over the official SysML v2 Release is ignored by default and informational in CI. To run it locally:

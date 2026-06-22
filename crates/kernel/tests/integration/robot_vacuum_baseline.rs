@@ -1,12 +1,14 @@
 //! Optional regression against the sysml-robot-vacuum-cleaner showcase model.
-//! Set `SYSML_ROBOT_VACUUM_DIR` to the repository root (directory containing `model/`).
+//!
+//! Default fixture: `third_party/sysml-robot-vacuum-cleaner` (see `scripts/fetch-robot-vacuum-cleaner.sh`).
+//! Override with `SYSML_ROBOT_VACUUM_DIR` pointing at a checkout root containing `model/`.
+
+#[path = "../../../../tests/fixtures/robot_vacuum_fixture.rs"]
+mod robot_vacuum_fixture;
 
 use kernel::build_sysml_visualization_for_paths;
+use robot_vacuum_fixture::require_robot_vacuum_fixture;
 use spec42::cli::{CheckArgs, Cli, OutputFormat};
-use spec42::perform_check;
-use std::collections::HashMap;
-use std::path::PathBuf;
-use tower_lsp::lsp_types::NumberOrString;
 
 fn diagnostic_code_counts(report: &kernel::ValidationReport) -> HashMap<String, usize> {
     let mut counts = HashMap::new();
@@ -21,19 +23,9 @@ fn diagnostic_code_counts(report: &kernel::ValidationReport) -> HashMap<String, 
 }
 
 #[test]
-#[ignore = "requires SYSML_ROBOT_VACUUM_DIR pointing at the robot vacuum showcase checkout"]
+#[ignore = "local showcase: bash scripts/fetch-robot-vacuum-cleaner.sh then cargo test -- --ignored"]
 fn robot_vacuum_showcase_diagnostic_baseline() {
-    let Some(root) = std::env::var_os("SYSML_ROBOT_VACUUM_DIR") else {
-        return;
-    };
-    let root = PathBuf::from(root);
-    let model_dir = root.join("model");
-    if !model_dir.is_dir() {
-        panic!(
-            "SYSML_ROBOT_VACUUM_DIR must contain a model/ directory: {}",
-            model_dir.display()
-        );
-    }
+    let (root, model_dir) = require_robot_vacuum_fixture();
 
     let cli = Cli {
         config_path: None,
@@ -108,19 +100,9 @@ fn robot_vacuum_showcase_diagnostic_baseline() {
 }
 
 #[test]
-#[ignore = "requires SYSML_ROBOT_VACUUM_DIR pointing at the robot vacuum showcase checkout"]
+#[ignore = "local showcase: bash scripts/fetch-robot-vacuum-cleaner.sh then cargo test -- --ignored"]
 fn robot_vacuum_showcase_model_views_are_supported() {
-    let Some(root) = std::env::var_os("SYSML_ROBOT_VACUUM_DIR") else {
-        return;
-    };
-    let root = PathBuf::from(root);
-    let model_dir = root.join("model");
-    if !model_dir.is_dir() {
-        panic!(
-            "SYSML_ROBOT_VACUUM_DIR must contain a model/ directory: {}",
-            model_dir.display()
-        );
-    }
+    let (root, model_dir) = require_robot_vacuum_fixture();
 
     let probe =
         build_sysml_visualization_for_paths(&model_dir, Some(&root), &[], "general-view", None)

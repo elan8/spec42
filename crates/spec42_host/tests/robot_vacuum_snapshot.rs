@@ -1,24 +1,16 @@
-use std::path::PathBuf;
+#[path = "../../../tests/fixtures/robot_vacuum_fixture.rs"]
+mod robot_vacuum_fixture;
 
+use robot_vacuum_fixture::require_robot_vacuum_fixture;
 use spec42_host::{
     EngineBuilder, HostContext, HostFilesystemProvider, WorkspaceLoadRequest,
 };
 use tempfile::tempdir;
 
 #[test]
-#[ignore = "requires SYSML_ROBOT_VACUUM_DIR pointing at the robot vacuum showcase checkout"]
+#[ignore = "local showcase: bash scripts/fetch-robot-vacuum-cleaner.sh then cargo test -- --ignored"]
 fn robot_vacuum_snapshot_validates_and_prepares_product_structure() {
-    let Some(root) = std::env::var_os("SYSML_ROBOT_VACUUM_DIR") else {
-        return;
-    };
-    let root = PathBuf::from(root);
-    let model_dir = root.join("model");
-    if !model_dir.is_dir() {
-        panic!(
-            "SYSML_ROBOT_VACUUM_DIR must contain a model/ directory: {}",
-            model_dir.display()
-        );
-    }
+    let (root, model_dir) = require_robot_vacuum_fixture();
 
     let cache = tempdir().expect("cache");
     let engine = EngineBuilder::default()
