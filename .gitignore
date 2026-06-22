@@ -17,3 +17,4 @@ tmp/
 .cache/
 third_party/
 crates/kernel/tests/output/*
+perf.data

@@ -278,6 +278,26 @@ cargo test -p spec42_host --test incremental_benchmark -- --ignored --nocapture
 
 The benchmark stays `#[ignore]` in CI. Enable `experimental_incremental_updates(true)` on the engine builder before measuring incremental timings.
 
+### Robot vacuum performance analysis (local only)
+
+Profile the **embedding host** cold path (`load_workspace` + `prepare_view`) on the vendored robot-vacuum fixture. Requires the checkout from `scripts/fetch-robot-vacuum-cleaner.sh`.
+
+```bash
+# Single release report → target/spec42-perf/robot-vacuum-host-phases.json
+cargo test -p spec42_host --test robot_vacuum_performance \
+  robot_vacuum_host_phase_performance_report --release -- --ignored --nocapture
+
+# Median matrix (3 scenarios × 3 runs) → target/spec42-perf/robot-vacuum-host-matrix.json
+cargo test -p spec42_host --test robot_vacuum_performance \
+  robot_vacuum_host_performance_matrix_report --release -- --ignored --nocapture
+
+# Profiling example (profiling profile = release + debuginfo)
+cargo build -p spec42_host --profile profiling --example profile_robot_vacuum
+target/profiling/examples/profile_robot_vacuum --embedded-libs
+```
+
+CPU flamegraphs need `kernel.perf_event_paranoid <= 1` (see [ROBOT-VACUUM-PERFORMANCE-ANALYSIS.md](docs/engineering/ROBOT-VACUUM-PERFORMANCE-ANALYSIS.md)).
+
 ### SysML v2 validation suite
 
 The full validation suite over the official SysML v2 Release is ignored by default and informational in CI. To run it locally:

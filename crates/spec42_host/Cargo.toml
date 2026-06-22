@@ -108,3 +108,11 @@ path = "tests/incremental_fallback.rs"
 [[test]]
 name = "incremental_benchmark"
 path = "tests/incremental_benchmark.rs"
+
+[[test]]
+name = "robot_vacuum_performance"
+path = "tests/robot_vacuum_performance.rs"
+
+[[example]]
+name = "profile_robot_vacuum"
+path = "examples/profile_robot_vacuum.rs"

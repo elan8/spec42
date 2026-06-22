@@ -39,6 +39,8 @@ Optional grid drill-down in nightly CI: set repository variable `SYSML_POWERSYST
 
 See [POWER-SYSTEMS-PERFORMANCE-ANALYSIS.md](./POWER-SYSTEMS-PERFORMANCE-ANALYSIS.md) for findings and improvement plan.
 
+See [ROBOT-VACUUM-PERFORMANCE-ANALYSIS.md](./ROBOT-VACUUM-PERFORMANCE-ANALYSIS.md) for embedding-host cold-path profiling on the robot-vacuum showcase fixture.
+
 ## Initial Budgets
 
 These budgets are not enforced yet:

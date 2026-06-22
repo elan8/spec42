@@ -6,6 +6,7 @@ pub mod engine;
 pub mod error;
 pub mod library;
 pub mod provider;
+pub mod robot_vacuum_perf;
 pub mod snapshot;
 pub mod version;
 
