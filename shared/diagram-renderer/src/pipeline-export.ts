@@ -11,10 +11,22 @@ export interface InterconnectionPipelineExport {
   routeSummary: Record<string, unknown>;
 }
 
+function preparedViewFromPayload(payload: UnknownRecord): UnknownRecord | null {
+  const prepared = payload.preparedView;
+  if (!prepared || typeof prepared !== "object") {
+    return null;
+  }
+  const view = prepared as { view?: unknown; nodes?: unknown; edges?: unknown };
+  if (typeof view.view !== "string" || !Array.isArray(view.nodes) || !Array.isArray(view.edges)) {
+    return null;
+  }
+  return prepared as UnknownRecord;
+}
+
 export async function exportInterconnectionPipeline(
   payload: UnknownRecord,
 ): Promise<InterconnectionPipelineExport> {
-  const prepared = prepareViewData({ ...payload, view: "interconnection-view" });
+  const prepared = prepareViewData(preparedViewFromPayload(payload) ? payload : { ...payload, view: "interconnection-view" });
   const elkInput = buildInterconnectionElkGraphInput(prepared);
   let elkOutput: UnknownRecord | null = null;
   let routeSummary: Record<string, unknown> = { passed: false, violations: ["layout not run"] };

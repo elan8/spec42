@@ -25,6 +25,13 @@ export interface UpdateMessage {
     generalViewGraph?: SysMLGraphDTO;
     ibd?: IbdDataDTO;
     interconnectionScene?: InterconnectionSceneDTO;
+    preparedView?: {
+        title: string;
+        view: string;
+        nodes: unknown[];
+        edges: unknown[];
+        meta?: Record<string, unknown>;
+    };
     activityDiagrams: unknown[];
     sequenceDiagrams: unknown[];
     currentView: string;
@@ -91,6 +98,7 @@ export async function fetchModelData(params: FetchModelParams): Promise<UpdateMe
             generalViewGraph: result.generalViewGraph ?? result.graph,
             ibd: result.ibd,
             interconnectionScene: result.interconnectionScene,
+            preparedView: result.preparedView,
             activityDiagrams: result.activityDiagrams ?? [],
             sequenceDiagrams: result.sequenceDiagrams ?? [],
             currentView: result.view ?? currentView,

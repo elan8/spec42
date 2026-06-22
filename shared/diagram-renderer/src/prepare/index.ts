@@ -54,6 +54,13 @@ export function rendererLabel(view: string): string {
 }
 
 export function prepareViewData(visualizationInput: unknown): PreparedView {
+  const passthrough = asRecord(visualizationInput).preparedView;
+  if (passthrough && typeof passthrough === "object") {
+    const candidate = asRecord(passthrough) as PreparedView;
+    if (typeof candidate.view === "string" && Array.isArray(candidate.nodes) && Array.isArray(candidate.edges)) {
+      return candidate;
+    }
+  }
   const normalized = normalizeVisualizationPayload(asRecord(visualizationInput) as Record<string, unknown>);
   const visualization = asRecord(normalized) as VisualizationPayload;
   const view = visualization?.view || "general-view";

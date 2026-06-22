@@ -116,6 +116,18 @@ flowchart TD
 
 This enables multiple ingestion backends (filesystem, DB, in-memory) while preserving one semantic pipeline.
 
+## Visualization Snapshot and PreparedView (Pass 3)
+
+Pass 3 introduces a single snapshot model for diagram rendering:
+
+- `WorkspaceRenderSnapshot` keyed by `(semantic_state_version, workspace_root_uri)`
+- eager `ViewIndex` (`view_candidates`, evaluated views, projected metadata)
+- lazy `ModelExplorerBundle` (workspace graph/model + full IBD)
+- lazy per-view `PreparedViewDto` generation in Rust (`semantic/prepared_view/*`)
+
+The LSP visualization response now carries `preparedView` as the render contract for webview layout/SVG.
+TypeScript semantic prepare remains as fallback for non-LSP/headless compatibility paths.
+
 ## Consumer Boundaries
 
 ### `language_service` (editor intelligence)

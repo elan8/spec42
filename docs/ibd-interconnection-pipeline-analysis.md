@@ -8,10 +8,10 @@ Date: 2026-06-12
 
 Post–Phase 5 stabilization (same day):
 
-- **Extension plumbing** — [modelFetcher.ts](../vscode/src/visualization/modelFetcher.ts) forwards `interconnectionScene` to the webview (Phase 5 had made the renderer scene-only, but the field was dropped on the update message).
+- **Extension plumbing** — [modelFetcher.ts](../vscode/src/visualization/modelFetcher.ts) now forwards `preparedView` (and `interconnectionScene` for compatibility) to the webview update message.
 - **Nested-port routing** — [ibd-route.ts](../shared/diagram-renderer/src/render/ibd-route.ts) restores port-center–driven offset selection (`edgeOwnerOffset`, `lcaOffset`) for ELK sections that arrive in container-local coordinates; [layout.ts](../shared/diagram-renderer/src/render/layout.ts) collects edges from the full ELK tree and stores owner/LCA offsets. Orthogonal endpoint stitching fixed for non-axis-aligned port joins.
 
-**2026-06-19 validation:** Scoped IBD build (`ViewExposedPackages`) parity-tested against full-workspace filter; LSP interconnection responses omit `ibd` when `interconnectionScene` is present; nightly CI runs drone perf smoke with scoped IBD metrics.
+**2026-06-19 validation:** Scoped IBD build (`ViewExposedPackages`) parity-tested against full-workspace filter; LSP interconnection responses are `preparedView`-first and omit duplicate `ibd`/graph fields; nightly CI runs drone perf smoke with scoped IBD metrics.
 
 ### Landed
 
@@ -34,7 +34,7 @@ Post–Phase 5 stabilization (same day):
 | `route-quality.test.ts` | `shared/diagram-renderer` | Detached endpoints, bounds, node-boundary fallback detection |
 | `modelFetcher.test.ts` | `vscode` | `interconnectionScene` forwarded from LSP result to webview update message |
 | `interconnection_elk` (unit) | `semantic_core` | Rust `build_elk_graph_from_scene` structural parity vs TS ELK input goldens |
-| `interconnection_elk_svg_from_scene_fixture` | `server` | CLI/API interconnection SVG from `interconnectionScene` (no ibd heuristic fallback) |
+| `interconnection_elk_svg_from_scene_fixture` | `server` | **Test-only:** legacy Rust ELK SVG from `interconnectionScene` fixture ([legacy_elk_svg.rs](../crates/server/src/legacy_elk_svg.rs)); production CLI/API uses shared headless renderer + `preparedView` |
 | `interconnection_elk_layout_matches_typescript_golden_when_present` | `server` | Rust ELK.js layout positions within ±2px of TS goldens (when `*-elk-layout.json` present) |
 | `view_expose_powersystems_interconnection` | `semantic_core` | Semantic scoping, connector invariants, scene export (skipped if power systems repo absent) |
 | `scoped_ibd_parity` | `semantic_core` | Scoped vs full-workspace IBD interconnection scene parity on `examples/drone` (CI) |
@@ -51,14 +51,14 @@ Regenerate layout position goldens: `UPDATE_LAYOUT_FIXTURES=1 npm test -- layout
 
 - **Layout DTO containers** — `InterconnectionLayoutDto.containers[]` populated during ELK visit; [drawing.ts](../shared/diagram-renderer/src/render/drawing.ts) `drawInterconnectionContainers` reads layout only (legacy `packageContainerGroups` fallback for non-canonical tests).
 - **Interconnection typing** — `InterconnectionPreparedView` / `InterconnectionPreparedNode` / `Port` / `Edge` in [types.ts](../shared/diagram-renderer/src/prepare/types.ts); [interconnection-scene.ts](../shared/diagram-renderer/src/prepare/interconnection-scene.ts) returns typed view; layout path uses `asInterconnectionPrepared`.
-- **Server native SVG** — [diagrams.rs](../crates/server/src/diagrams.rs) `build_interconnection_elk_source` requires `interconnectionScene` and calls [interconnection_elk.rs](../crates/semantic_core/src/semantic/interconnection_elk.rs) `build_elk_graph_from_scene`; ELK options aligned with TS.
+- **Server native SVG (test-only)** — [legacy_elk_svg.rs](../crates/server/src/legacy_elk_svg.rs) `build_interconnection_elk_source` requires `interconnectionScene` for parity probes; **production** SVG export uses [headless_renderer.rs](../crates/server/src/headless_renderer.rs) with `preparedView`.
 - **ELK input parity** — TS `buildInterconnectionElkGraphInput` + Rust `build_elk_graph_from_scene` + `*-elk-input.json` goldens.
 - **Layout parity (optional gate)** — Rust `layout_elk_graph` vs TS positions on scene fixtures when `*-elk-layout.json` goldens exist.
 
 ### Out of scope / optional future
 
 - **Diagnostics UI** — Not planned; `scene.diagnostics` and layout warnings may surface later via banner or LSP Problems only.
-- **Moving production layout to Rust** — VS Code/webview keeps ELK.js; Rust ELK is for CLI SVG and parity tests via [elk_layout.rs](../crates/server/src/elk_layout.rs).
+- **Moving production layout to Rust** — VS Code/webview and CLI/API SVG use the shared headless renderer (ELK.js + drawing parity with the webview). Rust ELK in [legacy_elk_svg.rs](../crates/server/src/legacy_elk_svg.rs) and [elk_layout.rs](../crates/server/src/elk_layout.rs) remain for parity tests only.
 
 ---
 

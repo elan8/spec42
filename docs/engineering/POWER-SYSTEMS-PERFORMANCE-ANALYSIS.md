@@ -70,7 +70,7 @@ Requires `SYSML_POWERSYSTEMS_DIR` for the grid drill-down only (not bundled with
 | Startup relink | 446 | cross-doc edges, relationships |
 | Startup diagnostics | 2,924 | all workspace files (debug test profile) |
 | `sysml/model` (Model Explorer) | 2,943 | **1 ms IBD** (artifact cache hit); **3.2 MB** response |
-| `sysml/visualization` (`systemContext`, first) | 151 | **147 ms** model build; **680 KB** response (slim payload) |
+| `sysml/visualization` (`systemContext`, first) | 151 | **147 ms** model build; **preparedView-first slim payload** (~50 KB class for interconnection) |
 | `sysml/visualization` (`systemContext`, cache hit) | 2 | response cache; **47 ms** LSP round-trip |
 
 ### Pre-change baseline (March 2026, for comparison)
@@ -125,7 +125,7 @@ flowchart TB
 1. **Workspace artifact cache** (`WorkspaceVizCaches` on `ServerState`): graph + merged IBD + evaluated views + view candidates, keyed by `semantic_state_version` and normalized workspace root. Shared by `sysml/model` and `sysml/visualization`.
 2. **Lazy single-view projection**: only the selected view is projected; activity/sequence/state are skipped for interconnection-only paths.
 3. **Visualization response cache**: per `(version, root, view, selectedView)`; warm repeat requests return in ~2 ms Rust work.
-4. **Slim interconnection payload**: omits `workspace_model` and unused diagram families (~680 KB vs ~911 KB).
+4. **Slim interconnection payload**: now centers on `preparedView` + selectors and omits duplicate semantic scene/model fields for interconnection LSP responses.
 
 ## Bottleneck ranking
 

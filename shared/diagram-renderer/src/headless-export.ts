@@ -8,6 +8,18 @@ export interface HeadlessExportOptions {
   colorScheme?: "light" | "dark";
 }
 
+function preparedViewFromPayload(payload: UnknownRecord) {
+  const prepared = payload.preparedView;
+  if (!prepared || typeof prepared !== "object") {
+    return null;
+  }
+  const view = prepared as { view?: unknown; nodes?: unknown; edges?: unknown };
+  if (typeof view.view !== "string" || !Array.isArray(view.nodes) || !Array.isArray(view.edges)) {
+    return null;
+  }
+  return prepared;
+}
+
 type AttrValue = string | number | boolean | null | undefined;
 
 class VirtualStyle {
@@ -283,7 +295,7 @@ export async function exportHeadlessSvg(
   target.clientHeight = options.height ?? 900;
   document.body.appendChild(target);
   try {
-    const prepared = prepareViewData(payload);
+    const prepared = preparedViewFromPayload(payload) ?? prepareViewData(payload);
     const controller = await renderVisualization(target as unknown as HTMLElement, prepared, {
       delegateZoom: true,
       theme: { colorScheme: options.colorScheme ?? "light" },

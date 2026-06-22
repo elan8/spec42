@@ -1,6 +1,6 @@
 /**
  * Adapts LSP visualization DTOs for the shared diagram renderer.
- * Payload normalization runs in shared prepareViewData via normalizeVisualizationPayload.
+ * When `preparedView` is present, shared prepare consumes it directly and skips semantic normalization.
  */
 
 export function buildSharedRendererInput(

@@ -265,6 +265,13 @@ export interface SysMLVisualizationResult {
   sequenceDiagrams?: SequenceDiagramDTO[];
   ibd?: IbdDataDTO;
   interconnectionScene?: InterconnectionSceneDTO;
+  preparedView?: {
+    title: string;
+    view: string;
+    nodes: unknown[];
+    edges: unknown[];
+    meta?: Record<string, unknown>;
+  };
   stats?: SysMLModelStatsDTO;
 }
 

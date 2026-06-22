@@ -95,7 +95,8 @@ Before the headless shared-renderer migration, `crates/server/src/diagrams.rs` i
 | Payload | Same `build_sysml_visualization_for_paths` | Correct view selection |
 | ELK layout | `elk_layout.rs` — vendored ELK.js inside QuickJS | Layout-only thread; options aligned with TS for interconnection |
 | General / action / state SVG | `build_graph_elk_source` → flat `ElkNode` list → `render_elk_svg` | **No hierarchy nesting**; all nodes are root children |
-| Interconnection SVG | `build_interconnection_elk_source` from `interconnectionScene` | ELK graph parity with TS input goldens; drawing still simplified |
+| Interconnection SVG (production) | `render_shared_svg` → headless `preparedView` path | Same renderer as webview; no `interconnectionScene` required |
+| Interconnection SVG (test-only) | `legacy_elk_svg.rs` `build_interconnection_elk_source` from `interconnectionScene` | ELK graph parity with TS input goldens; simplified drawing |
 | Sequence / browser / grid / geometry | `native_svg` — vertical list of rectangles | Deterministic smoke output |
 | Output markers | `data-spec42-view`, `data-layout-engine="elkjs-quickjs"` | No `viz-node--*` classes |
 
