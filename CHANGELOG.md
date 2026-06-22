@@ -5,6 +5,34 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.32.0] - 2026-06-22
+
+### Added
+
+- **`language_service` crate** — Shared language-service layer extracted from the kernel; integrated into LSP runtime and core tests.
+- **`preparedView` pipeline** — Rust builds render-ready `preparedView` DTOs for interconnection and standard views; LSP can emit slim interconnection payloads that omit duplicate `ibd`, `graph`, and `interconnectionScene` fields when `preparedView` is present.
+- **Headless SVG export** — Shared `@spec42/diagram-renderer` headless path for CLI/API diagram export and VS Code export smoke tests, aligned with the webview renderer.
+- **Standard views** — Browser, grid, and geometry view preparers in `semantic_core` and the shared diagram renderer.
+- **Projection hints** — View projection hints and rendering resolution for defined SysML views; standard-view defaults and swim-lane handling in activity diagrams.
+- **IBD build scoping** — `ViewExposedPackages` scope for interconnection builds reduces work on large workspaces; scoped-vs-full parity and performance smoke tests.
+- **Legacy ELK SVG (test-only)** — Rust `legacy_elk_svg` module retains `interconnectionScene` ELK parity probes; production export uses headless `preparedView`.
+- **Diagram export quality analysis** — Engineering notes and integration coverage for export/readability invariants.
+
+### Changed
+
+- **Interconnection scene schema version 2** — Canonical interconnection scenes and prepared views use schema version 2; integration tests poll `preparedView` instead of legacy `interconnectionScene`/`ibd` counts.
+- **Visualization workspace cache** — Model Explorer and visualizer share workspace render snapshots; slim `preparedView` interconnection responses are cached on warm `sysml/visualization` requests.
+- **Parser dependency** — Bumped `sysml-v2-parser` to **0.25.6** on [crates.io](https://crates.io/crates/sysml-v2-parser).
+- **Library closure resolution** — Further hardening of import-scoped library loading and workspace-wins merge behavior.
+- **CI and agent surfaces** — Core vs agent/API/MCP test split in CI; ignored integration tests documented for MCP/API workflows.
+- **Release surface alignment** — Rust workspace, `spec42` server, VS Code extension, Zed extension, and GitHub Action examples aligned at `0.32.0`.
+
+### Fixed
+
+- **Slim interconnection cache** — Visualization response cache accepts `preparedView`-only interconnection payloads (restores warm-cache behavior after slim-payload refactor).
+- **IBD unit tests** — Correct `extract_impl` test imports for `merge_ibd_payloads` and related IBD helpers after module layout changes.
+- **Diagram renderer types** — TypeScript `PreparedView` passthrough casts in shared prepare/headless export paths.
+
 ## [0.31.0] - 2026-06-15
 
 ### Added
@@ -665,6 +693,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Parser is aligned with the SysML v2 Release validation suite; it does not claim full OMG spec compliance.
 - Some constructs may have incomplete semantic token or outline coverage.
 
+[0.32.0]: https://github.com/elan8/spec42/releases/tag/v0.32.0
 [0.31.0]: https://github.com/elan8/spec42/releases/tag/v0.31.0
 [0.30.0]: https://github.com/elan8/spec42/releases/tag/v0.30.0
 [0.29.1]: https://github.com/elan8/spec42/releases/tag/v0.29.1
