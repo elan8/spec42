@@ -1,6 +1,6 @@
 import { prepareViewData } from "./prepare";
 import { renderVisualization } from "./renderer";
-import type { UnknownRecord } from "./prepare/types";
+import type { PreparedView, UnknownRecord } from "./prepare/types";
 
 export interface HeadlessExportOptions {
   width?: number;
@@ -8,7 +8,7 @@ export interface HeadlessExportOptions {
   colorScheme?: "light" | "dark";
 }
 
-function preparedViewFromPayload(payload: UnknownRecord) {
+function preparedViewFromPayload(payload: UnknownRecord): PreparedView | null {
   const prepared = payload.preparedView;
   if (!prepared || typeof prepared !== "object") {
     return null;
@@ -17,7 +17,7 @@ function preparedViewFromPayload(payload: UnknownRecord) {
   if (typeof view.view !== "string" || !Array.isArray(view.nodes) || !Array.isArray(view.edges)) {
     return null;
   }
-  return prepared;
+  return prepared as PreparedView;
 }
 
 type AttrValue = string | number | boolean | null | undefined;

@@ -63,6 +63,55 @@ export type VisualizerSeedSummary = {
   requestedSelectedView?: string;
 };
 
+type PreparedInterconnectionView = {
+  edges?: unknown[];
+  nodes?: unknown[];
+  meta?: { schemaVersion?: number; canonicalScene?: boolean };
+};
+
+/** Count interconnection edges/parts from slim preparedView or legacy ibd/scene payloads. */
+export function interconnectionCountsFromVisualization(
+  visualization: Record<string, unknown> | undefined
+): { edges: number; parts: number; schemaVersion?: number } {
+  const prepared = visualization?.preparedView as PreparedInterconnectionView | undefined;
+  if (prepared && Array.isArray(prepared.edges)) {
+    const nodes = Array.isArray(prepared.nodes) ? prepared.nodes : [];
+    return {
+      edges: prepared.edges.length,
+      parts: nodes.length,
+      schemaVersion: prepared.meta?.schemaVersion,
+    };
+  }
+  const scene = visualization?.interconnectionScene as { edges?: unknown[]; schemaVersion?: number } | undefined;
+  if (scene && Array.isArray(scene.edges)) {
+    return {
+      edges: scene.edges.length,
+      parts: 0,
+      schemaVersion: scene.schemaVersion,
+    };
+  }
+  const ibd = visualization?.ibd as { parts?: unknown[]; connectors?: unknown[] } | undefined;
+  return {
+    edges: ibd?.connectors?.length ?? 0,
+    parts: ibd?.parts?.length ?? 0,
+  };
+}
+
+export function interconnectionVisualizationReady(
+  visualization: Record<string, unknown> | undefined,
+  options?: { minEdges?: number; schemaVersion?: number }
+): boolean {
+  const counts = interconnectionCountsFromVisualization(visualization);
+  const minEdges = options?.minEdges ?? 1;
+  if (counts.edges < minEdges) {
+    return false;
+  }
+  if (options?.schemaVersion !== undefined && counts.schemaVersion !== options.schemaVersion) {
+    return false;
+  }
+  return true;
+}
+
 /** Structured logs for integration tests — always emitted to the test host console (CI-visible). */
 export function integrationTestLog(phase: string, payload: Record<string, unknown>): void {
   try {
@@ -128,13 +177,14 @@ export function visualizationToSeedSummary(visualization: Record<string, unknown
   const ibd = visualization?.ibd as
     | { parts?: unknown[]; ports?: unknown[]; connectors?: unknown[] }
     | undefined;
+  const interconnection = interconnectionCountsFromVisualization(visualization);
   const viewCandidates = Array.isArray(visualization?.viewCandidates)
     ? (visualization.viewCandidates as Array<{ id?: string; name?: string }>)
     : [];
   return {
     modelReady: visualization?.modelReady !== false,
-    ibdConnectors: ibd?.connectors?.length ?? 0,
-    ibdParts: ibd?.parts?.length ?? 0,
+    ibdConnectors: interconnection.edges || (ibd?.connectors?.length ?? 0),
+    ibdParts: interconnection.parts || (ibd?.parts?.length ?? 0),
     ibdPorts: ibd?.ports?.length ?? 0,
     graphNodes: (visualization?.graph as { nodes?: unknown[] } | undefined)?.nodes?.length ?? 0,
     viewCandidateCount: viewCandidates.length,

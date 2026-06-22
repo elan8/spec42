@@ -8,6 +8,8 @@ import {
     getFixturePath,
     getTestWorkspaceFolder,
     integrationHookTimeoutMs,
+    interconnectionCountsFromVisualization,
+    interconnectionVisualizationReady,
     isCi,
     seedVisualizerWebviewFromModel,
     triggerDiagramExportAndWait,
@@ -226,20 +228,23 @@ describe("Interconnection Visualization", () => {
         const snapshot = await waitForVisualizationModel(
             workspaceFolder.uri,
             "interconnection-view",
-            (visualization) => {
-                const scene = visualization?.interconnectionScene as
-                    | { schemaVersion?: number; edges?: unknown[] }
-                    | undefined;
-                return scene?.schemaVersion === 2 && (scene.edges?.length ?? 0) > 0;
-            },
+            (visualization) =>
+                interconnectionVisualizationReady(visualization, {
+                    schemaVersion: 2,
+                    minEdges: 1,
+                }),
             interconnectionExportTimeoutMs,
             DRONE_INTERCONNECTION_VIEW
         );
-        const scene = snapshot?.interconnectionScene as { schemaVersion?: number; edges?: unknown[] } | undefined;
-        assert.strictEqual(scene?.schemaVersion, 2, "expected interconnectionScene schemaVersion 2 for droneConnections");
+        const counts = interconnectionCountsFromVisualization(snapshot);
+        assert.strictEqual(
+            counts.schemaVersion,
+            2,
+            "expected preparedView schemaVersion 2 for droneConnections"
+        );
         assert.ok(
-            (scene?.edges?.length ?? 0) > 0,
-            `expected interconnectionScene edges for droneConnections, got ${scene?.edges?.length ?? 0}`
+            counts.edges > 0,
+            `expected preparedView edges for droneConnections, got ${counts.edges}`
         );
         await seedVisualizerWebviewFromModel(
             workspaceFolder.uri,

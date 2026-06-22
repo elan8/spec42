@@ -1483,6 +1483,10 @@ mod tests {
     use crate::semantic::ibd::dto::{
         IbdConnectorDto, IbdDataDto, IbdPartDto, IbdPortDto,
     };
+    use crate::semantic::ibd::{
+        build_ibd_for_uri, finalize_merged_ibd_connectors, merge_ibd_payloads,
+        normalize_ibd_to_instance_paths,
+    };
     use super::{
         build_container_groups, infer_port_side, prune_ibd_payload_to_connected_scope,
         prune_interconnection_definition_parts, prune_redundant_top_level_roots,
@@ -1918,9 +1922,9 @@ mod tests {
         let (graph, _parsed) =
             build_semantic_graph_from_documents(&[arch_doc, instance_doc]).expect("graph");
 
-        let merged = super::merge_ibd_payloads(vec![
-            super::build_ibd_for_uri(&graph, &architecture_uri),
-            super::build_ibd_for_uri(&graph, &instance_uri),
+        let merged = merge_ibd_payloads(vec![
+            build_ibd_for_uri(&graph, &architecture_uri),
+            build_ibd_for_uri(&graph, &instance_uri),
         ]);
 
         let root_view = merged
@@ -1975,12 +1979,12 @@ mod tests {
         let uris = [architecture.uri.clone(), project.uri.clone()];
         let (graph, _) =
             build_semantic_graph_from_documents(&[architecture, project]).expect("graph");
-        let mut merged = super::merge_ibd_payloads(
+        let mut merged = merge_ibd_payloads(
             uris.iter()
-                .map(|uri| super::build_ibd_for_uri(&graph, uri))
+                .map(|uri| build_ibd_for_uri(&graph, uri))
                 .collect(),
         );
-        super::connectors::finalize_merged_ibd_connectors(&graph, &uris, &mut merged);
+        finalize_merged_ibd_connectors(&graph, &uris, &mut merged);
         assert!(
             merged.connectors.iter().any(|connector| {
                 connector
@@ -2037,7 +2041,7 @@ mod tests {
             root_views: std::collections::HashMap::new(),
         };
 
-        super::normalize_ibd_to_instance_paths(&mut ibd);
+        normalize_ibd_to_instance_paths(&mut ibd);
 
         assert!(ibd.ports.iter().any(|port| {
             port.port_id
@@ -2090,12 +2094,12 @@ mod tests {
         let uris = [architecture.uri.clone(), project.uri.clone()];
         let (graph, _) =
             build_semantic_graph_from_documents(&[architecture, project]).expect("graph");
-        let mut merged = super::merge_ibd_payloads(
+        let mut merged = merge_ibd_payloads(
             uris.iter()
-                .map(|uri| super::build_ibd_for_uri(&graph, uri))
+                .map(|uri| build_ibd_for_uri(&graph, uri))
                 .collect(),
         );
-        super::connectors::finalize_merged_ibd_connectors(&graph, &uris, &mut merged);
+        finalize_merged_ibd_connectors(&graph, &uris, &mut merged);
 
         assert!(
             merged
@@ -2155,7 +2159,7 @@ mod tests {
         let uri = doc.uri.clone();
         let (graph, _) =
             build_semantic_graph_from_documents(&[doc]).expect("semantic graph should build");
-        let ibd = super::build_ibd_for_uri(&graph, &uri);
+        let ibd = build_ibd_for_uri(&graph, &uri);
         let feeder_ports: Vec<_> = ibd
             .ports
             .iter()
@@ -2200,7 +2204,7 @@ mod tests {
         let uri = workspace.uri.clone();
         let (graph, _) = build_semantic_graph_from_documents(&[workspace, library])
             .expect("semantic graph should build");
-        let ibd = super::build_ibd_for_uri(&graph, &uri);
+        let ibd = build_ibd_for_uri(&graph, &uri);
         assert!(
             ibd.root_candidates.iter().any(|root| root == "robot"),
             "expected robot as IBD root, got {:?}",
@@ -2239,7 +2243,7 @@ mod tests {
         .expect("workspace doc");
         let (graph, _parsed) = build_semantic_graph_from_documents(&[doc]).expect("graph");
         let uri = Url::parse("memory://workspace/model.sysml").expect("uri");
-        let ibd = super::build_ibd_for_uri(&graph, &uri);
+        let ibd = build_ibd_for_uri(&graph, &uri);
         assert!(
             ibd.connectors.iter().any(|connector| {
                 connector.source_id == "Architecture.AutonomousFloorCleaningRobot.power.powerOut"
@@ -2269,7 +2273,7 @@ mod tests {
         .expect("workspace doc");
         let (graph, _parsed) = build_semantic_graph_from_documents(&[doc]).expect("graph");
         let uri = Url::parse("memory://workspace/surveillance_drone_full.sysml").expect("uri");
-        let ibd = super::build_ibd_for_uri(&graph, &uri);
+        let ibd = build_ibd_for_uri(&graph, &uri);
 
         assert_eq!(
             ibd.default_root.as_deref(),
@@ -2365,7 +2369,7 @@ mod tests {
         .expect("workspace doc");
         let (graph, _parsed) = build_semantic_graph_from_documents(&[doc]).expect("graph");
         let uri = Url::parse("memory://workspace/parts_tree.sysml").expect("uri");
-        let ibd = super::build_ibd_for_uri(&graph, &uri);
+        let ibd = build_ibd_for_uri(&graph, &uri);
 
         assert!(
             ibd.parts

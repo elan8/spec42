@@ -6,6 +6,7 @@ import {
     disposeVisualizer,
     getDiagramExportUri,
     integrationTestLog,
+    interconnectionCountsFromVisualization,
     seedVisualizerWebviewFromModel,
     triggerDiagramExportAndWait,
     waitForExtensionServerReady,
@@ -72,8 +73,36 @@ function ownerFromEndpoint(endpoint: string): string {
     return lastDot >= 0 ? endpoint.slice(0, lastDot) : endpoint;
 }
 
+function interconnectionConnectorsFromVisualization(
+    snapshot: Record<string, unknown> | undefined
+): IbdConnectorSnapshot[] {
+    const ibdConnectors =
+        (snapshot?.ibd as { connectors?: IbdConnectorSnapshot[] } | undefined)?.connectors ?? [];
+    if (ibdConnectors.length > 0) {
+        return ibdConnectors;
+    }
+    const prepared = snapshot?.preparedView as
+        | { edges?: Array<{ attributes?: Record<string, unknown> }> }
+        | undefined;
+    return (prepared?.edges ?? []).map((edge) => {
+        const attributes = edge.attributes ?? {};
+        return {
+            sourceId:
+                (attributes.sourceExpression as string | undefined) ??
+                (attributes.sourceId as string | undefined),
+            targetId:
+                (attributes.targetExpression as string | undefined) ??
+                (attributes.targetId as string | undefined),
+            sourcePartId: attributes.sourceNodeId as string | undefined,
+            targetPartId: attributes.targetNodeId as string | undefined,
+            sourcePortId: attributes.sourcePortId as string | undefined,
+            targetPortId: attributes.targetPortId as string | undefined,
+        };
+    });
+}
+
 function ibdConnectorDebug(snapshot: Record<string, unknown> | undefined): Record<string, unknown> {
-    const connectors = ((snapshot?.ibd as { connectors?: IbdConnectorSnapshot[] } | undefined)?.connectors ?? []);
+    const connectors = interconnectionConnectorsFromVisualization(snapshot);
     const missingEndpointIds = connectors.filter((connector) => !connector.sourcePortId || !connector.targetPortId);
     const ownerMismatches = connectors.filter((connector) => {
         const sourceId = normalizeEndpoint(connector.sourceId);
@@ -183,24 +212,23 @@ describe("Power Systems Interconnection Visualization", () => {
             "interconnection-view",
             GRID_CONNECTIONS_VIEW
         );
+        const gridCounts = interconnectionCountsFromVisualization(snapshot);
         integrationTestLog("powersystems:gridConnections:lspSnapshot", {
             selectedView: snapshot?.selectedView,
             selectedViewName: snapshot?.selectedViewName,
             viewCandidates: (snapshot?.viewCandidates as Array<{ id?: string; name?: string }> | undefined)?.map(
                 (candidate) => ({ id: candidate.id, name: candidate.name })
             ),
-            ibdParts: (snapshot?.ibd as { parts?: unknown[] } | undefined)?.parts?.length ?? 0,
-            ibdConnectors: (snapshot?.ibd as { connectors?: unknown[] } | undefined)?.connectors?.length ?? 0,
+            ibdParts: gridCounts.parts,
+            ibdConnectors: gridCounts.edges,
+            preparedViewSchemaVersion: gridCounts.schemaVersion,
             rootCandidates: (snapshot?.ibd as { rootCandidates?: unknown[] } | undefined)?.rootCandidates,
             defaultRoot: (snapshot?.ibd as { defaultRoot?: unknown } | undefined)?.defaultRoot,
-            interconnectionSceneEdges:
-                (snapshot?.interconnectionScene as { edges?: unknown[] } | undefined)?.edges?.length ?? 0,
         });
-        const gridScene = snapshot?.interconnectionScene as { schemaVersion?: number; edges?: unknown[] } | undefined;
-        assert.equal(gridScene?.schemaVersion, 2, "expected interconnectionScene schemaVersion 2 for gridConnections");
+        assert.equal(gridCounts.schemaVersion, 2, "expected preparedView schemaVersion 2 for gridConnections");
         assert.ok(
-            (gridScene?.edges?.length ?? 0) >= 15,
-            `expected interconnectionScene edges for gridConnections, got ${gridScene?.edges?.length ?? 0}`
+            gridCounts.edges >= 15,
+            `expected preparedView edges for gridConnections, got ${gridCounts.edges}`
         );
         await assertInterconnectionPipelineRouteQuality(
             workspaceFolder.uri.toString(),
@@ -262,13 +290,14 @@ describe("Power Systems Interconnection Visualization", () => {
             "interconnection-view",
             SYSTEM_CONTEXT_VIEW
         );
-        const snapshotConnectors =
-            (snapshot?.ibd as { connectors?: IbdConnectorSnapshot[] } | undefined)?.connectors ?? [];
+        const snapshotConnectors = interconnectionConnectorsFromVisualization(snapshot);
+        const systemContextCounts = interconnectionCountsFromVisualization(snapshot);
         integrationTestLog("powersystems:systemContext:lspSnapshot", {
             selectedView: snapshot?.selectedView,
             selectedViewName: snapshot?.selectedViewName,
-            ibdParts: (snapshot?.ibd as { parts?: unknown[] } | undefined)?.parts?.length ?? 0,
+            ibdParts: systemContextCounts.parts,
             ibdConnectors: snapshotConnectors.length,
+            preparedViewSchemaVersion: systemContextCounts.schemaVersion,
             ...ibdConnectorDebug(snapshot),
         });
         const expectedPaths: Array<[string, string]> = [
@@ -293,11 +322,10 @@ describe("Power Systems Interconnection Visualization", () => {
         for (const [sourceSuffix, targetSuffix] of expectedPaths) {
             assertConnectorEndpoint(snapshotConnectors, sourceSuffix, targetSuffix);
         }
-        const scene = (snapshot?.interconnectionScene as { schemaVersion?: number; edges?: unknown[] } | undefined);
-        assert.equal(scene?.schemaVersion, 2, "expected interconnectionScene schemaVersion 2");
+        assert.equal(systemContextCounts.schemaVersion, 2, "expected preparedView schemaVersion 2");
         assert.ok(
-            (scene?.edges?.length ?? 0) >= expectedPaths.length,
-            `expected interconnectionScene edges for systemContext, got ${scene?.edges?.length ?? 0}`
+            systemContextCounts.edges >= expectedPaths.length,
+            `expected preparedView edges for systemContext, got ${systemContextCounts.edges}`
         );
         await assertInterconnectionPipelineRouteQuality(
             workspaceFolder.uri.toString(),
