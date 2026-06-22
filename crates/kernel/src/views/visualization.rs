@@ -649,7 +649,7 @@ mod tests {
     }
 
     #[test]
-    fn interconnection_fixture_with_views_returns_ibd_connectors() {
+    fn interconnection_fixture_with_views_returns_prepared_view() {
         let workspace_path = PathBuf::from(env!("CARGO_MANIFEST_DIR"))
             .join("../../vscode/testFixture/workspaces/interconnection-drone");
         let response = build_sysml_visualization_for_paths(
@@ -670,18 +670,27 @@ mod tests {
             response.selected_view.as_deref(),
             Some("Views::droneConnections")
         );
-        let ibd = response.ibd.expect("ibd payload");
+        let prepared = response
+            .prepared_view
+            .expect("prepared view for droneConnections");
+        assert_eq!(prepared.view, "interconnection-view");
         assert!(
-            !ibd.connectors.is_empty(),
-            "expected SurveillanceDrone IBD connectors, got: {ibd:#?}"
+            !prepared.edges.is_empty(),
+            "expected SurveillanceDrone prepared interconnection edges, got: {prepared:#?}"
         );
-        let scene = response
-            .interconnection_scene
-            .expect("interconnection scene for droneConnections");
-        assert_eq!(scene.schema_version, 2);
+        let schema_version = prepared
+            .meta
+            .as_ref()
+            .and_then(|meta| meta.get("schemaVersion"))
+            .and_then(|value| value.as_u64());
+        assert_eq!(schema_version, Some(2), "expected preparedView schemaVersion 2");
         assert!(
-            !scene.edges.is_empty(),
-            "expected interconnection scene edges, got: {scene:#?}"
+            response.ibd.is_none(),
+            "slim interconnection payload should omit ibd when preparedView is present"
+        );
+        assert!(
+            response.interconnection_scene.is_none(),
+            "slim interconnection payload should omit interconnectionScene when preparedView is present"
         );
     }
 }
