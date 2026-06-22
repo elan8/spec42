@@ -200,6 +200,7 @@ fn assemble_snapshot_from_state(
             collect_host_validation_report(
                 &semantic_graph,
                 documents,
+                &parsed_documents,
                 &library_urls,
                 &target_files,
                 Some(workspace_root.as_path()),

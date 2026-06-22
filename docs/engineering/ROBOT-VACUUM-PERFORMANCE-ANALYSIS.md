@@ -179,6 +179,23 @@ Regression ceilings (release, view-first harness): load ≤ 3,000 ms, prepare �
 
 **Remaining headroom:** further `prepare_view` gains require IBD merge/allocation reductions; eager validation remains available via `ValidationTiming::Eager` (default) for hosts that need diagnostics at load time.
 
+## Validation / diagnostics scenarios (June 2026)
+
+After workspace-level validation optimizations (shared `UnitRegistry` per report, document text index):
+
+| Scenario | Metric | Release (single run) | Notes |
+| --- | --- | ---: | --- |
+| `validation_eager_at_load` | `time_to_completed_validation_ms` | **~2,707** | Validation during `load_workspace` |
+| `validation_deferred_ensure` | `time_to_completed_validation_ms` | **~2,783** | `load` (~950 ms) + `ensure_validation()` (~1,845 ms) |
+| `view_then_validation` | `time_to_completed_validation_ms` | **~4,681** | View first, then diagnostics |
+
+Regression ceilings: `release_validation_perf_thresholds()` in `robot_vacuum_perf.rs` (eager ≤ 3.5 s, deferred ensure ≤ 3.0 s, view-then-validation ≤ 5.5 s).
+
+```bash
+cargo test -p spec42_host --test robot_vacuum_performance \
+  robot_vacuum_host_validation_performance_report --release -- --ignored --nocapture
+```
+
 ## How to reproduce
 
 ```bash

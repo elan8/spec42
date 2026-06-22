@@ -7,7 +7,8 @@
 //! ```
 
 use spec42_host::robot_vacuum_perf::{
-    default_matrix_scenarios, emit_perf_report, run_perf_matrix, run_robot_vacuum_perf, PerfConfig,
+    default_matrix_scenarios, emit_perf_report, run_perf_matrix, run_robot_vacuum_perf,
+    PerfConfig, ValidationPerfMode,
 };
 
 fn main() {
@@ -36,6 +37,7 @@ fn main() {
         no_stdlib,
         include_prepare_view: !skip_prepare_view,
         release_build: !cfg!(debug_assertions),
+        validation_mode: ValidationPerfMode::ViewFirst,
     };
 
     let report = run_robot_vacuum_perf(&config, &cache_root);

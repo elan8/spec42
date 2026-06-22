@@ -2,7 +2,8 @@ pub mod semantic;
 
 pub use semantic::activity_graph::enrich_activity_diagrams_from_graph;
 pub use semantic::diagnostics::{
-    collect_diagnostics_from_graph, collect_untyped_part_usage_diagnostics,
+    collect_diagnostics_from_graph, collect_diagnostics_from_graph_with_unit_registry,
+    collect_untyped_part_usage_diagnostics,
     missing_library_context_diagnostic, DiagnosticRelatedInfo, DiagnosticSeverity,
     DiagnosticsOptions, SemanticDiagnostic,
 };

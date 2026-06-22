@@ -32,12 +32,22 @@ fn is_viewpoint_kind(kind: &str) -> bool {
 pub fn compute_semantic_diagnostics(
     graph: &SemanticGraph,
     uri: &Url,
+    options: DiagnosticsOptions,
+) -> Vec<SemanticDiagnostic> {
+    let unit_registry = UnitRegistry::from_graph(graph);
+    compute_semantic_diagnostics_with_unit_registry(graph, uri, options, &unit_registry)
+}
+
+/// Like [`compute_semantic_diagnostics`] but reuses a workspace-level unit registry.
+pub fn compute_semantic_diagnostics_with_unit_registry(
+    graph: &SemanticGraph,
+    uri: &Url,
     _options: DiagnosticsOptions,
+    unit_registry: &UnitRegistry,
 ) -> Vec<SemanticDiagnostic> {
     let mut diagnostics = Vec::new();
     let total_start = Instant::now();
     let mut section_timings = Vec::<(String, u128, usize)>::new();
-    let unit_registry = UnitRegistry::from_graph(graph);
     // 0) Explicit builder diagnostics (e.g. ambiguous endpoint resolution).
     let t0 = Instant::now();
     let d0 = diagnostics.len();

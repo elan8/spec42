@@ -1,8 +1,11 @@
 use url::Url;
 
 use crate::semantic::graph::SemanticGraph;
+use crate::UnitRegistry;
 
-use super::engine_impl::compute_semantic_diagnostics;
+use super::engine_impl::{
+    compute_semantic_diagnostics, compute_semantic_diagnostics_with_unit_registry,
+};
 use super::types::{DiagnosticsOptions, SemanticDiagnostic};
 
 /// Collects semantic diagnostics from an already-built semantic graph.
@@ -15,6 +18,16 @@ pub fn collect_diagnostics_from_graph(
     options: DiagnosticsOptions,
 ) -> Vec<SemanticDiagnostic> {
     compute_semantic_diagnostics(graph, uri, options)
+}
+
+/// Collects semantic diagnostics reusing a workspace-level [`UnitRegistry`].
+pub fn collect_diagnostics_from_graph_with_unit_registry(
+    graph: &SemanticGraph,
+    uri: &Url,
+    options: DiagnosticsOptions,
+    unit_registry: &UnitRegistry,
+) -> Vec<SemanticDiagnostic> {
+    compute_semantic_diagnostics_with_unit_registry(graph, uri, options, unit_registry)
 }
 
 #[cfg(test)]

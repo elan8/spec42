@@ -32,11 +32,27 @@ pub struct PerfRegressionThresholds {
     pub total_ms: u128,
 }
 
+/// Release-profile ceilings for time-to-completed-validation scenarios.
+#[derive(Debug, Clone, Copy)]
+pub struct ValidationPerfThresholds {
+    pub eager_at_load_ms: u128,
+    pub deferred_ensure_ms: u128,
+    pub view_then_validation_ms: u128,
+}
+
 pub fn release_perf_thresholds() -> PerfRegressionThresholds {
     PerfRegressionThresholds {
         load_workspace_ms: 3_000,
         prepare_view_ms: 2_500,
         total_ms: 5_500,
+    }
+}
+
+pub fn release_validation_perf_thresholds() -> ValidationPerfThresholds {
+    ValidationPerfThresholds {
+        eager_at_load_ms: 3_500,
+        deferred_ensure_ms: 3_000,
+        view_then_validation_ms: 5_500,
     }
 }
 
@@ -65,6 +81,29 @@ pub fn assert_release_perf_thresholds(phases: &HostPhaseTimings) {
     );
 }
 
+pub fn assert_release_validation_perf_thresholds(phases: &HostPhaseTimings) {
+    if cfg!(debug_assertions) {
+        return;
+    }
+    let thresholds = release_validation_perf_thresholds();
+    if phases.time_to_completed_validation_ms == 0 {
+        return;
+    }
+    let ceiling = match phases.validation_mode {
+        ValidationPerfMode::EagerAtLoad => thresholds.eager_at_load_ms,
+        ValidationPerfMode::DeferredEnsure => thresholds.deferred_ensure_ms,
+        ValidationPerfMode::ViewThenValidation => thresholds.view_then_validation_ms,
+        ValidationPerfMode::ViewFirst => return,
+    };
+    assert!(
+        phases.time_to_completed_validation_ms <= ceiling,
+        "time_to_completed_validation {}ms exceeded ceiling {}ms (mode {:?})",
+        phases.time_to_completed_validation_ms,
+        ceiling,
+        phases.validation_mode
+    );
+}
+
 /// Performance scenario configuration.
 #[derive(Debug, Clone, Serialize)]
 pub struct PerfConfig {
@@ -72,10 +111,27 @@ pub struct PerfConfig {
     pub no_stdlib: bool,
     pub include_prepare_view: bool,
     pub release_build: bool,
+    #[serde(default)]
+    pub validation_mode: ValidationPerfMode,
+}
+
+/// What “time to completed validation” measures in a perf run.
+#[derive(Debug, Clone, Copy, Serialize, PartialEq, Eq, Default)]
+#[serde(rename_all = "snake_case")]
+pub enum ValidationPerfMode {
+    /// View-first: deferred validation at load; no `ensure_validation()` in the run.
+    #[default]
+    ViewFirst,
+    /// Validation collected during `load_workspace` (`ValidationTiming::Eager`).
+    EagerAtLoad,
+    /// Deferred load, then `ensure_validation()` only.
+    DeferredEnsure,
+    /// Deferred load, `prepare_view`, then `ensure_validation()`.
+    ViewThenValidation,
 }
 
 /// Wall-clock duration per host pipeline phase.
-#[derive(Debug, Clone, Default, Serialize)]
+#[derive(Debug, Clone, Serialize)]
 pub struct HostPhaseTimings {
     pub engine_build_ms: u128,
     pub loading_documents_ms: u128,
@@ -86,7 +142,30 @@ pub struct HostPhaseTimings {
     pub projecting_model_ms: u128,
     pub load_workspace_total_ms: u128,
     pub prepare_view_ms: u128,
+    pub ensure_validation_ms: u128,
+    pub time_to_completed_validation_ms: u128,
+    pub validation_mode: ValidationPerfMode,
     pub total_ms: u128,
+}
+
+impl Default for HostPhaseTimings {
+    fn default() -> Self {
+        Self {
+            engine_build_ms: 0,
+            loading_documents_ms: 0,
+            building_graph_ms: 0,
+            building_language_workspace_ms: 0,
+            building_view_catalog_ms: 0,
+            collecting_validation_ms: 0,
+            projecting_model_ms: 0,
+            load_workspace_total_ms: 0,
+            prepare_view_ms: 0,
+            ensure_validation_ms: 0,
+            time_to_completed_validation_ms: 0,
+            validation_mode: ValidationPerfMode::default(),
+            total_ms: 0,
+        }
+    }
 }
 
 /// In-process semantic/visualization phase breakdown (post-graph or cold).
@@ -277,11 +356,12 @@ fn load_snapshot_with_phases(
     engine: &Spec42Engine,
     root: &Path,
     model_dir: &Path,
+    validation_timing: ValidationTiming,
 ) -> (Arc<HostWorkspaceSnapshot>, HashMap<String, u128>, u128) {
     let provider = HostFilesystemProvider::from_paths(model_dir, Some(root), &[]);
     let request = WorkspaceLoadRequest::single_target(model_dir.to_path_buf())
         .with_workspace_root(Some(root.to_path_buf()))
-        .with_validation_timing(ValidationTiming::Deferred);
+        .with_validation_timing(validation_timing);
 
     let recorder = Arc::new(Mutex::new(PhaseRecorder::new()));
     let progress_recorder = Arc::clone(&recorder);
@@ -456,12 +536,21 @@ pub fn run_robot_vacuum_perf(
     let (root, model_dir) = require_robot_vacuum_fixture();
     let fixture = collect_fixture_summary(&model_dir);
 
+    let validation_timing = match config.validation_mode {
+        ValidationPerfMode::EagerAtLoad => ValidationTiming::Eager,
+        ValidationPerfMode::ViewFirst
+        | ValidationPerfMode::DeferredEnsure
+        | ValidationPerfMode::ViewThenValidation => ValidationTiming::Deferred,
+    };
+    let include_prepare_view = config.include_prepare_view
+        || config.validation_mode == ValidationPerfMode::ViewThenValidation;
+
     let (engine, engine_build_ms) = build_engine(cache_dir, config.no_stdlib);
     let (snapshot, phase_durations, load_workspace_total_ms) =
-        load_snapshot_with_phases(&engine, &root, &model_dir);
+        load_snapshot_with_phases(&engine, &root, &model_dir, validation_timing);
 
     let mut prepare_view_ms = 0;
-    if config.include_prepare_view {
+    if include_prepare_view {
         let prepare_start = Instant::now();
         let _ = snapshot
             .prepare_view(RENDERER_VIEW, Some(SELECTED_VIEW))
@@ -469,10 +558,32 @@ pub fn run_robot_vacuum_perf(
         prepare_view_ms = prepare_start.elapsed().as_millis();
     }
 
+    let mut ensure_validation_ms = 0;
+    if matches!(
+        config.validation_mode,
+        ValidationPerfMode::DeferredEnsure | ValidationPerfMode::ViewThenValidation
+    ) {
+        let ensure_start = Instant::now();
+        let _ = snapshot.ensure_validation().expect("ensure validation");
+        ensure_validation_ms = ensure_start.elapsed().as_millis();
+    }
+
+    let time_to_completed_validation_ms = match config.validation_mode {
+        ValidationPerfMode::ViewFirst => 0,
+        ValidationPerfMode::EagerAtLoad => load_workspace_total_ms,
+        ValidationPerfMode::DeferredEnsure => load_workspace_total_ms + ensure_validation_ms,
+        ValidationPerfMode::ViewThenValidation => {
+            load_workspace_total_ms + prepare_view_ms + ensure_validation_ms
+        }
+    };
+
     let post_snapshot_visualization = collect_post_snapshot_visualization(snapshot.as_ref());
     let (cold_one_shot_visualization_ms, _) = collect_cold_one_shot_visualization(&root, &model_dir);
 
-    let measured_total_ms = engine_build_ms + load_workspace_total_ms + prepare_view_ms;
+    let measured_total_ms = engine_build_ms
+        + load_workspace_total_ms
+        + prepare_view_ms
+        + ensure_validation_ms;
 
     let host_phases = HostPhaseTimings {
         engine_build_ms,
@@ -484,6 +595,9 @@ pub fn run_robot_vacuum_perf(
         projecting_model_ms: duration_for(&phase_durations, "projectingModel"),
         load_workspace_total_ms,
         prepare_view_ms,
+        ensure_validation_ms,
+        time_to_completed_validation_ms,
+        validation_mode: config.validation_mode,
         total_ms: measured_total_ms,
     };
 
@@ -516,6 +630,17 @@ fn median_host_phases(reports: &[RobotVacuumPerfReport]) -> HostPhaseTimings {
         projecting_model_ms: median_u128(&reports.iter().map(|r| r.host_phases.projecting_model_ms).collect::<Vec<_>>()),
         load_workspace_total_ms: median_u128(&reports.iter().map(|r| r.host_phases.load_workspace_total_ms).collect::<Vec<_>>()),
         prepare_view_ms: median_u128(&reports.iter().map(|r| r.host_phases.prepare_view_ms).collect::<Vec<_>>()),
+        ensure_validation_ms: median_u128(&reports.iter().map(|r| r.host_phases.ensure_validation_ms).collect::<Vec<_>>()),
+        time_to_completed_validation_ms: median_u128(
+            &reports
+                .iter()
+                .map(|r| r.host_phases.time_to_completed_validation_ms)
+                .collect::<Vec<_>>(),
+        ),
+        validation_mode: reports
+            .first()
+            .map(|r| r.host_phases.validation_mode)
+            .unwrap_or_default(),
         total_ms: median_u128(&reports.iter().map(|r| r.host_phases.total_ms).collect::<Vec<_>>()),
     }
 }
@@ -602,18 +727,49 @@ pub fn default_matrix_scenarios(release_build: bool) -> Vec<PerfConfig> {
             no_stdlib: true,
             include_prepare_view: false,
             release_build,
+            validation_mode: ValidationPerfMode::ViewFirst,
         },
         PerfConfig {
             label: "no_stdlib_load_and_prepare_view".into(),
             no_stdlib: true,
             include_prepare_view: true,
             release_build,
+            validation_mode: ValidationPerfMode::ViewFirst,
         },
         PerfConfig {
             label: "embedded_libs_load_and_prepare_view".into(),
             no_stdlib: false,
             include_prepare_view: true,
             release_build,
+            validation_mode: ValidationPerfMode::ViewFirst,
+        },
+        PerfConfig {
+            label: "validation_eager_at_load".into(),
+            no_stdlib: true,
+            include_prepare_view: false,
+            release_build,
+            validation_mode: ValidationPerfMode::EagerAtLoad,
+        },
+        PerfConfig {
+            label: "validation_deferred_ensure".into(),
+            no_stdlib: true,
+            include_prepare_view: false,
+            release_build,
+            validation_mode: ValidationPerfMode::DeferredEnsure,
+        },
+        PerfConfig {
+            label: "view_then_validation".into(),
+            no_stdlib: true,
+            include_prepare_view: true,
+            release_build,
+            validation_mode: ValidationPerfMode::ViewThenValidation,
         },
     ]
+}
+
+pub fn validation_matrix_scenarios(release_build: bool) -> Vec<PerfConfig> {
+    default_matrix_scenarios(release_build)
+        .into_iter()
+        .filter(|scenario| scenario.validation_mode != ValidationPerfMode::ViewFirst)
+        .collect()
 }

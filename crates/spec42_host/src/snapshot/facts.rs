@@ -1,11 +1,11 @@
 //! Host validation and projection assembly from a built semantic graph.
 
-use std::collections::BTreeSet;
+use std::collections::{BTreeSet, HashMap};
 
 use semantic_core::{
-    collect_diagnostics_from_graph, collect_untyped_part_usage_diagnostics,
+    collect_diagnostics_from_graph_with_unit_registry, collect_untyped_part_usage_diagnostics,
     missing_library_context_diagnostic, DiagnosticSeverity, DiagnosticsOptions, SemanticDiagnostic,
-    SemanticGraph, SysmlDocument,
+    SemanticGraph, SysmlDocument, UnitRegistry, WorkspaceParsedDocument,
 };
 use sysml_v2_parser::DiagnosticSeverity as ParseSeverity;
 use url::Url;
@@ -21,6 +21,7 @@ use super::validation::{
 pub(crate) fn collect_host_validation_report(
     graph: &SemanticGraph,
     documents: &[SysmlDocument],
+    _parsed_documents: &[WorkspaceParsedDocument],
     library_urls: &[Url],
     target_files: &[std::path::PathBuf],
     workspace_root: Option<&std::path::Path>,
@@ -28,15 +29,21 @@ pub(crate) fn collect_host_validation_report(
     strict_diagnostics: bool,
 ) -> crate::error::HostResult<HostValidationReport> {
     let target_urls = target_file_urls(target_files)?;
+    let unit_registry = UnitRegistry::from_graph(graph);
+    let document_text: HashMap<&str, &str> = documents
+        .iter()
+        .map(|doc| (doc.uri.as_str(), doc.content.as_str()))
+        .collect();
     let mut host_documents = Vec::new();
 
     for uri in &target_urls {
-        let text = document_text_for_uri(documents, uri);
+        let text = document_text.get(uri.as_str()).copied().unwrap_or("");
         let diagnostics = collect_host_document_diagnostics(
             graph,
+            &unit_registry,
             library_urls,
             uri,
-            &text,
+            text,
             strict_diagnostics,
         );
         host_documents.push(HostValidatedDocument {
@@ -115,16 +122,9 @@ fn target_file_urls(target_files: &[std::path::PathBuf]) -> crate::error::HostRe
         .collect::<Result<BTreeSet<_>, _>>()
 }
 
-fn document_text_for_uri(documents: &[SysmlDocument], uri: &Url) -> String {
-    documents
-        .iter()
-        .find(|doc| doc.uri.as_str() == uri.as_str())
-        .map(|doc| doc.content.clone())
-        .unwrap_or_default()
-}
-
 fn collect_host_document_diagnostics(
     graph: &SemanticGraph,
+    unit_registry: &UnitRegistry,
     library_urls: &[Url],
     uri: &Url,
     text: &str,
@@ -146,10 +146,11 @@ fn collect_host_document_diagnostics(
     };
 
     if allow_semantic {
-        diagnostics.extend(collect_diagnostics_from_graph(
+        diagnostics.extend(collect_diagnostics_from_graph_with_unit_registry(
             graph,
             uri,
             DiagnosticsOptions::default(),
+            unit_registry,
         ));
 
         let has_unresolved_type_reference = has_semantic_code(&diagnostics, "unresolved_type_reference");
