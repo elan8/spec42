@@ -9,6 +9,9 @@ mod robot_vacuum_fixture;
 use kernel::build_sysml_visualization_for_paths;
 use robot_vacuum_fixture::require_robot_vacuum_fixture;
 use spec42::cli::{CheckArgs, Cli, OutputFormat};
+use spec42::perform_check;
+use std::collections::HashMap;
+use tower_lsp::lsp_types::NumberOrString;
 
 fn diagnostic_code_counts(report: &kernel::ValidationReport) -> HashMap<String, usize> {
     let mut counts = HashMap::new();
