@@ -170,4 +170,5 @@ pub(super) fn add_node_and_recurse(
         .entry(qualified.to_string())
         .or_default()
         .push(NodeId::new(uri, qualified));
+    g.invalidate_query_indexes();
 }

@@ -1,7 +1,7 @@
 //! Petgraph-backed semantic graph and query API.
 
 use std::collections::HashMap;
-use std::sync::Mutex;
+use std::sync::{Arc, Mutex};
 
 use crate::semantic::text_span::{TextPosition, TextRange};
 use petgraph::stable_graph::{NodeIndex, StableGraph};
@@ -15,9 +15,15 @@ use crate::semantic::model::{
 };
 use crate::semantic::workspace_uri;
 
+/// Cached reverse index from petgraph node index to [`NodeId`] (invalidated on structural mutation).
+#[derive(Debug, Clone)]
+struct GraphQueryIndexes {
+    index_to_node_id: HashMap<NodeIndex, NodeId>,
+}
+
 /// Semantic graph: nodes (model elements) and edges (relationships).
 /// Uses petgraph StableGraph for efficient add/remove and future algorithm support.
-#[derive(Debug, Default)]
+#[derive(Debug)]
 pub struct SemanticGraph {
     pub graph: StableGraph<SemanticNode, SemanticEdge, Directed>,
     pub node_index_by_id: HashMap<NodeId, NodeIndex>,
@@ -26,6 +32,13 @@ pub struct SemanticGraph {
     pub pending_expression_relationships: Vec<PendingExpressionRelationship>,
     pub pending_relationships: Vec<PendingRelationship>,
     pub import_lookup_cache: Mutex<HashMap<(NodeId, String, bool), Vec<NodeId>>>,
+    query_indexes: Mutex<Option<Arc<GraphQueryIndexes>>>,
+}
+
+impl Default for SemanticGraph {
+    fn default() -> Self {
+        Self::new()
+    }
 }
 
 impl Clone for SemanticGraph {
@@ -38,6 +51,7 @@ impl Clone for SemanticGraph {
             pending_expression_relationships: self.pending_expression_relationships.clone(),
             pending_relationships: self.pending_relationships.clone(),
             import_lookup_cache: Mutex::new(HashMap::new()),
+            query_indexes: Mutex::new(None),
         }
     }
 }
@@ -71,6 +85,34 @@ impl SemanticGraph {
             pending_expression_relationships: Vec::new(),
             pending_relationships: Vec::new(),
             import_lookup_cache: Mutex::new(HashMap::new()),
+            query_indexes: Mutex::new(None),
+        }
+    }
+
+    fn build_query_indexes(&self) -> GraphQueryIndexes {
+        let mut index_to_node_id = HashMap::with_capacity(self.node_index_by_id.len());
+        for (id, idx) in &self.node_index_by_id {
+            index_to_node_id.insert(*idx, id.clone());
+        }
+        GraphQueryIndexes { index_to_node_id }
+    }
+
+    fn query_indexes(&self) -> Arc<GraphQueryIndexes> {
+        let mut guard = self
+            .query_indexes
+            .lock()
+            .expect("semantic graph query indexes lock");
+        if let Some(indexes) = guard.as_ref() {
+            return Arc::clone(indexes);
+        }
+        let built = Arc::new(self.build_query_indexes());
+        *guard = Some(Arc::clone(&built));
+        built
+    }
+
+    pub(crate) fn invalidate_query_indexes(&self) {
+        if let Ok(mut guard) = self.query_indexes.lock() {
+            *guard = None;
         }
     }
 
@@ -93,6 +135,7 @@ impl SemanticGraph {
                 self.graph.remove_node(idx);
             }
         }
+        self.invalidate_query_indexes();
         self.clear_import_lookup_cache();
     }
 
@@ -151,7 +194,7 @@ impl SemanticGraph {
                 self.graph.add_edge(src_idx, tgt_idx, edge.clone());
             }
         }
-        self.clear_import_lookup_cache();
+        self.invalidate_query_indexes();
     }
 
     fn qualified_name_under_packages(
@@ -185,16 +228,10 @@ impl SemanticGraph {
     }
 
     fn iter_edges(&self) -> impl Iterator<Item = (NodeId, NodeId, SemanticEdge)> + '_ {
-        let node_ids: Vec<_> = self
-            .node_index_by_id
-            .iter()
-            .map(|(k, v)| (k.clone(), *v))
-            .collect();
-        let id_by_idx: HashMap<NodeIndex, NodeId> =
-            node_ids.into_iter().map(|(k, v)| (v, k)).collect();
+        let indexes = self.query_indexes();
         self.graph.edge_references().filter_map(move |e| {
-            let src_id = id_by_idx.get(&e.source())?.clone();
-            let tgt_id = id_by_idx.get(&e.target())?.clone();
+            let src_id = indexes.index_to_node_id.get(&e.source())?.clone();
+            let tgt_id = indexes.index_to_node_id.get(&e.target())?.clone();
             let edge = e.weight().clone();
             Some((src_id, tgt_id, edge))
         })
@@ -340,11 +377,8 @@ impl SemanticGraph {
             Some(&idx) => idx,
             None => return Vec::new(),
         };
-        let id_by_idx: HashMap<NodeIndex, NodeId> = self
-            .node_index_by_id
-            .iter()
-            .map(|(k, v)| (*v, k.clone()))
-            .collect();
+        let indexes = self.query_indexes();
+        let id_by_idx = &indexes.index_to_node_id;
         let mut targets = Vec::new();
         for edge in self.graph.edges_directed(src_idx, Direction::Outgoing) {
             if matches!(
@@ -371,11 +405,8 @@ impl SemanticGraph {
             Some(&idx) => idx,
             None => return Vec::new(),
         };
-        let id_by_idx: HashMap<NodeIndex, NodeId> = self
-            .node_index_by_id
-            .iter()
-            .map(|(k, v)| (*v, k.clone()))
-            .collect();
+        let indexes = self.query_indexes();
+        let id_by_idx = &indexes.index_to_node_id;
         let mut targets = Vec::new();
         for edge in self.graph.edges_directed(src_idx, Direction::Outgoing) {
             if edge.weight().kind == kind {
@@ -398,11 +429,8 @@ impl SemanticGraph {
             Some(&idx) => idx,
             None => return Vec::new(),
         };
-        let id_by_idx: HashMap<NodeIndex, NodeId> = self
-            .node_index_by_id
-            .iter()
-            .map(|(k, v)| (*v, k.clone()))
-            .collect();
+        let indexes = self.query_indexes();
+        let id_by_idx = &indexes.index_to_node_id;
         let mut sources = Vec::new();
         for edge in self.graph.edges_directed(tgt_idx, Direction::Incoming) {
             if matches!(
@@ -429,11 +457,8 @@ impl SemanticGraph {
             Some(&idx) => idx,
             None => return Vec::new(),
         };
-        let id_by_idx: HashMap<NodeIndex, NodeId> = self
-            .node_index_by_id
-            .iter()
-            .map(|(k, v)| (*v, k.clone()))
-            .collect();
+        let indexes = self.query_indexes();
+        let id_by_idx = &indexes.index_to_node_id;
         let mut sources = Vec::new();
         for edge in self.graph.edges_directed(tgt_idx, Direction::Incoming) {
             if edge.weight().kind == kind {
@@ -456,11 +481,8 @@ impl SemanticGraph {
             Some(&idx) => idx,
             None => return Vec::new(),
         };
-        let id_by_idx: HashMap<NodeIndex, NodeId> = self
-            .node_index_by_id
-            .iter()
-            .map(|(k, v)| (*v, k.clone()))
-            .collect();
+        let indexes = self.query_indexes();
+        let id_by_idx = &indexes.index_to_node_id;
         let mut relationships = Vec::new();
         for edge in self.graph.edges_directed(src_idx, Direction::Outgoing) {
             if let Some(tgt_id) = id_by_idx.get(&edge.target()) {
@@ -481,11 +503,8 @@ impl SemanticGraph {
             Some(&idx) => idx,
             None => return Vec::new(),
         };
-        let id_by_idx: HashMap<NodeIndex, NodeId> = self
-            .node_index_by_id
-            .iter()
-            .map(|(k, v)| (*v, k.clone()))
-            .collect();
+        let indexes = self.query_indexes();
+        let id_by_idx = &indexes.index_to_node_id;
         let mut relationships = Vec::new();
         for edge in self.graph.edges_directed(tgt_idx, Direction::Incoming) {
             if let Some(src_id) = id_by_idx.get(&edge.source()) {
@@ -503,11 +522,8 @@ impl SemanticGraph {
             Some(&idx) => idx,
             None => return Vec::new(),
         };
-        let id_by_idx: HashMap<NodeIndex, NodeId> = self
-            .node_index_by_id
-            .iter()
-            .map(|(k, v)| (*v, k.clone()))
-            .collect();
+        let indexes = self.query_indexes();
+        let id_by_idx = &indexes.index_to_node_id;
         let mut targets = Vec::new();
         for edge in self.graph.edges_directed(src_idx, Direction::Outgoing) {
             if edge.weight().kind == RelationshipKind::Perform {
@@ -527,11 +543,8 @@ impl SemanticGraph {
             Some(&idx) => idx,
             None => return Vec::new(),
         };
-        let id_by_idx: HashMap<NodeIndex, NodeId> = self
-            .node_index_by_id
-            .iter()
-            .map(|(k, v)| (*v, k.clone()))
-            .collect();
+        let indexes = self.query_indexes();
+        let id_by_idx = &indexes.index_to_node_id;
         let mut sources = Vec::new();
         for edge in self.graph.edges_directed(tgt_idx, Direction::Incoming) {
             if edge.weight().kind == RelationshipKind::Perform {
@@ -558,11 +571,8 @@ impl SemanticGraph {
         if ids.is_empty() {
             return Vec::new();
         }
-        let id_by_idx: HashMap<NodeIndex, NodeId> = self
-            .node_index_by_id
-            .iter()
-            .map(|(k, v)| (*v, k.clone()))
-            .collect();
+        let indexes = self.query_indexes();
+        let id_by_idx = &indexes.index_to_node_id;
         let mut out = Vec::new();
         for e in self.graph.edge_references() {
             if e.weight().kind != RelationshipKind::Connection {
@@ -595,11 +605,8 @@ impl SemanticGraph {
         if ids.is_empty() {
             return Vec::new();
         }
-        let id_by_idx: HashMap<NodeIndex, NodeId> = self
-            .node_index_by_id
-            .iter()
-            .map(|(k, v)| (*v, k.clone()))
-            .collect();
+        let indexes = self.query_indexes();
+        let id_by_idx = &indexes.index_to_node_id;
         let mut out = Vec::new();
         for e in self.graph.edge_references() {
             if e.weight().kind != RelationshipKind::Connection {
@@ -635,11 +642,8 @@ impl SemanticGraph {
         if ids.is_empty() {
             return Vec::new();
         }
-        let id_by_idx: HashMap<NodeIndex, NodeId> = self
-            .node_index_by_id
-            .iter()
-            .map(|(k, v)| (*v, k.clone()))
-            .collect();
+        let indexes = self.query_indexes();
+        let id_by_idx = &indexes.index_to_node_id;
         let mut out = Vec::new();
         for e in self.graph.edge_references() {
             let Some(connect) = e.weight().connect.clone() else {
@@ -680,11 +684,8 @@ impl SemanticGraph {
         if ids.is_empty() {
             return Vec::new();
         }
-        let id_by_idx: HashMap<NodeIndex, NodeId> = self
-            .node_index_by_id
-            .iter()
-            .map(|(k, v)| (*v, k.clone()))
-            .collect();
+        let indexes = self.query_indexes();
+        let id_by_idx = &indexes.index_to_node_id;
         let mut out = Vec::new();
         for e in self.graph.edge_references() {
             let src_id = match id_by_idx.get(&e.source()) {
@@ -740,11 +741,8 @@ impl SemanticGraph {
         if workspace_ids.is_empty() {
             return Vec::new();
         }
-        let id_by_idx: HashMap<NodeIndex, NodeId> = self
-            .node_index_by_id
-            .iter()
-            .map(|(k, v)| (*v, k.clone()))
-            .collect();
+        let indexes = self.query_indexes();
+        let id_by_idx = &indexes.index_to_node_id;
         let mut out = Vec::new();
         for e in self.graph.edge_references() {
             let src_id = match id_by_idx.get(&e.source()) {
@@ -781,7 +779,8 @@ impl SemanticGraph {
         self.node_ids_by_qualified_name
             .entry(node.id.qualified_name.clone())
             .or_default()
-            .push(node.id);
+            .push(node.id.clone());
+        self.invalidate_query_indexes();
     }
 
     /// Inserts a directed relationship between existing workspace nodes.

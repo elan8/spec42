@@ -280,19 +280,24 @@ fn workspace_declared_packages(workspace: &[WorkspaceSource<'_>]) -> HashSet<Pac
     defined
 }
 
-/// Qualified names of packages declared in SysML source (includes nested packages).
-pub fn declared_packages_in_content(content: &str) -> HashSet<String> {
+/// Qualified names of packages declared in a parsed SysML document (includes nested packages).
+pub fn declared_packages_from_parsed(parsed: &ParsedRoot) -> HashSet<String> {
     let mut defined = HashSet::new();
-    for_each_package_in_content(content, |qualified, _body| {
+    for_each_package_in_parsed(parsed, |qualified, _body| {
         defined.insert(qualified);
     });
     defined
 }
 
-fn for_each_package_in_content(content: &str, mut visit: impl FnMut(String, &PackageBody)) {
+/// Qualified names of packages declared in SysML source (includes nested packages).
+pub fn declared_packages_in_content(content: &str) -> HashSet<String> {
     let Ok(parsed) = sysml_v2_parser::parse(content) else {
-        return;
+        return HashSet::new();
     };
+    declared_packages_from_parsed(&parsed)
+}
+
+fn for_each_package_in_parsed(parsed: &ParsedRoot, mut visit: impl FnMut(String, &PackageBody)) {
     for element in &parsed.elements {
         match &element.value {
             RootElement::Package(package) => visit_package_tree(package, None, &mut visit),
@@ -302,6 +307,13 @@ fn for_each_package_in_content(content: &str, mut visit: impl FnMut(String, &Pac
             _ => {}
         }
     }
+}
+
+fn for_each_package_in_content(content: &str, mut visit: impl FnMut(String, &PackageBody)) {
+    let Ok(parsed) = sysml_v2_parser::parse(content) else {
+        return;
+    };
+    for_each_package_in_parsed(&parsed, visit);
 }
 
 fn visit_package_tree(

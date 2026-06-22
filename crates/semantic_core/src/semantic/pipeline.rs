@@ -6,7 +6,7 @@ use std::time::Instant;
 use crate::semantic::analysis_typing::prepare_analysis_evaluation_context;
 use crate::semantic::graph::SemanticGraph;
 use crate::semantic::graph_builder::build_graph_from_doc;
-use crate::semantic::library_loader::declared_packages_in_content;
+use crate::semantic::library_loader::declared_packages_from_parsed;
 use crate::semantic::relationships::{
     link_workspace_relationships, resolve_workspace_pending_relationships,
 };
@@ -32,22 +32,16 @@ pub fn build_and_link_graph(
     }
 
     let mut workspace_packages = HashSet::new();
-    for document in &workspace_docs {
-        workspace_packages.extend(declared_packages_in_content(&document.content));
-    }
 
-    for document in workspace_docs.into_iter().chain(library_docs) {
+    for document in workspace_docs {
         let parse_start = Instant::now();
         let Ok(parsed) = sysml_v2_parser::parse(&document.content) else {
             continue;
         };
+        workspace_packages.extend(declared_packages_from_parsed(&parsed));
         let parse_time_ms = parse_start.elapsed().as_millis().max(1) as u32;
         let doc_graph = build_graph_from_doc(&parsed, &document.uri);
-        if document.source_kind == SysmlDocumentSourceKind::Library {
-            graph.merge_skip_existing_qualified_names(doc_graph, &workspace_packages);
-        } else {
-            graph.merge(doc_graph);
-        }
+        graph.merge(doc_graph);
         parsed_docs.push(WorkspaceParsedDocument {
             uri: document.uri.clone(),
             content: document.content.clone(),
@@ -57,7 +51,23 @@ pub fn build_and_link_graph(
         });
     }
 
-    link_workspace_relationships(&mut graph);
+    for document in library_docs {
+        let parse_start = Instant::now();
+        let Ok(parsed) = sysml_v2_parser::parse(&document.content) else {
+            continue;
+        };
+        let parse_time_ms = parse_start.elapsed().as_millis().max(1) as u32;
+        let doc_graph = build_graph_from_doc(&parsed, &document.uri);
+        graph.merge_skip_existing_qualified_names(doc_graph, &workspace_packages);
+        parsed_docs.push(WorkspaceParsedDocument {
+            uri: document.uri.clone(),
+            content: document.content.clone(),
+            parsed,
+            parse_time_ms,
+            parse_cached: false,
+        });
+    }
+
     finalize_workspace_graph(&mut graph);
 
     Ok((graph, parsed_docs))

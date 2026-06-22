@@ -1,6 +1,8 @@
 //! Builds IBD (Internal Block Diagram) / Interconnection View data from the semantic graph.
 //! Used by sysml/model to return a ready-to-render structure for the client.
 
+use std::collections::{HashMap, HashSet};
+
 use url::Url;
 
 use super::connectors::{
@@ -751,6 +753,25 @@ pub(crate) fn expand_relative_endpoint_to_part_path(
     parts: &[IbdPartDto],
     ports: &[IbdPortDto],
 ) -> String {
+    expand_relative_endpoint_with_port_index(endpoint, parts, &build_port_names_by_parent(ports))
+}
+
+fn build_port_names_by_parent(ports: &[IbdPortDto]) -> HashMap<String, HashSet<String>> {
+    let mut by_parent: HashMap<String, HashSet<String>> = HashMap::new();
+    for port in ports {
+        by_parent
+            .entry(port.parent_id.clone())
+            .or_default()
+            .insert(port.name.clone());
+    }
+    by_parent
+}
+
+fn expand_relative_endpoint_with_port_index(
+    endpoint: &str,
+    parts: &[IbdPartDto],
+    port_names_by_parent: &HashMap<String, HashSet<String>>,
+) -> String {
     let trimmed = endpoint.trim();
     if trimmed.is_empty() || trimmed.contains("::") {
         return trimmed.replace("::", ".");
@@ -764,10 +785,10 @@ pub(crate) fn expand_relative_endpoint_to_part_path(
 
     let mut best_match: Option<(String, bool, usize)> = None;
     for part in parts {
-        if !ports
-            .iter()
-            .any(|port| port.parent_id == part.qualified_name && port.name == port_name)
-        {
+        let Some(port_names) = port_names_by_parent.get(&part.qualified_name) else {
+            continue;
+        };
+        if !port_names.contains(port_name) {
             continue;
         }
         if path_without_port == part.qualified_name
@@ -938,27 +959,20 @@ pub fn build_ibd_for_uri(graph: &SemanticGraph, uri: &Url) -> IbdDataDto {
         .map(|p| (p.parent_id.clone(), p.name.clone()))
         .collect();
 
-    let add_ports_from_def =
-        |def_node: &SemanticNode,
-         parent_dot: &str,
-         ports_out: &mut Vec<IbdPortDto>,
-         existing_ports: &mut std::collections::HashSet<(String, String)>| {
-            add_inherited_ports_from_definition(
-                graph,
-                def_node,
-                parent_dot,
-                ports_out,
-                existing_ports,
-            );
-        };
+    let mut shape_cache: HashMap<String, bool> = HashMap::new();
+    let mut typed_shape_cache: HashMap<String, Option<String>> = HashMap::new();
 
     fn part_def_has_materialized_shape(
         graph: &SemanticGraph,
         def_node: &SemanticNode,
         visiting: &mut std::collections::HashSet<String>,
+        shape_cache: &mut HashMap<String, bool>,
     ) -> bool {
         let def_key = def_node.id.qualified_name.clone();
-        if !visiting.insert(def_key) {
+        if let Some(&cached) = shape_cache.get(&def_key) {
+            return cached;
+        }
+        if !visiting.insert(def_key.clone()) {
             return false;
         }
         let direct = graph
@@ -970,17 +984,34 @@ pub fn build_ibd_for_uri(graph: &SemanticGraph, uri: &Url) -> IbdDataDto {
             .into_iter()
             .any(|generalization| {
                 is_part_like(&generalization.element_kind)
-                    && part_def_has_materialized_shape(graph, generalization, visiting)
+                    && part_def_has_materialized_shape(
+                        graph,
+                        generalization,
+                        visiting,
+                        shape_cache,
+                    )
             });
         visiting.remove(&def_node.id.qualified_name);
-        direct || inherited
+        let result = direct || inherited;
+        shape_cache.insert(def_key, result);
+        result
     }
 
     fn first_typed_part_shape<'a>(
         graph: &'a SemanticGraph,
         node: &'a SemanticNode,
+        shape_cache: &mut HashMap<String, bool>,
+        typed_shape_cache: &mut HashMap<String, Option<String>>,
     ) -> Option<&'a SemanticNode> {
-        graph
+        if let Some(cached_qn) = typed_shape_cache.get(&node.id.qualified_name) {
+            return cached_qn.as_ref().and_then(|qn| {
+                graph
+                    .node_ids_for_qualified_name(qn)
+                    .and_then(|ids| ids.first())
+                    .and_then(|id| graph.get_node(id))
+            });
+        }
+        let found = graph
             .outgoing_typing_or_specializes_targets(node)
             .into_iter()
             .find(|typed_def| {
@@ -989,8 +1020,14 @@ pub fn build_ibd_for_uri(graph: &SemanticGraph, uri: &Url) -> IbdDataDto {
                         graph,
                         typed_def,
                         &mut std::collections::HashSet::new(),
+                        shape_cache,
                     )
-            })
+            });
+        typed_shape_cache.insert(
+            node.id.qualified_name.clone(),
+            found.map(|node| node.id.qualified_name.clone()),
+        );
+        found
     }
 
     #[allow(clippy::too_many_arguments)]
@@ -1003,6 +1040,8 @@ pub fn build_ibd_for_uri(graph: &SemanticGraph, uri: &Url) -> IbdDataDto {
         existing_part_qn_dot: &mut std::collections::HashSet<String>,
         existing_ports: &mut std::collections::HashSet<(String, String)>,
         visiting_defs: &mut std::collections::HashSet<String>,
+        shape_cache: &mut HashMap<String, bool>,
+        typed_shape_cache: &mut HashMap<String, Option<String>>,
     ) {
         for part_child in graph.children_of(usage_node) {
             if !is_part_like(&part_child.element_kind) {
@@ -1030,8 +1069,12 @@ pub fn build_ibd_for_uri(graph: &SemanticGraph, uri: &Url) -> IbdDataDto {
                 existing_part_qn_dot,
                 existing_ports,
                 visiting_defs,
+                shape_cache,
+                typed_shape_cache,
             );
-            if let Some(grand_def) = first_typed_part_shape(graph, part_child) {
+            if let Some(grand_def) =
+                first_typed_part_shape(graph, part_child, shape_cache, typed_shape_cache)
+            {
                 expand_def_subtree(
                     graph,
                     grand_def,
@@ -1041,6 +1084,8 @@ pub fn build_ibd_for_uri(graph: &SemanticGraph, uri: &Url) -> IbdDataDto {
                     existing_part_qn_dot,
                     existing_ports,
                     visiting_defs,
+                    shape_cache,
+                    typed_shape_cache,
                 );
             }
         }
@@ -1056,6 +1101,8 @@ pub fn build_ibd_for_uri(graph: &SemanticGraph, uri: &Url) -> IbdDataDto {
         existing_part_qn_dot: &mut std::collections::HashSet<String>,
         existing_ports: &mut std::collections::HashSet<(String, String)>,
         visiting_defs: &mut std::collections::HashSet<String>,
+        shape_cache: &mut HashMap<String, bool>,
+        typed_shape_cache: &mut HashMap<String, Option<String>>,
     ) {
         let def_key = def_node.id.qualified_name.clone();
         if !visiting_defs.insert(def_key.clone()) {
@@ -1090,8 +1137,12 @@ pub fn build_ibd_for_uri(graph: &SemanticGraph, uri: &Url) -> IbdDataDto {
                 existing_part_qn_dot,
                 existing_ports,
                 visiting_defs,
+                shape_cache,
+                typed_shape_cache,
             );
-            if let Some(grand_def) = first_typed_part_shape(graph, part_child) {
+            if let Some(grand_def) =
+                first_typed_part_shape(graph, part_child, shape_cache, typed_shape_cache)
+            {
                 expand_def_subtree(
                     graph,
                     grand_def,
@@ -1101,6 +1152,8 @@ pub fn build_ibd_for_uri(graph: &SemanticGraph, uri: &Url) -> IbdDataDto {
                     existing_part_qn_dot,
                     existing_ports,
                     visiting_defs,
+                    shape_cache,
+                    typed_shape_cache,
                 );
             }
         }
@@ -1108,15 +1161,19 @@ pub fn build_ibd_for_uri(graph: &SemanticGraph, uri: &Url) -> IbdDataDto {
     }
 
     let parts_snapshot = parts.clone();
+    let mut typed_roots: Vec<(&IbdPartDto, &SemanticNode, &SemanticNode)> = Vec::new();
     for p in &parts_snapshot {
         let Some(node) = graph_node_for_ibd_part(graph, uri, p) else {
             continue;
         };
-        let Some(def_node) = first_typed_part_shape(graph, node) else {
+        let Some(def_node) = first_typed_part_shape(graph, node, &mut shape_cache, &mut typed_shape_cache)
+        else {
             continue;
         };
+        typed_roots.push((p, node, def_node));
+    }
+    for (p, _node, def_node) in &typed_roots {
         let parent_dot = p.qualified_name.as_str();
-        add_ports_from_def(def_node, parent_dot, &mut ports, &mut existing_ports);
         let mut visiting_defs: std::collections::HashSet<String> = std::collections::HashSet::new();
         expand_def_subtree(
             graph,
@@ -1127,11 +1184,12 @@ pub fn build_ibd_for_uri(graph: &SemanticGraph, uri: &Url) -> IbdDataDto {
             &mut existing_part_qn_dot,
             &mut existing_ports,
             &mut visiting_defs,
+            &mut shape_cache,
+            &mut typed_shape_cache,
         );
     }
 
-    let def_container_prefixes: Vec<String> = graph
-        .nodes_for_uri(uri)
+    let def_container_prefixes: Vec<String> = nodes
         .iter()
         .filter(|node| node.element_kind.to_lowercase().contains("part def"))
         .map(|node| node.id.qualified_name.clone())
@@ -1207,20 +1265,6 @@ pub fn build_ibd_for_uri(graph: &SemanticGraph, uri: &Url) -> IbdDataDto {
     }
 
     let instance_def_mappings = build_instance_def_mappings(graph, uri, &parts);
-    connectors = remap_connectors_to_typed_instances(connectors, &instance_def_mappings);
-
-    for connector in &mut connectors {
-        connector.source_id =
-            expand_relative_endpoint_to_part_path(&connector.source_id, &parts, &ports);
-        connector.target_id =
-            expand_relative_endpoint_to_part_path(&connector.target_id, &parts, &ports);
-        if connector.source == connector.source_id {
-            connector.source = connector.source_id.clone();
-        }
-        if connector.target == connector.target_id {
-            connector.target = connector.target_id.clone();
-        }
-    }
 
     // Mirror definition-level connectors into usage-instance paths so interconnection
     // rendering stays instance-centric for selected roots.
@@ -1228,13 +1272,7 @@ pub fn build_ibd_for_uri(graph: &SemanticGraph, uri: &Url) -> IbdDataDto {
         .iter()
         .map(|c| (c.source_id.clone(), c.target_id.clone(), c.rel_type.clone()))
         .collect();
-    for p in &parts_snapshot {
-        let Some(node) = graph_node_for_ibd_part(graph, uri, p) else {
-            continue;
-        };
-        let Some(def_node) = first_typed_part_shape(graph, node) else {
-            continue;
-        };
+    for (p, _node, def_node) in &typed_roots {
         let def_prefix = def_node.id.qualified_name.as_str();
         let usage_prefix_dot = p.qualified_name.as_str();
         if def_node.id.uri != *uri {
@@ -1295,11 +1333,18 @@ pub fn build_ibd_for_uri(graph: &SemanticGraph, uri: &Url) -> IbdDataDto {
     }
 
     connectors = remap_connectors_to_typed_instances(connectors, &instance_def_mappings);
+    let port_names_by_parent = build_port_names_by_parent(&ports);
     for connector in &mut connectors {
-        connector.source_id =
-            expand_relative_endpoint_to_part_path(&connector.source_id, &parts, &ports);
-        connector.target_id =
-            expand_relative_endpoint_to_part_path(&connector.target_id, &parts, &ports);
+        connector.source_id = expand_relative_endpoint_with_port_index(
+            &connector.source_id,
+            &parts,
+            &port_names_by_parent,
+        );
+        connector.target_id = expand_relative_endpoint_with_port_index(
+            &connector.target_id,
+            &parts,
+            &port_names_by_parent,
+        );
         if connector.source == connector.source_id {
             connector.source = connector.source_id.clone();
         }
@@ -1307,7 +1352,6 @@ pub fn build_ibd_for_uri(graph: &SemanticGraph, uri: &Url) -> IbdDataDto {
             connector.target = connector.target_id.clone();
         }
     }
-    connectors = remap_connectors_to_typed_instances(connectors, &instance_def_mappings);
     let connectors = dedupe_connectors(connectors);
 
     ensure_endpoint_parts_present(&mut parts, &connectors, graph, uri);

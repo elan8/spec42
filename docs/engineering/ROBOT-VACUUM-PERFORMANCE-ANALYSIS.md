@@ -16,9 +16,9 @@ Analysis of loading the [sysml-robot-vacuum-cleaner](https://github.com/elan8/sy
 
 Slowness is **not** caused by workspace size. For a 21-file model, the **release** embedding path originally spent **~8.6 s** from cold `load_workspace` through first `prepare_view` (June 2026 baseline).
 
-After embedding-path optimizations (graph reuse, deferred validation, render-snapshot reuse, scoped IBD) the cold path dropped to **~2.8 s**. **IBD internals** optimizations (June 2026) bring it to **~2.2 s** on the same fixture.
+Progressive optimizations brought the cold path to **~2.8 s** (embedding path), **~2.2 s** (IBD merge/finalize), and **~0.67 s** (graph pipeline + `build_ibd_for_uri` + graph query indexes, June 2026) — roughly **~13× faster** than baseline.
 
-Roughly **55% of remaining user-visible time** on the optimized path is **`prepare_view` (~1.2 s release)**; within isolated IBD instrumentation, **per-URI build** still dominates (~1.9 s sequential), while **merge + finalize** dropped from ~3.4 s combined to **~1.0 s** (~104 ms merge + ~867 ms finalize).
+On the current path, **`load_workspace` (~0.5 s)** and **`prepare_view` (~0.15 s)** are both sub-second; **`building_graph` (~0.47 s)** is the largest load phase. Remaining headroom is mostly **repeat `prepare_view`**, **eager validation**, and **IDE/LSP overhead**.
 
 Embedded stdlib/domain libraries add **negligible** marginal cost on warm cache compared to `no_stdlib` for this fixture; engine `build()` was &lt;1 ms after the first materialization.
 
@@ -44,17 +44,18 @@ Raw JSON: `target/spec42-perf/robot-vacuum-host-phases.json`
 
 | Metric | ms | Notes |
 | --- | ---: | --- |
-| **`load_workspace` total** | **960** | Graph reuse; validation deferred |
-| **`prepare_view(productStructure)`** | **1,200** | After IBD internals |
-| **Cold path total** | **2,160** | load + prepare |
-| `building_graph` | 881 | Single graph build |
+| **`load_workspace` total** | **519** | Graph reuse; validation deferred |
+| **`prepare_view(productStructure)`** | **149** | After graph + IBD build optimizations |
+| **Cold path total** | **668** | load + prepare |
+| `building_graph` | 471 | Single graph build (was ~881 ms) |
 | `building_language_workspace` | 8 | Reuses snapshot graph |
-| `building_view_catalog` | 34 | `build_render_snapshot` (deferred IBD) |
+| `building_view_catalog` | 25 | `build_render_snapshot` (deferred IBD) |
 | `collecting_validation` | 0 | Deferred on this harness |
-| `ibd_merge` / `ibd_finalize` | 104 / 867 | Post-snapshot instrumentation |
-| `ibd_per_uri` | 1,929 | Sequential harness (production parallelizes) |
+| `ibd_merge` / `ibd_finalize` | 33 / 130 | Post-snapshot instrumentation |
+| `ibd_per_uri` | 227 | Sequential harness (production parallelizes) |
+| Cold one-shot visualization | 338 | No snapshot reuse |
 
-Re-run matrix after IBD changes: `robot_vacuum_host_performance_matrix_report` (stale matrix still reports legacy `ibd_merge_finalize_ms`).
+Re-run matrix after latest changes: `robot_vacuum_host_performance_matrix_report` (existing matrix JSON is from pre-optimization runs).
 
 ### Release matrix (median of 3 runs)
 
@@ -79,32 +80,32 @@ Debug is **~5.8×** slower for the same host path. Any manual testing or IDE int
 
 Isolated timings on the built snapshot graph (not additive to user path). The harness builds per-URI IBD **sequentially**; production uses `std::thread::scope` in `build_merged_workspace_ibd`, so wall-clock IBD is lower than `ibd_per_uri_ms`.
 
-| Phase | Baseline ms | After embedding opts | After IBD internals | Notes |
-| --- | ---: | ---: | ---: | --- |
-| `prepare_view` (productStructure) | 5,512 | ~1,860 | **~1,215** | Full visualization path |
-| `ibd_per_uri` | 2,317 | ~2,317 | **~1,929** | `build_ibd_for_uri` × 21 (sequential harness) |
-| `ibd_merge` | — | (in merge/finalize) | **~104** | `merge_ibd_payloads_for_workspace_finalize` |
-| `ibd_finalize` | — | (in merge/finalize) | **~867** | `finalize_merged_ibd_connectors` |
-| `ibd_merge_finalize` (legacy) | 3,406 | ~3,406 | — | Replaced by `ibd_merge` + `ibd_finalize` |
-| `build_render_snapshot` | 30 | ~32 | **~32** | Deferred IBD during load |
-| `workspace_graph_dto` | 23 | ~23 | **~23** | Graph projection |
-| Cold one-shot visualization | 5,024 | ~2,800 | **~2,197** | No snapshot reuse |
+| Phase | Baseline ms | After embedding | After IBD merge/finalize | After graph + IBD build | Notes |
+| --- | ---: | ---: | ---: | ---: | --- |
+| `prepare_view` (productStructure) | 5,512 | ~1,860 | ~1,215 | **~147** | Full visualization path |
+| `ibd_per_uri` | 2,317 | ~2,317 | ~1,929 | **~227** | `build_ibd_for_uri` × 21 (sequential harness) |
+| `ibd_merge` | — | — | ~104 | **~33** | `merge_ibd_payloads_for_workspace_finalize` |
+| `ibd_finalize` | — | — | ~867 | **~130** | `finalize_merged_ibd_connectors` |
+| `ibd_merge_finalize` (legacy) | 3,406 | ~3,406 | — | — | Replaced by `ibd_merge` + `ibd_finalize` |
+| `build_render_snapshot` | 30 | ~32 | ~32 | **~20** | Deferred IBD during load |
+| `workspace_graph_dto` | 23 | ~23 | ~23 | **~13** | Graph projection |
+| Cold one-shot visualization | 5,024 | ~2,800 | ~2,197 | **~338** | No snapshot reuse |
 
 ## Architecture: where time goes
 
 ```mermaid
 flowchart TB
-  subgraph load [load_workspace ~960ms release optimized]
-    A[LoadingDocuments ~13ms] --> B[BuildingGraph ~881ms]
+  subgraph load [load_workspace ~519ms release]
+    A[LoadingDocuments ~1ms] --> B[BuildingGraph ~471ms]
     B --> C[BuildingLanguageWorkspace ~8ms]
-    C --> D[BuildingViewCatalog ~34ms]
+    C --> D[BuildingViewCatalog ~25ms]
     D --> E[CollectingValidation 0ms deferred]
-    E --> F[ProjectingModel ~21ms]
+    E --> F[ProjectingModel ~12ms]
   end
-  subgraph view [prepare_view ~1200ms release optimized]
-    G[build from render snapshot] --> H[IBD per URI ~1929ms sequential harness]
-    H --> I[IBD merge ~104ms]
-    I --> J[IBD finalize ~867ms]
+  subgraph view [prepare_view ~149ms release]
+    G[build from render snapshot] --> H[IBD per URI ~227ms sequential harness]
+    H --> I[IBD merge ~33ms]
+    I --> J[IBD finalize ~130ms]
     J --> K[View projection + DTO assembly]
   end
   load --> view
@@ -112,10 +113,11 @@ flowchart TB
 
 **Key observations (current optimized path):**
 
-- `build_render_snapshot` during load uses **deferred IBD** (~34 ms); `prepare_view` materializes full/scoped IBD from the render snapshot.
+- `build_render_snapshot` during load uses **deferred IBD** (~25 ms); `prepare_view` materializes scoped IBD from the render snapshot.
 - `InMemoryWorkspace` reuses the snapshot graph (`from_graph_and_documents`) — no duplicate graph build.
 - Validation is deferred (`ValidationTiming::Deferred`) on the view-first perf harness; eager validation remains the default for hosts that need diagnostics at load.
-- IBD merge skips connector enrich before finalize; workspace instance-def mappings are built once per workspace instead of per URI.
+- Graph pipeline: single parse per workspace doc, single `link_workspace_relationships`, warm import cache across merges, cached `index_to_node_id` for typing/edge traversal.
+- IBD: workspace mapping once at finalize; per-URI typed-shape memoization; consolidated remap/expand; port index for endpoint expansion.
 
 ## Flamegraph / CPU profiling
 
@@ -154,12 +156,12 @@ These align with phase timers: **IBD + validation + duplicate graph build**, not
 
 ### Phase timer ↔ CPU alignment
 
-| Phase timer (release, optimized path) | Flamegraph / perf evidence |
+| Phase timer (release, current path) | Flamegraph / perf evidence |
 | --- | --- |
-| `prepare_view` ~1.2 s; IBD finalize ~0.9 s | Allocator-heavy; IBD extract frames present |
+| `prepare_view` ~0.15 s; IBD per-URI ~0.23 s (harness) | Allocator-heavy; IBD extract still visible but much reduced |
+| `building_graph` ~0.47 s | Parser + merge; duplicate parse/link removed |
 | `collecting_validation` 0 ms (deferred harness) | `type_ref_candidates`, import resolution when eager |
-| Graph build ~0.9 s (single pass) | Parser frames appear once per load |
-| `loading_documents` ~13 ms | Not CPU-bound — confirms size is not the issue |
+| `loading_documents` ~1 ms | Not CPU-bound — confirms size is not the issue |
 
 **Note:** Delete `perf.data` (~2.5 GB) in the repo root after analysis if disk space matters.
 
@@ -167,10 +169,10 @@ These align with phase timers: **IBD + validation + duplicate graph build**, not
 
 | Expectation | Reality |
 | --- | --- |
-| "21 files should be fast" | Graph DTO has **1,681 nodes**; view pipeline builds **full-workspace IBD** for all 21 URIs on every `prepare_view` |
-| "Snapshot avoids rebuild" | Load defers IBD; first view pays full visualization cost |
-| "Phase 5 incremental helps editor saves" | Cold open still pays full `load_workspace` + first `prepare_view` |
-| Spike note (~102 s dev) | Consistent with **debug build** + full validation + view (~50 s measured) + harness/instrumentation overhead |
+| "21 files should be fast" | Cold host path is now **~0.67 s** release; graph DTO still has **1,681 nodes** |
+| "Snapshot avoids rebuild" | Load defers IBD; first `prepare_view` is **~0.15 s** (scoped IBD + render snapshot) |
+| "Phase 5 incremental helps editor saves" | Cold open is fast; edits benefit from `update_snapshot` (experimental) |
+| Spike note (~102 s dev) | Consistent with **debug build** + full validation + view (~50 s measured) + harness overhead |
 
 ## Ranked improvement opportunities
 
@@ -180,13 +182,24 @@ These align with phase timers: **IBD + validation + duplicate graph build**, not
 | 2 | Serve `prepare_view` from `WorkspaceRenderSnapshot` | **Done** | Major first-view reduction |
 | 3 | Scope IBD to view-exposed packages for `general-view` | **Done** | Reduced IBD source set |
 | 4 | Defer validation for view-first hosts | **Done** | ~1.8 s release load (deferred) |
-| 5 | IBD internals: merge/finalize/mapping | **Done** | ~2.4 s → ~1.0 s merge+finalize (harness) |
-| 6 | Cache `prepared_view` on snapshot | Open | Avoid repeat `prepare_view` cost |
-| 7 | Further per-URI IBD (`build_ibd_for_uri`) | Open | Largest remaining IBD slice |
-| 8 | Release-only server binary for IDE | Open | ~5× vs debug |
-| 9 | Phase 5 `update_snapshot` for edits | Open | Saves reload; cold open unchanged |
+| 5 | IBD internals: merge/finalize/mapping | **Done** | merge+finalize ~3.4 s → ~0.16 s (harness) |
+| 6 | Graph pipeline: single parse, single link, query indexes | **Done** | `building_graph` ~881 ms → ~471 ms |
+| 7 | `build_ibd_for_uri`: memo, remap/expand, port index | **Done** | per-URI ~1.9 s → ~0.23 s (harness) |
+| 8 | Cache `prepared_view` on snapshot | Open | Avoid repeat `prepare_view` cost |
+| 9 | Parallel per-document parse/materialize | Open | Multi-core graph build |
+| 10 | Release-only server binary for IDE | Open | ~5× vs debug |
+| 11 | Phase 5 `update_snapshot` for edits | Open | Saves reload; cold open unchanged |
 
 ## After optimizations (June 2026)
+
+Cumulative progression (release, single run, view-first harness):
+
+| Stage | Cold total | `load` | `prepare_view` |
+| --- | ---: | ---: | ---: |
+| Baseline | ~8,617 ms | ~3,623 ms | ~4,994 ms |
+| Embedding path | ~2,809 ms | ~960 ms | ~1,860 ms |
+| IBD merge/finalize | ~2,160 ms | ~960 ms | ~1,200 ms |
+| **Graph + IBD build** | **~668 ms** | **~519 ms** | **~149 ms** |
 
 ### Embedding path (graph reuse, deferred validation, render snapshot, scoped IBD)
 
@@ -210,16 +223,43 @@ Implemented in `semantic_core` (`ibd/merge.rs`, `ibd/connectors.rs`, `ibd/extrac
 | Per-URI: one `enrich_connector_endpoint_refs` after prune (not two) | Less work in `build_ibd_for_uri` |
 | Perf harness: `ibd_merge_ms` + `ibd_finalize_ms` split | Regression tracking per phase |
 
-| Metric | After embedding opts | After IBD internals | Change |
-| --- | ---: | ---: | --- |
-| `prepare_view(productStructure)` | ~1,860 ms | **~1,200 ms** | **~−35%** |
-| `ibd_merge` + `ibd_finalize` (harness) | ~3,406 ms combined | **~971 ms** (~104 + ~867) | **~−71%** |
-| `ibd_per_uri` (harness, sequential) | ~2,317 ms | **~1,929 ms** | ~−17% |
-| **Cold total** | **~2,809 ms** | **~2,160 ms** | **~−23%** |
+| Metric | After embedding opts | After IBD internals | After graph + IBD build | Change (vs IBD internals) |
+| --- | ---: | ---: | ---: | --- |
+| `load_workspace` | ~960 ms | ~960 ms | **~519 ms** | **~−46%** |
+| `prepare_view(productStructure)` | ~1,860 ms | ~1,200 ms | **~149 ms** | **~−88%** |
+| `building_graph` | ~881 ms | ~881 ms | **~471 ms** | **~−46%** |
+| `ibd_merge` + `ibd_finalize` (harness) | ~3,406 ms | ~971 ms | **~163 ms** | **~−83%** |
+| `ibd_per_uri` (harness, sequential) | ~2,317 ms | ~1,929 ms | **~227 ms** | **~−88%** |
+| **Cold total** | **~2,809 ms** | **~2,160 ms** | **~668 ms** | **~−69%** |
+
+### Graph pipeline + query indexes (June 2026)
+
+Implemented in `semantic_core` (`pipeline.rs`, `library_loader.rs`, `graph.rs`, `graph_builder/mod.rs`):
+
+| Change | Effect |
+| --- | --- |
+| Remove duplicate `link_workspace_relationships` before `finalize_workspace_graph` | One link pass instead of two |
+| `declared_packages_from_parsed` — no second parse for package discovery | 21 fewer full parses on robot-vacuum |
+| `index_to_node_id` cache (`Arc`) for edge/typing traversal | Avoids rebuilding reverse map per `outgoing_typing` call |
+| Skip per-merge `import_lookup_cache` clear | Warm cache during pending resolve |
+| `invalidate_query_indexes` on node insert | Safe cache during incremental graph build |
+
+### `build_ibd_for_uri` optimizations (June 2026)
+
+Implemented in `semantic_core` (`ibd/extract_impl.rs`, `ibd/connectors.rs`):
+
+| Change | Effect |
+| --- | --- |
+| Memo `part_def_has_materialized_shape` / `first_typed_part_shape` | Fewer specialization tree walks |
+| `typed_roots` — single pass for expand + mirror | No duplicate typed-shape lookup |
+| Connector path: one remap + one expand (was three remaps + two expands) | Less O(connectors × mappings) work |
+| Port-name index for `expand_relative_endpoint` | O(1) port lookup per part |
+| `extend_instance_def_mappings` without full `mappings.clone()` | Less finalize allocation |
+| Reuse cached `nodes` for `def_container_prefixes` | No second `nodes_for_uri` |
 
 Regression ceilings (release, view-first harness): load ≤ 3,000 ms, prepare ≤ 2,500 ms, total ≤ 5,500 ms — see `spec42_host::robot_vacuum_perf::release_perf_thresholds()`.
 
-**Remaining headroom:** `build_ibd_for_uri` per-URI cost (~1.9 s sequential harness) is the largest IBD slice; parallel production build amortizes wall-clock. Further gains: `prepared_view` snapshot cache, `extend_instance_def_mappings_with_specializations` allocation reduction, optional parallel harness for realistic breakdown.
+**Remaining headroom:** `prepared_view` snapshot cache (repeat views), parallel per-document materialize (multi-core load), parse-once cache in filesystem provider (embedded-lib hosts), release IDE binary, incremental `update_snapshot` for edits.
 
 ## Validation / diagnostics scenarios (June 2026)
 
@@ -228,7 +268,7 @@ After workspace-level validation optimizations (shared `UnitRegistry` per report
 | Scenario | Metric | Release (single run) | Notes |
 | --- | --- | ---: | --- |
 | `validation_eager_at_load` | `time_to_completed_validation_ms` | **~2,707** | Validation during `load_workspace` |
-| `validation_deferred_ensure` | `time_to_completed_validation_ms` | **~2,783** | `load` (~950 ms) + `ensure_validation()` (~1,845 ms) |
+| `validation_deferred_ensure` | `time_to_completed_validation_ms` | **~2,783** (stale; re-measure after graph opts) | `load` (~520 ms) + `ensure_validation()` |
 | `view_then_validation` | `time_to_completed_validation_ms` | **~4,681** | View first, then diagnostics |
 
 Regression ceilings: `release_validation_perf_thresholds()` in `robot_vacuum_perf.rs` (eager ≤ 3.5 s, deferred ensure ≤ 3.0 s, view-then-validation ≤ 5.5 s).
@@ -276,7 +316,7 @@ Override fixture path: `SYSML_ROBOT_VACUUM_DIR=/path/to/checkout`
 
 ### LSP / VS Code (not profiled in depth)
 
-Opening the same model in VS Code adds LSP startup indexing, `sysml/model` Model Explorer payload, JSON transfer, and webview ELK. See [POWER-SYSTEMS-PERFORMANCE-ANALYSIS.md](./POWER-SYSTEMS-PERFORMANCE-ANALYSIS.md) for multipliers (~3–5× debug server, duplicate visualization paths). Expect robot-vacuum IDE cold open to exceed the **~2.2 s** host-only release baseline (optimized embedding path).
+Opening the same model in VS Code adds LSP startup indexing, `sysml/model` Model Explorer payload, JSON transfer, and webview ELK. See [POWER-SYSTEMS-PERFORMANCE-ANALYSIS.md](./POWER-SYSTEMS-PERFORMANCE-ANALYSIS.md) for multipliers (~3–5× debug server, duplicate visualization paths). Expect robot-vacuum IDE cold open to exceed the **~0.67 s** host-only release baseline.
 
 ### Harness code
 

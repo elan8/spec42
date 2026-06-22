@@ -151,8 +151,9 @@ fn extend_instance_def_mappings_with_specializations(
     graph: &SemanticGraph,
     mappings: &mut Vec<(String, String)>,
 ) {
-    let seed = mappings.clone();
-    for (def_dot, instance_dot) in seed {
+    let initial_len = mappings.len();
+    for index in 0..initial_len {
+        let (def_dot, instance_dot) = mappings[index].clone();
         let def_qn = def_dot.replace('.', "::");
         let Some(def_ids) = graph.node_ids_for_qualified_name(&def_qn) else {
             continue;
