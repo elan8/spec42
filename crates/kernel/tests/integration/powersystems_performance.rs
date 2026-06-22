@@ -1,10 +1,5 @@
 //! Report-only performance drill-down for interconnection visualization.
 //!
-//! CI smoke (in-repo drone example):
-//! ```text
-//! cargo test -p kernel --test lsp_integration integration::powersystems_performance::drone_interconnection_performance_smoke_report -- --nocapture
-//! ```
-//!
 //! Optional grid drill-down (requires `SYSML_POWERSYSTEMS_DIR`):
 //! ```text
 //! cargo test -p kernel --test lsp_integration integration::powersystems_performance::powersystems_system_context_performance_report -- --ignored --nocapture
@@ -32,11 +27,6 @@ use super::perf_report::{
     request_with_perf_capture, slowest_phase_entries, value_ms, visualization_model_build_time_ms,
     wait_for_startup_scan, workspace_loaded_files,
 };
-
-fn repo_examples_drone_dir() -> PathBuf {
-    Path::new(env!("CARGO_MANIFEST_DIR"))
-        .join("../../examples/drone")
-}
 
 fn powersystems_repo_root() -> Option<PathBuf> {
     let repo_root = PathBuf::from(std::env::var_os("SYSML_POWERSYSTEMS_DIR")?);
@@ -619,27 +609,6 @@ fn run_interconnection_lsp_performance_report(config: InterconnectionPerfReportC
     );
 
     let _ = child.kill();
-}
-
-#[test]
-fn drone_interconnection_performance_smoke_report() {
-    let repo_root = repo_examples_drone_dir();
-    assert!(
-        repo_root.is_dir(),
-        "expected drone example at {}",
-        repo_root.display()
-    );
-    let views_uri =
-        url::Url::from_file_path(repo_root.join("Views.sysml")).expect("Views.sysml uri");
-
-    run_interconnection_lsp_performance_report(InterconnectionPerfReportConfig {
-        fixture_name: "drone-connections",
-        report_file: "drone-interconnection-performance.json",
-        repo_root: &repo_root,
-        selected_view: "connections",
-        views_uri,
-        warm_cache_budget_ms: 1500,
-    });
 }
 
 #[test]

@@ -261,10 +261,6 @@ jobs:
         if: steps.stdlib-cache.outputs.cache-hit != 'true'
         run: bash scripts/fetch-stdlib-bundle.sh
 
-      - name: Run drone interconnection performance smoke
-        run: |
-          cargo test -p kernel --test lsp_integration integration::powersystems_performance::drone_interconnection_performance_smoke_report --release -- --nocapture
-
       - name: Run grid interconnection performance report (optional)
         env:
           SYSML_POWERSYSTEMS_DIR: ${{ vars.SYSML_POWERSYSTEMS_DIR }}
@@ -283,7 +279,6 @@ jobs:
           const path = require("path");
           const reportDir = "target/spec42-perf";
           const candidates = [
-            "drone-interconnection-performance.json",
             "grid-system-context-performance.json",
           ];
           console.log("### Interconnection performance reports");
@@ -324,5 +319,4 @@ jobs:
           name: interconnection-performance-report
           if-no-files-found: warn
           path: |
-            target/spec42-perf/drone-interconnection-performance.json
             target/spec42-perf/grid-system-context-performance.json

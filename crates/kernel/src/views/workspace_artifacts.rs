@@ -60,6 +60,23 @@ fn visualization_response_is_cacheable(
     true
 }
 
+fn cached_visualization_response(
+    state: &ServerState,
+    workspace_root_uri: &Url,
+    cache_key: &VisualizationCacheKey,
+) -> Option<semantic_core::SysmlVisualizationResultDto> {
+    let entry = state.workspace_render_cache.entry.as_ref()?;
+    if !render_cache_valid(entry, state, workspace_root_uri) {
+        return None;
+    }
+    let cached = entry.visualization_responses.get(cache_key)?;
+    if visualization_response_is_cacheable(cached) {
+        Some(cached.clone())
+    } else {
+        None
+    }
+}
+
 pub(crate) fn clear_workspace_viz_caches(state: &mut ServerState) {
     state.workspace_render_cache.clear();
 }
@@ -182,28 +199,22 @@ pub(crate) fn build_visualization_with_cache(
     options: VisualizationBuildOptions,
 ) -> Result<VisualizationBuildOutcome, String> {
     let workspace_root_uri = util::normalize_file_uri(workspace_root_uri);
-    let semantic_state_version = state.semantic_state_version;
     let cache_key = VisualizationCacheKey {
         view: view.to_string(),
         selected_view: selected_view.map(str::to_string),
     };
 
-    ensure_render_snapshot(state, &workspace_root_uri)?;
-    if let Some(entry) = state.workspace_render_cache.entry.as_ref() {
-        if render_cache_valid(entry, state, &workspace_root_uri) {
-            if let Some(cached) = entry.visualization_responses.get(&cache_key) {
-                if visualization_response_is_cacheable(cached) {
-                    return Ok(VisualizationBuildOutcome {
-                        response: cached.clone(),
-                        meta: VisualizationBuildMeta {
-                            cache_hit: true,
-                            ..VisualizationBuildMeta::default()
-                        },
-                    });
-                }
-            }
-        }
+    if let Some(cached) = cached_visualization_response(state, &workspace_root_uri, &cache_key) {
+        return Ok(VisualizationBuildOutcome {
+            response: cached,
+            meta: VisualizationBuildMeta {
+                cache_hit: true,
+                ..VisualizationBuildMeta::default()
+            },
+        });
     }
+
+    ensure_render_snapshot(state, &workspace_root_uri)?;
 
     let snapshot = state
         .workspace_render_cache
@@ -274,4 +285,86 @@ pub(crate) fn build_visualization_with_cache(
 
 pub(crate) fn primary_workspace_root(state: &ServerState) -> Option<Url> {
     state.workspace_roots.first().map(util::normalize_file_uri)
+}
+
+#[cfg(test)]
+mod cache_tests {
+    use super::*;
+    use crate::workspace::state::{IndexEntry, ParseMetadata, SemanticLifecycle, ServerState};
+    use semantic_core::{build_semantic_graph_with_provider, FileSystemDocumentProvider};
+    use std::path::PathBuf;
+
+    fn drone_workspace_state() -> (ServerState, Url) {
+        let repo_root = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../../examples/drone");
+        let workspace_root_uri =
+            Url::from_directory_path(repo_root.canonicalize().unwrap()).unwrap();
+        let provider =
+            FileSystemDocumentProvider::new(repo_root.clone(), Some(repo_root), Vec::new());
+        let (semantic_graph, parsed_docs) =
+            build_semantic_graph_with_provider(&provider).expect("semantic graph");
+        let index = parsed_docs
+            .into_iter()
+            .map(|doc| {
+                (
+                    doc.uri.clone(),
+                    IndexEntry {
+                        content: doc.content,
+                        parsed: Some(doc.parsed),
+                        parse_metadata: ParseMetadata {
+                            parse_time_ms: doc.parse_time_ms,
+                            parse_cached: doc.parse_cached,
+                        },
+                        include_in_semantic_graph: true,
+                    },
+                )
+            })
+            .collect();
+        let state = ServerState {
+            workspace_roots: vec![workspace_root_uri.clone()],
+            semantic_lifecycle: SemanticLifecycle::Ready,
+            semantic_state_version: 1,
+            index,
+            symbol_table: Vec::new(),
+            semantic_graph,
+            ..ServerState::default()
+        };
+        (state, workspace_root_uri)
+    }
+
+    #[test]
+    fn warm_interconnection_visualization_hits_response_cache() {
+        let (mut state, root) = drone_workspace_state();
+        let options = semantic_core::interconnection_build_options("interconnection-view");
+        let cold = build_visualization_with_cache(
+            &mut state,
+            &root,
+            "interconnection-view",
+            Some("connections"),
+            Instant::now(),
+            options.clone(),
+        )
+        .expect("cold visualization");
+        assert!(
+            !cold.meta.cache_hit,
+            "first visualization build should miss cache"
+        );
+        assert!(
+            cold.response.prepared_view.is_some(),
+            "cold response should include preparedView for cacheability"
+        );
+
+        let warm = build_visualization_with_cache(
+            &mut state,
+            &root,
+            "interconnection-view",
+            Some("connections"),
+            Instant::now(),
+            options,
+        )
+        .expect("warm visualization");
+        assert!(
+            warm.meta.cache_hit,
+            "second visualization build should hit response cache"
+        );
+    }
 }
