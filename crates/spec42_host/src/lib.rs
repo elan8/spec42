@@ -1,6 +1,7 @@
 //! Protocol-neutral host embedding API for Spec42.
 
 pub mod catalog;
+pub mod comparison;
 pub mod engine;
 pub mod error;
 pub mod library;
@@ -9,6 +10,14 @@ pub mod snapshot;
 pub mod version;
 
 pub use catalog::{HostConfigFile, HostLibraryRequest, LibraryCatalog};
+pub use comparison::{
+    compare_snapshots, HostDiagnosticComparison, HostDiagnosticIdentity,
+    HostDocumentDiagnosticComparison, HostElementChange, HostElementComparison,
+    HostElementFieldChange, HostElementIdentity, HostRelationshipComparison,
+    HostRelationshipIdentity, HostViewCatalogChange, HostViewCatalogEntry,
+    HostViewCatalogFieldChange, HostViewComparison, HostViewPayloadChange,
+    IdentityPreservationStatus, SemanticComparisonReport,
+};
 pub use engine::{EngineBuilder, HostEngineMetadata, Spec42Engine};
 pub use error::{HostResult, Spec42HostError};
 pub use library::{

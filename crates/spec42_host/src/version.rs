@@ -8,7 +8,7 @@ use serde::{Deserialize, Serialize};
 pub const ARTIFACT_METADATA_VERSION: u32 = 1;
 pub const PROJECTION_SCHEMA_VERSION: u32 = 1;
 pub const RENDERER_COMPATIBILITY_VERSION: u32 = 1;
-pub const COMPARISON_SCHEMA_VERSION: u32 = 0;
+pub const COMPARISON_SCHEMA_VERSION: u32 = 1;
 
 /// Version identifiers for host-persisted artifacts.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]

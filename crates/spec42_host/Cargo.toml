@@ -68,3 +68,27 @@ path = "tests/cancellation.rs"
 [[test]]
 name = "resource_limits"
 path = "tests/resource_limits.rs"
+
+[[test]]
+name = "comparison_serde"
+path = "tests/comparison_serde.rs"
+
+[[test]]
+name = "comparison_elements"
+path = "tests/comparison_elements.rs"
+
+[[test]]
+name = "comparison_relationships"
+path = "tests/comparison_relationships.rs"
+
+[[test]]
+name = "comparison_diagnostics"
+path = "tests/comparison_diagnostics.rs"
+
+[[test]]
+name = "comparison_views"
+path = "tests/comparison_views.rs"
+
+[[test]]
+name = "comparison_identity"
+path = "tests/comparison_identity.rs"

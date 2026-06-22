@@ -24,6 +24,12 @@ Protocol-neutral embedding API for Spec42 host services.
 - `Spec42HostError` with stable machine-readable codes (no `From<String>` catch-all);
 - `HostContext` with cooperative cancellation, deadlines, resource limits, and optional progress callbacks.
 
+### Phase 4 — semantic comparison
+
+- `compare_snapshots(previous, next)` returns a versioned `SemanticComparisonReport`;
+- facts-only diffs for elements, relationships, diagnostics, and supported-view payload identities;
+- `IdentityPreservationStatus` when library environment or document URI sets differ between revisions.
+
 ## Snapshot lifecycle
 
 1. Resolve libraries via `Spec42Engine::builder()`.
@@ -42,7 +48,7 @@ Every `HostWorkspaceSnapshot` carries `HostArtifactMetadata` via `metadata()`. P
 | `schema_versions.artifact_metadata_version` | Schema of `HostArtifactMetadata` itself (currently `1`) |
 | `schema_versions.projection_schema_version` | Semantic projection DTO layout |
 | `schema_versions.renderer_compatibility_version` | Renderer/view compatibility |
-| `schema_versions.comparison_schema_version` | Reserved for Phase 4 comparison reports (`0` until implemented) |
+| `schema_versions.comparison_schema_version` | `SemanticComparisonReport` layout (currently `1`) |
 | `engine_version` | `spec42_host` crate version at build time |
 | `library_catalog_hash` | Content hash of the resolved library catalog |
 | `built_at` | UTC RFC3339 timestamp (`YYYY-MM-DDTHH:MM:SSZ`) |
@@ -56,7 +62,7 @@ Example:
     "artifact_metadata_version": 1,
     "projection_schema_version": 1,
     "renderer_compatibility_version": 1,
-    "comparison_schema_version": 0
+    "comparison_schema_version": 1
   },
   "engine_version": "0.32.0",
   "library_catalog_hash": "catalog-hash",
@@ -112,6 +118,68 @@ let context = HostContext::default()
 Pipeline phases (`HostPipelinePhase`): `LoadingDocuments` → `BuildingGraph` → `BuildingLanguageWorkspace` → `BuildingViewCatalog` → `CollectingValidation` → `ProjectingModel`.
 
 Checks run cooperatively at each step. On `cancelled` or `resource_limit_exceeded`, `load_workspace` returns `Err` immediately and **never** returns a partial snapshot. Deadlines also map to `cancelled`.
+
+## Semantic comparison
+
+Compare two immutable snapshots after loading different workspace revisions:
+
+```rust
+use spec42_host::compare_snapshots;
+
+let report = compare_snapshots(&previous, &next)?;
+```
+
+`SemanticComparisonReport` is serde-stable and persistable alongside snapshot artifacts. It reports **semantic facts only** — no inferred engineering impact.
+
+| Section | Contents |
+| --- | --- |
+| `schema_versions.comparison_schema_version` | Report schema (currently `1`) |
+| `previous_artifact` / `next_artifact` | `HostArtifactMetadata` from each snapshot |
+| `identity_preservation` | `preserved`, `incompatible_environment`, or `document_set_changed` |
+| `elements` | added / removed / changed model elements (key: `uri` + `qualified_name`) |
+| `relationships` | added / removed edges (`source`, `target`, `kind`) |
+| `diagnostics` | introduced / resolved per document |
+| `views` | catalog changes + changed supported-view payload hashes |
+
+### Identity preservation
+
+| Status | Meaning | Host action |
+| --- | --- | --- |
+| `preserved` | Same engine version, library catalog hash, and document URI set | Trust element keys |
+| `incompatible_environment` | Engine version or catalog hash differs | Rebuild both snapshots or compare cautiously |
+| `document_set_changed` | Document URI set differs (add/remove/rename) | Add/remove churn may reflect URI drift, not model edits |
+
+Phase 4 does not remap URIs across Git renames; use `document_hashes` in artifact metadata for content-level change detection.
+
+### Diagnostic matching
+
+Diagnostics match on `(uri, code, severity, message)`. **Range is excluded** so line shifts from formatting do not appear as resolve+introduce churn.
+
+### View payload identity
+
+For supported views present in both snapshots, `compare_snapshots` hashes a stable fingerprint of each `prepare_view` result (candidate ids, empty-state message, graph counts, prepared-view key). Full diagram geometry is not diffed.
+
+Example (abbreviated):
+
+```json
+{
+  "schema_versions": { "comparison_schema_version": 1 },
+  "identity_preservation": "preserved",
+  "elements": {
+    "added": [],
+    "removed": [],
+    "changed": []
+  },
+  "relationships": { "added": [], "removed": [] },
+  "diagnostics": { "by_document": {} },
+  "views": {
+    "catalog_added": [],
+    "catalog_removed": [],
+    "catalog_changed": [],
+    "changed_view_payloads": []
+  }
+}
+```
 
 ## Validation paths
 

@@ -341,6 +341,15 @@ Phase 3 complete:
 5. Integration tests: `artifact_metadata_serde`, `host_errors`, `cancellation`, `resource_limits`.
 6. `crates/spec42_host/README.md` documents artifact JSON, error codes, context semantics, and concurrency.
 
+Phase 4 complete:
+
+1. `compare_snapshots(previous, next) -> SemanticComparisonReport` with serde-stable host DTOs.
+2. Element add/remove/change, relationship add/remove, diagnostic introduced/resolved, and view catalog/payload identity diffs.
+3. `IdentityPreservationStatus` derived from artifact metadata (`library_catalog_hash`, `engine_version`, document URI set).
+4. `COMPARISON_SCHEMA_VERSION` bumped to `1` in `HostSchemaVersions`.
+5. Integration tests: `comparison_serde`, `comparison_elements`, `comparison_relationships`, `comparison_diagnostics`, `comparison_views`, `comparison_identity`.
+6. `crates/spec42_host/README.md` documents comparison artifact JSON, identity semantics, and diagnostic matching.
+
 ## Related documents
 
 - [ADR 0003: `spec42_host` crate](../adr/0003-spec42-host-embedding-crate.md)
