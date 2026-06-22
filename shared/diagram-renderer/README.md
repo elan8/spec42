@@ -1,6 +1,6 @@
 # Diagram renderer
 
-Shared D3 + ELK renderer for Spec42 **SysML visualizer views** (`SYSML_ENABLED_VIEWS`), used by the VS Code extension. Babel42 embeds **general** and **interconnection** only today.
+Shared D3 + ELK renderer for Spec42 **SysML visualizer views** (`SYSML_ENABLED_VIEWS`), used by the VS Code extension. Embedding hosts may consume a subset of views (for example **general** and **interconnection** only).
 
 | View | Layout | Module |
 |------|--------|--------|
@@ -29,7 +29,7 @@ Pass via `renderVisualization(..., { theme: { colorScheme } })`:
 |-------|-----|
 | `vscode` | VS Code webview (default): `var(--vscode-*)` follows editor light/dark |
 | `light` / `dark` | Static hex tokens for tests, export, standalone hosts |
-| `auto` | `prefers-color-scheme` when `window` exists; else light (Babel42) |
+| `auto` | `prefers-color-scheme` when `window` exists; else light (headless hosts) |
 
 Hosts that embed exported SVG outside VS Code should use `light` or `dark`, not `vscode`, so strokes are real colors.
 

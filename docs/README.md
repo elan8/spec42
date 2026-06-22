@@ -19,6 +19,7 @@ Use this index to find the right document for the job. Public compatibility page
 | Diagnostic roadmap | [engineering/DIAGNOSTIC-CHECKS-ROADMAP.md](engineering/DIAGNOSTIC-CHECKS-ROADMAP.md) |
 | AST and semantic coverage priorities | [engineering/AST-SEMANTIC-COVERAGE.md](engineering/AST-SEMANTIC-COVERAGE.md) |
 | Nightly performance guardrails | [engineering/PERFORMANCE-GUARDRAILS.md](engineering/PERFORMANCE-GUARDRAILS.md) |
+| Host embedding implementation plan | [engineering/HOST-EMBEDDING-IMPLEMENTATION-PLAN.md](engineering/HOST-EMBEDDING-IMPLEMENTATION-PLAN.md) |
 | 1.0 competitive roadmap | [engineering/COMPETITIVE-ROADMAP.md](engineering/COMPETITIVE-ROADMAP.md) |
 | Diagram export quality (VS Code vs CLI vs BNF) | [engineering/DIAGRAM-EXPORT-QUALITY-ANALYSIS.md](engineering/DIAGRAM-EXPORT-QUALITY-ANALYSIS.md) |
 
@@ -32,6 +33,7 @@ Use this index to find the right document for the job. Public compatibility page
 | IBD / interconnection pipeline | [ibd-interconnection-pipeline-analysis.md](ibd-interconnection-pipeline-analysis.md) |
 | Read-only HTTP API | [api/README.md](api/README.md) |
 | Architecture decisions | [adr/README.md](adr/README.md) |
+| Host embedding ADR (`spec42_host`) | [adr/0003-spec42-host-embedding-crate.md](adr/0003-spec42-host-embedding-crate.md) |
 
 ## Reference And Archive
 

@@ -20,7 +20,7 @@ These surfaces work well for editing, automation, and agent workflows. They are 
 
 The OMG **Systems Modeling API and Services** specification defines the industry-standard interoperability layer for SysML v2. It includes a Platform Independent Model (PIM) and REST/HTTP and OSLC platform-specific models (PSMs). The reference implementation ([SysML-v2-API-Services](https://github.com/Systems-Modeling/SysML-v2-API-Services)) is repository-centric: projects, branches, commits, element CRUD, and persistent identity.
 
-Spec42's product wedge is **open, local-first tooling** (see [COMPETITIVE-ROADMAP.md](../engineering/COMPETITIVE-ROADMAP.md)): bundled server, file-based workspaces, no cloud dependency. A full OMG-conformant repository API would overlap heavily with collaborative products (for example Babel42) and is out of scope for the near term.
+Spec42's product wedge is **open, local-first tooling** (see [COMPETITIVE-ROADMAP.md](../engineering/COMPETITIVE-ROADMAP.md)): bundled server, file-based workspaces, no cloud dependency. A full OMG-conformant repository API would overlap heavily with collaborative repository products and is out of scope for the near term.
 
 At the same time, `semantic_core` and `kernel` already produce rich read projections — validation reports, semantic graphs, visualization DTOs, diagram exports — reused by LSP custom methods, CLI, and MCP. A thin HTTP layer on top of those projections would unlock interoperability without changing Spec42's local-first identity.
 
@@ -221,12 +221,12 @@ Spec42 phase 1 intentionally does **not** implement that resource model. Instead
 | OMG concept | Spec42 phase 1 | Future |
 | --- | --- | --- |
 | Project | `workspace_root` server config | Map to OMG `/projects` wrapper |
-| Commit / branch | Current files on disk (implicit HEAD) | Babel42 or dedicated repository layer |
+| Commit / branch | Current files on disk (implicit HEAD) | Dedicated repository layer |
 | Element by UUID | Not available | Requires persistent identity store |
 | Element query | `GET /v1/elements?q=…` on semantic projection | Map to OMG query endpoint subset |
 | Validation | `POST /v1/validate` | No OMG equivalent (Spec42 extension) |
 
-Phase 2 may add an **`/omg` compatibility prefix** that adapts responses to OMG OpenAPI schemas where a faithful read-only mapping exists (for example element listing → `Element` schema subset). Full conformance remains a separate ADR and likely a Babel42 concern for write/commit workflows.
+Phase 2 may add an **`/omg` compatibility prefix** that adapts responses to OMG OpenAPI schemas where a faithful read-only mapping exists (for example element listing → `Element` schema subset). Full conformance remains a separate ADR and likely a host-service concern for write/commit workflows.
 
 ## Security
 
@@ -294,7 +294,7 @@ Global flags (`--library-path`, `--config`, `--stdlib-path`, `--no-stdlib`) appl
 
 - External tools can consume SysML v2 semantics without LSP or MCP.
 - Same validation/graph results as CI (`spec42 check`) — single source of truth.
-- Foundation for future OMG read-subset mapping and Babel42 integration.
+- Foundation for future OMG read-subset mapping and host-service integration.
 - Complements rather than replaces CLI/MCP.
 
 ### Negative / trade-offs
@@ -321,7 +321,7 @@ Global flags (`--library-path`, `--config`, `--stdlib-path`, `--no-stdlib`) appl
 | gRPC instead of REST | Worse fit for browser/ops tooling; OpenAPI is OMG direction |
 | Extend LSP over TCP | LSP is editor-oriented; custom RPC not standard for integrators |
 | MCP over HTTP/SSE | Emerging pattern but not industry standard for SysML interoperability |
-| Put API only in Babel42 | Leaves standalone Spec42 / CI / local workspace users without HTTP access |
+| Put API only in a downstream host service | Leaves standalone Spec42 / CI / local workspace users without HTTP access |
 
 ## References
 

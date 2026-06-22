@@ -11,7 +11,7 @@ This document explains what `semantic_core` does, how its modules fit together, 
 - provides semantic resolution/evaluation helpers
 - exposes visualization-oriented DTOs and graph-first visualization metadata APIs
 
-The crate is designed to be consumed by multiple hosts (`kernel`, `babel42`, and future services), without hard-coding filesystem or editor runtime concerns into the semantic core.
+The crate is designed to be consumed by multiple hosts (`kernel`, embedding services, and future integrators), without hard-coding filesystem or editor runtime concerns into the semantic core.
 
 ## High-Level Capabilities
 
@@ -72,7 +72,7 @@ Current provider implementations:
 
 Future provider examples:
 
-- DB-backed provider (Babel42 commit storage)
+- DB-backed provider (repository or revision storage)
 - remote/blob provider
 - cached/streaming provider
 
@@ -112,7 +112,7 @@ flowchart TD
 ### Key Principle
 
 - `semantic_core` owns semantic and reusable projection logic.
-- Hosts (`kernel`, `babel42`) decide transport/runtime concerns and final response wiring.
+- Hosts (`kernel`, embedding services) decide transport/runtime concerns and final response wiring.
 
 This enables multiple ingestion backends (filesystem, DB, in-memory) while preserving one semantic pipeline.
 
@@ -132,10 +132,10 @@ TypeScript semantic prepare remains as fallback for non-LSP/headless compatibili
 
 ### `language_service` (editor intelligence)
 
-- sits between `semantic_core` and protocol adapters (`kernel` LSP, future Babel42 HTTP/Monaco)
+- sits between `semantic_core` and protocol adapters (`kernel` LSP, in-browser HTTP/Monaco hosts)
 - exposes navigation APIs against logical document paths and `TextPosition` / `TextRange`
 - no dependency on `tower-lsp`, `tokio`, or `kernel`
-- `InMemoryWorkspace` supports headless tests and Babel42-style in-memory document pipelines
+- `InMemoryWorkspace` supports headless tests and host-style in-memory document pipelines
 
 ### `kernel` (LSP/runtime host)
 
@@ -145,13 +145,13 @@ TypeScript semantic prepare remains as fallback for non-LSP/headless compatibili
 - delegates navigation (hover, definition, references) to `language_service` via `WorkspaceSnapshot`
 - keeps LSP protocol/runtime behavior outside semantic_core and language_service
 
-### `babel42` (service/API host)
+### Embedding hosts (service/API)
 
 - can use in-memory (or future DB) providers
 - avoids temporary workspace-only coupling for semantic graph creation
 - consumes graph-first visualization metadata API from semantic_core
 - can depend on `language_service` for editor navigation without the LSP stack
-- maps semantic-core diagnostics into `babel42_core::DiagnosticDto` for storage/API responses
+- maps semantic-core diagnostics into host-specific storage/API DTOs at the boundary
 
 ## Data Contracts
 

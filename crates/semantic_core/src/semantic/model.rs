@@ -99,7 +99,7 @@ impl RelationshipKind {
         }
     }
 
-    /// Parses persisted relationship type strings (babel42 projection / Surreal).
+    /// Parses persisted relationship type strings (host projection storage).
     pub fn from_persisted_type(value: &str) -> Option<Self> {
         match value.trim().to_ascii_lowercase().as_str() {
             "typing" => Some(RelationshipKind::Typing),

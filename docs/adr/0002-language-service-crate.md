@@ -10,7 +10,7 @@
 
 Spec42 exposes editor features (hover, go-to-definition, find references, completion, formatting, and more) primarily through `kernel::lsp_runtime`, which is coupled to `tower-lsp`, `tokio`, and LSP-specific types (`Hover`, `Location`, `Url` from `tower_lsp::lsp_types`).
 
-Babel42 and future in-browser Monaco authoring need the same semantic navigation behavior without importing the LSP stack. `semantic_core` already provides graph construction, resolution, and diagnostics, but it does not expose a stable, editor-oriented API for navigation requests at a logical document path and text position.
+Embedding hosts and future in-browser Monaco authoring need the same semantic navigation behavior without importing the LSP stack. `semantic_core` already provides graph construction, resolution, and diagnostics, but it does not expose a stable, editor-oriented API for navigation requests at a logical document path and text position.
 
 Phase 1 of the language-service extraction targeted **navigation** (hover, go-to-definition, references). Phases 2–4 have since moved completion, outline/folding/workspace symbols, rename, formatting, and neutral quick-fix code actions into `language_service`.
 
@@ -43,7 +43,7 @@ kernel            — LSP/runtime adapters, document lifecycle, protocol mapping
 
 ### Positive
 
-- Babel42 can add `language_service = { path = "../spec42/crates/language_service" }` and expose JSON/HTTP endpoints without the LSP stack.
+- Embedding hosts can add `language_service = { path = "../spec42/crates/language_service" }` and expose JSON/HTTP endpoints without the LSP stack.
 - Headless integration tests can validate navigation without spawning an LSP subprocess.
 - Neutral DTOs are serde-friendly and suitable as a stable JSON contract for future APIs.
 
@@ -54,7 +54,7 @@ kernel            — LSP/runtime adapters, document lifecycle, protocol mapping
 
 ## Non-goals (original phase 1)
 
-- Babel42 HTTP endpoints or Monaco providers (optional follow-up)
+- Host HTTP endpoints or Monaco providers (optional follow-up)
 - WASM packaging
 - Replacing `semantic_core` responsibilities
 
@@ -65,5 +65,5 @@ kernel            — LSP/runtime adapters, document lifecycle, protocol mapping
 | Completion | Done — `language_service::complete`, kernel LSP adapter in `lsp_runtime/features/completion.rs` |
 | Document/workspace symbols, folding | Done — `outline`, `workspace_symbols` |
 | Rename, formatting, code actions | Done — `rename`, `formatting`, `code_actions` (kernel keeps library-path guards and VS Code commands) |
-| Incremental workspace API for edit sessions | When Babel42 perf requires it |
-| Babel42 HTTP endpoints | Optional |
+| Incremental workspace API for edit sessions | When embedding host performance requires it |
+| Host HTTP endpoints | Optional |

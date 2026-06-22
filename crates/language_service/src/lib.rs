@@ -1,6 +1,6 @@
 //! Protocol-neutral SysML editor language services.
 //!
-//! Hosts (LSP, Babel42 HTTP, CLI) call these APIs instead of depending on `tower-lsp`.
+//! Hosts (LSP, embedding services, CLI) call these APIs instead of depending on `tower-lsp`.
 
 pub mod code_actions;
 pub mod completion;
