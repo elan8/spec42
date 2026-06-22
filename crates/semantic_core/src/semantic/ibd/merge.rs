@@ -11,6 +11,31 @@ use super::extract_impl::{is_part_instance_kind, prune_interconnection_definitio
 
 /// Merge multiple per-URI IBD payloads into one workspace-scoped payload.
 pub fn merge_ibd_payloads(ibds: Vec<IbdDataDto>) -> IbdDataDto {
+    merge_ibd_payloads_inner(ibds, true)
+}
+
+/// Merge payloads before [`super::connectors::finalize_merged_ibd_connectors`], which re-enriches connectors.
+pub fn merge_ibd_payloads_for_workspace_finalize(ibds: Vec<IbdDataDto>) -> IbdDataDto {
+    merge_ibd_payloads_inner(ibds, false)
+}
+
+fn merge_member_part_ids(existing: &mut Vec<String>, incoming: &[String]) {
+    if incoming.is_empty() {
+        return;
+    }
+    if existing.is_empty() {
+        existing.extend_from_slice(incoming);
+        return;
+    }
+    let mut seen: HashSet<String> = existing.iter().cloned().collect();
+    for part_id in incoming {
+        if seen.insert(part_id.clone()) {
+            existing.push(part_id.clone());
+        }
+    }
+}
+
+fn merge_ibd_payloads_inner(ibds: Vec<IbdDataDto>, enrich_connectors: bool) -> IbdDataDto {
     let mut parts_by_id: std::collections::HashMap<String, IbdPartDto> =
         std::collections::HashMap::new();
     let mut ports_by_key: std::collections::HashMap<(String, String), IbdPortDto> =
@@ -47,13 +72,7 @@ pub fn merge_ibd_payloads(ibds: Vec<IbdDataDto>) -> IbdDataDto {
             container_groups_by_id
                 .entry(group.id.clone())
                 .and_modify(|existing| {
-                    let mut members: std::collections::HashSet<String> =
-                        existing.member_part_ids.iter().cloned().collect();
-                    for part_id in &group.member_part_ids {
-                        if members.insert(part_id.clone()) {
-                            existing.member_part_ids.push(part_id.clone());
-                        }
-                    }
+                    merge_member_part_ids(&mut existing.member_part_ids, &group.member_part_ids);
                 })
                 .or_insert(group);
         }
@@ -61,13 +80,7 @@ pub fn merge_ibd_payloads(ibds: Vec<IbdDataDto>) -> IbdDataDto {
             package_container_groups_by_id
                 .entry(group.id.clone())
                 .and_modify(|existing| {
-                    let mut members: std::collections::HashSet<String> =
-                        existing.member_part_ids.iter().cloned().collect();
-                    for part_id in &group.member_part_ids {
-                        if members.insert(part_id.clone()) {
-                            existing.member_part_ids.push(part_id.clone());
-                        }
-                    }
+                    merge_member_part_ids(&mut existing.member_part_ids, &group.member_part_ids);
                 })
                 .or_insert(group);
         }
@@ -140,7 +153,9 @@ pub fn merge_ibd_payloads(ibds: Vec<IbdDataDto>) -> IbdDataDto {
     let (parts, ports, connectors) =
         prune_interconnection_definition_parts(parts, ports, connectors);
     let mut connectors = connectors;
-    enrich_connector_endpoint_refs(&mut connectors, &parts, &ports);
+    if enrich_connectors {
+        enrich_connector_endpoint_refs(&mut connectors, &parts, &ports);
+    }
     for view in root_views.values_mut() {
         let (view_parts, view_ports, view_connectors) = prune_interconnection_definition_parts(
             std::mem::take(&mut view.parts),
@@ -148,7 +163,9 @@ pub fn merge_ibd_payloads(ibds: Vec<IbdDataDto>) -> IbdDataDto {
             std::mem::take(&mut view.connectors),
         );
         let mut view_connectors = view_connectors;
-        enrich_connector_endpoint_refs(&mut view_connectors, &view_parts, &view_ports);
+        if enrich_connectors {
+            enrich_connector_endpoint_refs(&mut view_connectors, &view_parts, &view_ports);
+        }
         view.parts = view_parts;
         view.ports = view_ports;
         view.connectors = view_connectors;

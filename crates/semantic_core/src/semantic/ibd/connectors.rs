@@ -33,7 +33,18 @@ pub(crate) fn build_instance_def_mappings(
     uri: &Url,
     parts: &[IbdPartDto],
 ) -> Vec<(String, String)> {
-    let mut mappings: Vec<(String, String)> = Vec::new();
+    let mut mappings = Vec::new();
+    collect_instance_def_mappings(graph, uri, parts, &mut mappings);
+    finalize_instance_def_mappings(graph, &mut mappings);
+    mappings
+}
+
+fn collect_instance_def_mappings(
+    graph: &SemanticGraph,
+    uri: &Url,
+    parts: &[IbdPartDto],
+    mappings: &mut Vec<(String, String)>,
+) {
     for part in parts {
         if let Some(mapping) = instance_def_mapping_for_part(graph, uri, part) {
             mappings.push(mapping);
@@ -61,9 +72,62 @@ pub(crate) fn build_instance_def_mappings(
             mappings.push((def_dot, usage_dot));
         }
     }
+}
+
+fn finalize_instance_def_mappings(graph: &SemanticGraph, mappings: &mut Vec<(String, String)>) {
     mappings.sort_by_key(|mapping| std::cmp::Reverse(mapping.0.len()));
     mappings.dedup_by(|left, right| left.0 == right.0 && left.1 == right.1);
-    extend_instance_def_mappings_with_specializations(graph, &mut mappings);
+    extend_instance_def_mappings_with_specializations(graph, mappings);
+    mappings.sort_by_key(|mapping| std::cmp::Reverse(mapping.0.len()));
+    mappings.dedup_by(|left, right| left.0 == right.0 && left.1 == right.1);
+}
+
+fn build_workspace_instance_def_mappings(
+    graph: &SemanticGraph,
+    workspace_uris: &[Url],
+    all_parts: &[IbdPartDto],
+) -> Vec<(String, String)> {
+    let mut parts_by_uri: HashMap<&str, Vec<usize>> = HashMap::new();
+    for (index, part) in all_parts.iter().enumerate() {
+        if let Some(uri) = part.uri.as_deref() {
+            parts_by_uri.entry(uri).or_default().push(index);
+        }
+    }
+    let mut mappings = Vec::new();
+    for uri in workspace_uris {
+        let empty = Vec::new();
+        let indices = parts_by_uri.get(uri.as_str()).unwrap_or(&empty);
+        for &index in indices {
+            if let Some(mapping) =
+                instance_def_mapping_for_part(graph, uri, &all_parts[index])
+            {
+                mappings.push(mapping);
+            }
+        }
+        for node in graph.nodes_for_uri(uri) {
+            if !is_part_like(&node.element_kind)
+                || node.element_kind.to_lowercase().contains("part def")
+            {
+                continue;
+            }
+            let usage_dot = qualified_name_to_dot(&node.id.qualified_name);
+            if mappings
+                .iter()
+                .any(|(_, instance_dot)| instance_dot == &usage_dot)
+            {
+                continue;
+            }
+            if let Some(def_node) = graph
+                .outgoing_typing_or_specializes_targets(node)
+                .into_iter()
+                .find(|target| is_part_like(&target.element_kind))
+            {
+                let def_dot = qualified_name_to_dot(&def_node.id.qualified_name);
+                mappings.push((def_dot, usage_dot));
+            }
+        }
+    }
+    finalize_instance_def_mappings(graph, &mut mappings);
     mappings
 }
 
@@ -357,13 +421,7 @@ pub fn finalize_merged_ibd_connectors(
     workspace_uris: &[Url],
     ibd: &mut IbdDataDto,
 ) {
-    let mut mappings = Vec::new();
-    for uri in workspace_uris {
-        mappings.extend(build_instance_def_mappings(graph, uri, &ibd.parts));
-    }
-    mappings.sort_by_key(|mapping| std::cmp::Reverse(mapping.0.len()));
-    mappings.dedup_by(|left, right| left.0 == right.0 && left.1 == right.1);
-
+    let mappings = build_workspace_instance_def_mappings(graph, workspace_uris, &ibd.parts);
     ibd.connectors =
         remap_connectors_to_typed_instances(std::mem::take(&mut ibd.connectors), &mappings);
     for view in ibd.root_views.values_mut() {

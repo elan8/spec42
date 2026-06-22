@@ -146,7 +146,7 @@ pub fn build_merged_workspace_ibd(
             .flat_map(|handle| handle.join().expect("ibd worker"))
             .collect::<Vec<_>>()
     });
-    let mut full_ibd = ibd::merge_ibd_payloads(ibds);
+    let mut full_ibd = ibd::merge_ibd_payloads_for_workspace_finalize(ibds);
     ibd::finalize_merged_ibd_connectors(semantic_graph, workspace_uris, &mut full_ibd);
     full_ibd
 }

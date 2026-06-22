@@ -9,7 +9,8 @@ use std::time::Instant;
 use semantic_core::{
     build_ibd_for_uri, build_render_snapshot, build_semantic_graph_with_provider,
     build_sysml_visualization_workspace, build_view_catalog, build_workspace_graph_dto_for_uris,
-    evaluate_views, finalize_merged_ibd_connectors, merge_ibd_payloads, project_ids_for_renderer,
+    evaluate_views, finalize_merged_ibd_connectors, merge_ibd_payloads_for_workspace_finalize,
+    project_ids_for_renderer,
     FileSystemDocumentProvider, SemanticGraph, WorkspaceParsedDocument,
 };
 use serde::Serialize;
@@ -174,7 +175,8 @@ pub struct VisualizationPhaseBreakdown {
     pub semantic_graph_build_ms: u128,
     pub workspace_graph_dto_ms: u128,
     pub ibd_per_uri_ms: u128,
-    pub ibd_merge_finalize_ms: u128,
+    pub ibd_merge_ms: u128,
+    pub ibd_finalize_ms: u128,
     pub view_catalog_ms: u128,
     pub evaluate_views_ms: u128,
     pub project_all_views_ms: u128,
@@ -410,9 +412,12 @@ fn collect_post_snapshot_visualization(
     let ibd_per_uri_ms = ibd_start.elapsed().as_millis();
 
     let merge_start = Instant::now();
-    let mut full_ibd = merge_ibd_payloads(ibds);
+    let mut full_ibd = merge_ibd_payloads_for_workspace_finalize(ibds);
+    let ibd_merge_ms = merge_start.elapsed().as_millis();
+
+    let finalize_start = Instant::now();
     finalize_merged_ibd_connectors(semantic_graph, &workspace_uris, &mut full_ibd);
-    let ibd_merge_finalize_ms = merge_start.elapsed().as_millis();
+    let ibd_finalize_ms = finalize_start.elapsed().as_millis();
 
     let catalog_start = Instant::now();
     let catalog = build_view_catalog(&workspace_uris, parsed_documents);
@@ -449,7 +454,8 @@ fn collect_post_snapshot_visualization(
         semantic_graph_build_ms: 0,
         workspace_graph_dto_ms,
         ibd_per_uri_ms,
-        ibd_merge_finalize_ms,
+        ibd_merge_ms,
+        ibd_finalize_ms,
         view_catalog_ms,
         evaluate_views_ms,
         project_all_views_ms,
@@ -665,7 +671,8 @@ fn median_visualization(reports: &[RobotVacuumPerfReport]) -> VisualizationPhase
         semantic_graph_build_ms: pick(|v| v.semantic_graph_build_ms),
         workspace_graph_dto_ms: pick(|v| v.workspace_graph_dto_ms),
         ibd_per_uri_ms: pick(|v| v.ibd_per_uri_ms),
-        ibd_merge_finalize_ms: pick(|v| v.ibd_merge_finalize_ms),
+        ibd_merge_ms: pick(|v| v.ibd_merge_ms),
+        ibd_finalize_ms: pick(|v| v.ibd_finalize_ms),
         view_catalog_ms: pick(|v| v.view_catalog_ms),
         evaluate_views_ms: pick(|v| v.evaluate_views_ms),
         project_all_views_ms: pick(|v| v.project_all_views_ms),

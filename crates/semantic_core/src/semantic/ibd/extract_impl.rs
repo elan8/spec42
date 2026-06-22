@@ -1308,8 +1308,7 @@ pub fn build_ibd_for_uri(graph: &SemanticGraph, uri: &Url) -> IbdDataDto {
         }
     }
     connectors = remap_connectors_to_typed_instances(connectors, &instance_def_mappings);
-    let mut connectors = dedupe_connectors(connectors);
-    enrich_connector_endpoint_refs(&mut connectors, &parts, &ports);
+    let connectors = dedupe_connectors(connectors);
 
     ensure_endpoint_parts_present(&mut parts, &connectors, graph, uri);
 
