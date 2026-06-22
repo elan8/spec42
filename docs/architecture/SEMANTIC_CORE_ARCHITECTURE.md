@@ -11,7 +11,18 @@ This document explains what `semantic_core` does, how its modules fit together, 
 - provides semantic resolution/evaluation helpers
 - exposes visualization-oriented DTOs and graph-first visualization metadata APIs
 
-The crate is designed to be consumed by multiple hosts (`kernel`, embedding services, and future integrators), without hard-coding filesystem or editor runtime concerns into the semantic core.
+The crate is designed to be consumed by multiple hosts (`kernel`, `spec42_host`, embedding services, and future integrators), without hard-coding filesystem or editor runtime concerns into the semantic core.
+
+## Consumer boundaries
+
+| Consumer | Uses `semantic_core` for |
+| --- | --- |
+| `kernel` | LSP/runtime adapters, tower-lsp diagnostics postprocess, validation pipeline orchestration |
+| `spec42_host` | single-build workspace snapshots: graph construction, render snapshot, host diagnostics, view preparation |
+| `language_service` | editor intelligence over `WorkspaceSnapshot` (built from snapshot documents) |
+
+`spec42_host` owns immutable snapshot assembly. It calls `build_semantic_graph_from_documents`, `build_render_snapshot`, and `build_sysml_visualization_workspace` once per load. Server surfaces reuse the same graph through `kernel::semantic_report_from_built_workspace` for CLI-equivalent diagnostics.
+
 
 ## High-Level Capabilities
 

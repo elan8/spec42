@@ -4,6 +4,8 @@ pub mod catalog;
 pub mod engine;
 pub mod error;
 pub mod library;
+pub mod provider;
+pub mod snapshot;
 
 pub use catalog::{HostConfigFile, HostLibraryRequest, LibraryCatalog};
 pub use engine::{EngineBuilder, HostEngineMetadata, Spec42Engine};
@@ -20,4 +22,13 @@ pub use library::{
         project_dirs, standard_library_paths_from_data_dir, StandardLibraryConfig,
         StandardLibraryPaths, StandardLibraryStatus,
     },
+};
+pub use provider::{
+    ChangesetDocumentProvider, FileSystemDocumentProvider, HostFilesystemProvider,
+    InMemoryDocumentProvider, SysmlDocument, SysmlDocumentProvider, SysmlDocumentSourceKind,
+};
+pub use snapshot::{
+    HostContext, HostSemanticModelNode, HostSemanticModelRelationship, HostSemanticProjection,
+    HostSnapshotMetadata, HostValidatedDocument, HostValidationReport, HostValidationSummary,
+    HostWorkspaceSnapshot, WorkspaceLoadRequest,
 };

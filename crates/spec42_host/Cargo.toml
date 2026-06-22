@@ -21,6 +21,8 @@ kpar = { path = "../kpar" }
 
 [dependencies]
 kpar = { path = "../kpar" }
+semantic_core = { path = "../semantic_core" }
+language_service = { path = "../language_service" }
 serde = { workspace = true }
 serde_json = { workspace = true }
 thiserror = { workspace = true }
@@ -28,6 +30,9 @@ sha2 = "0.10"
 toml = "0.8"
 zip = { version = "2", default-features = false, features = ["deflate"] }
 directories = "5"
+url = "2"
+walkdir = "2"
+sysml-v2-parser = { workspace = true }
 
 [dev-dependencies]
 tempfile = "3"
@@ -39,3 +44,11 @@ path = "tests/dependency_guardrails.rs"
 [[test]]
 name = "library_source_resolution"
 path = "tests/library_source_resolution.rs"
+
+[[test]]
+name = "snapshot_single_build"
+path = "tests/snapshot_single_build.rs"
+
+[[test]]
+name = "robot_vacuum_snapshot"
+path = "tests/robot_vacuum_snapshot.rs"

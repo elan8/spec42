@@ -20,4 +20,11 @@ fn spec42_host_does_not_depend_on_protocol_or_runtime_crates() {
             "spec42_host must not depend on {dep}"
         );
     }
+
+    for required in ["semantic_core", "language_service"] {
+        assert!(
+            cargo_toml.contains(&format!("{required} =")),
+            "spec42_host must depend on {required}"
+        );
+    }
 }

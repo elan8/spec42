@@ -149,7 +149,7 @@ fn collect_entries(
     Ok(entries)
 }
 
-fn collect_target_documents(
+pub(super) fn collect_target_documents(
     state: &ServerState,
     config: &Arc<Spec42Config>,
     target_files: &[std::path::PathBuf],
@@ -178,7 +178,7 @@ fn target_file_urls(target_files: &[std::path::PathBuf]) -> Result<BTreeSet<Url>
         .collect::<Result<BTreeSet<_>, _>>()
 }
 
-fn project_semantic_model(
+pub(super) fn project_semantic_model(
     state: &ServerState,
     target_urls: &BTreeSet<Url>,
 ) -> SemanticModelProjection {

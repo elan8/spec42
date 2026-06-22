@@ -8,6 +8,9 @@ use crate::library::{
     domain::DomainLibrariesConfig,
     stdlib::StandardLibraryConfig,
 };
+use crate::snapshot::{HostContext, HostWorkspaceSnapshot, WorkspaceLoadRequest};
+use semantic_core::SysmlDocumentProvider;
+use std::sync::Arc;
 
 #[derive(Debug, Clone, Serialize)]
 pub struct HostEngineMetadata {
@@ -59,6 +62,15 @@ impl Spec42Engine {
 
     pub fn metadata(&self) -> &HostEngineMetadata {
         &self.metadata
+    }
+
+    pub fn load_workspace(
+        &self,
+        provider: impl SysmlDocumentProvider,
+        request: WorkspaceLoadRequest,
+        context: HostContext,
+    ) -> HostResult<Arc<HostWorkspaceSnapshot>> {
+        crate::snapshot::load_workspace_snapshot(self, provider, request, context)
     }
 }
 

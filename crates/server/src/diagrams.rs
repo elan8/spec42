@@ -1,10 +1,11 @@
 use std::path::{Path, PathBuf};
 
-use kernel::build_sysml_visualization_for_paths;
 use semantic_core::SysmlVisualizationResultDto;
+use spec42_host::HostWorkspaceSnapshot;
 
-use crate::cli::{DiagramExportArgs, DiagramExportFormat};
+use crate::cli::{Cli, DiagramExportArgs, DiagramExportFormat};
 use crate::headless_renderer::render_shared_svg;
+use crate::host_snapshot::load_snapshot_for_paths;
 
 const EXPORTABLE_VIEWS: &[&str] = &[
     "general-view",
@@ -24,20 +25,25 @@ pub struct DiagramExportSummary {
 }
 
 pub fn build_diagram_payload(
+    cli: &Cli,
     path: &Path,
     workspace_root: Option<&Path>,
-    library_paths: &[PathBuf],
     view: &str,
     selected_view: Option<&str>,
 ) -> Result<SysmlVisualizationResultDto, String> {
     let export_view = resolve_renderer_view(view)?;
-    build_sysml_visualization_for_paths(
-        path,
-        workspace_root,
-        library_paths,
-        export_view,
-        selected_view,
-    )
+    let snapshot = load_snapshot_for_paths(cli, path, workspace_root, false)?;
+    build_diagram_payload_from_snapshot(&snapshot, export_view, selected_view)
+}
+
+pub fn build_diagram_payload_from_snapshot(
+    snapshot: &HostWorkspaceSnapshot,
+    view: &str,
+    selected_view: Option<&str>,
+) -> Result<SysmlVisualizationResultDto, String> {
+    snapshot
+        .prepare_view(view, selected_view)
+        .map_err(|error| error.to_string())
 }
 
 pub fn render_diagram(
@@ -61,30 +67,27 @@ pub fn render_diagram(
 }
 
 pub fn render_diagram_for_path(
+    cli: &Cli,
     path: &Path,
     workspace_root: Option<&Path>,
-    library_paths: &[PathBuf],
     view: &str,
     selected_view: Option<&str>,
     format: DiagramExportFormat,
 ) -> Result<(String, &'static str), String> {
-    let payload = build_diagram_payload(path, workspace_root, library_paths, view, selected_view)?;
+    let payload = build_diagram_payload(cli, path, workspace_root, view, selected_view)?;
     render_diagram(&payload, format)
 }
 
-pub fn export_diagrams(
-    args: &DiagramExportArgs,
-    library_paths: &[PathBuf],
-) -> Result<DiagramExportSummary, String> {
+pub fn export_diagrams(cli: &Cli, args: &DiagramExportArgs) -> Result<DiagramExportSummary, String> {
     std::fs::create_dir_all(&args.output)
         .map_err(|err| format!("Failed to create {}: {err}", args.output.display()))?;
     if args.view == "model-views" {
-        return export_model_views(args, library_paths);
+        return export_model_views(cli, args);
     }
     if args.selected_view.is_some() {
         return export_single_diagram(
+            cli,
             args,
-            library_paths,
             args.view.as_str(),
             args.selected_view.as_deref(),
         );
@@ -92,7 +95,7 @@ pub fn export_diagrams(
     let views = requested_renderer_views(args.view.as_str())?;
     let mut exported = 0;
     for view in views {
-        export_single_diagram(args, library_paths, view, None)?;
+        export_single_diagram(cli, args, view, None)?;
         exported += 1;
     }
     Ok(DiagramExportSummary {
@@ -101,20 +104,17 @@ pub fn export_diagrams(
     })
 }
 
-fn export_model_views(
-    args: &DiagramExportArgs,
-    library_paths: &[PathBuf],
-) -> Result<DiagramExportSummary, String> {
+fn export_model_views(cli: &Cli, args: &DiagramExportArgs) -> Result<DiagramExportSummary, String> {
     if args.selected_view.is_some() {
         return Err("--selected-view cannot be combined with --view model-views".to_string());
     }
-    let probe = build_sysml_visualization_for_paths(
+    let snapshot = load_snapshot_for_paths(
+        cli,
         args.path.as_path(),
         args.workspace_root.as_deref(),
-        library_paths,
-        "general-view",
-        None,
+        false,
     )?;
+    let probe = build_diagram_payload_from_snapshot(&snapshot, "general-view", None)?;
     let candidates: Vec<_> = probe
         .view_candidates
         .iter()
@@ -133,10 +133,8 @@ fn export_model_views(
             .renderer_view
             .as_deref()
             .ok_or_else(|| format!("View '{}' has no renderer mapping", candidate.name))?;
-        let payload = build_sysml_visualization_for_paths(
-            args.path.as_path(),
-            args.workspace_root.as_deref(),
-            library_paths,
+        let payload = build_diagram_payload_from_snapshot(
+            &snapshot,
             renderer_view,
             Some(candidate.name.as_str()),
         )?;
@@ -155,15 +153,15 @@ fn export_model_views(
 }
 
 fn export_single_diagram(
+    cli: &Cli,
     args: &DiagramExportArgs,
-    library_paths: &[PathBuf],
     view: &str,
     selected_view: Option<&str>,
 ) -> Result<DiagramExportSummary, String> {
     let payload = build_diagram_payload(
+        cli,
         args.path.as_path(),
         args.workspace_root.as_deref(),
-        library_paths,
         view,
         selected_view,
     )?;
@@ -412,6 +410,18 @@ mod tests {
         assert!(svg.contains("data-layout-engine=\"elkjs-quickjs\""));
     }
 
+    fn test_cli() -> Cli {
+        Cli {
+            config_path: None,
+            library_paths: Vec::new(),
+            stdlib_path: None,
+            domain_libraries_path: None,
+            no_stdlib: true,
+            stdio: false,
+            command: None,
+        }
+    }
+
     #[test]
     fn interconnection_export_matches_slim_scoped_lsp_contract_for_drone() {
         let repo_root =
@@ -422,9 +432,9 @@ mod tests {
             repo_root.display()
         );
         let payload = build_diagram_payload(
+            &test_cli(),
             &repo_root.join("Views.sysml"),
             Some(repo_root.as_path()),
-            &[],
             "interconnection-view",
             Some("connections"),
         )

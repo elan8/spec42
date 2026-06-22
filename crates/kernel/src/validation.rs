@@ -5,6 +5,7 @@ use crate::host::config::Spec42Config;
 use serde::Serialize;
 use tower_lsp::lsp_types::{Diagnostic, Range};
 
+mod built_workspace;
 mod discovery;
 mod pipeline;
 mod report;
@@ -84,6 +85,8 @@ pub fn validate_paths_with_semantics(
 ) -> Result<SemanticValidationReport, String> {
     pipeline::validate_paths_with_semantics(config, request)
 }
+
+pub use built_workspace::{semantic_report_from_built_workspace, BuiltWorkspaceInput};
 
 #[cfg(test)]
 mod tests {

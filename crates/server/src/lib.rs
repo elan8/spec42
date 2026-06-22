@@ -8,6 +8,7 @@ pub mod domain_libraries;
 pub mod elk_layout;
 pub mod environment;
 pub mod headless_renderer;
+pub mod host_snapshot;
 pub mod library_bundle;
 pub mod mcp;
 pub mod reports;
@@ -24,10 +25,10 @@ use cli::{
 };
 pub use environment::DoctorReport;
 use environment::{build_doctor_report, resolve_environment};
+use host_snapshot::{load_snapshot_for_check, semantic_report_from_snapshot};
 use kernel::{
-    validate_paths, validate_paths_with_semantics, SemanticModelNode, SemanticModelProjection,
-    SemanticModelRelationship, SemanticValidationReport, ValidationReport, ValidationRequest,
-    ValidationSummary,
+    validate_paths, SemanticModelNode, SemanticModelProjection, SemanticModelRelationship,
+    SemanticValidationReport, ValidationReport, ValidationRequest, ValidationSummary,
 };
 use mcp::schemas::Spec42GlobalParams;
 use reports::{apply_baseline, emit_validation_report};
@@ -98,9 +99,10 @@ pub fn perform_check_with_semantics(
 ) -> Result<SemanticValidationReport, String> {
     let references_stdlib = environment::workspace_references_standard_library(&args.path);
     let environment = resolve_environment(cli)?;
-    let config = Arc::new(kernel::default_server_config());
-    let mut report = validate_paths_with_semantics(
-        &config,
+    let snapshot = load_snapshot_for_check(cli, args)?;
+    let mut report = semantic_report_from_snapshot(
+        &snapshot,
+        &environment,
         ValidationRequest {
             targets: vec![args.path.clone()],
             workspace_root: args.workspace_root.clone(),
@@ -348,8 +350,7 @@ fn run_sysand(command: &SysandCommand) -> Result<ExitCode, String> {
 fn run_diagrams(cli: &Cli, command: &DiagramsCommand) -> Result<ExitCode, String> {
     match command {
         DiagramsCommand::Export(args) => {
-            let environment = resolve_environment(cli)?;
-            let summary = diagrams::export_diagrams(args, &environment.library_paths)?;
+            let summary = diagrams::export_diagrams(cli, args)?;
             println!(
                 "Exported {} diagram artifact(s) to {}",
                 summary.exported,

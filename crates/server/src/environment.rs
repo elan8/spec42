@@ -19,7 +19,7 @@ use spec42_host::{
         resolve_domain_libraries_component_for_test, resolve_stdlib_component_for_test,
         HostLibraryRequest,
     },
-    EngineBuilder,
+    EngineBuilder, Spec42Engine,
 };
 
 #[derive(Debug, Clone, Deserialize, Default)]
@@ -158,6 +158,59 @@ fn resolve_environment_with_dirs(
         domain_libraries,
         domain_libraries_paths: catalog.domain_libraries_paths.clone(),
     })
+}
+
+/// Build a [`Spec42Engine`] from CLI configuration without duplicating catalog resolution.
+pub fn build_engine(cli: &Cli) -> Result<Spec42Engine, String> {
+    let project_dirs = project_dirs()?;
+    let config_dir = std::env::var_os("SPEC42_CONFIG_DIR")
+        .map(PathBuf::from)
+        .map(|path| canonicalize_lossy(path.as_path()))
+        .unwrap_or_else(|| project_dirs.config_dir().to_path_buf());
+    let data_dir = std::env::var_os("SPEC42_DATA_DIR")
+        .map(PathBuf::from)
+        .map(|path| canonicalize_lossy(path.as_path()))
+        .unwrap_or_else(|| project_dirs.data_local_dir().to_path_buf());
+    build_engine_with_dirs(cli, config_dir, data_dir)
+}
+
+fn build_engine_with_dirs(
+    cli: &Cli,
+    config_dir: PathBuf,
+    data_dir: PathBuf,
+) -> Result<Spec42Engine, String> {
+    let explicit_config_path = cli
+        .config_path
+        .as_ref()
+        .map(|path| canonicalize_lossy(path.as_path()));
+    let default_config_path = config_dir.join("config.toml");
+    let explicit_config = explicit_config_path
+        .as_ref()
+        .map(|path| load_config_file(path.as_path()))
+        .transpose()?
+        .unwrap_or_default();
+    let default_config = if explicit_config_path.is_none() {
+        load_config_file_if_present(&default_config_path)?
+    } else {
+        ConfigFile::default()
+    };
+
+    let standard_library = resolve_standard_library_config(cli, &explicit_config, &default_config);
+    let domain_libraries = resolve_domain_libraries_config(cli, &explicit_config, &default_config);
+    let sysand = detect_sysand_status();
+    let sysand_dependency_roots = dependency_roots_from_status(&sysand);
+    let request = build_host_library_request(
+        cli,
+        &explicit_config,
+        &default_config,
+        data_dir,
+        &sysand_dependency_roots,
+        standard_library,
+        domain_libraries,
+    )?;
+    EngineBuilder::from_request(request)
+        .build()
+        .map_err(|error| error.to_string())
 }
 
 pub fn build_doctor_report(

@@ -1993,12 +1993,17 @@ version = "0.32.0"
 dependencies = [
  "directories",
  "kpar",
+ "language_service",
+ "semantic_core",
  "serde",
  "serde_json",
  "sha2",
+ "sysml-v2-parser",
  "tempfile",
  "thiserror 2.0.18",
  "toml",
+ "url",
+ "walkdir",
  "zip",
 ]
 

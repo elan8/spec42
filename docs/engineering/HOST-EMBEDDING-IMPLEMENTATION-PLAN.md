@@ -324,6 +324,14 @@ Remaining for Phase 2:
 
 1. Update [SEMANTIC_CORE_ARCHITECTURE.md](../architecture/SEMANTIC_CORE_ARCHITECTURE.md) consumer boundaries for `spec42_host` snapshots.
 
+Phase 2 complete:
+
+1. `HostWorkspaceSnapshot` with single-build validation, projection, language-service workspace, and view catalog.
+2. `Spec42Engine::load_workspace` and filesystem/changeset document providers.
+3. Server `perform_check_with_semantics` and diagram export query one snapshot build.
+4. Kernel `semantic_report_from_built_workspace` preserves CLI diagnostic parity on pre-built graphs.
+5. Integration tests: `snapshot_single_build`, `built_workspace_parity`, `robot_vacuum_snapshot` (ignored).
+
 ## Related documents
 
 - [ADR 0003: `spec42_host` crate](../adr/0003-spec42-host-embedding-crate.md)

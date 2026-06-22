@@ -286,7 +286,7 @@ pub async fn diagrams_export(
     Json(body): Json<DiagramExportRequest>,
 ) -> ApiResult<Response> {
     let resolved = resolve_workspace_path(&state.workspace_root, &body.path)?;
-    let library_paths = state.environment.library_paths.clone();
+    let cli = state.cli.clone();
     let workspace_root = state.workspace_root.clone();
     let view = body.view.clone();
     let selected_view = body.selected_view.clone();
@@ -294,9 +294,9 @@ pub async fn diagrams_export(
 
     let (body_text, content_type) = tokio::task::spawn_blocking(move || {
         diagrams::render_diagram_for_path(
+            &cli,
             resolved.as_path(),
             Some(workspace_root.as_path()),
-            &library_paths,
             &view,
             selected_view.as_deref(),
             format,

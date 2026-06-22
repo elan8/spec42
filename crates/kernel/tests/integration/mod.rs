@@ -6,6 +6,7 @@
 //! server loads files from disk (scan). When `SYSML_V2_RELEASE_DIR` is set,
 //! `lsp_workspace_scan_sysml_release` runs and validates indexing of the OMG SysML v2 repo.
 
+mod built_workspace_parity;
 mod completion;
 mod definition;
 mod diagnostics;
