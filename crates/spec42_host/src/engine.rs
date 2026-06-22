@@ -23,6 +23,7 @@ pub struct Spec42Engine {
     cache_dir: PathBuf,
     catalog: LibraryCatalog,
     metadata: HostEngineMetadata,
+    experimental_incremental_updates: bool,
 }
 
 #[derive(Debug, Default)]
@@ -40,6 +41,7 @@ pub struct EngineBuilder {
     use_embedded_domain_libraries: bool,
     config_stdlib_path: Option<PathBuf>,
     config_no_stdlib: bool,
+    experimental_incremental_updates: bool,
 }
 
 impl Spec42Engine {
@@ -67,6 +69,10 @@ impl Spec42Engine {
         self.metadata.schema_versions
     }
 
+    pub fn experimental_incremental_updates(&self) -> bool {
+        self.experimental_incremental_updates
+    }
+
     pub fn load_workspace(
         &self,
         provider: impl SysmlDocumentProvider,
@@ -74,6 +80,16 @@ impl Spec42Engine {
         context: HostContext,
     ) -> HostResult<Arc<HostWorkspaceSnapshot>> {
         crate::snapshot::load_workspace_snapshot(self, provider, request, context)
+    }
+
+    pub fn update_snapshot(
+        &self,
+        previous: &HostWorkspaceSnapshot,
+        changes: crate::snapshot::DocumentChanges,
+        request: WorkspaceLoadRequest,
+        context: HostContext,
+    ) -> HostResult<Arc<HostWorkspaceSnapshot>> {
+        crate::snapshot::update_workspace_snapshot(self, previous, changes, request, context)
     }
 }
 
@@ -143,6 +159,11 @@ impl EngineBuilder {
         self
     }
 
+    pub fn experimental_incremental_updates(mut self, enabled: bool) -> Self {
+        self.experimental_incremental_updates = enabled;
+        self
+    }
+
     pub fn build(self) -> HostResult<Spec42Engine> {
         let cache_dir = self.cache_dir.ok_or_else(|| {
             Spec42HostError::unresolved_library_environment(
@@ -178,6 +199,7 @@ impl EngineBuilder {
                 engine_version: env!("CARGO_PKG_VERSION").to_string(),
                 schema_versions: HostSchemaVersions::current(),
             },
+            experimental_incremental_updates: self.experimental_incremental_updates,
         })
     }
 

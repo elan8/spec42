@@ -92,3 +92,19 @@ path = "tests/comparison_views.rs"
 [[test]]
 name = "comparison_identity"
 path = "tests/comparison_identity.rs"
+
+[[test]]
+name = "document_changes"
+path = "tests/document_changes.rs"
+
+[[test]]
+name = "incremental_parity"
+path = "tests/incremental_parity.rs"
+
+[[test]]
+name = "incremental_fallback"
+path = "tests/incremental_fallback.rs"
+
+[[test]]
+name = "incremental_benchmark"
+path = "tests/incremental_benchmark.rs"

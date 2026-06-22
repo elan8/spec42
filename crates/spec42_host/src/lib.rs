@@ -38,8 +38,9 @@ pub use provider::{
     InMemoryDocumentProvider, SysmlDocument, SysmlDocumentProvider, SysmlDocumentSourceKind,
 };
 pub use snapshot::{
-    CancellationToken, HostContext, HostPipelinePhase, HostResourceLimits, HostSemanticModelNode,
-    HostSemanticModelRelationship, HostSemanticProjection, HostValidatedDocument,
-    HostValidationReport, HostValidationSummary, HostWorkspaceSnapshot, WorkspaceLoadRequest,
+    apply_document_changes, CancellationToken, DocumentChanges, HostContext, HostPipelinePhase,
+    HostResourceLimits, HostSemanticModelNode, HostSemanticModelRelationship,
+    HostSemanticProjection, HostValidatedDocument, HostValidationReport, HostValidationSummary,
+    HostWorkspaceSnapshot, WorkspaceLoadRequest,
 };
 pub use version::{HostArtifactMetadata, HostSchemaVersions};

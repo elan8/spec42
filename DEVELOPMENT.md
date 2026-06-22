@@ -268,6 +268,16 @@ cargo test -p spec42_host --test robot_vacuum_snapshot -- --ignored --nocapture
 cargo test -p kernel --test lsp_integration robot_vacuum -- --ignored --nocapture
 ```
 
+### Incremental update benchmark (local only)
+
+Compare full in-memory rebuild vs. single-document `update_snapshot` on a synthetic multi-file workspace:
+
+```bash
+cargo test -p spec42_host --test incremental_benchmark -- --ignored --nocapture
+```
+
+The benchmark stays `#[ignore]` in CI. Enable `experimental_incremental_updates(true)` on the engine builder before measuring incremental timings.
+
 ### SysML v2 validation suite
 
 The full validation suite over the official SysML v2 Release is ignored by default and informational in CI. To run it locally:

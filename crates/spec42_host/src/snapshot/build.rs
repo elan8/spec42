@@ -227,7 +227,52 @@ pub(crate) fn build_workspace_snapshot(
     })
 }
 
-fn enrich_document_hashes(documents: &mut [SysmlDocument]) {
+#[allow(clippy::too_many_arguments)]
+pub(crate) fn assemble_host_workspace_snapshot(
+    metadata: &HostEngineMetadata,
+    catalog: &LibraryCatalog,
+    documents: Vec<SysmlDocument>,
+    semantic_graph: SemanticGraph,
+    parsed_documents: Vec<WorkspaceParsedDocument>,
+    language_workspace: InMemoryWorkspace,
+    render_snapshot: WorkspaceRenderSnapshot,
+    validation_report: HostValidationReport,
+    semantic_projection: HostSemanticProjection,
+    library_urls: Vec<Url>,
+    library_paths: Vec<PathBuf>,
+    workspace_root: PathBuf,
+    workspace_root_uri: Url,
+    build_instant: Instant,
+) -> HostWorkspaceSnapshot {
+    let document_hashes = documents
+        .iter()
+        .map(|doc| (doc.uri.to_string(), doc.sha256.clone().unwrap_or_default()))
+        .collect::<BTreeMap<_, _>>();
+
+    let snapshot_metadata = HostArtifactMetadata::new(
+        metadata.engine_version.clone(),
+        catalog.content_hash.clone(),
+        document_hashes,
+    );
+
+    HostWorkspaceSnapshot {
+        metadata: snapshot_metadata,
+        documents,
+        semantic_graph,
+        parsed_documents,
+        language_workspace,
+        render_snapshot,
+        validation_report,
+        semantic_projection,
+        library_urls,
+        library_paths,
+        workspace_root,
+        workspace_root_uri,
+        build_instant,
+    }
+}
+
+pub(crate) fn enrich_document_hashes(documents: &mut [SysmlDocument]) {
     for document in documents {
         let bytes = document.content.as_bytes();
         document.byte_size = Some(bytes.len() as i64);

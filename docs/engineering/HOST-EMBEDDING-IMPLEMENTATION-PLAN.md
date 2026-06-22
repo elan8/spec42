@@ -281,7 +281,9 @@ Add `crates/spec42_host/tests/` for:
 - snapshot single-build invariants;
 - metadata and error round-trips;
 - comparison fixtures;
-- optional ignored showcase tests behind `SYSML_ROBOT_VACUUM_DIR`.
+- optional ignored showcase tests behind `SYSML_ROBOT_VACUUM_DIR`;
+- incremental parity and fallback tests (`incremental_parity`, `incremental_fallback`);
+- ignored incremental benchmark (`incremental_benchmark`).
 
 The read-only HTTP API remains useful for manual debugging and automated parity checks. It is not the production multi-tenant boundary for in-process embedding hosts.
 
@@ -349,6 +351,15 @@ Phase 4 complete:
 4. `COMPARISON_SCHEMA_VERSION` bumped to `1` in `HostSchemaVersions`.
 5. Integration tests: `comparison_serde`, `comparison_elements`, `comparison_relationships`, `comparison_diagnostics`, `comparison_views`, `comparison_identity`.
 6. `crates/spec42_host/README.md` documents comparison artifact JSON, identity semantics, and diagnostic matching.
+
+Phase 5 complete:
+
+1. `DocumentChanges` with `apply_document_changes` merge helper and URI bucket validation.
+2. `Spec42Engine::update_snapshot(previous, changes, request, context) -> Arc<HostWorkspaceSnapshot>` with in-memory full-rebuild fallback.
+3. `EngineBuilder::experimental_incremental_updates` gates single-document graph patching (default off).
+4. `semantic_core::finalize_workspace_graph` shared post-merge finalization for incremental and full paths.
+5. Integration tests: `document_changes`, `incremental_parity`, `incremental_fallback`; ignored `incremental_benchmark`.
+6. `crates/spec42_host/README.md` documents incremental update API, experimental flag, immutability, and editor integration.
 
 ## Related documents
 

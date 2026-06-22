@@ -58,8 +58,14 @@ pub fn build_and_link_graph(
     }
 
     link_workspace_relationships(&mut graph);
-    prepare_analysis_evaluation_context(&mut graph);
-    resolve_workspace_pending_relationships(&mut graph);
+    finalize_workspace_graph(&mut graph);
 
     Ok((graph, parsed_docs))
+}
+
+/// Link, prepare analysis context, and resolve pending relationships after graph mutation.
+pub fn finalize_workspace_graph(graph: &mut SemanticGraph) {
+    link_workspace_relationships(graph);
+    prepare_analysis_evaluation_context(graph);
+    resolve_workspace_pending_relationships(graph);
 }

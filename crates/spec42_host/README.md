@@ -30,14 +30,59 @@ Protocol-neutral embedding API for Spec42 host services.
 - facts-only diffs for elements, relationships, diagnostics, and supported-view payload identities;
 - `IdentityPreservationStatus` when library environment or document URI sets differ between revisions.
 
+### Phase 5 — incremental snapshot updates
+
+- `Spec42Engine::update_snapshot(previous, changes, request, context)` returns a new `Arc<HostWorkspaceSnapshot>` without re-reading the workspace from disk;
+- `DocumentChanges` overlays added, changed, and removed logical documents on a prior snapshot;
+- single changed workspace document can use an experimental graph patch; add/remove/multi-doc edits fall back to in-memory full rebuild;
+- previous `Arc` remains valid for readers — snapshots are never mutated in place.
+
 ## Snapshot lifecycle
 
 1. Resolve libraries via `Spec42Engine::builder()`.
 2. Load documents through a `SysmlDocumentProvider` (filesystem, in-memory, or changeset overlay).
 3. Build graph, language indexes, and view catalog once.
 4. Query `validation()`, `semantic_projection()`, `language_workspace()`, `view_catalog()`, and `prepare_view()` from the same `Arc<HostWorkspaceSnapshot>`.
+5. After editor saves, call `update_snapshot` with `DocumentChanges` instead of reloading from disk when the prior snapshot is still valid.
 
-Snapshots are immutable after construction. Share them across worker threads with `Arc`; types are `Send + Sync`.
+Snapshots are immutable after construction. Share them across worker threads with `Arc`; types are `Send + Sync`. `update_snapshot` always returns a **new** `Arc`; existing readers keep the previous snapshot until they adopt the new one.
+
+## Incremental updates
+
+Apply logical document overlays on top of a prior snapshot:
+
+```rust
+use spec42_host::{DocumentChanges, EngineBuilder, HostContext, WorkspaceLoadRequest};
+
+let engine = EngineBuilder::default()
+    .cache_dir(cache_dir)
+    .experimental_incremental_updates(true) // default: false
+    .build()?;
+
+let request = WorkspaceLoadRequest::single_target(workspace_root.join("Demo.sysml"));
+let previous = engine.load_workspace(provider, request.clone(), HostContext::default())?;
+
+let changes = DocumentChanges::new().replace(updated_document);
+let next = engine.update_snapshot(
+    previous.as_ref(),
+    changes,
+    request,
+    HostContext::default(),
+)?;
+```
+
+| Input | Behavior |
+| --- | --- |
+| `DocumentChanges::with_changed` (one workspace doc) | Experimental graph patch when `experimental_incremental_updates(true)` |
+| Add, remove, or multiple changed docs | In-memory full rebuild via `InMemoryDocumentProvider` (no base provider I/O) |
+| `experimental_incremental_updates(false)` | Always full-rebuild fallback (still skips filesystem provider) |
+| Library catalog change | Reload workspace with `load_workspace`; do not call `update_snapshot` |
+
+Pass the same `WorkspaceLoadRequest` used for the initial load (`targets`, `workspace_root`, `strict_diagnostics`) so validation and projection scope stay consistent.
+
+`DocumentChanges` rejects URIs that appear in more than one bucket (`added` / `changed` / `removed`). Use `replace(document)` for single-save editor flows.
+
+**Editor integration:** full workspace open → `load_workspace`; single document save → `update_snapshot` with `DocumentChanges::replace`; catalog or URI-set change → `load_workspace` again.
 
 ## Artifact metadata
 
@@ -94,7 +139,7 @@ The CLI/HTTP/MCP server maps errors to strings via `Display`; embedding hosts sh
 
 ## HostContext
 
-Pass a `HostContext` to `load_workspace` to control long-running builds in SaaS workers:
+Pass a `HostContext` to `load_workspace` and `update_snapshot` to control long-running builds in SaaS workers:
 
 ```rust
 use std::sync::Arc;
@@ -117,7 +162,7 @@ let context = HostContext::default()
 
 Pipeline phases (`HostPipelinePhase`): `LoadingDocuments` → `BuildingGraph` → `BuildingLanguageWorkspace` → `BuildingViewCatalog` → `CollectingValidation` → `ProjectingModel`.
 
-Checks run cooperatively at each step. On `cancelled` or `resource_limit_exceeded`, `load_workspace` returns `Err` immediately and **never** returns a partial snapshot. Deadlines also map to `cancelled`.
+Checks run cooperatively at each step. On `cancelled` or `resource_limit_exceeded`, `load_workspace` and `update_snapshot` return `Err` immediately and **never** return a partial snapshot. Deadlines also map to `cancelled`.
 
 ## Semantic comparison
 
