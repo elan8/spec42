@@ -51,7 +51,10 @@ fn visualization_response_is_cacheable(
     if !response.model_ready {
         return false;
     }
-    if response.view == "interconnection-view" && response.interconnection_scene.is_none() {
+    if response.view == "interconnection-view"
+        && response.interconnection_scene.is_none()
+        && response.prepared_view.is_none()
+    {
         return false;
     }
     true
