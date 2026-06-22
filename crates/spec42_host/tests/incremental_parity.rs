@@ -60,7 +60,14 @@ package Demo {
         .expect("incremental update");
 
     let merged = apply_document_changes(previous.documents(), &changes).expect("merge");
-    let baseline = load_merged_baseline(&engine, merged, model_path);
+    let request = WorkspaceLoadRequest::single_target(model_path.clone());
+    let baseline = engine
+        .load_workspace(
+            spec42_host::InMemoryDocumentProvider::new(merged),
+            request,
+            HostContext::default(),
+        )
+        .expect("baseline");
 
     assert_snapshot_parity("incremental", baseline.as_ref(), updated.as_ref());
 }

@@ -252,36 +252,49 @@ fn lsp_republishes_diagnostics_for_loose_file_after_library_scan() {
     });
     send_message(&mut stdin, &did_open_loose.to_string());
 
-    std::thread::sleep(std::time::Duration::from_millis(700));
-
-    let barrier_id = next_id();
-    let barrier_req = serde_json::json!({
-        "jsonrpc": "2.0",
-        "id": barrier_id,
-        "method": "workspace/symbol",
-        "params": { "query": "" }
-    });
-    send_message(&mut stdin, &barrier_req.to_string());
-
+    // Library closure ingest + debounced workspace republish can arrive after the first
+    // publishDiagnostics. Poll until the last loose-file publish is clean (same pattern as
+    // did_change_republishs_peer_diagnostics_after_debounce).
+    let deadline = Instant::now() + Duration::from_secs(3);
     let mut saw_loose_publish = false;
+    let mut loose_has_unresolved = true;
     let mut last_loose_diagnostics = Vec::new();
-    loop {
-        let msg = read_message(&mut stdout).expect("expected message while waiting for barrier");
-        let json: serde_json::Value = serde_json::from_str(&msg).unwrap_or_default();
-        if json["method"].as_str() == Some("textDocument/publishDiagnostics")
-            && json["params"]["uri"]
-                .as_str()
-                .map(|uri| uri.eq_ignore_ascii_case(loose_uri))
-                .unwrap_or(false)
-        {
-            saw_loose_publish = true;
-            last_loose_diagnostics = json["params"]["diagnostics"]
-                .as_array()
-                .cloned()
-                .unwrap_or_default();
-        }
-        if json["id"].as_i64() == Some(barrier_id) {
-            break;
+    while Instant::now() < deadline && loose_has_unresolved {
+        let barrier_id = next_id();
+        let barrier_req = serde_json::json!({
+            "jsonrpc": "2.0",
+            "id": barrier_id,
+            "method": "workspace/symbol",
+            "params": { "query": "" }
+        });
+        send_message(&mut stdin, &barrier_req.to_string());
+
+        loop {
+            let msg = read_message(&mut stdout).expect("expected message while waiting for barrier");
+            let json: serde_json::Value = serde_json::from_str(&msg).unwrap_or_default();
+            if json["method"].as_str() == Some("textDocument/publishDiagnostics")
+                && json["params"]["uri"]
+                    .as_str()
+                    .map(|uri| uri.eq_ignore_ascii_case(loose_uri))
+                    .unwrap_or(false)
+            {
+                saw_loose_publish = true;
+                let diagnostics = json["params"]["diagnostics"]
+                    .as_array()
+                    .cloned()
+                    .unwrap_or_default();
+                last_loose_diagnostics = diagnostics.clone();
+                loose_has_unresolved = diagnostics.iter().any(|d| {
+                    d["source"].as_str() == Some("semantic")
+                        && matches!(
+                            d["code"].as_str(),
+                            Some("unresolved_type_reference") | Some("unresolved_import_target")
+                        )
+                });
+            }
+            if json["id"].as_i64() == Some(barrier_id) {
+                break;
+            }
         }
     }
 
@@ -290,11 +303,8 @@ fn lsp_republishes_diagnostics_for_loose_file_after_library_scan() {
         "expected diagnostics to be published for loose file after library indexing"
     );
     assert!(
-        !last_loose_diagnostics.iter().any(|d| {
-            d["source"].as_str() == Some("semantic")
-                && d["code"].as_str() == Some("unresolved_type_reference")
-        }),
-        "expected no unresolved_type_reference diagnostics after library indexing, got: {last_loose_diagnostics:#?}"
+        !loose_has_unresolved,
+        "expected no unresolved library diagnostics after library indexing, got: {last_loose_diagnostics:#?}"
     );
 
     let _ = child.kill();
