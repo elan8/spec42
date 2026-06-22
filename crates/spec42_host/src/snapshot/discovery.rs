@@ -66,7 +66,11 @@ pub(crate) fn path_to_file_url(path: &Path) -> HostResult<Url> {
         path.to_path_buf()
     } else {
         std::env::current_dir()
-            .map_err(|err| format!("Failed to resolve current directory: {err}"))?
+            .map_err(|err| {
+                Spec42HostError::unresolved_library_environment(format!(
+                    "Failed to resolve current directory: {err}"
+                ))
+            })?
             .join(path)
     };
     let canonical = std::fs::canonicalize(&absolute).unwrap_or(absolute);
@@ -76,7 +80,7 @@ pub(crate) fn path_to_file_url(path: &Path) -> HostResult<Url> {
         Url::from_file_path(&canonical)
     }
     .map_err(|_| {
-        Spec42HostError::invalid_library_path(format!(
+        Spec42HostError::invalid_document_uri(format!(
             "Failed to convert path to file URI: {}",
             canonical.display()
         ))

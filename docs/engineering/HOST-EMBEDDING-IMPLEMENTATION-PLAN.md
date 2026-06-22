@@ -332,6 +332,15 @@ Phase 2 complete:
 4. Kernel `semantic_report_from_built_workspace` preserves CLI diagnostic parity on pre-built graphs.
 5. Integration tests: `snapshot_single_build`, `built_workspace_parity`, `robot_vacuum_snapshot` (ignored).
 
+Phase 3 complete:
+
+1. `HostSchemaVersions` and `HostArtifactMetadata` on snapshots with RFC3339 `built_at` and document content hashes.
+2. `Spec42HostError` taxonomy with stable codes; explicit error mappers replace `From<String>`.
+3. `HostContext` with `CancellationToken`, deadlines, `HostResourceLimits`, and `HostPipelinePhase` progress.
+4. Cooperative cancellation and limits in `build_workspace_snapshot`; no partial snapshots on abort.
+5. Integration tests: `artifact_metadata_serde`, `host_errors`, `cancellation`, `resource_limits`.
+6. `crates/spec42_host/README.md` documents artifact JSON, error codes, context semantics, and concurrency.
+
 ## Related documents
 
 - [ADR 0003: `spec42_host` crate](../adr/0003-spec42-host-embedding-crate.md)

@@ -1,7 +1,5 @@
 use std::path::{Path, PathBuf};
 
-use serde::Serialize;
-
 use crate::catalog::{resolve_library_catalog, HostLibraryRequest, LibraryCatalog};
 use crate::error::{HostResult, Spec42HostError};
 use crate::library::{
@@ -9,14 +7,15 @@ use crate::library::{
     stdlib::StandardLibraryConfig,
 };
 use crate::snapshot::{HostContext, HostWorkspaceSnapshot, WorkspaceLoadRequest};
+use crate::version::HostSchemaVersions;
 use semantic_core::SysmlDocumentProvider;
 use std::sync::Arc;
 
-#[derive(Debug, Clone, Serialize)]
+/// Engine-level metadata (version identity for built snapshots).
+#[derive(Debug, Clone)]
 pub struct HostEngineMetadata {
     pub engine_version: String,
-    pub projection_schema_version: u32,
-    pub renderer_compatibility_version: u32,
+    pub schema_versions: HostSchemaVersions,
 }
 
 #[derive(Debug)]
@@ -62,6 +61,10 @@ impl Spec42Engine {
 
     pub fn metadata(&self) -> &HostEngineMetadata {
         &self.metadata
+    }
+
+    pub fn schema_versions(&self) -> HostSchemaVersions {
+        self.metadata.schema_versions
     }
 
     pub fn load_workspace(
@@ -173,8 +176,7 @@ impl EngineBuilder {
             catalog,
             metadata: HostEngineMetadata {
                 engine_version: env!("CARGO_PKG_VERSION").to_string(),
-                projection_schema_version: 1,
-                renderer_compatibility_version: 1,
+                schema_versions: HostSchemaVersions::current(),
             },
         })
     }

@@ -52,3 +52,19 @@ path = "tests/snapshot_single_build.rs"
 [[test]]
 name = "robot_vacuum_snapshot"
 path = "tests/robot_vacuum_snapshot.rs"
+
+[[test]]
+name = "artifact_metadata_serde"
+path = "tests/artifact_metadata_serde.rs"
+
+[[test]]
+name = "host_errors"
+path = "tests/host_errors.rs"
+
+[[test]]
+name = "cancellation"
+path = "tests/cancellation.rs"
+
+[[test]]
+name = "resource_limits"
+path = "tests/resource_limits.rs"

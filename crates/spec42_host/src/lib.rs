@@ -6,6 +6,7 @@ pub mod error;
 pub mod library;
 pub mod provider;
 pub mod snapshot;
+pub mod version;
 
 pub use catalog::{HostConfigFile, HostLibraryRequest, LibraryCatalog};
 pub use engine::{EngineBuilder, HostEngineMetadata, Spec42Engine};
@@ -28,7 +29,8 @@ pub use provider::{
     InMemoryDocumentProvider, SysmlDocument, SysmlDocumentProvider, SysmlDocumentSourceKind,
 };
 pub use snapshot::{
-    HostContext, HostSemanticModelNode, HostSemanticModelRelationship, HostSemanticProjection,
-    HostSnapshotMetadata, HostValidatedDocument, HostValidationReport, HostValidationSummary,
-    HostWorkspaceSnapshot, WorkspaceLoadRequest,
+    CancellationToken, HostContext, HostPipelinePhase, HostResourceLimits, HostSemanticModelNode,
+    HostSemanticModelRelationship, HostSemanticProjection, HostValidatedDocument,
+    HostValidationReport, HostValidationSummary, HostWorkspaceSnapshot, WorkspaceLoadRequest,
 };
+pub use version::{HostArtifactMetadata, HostSchemaVersions};

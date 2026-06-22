@@ -10,8 +10,10 @@ mod request;
 mod validation;
 
 pub use build::{load_workspace_snapshot, HostWorkspaceSnapshot};
-pub use context::HostContext;
-pub use metadata::HostSnapshotMetadata;
+pub use context::{
+    CancellationToken, HostContext, HostPipelinePhase, HostResourceLimits,
+};
+pub use metadata::HostArtifactMetadata;
 pub use projection::{
     HostSemanticModelNode, HostSemanticModelRelationship, HostSemanticProjection,
 };

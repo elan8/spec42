@@ -3,7 +3,7 @@
 use std::collections::BTreeMap;
 use std::path::{Path, PathBuf};
 use std::sync::Arc;
-use std::time::{Instant, SystemTime};
+use std::time::Instant;
 
 use language_service::InMemoryWorkspace;
 use semantic_core::{
@@ -16,11 +16,14 @@ use url::Url;
 
 use crate::catalog::LibraryCatalog;
 use crate::engine::HostEngineMetadata;
-use crate::error::{HostResult, Spec42HostError};
-use crate::snapshot::context::HostContext;
+use crate::error::{
+    map_graph_error, map_language_service_error, map_provider_error, map_render_snapshot_error,
+    map_view_error, HostResult, Spec42HostError,
+};
+use crate::snapshot::context::{HostContext, HostPipelinePhase};
 use crate::snapshot::discovery::{discover_target_files, path_to_file_url, resolve_workspace_root};
 use crate::snapshot::facts::{collect_host_validation_report, project_host_semantic_model};
-use crate::snapshot::metadata::HostSnapshotMetadata;
+use crate::snapshot::metadata::HostArtifactMetadata;
 use crate::snapshot::projection::HostSemanticProjection;
 use crate::snapshot::request::WorkspaceLoadRequest;
 use crate::snapshot::validation::HostValidationReport;
@@ -29,7 +32,7 @@ use crate::Spec42Engine;
 /// Immutable workspace snapshot built once and queried by hosts and server adapters.
 #[derive(Debug)]
 pub struct HostWorkspaceSnapshot {
-    metadata: HostSnapshotMetadata,
+    metadata: HostArtifactMetadata,
     documents: Vec<SysmlDocument>,
     semantic_graph: SemanticGraph,
     parsed_documents: Vec<WorkspaceParsedDocument>,
@@ -45,7 +48,11 @@ pub struct HostWorkspaceSnapshot {
 }
 
 impl HostWorkspaceSnapshot {
-    pub fn metadata(&self) -> &HostSnapshotMetadata {
+    pub fn metadata(&self) -> &HostArtifactMetadata {
+        &self.metadata
+    }
+
+    pub fn artifact_metadata(&self) -> &HostArtifactMetadata {
         &self.metadata
     }
 
@@ -107,7 +114,7 @@ impl HostWorkspaceSnapshot {
             selected_view,
             self.build_instant,
         )
-        .map_err(|message| Spec42HostError::unresolved_library_environment(message))
+        .map_err(|message| map_view_error(view, message))
     }
 }
 
@@ -117,12 +124,25 @@ pub(crate) fn build_workspace_snapshot(
     metadata: &HostEngineMetadata,
     provider: impl SysmlDocumentProvider,
     request: WorkspaceLoadRequest,
-    _context: HostContext,
+    context: &HostContext,
 ) -> HostResult<HostWorkspaceSnapshot> {
     let build_instant = Instant::now();
 
-    let mut documents = provider.load_documents().map_err(Spec42HostError::from)?;
+    context.check_continue(HostPipelinePhase::LoadingDocuments)?;
+    let mut documents = match provider.load_documents() {
+        Err(_message) if context.cancellation.is_cancelled() => {
+            return Err(Spec42HostError::cancelled());
+        }
+        Err(message) => return Err(map_provider_error(message)),
+        Ok(documents) => documents,
+    };
     enrich_document_hashes(&mut documents);
+    let total_bytes = documents
+        .iter()
+        .map(|doc| doc.content.len() as u64)
+        .sum();
+    context.enforce_document_limits(documents.len(), total_bytes)?;
+    context.check_continue(HostPipelinePhase::LoadingDocuments)?;
 
     let workspace_root = resolve_workspace_root(
         &request.targets,
@@ -138,12 +158,21 @@ pub(crate) fn build_workspace_snapshot(
 
     let workspace_root_uri = path_to_file_url(&workspace_root)?;
 
+    context.check_continue(HostPipelinePhase::BuildingGraph)?;
     let (semantic_graph, parsed_documents) =
-        build_semantic_graph_from_documents(&documents).map_err(Spec42HostError::from)?;
+        build_semantic_graph_from_documents(&documents).map_err(map_graph_error)?;
+    context.enforce_graph_limits(
+        semantic_graph.node_ids_by_qualified_name.len(),
+        semantic_graph.graph.edge_count(),
+    )?;
+    context.check_continue(HostPipelinePhase::BuildingGraph)?;
 
+    context.check_continue(HostPipelinePhase::BuildingLanguageWorkspace)?;
     let language_workspace =
-        InMemoryWorkspace::from_documents(documents.clone()).map_err(Spec42HostError::from)?;
+        InMemoryWorkspace::from_documents(documents.clone()).map_err(map_language_service_error)?;
+    context.check_continue(HostPipelinePhase::BuildingLanguageWorkspace)?;
 
+    context.check_continue(HostPipelinePhase::BuildingViewCatalog)?;
     let render_snapshot = build_render_snapshot(
         &semantic_graph,
         &parsed_documents,
@@ -151,8 +180,10 @@ pub(crate) fn build_workspace_snapshot(
         &workspace_root_uri,
         1,
     )
-    .map_err(Spec42HostError::from)?;
+    .map_err(map_render_snapshot_error)?;
+    context.check_continue(HostPipelinePhase::BuildingViewCatalog)?;
 
+    context.check_continue(HostPipelinePhase::CollectingValidation)?;
     let validation_report = collect_host_validation_report(
         &semantic_graph,
         &documents,
@@ -162,22 +193,22 @@ pub(crate) fn build_workspace_snapshot(
         &library_paths,
         request.strict_diagnostics,
     )?;
+    context.check_continue(HostPipelinePhase::CollectingValidation)?;
 
+    context.check_continue(HostPipelinePhase::ProjectingModel)?;
     let semantic_projection = project_host_semantic_model(&semantic_graph, &target_files)?;
+    context.check_continue(HostPipelinePhase::ProjectingModel)?;
 
     let document_hashes = documents
         .iter()
         .map(|doc| (doc.uri.to_string(), doc.sha256.clone().unwrap_or_default()))
         .collect::<BTreeMap<_, _>>();
 
-    let snapshot_metadata = HostSnapshotMetadata {
-        engine_version: metadata.engine_version.clone(),
-        projection_schema_version: metadata.projection_schema_version,
-        renderer_compatibility_version: metadata.renderer_compatibility_version,
-        library_catalog_hash: catalog.content_hash.clone(),
-        built_at: SystemTime::now(),
+    let snapshot_metadata = HostArtifactMetadata::new(
+        metadata.engine_version.clone(),
+        catalog.content_hash.clone(),
         document_hashes,
-    };
+    );
 
     Ok(HostWorkspaceSnapshot {
         metadata: snapshot_metadata,
@@ -220,7 +251,7 @@ pub fn load_workspace_snapshot(
         &metadata,
         provider,
         request,
-        context,
+        &context,
     )?;
     Ok(Arc::new(snapshot))
 }

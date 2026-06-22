@@ -122,7 +122,8 @@ fn resolve_stdlib_component(
     }
 
     if let Some(path) = request.stdlib_path_override.as_ref() {
-        let resolved = resolve_explicit_library_path(path, &request.cache_dir, "standard-library")?;
+        let resolved = resolve_explicit_library_path(path, &request.cache_dir, "standard-library")
+            .map_err(Spec42HostError::unresolved_library_environment)?;
         return Ok(StdlibComponent {
             path: Some(resolved.install_path),
             roots: resolved.package_roots.roots,
@@ -132,7 +133,8 @@ fn resolve_stdlib_component(
     }
     if let Some(value) = std::env::var_os("SPEC42_STDLIB_PATH") {
         let path = PathBuf::from(value);
-        let resolved = resolve_explicit_library_path(&path, &request.cache_dir, "standard-library")?;
+        let resolved = resolve_explicit_library_path(&path, &request.cache_dir, "standard-library")
+            .map_err(Spec42HostError::unresolved_library_environment)?;
         return Ok(StdlibComponent {
             path: Some(resolved.install_path),
             roots: resolved.package_roots.roots,
@@ -141,7 +143,8 @@ fn resolve_stdlib_component(
         });
     }
     if let Some(path) = request.config_stdlib_path.as_ref() {
-        let resolved = resolve_explicit_library_path(path, &request.cache_dir, "standard-library")?;
+        let resolved = resolve_explicit_library_path(path, &request.cache_dir, "standard-library")
+            .map_err(Spec42HostError::unresolved_library_environment)?;
         return Ok(StdlibComponent {
             path: Some(resolved.install_path),
             roots: resolved.package_roots.roots,
@@ -209,7 +212,8 @@ fn resolve_domain_libraries_component(
 ) -> HostResult<DomainLibrariesComponent> {
     if let Some(path) = request.domain_libraries_path_override.as_ref() {
         let resolved =
-            resolve_explicit_library_path(path, &request.cache_dir, "domain-libraries")?;
+            resolve_explicit_library_path(path, &request.cache_dir, "domain-libraries")
+                .map_err(Spec42HostError::unresolved_library_environment)?;
         return Ok(DomainLibrariesComponent {
             path: Some(resolved.install_path),
             source: Some("flag".to_string()),
@@ -218,7 +222,8 @@ fn resolve_domain_libraries_component(
     if let Some(value) = std::env::var_os("SPEC42_DOMAIN_LIBRARIES_PATH") {
         let path = PathBuf::from(value);
         let resolved =
-            resolve_explicit_library_path(&path, &request.cache_dir, "domain-libraries")?;
+            resolve_explicit_library_path(&path, &request.cache_dir, "domain-libraries")
+                .map_err(Spec42HostError::unresolved_library_environment)?;
         return Ok(DomainLibrariesComponent {
             path: Some(resolved.install_path),
             source: Some("env".to_string()),
