@@ -2,10 +2,7 @@
 
 use std::collections::{HashMap, HashSet};
 
-use url::Url;
-
 use crate::semantic::ibd::{IbdDataDto, IbdRootViewDto};
-use crate::semantic::visualization::scope::IbdBuildScope;
 
 pub fn filter_ibd_by_visible_ids(ibd: &IbdDataDto, visible_ids: &HashSet<String>) -> IbdDataDto {
     if visible_ids.is_empty() {

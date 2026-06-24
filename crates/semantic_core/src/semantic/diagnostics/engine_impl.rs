@@ -677,7 +677,7 @@ pub fn compute_semantic_diagnostics_with_unit_registry(
         expression_conformance::collect_expression_conformance_diagnostics(
             graph,
             uri,
-            &unit_registry,
+            unit_registry,
         ),
     );
     section_timings.push((

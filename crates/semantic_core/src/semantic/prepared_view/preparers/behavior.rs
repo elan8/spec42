@@ -20,8 +20,7 @@ fn diagram_simple_name(value: &str) -> String {
     let normalized = value.replace("::", ".");
     normalized
         .split('.')
-        .filter(|segment| !segment.is_empty())
-        .last()
+        .rfind(|segment| !segment.is_empty())
         .map(str::to_string)
         .unwrap_or(normalized)
 }
@@ -236,7 +235,7 @@ fn build_activity_node_alias_map(nodes: &[PreparedNodeDto]) -> HashMap<String, S
         aliases
             .entry(normalized.clone())
             .or_insert_with(|| node_id.to_string());
-        if let Some(last) = normalized.split('.').filter(|s| !s.is_empty()).last() {
+        if let Some(last) = normalized.split('.').rfind(|s| !s.is_empty()) {
             aliases
                 .entry(last.to_string())
                 .or_insert_with(|| node_id.to_string());
@@ -434,10 +433,9 @@ fn collect_state_machine_nodes(machine: &StateMachineDto) -> Vec<PreparedNodeDto
     machine
         .states
         .iter()
-        .enumerate()
-        .map(|(index, state)| {
+        .map(|state| {
             let kind = state_kind(state);
-            let mut attrs = json!({
+            let attrs = json!({
                 "qualifiedName": state.id,
                 "entry": state.entry,
                 "do": state.do_action,

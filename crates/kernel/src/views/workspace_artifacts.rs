@@ -146,43 +146,7 @@ pub(crate) fn materialize_model_explorer(
             &entry.snapshot,
         ));
     }
-    Ok(entry.model_explorer.as_ref().expect("model explorer").clone())
-}
-
-pub(crate) fn ensure_workspace_artifacts(
-    state: &mut ServerState,
-    workspace_root_uri: &Url,
-    ibd_artifact_mode: IbdArtifactMode,
-) -> Result<semantic_core::WorkspaceVisualizationArtifacts, String> {
-    let workspace_root_uri = util::normalize_file_uri(workspace_root_uri);
-    let snapshot = ensure_render_snapshot(state, &workspace_root_uri)?.clone();
-    let full_ibd = if ibd_artifact_mode == IbdArtifactMode::FullWorkspace {
-        let cached = state
-            .workspace_render_cache
-            .entry
-            .as_ref()
-            .and_then(|entry| entry.model_explorer.as_ref())
-            .map(|bundle| &bundle.full_ibd);
-        full_ibd_for_render_snapshot(&state.semantic_graph, &snapshot, cached)
-    } else {
-        empty_merged_ibd()
-    };
-    Ok(semantic_core::view_index_to_artifacts(
-        &snapshot.view_index,
-        full_ibd,
-    ))
-}
-
-pub(crate) fn cached_merged_ibd(
-    state: &ServerState,
-    workspace_root_uri: &Url,
-) -> Option<semantic_core::IbdDataDto> {
-    let workspace_root_uri = util::normalize_file_uri(workspace_root_uri);
-    let entry = state.workspace_render_cache.entry.as_ref()?;
-    if !render_cache_valid(entry, state, &workspace_root_uri) {
-        return None;
-    }
-    entry.model_explorer.as_ref().map(|bundle| bundle.full_ibd.clone())
+    Ok(entry.model_explorer.as_ref().expect("model explorer").clone()    )
 }
 
 pub(crate) struct VisualizationBuildOutcome {

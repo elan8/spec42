@@ -2,7 +2,7 @@ use spec42_host::{apply_document_changes, DocumentChanges, SysmlDocumentSourceKi
 use url::Url;
 
 fn memory_doc(path: &str, content: &str) -> spec42_host::SysmlDocument {
-    let uri = Url::from_file_path(path).expect("uri");
+    let uri = Url::parse(&format!("file://{path}")).expect("uri");
     spec42_host::SysmlDocument {
         uri,
         content: content.to_string(),
@@ -40,7 +40,7 @@ fn apply_document_changes_replaces_changed_uri() {
 #[test]
 fn apply_document_changes_adds_and_removes_documents() {
     let previous = vec![memory_doc("/tmp/A.sysml", "package A {}")];
-    let removed = Url::from_file_path("/tmp/A.sysml").unwrap();
+    let removed = Url::parse("file:///tmp/A.sysml").unwrap();
     let changes = DocumentChanges::new()
         .with_removed(vec![removed])
         .with_added(vec![memory_doc("/tmp/C.sysml", "package C {}")]);

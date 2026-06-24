@@ -1,6 +1,6 @@
 //! Connector remapping, deduplication, and merge finalization.
 
-use std::collections::{HashMap, HashSet};
+use std::collections::HashMap;
 
 use url::Url;
 

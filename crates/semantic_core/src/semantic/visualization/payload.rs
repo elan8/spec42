@@ -69,12 +69,11 @@ fn rank_activity_diagram(diagram: &ActivityDiagramDto) -> i64 {
 fn last_path_segment(value: &str) -> &str {
     value
         .split(['.', ':'])
-        .filter(|segment| !segment.is_empty())
-        .last()
+        .rfind(|segment| !segment.is_empty())
         .unwrap_or(value)
 }
 
-fn resolve_activity_flow_endpoint<'a>(
+fn resolve_activity_flow_endpoint(
     value: &str,
     aliases: &std::collections::HashMap<String, String>,
 ) -> String {
@@ -108,7 +107,7 @@ fn register_activity_aliases(
     aliases
         .entry(normalized.clone())
         .or_insert_with(|| node_id.to_string());
-    if let Some(last) = normalized.split('.').filter(|s| !s.is_empty()).last() {
+    if let Some(last) = normalized.split('.').rfind(|s| !s.is_empty()) {
         aliases
             .entry(last.to_string())
             .or_insert_with(|| node_id.to_string());

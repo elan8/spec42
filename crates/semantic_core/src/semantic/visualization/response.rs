@@ -6,13 +6,12 @@ use std::time::Instant;
 use url::Url;
 
 use crate::semantic::dto::{
-    GraphEdgeDto, GraphNodeDto, SysmlGraphDto, SysmlModelStatsDto,
-    SysmlVisualizationProjectionHintsDto, SysmlVisualizationResultDto, WorkspaceFileModelDto,
-    WorkspaceModelDto, WorkspaceModelSummaryDto,
+    SysmlGraphDto, SysmlModelStatsDto,
+    SysmlVisualizationProjectionHintsDto, SysmlVisualizationResultDto,
 };
 use crate::semantic::explicit_views;
 use crate::semantic::extracted_model::{ActivityDiagramDto, SequenceDiagramDto, StateMachineDto};
-use crate::semantic::ibd::{self, IbdDataDto, IbdRootViewDto};
+use crate::semantic::ibd::{self, IbdDataDto};
 use crate::semantic::interconnection_projection::occurrence_id_for_qualified_name;
 use crate::semantic::interconnection_scene::build_interconnection_scene;
 use crate::semantic::activity_graph::enrich_activity_diagrams_from_graph;
@@ -25,8 +24,8 @@ use crate::semantic::state_views::{
 };
 use crate::semantic::view_projection::{apply_edge_predicate, project_view};
 use crate::semantic::visualization::ibd_scope::{
-    filter_ibd_by_root_prefixes, filter_ibd_by_visible_ids, ibd_scope_trace_enabled,
-    log_ibd_scope_trace, select_interconnection_ibd_scope, select_interconnection_ibd_scope_with_trace,
+    filter_ibd_by_visible_ids, ibd_scope_trace_enabled,
+    log_ibd_scope_trace, select_interconnection_ibd_scope_with_trace,
     IbdScopeTrace,
 };
 use crate::semantic::visualization::payload::{
@@ -36,13 +35,12 @@ use crate::semantic::visualization::payload::{
     warn_if_behavior_payload_missing,
 };
 use crate::semantic::visualization::projection::{
-    build_ibd_package_container_groups, build_package_groups_from_graph,
+    build_package_groups_from_graph,
     build_workspace_activity_diagrams, build_workspace_graph_dto_for_uris,
     build_workspace_model_dto_from_graph, attach_ibd_package_container_groups,
-    collect_package_candidates, diagram_matches_package_filter, filter_activity_diagrams_by_graph,
-    graph_to_element_tree, merge_namespace_elements, normalize_package_path,
+    collect_package_candidates, filter_activity_diagrams_by_graph,
     no_defined_views_message, project_graph_by_ids, renderer_empty_state_message,
-    top_level_package_for_node_id, unsupported_view_type_message,
+    unsupported_view_type_message,
     workspace_parsed_documents_for_uris,
 };
 use crate::semantic::visualization::scope::{

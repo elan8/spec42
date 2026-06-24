@@ -42,6 +42,6 @@ pub use snapshot::{
     apply_document_changes, CancellationToken, DocumentChanges, HostContext, HostPipelinePhase,
     HostResourceLimits, HostSemanticModelNode, HostSemanticModelRelationship,
     HostSemanticProjection, HostValidatedDocument, HostValidationReport, HostValidationSummary,
-    HostWorkspaceSnapshot, ValidationTiming, WorkspaceLoadRequest,
+    HostWorkspaceSnapshot, Spec42ProjectionOutput, ValidationTiming, WorkspaceLoadRequest,
 };
 pub use version::{HostArtifactMetadata, HostSchemaVersions};

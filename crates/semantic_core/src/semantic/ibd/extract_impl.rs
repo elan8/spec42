@@ -12,7 +12,7 @@ use super::connectors::{
     IbdConnectorSink,
 };
 use super::dto::{
-    IbdConnectorDto, IbdContainerGroupDto, IbdDataDto, IbdPackageContainerGroupDto, IbdPartDto,
+    IbdConnectorDto, IbdContainerGroupDto, IbdDataDto, IbdPartDto,
     IbdPortDto, IbdRootViewDto,
 };
 use crate::{NodeId, RelationshipKind, SemanticGraph, SemanticNode};

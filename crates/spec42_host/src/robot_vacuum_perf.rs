@@ -132,7 +132,7 @@ pub enum ValidationPerfMode {
 }
 
 /// Wall-clock duration per host pipeline phase.
-#[derive(Debug, Clone, Serialize)]
+#[derive(Debug, Clone, Default, Serialize)]
 pub struct HostPhaseTimings {
     pub engine_build_ms: u128,
     pub loading_documents_ms: u128,
@@ -147,26 +147,6 @@ pub struct HostPhaseTimings {
     pub time_to_completed_validation_ms: u128,
     pub validation_mode: ValidationPerfMode,
     pub total_ms: u128,
-}
-
-impl Default for HostPhaseTimings {
-    fn default() -> Self {
-        Self {
-            engine_build_ms: 0,
-            loading_documents_ms: 0,
-            building_graph_ms: 0,
-            building_language_workspace_ms: 0,
-            building_view_catalog_ms: 0,
-            collecting_validation_ms: 0,
-            projecting_model_ms: 0,
-            load_workspace_total_ms: 0,
-            prepare_view_ms: 0,
-            ensure_validation_ms: 0,
-            time_to_completed_validation_ms: 0,
-            validation_mode: ValidationPerfMode::default(),
-            total_ms: 0,
-        }
-    }
 }
 
 /// In-process semantic/visualization phase breakdown (post-graph or cold).

@@ -6,7 +6,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::cli::Cli;
 use crate::domain_libraries::{
-    domain_libraries_paths_from_data_dir, managed_status as domain_managed_status,
+    managed_status as domain_managed_status,
     DomainLibrariesConfig, DomainLibrariesPaths, DomainLibrariesStatus,
 };
 use crate::stdlib::{
@@ -15,11 +15,13 @@ use crate::stdlib::{
 };
 use crate::sysand::{dependency_roots_from_status, detect_sysand_status, SysandStatus};
 use spec42_host::{
-    catalog::{
-        resolve_domain_libraries_component_for_test, resolve_stdlib_component_for_test,
-        HostLibraryRequest,
-    },
+    catalog::HostLibraryRequest,
     EngineBuilder, Spec42Engine,
+};
+
+#[cfg(test)]
+use spec42_host::catalog::{
+    resolve_domain_libraries_component_for_test, resolve_stdlib_component_for_test,
 };
 
 #[derive(Debug, Clone, Deserialize, Default)]
@@ -454,11 +456,13 @@ fn resolve_library_paths(
         .collect()
 }
 
+#[cfg(test)]
 struct DomainLibrariesResolution {
     path: Option<PathBuf>,
     source: Option<String>,
 }
 
+#[cfg(test)]
 fn resolve_domain_libraries_path(
     cli: &Cli,
     domain_libraries: &DomainLibrariesConfig,
@@ -494,6 +498,7 @@ fn resolve_domain_libraries_config(
     DomainLibrariesConfig::default()
 }
 
+#[cfg(test)]
 struct StdlibResolution {
     path: Option<PathBuf>,
     roots: Vec<PathBuf>,
@@ -501,6 +506,7 @@ struct StdlibResolution {
     used_legacy_vscode_fallback: bool,
 }
 
+#[cfg(test)]
 fn resolve_stdlib_path(
     cli: &Cli,
     explicit_config: &ConfigFile,
@@ -617,6 +623,7 @@ mod tests {
     use std::sync::Mutex;
 
     use super::*;
+    use crate::domain_libraries::domain_libraries_paths_from_data_dir;
     use crate::stdlib::{
         save_managed_metadata, standard_library_paths_from_data_dir, DEFAULT_STDLIB_CONTENT_PATH,
         EMBEDDED_STDLIB_REPO,

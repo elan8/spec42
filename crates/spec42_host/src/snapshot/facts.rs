@@ -18,6 +18,7 @@ use super::validation::{
     HostValidatedDocument, HostValidationReport, HostValidationSummary,
 };
 
+#[allow(clippy::too_many_arguments)]
 pub(crate) fn collect_host_validation_report(
     graph: &SemanticGraph,
     documents: &[SysmlDocument],
@@ -71,6 +72,9 @@ pub(crate) fn project_host_semantic_model(
     let mut nodes = Vec::new();
     for uri in &target_urls {
         for node in graph.nodes_for_uri(uri) {
+            if node.element_kind == "diagnostic" {
+                continue;
+            }
             nodes.push(HostSemanticModelNode {
                 uri: node.id.uri.to_string(),
                 qualified_name: node.id.qualified_name.clone(),
@@ -131,10 +135,7 @@ fn collect_host_document_diagnostics(
     strict_diagnostics: bool,
 ) -> Vec<SemanticDiagnostic> {
     let mut diagnostics = parse_diagnostics(uri, text);
-    diagnostics.extend(
-        collect_untyped_part_usage_diagnostics(uri, text)
-            .into_iter(),
-    );
+    diagnostics.extend(collect_untyped_part_usage_diagnostics(uri, text));
 
     let has_parse_error = diagnostics.iter().any(|diagnostic| {
         diagnostic.severity == DiagnosticSeverity::Error && diagnostic.source == "sysml"

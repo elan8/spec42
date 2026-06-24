@@ -17,7 +17,7 @@ use semantic_core::semantic::extracted_model as model;
 use semantic_core::semantic::ibd;
 use semantic_core::semantic::model_projection;
 use semantic_core::{
-    range_to_dto, GraphEdgeDto, GraphNodeDto, IbdDataDto, ModelExplorerBundle, RelationshipDto,
+    range_to_dto, GraphEdgeDto, GraphNodeDto, ModelExplorerBundle, RelationshipDto,
     SysmlElementDto, SysmlGraphDto, SysmlModelStatsDto, WorkspaceFileModelDto, WorkspaceModelDto,
     WorkspaceModelSummaryDto,
 };

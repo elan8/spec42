@@ -309,7 +309,7 @@ fn for_each_package_in_parsed(parsed: &ParsedRoot, mut visit: impl FnMut(String,
     }
 }
 
-fn for_each_package_in_content(content: &str, mut visit: impl FnMut(String, &PackageBody)) {
+fn for_each_package_in_content(content: &str, visit: impl FnMut(String, &PackageBody)) {
     let Ok(parsed) = sysml_v2_parser::parse(content) else {
         return;
     };
@@ -716,9 +716,8 @@ fn walk_port_usage_type_refs(port_usage: &PortUsage, out: &mut Vec<String>) {
         return;
     };
     for member in elements {
-        match &member.value {
-            PortBodyElement::PortUsage(nested) => walk_port_usage_type_refs(&nested.value, out),
-            _ => {}
+        if let PortBodyElement::PortUsage(nested) = &member.value {
+            walk_port_usage_type_refs(&nested.value, out);
         }
     }
 }

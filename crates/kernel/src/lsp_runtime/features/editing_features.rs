@@ -15,8 +15,6 @@ use language_service::WorkspaceSnapshot;
 use crate::workspace::snapshot::ServerStateSnapshot;
 use crate::workspace::ServerState;
 
-use super::super::references_resolver;
-
 fn collect_brace_folding_ranges(text: &str) -> Vec<FoldingRange> {
     let mut out = Vec::new();
     let mut stack: Vec<u32> = Vec::new();

@@ -152,6 +152,7 @@ pub fn full_ibd_for_render_snapshot(
 }
 
 /// Build a single-view visualization response from a precomputed render snapshot.
+#[allow(clippy::too_many_arguments)]
 pub fn build_sysml_visualization_from_render_snapshot(
     semantic_graph: &SemanticGraph,
     documents: &[WorkspaceParsedDocument],
@@ -176,6 +177,7 @@ pub fn build_sysml_visualization_from_render_snapshot(
 }
 
 /// Build a single-view visualization response with perf metadata.
+#[allow(clippy::too_many_arguments)]
 pub fn build_sysml_visualization_from_render_snapshot_with_meta(
     semantic_graph: &SemanticGraph,
     documents: &[WorkspaceParsedDocument],

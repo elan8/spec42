@@ -1,6 +1,6 @@
 //! Merge per-URI IBD payloads into a workspace-scoped payload.
 
-use std::collections::{BTreeSet, HashMap, HashSet};
+use std::collections::HashSet;
 
 use super::connectors::enrich_connector_endpoint_refs;
 use super::dto::{

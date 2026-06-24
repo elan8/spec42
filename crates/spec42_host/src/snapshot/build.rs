@@ -26,6 +26,7 @@ use crate::snapshot::context::{HostContext, HostPipelinePhase};
 use crate::snapshot::discovery::{discover_target_files, path_to_file_url, resolve_workspace_root};
 use crate::snapshot::facts::{collect_host_validation_report, project_host_semantic_model};
 use crate::snapshot::metadata::HostArtifactMetadata;
+use crate::snapshot::output::Spec42ProjectionOutput;
 use crate::snapshot::projection::HostSemanticProjection;
 use crate::snapshot::request::{ValidationTiming, WorkspaceLoadRequest};
 use crate::snapshot::validation::HostValidationReport;
@@ -132,6 +133,20 @@ impl HostWorkspaceSnapshot {
 
     pub fn view_catalog(&self) -> &WorkspaceRenderSnapshot {
         &self.render_snapshot
+    }
+
+    /// Consume the snapshot and return a typed projection output.
+    ///
+    /// Ensures validation has run, then moves the typed structs into a
+    /// [`Spec42ProjectionOutput`] so the caller can persist or inspect them
+    /// without going through JSON.
+    pub fn into_projection_output(self) -> HostResult<Spec42ProjectionOutput> {
+        let validation_report = self.ensure_validation()?.clone();
+        Ok(Spec42ProjectionOutput {
+            metadata: self.metadata,
+            semantic_projection: self.semantic_projection,
+            validation_report,
+        })
     }
 
     pub fn prepare_view(

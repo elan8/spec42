@@ -4,27 +4,15 @@ use std::collections::{HashMap, HashSet};
 
 use url::Url;
 
-use crate::semantic::activity_graph::enrich_activity_diagrams_from_graph;
 use crate::semantic::dto::{
-    range_to_dto, GraphEdgeDto, GraphNodeDto, PositionDto, RangeDto, RelationshipDto,
+    range_to_dto, GraphEdgeDto, GraphNodeDto, RelationshipDto,
     SysmlElementDto, SysmlGraphDto, SysmlVisualizationGroupDto, SysmlVisualizationPackageCandidateDto,
     WorkspaceFileModelDto, WorkspaceModelDto, WorkspaceModelSummaryDto,
 };
 use crate::semantic::extracted_model::{
-    extract_activity_diagrams, ActivityDiagramDto, SequenceDiagramDto, StateMachineDto,
+    extract_activity_diagrams, ActivityDiagramDto,
 };
 use crate::semantic::ibd::{IbdDataDto, IbdPackageContainerGroupDto, IbdPartDto};
-use crate::semantic::model_projection::{self, canonical_general_view_graph};
-use crate::semantic::sequence_views::{
-    build_workspace_sequence_diagrams, filter_sequence_diagrams_by_exposed_ids,
-};
-use crate::semantic::state_views::{
-    build_workspace_state_machines, filter_state_machines_by_exposed_ids,
-};
-use crate::semantic::view_projection::{apply_edge_predicate, project_view};
-use crate::semantic::visualization::ibd_scope::{
-    filter_ibd_by_root_prefixes, filter_ibd_by_visible_ids, select_interconnection_ibd_scope,
-};
 use crate::semantic::workspace_graph::WorkspaceParsedDocument;
 use crate::SemanticGraph;
 
