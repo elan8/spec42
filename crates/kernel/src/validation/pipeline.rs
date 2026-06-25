@@ -189,7 +189,7 @@ pub(super) fn project_semantic_model(
                 uri: node.id.uri.to_string(),
                 qualified_name: node.id.qualified_name.clone(),
                 name: node.name.clone(),
-                element_kind: node.element_kind.clone(),
+                element_kind: node.element_kind.as_str().to_string(),
                 range: to_lsp_range(node.range),
                 parent: node
                     .parent_id

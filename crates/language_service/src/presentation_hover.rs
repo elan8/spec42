@@ -311,7 +311,7 @@ pub fn hover_markdown_for_node(
     md.push_str(&code_block);
     md.push_str("\n```\n\n");
 
-    append_field(&mut md, "Kind", &node.element_kind);
+    append_field(&mut md, "Kind", node.element_kind.as_str());
     append_field(&mut md, "Qualified name", &node.id.qualified_name);
 
     if let Some(parent_id) = &node.parent_id {
@@ -333,7 +333,7 @@ pub fn hover_markdown_for_node(
             None => true,
         };
         if should_show_target {
-            let label = if target.element_kind.ends_with(" def") {
+            let label = if target.element_kind.as_str().ends_with(" def") {
                 "Resolved type"
             } else {
                 "Resolves to"

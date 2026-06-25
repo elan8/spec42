@@ -38,7 +38,7 @@ fn normalized_namespace_target(target: &str) -> String {
 fn resolve_import_target_kind(
     graph: &SemanticGraph,
     import_node: &crate::SemanticNode,
-) -> Option<String> {
+) -> Option<crate::ElementKind> {
     let target = import_target(import_node)?;
     let lookup = if import_is_all(import_node) {
         normalized_namespace_target(target)

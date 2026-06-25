@@ -1,6 +1,6 @@
 //! Canonical element-kind predicates and resolution allowlists for semantic_core.
 
-use crate::SemanticNode;
+use crate::{ElementKind, SemanticNode};
 
 /// Why a qualified or simple name is being resolved.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -187,40 +187,43 @@ pub const ANNOTATED_ELEMENT_TARGET_KINDS: &[&str] = &[
     "package",
 ];
 
-pub fn element_kind_allowed(element_kind: &str, allowed_kinds: &[&str]) -> bool {
-    allowed_kinds.contains(&element_kind)
+pub fn element_kind_allowed(element_kind: &ElementKind, allowed_kinds: &[&str]) -> bool {
+    allowed_kinds.contains(&element_kind.as_str())
 }
 
-pub fn is_namespace(element_kind: &str) -> bool {
+pub fn is_namespace(element_kind: &ElementKind) -> bool {
     matches!(
         element_kind,
-        "package"
-            | "requirement def"
-            | "requirement"
-            | "use case def"
-            | "use case"
-            | "analysis def"
-            | "analysis"
-            | "verification def"
-            | "verification"
-            | "concern def"
-            | "concern"
+        ElementKind::Package
+            | ElementKind::RequirementDef
+            | ElementKind::Requirement
+            | ElementKind::UseCaseDef
+            | ElementKind::UseCase
+            | ElementKind::AnalysisDef
+            | ElementKind::Analysis
+            | ElementKind::VerificationDef
+            | ElementKind::Verification
+            | ElementKind::ConcernDef
+            | ElementKind::Concern
     )
 }
 
-pub fn is_part_like(element_kind: &str) -> bool {
+pub fn is_part_like(element_kind: &ElementKind) -> bool {
     matches!(
         element_kind,
-        "part" | "part def" | "item def" | "occurrence def"
-    ) || element_kind.contains("part")
+        ElementKind::Part | ElementKind::PartDef | ElementKind::ItemDef | ElementKind::OccurrenceDef
+    ) || element_kind.as_str().contains("part")
 }
 
-pub fn is_port_like(element_kind: &str) -> bool {
-    element_kind.contains("port")
+pub fn is_port_like(element_kind: &ElementKind) -> bool {
+    element_kind.as_str().contains("port")
 }
 
-pub fn is_requirement(element_kind: &str) -> bool {
-    matches!(element_kind, "requirement" | "requirement def")
+pub fn is_requirement(element_kind: &ElementKind) -> bool {
+    matches!(
+        element_kind,
+        ElementKind::Requirement | ElementKind::RequirementDef
+    )
 }
 
 pub fn is_metadata_restriction_attribute(node: &SemanticNode) -> bool {
@@ -275,23 +278,23 @@ pub fn is_semantic_metadata_base_type_redefine(owner: &SemanticNode, node: &Sema
             .is_some_and(|value| value.contains("SemanticMetadata"))
 }
 
-pub fn is_compatible_kind(target_kind: &str, allowed: &[&str]) -> bool {
-    allowed.contains(&target_kind)
+pub fn is_compatible_kind(target_kind: &ElementKind, allowed: &[&str]) -> bool {
+    allowed.contains(&target_kind.as_str())
 }
 
-pub fn is_compatible_specializes_target(def_kind: &str, target: &SemanticNode) -> bool {
+pub fn is_compatible_specializes_target(def_kind: &ElementKind, target: &SemanticNode) -> bool {
     if is_compatible_kind(
         &target.element_kind,
         allowed_specializes_target_kinds(def_kind),
     ) {
         return true;
     }
-    def_kind == "metadata def" && is_kerml_metadata_supertype(target)
+    *def_kind == ElementKind::MetadataDef && is_kerml_metadata_supertype(target)
 }
 
 /// Per-usage typing compatibility (diagnostics layer).
-pub fn allowed_typing_target_kinds(usage_kind: &str) -> &'static [&'static str] {
-    match usage_kind {
+pub fn allowed_typing_target_kinds(usage_kind: &ElementKind) -> &'static [&'static str] {
+    match usage_kind.as_str() {
         "part" => &["part def", "item def", "occurrence def"],
         "port" => &["port def"],
         "item" => &["item def", "part def"],
@@ -341,8 +344,8 @@ pub fn allowed_typing_target_kinds(usage_kind: &str) -> &'static [&'static str] 
     }
 }
 
-pub fn allowed_specializes_target_kinds(def_kind: &str) -> &'static [&'static str] {
-    match def_kind {
+pub fn allowed_specializes_target_kinds(def_kind: &ElementKind) -> &'static [&'static str] {
+    match def_kind.as_str() {
         "part def" => &["part def", "occurrence def"],
         "port def" => &["port def"],
         "item def" => &["item def"],
@@ -384,8 +387,8 @@ const FLOW_SUBSET_TARGETS: &[&str] = &["flow", "flow def"];
 const ALLOCATION_SUBSET_TARGETS: &[&str] = &["allocation", "allocation def"];
 const INTERFACE_SUBSET_TARGETS: &[&str] = &["interface"];
 
-pub fn allowed_subset_redefine_target_kinds(usage_kind: &str) -> &'static [&'static str] {
-    match usage_kind {
+pub fn allowed_subset_redefine_target_kinds(usage_kind: &ElementKind) -> &'static [&'static str] {
+    match usage_kind.as_str() {
         "part" => PART_SUBSET_TARGETS,
         "port" => PORT_SUBSET_TARGETS,
         "item" => ITEM_SUBSET_TARGETS,

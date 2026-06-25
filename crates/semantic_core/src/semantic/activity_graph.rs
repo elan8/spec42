@@ -25,8 +25,8 @@ fn text_range_to_dto(range: TextRange) -> RangeDto {
     }
 }
 
-fn is_action_step_kind(kind: &str) -> bool {
-    matches!(kind, "action" | "perform")
+fn is_action_step_kind(kind: &crate::ElementKind) -> bool {
+    matches!(kind.as_str(), "action" | "perform")
 }
 
 fn normalized_type_name(type_name: &str) -> String {

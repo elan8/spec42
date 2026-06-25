@@ -79,8 +79,8 @@ fn is_interval_scale_node(node: &SemanticNode) -> bool {
         == Some("IntervalScale")
 }
 
-fn is_unit_catalog_element_kind(kind: &str) -> bool {
-    kind == "attribute def" || kind == "attribute"
+fn is_unit_catalog_element_kind(kind: &crate::ElementKind) -> bool {
+    *kind == crate::ElementKind::AttributeDef || *kind == crate::ElementKind::Attribute
 }
 
 fn unit_prefix_from_node(node: &SemanticNode) -> Option<(String, Option<String>, f64)> {

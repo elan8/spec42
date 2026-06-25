@@ -142,12 +142,35 @@ fn path_to_url(path: &Path) -> Result<Url, String> {
             .join(path)
     };
     let canonical = canonicalize_or_self(&absolute);
-    Url::from_file_path(&canonical).map_err(|_| {
+    let url = Url::from_file_path(&canonical).map_err(|_| {
         format!(
             "failed to convert path to file URI: {}",
             canonical.display()
         )
-    })
+    })?;
+    Ok(normalize_file_url_drive_letter(url))
+}
+
+/// Lowercases the Windows drive letter in a `file://` URL so all paths use a
+/// consistent form (`file:///c:/...` not `file:///C:/...`). This matches the
+/// normalisation applied by the kernel/LSP layer and ensures graph node URIs
+/// are comparable to the target URLs used in workspace lookups.
+fn normalize_file_url_drive_letter(url: Url) -> Url {
+    if url.scheme() != "file" {
+        return url;
+    }
+    let path = url.path();
+    // Windows path: /C:/... — lowercase the drive letter at index 1.
+    if path.len() >= 3 {
+        let bytes = path.as_bytes();
+        if bytes[0] == b'/' && bytes[1].is_ascii_uppercase() && bytes[2] == b':' {
+            let new_path = format!("/{}{}", (bytes[1] as char).to_ascii_lowercase(), &path[2..]);
+            if let Ok(normalized) = Url::parse(&format!("file://{new_path}")) {
+                return normalized;
+            }
+        }
+    }
+    url
 }
 
 fn resolve_workspace_root(target: &Path, workspace_root: Option<&Path>) -> PathBuf {

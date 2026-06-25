@@ -102,7 +102,7 @@ pub(super) fn import_target_resolves(
             .flatten()
             .filter(|id| id.qualified_name == namespace_target)
             .filter_map(|id| graph.get_node(id))
-            .any(|node| is_namespace_kind(&node.element_kind));
+            .any(|node| is_namespace_kind(node.element_kind.as_str()));
     }
 
     let membership_target = normalized_membership_target(target);
@@ -117,7 +117,7 @@ pub(super) fn import_target_resolves(
             .flatten()
             .filter(|id| id.qualified_name == namespace_target)
             .filter_map(|id| graph.get_node(id))
-            .filter(|node| is_namespace_kind(&node.element_kind))
+            .filter(|node| is_namespace_kind(node.element_kind.as_str()))
             .flat_map(|namespace| graph.children_of(namespace))
             .any(|child| child.element_kind != "import" && child.name == member_name);
     }

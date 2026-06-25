@@ -129,7 +129,7 @@ fn part_tree_size_inner(
     let children = graph.children_of(node);
     let part_children: Vec<_> = children
         .iter()
-        .filter(|c| is_part_like(&c.element_kind))
+        .filter(|c| is_part_like(c.element_kind.as_str()))
         .collect();
     part_children
         .iter()
@@ -137,7 +137,7 @@ fn part_tree_size_inner(
             let typed = graph.outgoing_typing_or_specializes_targets(c);
             let def = typed.into_iter().next();
             if let Some(def_node) = def {
-                if is_part_like(&def_node.element_kind) {
+                if is_part_like(def_node.element_kind.as_str()) {
                     let def_key = def_node.id.qualified_name.clone();
                     if !visiting_defs.insert(def_key.clone()) {
                         // Break recursive type cycles (A -> B -> A).
@@ -206,7 +206,7 @@ fn push_inherited_ports_from_definition(
         return;
     }
     for generalization in graph.outgoing_typing_or_specializes_targets(def_node) {
-        if is_part_like(&generalization.element_kind) {
+        if is_part_like(generalization.element_kind.as_str()) {
             push_inherited_ports_from_definition(
                 graph,
                 generalization,
@@ -218,7 +218,7 @@ fn push_inherited_ports_from_definition(
         }
     }
     for child in graph.children_of(def_node) {
-        if !is_port_like(&child.element_kind) {
+        if !is_port_like(child.element_kind.as_str()) {
             continue;
         }
         let key = (parent_dot.to_string(), child.name.clone());
@@ -446,7 +446,7 @@ fn resolve_endpoint_anchor_node<'a>(
     loop {
         let node_id = NodeId::new(uri, &candidate);
         if let Some(node) = graph.get_node(&node_id) {
-            if is_port_like(&node.element_kind) {
+            if is_port_like(node.element_kind.as_str()) {
                 if let Some(parent_id) = &node.parent_id {
                     if let Some(parent) = graph.get_node(parent_id) {
                         return Some(parent);
@@ -490,10 +490,10 @@ fn ensure_endpoint_parts_present(
             .parent_id
             .as_ref()
             .map(|parent| qualified_name_to_dot(&parent.qualified_name));
-        if is_definition_element_kind(&node.element_kind) {
+        if is_definition_element_kind(node.element_kind.as_str()) {
             continue;
         }
-        let element_type = normalize_ibd_element_type(&node.element_kind);
+        let element_type = normalize_ibd_element_type(node.element_kind.as_str());
         let mut attributes = node.attributes.clone();
         decorate_ibd_part_attributes(&element_type, &mut attributes);
         parts.push(IbdPartDto {
@@ -903,10 +903,10 @@ pub fn build_ibd_for_uri(graph: &SemanticGraph, uri: &Url) -> IbdDataDto {
         let qn = node.id.qualified_name.clone();
         let parent_qualified = node.parent_id.as_ref().map(|p| p.qualified_name.clone());
 
-        if is_interconnection_element_kind(&node.element_kind) {
+        if is_interconnection_element_kind(node.element_kind.as_str()) {
             let container_id = node.parent_id.as_ref().and_then(|pid| {
                 graph.get_node(pid).and_then(|p| {
-                    if is_interconnection_element_kind(&p.element_kind) {
+                    if is_interconnection_element_kind(p.element_kind.as_str()) {
                         Some(qualified_name_to_dot(&pid.qualified_name))
                     } else {
                         None
@@ -920,10 +920,10 @@ pub fn build_ibd_for_uri(graph: &SemanticGraph, uri: &Url) -> IbdDataDto {
                 qualified_name: qualified_name_to_dot(&qn),
                 uri: Some(node.id.uri.as_str().to_string()),
                 container_id: container_id.map(|s| qualified_name_to_dot(&s)),
-                element_type: node.element_kind.clone(),
+                element_type: node.element_kind.as_str().to_string(),
                 attributes: node.attributes.clone(),
             });
-        } else if is_port_like(&node.element_kind) {
+        } else if is_port_like(node.element_kind.as_str()) {
             let parent_id = parent_qualified
                 .as_ref()
                 .map(|pq| qualified_name_to_dot(pq))
@@ -978,12 +978,12 @@ pub fn build_ibd_for_uri(graph: &SemanticGraph, uri: &Url) -> IbdDataDto {
         let direct = graph
             .children_of(def_node)
             .iter()
-            .any(|child| is_part_like(&child.element_kind) || is_port_like(&child.element_kind));
+            .any(|child| is_part_like(child.element_kind.as_str()) || is_port_like(child.element_kind.as_str()));
         let inherited = graph
             .outgoing_typing_or_specializes_targets(def_node)
             .into_iter()
             .any(|generalization| {
-                is_part_like(&generalization.element_kind)
+                is_part_like(generalization.element_kind.as_str())
                     && part_def_has_materialized_shape(
                         graph,
                         generalization,
@@ -1015,7 +1015,7 @@ pub fn build_ibd_for_uri(graph: &SemanticGraph, uri: &Url) -> IbdDataDto {
             .outgoing_typing_or_specializes_targets(node)
             .into_iter()
             .find(|typed_def| {
-                is_part_like(&typed_def.element_kind)
+                is_part_like(typed_def.element_kind.as_str())
                     && part_def_has_materialized_shape(
                         graph,
                         typed_def,
@@ -1044,7 +1044,7 @@ pub fn build_ibd_for_uri(graph: &SemanticGraph, uri: &Url) -> IbdDataDto {
         typed_shape_cache: &mut HashMap<String, Option<String>>,
     ) {
         for part_child in graph.children_of(usage_node) {
-            if !is_part_like(&part_child.element_kind) {
+            if !is_part_like(part_child.element_kind.as_str()) {
                 continue;
             }
             let expanded_dot = format!("{parent_dot}.{}", part_child.name);
@@ -1056,7 +1056,7 @@ pub fn build_ibd_for_uri(graph: &SemanticGraph, uri: &Url) -> IbdDataDto {
                     qualified_name: expanded_dot.clone(),
                     uri: Some(part_child.id.uri.as_str().to_string()),
                     container_id: Some(parent_dot.to_string()),
-                    element_type: part_child.element_kind.clone(),
+                    element_type: part_child.element_kind.as_str().to_string(),
                     attributes: part_child.attributes.clone(),
                 });
             }
@@ -1110,7 +1110,7 @@ pub fn build_ibd_for_uri(graph: &SemanticGraph, uri: &Url) -> IbdDataDto {
         }
         add_inherited_ports_from_definition(graph, def_node, parent_dot, ports_out, existing_ports);
         for part_child in graph.children_of(def_node) {
-            if !is_part_like(&part_child.element_kind) {
+            if !is_part_like(part_child.element_kind.as_str()) {
                 continue;
             }
             let expanded_dot = format!("{parent_dot}.{}", part_child.name);
@@ -1125,7 +1125,7 @@ pub fn build_ibd_for_uri(graph: &SemanticGraph, uri: &Url) -> IbdDataDto {
                 qualified_name: expanded_dot.clone(),
                 uri: Some(part_child.id.uri.as_str().to_string()),
                 container_id: Some(parent_dot.to_string()),
-                element_type: part_child.element_kind.clone(),
+                element_type: part_child.element_kind.as_str().to_string(),
                 attributes: part_child.attributes.clone(),
             });
             expand_part_usage_subtree(
@@ -1191,7 +1191,7 @@ pub fn build_ibd_for_uri(graph: &SemanticGraph, uri: &Url) -> IbdDataDto {
 
     let def_container_prefixes: Vec<String> = nodes
         .iter()
-        .filter(|node| node.element_kind.to_lowercase().contains("part def"))
+        .filter(|node| node.element_kind.as_str().to_lowercase().contains("part def"))
         .map(|node| node.id.qualified_name.clone())
         .collect();
 
@@ -1981,7 +1981,7 @@ mod tests {
                     && connector.target_id.contains("webshopSystem.apiGateway")
                     && connector.target_id.contains("publicCheckoutIn")
             }),
-            "expected mirrored storefront→gateway connector, got {:?}",
+            "expected mirrored storefrontâ†’gateway connector, got {:?}",
             root_view.connectors
         );
     }

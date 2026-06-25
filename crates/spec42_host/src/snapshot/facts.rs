@@ -5,7 +5,7 @@ use std::collections::{BTreeSet, HashMap};
 use semantic_core::{
     collect_diagnostics_from_graph_with_unit_registry, collect_untyped_part_usage_diagnostics,
     missing_library_context_diagnostic, DiagnosticSeverity, DiagnosticsOptions, SemanticDiagnostic,
-    SemanticGraph, SysmlDocument, UnitRegistry, WorkspaceParsedDocument,
+    SemanticGraph, SysmlDocument, UnitRegistry,
 };
 use sysml_v2_parser::DiagnosticSeverity as ParseSeverity;
 use url::Url;
@@ -18,11 +18,9 @@ use super::validation::{
     HostValidatedDocument, HostValidationReport, HostValidationSummary,
 };
 
-#[allow(clippy::too_many_arguments)]
 pub(crate) fn collect_host_validation_report(
     graph: &SemanticGraph,
     documents: &[SysmlDocument],
-    _parsed_documents: &[WorkspaceParsedDocument],
     library_urls: &[Url],
     target_files: &[std::path::PathBuf],
     workspace_root: Option<&std::path::Path>,
@@ -72,14 +70,11 @@ pub(crate) fn project_host_semantic_model(
     let mut nodes = Vec::new();
     for uri in &target_urls {
         for node in graph.nodes_for_uri(uri) {
-            if node.element_kind == "diagnostic" {
-                continue;
-            }
             nodes.push(HostSemanticModelNode {
                 uri: node.id.uri.to_string(),
                 qualified_name: node.id.qualified_name.clone(),
                 name: node.name.clone(),
-                element_kind: node.element_kind.clone(),
+                element_kind: node.element_kind.as_str().to_string(),
                 range: node.range,
                 parent: node
                     .parent_id

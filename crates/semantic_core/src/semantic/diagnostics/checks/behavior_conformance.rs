@@ -13,15 +13,15 @@ use crate::semantic::reference_resolution::resolve_expression_endpoint_strict;
 use crate::semantic::relationships::{resolve_type_target_in_workspace, TYPING_TARGET_KINDS};
 use crate::{ResolveResult, SemanticDiagnostic, SemanticGraph, SemanticNode};
 
-fn is_action_like(kind: &str) -> bool {
+fn is_action_like(kind: &crate::ElementKind) -> bool {
     matches!(
-        kind,
+        kind.as_str(),
         "action" | "action def" | "perform" | "merge" | "verdict"
     )
 }
 
-fn is_state_like(kind: &str) -> bool {
-    matches!(kind, "state" | "state def")
+fn is_state_like(kind: &crate::ElementKind) -> bool {
+    matches!(kind.as_str(), "state" | "state def")
 }
 
 fn state_def_contains_node(graph: &SemanticGraph, state_def_qn: &str, node: &SemanticNode) -> bool {
@@ -538,7 +538,7 @@ pub(in crate::semantic::diagnostics) fn collect_behavior_conformance_diagnostics
         } else {
             "accept_payload_incompatible"
         };
-        let allowed = allowed_typing_target_kinds("action");
+        let allowed = allowed_typing_target_kinds(&crate::ElementKind::Action);
         let Some(target_id) =
             resolve_type_target_in_workspace(graph, node, payload_type, TYPING_TARGET_KINDS)
         else {

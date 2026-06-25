@@ -1,5 +1,5 @@
 use semantic_core::{
-    add_semantic_edge_once, AddSemanticEdgeResult, ConnectStatementDetail, NodeId,
+    add_semantic_edge_once, AddSemanticEdgeResult, ConnectStatementDetail, ElementKind, NodeId,
     RelationshipKind, SemanticEdge, SemanticGraph, SemanticNode, TextPosition, TextRange,
 };
 use url::Url;
@@ -12,7 +12,7 @@ fn port_nodes(uri: &Url, a_qn: &str, b_qn: &str) -> (SemanticGraph, NodeId, Node
     for (id, name) in [(a.clone(), "a"), (b.clone(), "b")] {
         graph.insert_workspace_node(SemanticNode {
             id,
-            element_kind: "port".to_string(),
+            element_kind: ElementKind::Port,
             name: name.to_string(),
             range,
             attributes: Default::default(),

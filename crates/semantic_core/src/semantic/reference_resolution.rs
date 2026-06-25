@@ -426,8 +426,8 @@ fn resolve_expose_root(
     resolve_expression_endpoint_workspace(g, base)
 }
 
-fn is_part_like_kind(kind: &str) -> bool {
-    kind.to_lowercase().contains("part")
+fn is_part_like_kind(kind: &crate::ElementKind) -> bool {
+    kind.as_str().to_lowercase().contains("part")
 }
 
 fn collect_expose_members(

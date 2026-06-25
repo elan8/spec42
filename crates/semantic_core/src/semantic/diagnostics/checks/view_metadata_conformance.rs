@@ -681,7 +681,8 @@ fn expose_target_entry_range(
     node.range
 }
 
-fn annotated_element_matches_restriction(element_kind: &str, restriction: &str) -> bool {
+fn annotated_element_matches_restriction(element_kind: &crate::ElementKind, restriction: &str) -> bool {
+    let element_kind = element_kind.as_str();
     let local = restriction.rsplit("::").next().unwrap_or(restriction);
     let normalized = local
         .trim_end_matches("Definition")

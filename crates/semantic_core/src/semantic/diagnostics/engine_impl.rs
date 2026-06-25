@@ -19,12 +19,12 @@ use crate::{
     SemanticGraph, UnitRegistry,
 };
 
-fn is_view_kind(kind: &str) -> bool {
-    matches!(kind, "view" | "view def")
+fn is_view_kind(kind: &crate::ElementKind) -> bool {
+    matches!(kind.as_str(), "view" | "view def")
 }
 
-fn is_viewpoint_kind(kind: &str) -> bool {
-    matches!(kind, "viewpoint" | "viewpoint def")
+fn is_viewpoint_kind(kind: &crate::ElementKind) -> bool {
+    matches!(kind.as_str(), "viewpoint" | "viewpoint def")
 }
 
 /// Returns LSP diagnostics for semantic rules in the given document.

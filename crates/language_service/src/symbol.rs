@@ -31,7 +31,7 @@ pub fn symbol_entries_for_uri(graph: &SemanticGraph, uri: &Url) -> Vec<SymbolEnt
             uri: node.id.uri.clone(),
             range: node.range,
             container_name,
-            detail: Some(node.element_kind.clone()),
+            detail: Some(node.element_kind.as_str().to_string()),
             description: Some(description),
             signature,
         });

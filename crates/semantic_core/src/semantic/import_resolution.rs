@@ -7,8 +7,8 @@ use crate::semantic::resolution::naming::{
     normalize_declared_type_ref, normalize_for_lookup, type_ref_candidates_with_kind,
 };
 
-fn element_kind_allowed(element_kind: &str, allowed_kinds: &[&str]) -> bool {
-    allowed_kinds.contains(&element_kind)
+fn element_kind_allowed(element_kind: &crate::ElementKind, allowed_kinds: &[&str]) -> bool {
+    allowed_kinds.contains(&element_kind.as_str())
 }
 
 fn import_visibility(import: &SemanticNode) -> String {

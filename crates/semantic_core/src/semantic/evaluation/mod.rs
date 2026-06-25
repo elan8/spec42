@@ -2418,7 +2418,7 @@ mod tests {
     use crate::semantic::text_span::{TextPosition, TextRange};
     use url::Url;
 
-    use crate::semantic::model::SemanticNode;
+    use crate::semantic::model::{ElementKind, SemanticNode};
 
     fn range() -> TextRange {
         TextRange::new(TextPosition::new(0, 0), TextPosition::new(0, 1))
@@ -2436,7 +2436,7 @@ mod tests {
         let id = NodeId::new(uri, qualified_name);
         let node = SemanticNode {
             id: id.clone(),
-            element_kind: element_kind.to_string(),
+            element_kind: ElementKind::parse(element_kind),
             name: name.to_string(),
             range: range(),
             attributes,

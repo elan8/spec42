@@ -52,7 +52,7 @@ fn build_document_graph_dto(semantic_graph: &semantic::SemanticGraph, uri: &Url)
         .filter(|n| n.element_kind != "diagnostic")
         .map(|n| GraphNodeDto {
             id: n.id.qualified_name.clone(),
-            element_type: n.element_kind.clone(),
+            element_type: n.element_kind.as_str().to_string(),
             name: n.name.clone(),
             uri: Some(n.id.uri.as_str().to_string()),
             parent_id: n.parent_id.as_ref().map(|p| p.qualified_name.clone()),

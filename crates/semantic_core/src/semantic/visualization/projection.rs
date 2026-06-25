@@ -9,9 +9,7 @@ use crate::semantic::dto::{
     SysmlElementDto, SysmlGraphDto, SysmlVisualizationGroupDto, SysmlVisualizationPackageCandidateDto,
     WorkspaceFileModelDto, WorkspaceModelDto, WorkspaceModelSummaryDto,
 };
-use crate::semantic::extracted_model::{
-    extract_activity_diagrams, ActivityDiagramDto,
-};
+use crate::semantic::extracted_model::{extract_activity_diagrams, ActivityDiagramDto};
 use crate::semantic::ibd::{IbdDataDto, IbdPackageContainerGroupDto, IbdPartDto};
 use crate::semantic::workspace_graph::WorkspaceParsedDocument;
 use crate::SemanticGraph;
@@ -32,7 +30,7 @@ pub fn build_workspace_graph_dto_for_uris(
             node_ids.insert(node.id.qualified_name.clone());
             nodes.push(GraphNodeDto {
                 id: node.id.qualified_name.clone(),
-                element_type: node.element_kind.clone(),
+                element_type: node.element_kind.as_str().to_string(),
                 name: node.name.clone(),
                 uri: Some(node.id.uri.as_str().to_string()),
                 parent_id: node

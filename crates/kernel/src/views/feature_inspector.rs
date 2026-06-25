@@ -63,7 +63,7 @@ fn element_ref(node: &SemanticNode) -> SysmlFeatureInspectorElementRefDto {
         id: node.id.qualified_name.clone(),
         name: node.name.clone(),
         qualified_name: node.id.qualified_name.clone(),
-        element_type: node.element_kind.clone(),
+        element_type: node.element_kind.as_str().to_string(),
         uri: node.id.uri.to_string(),
         range: range_to_dto(node.range),
     }
@@ -156,7 +156,7 @@ pub fn build_sysml_feature_inspector_response(
                 id: node.id.qualified_name.clone(),
                 name: node.name.clone(),
                 qualified_name: node.id.qualified_name.clone(),
-                element_type: node.element_kind.clone(),
+                element_type: node.element_kind.as_str().to_string(),
                 uri: node.id.uri.to_string(),
                 range: range_to_dto(node.range),
                 parent,

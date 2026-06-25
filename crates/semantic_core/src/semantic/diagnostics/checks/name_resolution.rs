@@ -15,9 +15,9 @@ use crate::semantic::kinds::{
 use crate::semantic::relationships::SPECIALIZES_TARGET_KINDS;
 use crate::{resolve_type_reference_targets, SemanticDiagnostic, SemanticGraph, SemanticNode};
 
-fn is_def_or_usage_kind(kind: &str) -> bool {
+fn is_def_or_usage_kind(kind: &crate::ElementKind) -> bool {
     matches!(
-        kind,
+        kind.as_str(),
         "part def"
             | "port def"
             | "item def"
@@ -138,7 +138,7 @@ fn collect_duplicate_namespace_members(
                 continue;
             }
             *counts
-                .entry((child.name.clone(), child.element_kind.clone()))
+                .entry((child.name.clone(), child.element_kind.as_str().to_string()))
                 .or_default() += 1;
         }
         for ((name, kind), count) in counts {

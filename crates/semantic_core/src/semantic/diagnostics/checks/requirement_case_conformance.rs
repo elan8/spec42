@@ -10,13 +10,13 @@ use crate::{resolve_type_reference_targets, ResolveResult, SemanticDiagnostic, S
 
 const VERIFIED_REQUIREMENT_TARGET_KINDS: &[&str] = &["requirement def", "requirement"];
 
-fn is_requirement_kind(kind: &str) -> bool {
-    matches!(kind, "requirement" | "requirement def")
+fn is_requirement_kind(kind: &crate::ElementKind) -> bool {
+    matches!(kind.as_str(), "requirement" | "requirement def")
 }
 
-fn is_requirement_satisfy_target_kind(kind: &str) -> bool {
+fn is_requirement_satisfy_target_kind(kind: &crate::ElementKind) -> bool {
     matches!(
-        kind,
+        kind.as_str(),
         "requirement"
             | "requirement def"
             | "part"
@@ -37,16 +37,16 @@ fn is_requirement_satisfy_target_kind(kind: &str) -> bool {
     )
 }
 
-fn is_use_case_kind(kind: &str) -> bool {
-    matches!(kind, "use case" | "use case def")
+fn is_use_case_kind(kind: &crate::ElementKind) -> bool {
+    matches!(kind.as_str(), "use case" | "use case def")
 }
 
-fn is_view_kind(kind: &str) -> bool {
-    matches!(kind, "view" | "view def")
+fn is_view_kind(kind: &crate::ElementKind) -> bool {
+    matches!(kind.as_str(), "view" | "view def")
 }
 
-fn is_viewpoint_kind(kind: &str) -> bool {
-    matches!(kind, "viewpoint" | "viewpoint def")
+fn is_viewpoint_kind(kind: &crate::ElementKind) -> bool {
+    matches!(kind.as_str(), "viewpoint" | "viewpoint def")
 }
 
 fn container_prefix_for(node: &crate::SemanticNode) -> Option<&str> {

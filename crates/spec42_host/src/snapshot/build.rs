@@ -108,7 +108,6 @@ impl HostWorkspaceSnapshot {
         let report = collect_host_validation_report(
             &self.semantic_graph,
             &self.documents,
-            &self.parsed_documents,
             &self.library_urls,
             &self.validation_target_files,
             Some(self.workspace_root.as_path()),
@@ -261,7 +260,6 @@ pub(crate) fn build_workspace_snapshot(
             collect_host_validation_report(
                 &semantic_graph,
                 &documents,
-                &parsed_documents,
                 &library_urls,
                 &target_files,
                 Some(workspace_root.as_path()),

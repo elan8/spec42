@@ -129,8 +129,8 @@ fn direct_attribute_names(
         .collect()
 }
 
-fn is_attribute_like_kind(kind: &str) -> bool {
-    let lower = kind.to_lowercase();
+fn is_attribute_like_kind(kind: &semantic_core::ElementKind) -> bool {
+    let lower = kind.as_str().to_lowercase();
     lower.contains("attribute") || lower.contains("property")
 }
 

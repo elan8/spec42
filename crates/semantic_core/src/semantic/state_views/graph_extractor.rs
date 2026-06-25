@@ -59,8 +59,8 @@ pub(super) fn extract_state_machines(
     machines
 }
 
-fn is_state_behavior_element(kind: &str) -> bool {
-    matches!(kind, "state" | "final state" | "transition")
+fn is_state_behavior_element(kind: &crate::ElementKind) -> bool {
+    matches!(kind.as_str(), "state" | "final state" | "transition")
 }
 
 fn is_state_machine_root(graph: &SemanticGraph, node: &SemanticNode) -> bool {

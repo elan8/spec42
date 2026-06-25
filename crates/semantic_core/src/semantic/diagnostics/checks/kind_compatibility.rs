@@ -195,7 +195,7 @@ pub(in crate::semantic::diagnostics) fn collect_kind_compatibility_diagnostics(
                             if seen.insert(key) {
                                 let range = unresolved_type_diagnostic_range(node, type_ref)
                                     .unwrap_or_else(|| diagnostic_range(graph, node, None));
-                                let expected = expected_typing_definition_label(&node.element_kind);
+                                let expected = expected_typing_definition_label(node.element_kind.as_str());
                                 diagnostics.push(diag(
                                     uri,
                                     range,

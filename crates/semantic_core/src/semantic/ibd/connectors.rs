@@ -51,8 +51,8 @@ fn collect_instance_def_mappings(
         }
     }
     for node in graph.nodes_for_uri(uri) {
-        if !is_part_like(&node.element_kind)
-            || node.element_kind.to_lowercase().contains("part def")
+        if !is_part_like(node.element_kind.as_str())
+            || node.element_kind.as_str().to_lowercase().contains("part def")
         {
             continue;
         }
@@ -66,7 +66,7 @@ fn collect_instance_def_mappings(
         if let Some(def_node) = graph
             .outgoing_typing_or_specializes_targets(node)
             .into_iter()
-            .find(|target| is_part_like(&target.element_kind))
+            .find(|target| is_part_like(target.element_kind.as_str()))
         {
             let def_dot = qualified_name_to_dot(&def_node.id.qualified_name);
             mappings.push((def_dot, usage_dot));
@@ -105,8 +105,8 @@ fn build_workspace_instance_def_mappings(
             }
         }
         for node in graph.nodes_for_uri(uri) {
-            if !is_part_like(&node.element_kind)
-                || node.element_kind.to_lowercase().contains("part def")
+            if !is_part_like(node.element_kind.as_str())
+                || node.element_kind.as_str().to_lowercase().contains("part def")
             {
                 continue;
             }
@@ -120,7 +120,7 @@ fn build_workspace_instance_def_mappings(
             if let Some(def_node) = graph
                 .outgoing_typing_or_specializes_targets(node)
                 .into_iter()
-                .find(|target| is_part_like(&target.element_kind))
+                .find(|target| is_part_like(target.element_kind.as_str()))
             {
                 let def_dot = qualified_name_to_dot(&def_node.id.qualified_name);
                 mappings.push((def_dot, usage_dot));
@@ -140,7 +140,7 @@ fn instance_def_mapping_for_part(
     let def_node = graph
         .outgoing_typing_or_specializes_targets(node)
         .into_iter()
-        .find(|target| is_part_like(&target.element_kind))?;
+        .find(|target| is_part_like(target.element_kind.as_str()))?;
     Some((
         qualified_name_to_dot(&def_node.id.qualified_name),
         part.qualified_name.clone(),
@@ -166,8 +166,8 @@ fn extend_instance_def_mappings_with_specializations(
                 graph.incoming_typing_or_specializes_sources(def_node);
             let mut visited: std::collections::HashSet<String> = std::collections::HashSet::new();
             while let Some(source) = stack.pop() {
-                if !is_part_like(&source.element_kind)
-                    || !source.element_kind.to_lowercase().contains("part def")
+                if !is_part_like(source.element_kind.as_str())
+                    || !source.element_kind.as_str().to_lowercase().contains("part def")
                 {
                     continue;
                 }
@@ -297,7 +297,7 @@ fn def_container_prefixes_for_uri(graph: &SemanticGraph, uri: &Url) -> Vec<Strin
     graph
         .nodes_for_uri(uri)
         .iter()
-        .filter(|node| node.element_kind.to_lowercase().contains("part def"))
+        .filter(|node| node.element_kind.as_str().to_lowercase().contains("part def"))
         .map(|node| node.id.qualified_name.clone())
         .collect()
 }

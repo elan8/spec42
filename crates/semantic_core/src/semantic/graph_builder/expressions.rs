@@ -14,8 +14,8 @@ use crate::semantic::relationships::{add_semantic_edge_once, AddSemanticEdgeResu
 
 use super::{add_node_and_recurse, qualified_name, qualified_name_for_node};
 
-fn is_action_like_kind(kind: &str) -> bool {
-    matches!(kind, "action" | "action def" | "perform" | "merge")
+fn is_action_like_kind(kind: &crate::ElementKind) -> bool {
+    matches!(kind.as_str(), "action" | "action def" | "perform" | "merge")
 }
 
 pub(super) fn add_perform_usage_node(

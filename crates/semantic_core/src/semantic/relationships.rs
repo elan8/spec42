@@ -69,8 +69,8 @@ fn specializes_refs_from_value(value: &serde_json::Value) -> Vec<String> {
     }
 }
 
-fn element_kind_allowed(element_kind: &str, allowed_kinds: &[&str]) -> bool {
-    allowed_kinds.contains(&element_kind)
+fn element_kind_allowed(element_kind: &crate::ElementKind, allowed_kinds: &[&str]) -> bool {
+    allowed_kinds.contains(&element_kind.as_str())
 }
 
 fn resolve_pending_target(
@@ -374,7 +374,7 @@ pub fn resolve_pending_relationships_for_uri(g: &mut SemanticGraph, uri: &Url) {
         if let Some(ref target_kinds) = pending_edge.target_kinds {
             if !target_kinds
                 .iter()
-                .any(|kind| kind == &tgt_node.element_kind)
+                .any(|kind| kind.as_str() == tgt_node.element_kind)
             {
                 continue;
             }
@@ -1034,7 +1034,7 @@ fn resolve_typing_edge_cross_document_inner(
                     for target_id in target_ids {
                         if let Some(target) = g.get_node(target_id) {
                             if element_kind_allowed(
-                                target.element_kind.as_str(),
+                                &target.element_kind,
                                 target_element_kinds,
                             ) {
                                 targets.push(target_id.clone());

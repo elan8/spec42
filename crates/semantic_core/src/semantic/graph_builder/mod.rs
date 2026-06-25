@@ -9,7 +9,7 @@ use url::Url;
 
 use crate::semantic::ast_util::span_to_range;
 use crate::semantic::graph::SemanticGraph;
-use crate::semantic::model::{NodeId, SemanticNode};
+use crate::semantic::model::{ElementKind, NodeId, SemanticNode};
 
 mod action;
 mod analysis_case;
@@ -157,7 +157,7 @@ pub(super) fn add_node_and_recurse(
     let node_id = NodeId::new(uri, qualified);
     let node = SemanticNode {
         id: node_id.clone(),
-        element_kind: kind.to_string(),
+        element_kind: ElementKind::from(kind),
         name,
         range,
         attributes: attrs,

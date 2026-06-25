@@ -1,15 +1,15 @@
 use crate::semantic::diagnostics::types::{DiagnosticSeverity, SemanticDiagnostic};
 
-use crate::{NodeId, SemanticGraph, SemanticNode, TextPosition, TextRange};
+use crate::{ElementKind, NodeId, SemanticGraph, SemanticNode, TextPosition, TextRange};
 
 use crate::semantic::ibd;
 
-pub(super) fn is_port_like(kind: &str) -> bool {
-    ibd::is_port_like(kind)
+pub(super) fn is_port_like(kind: &ElementKind) -> bool {
+    ibd::is_port_like(kind.as_str())
 }
 
-pub(super) fn is_part_like(kind: &str) -> bool {
-    ibd::is_part_like(kind)
+pub(super) fn is_part_like(kind: &ElementKind) -> bool {
+    ibd::is_part_like(kind.as_str())
 }
 
 pub(super) fn diag(

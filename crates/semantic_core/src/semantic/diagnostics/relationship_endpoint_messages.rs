@@ -46,8 +46,8 @@ fn relationship_kind_from_code(code: &str) -> Option<(RelationshipKindHint, Endp
     }
 }
 
-fn is_definitional_element_kind(kind: &str) -> bool {
-    kind.ends_with(" def")
+fn is_definitional_element_kind(kind: &crate::ElementKind) -> bool {
+    kind.as_str().ends_with(" def")
 }
 
 fn prefers_usage_endpoint(kind: RelationshipKindHint, role: EndpointRole) -> bool {
