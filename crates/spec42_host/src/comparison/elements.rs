@@ -102,8 +102,8 @@ fn diff_node_fields(
     if previous.element_kind != next.element_kind {
         fields.push(HostElementFieldChange {
             field: "element_kind".to_string(),
-            previous: previous.element_kind.clone(),
-            next: next.element_kind.clone(),
+            previous: previous.element_kind.as_str().to_string(),
+            next: next.element_kind.as_str().to_string(),
         });
     }
     if previous.name != next.name {

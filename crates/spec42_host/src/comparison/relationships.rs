@@ -38,7 +38,7 @@ fn relationship_set(
         .map(|relationship| HostRelationshipIdentity {
             source: relationship.source.clone(),
             target: relationship.target.clone(),
-            kind: relationship.kind.clone(),
+            kind: relationship.kind.as_str().to_string(),
         })
         .collect()
 }

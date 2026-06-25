@@ -2,6 +2,8 @@
 
 use std::collections::HashMap;
 
+use serde::{Deserialize, Serialize};
+
 use crate::semantic::text_span::TextRange;
 use url::Url;
 
@@ -24,7 +26,8 @@ impl NodeId {
 
 /// SysML v2 relationship kinds (edges in the graph).
 #[allow(dead_code)] // some relationship kinds are staged for upcoming semantic features
-#[derive(Clone, Debug, PartialEq, Eq)]
+#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub enum RelationshipKind {
     Typing,
     Specializes,
@@ -49,9 +52,10 @@ pub enum RelationshipKind {
 ///
 /// Replaces the previous `element_kind: String` field on [`SemanticNode`] with a
 /// type-safe enum. `as_str` returns the canonical lowercase spelling that was
-/// stored before, and `from_str` parses it back (falling back to
+/// stored before, and `parse` parses it back (falling back to
 /// [`ElementKind::Unknown`] for forward-compatibility).
-#[derive(Clone, Debug, PartialEq, Eq, Hash)]
+#[derive(Clone, Debug, PartialEq, Eq, Hash, Serialize, Deserialize)]
+#[serde(into = "String", from = "String")]
 pub enum ElementKind {
     // Definitions
     Package,
@@ -371,7 +375,7 @@ impl From<ElementKind> for String {
 }
 
 /// Optional metadata when a `Connection` edge came from a resolved `connect` statement.
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct ConnectStatementDetail {
     pub declaring_uri: Url,
     pub range: TextRange,

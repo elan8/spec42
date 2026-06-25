@@ -668,6 +668,37 @@ impl SemanticGraph {
         out
     }
 
+    /// Returns all edges incident to nodes in the given URI with full edge detail.
+    pub fn edges_for_uri(&self, uri: &Url) -> Vec<(NodeId, NodeId, SemanticEdge)> {
+        let ids: std::collections::HashSet<_> = self
+            .nodes_by_uri
+            .get(uri)
+            .into_iter()
+            .flatten()
+            .cloned()
+            .collect();
+        if ids.is_empty() {
+            return Vec::new();
+        }
+        let indexes = self.query_indexes();
+        let id_by_idx = &indexes.index_to_node_id;
+        let mut out = Vec::new();
+        for e in self.graph.edge_references() {
+            let src_id = match id_by_idx.get(&e.source()) {
+                Some(id) => id.clone(),
+                None => continue,
+            };
+            let tgt_id = match id_by_idx.get(&e.target()) {
+                Some(id) => id.clone(),
+                None => continue,
+            };
+            if ids.contains(&src_id) || ids.contains(&tgt_id) {
+                out.push((src_id, tgt_id, e.weight().clone()));
+            }
+        }
+        out
+    }
+
     /// Returns edges incident to nodes in the given URI as (source, target, kind, optional edge name).
     /// Used for sysml/model relationships.
     pub fn edges_for_uri_as_strings(
@@ -792,6 +823,7 @@ impl SemanticGraph {
             return;
         };
         self.graph.add_edge(source_idx, target_idx, edge);
+        self.invalidate_query_indexes();
     }
 
     pub fn restore_pending_relationship(&mut self, pending: PendingRelationship) {

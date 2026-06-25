@@ -1,8 +1,20 @@
 # Spec42 Architecture & Technical-Debt Audit
 
 **Date:** 2026-06-25  
+**Last updated:** 2026-06-25  
 **Scope:** Full workspace (`crates/*`, ~104.5k LOC, 8 crates).  
 **Cross-referenced against:** `docs/engineering/ROBOT-VACUUM-PERFORMANCE-ANALYSIS.md`
+
+### Completed since initial audit
+
+| Item | Description | Commit / PR |
+|------|-------------|-------------|
+| P1-1 | Added `invalidate_query_indexes()` to `insert_workspace_edge` | in-tree |
+| — | **`ElementKind` enum** — replaced `element_kind: String` on `SemanticNode` with a type-safe enum (~60 variants + `Unknown(String)` catch-all); serialises via `#[serde(into = "String", from = "String")]` | in-tree |
+| — | **`HostSemanticProjection` redesigned** — now 1:1 with the semantic graph: `element_kind: ElementKind`, `attributes: HashMap<String, Value>`, `kind: RelationshipKind`, `connect: Option<ConnectStatementDetail>`; no information dropped on the path to babel42 | in-tree |
+| — | **URL normalisation fix** — `FileSystemDocumentProvider::path_to_url` now lowercases Windows drive letters, matching kernel's normalisation; fixes previously-broken `built_workspace_parity` test | in-tree |
+| — | `RelationshipKind` got `Serialize, Deserialize` + `#[serde(rename_all = "camelCase")]`; `ConnectStatementDetail` got `Serialize, Deserialize` | in-tree |
+| — | New `SemanticGraph::edges_for_uri()` returning full `SemanticEdge` detail | in-tree |
 
 ---
 
@@ -14,7 +26,7 @@
 
 3. **`semantic_core` leaks presentation and transport concerns.** ELK layout, interconnection scene, full visualization projection, IBD layout, `WorkspaceRenderSnapshot`, and ~20 `*Dto` wire types are all exported from a crate that should only own graph + resolution + diagnostics + evaluation.
 
-4. **`element_kind` is now an enum but still compared as strings ~158 times.** The `PartialEq<str>` impls (`model.rs:331-353`) enable this and defeat exhaustiveness checks.
+4. **`element_kind` is now a typed `ElementKind` enum** (`model.rs`) replacing the previous `element_kind: String`. ~158 remaining string comparisons (via `PartialEq<str>` impls) still defeat exhaustiveness checks — see P2-5.
 
 5. **`SemanticNode.attributes: HashMap<String, serde_json::Value>` is a large untyped bag** (`model.rs:455`) with ~70+ distinct string keys (`multiplicity`, `redefines`, `value`, `portType`, `allocationType`, `analysisEvaluationStatus`, `evaluatedValue`, …). Keys are re-parsed on hot paths; typos fail silently.
 
@@ -26,7 +38,7 @@
 
 9. **High `unwrap`/`expect` density:** semantic_core 351, kernel 162, server 84, host 41, language_service 12; plus 33 `panic!/todo!/unimplemented!/unreachable!` macros. A `Mutex` `.expect()` at `graph.rs:104` risks poison-panicking all analysis threads.
 
-10. **`SemanticGraph::insert_workspace_edge` (`graph.rs:787`) omits `invalidate_query_indexes()`** unlike every other graph mutator — a latent correctness bug for persisted-slice rebuild edge queries.
+10. ~~**`SemanticGraph::insert_workspace_edge` (`graph.rs:787`) omits `invalidate_query_indexes()`**~~ **Fixed.** `invalidate_query_indexes()` has been added to `insert_workspace_edge`.
 
 ---
 
@@ -146,11 +158,9 @@ The only saving is skipping re-parse of unchanged documents. This means editing 
 
 **Recommendation:** Persist the cache across incremental updates; invalidate only entries whose prefix matches a mutated URI's packages.
 
-### 4.5 `insert_workspace_edge` missing query index invalidation (P1 — correctness)
+### 4.5 ~~`insert_workspace_edge` missing query index invalidation (P1 — correctness)~~ **Fixed**
 
-`graph.rs:787-795` adds an edge but never calls `invalidate_query_indexes()`, unlike every other graph mutator. Any `iter_edges()` call after a persisted-slice rebuild that uses `insert_workspace_edge` will return stale index data.
-
-**Fix:** Add `self.invalidate_query_indexes();` at the end of `insert_workspace_edge`.
+`graph.rs:787-795` previously added an edge without calling `invalidate_query_indexes()`. This has been corrected.
 
 ---
 
@@ -256,7 +266,7 @@ Verify whether these are still reachable; retire if not.
 
 | # | Finding | Location |
 |---|---------|----------|
-| P1-1 | Add `invalidate_query_indexes()` in `insert_workspace_edge` | `graph.rs:787` |
+| ~~P1-1~~ | ~~Add `invalidate_query_indexes()` in `insert_workspace_edge`~~ **Done** | `graph.rs` |
 | P1-2 | Eliminate the `kernel` duplicate validation stack | `kernel/src/validation/`, `kernel/src/workspace/services.rs` |
 | P1-3 | `Arc<SemanticGraph>` — stop deep-cloning the graph on each snapshot/edit | `build.rs:237`, `update.rs:106,176` |
 
@@ -268,7 +278,7 @@ Verify whether these are still reachable; retire if not.
 | P2-2 | `rayon` par_iter for host validation; drop `host_documents.clone()` | `facts.rs:38,60` |
 | P2-3 | Scope `finalize_workspace_graph` to changed URI + dependents | `update.rs:101`, `pipeline.rs:77` |
 | P2-4 | `thiserror` enums for `semantic_core` and `kernel`; remove string-code matching | `update.rs:50`, `pipeline.rs:19` |
-| P2-5 | Remove `PartialEq<str>` from `ElementKind`; thread `ElementKind` through builder | `model.rs:331`, `graph_builder/mod.rs:121` |
+| P2-5 | `ElementKind` enum introduced ✓; still need: remove `PartialEq<str>` and thread `ElementKind` through builder | `model.rs:331`, `graph_builder/mod.rs:121` |
 | P2-6 | Typed node attributes; replace `HashMap<String, Value>` | `model.rs:455` |
 | P2-7 | Triage `unwrap`/`expect`; fix mutex poison risk | `graph.rs:104`, widespread |
 | P2-8 | Extract rendering/DTO out of `semantic_core` into `diagram_core` | `semantic_core/src/semantic/dto.rs`, `visualization/`, `ibd/` |

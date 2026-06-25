@@ -74,12 +74,13 @@ pub(crate) fn project_host_semantic_model(
                 uri: node.id.uri.to_string(),
                 qualified_name: node.id.qualified_name.clone(),
                 name: node.name.clone(),
-                element_kind: node.element_kind.as_str().to_string(),
+                element_kind: node.element_kind.clone(),
                 range: node.range,
                 parent: node
                     .parent_id
                     .as_ref()
                     .map(|parent| parent.qualified_name.clone()),
+                attributes: node.attributes.clone(),
             });
         }
     }
@@ -87,16 +88,17 @@ pub(crate) fn project_host_semantic_model(
         a.uri
             .cmp(&b.uri)
             .then_with(|| a.qualified_name.cmp(&b.qualified_name))
-            .then_with(|| a.element_kind.cmp(&b.element_kind))
+            .then_with(|| a.element_kind.as_str().cmp(b.element_kind.as_str()))
     });
 
     let mut relationships = Vec::new();
     for uri in &target_urls {
-        for (source, target, kind, _name) in graph.edges_for_uri_as_strings(uri) {
+        for (src_id, tgt_id, edge) in graph.edges_for_uri(uri) {
             relationships.push(HostSemanticModelRelationship {
-                source,
-                target,
-                kind: kind.as_str().to_string(),
+                source: src_id.qualified_name,
+                target: tgt_id.qualified_name,
+                kind: edge.kind,
+                connect: edge.connect,
             });
         }
     }
@@ -104,9 +106,11 @@ pub(crate) fn project_host_semantic_model(
         a.source
             .cmp(&b.source)
             .then_with(|| a.target.cmp(&b.target))
-            .then_with(|| a.kind.cmp(&b.kind))
+            .then_with(|| a.kind.as_str().cmp(b.kind.as_str()))
     });
-    relationships.dedup_by(|a, b| a.source == b.source && a.target == b.target && a.kind == b.kind);
+    relationships.dedup_by(|a, b| {
+        a.source == b.source && a.target == b.target && a.kind == b.kind
+    });
 
     Ok(HostSemanticProjection {
         nodes,
