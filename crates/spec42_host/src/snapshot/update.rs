@@ -6,7 +6,7 @@ use std::time::Instant;
 use language_service::InMemoryWorkspace;
 use semantic_core::{
     add_cross_document_edges_for_uri, build_graph_from_doc, build_render_snapshot,
-    finalize_workspace_graph, SysmlDocument, WorkspaceParsedDocument,
+    finalize_workspace_graph, SemanticGraph, SysmlDocument, WorkspaceParsedDocument,
 };
 
 use crate::error::{map_language_service_error, map_render_snapshot_error, HostResult};
@@ -103,23 +103,25 @@ fn try_incremental_update(
     let uri = changed.uri.clone();
 
     context.check_continue(HostPipelinePhase::BuildingGraph)?;
-    let mut semantic_graph = previous.semantic_graph().clone();
-    semantic_graph.remove_nodes_for_uri(&uri);
+    // One unavoidable deep clone: we need an owned graph to mutate.
+    let mut graph = (*previous.semantic_graph()).clone();
+    graph.remove_nodes_for_uri(&uri);
 
     let parsed_documents = patch_parsed_documents(previous.parsed_documents(), changed)?;
     if let Ok(parsed) = sysml_v2_parser::parse(&changed.content) {
         let doc_graph = build_graph_from_doc(&parsed, &uri);
-        semantic_graph.merge(doc_graph);
-        add_cross_document_edges_for_uri(&mut semantic_graph, &uri);
+        graph.merge(doc_graph);
+        add_cross_document_edges_for_uri(&mut graph, &uri);
     }
 
-    finalize_workspace_graph(&mut semantic_graph);
+    finalize_workspace_graph(&mut graph);
     context.enforce_graph_limits(
-        semantic_graph.node_ids_by_qualified_name.len(),
-        semantic_graph.graph.edge_count(),
+        graph.node_ids_by_qualified_name.len(),
+        graph.graph.edge_count(),
     )?;
     context.check_continue(HostPipelinePhase::BuildingGraph)?;
 
+    let semantic_graph = Arc::new(graph);
     assemble_snapshot_from_state(
         engine,
         previous,
@@ -160,7 +162,7 @@ fn assemble_snapshot_from_state(
     engine: &Spec42Engine,
     previous: &HostWorkspaceSnapshot,
     documents: &[SysmlDocument],
-    semantic_graph: semantic_core::SemanticGraph,
+    semantic_graph: Arc<SemanticGraph>,
     parsed_documents: Vec<WorkspaceParsedDocument>,
     request: &WorkspaceLoadRequest,
     context: &HostContext,
@@ -174,7 +176,7 @@ fn assemble_snapshot_from_state(
 
     context.check_continue(HostPipelinePhase::BuildingLanguageWorkspace)?;
     let language_workspace = InMemoryWorkspace::from_graph_and_documents(
-        semantic_graph.clone(),
+        Arc::clone(&semantic_graph),
         parsed_documents.clone(),
         documents,
     )

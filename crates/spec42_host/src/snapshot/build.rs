@@ -37,7 +37,7 @@ use crate::Spec42Engine;
 pub struct HostWorkspaceSnapshot {
     metadata: HostArtifactMetadata,
     documents: Vec<SysmlDocument>,
-    semantic_graph: SemanticGraph,
+    semantic_graph: Arc<SemanticGraph>,
     parsed_documents: Vec<WorkspaceParsedDocument>,
     language_workspace: InMemoryWorkspace,
     render_snapshot: WorkspaceRenderSnapshot,
@@ -68,7 +68,11 @@ impl HostWorkspaceSnapshot {
     }
 
     pub fn semantic_graph(&self) -> &SemanticGraph {
-        &self.semantic_graph
+        &*self.semantic_graph
+    }
+
+    pub fn semantic_graph_arc(&self) -> Arc<SemanticGraph> {
+        Arc::clone(&self.semantic_graph)
     }
 
     pub fn parsed_documents(&self) -> &[WorkspaceParsedDocument] {
@@ -227,6 +231,7 @@ pub(crate) fn build_workspace_snapshot(
     context.check_continue(HostPipelinePhase::BuildingGraph)?;
     let (semantic_graph, parsed_documents) =
         build_semantic_graph_from_documents(&documents).map_err(map_graph_error)?;
+    let semantic_graph = Arc::new(semantic_graph);
     context.enforce_graph_limits(
         semantic_graph.node_ids_by_qualified_name.len(),
         semantic_graph.graph.edge_count(),
@@ -235,7 +240,7 @@ pub(crate) fn build_workspace_snapshot(
 
     context.check_continue(HostPipelinePhase::BuildingLanguageWorkspace)?;
     let language_workspace = InMemoryWorkspace::from_graph_and_documents(
-        semantic_graph.clone(),
+        Arc::clone(&semantic_graph),
         parsed_documents.clone(),
         &documents,
     )
@@ -313,7 +318,7 @@ pub(crate) fn assemble_host_workspace_snapshot(
     metadata: &HostEngineMetadata,
     catalog: &LibraryCatalog,
     documents: Vec<SysmlDocument>,
-    semantic_graph: SemanticGraph,
+    semantic_graph: Arc<SemanticGraph>,
     parsed_documents: Vec<WorkspaceParsedDocument>,
     language_workspace: InMemoryWorkspace,
     render_snapshot: WorkspaceRenderSnapshot,

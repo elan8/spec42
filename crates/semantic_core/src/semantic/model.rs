@@ -2,10 +2,19 @@
 
 use std::collections::HashMap;
 
-use serde::{Deserialize, Serialize};
+use serde::{Deserialize, Deserializer, Serialize, Serializer};
 
 use crate::semantic::text_span::TextRange;
 use url::Url;
+
+fn serialize_url<S: Serializer>(url: &Url, s: S) -> Result<S::Ok, S::Error> {
+    s.serialize_str(url.as_str())
+}
+
+fn deserialize_url<'de, D: Deserializer<'de>>(d: D) -> Result<Url, D::Error> {
+    let s = String::deserialize(d)?;
+    Url::parse(&s).map_err(serde::de::Error::custom)
+}
 
 /// Unique identifier for a node in the semantic graph.
 /// Combines document URI and qualified name for workspace-wide uniqueness.
@@ -377,6 +386,10 @@ impl From<ElementKind> for String {
 /// Optional metadata when a `Connection` edge came from a resolved `connect` statement.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct ConnectStatementDetail {
+    #[serde(
+        serialize_with = "serialize_url",
+        deserialize_with = "deserialize_url"
+    )]
     pub declaring_uri: Url,
     pub range: TextRange,
     pub source_expression: String,
