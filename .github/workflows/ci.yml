@@ -89,21 +89,21 @@ jobs:
 
       - name: Requirements slice integration checks
         run: |
-          cargo test -p kernel --test lsp_integration integration::model::lsp_sysml_model_graph_resolves_requirement_usage_typing_same_file
-          cargo test -p kernel --test lsp_integration integration::model::lsp_sysml_model_graph_resolves_requirement_usage_typing_cross_file
-          cargo test -p kernel --test lsp_integration integration::diagnostics::unresolved_satisfy_reference_emits_semantic_diagnostic
+          cargo test -p lsp_server --test lsp_integration integration::model::lsp_sysml_model_graph_resolves_requirement_usage_typing_same_file
+          cargo test -p lsp_server --test lsp_integration integration::model::lsp_sysml_model_graph_resolves_requirement_usage_typing_cross_file
+          cargo test -p lsp_server --test lsp_integration integration::diagnostics::unresolved_satisfy_reference_emits_semantic_diagnostic
 
       - name: cargo test (core workspace)
         run: |
-          cargo test --workspace --exclude spec42
-          cargo test -p spec42 --lib
+          cargo test --workspace --exclude server
+          cargo test -p server --lib
 
       - name: cargo clippy
         run: cargo clippy --workspace --all-targets -- -W clippy::all
 
       - name: cargo clippy strict core debt trend (non-blocking)
         continue-on-error: true
-        run: cargo clippy -p semantic_core -p kernel --all-targets -- -D warnings
+        run: cargo clippy -p sysml_model -p lsp_server --all-targets -- -D warnings
 
   rust-surfaces:
     name: Rust agent/API surfaces
@@ -169,7 +169,7 @@ jobs:
 
       - name: Agent/API surface integration tests
         run: |
-          cargo test -p spec42 \
+          cargo test -p server \
             --test api_http \
             --test mcp_tools \
             --test cli_ai_tools \
@@ -181,7 +181,7 @@ jobs:
             -- --include-ignored
 
       - name: Build spec42-mcp binary
-        run: cargo build -p spec42 --bin spec42-mcp
+        run: cargo build -p server --bin spec42-mcp
 
   frontend-unit:
     name: Frontend unit checks
@@ -307,7 +307,7 @@ jobs:
           key: sysml-domain-libraries-${{ env.SPEC42_DOMAIN_LIBRARIES_VERSION }}
 
       - name: Build server (debug for extension test host)
-        run: cargo build -p spec42
+        run: cargo build -p server
 
       - name: Configure server path
         run: |
@@ -432,7 +432,7 @@ jobs:
           key: sysml-domain-libraries-${{ env.SPEC42_DOMAIN_LIBRARIES_VERSION }}
 
       - name: Build server (release for packaging)
-        run: cargo build --release -p spec42
+        run: cargo build --release -p server
 
       - name: Configure packaged server path
         run: |

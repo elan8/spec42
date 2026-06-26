@@ -30,12 +30,12 @@ jobs:
       - name: Run workspace scan test with SysML release
         env:
           SYSML_V2_RELEASE_DIR: ${{ github.workspace }}/sysml-v2-release
-        run: cargo test -p kernel lsp_workspace_scan_sysml_release -- --nocapture
+        run: cargo test -p lsp_server lsp_workspace_scan_sysml_release -- --nocapture
 
       - name: Engineering unit catalog regression
         env:
           SYSML_V2_RELEASE_DIR: ${{ github.workspace }}/sysml-v2-release
-        run: cargo test -p semantic_core engineering_prefixed_units mismatched_unit_dimension_emits -- --nocapture
+        run: cargo test -p sysml_model engineering_prefixed_units mismatched_unit_dimension_emits -- --nocapture
 
       - name: OMG 14c metadata diagnostic ratchet
         env:
@@ -115,7 +115,7 @@ jobs:
           key: sysml-domain-libraries-${{ env.SPEC42_DOMAIN_LIBRARIES_VERSION }}
 
       - name: Build server (debug for visualization test host)
-        run: cargo build -p spec42
+        run: cargo build -p server
 
       - name: Configure server path
         run: |
@@ -213,7 +213,7 @@ jobs:
       - name: Run large workspace performance report
         run: |
           set +e
-          cargo test -p kernel --test lsp_integration integration::workspace::lsp_large_workspace_performance_report -- --ignored --nocapture 2>&1 | tee large-workspace-perf.txt
+          cargo test -p lsp_server --test lsp_integration integration::workspace::lsp_large_workspace_performance_report -- --ignored --nocapture 2>&1 | tee large-workspace-perf.txt
           status=${PIPESTATUS[0]}
           set -e
           {
@@ -269,7 +269,7 @@ jobs:
             echo "Grid fixture not configured; skipping optional grid drill-down." >> "$GITHUB_STEP_SUMMARY"
             exit 0
           fi
-          cargo test -p kernel --test lsp_integration integration::powersystems_performance::powersystems_system_context_performance_report --release -- --ignored --nocapture
+          cargo test -p lsp_server --test lsp_integration integration::powersystems_performance::powersystems_system_context_performance_report --release -- --ignored --nocapture
 
       - name: Summarize interconnection performance reports
         if: always()

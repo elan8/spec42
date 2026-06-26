@@ -92,10 +92,10 @@ jobs:
 
       - name: Rust tests
         run: |
-          cargo test --workspace --exclude spec42
-          cargo test -p spec42 --lib
-          cargo test -p spec42 --test multi_file_check
-          cargo test -p spec42 \
+          cargo test --workspace --exclude server
+          cargo test -p server --lib
+          cargo test -p server --test multi_file_check
+          cargo test -p server \
             --test api_http \
             --test mcp_tools \
             --test cli_ai_tools \
@@ -215,7 +215,7 @@ jobs:
           key: sysml-domain-libraries-${{ env.SPEC42_DOMAIN_LIBRARIES_VERSION }}
 
       - name: Build release binary
-        run: cargo build --release -p spec42 --target ${{ matrix.target }}
+        run: cargo build --release -p server --target ${{ matrix.target }}
 
       - name: Prepare archive (Unix)
         if: matrix.binary_ext == ''
