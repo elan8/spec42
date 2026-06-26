@@ -246,7 +246,7 @@ pub(super) fn build_from_port_def_body_element(
         PDBE::PortUsage(n) => {
             materialize_port_usage(n, uri, container_prefix, parent_id, g);
         }
-        PDBE::Error(_) => {}
+        PDBE::Error(_) | PDBE::Other(_) => {}
     }
 }
 

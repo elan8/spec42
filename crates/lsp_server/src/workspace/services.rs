@@ -1,7 +1,9 @@
 ﻿use crate::common::util;
 use crate::semantic;
 use crate::workspace::library_search;
+use crate::workspace::parse_cache;
 use crate::workspace::state::{IndexEntry, ParseMetadata, ServerState};
+use std::path::Path;
 use std::time::Instant;
 use sysml_v2_parser::RootNamespace;
 use tower_lsp::lsp_types::{MessageType, TextDocumentContentChangeEvent, Url};
@@ -62,7 +64,36 @@ fn warning_from_parse_errors(
     }
 }
 
-fn parse_scanned_entry(ordinal: usize, uri: Url, content: String) -> ParsedScanEntry {
+fn parse_scanned_entry(
+    ordinal: usize,
+    uri: Url,
+    content: String,
+    cache_dir: Option<&Path>,
+) -> ParsedScanEntry {
+    // Try cache before parsing.
+    if let Some(dir) = cache_dir {
+        let hash = parse_cache::content_hash(content.as_bytes());
+        if let Some(root) = parse_cache::load(dir, &hash) {
+            return ParsedScanEntry {
+                ordinal,
+                uri,
+                content,
+                parsed: Some(root),
+                parse_errors: vec![],
+                parse_metadata: ParseMetadata { parse_time_ms: 0, parse_cached: true },
+            };
+        }
+        // Cache miss: parse normally then store.
+        let entry = parse_scanned_entry_cold(ordinal, uri, content);
+        if let Some(root) = &entry.parsed {
+            parse_cache::store(dir, &hash, root);
+        }
+        return entry;
+    }
+    parse_scanned_entry_cold(ordinal, uri, content)
+}
+
+fn parse_scanned_entry_cold(ordinal: usize, uri: Url, content: String) -> ParsedScanEntry {
     let parse_start = Instant::now();
     let parsed_result = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         util::parse_for_editor(&content)
@@ -106,6 +137,7 @@ fn parse_scanned_entry(ordinal: usize, uri: Url, content: String) -> ParsedScanE
 pub(crate) fn parse_scanned_entries(
     entries: Vec<(Url, String)>,
     parallel_enabled: bool,
+    cache_dir: Option<std::path::PathBuf>,
 ) -> Vec<ParsedScanEntry> {
     if entries.is_empty() {
         return Vec::new();
@@ -115,7 +147,9 @@ pub(crate) fn parse_scanned_entries(
         return entries
             .into_iter()
             .enumerate()
-            .map(|(ordinal, (uri, content))| parse_scanned_entry(ordinal, uri, content))
+            .map(|(ordinal, (uri, content))| {
+                parse_scanned_entry(ordinal, uri, content, cache_dir.as_deref())
+            })
             .collect();
     }
 
@@ -133,10 +167,13 @@ pub(crate) fn parse_scanned_entries(
 
     let mut handles = Vec::with_capacity(worker_count);
     for bucket in buckets {
+        let cache_dir = cache_dir.clone();
         handles.push(std::thread::spawn(move || {
             bucket
                 .into_iter()
-                .map(|(ordinal, uri, content)| parse_scanned_entry(ordinal, uri, content))
+                .map(|(ordinal, uri, content)| {
+                    parse_scanned_entry(ordinal, uri, content, cache_dir.as_deref())
+                })
                 .collect::<Vec<ParsedScanEntry>>()
         }));
     }
@@ -454,7 +491,7 @@ pub(crate) fn index_library_paths_for_search(
     if entries.is_empty() {
         return 0;
     }
-    let parsed_entries = parse_scanned_entries(entries, false);
+    let parsed_entries = parse_scanned_entries(entries, false, None);
     let mut indexed = 0usize;
     for entry in parsed_entries {
         let uri_norm = crate::common::util::normalize_file_uri(&entry.uri);

@@ -57,7 +57,7 @@ pub(super) fn validate_paths_with_semantics(
     )?;
     ingest_parsed_scan_entries(
         &mut state,
-        parse_scanned_entries(entries, request.parallel_enabled),
+        parse_scanned_entries(entries, request.parallel_enabled, None),
     );
     rebuild_all_document_links(&mut state);
 

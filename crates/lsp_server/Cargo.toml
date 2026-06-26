@@ -31,6 +31,9 @@ tracing = "0.1"
 tracing-subscriber = { version = "0.3", features = ["env-filter", "fmt"] }
 toml = "0.8"
 glob = "0.3"
+bincode = { version = "2", features = ["serde"] }
+sha2 = "0.10"
+dirs = "5"
 
 [dev-dependencies]
 # Used by LSP integration tests when constructing `file://` URIs.

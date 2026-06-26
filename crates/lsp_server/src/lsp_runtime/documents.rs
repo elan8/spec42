@@ -335,9 +335,20 @@ pub(crate) async fn initialized(
         let should_parallel_parse =
             parallel_parse_enabled && entries.len() >= parallel_parse_min_files;
         let library_paths_for_closure = library_paths.clone();
+        // Resolve the parse cache directory once for the whole startup scan.
+        let cache_dir = crate::workspace::parse_cache::default_cache_dir();
+        if let Some(dir) = &cache_dir {
+            let dir = dir.clone();
+            tokio::task::spawn_blocking(move || {
+                crate::workspace::parse_cache::evict_stale_entries(&dir);
+            })
+            .await
+            .ok();
+        }
         let parse_worker_start = Instant::now();
         let parsed_entries = tokio::task::spawn_blocking(move || {
-            parse_scanned_entries(entries, should_parallel_parse)
+            // Workspace files are not cached — they change on every edit.
+            parse_scanned_entries(entries, should_parallel_parse, None)
         })
         .await
         .unwrap_or_default();
@@ -381,9 +392,12 @@ pub(crate) async fn initialized(
         } else {
             let parallel =
                 library_entries.len() >= parallel_parse_min_files && should_parallel_parse;
-            tokio::task::spawn_blocking(move || parse_scanned_entries(library_entries, parallel))
-                .await
-                .unwrap_or_default()
+            // Library files are stable between upgrades — use the parse cache.
+            tokio::task::spawn_blocking(move || {
+                parse_scanned_entries(library_entries, parallel, cache_dir)
+            })
+            .await
+            .unwrap_or_default()
         };
         let parsed_entries: Vec<_> = parsed_entries.into_iter().chain(library_parsed).collect();
         let merge_index_start = Instant::now();
@@ -599,8 +613,10 @@ pub(crate) async fn did_open(
             && !state.library_paths.is_empty()
             && !util::uri_under_any_library(&uri_norm, &state.library_paths)
         {
-            crate::workspace::services::ingest_missing_library_closure(&mut state);
-            crate::workspace::services::rebuild_all_document_links(&mut state);
+            let added = crate::workspace::services::ingest_missing_library_closure(&mut state);
+            if added > 0 {
+                crate::workspace::services::rebuild_all_document_links(&mut state);
+            }
         }
         state.semantic_state_version = state.semantic_state_version.wrapping_add(1);
         warning
@@ -826,7 +842,7 @@ pub(crate) async fn did_change_configuration(
             parallel_parse_enabled && entries.len() >= parallel_parse_min_files;
         let parse_worker_start = Instant::now();
         let parsed_entries = tokio::task::spawn_blocking(move || {
-            parse_scanned_entries(entries, should_parallel_parse)
+            parse_scanned_entries(entries, should_parallel_parse, None)
         })
         .await
         .unwrap_or_default();
