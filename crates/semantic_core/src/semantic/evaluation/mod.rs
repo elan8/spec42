@@ -2454,6 +2454,13 @@ mod tests {
             .entry(qualified_name.to_string())
             .or_default()
             .push(id.clone());
+        if let Some(pid) = parent_id {
+            graph
+                .children_by_parent_id
+                .entry(pid.clone())
+                .or_default()
+                .push(id.clone());
+        }
         id
     }
 
