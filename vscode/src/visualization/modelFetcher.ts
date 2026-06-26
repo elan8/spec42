@@ -1,8 +1,6 @@
 import type { LspModelProvider } from '../providers/lspModelProvider';
 import { isVerboseLoggingEnabled, log, logError, logPerfEvent } from '../logger';
 import type {
-    IbdDataDTO,
-    InterconnectionSceneDTO,
     SysMLElementDTO,
     SysMLGraphDTO,
     VisualizationViewCandidateDTO,
@@ -64,6 +62,7 @@ export async function fetchModelData(params: FetchModelParams): Promise<UpdateMe
         const requestMs = Date.now() - requestStartedAt;
 
         const modelReady = result.modelReady !== false;
+        const resultView = result.view ?? currentView;
         const msg: UpdateMessage = {
             command: 'update',
             modelReady,
@@ -73,12 +72,10 @@ export async function fetchModelData(params: FetchModelParams): Promise<UpdateMe
             graph: result.graph ?? { nodes: [], edges: [] },
             elements: result.workspaceModel?.semantic,
             generalViewGraph: result.generalViewGraph ?? result.graph,
-            ibd: result.ibd,
-            interconnectionScene: result.interconnectionScene,
             preparedView: result.preparedView,
             activityDiagrams: result.activityDiagrams ?? [],
             sequenceDiagrams: result.sequenceDiagrams ?? [],
-            currentView: result.view ?? currentView,
+            currentView: resultView,
             viewCandidates: result.viewCandidates ?? [],
             selectedView: result.selectedView,
             selectedViewName: result.selectedViewName,

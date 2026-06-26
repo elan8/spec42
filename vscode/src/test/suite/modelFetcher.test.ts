@@ -2,23 +2,29 @@ import * as assert from "assert";
 import { fetchModelData } from "../../visualization/modelFetcher";
 
 describe("fetchModelData", () => {
-    it("forwards interconnectionScene from LSP visualization result", async () => {
-        const scene = {
-            schemaVersion: 1,
-            viewId: "view-1",
-            viewName: "systemContext",
-            nodes: [{ id: "n1", name: "Grid" }],
-            edges: [{ id: "e1", sourceNodeId: "n1", targetNodeId: "n2" }],
-            diagnostics: [],
-        };
+    it("omits interconnection legacy payloads from webview updates", async () => {
         const provider = {
             getVisualization: async () => ({
                 version: 1,
                 view: "interconnection-view",
                 workspaceRootUri: "file:///workspace",
                 viewCandidates: [],
-                ibd: { parts: [], connectors: [], ports: [] },
-                interconnectionScene: scene,
+                ibd: { parts: [{ id: "legacy-part" }], connectors: [{ id: "legacy-edge" }], ports: [] },
+                interconnectionScene: {
+                    schemaVersion: 2,
+                    view: { id: "view-1", name: "systemContext", type: "InterconnectionView", rootIds: [] },
+                    nodes: [{ id: "n1", name: "Grid" }],
+                    ports: [],
+                    edges: [{ id: "e1", sourceNodeId: "n1", targetNodeId: "n2" }],
+                    containers: [],
+                    diagnostics: [],
+                },
+                preparedView: {
+                    title: "systemContext",
+                    view: "interconnection-view",
+                    nodes: [{ id: "n1", label: "Grid", kind: "part" }],
+                    edges: [{ id: "e1", source: "n1", target: "n2", label: "connects" }],
+                },
             }),
         } as any;
 
@@ -30,7 +36,9 @@ describe("fetchModelData", () => {
         });
 
         assert.ok(msg);
-        assert.strictEqual(msg.interconnectionScene?.schemaVersion, 1);
-        assert.strictEqual(msg.interconnectionScene?.edges?.length, 1);
+        assert.strictEqual(msg.preparedView?.view, "interconnection-view");
+        assert.strictEqual(msg.preparedView?.edges.length, 1);
+        assert.strictEqual("ibd" in msg, false);
+        assert.strictEqual("interconnectionScene" in msg, false);
     });
 });

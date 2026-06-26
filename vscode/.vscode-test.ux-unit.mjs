@@ -18,6 +18,7 @@ export default defineConfig({
     path.join(__dirname, testOut, "test/suite/updateFlow.test.js"),
     path.join(__dirname, testOut, "test/suite/visualizationGate.test.js"),
     path.join(__dirname, testOut, "test/suite/dtoAdapter.test.js"),
+    path.join(__dirname, testOut, "test/suite/modelFetcher.test.js"),
     path.join(__dirname, testOut, "test/suite/renderTracker.test.js"),
   ],
   extensionDevelopmentPath: __dirname,

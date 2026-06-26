@@ -36,29 +36,6 @@ export type GraphPayloadDto = {
     edges?: GraphEdgeDto[];
 };
 
-export type IbdPartDto = GraphNodeDto & {
-    containerId?: string | null;
-    container_id?: string | null;
-};
-
-export type IbdConnectorDto = GraphEdgeDto & {
-    sourceId?: string;
-    targetId?: string;
-    sourcePortId?: string;
-    targetPortId?: string;
-};
-
-export type IbdPayloadDto = {
-    parts?: IbdPartDto[];
-    ports?: GraphNodeDto[];
-    connectors?: IbdConnectorDto[];
-    containerGroups?: unknown[];
-    packageContainerGroups?: unknown[];
-    rootViews?: Record<string, IbdPayloadDto>;
-    rootCandidates?: string[];
-    defaultRoot?: string;
-};
-
 export type ActivityDiagramDto = {
     id?: string;
     name?: string;
@@ -126,7 +103,6 @@ export type VisualizationDataDto = {
     graph?: GraphPayloadDto;
     elements?: GraphNodeDto[];
     relationships?: GraphEdgeDto[];
-    ibd?: IbdPayloadDto;
     activityDiagrams?: ActivityDiagramDto[];
     sequenceDiagrams?: SequenceDiagramDto[];
     stateMachines?: StateMachineDto[];

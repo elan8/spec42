@@ -540,11 +540,11 @@ export function registerVisualizerCommands(
           selectedView
         );
         const viewCandidates = visualization.viewCandidates ?? [];
+        const preparedView = visualization.preparedView;
         const summary = {
           modelReady: visualization.modelReady !== false,
-          ibdConnectors: visualization.ibd?.connectors?.length ?? 0,
-          ibdParts: visualization.ibd?.parts?.length ?? 0,
-          ibdPorts: visualization.ibd?.ports?.length ?? 0,
+          preparedViewNodes: preparedView?.nodes?.length ?? 0,
+          preparedViewEdges: preparedView?.edges?.length ?? 0,
           graphNodes: visualization.graph?.nodes?.length ?? 0,
           viewCandidateCount: viewCandidates.length,
           viewCandidateIds: viewCandidates.map((candidate) => candidate.id),

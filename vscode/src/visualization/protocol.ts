@@ -1,6 +1,4 @@
 import type {
-    IbdDataDTO,
-    InterconnectionSceneDTO,
     SysMLElementDTO,
     SysMLGraphDTO,
     VisualizationViewCandidateDTO,
@@ -42,8 +40,6 @@ export interface VisualizerUpdateMessage {
     graph?: SysMLGraphDTO;
     elements?: SysMLElementDTO[];
     generalViewGraph?: SysMLGraphDTO;
-    ibd?: IbdDataDTO;
-    interconnectionScene?: InterconnectionSceneDTO;
     preparedView?: PreparedViewPayload;
     activityDiagrams: unknown[];
     sequenceDiagrams: unknown[];

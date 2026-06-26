@@ -27,13 +27,68 @@ describe("dtoAdapter", () => {
         assert.ok(Array.isArray((input as { graph?: { nodes?: unknown[] } }).graph?.nodes));
     });
 
-    it("interconnectionBannerCounts prefers raw ibd metrics", () => {
+    it("buildSharedRendererInput trims interconnection legacy payload when preparedView is present", () => {
+        const input = buildSharedRendererInput(
+            {
+                currentView: "interconnection-view",
+                ibd: { parts: [{ id: "legacy" }], connectors: [] },
+                interconnectionScene: { schemaVersion: 2, edges: [{ id: "legacy-edge" }] },
+                preparedView: {
+                    title: "Connections",
+                    view: "interconnection-view",
+                    nodes: [{ id: "n1" }],
+                    edges: [],
+                },
+            },
+            "interconnection-view",
+        );
+
+        assert.ok(input);
+        assert.ok(input.preparedView);
+        assert.strictEqual(input.ibd, undefined);
+        assert.strictEqual(input.interconnectionScene, undefined);
+    });
+
+    it("interconnectionBannerCounts prefers preparedView metrics", () => {
+        const counts = interconnectionBannerCounts({
+            preparedView: {
+                title: "Connections",
+                view: "interconnection-view",
+                nodes: [{}, {}, {}],
+                edges: [{}, {}],
+            },
+            ibd: { parts: [{}], connectors: [] },
+        });
+
+        assert.strictEqual(counts.partCount, 3);
+        assert.strictEqual(counts.connectorCount, 2);
+    });
+
+    it("buildSharedRendererInput does not fall back to interconnection legacy payloads", () => {
+        const input = buildSharedRendererInput(
+            {
+                currentView: "interconnection-view",
+                ibd: { parts: [{ id: "legacy" }, { id: "legacy-2" }], connectors: [{ id: "c1" }] },
+                interconnectionScene: { schemaVersion: 2, edges: [{ id: "legacy-edge" }] },
+            },
+            "interconnection-view",
+        );
+
+        assert.ok(input);
+        assert.ok(input.preparedView);
+        assert.strictEqual(input.ibd, undefined);
+        assert.strictEqual(input.interconnectionScene, undefined);
+        assert.deepStrictEqual((input.preparedView as { nodes?: unknown[] }).nodes, []);
+        assert.deepStrictEqual((input.preparedView as { edges?: unknown[] }).edges, []);
+    });
+
+    it("interconnectionBannerCounts ignores raw ibd metrics", () => {
         const counts = interconnectionBannerCounts({
             ibd: { parts: [{}, {}], connectors: [{}] },
         });
 
-        assert.strictEqual(counts.partCount, 2);
-        assert.strictEqual(counts.connectorCount, 1);
+        assert.strictEqual(counts.partCount, 0);
+        assert.strictEqual(counts.connectorCount, 0);
     });
 
     it("interconnectionBannerCounts returns zero when ibd absent", () => {
