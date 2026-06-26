@@ -518,61 +518,6 @@ pub(crate) fn index_library_paths_for_search(
 }
 
 /// Load import-closure library files for the current workspace index (semantic graph merge).
-pub(crate) fn ingest_missing_library_closure(state: &mut ServerState) -> usize {
-    if crate::workspace::library_closure::library_full_scan_enabled()
-        || state.library_paths.is_empty()
-    {
-        return 0;
-    }
-    let workspace_sources: Vec<sysml_model::WorkspaceSource<'_>> = state
-        .index
-        .iter()
-        .filter(|(uri, entry)| {
-            entry.include_in_semantic_graph
-                && !crate::common::util::uri_under_any_library(uri, &state.library_paths)
-        })
-        .map(|(uri, entry)| sysml_model::WorkspaceSource {
-            path: uri.as_str(),
-            content: entry.content.as_str(),
-        })
-        .collect();
-    let Ok(loaded) = crate::workspace::library_closure::load_library_closure_scan_entries(
-        &workspace_sources,
-        &state.library_paths,
-    ) else {
-        return 0;
-    };
-    let mut added = 0usize;
-    for (uri, content) in loaded {
-        let uri_norm = crate::common::util::normalize_file_uri(&uri);
-        if state.index.contains_key(&uri_norm) {
-            continue;
-        }
-        let parsed_result = crate::common::util::parse_for_editor(&content);
-        let parse_errors = parsed_result
-            .errors
-            .iter()
-            .take(5)
-            .map(|e| e.message.clone())
-            .collect::<Vec<_>>();
-        store_parsed_document_text(
-            state,
-            &uri_norm,
-            content,
-            Some(parsed_result.root),
-            ParseMetadata {
-                parse_time_ms: 0,
-                parse_cached: false,
-            },
-            &parse_errors,
-            parsed_result.errors.len(),
-            "library_closure",
-            false,
-        );
-        added += 1;
-    }
-    added
-}
 
 pub(crate) fn rebuild_all_document_links(
     state: &mut ServerState,
