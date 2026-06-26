@@ -1,1 +1,1 @@
-pub(crate) use semantic_core::semantic::root_element::root_element_body;
+﻿pub(crate) use sysml_model::semantic::root_element::root_element_body;

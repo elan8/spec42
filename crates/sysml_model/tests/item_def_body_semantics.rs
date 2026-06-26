@@ -1,4 +1,4 @@
-use semantic_core::{build_semantic_graph_from_documents, SysmlDocument, SysmlDocumentSourceKind};
+﻿use sysml_model::{build_semantic_graph_from_documents, SysmlDocument, SysmlDocumentSourceKind};
 
 fn workspace_doc(path: &str, content: &str) -> SysmlDocument {
     SysmlDocument::from_memory_path(

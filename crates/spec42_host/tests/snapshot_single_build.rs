@@ -1,7 +1,7 @@
-use std::sync::atomic::{AtomicUsize, Ordering};
+﻿use std::sync::atomic::{AtomicUsize, Ordering};
 use std::sync::Arc;
 
-use semantic_core::{
+use sysml_model::{
     SysmlDocument, SysmlDocumentProvider, SysmlDocumentSourceKind,
 };
 use spec42_host::{

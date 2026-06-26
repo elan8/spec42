@@ -1,9 +1,9 @@
-//! Shared host workspace snapshot loading for CLI, HTTP, and MCP surfaces.
+﻿//! Shared host workspace snapshot loading for CLI, HTTP, and MCP surfaces.
 
 use std::path::{Path, PathBuf};
 use std::sync::Arc;
 
-use kernel::{BuiltWorkspaceInput, SemanticValidationReport, ValidationRequest};
+use lsp_server::{BuiltWorkspaceInput, SemanticValidationReport, ValidationRequest};
 use spec42_host::{
     HostContext, HostFilesystemProvider, HostWorkspaceSnapshot, Spec42Engine, WorkspaceLoadRequest,
 };
@@ -69,9 +69,9 @@ pub fn semantic_report_from_snapshot(
     _environment: &ResolvedEnvironment,
     request: ValidationRequest,
 ) -> Result<SemanticValidationReport, String> {
-    let config = Arc::new(kernel::default_server_config());
+    let config = Arc::new(lsp_server::default_server_config());
     let built = built_workspace_input_from_snapshot(snapshot);
-    kernel::semantic_report_from_built_workspace(&config, &built, request)
+    lsp_server::semantic_report_from_built_workspace(&config, &built, request)
         .map_err(|error| error.to_string())
 }
 

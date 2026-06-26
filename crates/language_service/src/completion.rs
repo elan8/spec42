@@ -1,6 +1,6 @@
-use std::collections::HashSet;
+﻿use std::collections::HashSet;
 
-use semantic_core::{TextPosition, TextRange};
+use sysml_model::{TextPosition, TextRange};
 use url::Url;
 
 use crate::dto::{

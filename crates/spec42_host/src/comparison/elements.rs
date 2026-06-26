@@ -1,10 +1,10 @@
-//! Element diff from host semantic projections.
+﻿//! Element diff from host semantic projections.
 
 use std::collections::BTreeMap;
 
 use crate::snapshot::HostSemanticModelNode;
 use crate::snapshot::HostSemanticProjection;
-use semantic_core::TextRange;
+use sysml_model::TextRange;
 
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, serde::Serialize, serde::Deserialize)]
 pub struct HostElementIdentity {

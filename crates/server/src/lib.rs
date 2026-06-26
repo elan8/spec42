@@ -1,4 +1,4 @@
-//! Spec42 CLI and MCP shared implementation.
+﻿//! Spec42 CLI and MCP shared implementation.
 
 pub mod ai_tools;
 pub mod api;
@@ -26,7 +26,7 @@ use cli::{
 pub use environment::DoctorReport;
 use environment::{build_doctor_report, resolve_environment};
 use host_snapshot::{load_snapshot_for_check, semantic_report_from_snapshot};
-use kernel::{
+use lsp_server::{
     validate_paths, SemanticModelNode, SemanticModelProjection, SemanticModelRelationship,
     SemanticValidationReport, ValidationReport, ValidationRequest, ValidationSummary,
 };
@@ -40,7 +40,7 @@ use stdlib::{managed_status, remove_standard_library};
 pub fn perform_check(cli: &Cli, args: &CheckArgs) -> Result<ValidationReport, String> {
     let references_stdlib = environment::workspace_references_standard_library(&args.path);
     let environment = resolve_environment(cli)?;
-    let config = Arc::new(kernel::default_server_config());
+    let config = Arc::new(lsp_server::default_server_config());
     let mut report = validate_paths(
         &config,
         ValidationRequest {
@@ -221,10 +221,10 @@ async fn run_api(cli: Cli, command: &cli::ApiCommand) -> Result<ExitCode, String
 async fn run_lsp(cli: &Cli) -> Result<ExitCode, String> {
     let environment = resolve_environment(cli)?;
     let config = Arc::new(
-        kernel::default_server_config()
+        lsp_server::default_server_config()
             .with_default_library_paths(environment.library_paths.clone()),
     );
-    kernel::run_lsp(config, "spec42").await;
+    lsp_server::run_lsp(config, "spec42").await;
     Ok(ExitCode::SUCCESS)
 }
 

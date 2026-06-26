@@ -1,8 +1,8 @@
-//! View catalog and supported-view payload identity diff.
+﻿//! View catalog and supported-view payload identity diff.
 
 use std::collections::BTreeMap;
 
-use semantic_core::{SysmlVisualizationResultDto, SysmlVisualizationViewCandidateDto};
+use sysml_model::{SysmlVisualizationResultDto, SysmlVisualizationViewCandidateDto};
 use sha2::{Digest, Sha256};
 
 use crate::error::HostResult;

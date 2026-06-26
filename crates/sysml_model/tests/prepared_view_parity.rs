@@ -1,9 +1,9 @@
-//! JSON schema parity between Rust PreparedViewDto and TS prepare/types.ts consumers.
+﻿//! JSON schema parity between Rust PreparedViewDto and TS prepare/types.ts consumers.
 
 use std::fs;
 use std::path::PathBuf;
 
-use semantic_core::{
+use sysml_model::{
     prepare_interconnection_prepared_view, prepare_view_from_visualization, InterconnectionSceneDto,
     PreparedViewDto, SysmlVisualizationResultDto,
 };

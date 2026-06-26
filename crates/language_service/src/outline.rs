@@ -1,6 +1,6 @@
-//! Document outline and folding ranges from parsed AST.
+﻿//! Document outline and folding ranges from parsed AST.
 
-use semantic_core::semantic::ast_util::{identification_name, span_to_range};
+use sysml_model::semantic::ast_util::{identification_name, span_to_range};
 use sysml_v2_parser::ast::{
     PackageBody, PackageBodyElement, PartDefBody, PartDefBodyElement, PartUsageBody,
     PartUsageBodyElement, PortDefBody, PortDefBodyElement, RootElement,

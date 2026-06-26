@@ -1,4 +1,4 @@
-//! Scoped vs full-workspace IBD parity for general views.
+﻿//! Scoped vs full-workspace IBD parity for general views.
 //!
 //! Ensures `IbdBuildScope::ViewExposedPackages` + scoped merge produces the same
 //! filtered IBD as full-workspace IBD + `filter_ibd_by_visible_ids`.
@@ -6,7 +6,7 @@
 use std::collections::HashSet;
 use std::path::{Path, PathBuf};
 
-use semantic_core::{
+use sysml_model::{
     build_merged_workspace_ibd, build_semantic_graph_with_provider, build_view_catalog,
     build_workspace_graph_dto_for_uris, evaluate_views, filter_ibd_by_visible_ids,
     project_ids_for_renderer, workspace_uris_for_ibd_scope, FileSystemDocumentProvider,
@@ -43,8 +43,8 @@ fn robot_vacuum_model_dir(repo_root: &Path) -> PathBuf {
 
 struct GeneralViewWorkspace {
     workspace_uris: Vec<Url>,
-    graph: semantic_core::SemanticGraph,
-    parsed: Vec<semantic_core::WorkspaceParsedDocument>,
+    graph: sysml_model::SemanticGraph,
+    parsed: Vec<sysml_model::WorkspaceParsedDocument>,
 }
 
 fn load_filesystem_workspace(scan_root: PathBuf, workspace_root: PathBuf) -> GeneralViewWorkspace {
@@ -57,7 +57,7 @@ fn load_filesystem_workspace(scan_root: PathBuf, workspace_root: PathBuf) -> Gen
         build_semantic_graph_with_provider(&provider).expect("semantic graph");
     let workspace_root_uri =
         Url::from_directory_path(workspace_root.canonicalize().unwrap()).unwrap();
-    let workspace_uris = semantic_core::workspace_uris_for_root(
+    let workspace_uris = sysml_model::workspace_uris_for_root(
         &graph,
         &[],
         &workspace_root_uri,
@@ -113,7 +113,7 @@ fn assert_scoped_ibd_parity_for_general_views(workspace: &GeneralViewWorkspace) 
         .iter()
         .filter(|view| {
             view.effective_view_type.as_deref() == Some("GeneralView")
-                || semantic_core::renderer_view_for_view_type(view.effective_view_type.as_deref())
+                || sysml_model::renderer_view_for_view_type(view.effective_view_type.as_deref())
                     == Some("general-view")
         })
         .collect();

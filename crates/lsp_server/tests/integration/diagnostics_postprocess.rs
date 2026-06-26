@@ -1,4 +1,4 @@
-use kernel::{default_server_config, validate_paths, ValidationRequest};
+﻿use lsp_server::{default_server_config, validate_paths, ValidationRequest};
 use std::fs;
 use std::sync::Arc;
 use tower_lsp::lsp_types::{DiagnosticSeverity, NumberOrString};

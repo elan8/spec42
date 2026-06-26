@@ -1,6 +1,6 @@
-//! Graph materialization tests for unit catalog attributes.
+﻿//! Graph materialization tests for unit catalog attributes.
 
-use semantic_core::{
+use sysml_model::{
     build_semantic_graph_from_documents, SysmlDocument, SysmlDocumentSourceKind, UnitRegistry,
 };
 
@@ -93,7 +93,7 @@ fn graph_only_registry_parity_with_engineering_catalog() {
 
 #[test]
 fn library_closure_seeds_quantity_packages_on_unit_literals() {
-    use semantic_core::{resolve_library_closure, LibraryClosureOptions, WorkspaceSource};
+    use sysml_model::{resolve_library_closure, LibraryClosureOptions, WorkspaceSource};
     use std::fs;
 
     let temp = tempfile::tempdir().expect("tempdir");
@@ -133,8 +133,8 @@ package Measurement {
 
 #[test]
 fn measurement_unit_taxonomy_materializes_as_attribute_defs_with_edges() {
-    use semantic_core::semantic::units::is_measurement_unit_compatible;
-    use semantic_core::{link_workspace_relationships, RelationshipKind};
+    use sysml_model::semantic::units::is_measurement_unit_compatible;
+    use sysml_model::{link_workspace_relationships, RelationshipKind};
 
     let doc = SysmlDocument::from_memory_path(
         "measurement",

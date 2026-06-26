@@ -1,4 +1,4 @@
-[package]
+﻿[package]
 name = "spec42_host"
 version.workspace = true
 edition.workspace = true
@@ -21,7 +21,7 @@ kpar = { path = "../kpar" }
 
 [dependencies]
 kpar = { path = "../kpar" }
-semantic_core = { path = "../semantic_core" }
+sysml_model = { path = "../sysml_model" }
 language_service = { path = "../language_service" }
 serde = { workspace = true }
 serde_json = { workspace = true }

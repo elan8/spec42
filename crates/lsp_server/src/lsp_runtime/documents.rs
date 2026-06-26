@@ -1,4 +1,4 @@
-use std::sync::atomic::{AtomicU64, Ordering};
+﻿use std::sync::atomic::{AtomicU64, Ordering};
 use std::sync::Arc;
 use std::time::{Duration, Instant};
 
@@ -350,10 +350,10 @@ pub(crate) async fn initialized(
             Vec::new()
         } else {
             match tokio::task::spawn_blocking(move || {
-                let workspace_sources: Vec<semantic_core::WorkspaceSource<'_>> =
+                let workspace_sources: Vec<sysml_model::WorkspaceSource<'_>> =
                     workspace_closure_inputs
                         .iter()
-                        .map(|(path, content)| semantic_core::WorkspaceSource {
+                        .map(|(path, content)| sysml_model::WorkspaceSource {
                             path: path.as_str(),
                             content: content.as_str(),
                         })

@@ -1,10 +1,10 @@
-//! Validation report assembly from a pre-built semantic workspace.
+﻿//! Validation report assembly from a pre-built semantic workspace.
 
 use std::collections::HashMap;
 use std::path::PathBuf;
 use std::sync::Arc;
 
-use semantic_core::{SemanticGraph, WorkspaceParsedDocument};
+use sysml_model::{SemanticGraph, WorkspaceParsedDocument};
 use tower_lsp::lsp_types::Url;
 
 use crate::host::config::Spec42Config;

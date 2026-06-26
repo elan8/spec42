@@ -1,5 +1,5 @@
-[package]
-name = "semantic_core"
+﻿[package]
+name = "sysml_model"
 version.workspace = true
 edition.workspace = true
 authors.workspace = true

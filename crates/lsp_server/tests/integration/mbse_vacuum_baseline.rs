@@ -1,13 +1,13 @@
-//! Optional regression against the public MBSE vacuum-cleaner example.
+﻿//! Optional regression against the public MBSE vacuum-cleaner example.
 //! Set `MBSE_VACUUM_EXAMPLE_DIR` to the repository root to enable.
 
-use kernel::{default_server_config, validate_paths, ValidationRequest};
+use lsp_server::{default_server_config, validate_paths, ValidationRequest};
 use std::collections::HashMap;
 use std::path::PathBuf;
 use std::sync::Arc;
 use tower_lsp::lsp_types::NumberOrString;
 
-fn diagnostic_code_counts(report: &kernel::ValidationReport) -> HashMap<String, usize> {
+fn diagnostic_code_counts(report: &lsp_server::ValidationReport) -> HashMap<String, usize> {
     let mut counts = HashMap::new();
     for document in &report.documents {
         for diagnostic in &document.diagnostics {

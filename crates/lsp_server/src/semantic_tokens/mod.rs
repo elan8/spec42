@@ -1,6 +1,6 @@
-//! LSP adapter over the shared sysml_semantic_tokens crate.
+﻿//! LSP adapter over the shared sysml_tokens crate.
 
-pub use sysml_semantic_tokens::{
+pub use sysml_tokens::{
     ast_semantic_ranges, legend_token_types, semantic_tokens_full as semantic_tokens_full_dto,
     semantic_tokens_range as semantic_tokens_range_dto, SemanticTokensDto, SourceRange,
 };

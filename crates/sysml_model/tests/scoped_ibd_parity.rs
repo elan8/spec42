@@ -1,4 +1,4 @@
-//! Scoped vs full-workspace IBD parity for interconnection views.
+﻿//! Scoped vs full-workspace IBD parity for interconnection views.
 //!
 //! Ensures `IbdBuildScope::ViewExposedPackages` + scoped merge produces the same
 //! interconnection scene as full-workspace IBD + `select_interconnection_ibd_scope`.
@@ -6,7 +6,7 @@
 use std::collections::BTreeSet;
 use std::path::{Path, PathBuf};
 
-use semantic_core::{
+use sysml_model::{
     build_interconnection_scene, build_merged_workspace_ibd, build_semantic_graph_with_provider,
     build_view_catalog, build_workspace_graph_dto_for_uris, evaluate_views,
     project_ids_for_renderer, select_interconnection_ibd_scope, workspace_uris_for_ibd_scope,
@@ -41,8 +41,8 @@ fn powersystems_sysml_root(repo_root: &Path) -> PathBuf {
 
 struct InterconnectionWorkspace {
     workspace_uris: Vec<Url>,
-    graph: semantic_core::SemanticGraph,
-    parsed: Vec<semantic_core::WorkspaceParsedDocument>,
+    graph: sysml_model::SemanticGraph,
+    parsed: Vec<sysml_model::WorkspaceParsedDocument>,
 }
 
 fn load_filesystem_workspace(scan_root: PathBuf, workspace_root: PathBuf) -> InterconnectionWorkspace {
@@ -78,7 +78,7 @@ fn root_ids_for_view(view: &EvaluatedView) -> Vec<String> {
 fn build_scene_for_view(
     workspace: &InterconnectionWorkspace,
     view: &EvaluatedView,
-    ibd_source: &semantic_core::IbdDataDto,
+    ibd_source: &sysml_model::IbdDataDto,
 ) -> InterconnectionSceneDto {
     let graph_dto =
         build_workspace_graph_dto_for_uris(&workspace.graph, &workspace.workspace_uris);
@@ -155,7 +155,7 @@ fn assert_scoped_ibd_parity_for_interconnection_views(workspace: &Interconnectio
         .iter()
         .filter(|view| {
             view.effective_view_type.as_deref() == Some("InterconnectionView")
-                || semantic_core::renderer_view_for_view_type(view.effective_view_type.as_deref())
+                || sysml_model::renderer_view_for_view_type(view.effective_view_type.as_deref())
                     == Some("interconnection-view")
         })
         .collect();

@@ -1,8 +1,8 @@
-//! Workspace render snapshot cache storage (no ServerState dependency).
+﻿//! Workspace render snapshot cache storage (no ServerState dependency).
 
 use std::collections::HashMap;
 
-use semantic_core::{
+use sysml_model::{
     ModelExplorerBundle, PreparedViewDto, SysmlVisualizationResultDto, WorkspaceRenderSnapshot,
 };
 use tower_lsp::lsp_types::Url;

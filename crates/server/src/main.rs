@@ -1,7 +1,7 @@
-use std::process::ExitCode;
+﻿use std::process::ExitCode;
 
 use clap::Parser;
-use kernel::host::logging::init_tracing;
+use lsp_server::host::logging::init_tracing;
 use spec42::cli::Cli;
 use spec42::run_cli;
 

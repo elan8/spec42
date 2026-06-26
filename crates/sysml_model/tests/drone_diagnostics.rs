@@ -1,6 +1,6 @@
-//! Regression tests for drone-example diagnostics (SysML v2 spec alignment).
+﻿//! Regression tests for drone-example diagnostics (SysML v2 spec alignment).
 
-use semantic_core::{
+use sysml_model::{
     build_semantic_graph_from_documents, collect_diagnostics_from_graph, DiagnosticsOptions,
     SysmlDocument, SysmlDocumentSourceKind,
 };
@@ -17,7 +17,7 @@ fn workspace_doc(name: &str, content: &str) -> SysmlDocument {
     .expect("workspace document")
 }
 
-fn has_code(diags: &[semantic_core::SemanticDiagnostic], code: &str) -> bool {
+fn has_code(diags: &[sysml_model::SemanticDiagnostic], code: &str) -> bool {
     diags.iter().any(|d| d.code == code)
 }
 

@@ -1,8 +1,8 @@
-use std::collections::HashMap;
+﻿use std::collections::HashMap;
 use std::path::{Path, PathBuf};
 use std::time::Instant;
 
-use semantic_core::{
+use sysml_model::{
     build_semantic_graph_with_provider, build_sysml_visualization_workspace,
     FileSystemDocumentProvider, SysmlGraphDto, SysmlModelStatsDto, SysmlVisualizationResultDto,
     WorkspaceParsedDocument,
@@ -124,7 +124,7 @@ pub(crate) fn build_sysml_visualization_response(
     build_start: Instant,
 ) -> SysmlVisualizationResultDto {
     let workspace_uris =
-        semantic_core::workspace_uris_for_root(semantic_graph, library_paths, workspace_root_uri);
+        sysml_model::workspace_uris_for_root(semantic_graph, library_paths, workspace_root_uri);
     let viz_docs = workspace_parsed_documents_for_visualization(index, &workspace_uris);
     let empty_graph = SysmlGraphDto {
         nodes: Vec::new(),
@@ -180,8 +180,8 @@ mod tests {
     use std::time::Instant;
 
     use super::{build_sysml_visualization_for_paths, parse_sysml_visualization_params};
-    use semantic_core::semantic::ibd::{IbdDataDto, IbdPartDto, IbdRootViewDto};
-    use semantic_core::{
+    use sysml_model::semantic::ibd::{IbdDataDto, IbdPartDto, IbdRootViewDto};
+    use sysml_model::{
         attach_ibd_package_container_groups, build_ibd_package_container_groups,
         build_package_groups_from_graph, build_workspace_activity_diagrams,
         select_interconnection_ibd_scope, GraphEdgeDto, GraphNodeDto, PositionDto, RangeDto,
@@ -217,7 +217,7 @@ mod tests {
                 attributes: HashMap::new(),
             }],
             ports: vec![
-                semantic_core::semantic::ibd::IbdPortDto {
+                sysml_model::semantic::ibd::IbdPortDto {
                     id: "WebShopArchitecture::WebShopSystem::checkoutService::apiIn".to_string(),
                     port_id: "WebShopArchitecture.WebShopSystem.checkoutService.apiIn".to_string(),
                     name: "apiIn".to_string(),
@@ -226,7 +226,7 @@ mod tests {
                     port_type: None,
                     port_side: None,
                 },
-                semantic_core::semantic::ibd::IbdPortDto {
+                sysml_model::semantic::ibd::IbdPortDto {
                     id: "WebShopArchitecture::WebShopSystem::apiGateway::checkoutApiOut"
                         .to_string(),
                     port_id: "WebShopArchitecture.WebShopSystem.apiGateway.checkoutApiOut"
@@ -238,7 +238,7 @@ mod tests {
                     port_side: None,
                 },
             ],
-            connectors: vec![semantic_core::semantic::ibd::IbdConnectorDto {
+            connectors: vec![sysml_model::semantic::ibd::IbdConnectorDto {
                 source: "WebShopArchitecture::WebShopSystem::checkoutService::apiIn".to_string(),
                 target: "WebShopArchitecture::WebShopSystem::apiGateway::checkoutApiOut"
                     .to_string(),
@@ -574,7 +574,7 @@ mod tests {
     }
 
     #[test]
-    fn semantic_core_graph_first_output_matches_kernel_on_core_view_metadata() {
+    fn sysml_model_graph_first_output_matches_kernel_on_core_view_metadata() {
         let workspace_path =
             PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../../examples/webshop");
         let requested_view = "general-view";
@@ -589,15 +589,15 @@ mod tests {
         )
         .expect("kernel visualization response");
 
-        let provider = semantic_core::FileSystemDocumentProvider::new(
+        let provider = sysml_model::FileSystemDocumentProvider::new(
             workspace_path.clone(),
             Some(workspace_path.clone()),
             Vec::new(),
         );
-        let (graph, docs) = semantic_core::build_semantic_graph_with_provider(&provider)
+        let (graph, docs) = sysml_model::build_semantic_graph_with_provider(&provider)
             .expect("semantic graph for workspace");
         let workspace_root_uri = super::path_to_url(&workspace_path).expect("workspace root uri");
-        let semantic_core_response = semantic_core::build_sysml_visualization_workspace(
+        let sysml_model_response = sysml_model::build_sysml_visualization_workspace(
             &graph,
             &docs,
             &[],
@@ -606,9 +606,9 @@ mod tests {
             requested_selected_view,
             Instant::now(),
         )
-        .expect("semantic_core workspace visualization response");
+        .expect("sysml_model workspace visualization response");
 
-        assert_eq!(kernel_response.view, semantic_core_response.view);
+        assert_eq!(kernel_response.view, sysml_model_response.view);
         assert!(
             kernel_response.selected_view.is_some(),
             "kernel should resolve a selected view"
@@ -618,11 +618,11 @@ mod tests {
             "kernel should resolve a selected view name"
         );
         assert_eq!(
-            semantic_core_response.selected_view,
+            sysml_model_response.selected_view,
             kernel_response.selected_view
         );
         assert_eq!(
-            semantic_core_response.selected_view_name,
+            sysml_model_response.selected_view_name,
             kernel_response.selected_view_name
         );
         assert!(
@@ -630,8 +630,8 @@ mod tests {
             "kernel should surface at least one candidate"
         );
         assert!(
-            !semantic_core_response.view_candidates.is_empty(),
-            "semantic_core should surface at least one candidate"
+            !sysml_model_response.view_candidates.is_empty(),
+            "sysml_model should surface at least one candidate"
         );
         assert_eq!(
             kernel_response
@@ -639,12 +639,12 @@ mod tests {
                 .iter()
                 .map(|candidate| candidate.id.clone())
                 .collect::<Vec<_>>(),
-            semantic_core_response
+            sysml_model_response
                 .view_candidates
                 .iter()
                 .map(|candidate| candidate.id.clone())
                 .collect::<Vec<_>>(),
-            "semantic_core graph-first API should align with kernel view candidates"
+            "sysml_model graph-first API should align with kernel view candidates"
         );
     }
 

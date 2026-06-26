@@ -1,4 +1,4 @@
-use semantic_core::{
+﻿use sysml_model::{
     build_semantic_graph_from_documents, collect_diagnostics_from_graph, DiagnosticsOptions,
     RelationshipKind, SysmlDocument, SysmlDocumentSourceKind,
 };
@@ -16,11 +16,11 @@ fn workspace_doc(path: &str, content: &str) -> SysmlDocument {
 }
 
 fn child_with_kind<'a>(
-    graph: &'a semantic_core::SemanticGraph,
-    parent: &semantic_core::SemanticNode,
+    graph: &'a sysml_model::SemanticGraph,
+    parent: &sysml_model::SemanticNode,
     kind: &str,
     name: &str,
-) -> Option<&'a semantic_core::SemanticNode> {
+) -> Option<&'a sysml_model::SemanticNode> {
     graph
         .children_of(parent)
         .into_iter()

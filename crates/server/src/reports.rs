@@ -1,7 +1,7 @@
-use std::collections::BTreeSet;
+﻿use std::collections::BTreeSet;
 use std::path::Path;
 
-use kernel::{ValidatedDocument, ValidationReport, ValidationSummary};
+use lsp_server::{ValidatedDocument, ValidationReport, ValidationSummary};
 use tower_lsp::lsp_types::{Diagnostic, DiagnosticSeverity, NumberOrString};
 
 use crate::cli::OutputFormat;

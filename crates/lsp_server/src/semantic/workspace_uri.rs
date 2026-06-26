@@ -1,1 +1,1 @@
-pub use semantic_core::semantic::workspace_uri::*;
+﻿pub use sysml_model::semantic::workspace_uri::*;

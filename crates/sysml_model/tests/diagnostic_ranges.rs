@@ -1,4 +1,4 @@
-use semantic_core::{
+﻿use sysml_model::{
     build_semantic_graph_from_documents, collect_diagnostics_from_graph, DiagnosticsOptions,
     SysmlDocument, SysmlDocumentSourceKind, TextRange,
 };
@@ -26,7 +26,7 @@ fn diagnostic_range_for(content: &str, code: &str) -> TextRange {
     diagnostic_for(content, code).range
 }
 
-fn diagnostic_for(content: &str, code: &str) -> semantic_core::SemanticDiagnostic {
+fn diagnostic_for(content: &str, code: &str) -> sysml_model::SemanticDiagnostic {
     let doc = file_doc("diagnostic-range.sysml", content);
     let uri = doc.uri.clone();
     let (graph, _parsed) = build_semantic_graph_from_documents(&[doc]).expect("graph");

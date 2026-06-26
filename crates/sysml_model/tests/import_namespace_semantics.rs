@@ -1,4 +1,4 @@
-use semantic_core::{
+﻿use sysml_model::{
     build_semantic_graph_from_documents, collect_diagnostics_from_graph, DiagnosticsOptions,
     SysmlDocument, SysmlDocumentSourceKind,
 };

@@ -1,5 +1,5 @@
-use semantic_core::semantic::source::{SysmlDocument, SysmlDocumentSourceKind};
-use semantic_core::{
+﻿use sysml_model::semantic::source::{SysmlDocument, SysmlDocumentSourceKind};
+use sysml_model::{
     build_semantic_graph_from_documents, collect_diagnostics_from_graph,
     resolve_expression_endpoint_strict, resolve_workspace_pending_relationships,
     DiagnosticsOptions, ResolveResult,

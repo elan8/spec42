@@ -1,8 +1,8 @@
-//! Diagnostic introduced/resolved diff from host validation reports.
+﻿//! Diagnostic introduced/resolved diff from host validation reports.
 
 use std::collections::{BTreeMap, BTreeSet};
 
-use semantic_core::{DiagnosticSeverity, SemanticDiagnostic};
+use sysml_model::{DiagnosticSeverity, SemanticDiagnostic};
 
 use crate::snapshot::HostValidationReport;
 

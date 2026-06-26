@@ -1,4 +1,4 @@
-use semantic_core::{
+﻿use sysml_model::{
     resolve_expression_endpoint_strict, resolve_type_reference_targets, ResolveResult,
     TextPosition, TextRange, UnitRegistry,
 };
@@ -153,10 +153,10 @@ pub fn hover_at_position(
 
 fn resolve_hover_type_reference_target<'a>(
     workspace: &'a impl WorkspaceSnapshot,
-    node: &semantic_core::SemanticNode,
+    node: &sysml_model::SemanticNode,
     word: &str,
     lookup_name: &str,
-) -> Option<&'a semantic_core::SemanticNode> {
+) -> Option<&'a sysml_model::SemanticNode> {
     let graph = workspace.semantic_graph();
     let mut candidates = Vec::<String>::new();
     let mut push_candidate = |candidate: String| {
@@ -200,7 +200,7 @@ fn resolve_hover_reference_target<'a>(
     uri: &url::Url,
     pos: TextPosition,
     word: &str,
-) -> Option<&'a semantic_core::SemanticNode> {
+) -> Option<&'a sysml_model::SemanticNode> {
     let graph = workspace.semantic_graph();
     let context_node = graph
         .find_deepest_node_at_position(uri, pos)

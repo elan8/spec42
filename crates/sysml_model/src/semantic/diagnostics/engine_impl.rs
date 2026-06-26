@@ -1,4 +1,4 @@
-//! Semantic validation beyond syntax: port connectivity, type compatibility, etc.
+﻿//! Semantic validation beyond syntax: port connectivity, type compatibility, etc.
 //!
 //! These checks use the semantic graph (parts, ports, connections) to report
 //! diagnostics such as: unconnected ports, connection to non-port, port type mismatch.
@@ -737,7 +737,7 @@ pub fn compute_semantic_diagnostics_with_unit_registry(
         diagnostics.len().saturating_sub(d19),
     ));
 
-    if std::env::var("SEMANTIC_CORE_TIMING")
+    if std::env::var("sysml_model_TIMING")
         .map(|value| {
             let value = value.trim().to_ascii_lowercase();
             value == "1" || value == "true" || value == "yes" || value == "on"

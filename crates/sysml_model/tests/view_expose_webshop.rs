@@ -1,6 +1,6 @@
-use std::path::Path;
+﻿use std::path::Path;
 
-use semantic_core::{
+use sysml_model::{
     build_semantic_graph_from_documents, build_view_catalog, build_workspace_graph_dto_for_uris,
     collect_diagnostics_from_graph, evaluate_views, resolve_expose_target, resolve_library_closure,
     DiagnosticsOptions, ExposeTargetResolution, LibraryClosureOptions, SysmlDocument,
@@ -18,8 +18,8 @@ const WEBSHOP_FILES: &[&str] = &[
 type WebshopWorkspace = (
     Vec<SysmlDocument>,
     Vec<url::Url>,
-    semantic_core::SemanticGraph,
-    Vec<semantic_core::WorkspaceParsedDocument>,
+    sysml_model::SemanticGraph,
+    Vec<sysml_model::WorkspaceParsedDocument>,
 );
 
 fn load_webshop_workspace() -> Option<WebshopWorkspace> {

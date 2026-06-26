@@ -1,4 +1,4 @@
-use std::sync::Arc;
+﻿use std::sync::Arc;
 
 use tower_lsp::lsp_types::{Diagnostic, DiagnosticSeverity, NumberOrString, Position, Range, Url};
 
@@ -61,7 +61,7 @@ pub(crate) fn collect_document_diagnostics(
     }
 
     diagnostics.extend(
-        semantic_core::collect_untyped_part_usage_diagnostics(uri, text)
+        sysml_model::collect_untyped_part_usage_diagnostics(uri, text)
             .into_iter()
             .map(semantic_to_lsp_diagnostic),
     );
@@ -91,7 +91,7 @@ pub(crate) fn collect_document_diagnostics(
         let has_unresolved_specializes_reference =
             has_semantic_code(&diagnostics, "unresolved_specializes_reference");
 
-        if let Some(diagnostic) = semantic_core::missing_library_context_diagnostic(
+        if let Some(diagnostic) = sysml_model::missing_library_context_diagnostic(
             uri,
             text,
             has_unresolved_type_reference

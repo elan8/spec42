@@ -1,4 +1,4 @@
-use crate::common::util;
+﻿use crate::common::util;
 use crate::semantic;
 use crate::workspace::library_search;
 use crate::workspace::state::{IndexEntry, ParseMetadata, ServerState};
@@ -485,14 +485,14 @@ pub(crate) fn ingest_missing_library_closure(state: &mut ServerState) -> usize {
     {
         return 0;
     }
-    let workspace_sources: Vec<semantic_core::WorkspaceSource<'_>> = state
+    let workspace_sources: Vec<sysml_model::WorkspaceSource<'_>> = state
         .index
         .iter()
         .filter(|(uri, entry)| {
             entry.include_in_semantic_graph
                 && !crate::common::util::uri_under_any_library(uri, &state.library_paths)
         })
-        .map(|(uri, entry)| semantic_core::WorkspaceSource {
+        .map(|(uri, entry)| sysml_model::WorkspaceSource {
             path: uri.as_str(),
             content: entry.content.as_str(),
         })
@@ -636,7 +636,7 @@ pub(crate) fn rebuild_all_document_links(
             state.semantic_graph.graph.add_edge(
                 src_idx,
                 tgt_idx,
-                semantic_core::SemanticEdge::plain(kind),
+                sysml_model::SemanticEdge::plain(kind),
             );
         }
     }
@@ -820,7 +820,7 @@ pub(crate) fn rebuild_semantic_graph_staged(
             semantic_graph.graph.add_edge(
                 src_idx,
                 tgt_idx,
-                semantic_core::SemanticEdge::plain(kind),
+                sysml_model::SemanticEdge::plain(kind),
             );
         }
     }

@@ -1,10 +1,10 @@
-//! DTOs and conversion helpers for sysml/model and related responses.
+﻿//! DTOs and conversion helpers for sysml/model and related responses.
 
 use serde::{Deserialize, Serialize};
 
-use semantic_core::semantic::extracted_model as model;
-use semantic_core::semantic::ibd;
-use semantic_core::{
+use sysml_model::semantic::extracted_model as model;
+use sysml_model::semantic::ibd;
+use sysml_model::{
     PositionDto, RangeDto, SysmlGraphDto, SysmlModelStatsDto, SysmlVisualizationGroupDto,
     WorkspaceModelDto,
 };

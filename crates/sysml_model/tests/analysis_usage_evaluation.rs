@@ -1,4 +1,4 @@
-use semantic_core::{
+﻿use sysml_model::{
     build_semantic_graph_from_documents, collect_diagnostics_from_graph, evaluate_expressions,
     DiagnosticsOptions, SysmlDocument, SysmlDocumentSourceKind,
 };
@@ -50,7 +50,7 @@ package AnalysisCases {
 }
 "#;
 
-fn build_graph() -> semantic_core::SemanticGraph {
+fn build_graph() -> sysml_model::SemanticGraph {
     let architecture = SysmlDocument::from_memory_path(
         "analysis-usage-eval",
         "Architecture.sysml",
@@ -84,7 +84,7 @@ fn build_graph() -> semantic_core::SemanticGraph {
     graph
 }
 
-fn node_attr(graph: &semantic_core::SemanticGraph, qualified: &str, key: &str) -> Option<String> {
+fn node_attr(graph: &sysml_model::SemanticGraph, qualified: &str, key: &str) -> Option<String> {
     graph
         .node_ids_by_qualified_name
         .get(qualified)?
@@ -99,7 +99,7 @@ fn node_attr(graph: &semantic_core::SemanticGraph, qualified: &str, key: &str) -
         })
 }
 
-fn has_analysis_diagnostic_code(graph: &semantic_core::SemanticGraph, code: &str) -> bool {
+fn has_analysis_diagnostic_code(graph: &sysml_model::SemanticGraph, code: &str) -> bool {
     let uri = graph
         .node_ids_by_qualified_name
         .get("AnalysisCases::powerRun")

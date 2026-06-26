@@ -1,4 +1,4 @@
-use semantic_core::{
+﻿use sysml_model::{
     build_semantic_graph_from_documents, collect_diagnostics_from_graph, DiagnosticsOptions,
     RelationshipKind, SysmlDocument, SysmlDocumentSourceKind,
 };
@@ -130,7 +130,7 @@ fn non_viewpoint_satisfy_target_emits_conformance_kind_diagnostic() {
 fn astronomy_fixture_view_conforms_to_viewpoint() {
     let content = std::fs::read_to_string(
         std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
-            .join("../kernel/tests/fixtures/astronomy_viewpoint_conformance.sysml"),
+            .join("../lsp_server/tests/fixtures/astronomy_viewpoint_conformance.sysml"),
     )
     .expect("read astronomy viewpoint fixture");
     let doc = workspace_doc("astronomy_viewpoint_conformance.sysml", &content);

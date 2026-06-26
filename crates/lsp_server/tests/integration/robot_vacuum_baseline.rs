@@ -1,4 +1,4 @@
-//! Optional regression against the sysml-robot-vacuum-cleaner showcase model.
+﻿//! Optional regression against the sysml-robot-vacuum-cleaner showcase model.
 //!
 //! Default fixture: `third_party/sysml-robot-vacuum-cleaner` (see `scripts/fetch-robot-vacuum-cleaner.sh`).
 //! Override with `SYSML_ROBOT_VACUUM_DIR` pointing at a checkout root containing `model/`.
@@ -6,14 +6,14 @@
 #[path = "../../../../tests/fixtures/robot_vacuum_fixture.rs"]
 mod robot_vacuum_fixture;
 
-use kernel::build_sysml_visualization_for_paths;
+use lsp_server::build_sysml_visualization_for_paths;
 use robot_vacuum_fixture::require_robot_vacuum_fixture;
 use spec42::cli::{CheckArgs, Cli, OutputFormat};
 use spec42::perform_check;
 use std::collections::HashMap;
 use tower_lsp::lsp_types::NumberOrString;
 
-fn diagnostic_code_counts(report: &kernel::ValidationReport) -> HashMap<String, usize> {
+fn diagnostic_code_counts(report: &lsp_server::ValidationReport) -> HashMap<String, usize> {
     let mut counts = HashMap::new();
     for document in &report.documents {
         for diagnostic in &document.diagnostics {

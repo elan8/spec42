@@ -1,4 +1,4 @@
-use semantic_core::{
+﻿use sysml_model::{
     build_semantic_graph_from_documents, enrich_activity_diagrams_from_graph,
     extract_activity_diagrams, finalize_activity_diagrams_for_response, SysmlDocument,
     SysmlDocumentSourceKind,

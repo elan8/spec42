@@ -1,7 +1,7 @@
-use std::collections::HashMap;
+﻿use std::collections::HashMap;
 use std::sync::Arc;
 
-use semantic_core::{
+use sysml_model::{
     build_semantic_graph_from_documents, SemanticGraph, SysmlDocument, TextPosition,
     WorkspaceParsedDocument,
 };
@@ -114,7 +114,7 @@ impl InMemoryWorkspace {
     }
 
     pub fn from_provider(
-        provider: &impl semantic_core::SysmlDocumentProvider,
+        provider: &impl sysml_model::SysmlDocumentProvider,
     ) -> Result<Self, String> {
         let documents = provider.load_documents()?;
         Self::from_documents(documents)

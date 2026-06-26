@@ -1,5 +1,5 @@
-use language_service::{complete, dto::SourceLocation, InMemoryWorkspace};
-use semantic_core::{SysmlDocument, SysmlDocumentSourceKind, TextPosition};
+﻿use language_service::{complete, dto::SourceLocation, InMemoryWorkspace};
+use sysml_model::{SysmlDocument, SysmlDocumentSourceKind, TextPosition};
 
 pub fn document(path: &str, content: &str) -> SysmlDocument {
     SysmlDocument::from_memory_path(

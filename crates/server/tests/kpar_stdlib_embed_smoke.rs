@@ -1,4 +1,4 @@
-//! Smoke test: embedded OMG KPAR stdlib materializes and resolves ScalarValues imports.
+﻿//! Smoke test: embedded OMG KPAR stdlib materializes and resolves ScalarValues imports.
 
 mod common;
 
@@ -17,7 +17,7 @@ const SMOKE_MODEL: &str = r#"package KparStdlibSmoke {
 }
 "#;
 
-fn diagnostic_codes(report: &kernel::ValidationReport) -> Vec<String> {
+fn diagnostic_codes(report: &lsp_server::ValidationReport) -> Vec<String> {
     report
         .documents
         .iter()

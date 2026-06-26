@@ -1,4 +1,4 @@
-mod capabilities;
+﻿mod capabilities;
 mod custom;
 mod diagnostics;
 mod documents;
@@ -26,7 +26,7 @@ use custom::{
     sysml_library_search_result, sysml_model_result, sysml_server_stats_result,
     sysml_visualization_result,
 };
-use semantic_core::SysmlVisualizationResultDto;
+use sysml_model::SysmlVisualizationResultDto;
 
 struct Backend {
     client: Client,

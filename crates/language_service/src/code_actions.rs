@@ -1,7 +1,7 @@
-//! Neutral quick-fix text edit suggesters.
+﻿//! Neutral quick-fix text edit suggesters.
 
-use semantic_core::semantic::ast_util::identification_name;
-use semantic_core::{TextPosition, TextRange};
+use sysml_model::semantic::ast_util::identification_name;
+use sysml_model::{TextPosition, TextRange};
 use sysml_v2_parser::ast::{PackageBody, RootElement};
 
 use crate::dto::{TextEditDto, TextEditSuggestion};

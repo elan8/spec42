@@ -1,4 +1,4 @@
-use semantic_core::{
+﻿use sysml_model::{
     build_semantic_graph_from_documents, collect_diagnostics_from_graph, DiagnosticsOptions,
     SysmlDocument, SysmlDocumentSourceKind,
 };
@@ -40,7 +40,7 @@ package AnalysisCases {
 }
 "#;
 
-fn diags_for_documents(docs: &[SysmlDocument]) -> Vec<semantic_core::SemanticDiagnostic> {
+fn diags_for_documents(docs: &[SysmlDocument]) -> Vec<sysml_model::SemanticDiagnostic> {
     let (graph, _) = build_semantic_graph_from_documents(docs).expect("semantic graph");
     let uri = docs
         .last()
@@ -49,7 +49,7 @@ fn diags_for_documents(docs: &[SysmlDocument]) -> Vec<semantic_core::SemanticDia
     collect_diagnostics_from_graph(&graph, &uri, DiagnosticsOptions::default())
 }
 
-fn has_code(diags: &[semantic_core::SemanticDiagnostic], code: &str) -> bool {
+fn has_code(diags: &[sysml_model::SemanticDiagnostic], code: &str) -> bool {
     diags.iter().any(|d| d.code == code)
 }
 

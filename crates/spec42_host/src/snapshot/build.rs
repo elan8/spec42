@@ -1,4 +1,4 @@
-//! Immutable workspace snapshot assembly.
+﻿//! Immutable workspace snapshot assembly.
 
 use std::collections::BTreeMap;
 use std::path::{Path, PathBuf};
@@ -6,7 +6,7 @@ use std::sync::{Arc, OnceLock};
 use std::time::Instant;
 
 use language_service::InMemoryWorkspace;
-use semantic_core::{
+use sysml_model::{
     build_render_snapshot, build_semantic_graph_from_documents,
     build_sysml_visualization_from_render_snapshot, empty_merged_ibd, full_ibd_for_render_snapshot,
     visualization_build_options, IbdBuildScope, IbdDataDto, SemanticGraph, SysmlDocument,

@@ -1,1 +1,1 @@
-pub use semantic_core::semantic::model::*;
+﻿pub use sysml_model::semantic::model::*;

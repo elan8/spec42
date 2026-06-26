@@ -1,5 +1,5 @@
-[package]
-name = "kernel"
+﻿[package]
+name = "lsp_server"
 version.workspace = true
 edition.workspace = true
 authors.workspace = true
@@ -7,15 +7,15 @@ license.workspace = true
 description = "Core library for Spec42 LSP server: semantic model, DTOs, extension traits"
 
 [lib]
-name = "kernel"
+name = "lsp_server"
 
 [features]
 default = []
 
 [dependencies]
 language_service = { path = "../language_service" }
-semantic_core = { path = "../semantic_core" }
-sysml_semantic_tokens = { path = "../sysml_semantic_tokens" }
+sysml_model = { path = "../sysml_model" }
+sysml_tokens = { path = "../sysml_tokens" }
 sysml-v2-parser = { workspace = true }
 petgraph = { workspace = true }
 tower-lsp = "0.20"
@@ -34,6 +34,6 @@ glob = "0.3"
 [dev-dependencies]
 # Used by LSP integration tests when constructing `file://` URIs.
 url = "2"
-spec42 = { path = "../server" }
+server = { path = "../server" }
 
 

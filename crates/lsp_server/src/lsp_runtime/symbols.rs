@@ -1,4 +1,4 @@
-#![allow(dead_code)] // staged inherited-attribute lens helpers; wired fully in follow-up work
+﻿#![allow(dead_code)] // staged inherited-attribute lens helpers; wired fully in follow-up work
 
 use crate::semantic::{RelationshipKind, SemanticNode};
 use crate::workspace::ServerState;
@@ -18,7 +18,7 @@ pub(crate) fn build_code_lens(state: &ServerState, uri_norm: &Url) -> Vec<CodeLe
     let elapsed_ms = started_at.elapsed().as_millis();
     if state.perf_logging_enabled && elapsed_ms >= 10 {
         info!(
-            target: "kernel::lsp_runtime::symbols",
+            target: "lsp_server::lsp_runtime::symbols",
             event = "symbols:buildCodeLens",
             uri = %uri_norm,
             indexed_symbols,
@@ -129,7 +129,7 @@ fn direct_attribute_names(
         .collect()
 }
 
-fn is_attribute_like_kind(kind: &semantic_core::ElementKind) -> bool {
+fn is_attribute_like_kind(kind: &sysml_model::ElementKind) -> bool {
     let lower = kind.as_str().to_lowercase();
     lower.contains("attribute") || lower.contains("property")
 }

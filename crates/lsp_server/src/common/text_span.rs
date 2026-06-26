@@ -1,4 +1,4 @@
-use semantic_core::{TextPosition, TextRange};
+﻿use sysml_model::{TextPosition, TextRange};
 use tower_lsp::lsp_types::{Position, Range};
 
 pub fn to_core_position(position: Position) -> TextPosition {

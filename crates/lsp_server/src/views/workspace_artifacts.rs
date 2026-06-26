@@ -1,9 +1,9 @@
-//! Cached workspace render snapshot and lazy view bundles for the LSP server.
+﻿//! Cached workspace render snapshot and lazy view bundles for the LSP server.
 
 use std::collections::HashMap;
 use std::time::Instant;
 
-use semantic_core::{
+use sysml_model::{
     build_render_snapshot, build_sysml_visualization_from_render_snapshot_with_meta,
     empty_merged_ibd, full_ibd_for_render_snapshot, materialize_model_explorer_bundle,
     IbdArtifactMode, ModelExplorerBundle, VisualizationBuildMeta, VisualizationBuildOptions,
@@ -46,7 +46,7 @@ fn render_cache_valid(entry: &WorkspaceRenderCacheEntry, state: &ServerState, ro
 }
 
 fn visualization_response_is_cacheable(
-    response: &semantic_core::SysmlVisualizationResultDto,
+    response: &sysml_model::SysmlVisualizationResultDto,
 ) -> bool {
     if !response.model_ready {
         return false;
@@ -64,7 +64,7 @@ fn cached_visualization_response(
     state: &ServerState,
     workspace_root_uri: &Url,
     cache_key: &VisualizationCacheKey,
-) -> Option<semantic_core::SysmlVisualizationResultDto> {
+) -> Option<sysml_model::SysmlVisualizationResultDto> {
     let entry = state.workspace_render_cache.entry.as_ref()?;
     if !render_cache_valid(entry, state, workspace_root_uri) {
         return None;
@@ -84,7 +84,7 @@ pub(crate) fn clear_workspace_viz_caches(state: &mut ServerState) {
 pub(crate) fn ensure_render_snapshot<'a>(
     state: &'a mut ServerState,
     workspace_root_uri: &Url,
-) -> Result<&'a semantic_core::WorkspaceRenderSnapshot, String> {
+) -> Result<&'a sysml_model::WorkspaceRenderSnapshot, String> {
     let workspace_root_uri = util::normalize_file_uri(workspace_root_uri);
     let cache_hit = state
         .workspace_render_cache
@@ -100,7 +100,7 @@ pub(crate) fn ensure_render_snapshot<'a>(
             .snapshot);
     }
 
-    let workspace_uris = semantic_core::workspace_uris_for_root(
+    let workspace_uris = sysml_model::workspace_uris_for_root(
         &state.semantic_graph,
         &state.library_paths,
         &workspace_root_uri,
@@ -150,7 +150,7 @@ pub(crate) fn materialize_model_explorer(
 }
 
 pub(crate) struct VisualizationBuildOutcome {
-    pub response: semantic_core::SysmlVisualizationResultDto,
+    pub response: sysml_model::SysmlVisualizationResultDto,
     pub meta: VisualizationBuildMeta,
 }
 
@@ -190,7 +190,7 @@ pub(crate) fn build_visualization_with_cache(
     let workspace_uris = snapshot.workspace_uris.clone();
     let viz_docs = workspace_parsed_documents_for_visualization(&state.index, &workspace_uris);
 
-    let ibd_artifact_mode = if options.ibd_build_scope == semantic_core::IbdBuildScope::ViewExposedPackages
+    let ibd_artifact_mode = if options.ibd_build_scope == sysml_model::IbdBuildScope::ViewExposedPackages
         && ((options.slim_interconnection_payload && view == "interconnection-view")
             || view == "general-view")
     {
@@ -252,7 +252,7 @@ pub(crate) fn primary_workspace_root(state: &ServerState) -> Option<Url> {
 mod cache_tests {
     use super::*;
     use crate::workspace::state::{IndexEntry, ParseMetadata, SemanticLifecycle, ServerState};
-    use semantic_core::{build_semantic_graph_with_provider, FileSystemDocumentProvider};
+    use sysml_model::{build_semantic_graph_with_provider, FileSystemDocumentProvider};
     use std::path::PathBuf;
 
     fn drone_workspace_state() -> (ServerState, Url) {
@@ -295,7 +295,7 @@ mod cache_tests {
     #[test]
     fn warm_interconnection_visualization_hits_response_cache() {
         let (mut state, root) = drone_workspace_state();
-        let options = semantic_core::interconnection_build_options("interconnection-view");
+        let options = sysml_model::interconnection_build_options("interconnection-view");
         let cold = build_visualization_with_cache(
             &mut state,
             &root,

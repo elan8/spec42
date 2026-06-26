@@ -1,8 +1,8 @@
-use language_service::{
+﻿use language_service::{
     CompletionItemDto, CompletionItemKindDto, CompletionResult, FoldingRangeDto,
     FoldingRangeKindDto, OutlineSymbol, TextEditDto, TextEditSuggestion, WorkspaceSymbolMatch,
 };
-use semantic_core::{TextPosition, TextRange};
+use sysml_model::{TextPosition, TextRange};
 
 #[test]
 fn dto_roundtrip_serde_phase1() {

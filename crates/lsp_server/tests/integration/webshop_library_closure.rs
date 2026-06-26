@@ -1,9 +1,9 @@
-//! End-to-end validation that import-scoped library closure does not duplicate workspace packages.
+﻿//! End-to-end validation that import-scoped library closure does not duplicate workspace packages.
 
 use std::path::PathBuf;
 use std::sync::Arc;
 
-use kernel::{default_server_config, validate_paths, ValidationRequest};
+use lsp_server::{default_server_config, validate_paths, ValidationRequest};
 use tower_lsp::lsp_types::{Diagnostic, NumberOrString};
 
 fn diagnostic_is_ambiguous_expose(diagnostic: &Diagnostic) -> bool {

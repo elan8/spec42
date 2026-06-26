@@ -1,9 +1,9 @@
-use semantic_core::{
+﻿use sysml_model::{
     build_semantic_graph_from_documents, build_view_candidates, build_view_catalog,
     build_workspace_graph_dto_for_uris, evaluate_views, SysmlDocument, SysmlDocumentSourceKind,
 };
 
-fn evaluate_fixture(content: &str, view_name: &str) -> semantic_core::EvaluatedView {
+fn evaluate_fixture(content: &str, view_name: &str) -> sysml_model::EvaluatedView {
     let doc = SysmlDocument::from_memory_path(
         "workspace",
         "model.sysml",
@@ -30,8 +30,8 @@ fn evaluate_fixture(content: &str, view_name: &str) -> semantic_core::EvaluatedV
 }
 
 fn candidate_for(
-    evaluated: &semantic_core::EvaluatedView,
-) -> semantic_core::SysmlVisualizationViewCandidateDto {
+    evaluated: &sysml_model::EvaluatedView,
+) -> sysml_model::SysmlVisualizationViewCandidateDto {
     let candidates = build_view_candidates(
         std::slice::from_ref(evaluated),
         &Default::default(),
@@ -181,28 +181,28 @@ fn general_view_part_usage_filter_excludes_non_part_elements() {
     "#;
     let view = evaluate_fixture(content, "structure");
     let graph_dto = {
-        let doc = semantic_core::SysmlDocument::from_memory_path(
+        let doc = sysml_model::SysmlDocument::from_memory_path(
             "workspace",
             "model.sysml",
             content.to_string(),
-            semantic_core::SysmlDocumentSourceKind::Workspace,
+            sysml_model::SysmlDocumentSourceKind::Workspace,
             None,
             None,
         )
         .expect("document");
         let uri = doc.uri.clone();
         let (graph, parsed) =
-            semantic_core::build_semantic_graph_from_documents(&[doc]).expect("graph");
+            sysml_model::build_semantic_graph_from_documents(&[doc]).expect("graph");
         let parsed_doc = parsed.into_iter().find(|e| e.uri == uri).expect("parsed");
         let catalog = build_view_catalog(std::slice::from_ref(&uri), &[parsed_doc]);
         let _ = evaluate_views(
             &catalog,
             &graph,
-            &semantic_core::build_workspace_graph_dto_for_uris(&graph, std::slice::from_ref(&uri)),
+            &sysml_model::build_workspace_graph_dto_for_uris(&graph, std::slice::from_ref(&uri)),
         );
-        semantic_core::build_workspace_graph_dto_for_uris(&graph, std::slice::from_ref(&uri))
+        sysml_model::build_workspace_graph_dto_for_uris(&graph, std::slice::from_ref(&uri))
     };
-    let projected = semantic_core::project_view(&view, &graph_dto);
+    let projected = sysml_model::project_view(&view, &graph_dto);
     let node_kinds: Vec<_> = graph_dto
         .nodes
         .iter()
@@ -237,20 +237,20 @@ fn general_view_requirement_filter_projection_follows_traceability_links() {
     let view = evaluate_fixture(content, "trace");
     assert_eq!(view.effective_view_type.as_deref(), Some("GeneralView"));
     let graph_dto = {
-        let doc = semantic_core::SysmlDocument::from_memory_path(
+        let doc = sysml_model::SysmlDocument::from_memory_path(
             "workspace",
             "model.sysml",
             content.to_string(),
-            semantic_core::SysmlDocumentSourceKind::Workspace,
+            sysml_model::SysmlDocumentSourceKind::Workspace,
             None,
             None,
         )
         .expect("document");
         let uri = doc.uri.clone();
-        let (graph, _) = semantic_core::build_semantic_graph_from_documents(&[doc]).expect("graph");
-        semantic_core::build_workspace_graph_dto_for_uris(&graph, std::slice::from_ref(&uri))
+        let (graph, _) = sysml_model::build_semantic_graph_from_documents(&[doc]).expect("graph");
+        sysml_model::build_workspace_graph_dto_for_uris(&graph, std::slice::from_ref(&uri))
     };
-    let projected = semantic_core::project_view(&view, &graph_dto);
+    let projected = sysml_model::project_view(&view, &graph_dto);
     assert!(projected.node_ids.iter().any(|id| id.contains("need")));
     assert!(projected.node_ids.iter().any(|id| id.contains("req")));
     assert!(projected.node_ids.iter().any(|id| id.contains("design")));
@@ -271,20 +271,20 @@ fn browser_view_projection_omits_ancestors_outside_scope() {
     "#;
     let view = evaluate_fixture(content, "tree");
     let graph_dto = {
-        let doc = semantic_core::SysmlDocument::from_memory_path(
+        let doc = sysml_model::SysmlDocument::from_memory_path(
             "workspace",
             "model.sysml",
             content.to_string(),
-            semantic_core::SysmlDocumentSourceKind::Workspace,
+            sysml_model::SysmlDocumentSourceKind::Workspace,
             None,
             None,
         )
         .expect("document");
         let uri = doc.uri.clone();
-        let (graph, _) = semantic_core::build_semantic_graph_from_documents(&[doc]).expect("graph");
-        semantic_core::build_workspace_graph_dto_for_uris(&graph, std::slice::from_ref(&uri))
+        let (graph, _) = sysml_model::build_semantic_graph_from_documents(&[doc]).expect("graph");
+        sysml_model::build_workspace_graph_dto_for_uris(&graph, std::slice::from_ref(&uri))
     };
-    let projected = semantic_core::project_view(&view, &graph_dto);
+    let projected = sysml_model::project_view(&view, &graph_dto);
     assert!(!projected.node_ids.iter().any(|id| id == "Pkg"));
     assert_eq!(projected.hints.browser_layout.as_deref(), Some("hierarchy"));
     assert!(projected
@@ -296,23 +296,23 @@ fn browser_view_projection_omits_ancestors_outside_scope() {
 
 #[test]
 fn geometry_view_without_usage_filter_gets_spatial_defaults() {
-    let view = semantic_core::EvaluatedView {
+    let view = sysml_model::EvaluatedView {
         id: "Pkg::geom".to_string(),
         name: "geom".to_string(),
         effective_view_type: Some("GeometryView".to_string()),
         exposed_ids: std::collections::HashSet::from(["Pkg::robot".to_string()]),
         conforms_to: Vec::new(),
-        filters: semantic_core::merge_usage_default_filters("GeometryView", &[], None),
+        filters: sysml_model::merge_usage_default_filters("GeometryView", &[], None),
         visible_ids: std::collections::HashSet::new(),
         issues: Vec::new(),
     };
     assert!(view
         .filters
         .iter()
-        .any(|filter| matches!(filter, semantic_core::FilterExpr::Or(_, _))));
-    let projected = semantic_core::project_view(
+        .any(|filter| matches!(filter, sysml_model::FilterExpr::Or(_, _))));
+    let projected = sysml_model::project_view(
         &view,
-        &semantic_core::SysmlGraphDto {
+        &sysml_model::SysmlGraphDto {
             nodes: vec![],
             edges: vec![],
         },
@@ -326,21 +326,21 @@ fn geometry_view_without_usage_filter_gets_spatial_defaults() {
 
 #[test]
 fn grid_view_connection_filter_selects_relationship_matrix_subtype() {
-    let view = semantic_core::EvaluatedView {
+    let view = sysml_model::EvaluatedView {
         id: "Pkg::matrix".to_string(),
         name: "matrix".to_string(),
         effective_view_type: Some("GridView".to_string()),
         exposed_ids: std::collections::HashSet::from(["Pkg::a".to_string()]),
         conforms_to: Vec::new(),
-        filters: vec![semantic_core::FilterExpr::Matches(
+        filters: vec![sysml_model::FilterExpr::Matches(
             "@SysML::ConnectionUsage".to_string(),
         )],
         visible_ids: std::collections::HashSet::new(),
         issues: Vec::new(),
     };
-    let projected = semantic_core::project_view(
+    let projected = sysml_model::project_view(
         &view,
-        &semantic_core::SysmlGraphDto {
+        &sysml_model::SysmlGraphDto {
             nodes: vec![],
             edges: vec![],
         },

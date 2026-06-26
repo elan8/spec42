@@ -1,4 +1,4 @@
-[package]
+﻿[package]
 name = "language_service"
 version.workspace = true
 edition.workspace = true
@@ -7,7 +7,7 @@ license.workspace = true
 description = "Protocol-neutral SysML editor language services for Spec42 hosts"
 
 [dependencies]
-semantic_core = { path = "../semantic_core" }
+sysml_model = { path = "../sysml_model" }
 sysml-v2-parser = { workspace = true }
 serde = { workspace = true }
 serde_json = { workspace = true }

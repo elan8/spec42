@@ -410,7 +410,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "diagram_core"
+name = "diagram"
 version = "0.32.0"
 dependencies = [
  "serde",
@@ -1003,31 +1003,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "kernel"
-version = "0.32.0"
-dependencies = [
- "clap",
- "glob",
- "language_service",
- "petgraph",
- "semantic_core",
- "serde",
- "serde_json",
- "spec42",
- "sysml-v2-parser",
- "sysml_semantic_tokens",
- "tempfile",
- "thiserror 2.0.18",
- "tokio",
- "toml",
- "tower-lsp",
- "tracing",
- "tracing-subscriber",
- "url",
- "walkdir",
-]
-
-[[package]]
 name = "kpar"
 version = "0.32.0"
 dependencies = [
@@ -1046,10 +1021,10 @@ dependencies = [
 name = "language_service"
 version = "0.32.0"
 dependencies = [
- "semantic_core",
  "serde",
  "serde_json",
  "sysml-v2-parser",
+ "sysml_model",
  "tempfile",
  "url",
 ]
@@ -1125,6 +1100,31 @@ dependencies = [
  "serde_json",
  "serde_repr",
  "url",
+]
+
+[[package]]
+name = "lsp_server"
+version = "0.32.0"
+dependencies = [
+ "clap",
+ "glob",
+ "language_service",
+ "petgraph",
+ "serde",
+ "serde_json",
+ "server",
+ "sysml-v2-parser",
+ "sysml_model",
+ "sysml_tokens",
+ "tempfile",
+ "thiserror 2.0.18",
+ "tokio",
+ "toml",
+ "tower-lsp",
+ "tracing",
+ "tracing-subscriber",
+ "url",
+ "walkdir",
 ]
 
 [[package]]
@@ -1764,19 +1764,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "94143f37725109f92c262ed2cf5e59bce7498c01bcc1502d7b9afe439a4e9f49"
 
 [[package]]
-name = "semantic_core"
-version = "0.32.0"
-dependencies = [
- "petgraph",
- "serde",
- "serde_json",
- "sysml-v2-parser",
- "tempfile",
- "url",
- "walkdir",
-]
-
-[[package]]
 name = "semver"
 version = "1.0.28"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1893,6 +1880,37 @@ dependencies = [
 ]
 
 [[package]]
+name = "server"
+version = "0.32.0"
+dependencies = [
+ "anyhow",
+ "axum",
+ "clap",
+ "directories",
+ "http-body-util",
+ "kpar",
+ "lsp_server",
+ "reqwest",
+ "rmcp",
+ "rquickjs",
+ "schemars",
+ "serde",
+ "serde_json",
+ "serde_yaml",
+ "spec42_host",
+ "sysml-v2-parser",
+ "sysml_model",
+ "tempfile",
+ "tokio",
+ "toml",
+ "tower 0.5.3",
+ "tower-http",
+ "tower-lsp",
+ "url",
+ "zip",
+]
+
+[[package]]
 name = "sha2"
 version = "0.10.9"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1957,48 +1975,17 @@ dependencies = [
 ]
 
 [[package]]
-name = "spec42"
-version = "0.32.0"
-dependencies = [
- "anyhow",
- "axum",
- "clap",
- "directories",
- "http-body-util",
- "kernel",
- "kpar",
- "reqwest",
- "rmcp",
- "rquickjs",
- "schemars",
- "semantic_core",
- "serde",
- "serde_json",
- "serde_yaml",
- "spec42_host",
- "sysml-v2-parser",
- "tempfile",
- "tokio",
- "toml",
- "tower 0.5.3",
- "tower-http",
- "tower-lsp",
- "url",
- "zip",
-]
-
-[[package]]
 name = "spec42_host"
 version = "0.32.0"
 dependencies = [
  "directories",
  "kpar",
  "language_service",
- "semantic_core",
  "serde",
  "serde_json",
  "sha2",
  "sysml-v2-parser",
+ "sysml_model",
  "tempfile",
  "thiserror 2.0.18",
  "toml",
@@ -2068,7 +2055,20 @@ dependencies = [
 ]
 
 [[package]]
-name = "sysml_semantic_tokens"
+name = "sysml_model"
+version = "0.32.0"
+dependencies = [
+ "petgraph",
+ "serde",
+ "serde_json",
+ "sysml-v2-parser",
+ "tempfile",
+ "url",
+ "walkdir",
+]
+
+[[package]]
+name = "sysml_tokens"
 version = "0.32.0"
 dependencies = [
  "serde",

@@ -1,9 +1,9 @@
-use std::sync::atomic::{AtomicUsize, Ordering};
+﻿use std::sync::atomic::{AtomicUsize, Ordering};
 use std::sync::Arc;
 use std::thread;
 use std::time::Duration;
 
-use semantic_core::{SysmlDocument, SysmlDocumentProvider, SysmlDocumentSourceKind};
+use sysml_model::{SysmlDocument, SysmlDocumentProvider, SysmlDocumentSourceKind};
 use spec42_host::{
     CancellationToken, EngineBuilder, HostContext, Spec42Engine, WorkspaceLoadRequest,
 };

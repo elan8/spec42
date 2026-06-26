@@ -1,4 +1,4 @@
-use std::path::{Path, PathBuf};
+﻿use std::path::{Path, PathBuf};
 
 use crate::catalog::{resolve_library_catalog, HostLibraryRequest, LibraryCatalog};
 use crate::error::{HostResult, Spec42HostError};
@@ -8,7 +8,7 @@ use crate::library::{
 };
 use crate::snapshot::{HostContext, HostWorkspaceSnapshot, WorkspaceLoadRequest};
 use crate::version::HostSchemaVersions;
-use semantic_core::SysmlDocumentProvider;
+use sysml_model::SysmlDocumentProvider;
 use std::sync::Arc;
 
 /// Engine-level metadata (version identity for built snapshots).

@@ -1,4 +1,4 @@
-//! sysml/featureInspector request parsing and response building.
+﻿//! sysml/featureInspector request parsing and response building.
 
 use tower_lsp::jsonrpc::Result;
 use tower_lsp::lsp_types::{Position, Url};
@@ -11,7 +11,7 @@ use crate::views::dto::{
     SysmlFeatureInspectorParamsDto, SysmlFeatureInspectorRelationshipDto,
     SysmlFeatureInspectorResolutionDto, SysmlFeatureInspectorResultDto,
 };
-use semantic_core::{range_to_dto, PositionDto};
+use sysml_model::{range_to_dto, PositionDto};
 
 const TYPING_ATTRIBUTE_KEYS: &[&str] = &[
     "partType",

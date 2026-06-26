@@ -1,4 +1,4 @@
-use semantic_core::{
+﻿use sysml_model::{
     build_semantic_graph_from_documents, collect_diagnostics_from_graph, evaluate_expressions,
     DiagnosticsOptions, SysmlDocument, SysmlDocumentSourceKind,
 };
@@ -44,7 +44,7 @@ package Grid {
 }
 "#;
 
-fn build_graph(source: &str) -> semantic_core::SemanticGraph {
+fn build_graph(source: &str) -> sysml_model::SemanticGraph {
     let doc = SysmlDocument::from_memory_path(
         "assert-constraint-eval",
         "Grid.sysml",
@@ -59,7 +59,7 @@ fn build_graph(source: &str) -> semantic_core::SemanticGraph {
     graph
 }
 
-fn node_attr(graph: &semantic_core::SemanticGraph, qualified: &str, key: &str) -> Option<String> {
+fn node_attr(graph: &sysml_model::SemanticGraph, qualified: &str, key: &str) -> Option<String> {
     graph
         .node_ids_by_qualified_name
         .get(qualified)?
@@ -74,7 +74,7 @@ fn node_attr(graph: &semantic_core::SemanticGraph, qualified: &str, key: &str) -
         })
 }
 
-fn diagnostics_for(graph: &semantic_core::SemanticGraph) -> Vec<semantic_core::SemanticDiagnostic> {
+fn diagnostics_for(graph: &sysml_model::SemanticGraph) -> Vec<sysml_model::SemanticDiagnostic> {
     let uri = graph
         .node_ids_by_qualified_name
         .keys()

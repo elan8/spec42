@@ -1,5 +1,5 @@
-use language_service::{InMemoryWorkspace, WorkspaceSnapshot};
-use semantic_core::{
+﻿use language_service::{InMemoryWorkspace, WorkspaceSnapshot};
+use sysml_model::{
     InMemoryDocumentProvider, SysmlDocument, SysmlDocumentSourceKind,
 };
 

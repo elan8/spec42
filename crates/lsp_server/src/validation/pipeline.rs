@@ -1,4 +1,4 @@
-use std::collections::{BTreeSet, HashSet};
+﻿use std::collections::{BTreeSet, HashSet};
 use std::sync::Arc;
 
 use tower_lsp::lsp_types::{Diagnostic, Url};
@@ -120,9 +120,9 @@ fn collect_entries(
     if !crate::workspace::library_closure::library_full_scan_enabled()
         && !library_root_urls.is_empty()
     {
-        let workspace_sources: Vec<semantic_core::WorkspaceSource<'_>> = entries
+        let workspace_sources: Vec<sysml_model::WorkspaceSource<'_>> = entries
             .iter()
-            .map(|(uri, content)| semantic_core::WorkspaceSource {
+            .map(|(uri, content)| sysml_model::WorkspaceSource {
                 path: uri.as_str(),
                 content: content.as_str(),
             })

@@ -1,4 +1,4 @@
-use semantic_core::{
+﻿use sysml_model::{
     build_semantic_graph_from_documents, collect_diagnostics_from_graph, DiagnosticsOptions,
     RelationshipKind, SysmlDocument, SysmlDocumentSourceKind,
 };
@@ -27,7 +27,7 @@ fn library_doc(path: &str, content: &str) -> SysmlDocument {
     .expect("library document")
 }
 
-fn semantic_codes(diagnostics: &[semantic_core::SemanticDiagnostic]) -> Vec<&str> {
+fn semantic_codes(diagnostics: &[sysml_model::SemanticDiagnostic]) -> Vec<&str> {
     diagnostics
         .iter()
         .filter(|diag| diag.source == "semantic")
@@ -36,7 +36,7 @@ fn semantic_codes(diagnostics: &[semantic_core::SemanticDiagnostic]) -> Vec<&str
 }
 
 fn assert_no_semantic_codes(
-    diagnostics: &[semantic_core::SemanticDiagnostic],
+    diagnostics: &[sysml_model::SemanticDiagnostic],
     forbidden: &[&str],
     context: &str,
 ) {

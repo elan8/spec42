@@ -1,4 +1,4 @@
-//! Report-only performance drill-down for interconnection visualization.
+﻿//! Report-only performance drill-down for interconnection visualization.
 //!
 //! Optional grid drill-down (requires `SYSML_POWERSYSTEMS_DIR`):
 //! ```text
@@ -9,8 +9,8 @@ use std::collections::HashMap;
 use std::path::{Path, PathBuf};
 use std::time::{Duration, Instant};
 
-use kernel::build_sysml_visualization_for_paths;
-use semantic_core::{
+use lsp_server::build_sysml_visualization_for_paths;
+use sysml_model::{
     build_ibd_for_uri, build_interconnection_scene, build_merged_workspace_ibd,
     build_semantic_graph_with_provider, build_sysml_visualization_workspace,
     build_sysml_visualization_workspace_with_meta, build_view_catalog,
@@ -92,7 +92,7 @@ fn collect_visualization_phase_breakdown(
     )
     .expect("workspace root uri");
     let workspace_uris =
-        semantic_core::workspace_uris_for_root(&semantic_graph, &[], &workspace_root_uri);
+        sysml_model::workspace_uris_for_root(&semantic_graph, &[], &workspace_root_uri);
 
     let graph_start = Instant::now();
     let workspace_graph = build_workspace_graph_dto_for_uris(&semantic_graph, &workspace_uris);
@@ -153,7 +153,7 @@ fn collect_visualization_phase_breakdown(
         .map(|id| id.replace("::", "."))
         .collect::<Vec<_>>();
 
-    let scoped_uris = semantic_core::workspace_uris_for_ibd_scope(
+    let scoped_uris = sysml_model::workspace_uris_for_ibd_scope(
         &workspace_uris,
         &semantic_graph,
         IbdBuildScope::ViewExposedPackages,

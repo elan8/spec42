@@ -1,4 +1,4 @@
-use semantic_core::{SemanticGraph, SemanticNode};
+﻿use sysml_model::{SemanticGraph, SemanticNode};
 
 fn attr_str<'a>(node: &'a SemanticNode, key: &str) -> Option<&'a str> {
     node.attributes.get(key).and_then(|value| value.as_str())
@@ -359,7 +359,7 @@ pub fn hover_markdown_for_node(
 
 #[cfg(test)]
 mod tests {
-    use semantic_core::{build_graph_from_doc, SemanticGraph, SemanticNode};
+    use sysml_model::{build_graph_from_doc, SemanticGraph, SemanticNode};
     use sysml_v2_parser::parse;
     use url::Url;
 

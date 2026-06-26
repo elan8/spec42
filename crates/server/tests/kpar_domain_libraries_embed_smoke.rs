@@ -1,4 +1,4 @@
-//! Smoke test: embedded Elan8 KPAR domain libraries materialize and resolve MonetaryUnits.
+﻿//! Smoke test: embedded Elan8 KPAR domain libraries materialize and resolve MonetaryUnits.
 
 mod common;
 
@@ -18,7 +18,7 @@ const SMOKE_MODEL: &str = r#"package KparDomainLibrariesSmoke {
 }
 "#;
 
-fn diagnostic_codes(report: &kernel::ValidationReport) -> Vec<String> {
+fn diagnostic_codes(report: &lsp_server::ValidationReport) -> Vec<String> {
     report
         .documents
         .iter()

@@ -1,8 +1,8 @@
-//! Host validation and projection assembly from a built semantic graph.
+﻿//! Host validation and projection assembly from a built semantic graph.
 
 use std::collections::{BTreeSet, HashMap};
 
-use semantic_core::{
+use sysml_model::{
     collect_diagnostics_from_graph_with_unit_registry, collect_untyped_part_usage_diagnostics,
     missing_library_context_diagnostic, DiagnosticSeverity, DiagnosticsOptions, SemanticDiagnostic,
     SemanticGraph, SysmlDocument, UnitRegistry,
@@ -195,15 +195,15 @@ fn parse_diagnostics(uri: &Url, text: &str) -> Vec<SemanticDiagnostic> {
                 range: error
                     .to_lsp_range()
                     .map(|(sl, sc, el, ec)| {
-                        semantic_core::TextRange::new(
-                            semantic_core::TextPosition::new(sl, sc),
-                            semantic_core::TextPosition::new(el, ec),
+                        sysml_model::TextRange::new(
+                            sysml_model::TextPosition::new(sl, sc),
+                            sysml_model::TextPosition::new(el, ec),
                         )
                     })
                     .unwrap_or_else(|| {
-                        semantic_core::TextRange::new(
-                            semantic_core::TextPosition::new(0, 0),
-                            semantic_core::TextPosition::new(0, 0),
+                        sysml_model::TextRange::new(
+                            sysml_model::TextPosition::new(0, 0),
+                            sysml_model::TextPosition::new(0, 0),
                         )
                     }),
                 severity,

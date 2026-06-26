@@ -1,8 +1,8 @@
-//! In-memory document changes layered on a base provider.
+﻿//! In-memory document changes layered on a base provider.
 
 use std::collections::HashSet;
 
-use semantic_core::{SysmlDocument, SysmlDocumentProvider};
+use sysml_model::{SysmlDocument, SysmlDocumentProvider};
 use url::Url;
 
 /// Overlay added/changed documents and remove logical URIs from a base provider.

@@ -1,4 +1,4 @@
-use semantic_core::TextPosition;
+﻿use sysml_model::TextPosition;
 
 use crate::dto::SourceLocation;
 use crate::references::{find_references_at_position, resolve_symbol_target_at_position};
@@ -9,7 +9,7 @@ pub fn prepare_rename(
     workspace: &impl WorkspaceSnapshot,
     document_path: &str,
     position: TextPosition,
-) -> Option<semantic_core::TextRange> {
+) -> Option<sysml_model::TextRange> {
     let uri = workspace.resolve_uri_for_path(document_path)?;
     resolve_symbol_target_at_position(workspace, &uri, position).map(|target| target.identifier_range)
 }

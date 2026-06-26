@@ -1,4 +1,4 @@
-//! Host semantic model projection (no LSP transport types).
+﻿//! Host semantic model projection (no LSP transport types).
 //!
 //! This is a 1:1 representation of the semantic graph in a serializable form.
 //! Every field present in [`SemanticNode`] and [`SemanticEdge`] is preserved here;
@@ -9,9 +9,9 @@ use std::collections::HashMap;
 
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
-use semantic_core::{ConnectStatementDetail, ElementKind, RelationshipKind, TextRange};
+use sysml_model::{ConnectStatementDetail, ElementKind, RelationshipKind, TextRange};
 
-/// A node in the semantic model — maps 1:1 to [`semantic_core::SemanticNode`].
+/// A node in the semantic model — maps 1:1 to [`sysml_model::SemanticNode`].
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
 pub struct HostSemanticModelNode {
     /// Document URI the node was declared in.
@@ -32,7 +32,7 @@ pub struct HostSemanticModelNode {
     pub attributes: HashMap<String, Value>,
 }
 
-/// A directed relationship between two nodes — maps 1:1 to [`semantic_core::SemanticEdge`].
+/// A directed relationship between two nodes — maps 1:1 to [`sysml_model::SemanticEdge`].
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
 pub struct HostSemanticModelRelationship {
     /// Qualified name of the source node.

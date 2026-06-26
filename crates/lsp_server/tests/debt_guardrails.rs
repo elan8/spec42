@@ -1,4 +1,4 @@
-use std::fs;
+﻿use std::fs;
 use std::path::{Path, PathBuf};
 
 const MAX_IGNORE_ATTRIBUTES: usize = 6;
@@ -39,7 +39,7 @@ fn kernel_semantic_layer_contains_only_shims_and_runtime_modules() {
 
     assert!(
         existing.is_empty(),
-        "reusable semantic implementations belong in semantic_core, not kernel:\n{}",
+        "reusable semantic implementations belong in sysml_model, not kernel:\n{}",
         existing.join("\n")
     );
 }

@@ -1,4 +1,4 @@
-use semantic_core::{SysmlDocument, SysmlDocumentProvider, SysmlDocumentSourceKind};
+﻿use sysml_model::{SysmlDocument, SysmlDocumentProvider, SysmlDocumentSourceKind};
 use spec42_host::{
     EngineBuilder, HostContext, HostResourceLimits, InMemoryDocumentProvider, WorkspaceLoadRequest,
 };

@@ -1,4 +1,4 @@
-use semantic_core::{
+﻿use sysml_model::{
     DiagnosticRelatedInfo, DiagnosticSeverity as CoreSeverity, SemanticDiagnostic,
 };
 use tower_lsp::lsp_types::{
@@ -49,7 +49,7 @@ fn map_related_information(
 #[cfg(test)]
 mod tests {
     use super::*;
-    use semantic_core::{
+    use sysml_model::{
         DiagnosticSeverity as CoreSeverity, SemanticDiagnostic, TextPosition, TextRange,
     };
     use tower_lsp::lsp_types::DiagnosticSeverity as LspSeverity;

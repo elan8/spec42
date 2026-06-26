@@ -1,4 +1,4 @@
-use semantic_core::{
+﻿use sysml_model::{
     build_semantic_graph_from_documents, RelationshipKind, SysmlDocument, SysmlDocumentSourceKind,
 };
 
@@ -33,7 +33,7 @@ fn document(path: &str, content: &str) -> SysmlDocument {
     .expect("document uri")
 }
 
-fn derivation_edges(graph: &semantic_core::SemanticGraph) -> Vec<(String, String)> {
+fn derivation_edges(graph: &sysml_model::SemanticGraph) -> Vec<(String, String)> {
     graph
         .graph
         .edge_indices()

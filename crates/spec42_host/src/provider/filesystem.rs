@@ -1,8 +1,8 @@
-//! Filesystem-backed workspace provider wired to a resolved engine catalog.
+﻿//! Filesystem-backed workspace provider wired to a resolved engine catalog.
 
 use std::path::{Path, PathBuf};
 
-use semantic_core::{FileSystemDocumentProvider, SysmlDocument, SysmlDocumentProvider};
+use sysml_model::{FileSystemDocumentProvider, SysmlDocument, SysmlDocumentProvider};
 
 /// Filesystem workspace provider using an engine's resolved library package roots.
 #[derive(Debug, Clone)]

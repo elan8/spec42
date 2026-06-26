@@ -1,8 +1,8 @@
-use crate::host::config::Spec42Config;
+﻿use crate::host::config::Spec42Config;
 use crate::views::dto;
 use crate::workspace::state::SemanticLifecycle;
 use crate::workspace::ServerState;
-use semantic_core::{visualization_model_not_ready, SysmlVisualizationResultDto};
+use sysml_model::{visualization_model_not_ready, SysmlVisualizationResultDto};
 use std::time::Instant;
 use tower_lsp::jsonrpc::Result;
 use tower_lsp::lsp_types::{MessageType, Url};
@@ -248,7 +248,7 @@ pub(crate) fn sysml_visualization_result(
     params: serde_json::Value,
 ) -> Result<(
     SysmlVisualizationResultDto,
-    semantic_core::VisualizationBuildMeta,
+    sysml_model::VisualizationBuildMeta,
 )> {
     let (workspace_root_uri, view, selected_view) =
         crate::views::parse_sysml_visualization_params(&params)?;
@@ -267,7 +267,7 @@ pub(crate) fn sysml_visualization_result(
         };
         return Ok((
             visualization_model_not_ready(workspace_root_uri.as_str(), &view, message),
-            semantic_core::VisualizationBuildMeta::default(),
+            sysml_model::VisualizationBuildMeta::default(),
         ));
     }
     let build_start = Instant::now();
@@ -277,7 +277,7 @@ pub(crate) fn sysml_visualization_result(
         &view,
         selected_view.as_deref(),
         build_start,
-        semantic_core::visualization_build_options(&view),
+        sysml_model::visualization_build_options(&view),
     )
     .map_err(|error| tower_lsp::jsonrpc::Error {
         code: tower_lsp::jsonrpc::ErrorCode::InternalError,

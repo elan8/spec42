@@ -1,4 +1,4 @@
-use semantic_core::{
+﻿use sysml_model::{
     add_semantic_edge_once, AddSemanticEdgeResult, ConnectStatementDetail, ElementKind, NodeId,
     RelationshipKind, SemanticEdge, SemanticGraph, SemanticNode, TextPosition, TextRange,
 };

@@ -1,1 +1,1 @@
-pub use semantic_core::semantic::evaluation::*;
+﻿pub use sysml_model::semantic::evaluation::*;

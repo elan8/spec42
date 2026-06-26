@@ -1,4 +1,4 @@
-use semantic_core::{
+﻿use sysml_model::{
     build_semantic_graph_from_documents, collect_diagnostics_from_graph, evaluate_expressions,
     DiagnosticsOptions, SysmlDocument, SysmlDocumentSourceKind,
 };
@@ -87,11 +87,11 @@ package GridRequirements {
 }
 "#;
 
-fn build_graph(source: &str) -> semantic_core::SemanticGraph {
+fn build_graph(source: &str) -> sysml_model::SemanticGraph {
     build_graph_from_documents(&[document_from_source(source)])
 }
 
-fn build_graph_with_units(source: &str) -> semantic_core::SemanticGraph {
+fn build_graph_with_units(source: &str) -> sysml_model::SemanticGraph {
     build_graph_from_documents(&[catalog_document(), document_from_source(source)])
 }
 
@@ -107,13 +107,13 @@ fn document_from_source(source: &str) -> SysmlDocument {
     .expect("document uri")
 }
 
-fn build_graph_from_documents(docs: &[SysmlDocument]) -> semantic_core::SemanticGraph {
+fn build_graph_from_documents(docs: &[SysmlDocument]) -> sysml_model::SemanticGraph {
     let (mut graph, _) = build_semantic_graph_from_documents(docs).expect("semantic graph");
     evaluate_expressions(&mut graph);
     graph
 }
 
-fn node_attr(graph: &semantic_core::SemanticGraph, qualified: &str, key: &str) -> Option<String> {
+fn node_attr(graph: &sysml_model::SemanticGraph, qualified: &str, key: &str) -> Option<String> {
     graph
         .node_ids_by_qualified_name
         .get(qualified)?
@@ -128,7 +128,7 @@ fn node_attr(graph: &semantic_core::SemanticGraph, qualified: &str, key: &str) -
         })
 }
 
-fn has_code(graph: &semantic_core::SemanticGraph, code: &str) -> bool {
+fn has_code(graph: &sysml_model::SemanticGraph, code: &str) -> bool {
     let uri = graph
         .node_ids_by_qualified_name
         .get("GridRequirements::GridCapacity")

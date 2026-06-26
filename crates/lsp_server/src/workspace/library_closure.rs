@@ -1,6 +1,6 @@
-use std::path::PathBuf;
+﻿use std::path::PathBuf;
 
-use semantic_core::{resolve_library_closure, LibraryClosureOptions, WorkspaceSource};
+use sysml_model::{resolve_library_closure, LibraryClosureOptions, WorkspaceSource};
 use tower_lsp::lsp_types::Url;
 
 use crate::common::util;

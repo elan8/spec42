@@ -1,8 +1,8 @@
-//! Diagnostics integration tests.
+﻿//! Diagnostics integration tests.
 
 use super::harness::{next_id, read_message, send_message, spawn_server};
-use kernel::common::util;
-use kernel::{default_server_config, validate_paths, ValidationRequest};
+use lsp_server::common::util;
+use lsp_server::{default_server_config, validate_paths, ValidationRequest};
 use std::fs;
 use std::sync::Arc;
 
@@ -495,7 +495,7 @@ fn print_diagnostics_for_real_sysml_examples_surveillance_drone() {
 
         let uri_norm =
             util::normalize_file_uri(&url::Url::from_file_path(&drone_path).expect("drone uri"));
-        let g = kernel::semantic::build_graph_from_doc(&root, &uri_norm);
+        let g = lsp_server::semantic::build_graph_from_doc(&root, &uri_norm);
         let action_def_count = g
             .nodes_for_uri(&uri_norm)
             .iter()
@@ -1103,10 +1103,10 @@ fn unresolved_specializes_reference_is_emitted_for_multi_base_with_missing_targe
             }
         }
     "#;
-    let root = kernel::sysml_v2::parse(content).expect("parse");
+    let root = lsp_server::sysml_v2::parse(content).expect("parse");
     let uri = tower_lsp::lsp_types::Url::parse("file:///multi_base_missing_specializes.sysml")
         .expect("uri");
-    let mut graph = kernel::semantic::build_graph_from_doc(&root, &uri);
+    let mut graph = lsp_server::semantic::build_graph_from_doc(&root, &uri);
     let child_id = graph
         .nodes_for_uri(&uri)
         .into_iter()
@@ -1121,9 +1121,9 @@ fn unresolved_specializes_reference_is_emitted_for_multi_base_with_missing_targe
             "specializes".to_string(),
             serde_json::json!(["RobotPlatform", "MissingBase", "MissionProfile"]),
         );
-    kernel::semantic::add_cross_document_edges_for_uri(&mut graph, &uri);
+    lsp_server::semantic::add_cross_document_edges_for_uri(&mut graph, &uri);
     let diagnostics =
-        kernel::compute_semantic_diagnostics(&graph, &uri, kernel::DiagnosticsHostContext);
+        lsp_server::compute_semantic_diagnostics(&graph, &uri, lsp_server::DiagnosticsHostContext);
     let found_unresolved_specializes = diagnostics.iter().any(|diagnostic| {
         diagnostic.source.as_deref() == Some("semantic")
             && diagnostic.code.as_ref()

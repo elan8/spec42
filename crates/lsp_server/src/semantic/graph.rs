@@ -1,1 +1,1 @@
-pub use semantic_core::semantic::graph::*;
+﻿pub use sysml_model::semantic::graph::*;

@@ -1,5 +1,5 @@
-[package]
-name = "spec42"
+﻿[package]
+name = "server"
 version = "0.32.0"
 edition = "2021"
 description = "Language server for SysML v2 (LSP over stdio)"
@@ -23,8 +23,8 @@ embed-domain-libraries = ["spec42_host/embed-domain-libraries"]
 
 [dependencies]
 spec42_host = { path = "../spec42_host", default-features = false }
-kernel = { path = "../kernel" }
-semantic_core = { path = "../semantic_core" }
+lsp_server = { path = "../lsp_server" }
+sysml_model = { path = "../sysml_model" }
 kpar = { path = "../kpar" }
 tokio = { version = "1", features = ["full"] }
 serde_json = { workspace = true }
@@ -43,7 +43,7 @@ tower-http = { version = "0.6", features = ["cors", "trace"] }
 serde_yaml = "0.9"
 
 [dev-dependencies]
-kernel = { path = "../kernel" }
+lsp_server = { path = "../lsp_server" }
 sysml-v2-parser = { workspace = true }
 serde_json = { workspace = true }
 tempfile = "3"

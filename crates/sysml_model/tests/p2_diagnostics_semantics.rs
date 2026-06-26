@@ -1,4 +1,4 @@
-use semantic_core::{
+﻿use sysml_model::{
     build_semantic_graph_from_documents, collect_diagnostics_from_graph, DiagnosticsOptions,
     SysmlDocument, SysmlDocumentSourceKind,
 };
@@ -15,7 +15,7 @@ fn workspace_doc(path: &str, content: &str) -> SysmlDocument {
     .expect("workspace document")
 }
 
-fn has_code(diagnostics: &[semantic_core::SemanticDiagnostic], code: &str) -> bool {
+fn has_code(diagnostics: &[sysml_model::SemanticDiagnostic], code: &str) -> bool {
     diagnostics.iter().any(|diagnostic| diagnostic.code == code)
 }
 

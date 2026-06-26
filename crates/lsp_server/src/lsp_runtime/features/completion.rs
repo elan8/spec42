@@ -1,4 +1,4 @@
-use tower_lsp::jsonrpc::Result;
+﻿use tower_lsp::jsonrpc::Result;
 use tower_lsp::lsp_types::*;
 
 use crate::common::text_span::{to_core_position, to_lsp_range};
@@ -137,7 +137,7 @@ mod tests {
     use super::map_completion_item;
     use language_service::dto::CompletionTextEditDto;
     use language_service::{CompletionItemDto, CompletionItemKindDto};
-    use semantic_core::{TextPosition, TextRange};
+    use sysml_model::{TextPosition, TextRange};
     use tower_lsp::lsp_types::CompletionItemKind;
 
     #[test]

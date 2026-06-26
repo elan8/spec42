@@ -1,1 +1,1 @@
-pub use semantic_core::semantic::relationships::*;
+﻿pub use sysml_model::semantic::relationships::*;

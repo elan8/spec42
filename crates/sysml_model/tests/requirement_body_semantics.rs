@@ -1,4 +1,4 @@
-use semantic_core::{
+﻿use sysml_model::{
     build_semantic_graph_from_documents, RelationshipKind, SysmlDocument, SysmlDocumentSourceKind,
 };
 
@@ -123,10 +123,10 @@ fn verification_case_cross_package_verify_requirement_resolves_via_import() {
     let (graph, _parsed) =
         build_semantic_graph_from_documents(&[requirements, verification]).expect("semantic graph");
 
-    let diagnostics = semantic_core::collect_diagnostics_from_graph(
+    let diagnostics = sysml_model::collect_diagnostics_from_graph(
         &graph,
         &uri,
-        semantic_core::DiagnosticsOptions::default(),
+        sysml_model::DiagnosticsOptions::default(),
     );
     assert!(
         !diagnostics
@@ -187,10 +187,10 @@ fn cross_package_verify_requirement_resolves_via_import() {
     let (graph, _parsed) =
         build_semantic_graph_from_documents(&[requirements, verification]).expect("semantic graph");
 
-    let diagnostics = semantic_core::collect_diagnostics_from_graph(
+    let diagnostics = sysml_model::collect_diagnostics_from_graph(
         &graph,
         &uri,
-        semantic_core::DiagnosticsOptions::default(),
+        sysml_model::DiagnosticsOptions::default(),
     );
     assert!(
         !diagnostics

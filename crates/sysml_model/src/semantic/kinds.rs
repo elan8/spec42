@@ -1,4 +1,4 @@
-//! Canonical element-kind predicates and resolution allowlists for semantic_core.
+﻿//! Canonical element-kind predicates and resolution allowlists for sysml_model.
 
 use crate::{ElementKind, SemanticNode};
 

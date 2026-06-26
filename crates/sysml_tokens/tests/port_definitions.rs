@@ -1,4 +1,4 @@
-use sysml_semantic_tokens::{ast_semantic_ranges, semantic_tokens_full};
+﻿use sysml_tokens::{ast_semantic_ranges, semantic_tokens_full};
 use sysml_v2_parser::parse_for_editor;
 
 fn decode_semantic_tokens(data: &[u32]) -> Vec<(u32, u32, u32, u32)> {

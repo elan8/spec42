@@ -1,4 +1,4 @@
-mod args;
+﻿mod args;
 mod error;
 mod handlers;
 mod paths;
@@ -14,7 +14,7 @@ use std::sync::Arc;
 
 use axum::routing::{get, post};
 use axum::Router;
-use kernel::Spec42Config;
+use lsp_server::Spec42Config;
 use tower_http::cors::{AllowOrigin, Any, CorsLayer};
 use tower_http::trace::TraceLayer;
 
@@ -68,7 +68,7 @@ pub async fn run_api_serve(cli: Cli, args: ApiServeArgs) -> Result<(), String> {
 
     let environment = resolve_environment(&cli)?;
     let config = Arc::new(
-        kernel::default_server_config()
+        lsp_server::default_server_config()
             .with_default_library_paths(environment.library_paths.clone()),
     );
 

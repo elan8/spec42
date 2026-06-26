@@ -1,4 +1,4 @@
-use semantic_core::{
+﻿use sysml_model::{
     build_semantic_graph_from_documents, resolve_expose_target, resolve_expression_endpoint_strict,
     ExposeTargetResolution, ResolveResult, SysmlDocument, SysmlDocumentSourceKind,
 };

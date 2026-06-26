@@ -1,4 +1,4 @@
-//! Robot-vacuum embedding-host performance harness (report-only).
+﻿//! Robot-vacuum embedding-host performance harness (report-only).
 
 use std::collections::HashMap;
 use std::fs;
@@ -6,7 +6,7 @@ use std::path::{Path, PathBuf};
 use std::sync::{Arc, Mutex};
 use std::time::Instant;
 
-use semantic_core::{
+use sysml_model::{
     build_ibd_for_uri, build_render_snapshot, build_semantic_graph_with_provider,
     build_sysml_visualization_workspace, build_view_catalog, build_workspace_graph_dto_for_uris,
     evaluate_views, finalize_merged_ibd_connectors, merge_ibd_payloads_for_workspace_finalize,
@@ -373,7 +373,7 @@ fn collect_post_snapshot_visualization(
     let library_urls = snapshot.library_urls();
     let workspace_root_uri = snapshot.workspace_root_uri();
 
-    let workspace_uris = semantic_core::workspace_uris_for_root(
+    let workspace_uris = sysml_model::workspace_uris_for_root(
         semantic_graph,
         library_urls,
         workspace_root_uri,
@@ -467,7 +467,7 @@ fn collect_cold_one_shot_visualization(root: &Path, model_dir: &Path) -> (u128, 
     )
     .expect("workspace root uri");
     let workspace_uris =
-        semantic_core::workspace_uris_for_root(&semantic_graph, &[], &workspace_root_uri);
+        sysml_model::workspace_uris_for_root(&semantic_graph, &[], &workspace_root_uri);
 
     let viz_start = Instant::now();
     let _ = build_sysml_visualization_workspace(

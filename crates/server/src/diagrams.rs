@@ -1,6 +1,6 @@
-use std::path::{Path, PathBuf};
+﻿use std::path::{Path, PathBuf};
 
-use semantic_core::SysmlVisualizationResultDto;
+use sysml_model::SysmlVisualizationResultDto;
 use spec42_host::HostWorkspaceSnapshot;
 
 use crate::cli::{Cli, DiagramExportArgs, DiagramExportFormat};
@@ -235,7 +235,7 @@ mod legacy_elk_svg;
 mod tests {
     use super::*;
     use super::legacy_elk_svg::{elk_svg, native_svg};
-    use semantic_core::{
+    use sysml_model::{
         GraphEdgeDto, GraphNodeDto, InterconnectionSceneDto, PositionDto, RangeDto, SysmlGraphDto,
     };
     use std::collections::HashMap;

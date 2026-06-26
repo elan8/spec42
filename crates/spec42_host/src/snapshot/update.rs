@@ -1,10 +1,10 @@
-//! Incremental and full-rebuild snapshot updates.
+﻿//! Incremental and full-rebuild snapshot updates.
 
 use std::sync::Arc;
 use std::time::Instant;
 
 use language_service::InMemoryWorkspace;
-use semantic_core::{
+use sysml_model::{
     add_cross_document_edges_for_uri, build_graph_from_doc, build_render_snapshot,
     finalize_workspace_graph, SemanticGraph, SysmlDocument, WorkspaceParsedDocument,
 };

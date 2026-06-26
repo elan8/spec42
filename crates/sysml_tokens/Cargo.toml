@@ -1,5 +1,5 @@
-[package]
-name = "sysml_semantic_tokens"
+﻿[package]
+name = "sysml_tokens"
 version.workspace = true
 edition.workspace = true
 authors.workspace = true

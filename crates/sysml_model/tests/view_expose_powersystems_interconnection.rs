@@ -1,8 +1,8 @@
-use std::path::{Path, PathBuf};
+﻿use std::path::{Path, PathBuf};
 
-use semantic_core::semantic::dto::SysmlGraphDto;
-use semantic_core::semantic::ibd::IbdDataDto;
-use semantic_core::{
+use sysml_model::semantic::dto::SysmlGraphDto;
+use sysml_model::semantic::ibd::IbdDataDto;
+use sysml_model::{
     build_ibd_for_uri, build_interconnection_scene, build_semantic_graph_from_documents,
     build_view_catalog, build_workspace_graph_dto_for_uris, evaluate_views,
     finalize_merged_ibd_connectors, merge_ibd_payloads, project_ids_for_renderer,

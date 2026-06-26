@@ -1,14 +1,14 @@
-[workspace]
+﻿[workspace]
 resolver = "2"
 members = [
-  "crates/diagram_core",
+  "crates/diagram",
   "crates/language_service",
-  "crates/kernel",
+  "crates/lsp_server",
   "crates/kpar",
   "crates/server",
-  "crates/semantic_core",
+  "crates/sysml_model",
   "crates/spec42_host",
-  "crates/sysml_semantic_tokens",
+  "crates/sysml_tokens",
 ]
 
 [workspace.package]

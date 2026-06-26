@@ -1,10 +1,10 @@
-//! Test-only Rust ELK/native SVG probes.
+﻿//! Test-only Rust ELK/native SVG probes.
 //!
 //! Production SVG export uses [`super::render_diagram`] → shared headless renderer with
 //! `preparedView`. This module keeps the legacy `interconnectionScene` ELK path for parity
 //! fixtures only.
 
-use semantic_core::{
+use sysml_model::{
     build_elk_graph_from_scene, GraphNodeDto, RangeDto, SysmlGraphDto, SysmlVisualizationResultDto,
 };
 use serde::{Deserialize, Serialize};

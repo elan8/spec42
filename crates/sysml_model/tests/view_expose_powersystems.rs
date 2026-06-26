@@ -1,6 +1,6 @@
-use std::path::PathBuf;
+﻿use std::path::PathBuf;
 
-use semantic_core::{
+use sysml_model::{
     build_semantic_graph_from_documents, build_view_catalog, build_workspace_graph_dto_for_uris,
     evaluate_views, project_ids_for_renderer, SysmlDocument, SysmlDocumentSourceKind,
 };

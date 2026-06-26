@@ -1,4 +1,4 @@
-use semantic_core::{SemanticGraph, SemanticNode, TextPosition, TextRange};
+﻿use sysml_model::{SemanticGraph, SemanticNode, TextPosition, TextRange};
 use url::Url;
 
 use crate::presentation_hover::signature_from_node;
@@ -106,7 +106,7 @@ pub fn find_reference_ranges(source: &str, name: &str) -> Vec<TextRange> {
 pub fn symbol_entry_node_id(
     graph: &SemanticGraph,
     entry: &SymbolEntry,
-) -> Option<semantic_core::NodeId> {
+) -> Option<sysml_model::NodeId> {
     let entry_uri = crate::uri::normalize_uri(&entry.uri);
     graph
         .nodes_for_uri(&entry_uri)
@@ -120,7 +120,7 @@ pub fn location_node_id(
     uri: &Url,
     lookup_name: &str,
     range: TextRange,
-) -> Option<semantic_core::NodeId> {
+) -> Option<sysml_model::NodeId> {
     graph
         .nodes_for_uri(uri)
         .into_iter()
@@ -138,7 +138,7 @@ pub fn node_to_source_location(path: &str, node: &SemanticNode) -> crate::dto::S
 #[cfg(test)]
 mod tests {
     use super::*;
-    use semantic_core::build_graph_from_doc;
+    use sysml_model::build_graph_from_doc;
     use sysml_v2_parser::parse;
     use url::Url;
 

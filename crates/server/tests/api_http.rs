@@ -1,4 +1,4 @@
-//! HTTP API integration and parity tests.
+﻿//! HTTP API integration and parity tests.
 
 mod common;
 
@@ -31,7 +31,7 @@ async fn build_test_state(workspace_root: PathBuf) -> Arc<ApiServerState> {
     let workspace_root = workspace_root.canonicalize().unwrap_or(workspace_root);
     Arc::new(ApiServerState {
         config: Arc::new(
-            kernel::default_server_config()
+            lsp_server::default_server_config()
                 .with_default_library_paths(environment.library_paths.clone()),
         ),
         cli,

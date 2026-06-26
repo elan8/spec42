@@ -1,11 +1,11 @@
-use std::time::Instant;
+﻿use std::time::Instant;
 
 use tower_lsp::jsonrpc::Result;
 use tower_lsp::lsp_types::Url;
 
 use crate::common::util;
 use crate::views::dto::SysmlModelResultDto;
-use semantic_core::{SysmlGraphDto, SysmlModelStatsDto};
+use sysml_model::{SysmlGraphDto, SysmlModelStatsDto};
 
 /// Parse sysml/model params from JSON-RPC value.
 pub fn parse_sysml_model_params(v: &serde_json::Value) -> Result<(Url, Vec<String>)> {

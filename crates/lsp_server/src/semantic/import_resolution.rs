@@ -1,1 +1,1 @@
-pub use semantic_core::semantic::import_resolution::*;
+﻿pub use sysml_model::semantic::import_resolution::*;

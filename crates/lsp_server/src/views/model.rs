@@ -1,4 +1,4 @@
-//! sysml/model request parsing and response building.
+﻿//! sysml/model request parsing and response building.
 
 #[path = "model_params.rs"]
 mod model_params;
@@ -13,10 +13,10 @@ use sysml_v2_parser::RootNamespace;
 use crate::common::util;
 use crate::semantic;
 use crate::views::dto::SysmlModelResultDto;
-use semantic_core::semantic::extracted_model as model;
-use semantic_core::semantic::ibd;
-use semantic_core::semantic::model_projection;
-use semantic_core::{
+use sysml_model::semantic::extracted_model as model;
+use sysml_model::semantic::ibd;
+use sysml_model::semantic::model_projection;
+use sysml_model::{
     range_to_dto, GraphEdgeDto, GraphNodeDto, ModelExplorerBundle, RelationshipDto,
     SysmlElementDto, SysmlGraphDto, SysmlModelStatsDto, WorkspaceFileModelDto, WorkspaceModelDto,
     WorkspaceModelSummaryDto,
@@ -512,7 +512,7 @@ pub async fn build_sysml_model_response(
             .map(model::extract_activity_diagrams)
             .unwrap_or_default();
         if !diagrams.is_empty() {
-            semantic_core::enrich_activity_diagrams_from_graph(
+            sysml_model::enrich_activity_diagrams_from_graph(
                 &mut diagrams,
                 semantic_graph,
                 std::slice::from_ref(uri),
@@ -527,7 +527,7 @@ pub async fn build_sysml_model_response(
     let sequence_diagrams_start = Instant::now();
     let sequence_diagrams = if want_sequence_diagrams {
         Some(
-            semantic_core::semantic::sequence_views::build_workspace_sequence_diagrams(
+            sysml_model::semantic::sequence_views::build_workspace_sequence_diagrams(
                 semantic_graph,
                 std::slice::from_ref(uri),
             ),
@@ -540,7 +540,7 @@ pub async fn build_sysml_model_response(
     let state_machines_start = Instant::now();
     let state_machines = if want_state_machines {
         Some(
-            semantic_core::semantic::state_views::build_workspace_state_machines(
+            sysml_model::semantic::state_views::build_workspace_state_machines(
                 semantic_graph,
                 std::slice::from_ref(uri),
             ),
@@ -598,7 +598,7 @@ pub async fn build_sysml_model_response(
     let ibd = if want_ibd && want_graph && graph.is_some() && workspace_viz {
         model_explorer_bundle.map(|bundle| bundle.full_ibd.clone()).or_else(|| {
             let workspace_uris = semantic_graph.workspace_uris_excluding_libraries(library_paths);
-            Some(semantic_core::build_merged_workspace_ibd(
+            Some(sysml_model::build_merged_workspace_ibd(
                 semantic_graph,
                 &workspace_uris,
             ))

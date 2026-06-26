@@ -1,4 +1,4 @@
-use kernel::host::logging::init_tracing;
+﻿use lsp_server::host::logging::init_tracing;
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {

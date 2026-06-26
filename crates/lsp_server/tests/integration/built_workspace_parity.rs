@@ -1,11 +1,11 @@
-use std::path::PathBuf;
+﻿use std::path::PathBuf;
 use std::sync::Arc;
 
-use kernel::{
+use lsp_server::{
     default_server_config, semantic_report_from_built_workspace, validate_paths_with_semantics,
     BuiltWorkspaceInput, ValidationRequest,
 };
-use semantic_core::{build_semantic_graph_with_provider, FileSystemDocumentProvider};
+use sysml_model::{build_semantic_graph_with_provider, FileSystemDocumentProvider};
 
 #[test]
 fn built_workspace_report_matches_full_validation_pipeline() {

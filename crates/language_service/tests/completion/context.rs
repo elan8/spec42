@@ -1,8 +1,8 @@
-use language_service::{
+﻿use language_service::{
     completion_edit_shape, detect_completion_context, CompletionContext,
     ATTRIBUTE_TYPE_LOOKUP_KINDS, PART_TYPE_LOOKUP_KINDS, PORT_TYPE_LOOKUP_KINDS,
 };
-use semantic_core::TextPosition;
+use sysml_model::TextPosition;
 
 #[test]
 fn detects_part_type_reference_context() {

@@ -1,4 +1,4 @@
-//! Workspace scan integration tests.
+﻿//! Workspace scan integration tests.
 
 use std::collections::HashMap;
 use std::path::PathBuf;
@@ -9,7 +9,7 @@ use super::perf_report::{
     collect_fixture_perf, emit_perf_report, graph_edge_count, graph_node_count, latest_perf_event,
     request_with_perf_capture, slowest_phase_entries, value_ms, workspace_loaded_files,
 };
-use kernel::common::util;
+use lsp_server::common::util;
 
 fn repo_root() -> PathBuf {
     PathBuf::from(env!("CARGO_MANIFEST_DIR"))
@@ -1385,7 +1385,7 @@ fn lsp_powersystems_parent_workspace_root_grid_connections_has_ibd_content() {
         return;
     }
 
-    let response = kernel::views::build_sysml_visualization_for_paths(
+    let response = lsp_server::views::build_sysml_visualization_for_paths(
         &repo_root,
         Some(&repo_root),
         &[],

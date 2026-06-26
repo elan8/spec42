@@ -1,6 +1,6 @@
-use std::collections::HashSet;
+﻿use std::collections::HashSet;
 
-use semantic_core::{
+use sysml_model::{
     resolve_member_via_type, resolve_type_reference_targets, NodeId, ResolveResult, TextPosition,
     TextRange,
 };

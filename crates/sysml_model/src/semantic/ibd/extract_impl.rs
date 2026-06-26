@@ -2057,7 +2057,7 @@ mod tests {
     fn build_ibd_surveillance_drone_instance_has_nested_parts_and_connectors() {
         let fixture = std::fs::read_to_string(
             std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
-                .join("../kernel/tests/fixtures/surveillance_drone_full.sysml"),
+                .join("../lsp_server/tests/fixtures/surveillance_drone_full.sysml"),
         )
         .expect("read surveillance drone fixture");
         let doc = SysmlDocument::from_memory_path(

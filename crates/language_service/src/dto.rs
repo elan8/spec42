@@ -1,5 +1,5 @@
-use serde::{Deserialize, Serialize};
-use semantic_core::TextRange;
+﻿use serde::{Deserialize, Serialize};
+use sysml_model::TextRange;
 
 /// A source location using a logical path string and neutral text range.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
