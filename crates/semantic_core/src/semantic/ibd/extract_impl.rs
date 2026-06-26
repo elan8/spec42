@@ -193,80 +193,6 @@ pub(crate) fn graph_node_for_ibd_part<'a>(
         .and_then(|id| graph.get_node(&id))
 }
 
-fn push_inherited_ports_from_definition(
-    graph: &SemanticGraph,
-    def_node: &SemanticNode,
-    parent_dot: &str,
-    ports_out: &mut Vec<IbdPortDto>,
-    existing_ports: &mut std::collections::HashSet<(String, String)>,
-    visiting: &mut std::collections::HashSet<String>,
-) {
-    let def_key = def_node.id.qualified_name.clone();
-    if !visiting.insert(def_key) {
-        return;
-    }
-    for generalization in graph.outgoing_typing_or_specializes_targets(def_node) {
-        if is_part_like(generalization.element_kind.as_str()) {
-            push_inherited_ports_from_definition(
-                graph,
-                generalization,
-                parent_dot,
-                ports_out,
-                existing_ports,
-                visiting,
-            );
-        }
-    }
-    for child in graph.children_of(def_node) {
-        if !is_port_like(child.element_kind.as_str()) {
-            continue;
-        }
-        let key = (parent_dot.to_string(), child.name.clone());
-        if existing_ports.contains(&key) {
-            continue;
-        }
-        existing_ports.insert(key);
-        let direction = child
-            .attributes
-            .get("direction")
-            .and_then(|v| v.as_str())
-            .map(String::from);
-        let port_type = child
-            .attributes
-            .get("portType")
-            .and_then(|v| v.as_str())
-            .map(String::from);
-        let port_side = infer_port_side(&child.name, direction.as_deref(), port_type.as_deref());
-        ports_out.push(IbdPortDto {
-            id: canonical_port_id(parent_dot, &child.name),
-            port_id: canonical_port_id(parent_dot, &child.name),
-            name: child.name.clone(),
-            parent_id: parent_dot.to_string(),
-            direction,
-            port_type,
-            port_side,
-        });
-    }
-    visiting.remove(&def_node.id.qualified_name);
-}
-
-fn add_inherited_ports_from_definition(
-    graph: &SemanticGraph,
-    def_node: &SemanticNode,
-    parent_dot: &str,
-    ports_out: &mut Vec<IbdPortDto>,
-    existing_ports: &mut std::collections::HashSet<(String, String)>,
-) {
-    let mut visiting = std::collections::HashSet::new();
-    push_inherited_ports_from_definition(
-        graph,
-        def_node,
-        parent_dot,
-        ports_out,
-        existing_ports,
-        &mut visiting,
-    );
-}
 
 fn infer_port_side(
     name: &str,
@@ -892,6 +818,19 @@ fn build_container_groups(parts: &[IbdPartDto]) -> Vec<IbdContainerGroupDto> {
     groups
 }
 
+fn expanded_port_to_ibd_dto(port: &crate::semantic::component_view::ExpandedPort) -> IbdPortDto {
+    let port_side = infer_port_side(&port.name, port.direction.as_deref(), port.port_type.as_deref());
+    IbdPortDto {
+        id: canonical_port_id(&port.parent_path, &port.name),
+        port_id: canonical_port_id(&port.parent_path, &port.name),
+        name: port.name.clone(),
+        parent_id: port.parent_path.clone(),
+        direction: port.direction.clone(),
+        port_type: port.port_type.clone(),
+        port_side,
+    }
+}
+
 /// Builds IBD data for the given URI from the semantic graph.
 pub fn build_ibd_for_uri(graph: &SemanticGraph, uri: &Url) -> IbdDataDto {
     let nodes = graph.nodes_for_uri(uri);
@@ -951,7 +890,7 @@ pub fn build_ibd_for_uri(graph: &SemanticGraph, uri: &Url) -> IbdDataDto {
         }
     }
 
-    // Interconnection view requires instance-centric expansion of typed part trees.
+    // Interconnection view: expand typed part trees via component_view (shared with other consumers).
     let mut existing_part_qn_dot: std::collections::HashSet<String> =
         parts.iter().map(|p| p.qualified_name.clone()).collect();
     let mut existing_ports: std::collections::HashSet<(String, String)> = ports
@@ -959,234 +898,50 @@ pub fn build_ibd_for_uri(graph: &SemanticGraph, uri: &Url) -> IbdDataDto {
         .map(|p| (p.parent_id.clone(), p.name.clone()))
         .collect();
 
-    let mut shape_cache: HashMap<String, bool> = HashMap::new();
-    let mut typed_shape_cache: HashMap<String, Option<String>> = HashMap::new();
-
-    fn part_def_has_materialized_shape(
-        graph: &SemanticGraph,
-        def_node: &SemanticNode,
-        visiting: &mut std::collections::HashSet<String>,
-        shape_cache: &mut HashMap<String, bool>,
-    ) -> bool {
-        let def_key = def_node.id.qualified_name.clone();
-        if let Some(&cached) = shape_cache.get(&def_key) {
-            return cached;
-        }
-        if !visiting.insert(def_key.clone()) {
-            return false;
-        }
-        let direct = graph
-            .children_of(def_node)
-            .iter()
-            .any(|child| is_part_like(child.element_kind.as_str()) || is_port_like(child.element_kind.as_str()));
-        let inherited = graph
-            .outgoing_typing_or_specializes_targets(def_node)
-            .into_iter()
-            .any(|generalization| {
-                is_part_like(generalization.element_kind.as_str())
-                    && part_def_has_materialized_shape(
-                        graph,
-                        generalization,
-                        visiting,
-                        shape_cache,
-                    )
-            });
-        visiting.remove(&def_node.id.qualified_name);
-        let result = direct || inherited;
-        shape_cache.insert(def_key, result);
-        result
-    }
-
-    fn first_typed_part_shape<'a>(
-        graph: &'a SemanticGraph,
-        node: &'a SemanticNode,
-        shape_cache: &mut HashMap<String, bool>,
-        typed_shape_cache: &mut HashMap<String, Option<String>>,
-    ) -> Option<&'a SemanticNode> {
-        if let Some(cached_qn) = typed_shape_cache.get(&node.id.qualified_name) {
-            return cached_qn.as_ref().and_then(|qn| {
-                graph
-                    .node_ids_for_qualified_name(qn)
-                    .and_then(|ids| ids.first())
-                    .and_then(|id| graph.get_node(id))
-            });
-        }
-        let found = graph
-            .outgoing_typing_or_specializes_targets(node)
-            .into_iter()
-            .find(|typed_def| {
-                is_part_like(typed_def.element_kind.as_str())
-                    && part_def_has_materialized_shape(
-                        graph,
-                        typed_def,
-                        &mut std::collections::HashSet::new(),
-                        shape_cache,
-                    )
-            });
-        typed_shape_cache.insert(
-            node.id.qualified_name.clone(),
-            found.map(|node| node.id.qualified_name.clone()),
-        );
-        found
-    }
-
-    #[allow(clippy::too_many_arguments)]
-    fn expand_part_usage_subtree(
-        graph: &SemanticGraph,
-        usage_node: &SemanticNode,
-        parent_dot: &str,
-        parts_out: &mut Vec<IbdPartDto>,
-        ports_out: &mut Vec<IbdPortDto>,
-        existing_part_qn_dot: &mut std::collections::HashSet<String>,
-        existing_ports: &mut std::collections::HashSet<(String, String)>,
-        visiting_defs: &mut std::collections::HashSet<String>,
-        shape_cache: &mut HashMap<String, bool>,
-        typed_shape_cache: &mut HashMap<String, Option<String>>,
-    ) {
-        for part_child in graph.children_of(usage_node) {
-            if !is_part_like(part_child.element_kind.as_str()) {
-                continue;
-            }
-            let expanded_dot = format!("{parent_dot}.{}", part_child.name);
-            if existing_part_qn_dot.insert(expanded_dot.clone()) {
-                parts_out.push(IbdPartDto {
-                    id: expanded_dot.clone(),
-                    node_id: expanded_dot.clone(),
-                    name: part_child.name.clone(),
-                    qualified_name: expanded_dot.clone(),
-                    uri: Some(part_child.id.uri.as_str().to_string()),
-                    container_id: Some(parent_dot.to_string()),
-                    element_type: part_child.element_kind.as_str().to_string(),
-                    attributes: part_child.attributes.clone(),
-                });
-            }
-            expand_part_usage_subtree(
-                graph,
-                part_child,
-                &expanded_dot,
-                parts_out,
-                ports_out,
-                existing_part_qn_dot,
-                existing_ports,
-                visiting_defs,
-                shape_cache,
-                typed_shape_cache,
-            );
-            if let Some(grand_def) =
-                first_typed_part_shape(graph, part_child, shape_cache, typed_shape_cache)
-            {
-                expand_def_subtree(
-                    graph,
-                    grand_def,
-                    &expanded_dot,
-                    parts_out,
-                    ports_out,
-                    existing_part_qn_dot,
-                    existing_ports,
-                    visiting_defs,
-                    shape_cache,
-                    typed_shape_cache,
-                );
-            }
-        }
-    }
-
-    #[allow(clippy::too_many_arguments)]
-    fn expand_def_subtree(
-        graph: &SemanticGraph,
-        def_node: &SemanticNode,
-        parent_dot: &str,
-        parts_out: &mut Vec<IbdPartDto>,
-        ports_out: &mut Vec<IbdPortDto>,
-        existing_part_qn_dot: &mut std::collections::HashSet<String>,
-        existing_ports: &mut std::collections::HashSet<(String, String)>,
-        visiting_defs: &mut std::collections::HashSet<String>,
-        shape_cache: &mut HashMap<String, bool>,
-        typed_shape_cache: &mut HashMap<String, Option<String>>,
-    ) {
-        let def_key = def_node.id.qualified_name.clone();
-        if !visiting_defs.insert(def_key.clone()) {
-            return;
-        }
-        add_inherited_ports_from_definition(graph, def_node, parent_dot, ports_out, existing_ports);
-        for part_child in graph.children_of(def_node) {
-            if !is_part_like(part_child.element_kind.as_str()) {
-                continue;
-            }
-            let expanded_dot = format!("{parent_dot}.{}", part_child.name);
-            if existing_part_qn_dot.contains(&expanded_dot) {
-                continue;
-            }
-            existing_part_qn_dot.insert(expanded_dot.clone());
-            parts_out.push(IbdPartDto {
-                id: expanded_dot.clone(),
-                node_id: expanded_dot.clone(),
-                name: part_child.name.clone(),
-                qualified_name: expanded_dot.clone(),
-                uri: Some(part_child.id.uri.as_str().to_string()),
-                container_id: Some(parent_dot.to_string()),
-                element_type: part_child.element_kind.as_str().to_string(),
-                attributes: part_child.attributes.clone(),
-            });
-            expand_part_usage_subtree(
-                graph,
-                part_child,
-                &expanded_dot,
-                parts_out,
-                ports_out,
-                existing_part_qn_dot,
-                existing_ports,
-                visiting_defs,
-                shape_cache,
-                typed_shape_cache,
-            );
-            if let Some(grand_def) =
-                first_typed_part_shape(graph, part_child, shape_cache, typed_shape_cache)
-            {
-                expand_def_subtree(
-                    graph,
-                    grand_def,
-                    &expanded_dot,
-                    parts_out,
-                    ports_out,
-                    existing_part_qn_dot,
-                    existing_ports,
-                    visiting_defs,
-                    shape_cache,
-                    typed_shape_cache,
-                );
-            }
-        }
-        visiting_defs.remove(&def_key);
-    }
+    // Collect (part_qualified_name, def_node_id) for connector mirroring below.
+    let mut typed_roots: Vec<(String, NodeId)> = Vec::new();
 
     let parts_snapshot = parts.clone();
-    let mut typed_roots: Vec<(&IbdPartDto, &SemanticNode, &SemanticNode)> = Vec::new();
     for p in &parts_snapshot {
         let Some(node) = graph_node_for_ibd_part(graph, uri, p) else {
             continue;
         };
-        let Some(def_node) = first_typed_part_shape(graph, node, &mut shape_cache, &mut typed_shape_cache)
+        let Some(def_node) = crate::semantic::component_view::first_typed_definition_with_shape(graph, node)
         else {
             continue;
         };
-        typed_roots.push((p, node, def_node));
-    }
-    for (p, _node, def_node) in &typed_roots {
+        typed_roots.push((p.qualified_name.clone(), def_node.id.clone()));
         let parent_dot = p.qualified_name.as_str();
-        let mut visiting_defs: std::collections::HashSet<String> = std::collections::HashSet::new();
-        expand_def_subtree(
-            graph,
-            def_node,
-            parent_dot,
-            &mut parts,
-            &mut ports,
-            &mut existing_part_qn_dot,
-            &mut existing_ports,
-            &mut visiting_defs,
-            &mut shape_cache,
-            &mut typed_shape_cache,
-        );
+        let expanded =
+            crate::semantic::component_view::expand_part_definition(graph, def_node, parent_dot, None);
+        for ep in &expanded {
+            if !existing_part_qn_dot.insert(ep.path.clone()) {
+                continue;
+            }
+            parts.push(IbdPartDto {
+                id: ep.path.clone(),
+                node_id: ep.path.clone(),
+                name: ep.name.clone(),
+                qualified_name: ep.path.clone(),
+                uri: ep.uri.as_ref().map(|u| u.as_str().to_string()),
+                container_id: ep.parent_path.clone(),
+                element_type: ep.element_kind.clone(),
+                attributes: ep.attributes.clone(),
+            });
+            for port in &ep.ports {
+                let key = (port.parent_path.clone(), port.name.clone());
+                if existing_ports.insert(key) {
+                    ports.push(expanded_port_to_ibd_dto(port));
+                }
+            }
+        }
+        // Also add ports for the root part itself from the definition.
+        for port in crate::semantic::component_view::inherited_ports(graph, def_node, parent_dot) {
+            let key = (port.parent_path.clone(), port.name.clone());
+            if existing_ports.insert(key) {
+                ports.push(expanded_port_to_ibd_dto(&port));
+            }
+        }
     }
 
     let def_container_prefixes: Vec<String> = nodes
@@ -1272,13 +1027,13 @@ pub fn build_ibd_for_uri(graph: &SemanticGraph, uri: &Url) -> IbdDataDto {
         .iter()
         .map(|c| (c.source_id.clone(), c.target_id.clone(), c.rel_type.clone()))
         .collect();
-    for (p, _node, def_node) in &typed_roots {
-        let def_prefix = def_node.id.qualified_name.as_str();
-        let usage_prefix_dot = p.qualified_name.as_str();
-        if def_node.id.uri != *uri {
+    for (usage_prefix_dot, def_id) in &typed_roots {
+        let def_prefix = def_id.qualified_name.as_str();
+        let usage_prefix_dot = usage_prefix_dot.as_str();
+        if def_id.uri != *uri {
             mirror_connectors_from_definition_document(
                 graph,
-                &def_node.id.uri,
+                &def_id.uri,
                 def_prefix,
                 usage_prefix_dot,
                 &parts,
@@ -1290,7 +1045,7 @@ pub fn build_ibd_for_uri(graph: &SemanticGraph, uri: &Url) -> IbdDataDto {
             );
             continue;
         }
-        let def_edges = graph.edges_for_uri_as_strings(&def_node.id.uri);
+        let def_edges = graph.edges_for_uri_as_strings(&def_id.uri);
         for (src, tgt, kind, _name) in &def_edges {
             if *kind != RelationshipKind::Connection {
                 continue;

@@ -165,10 +165,16 @@ pub(super) fn add_node_and_recurse(
     };
     let idx = g.graph.add_node(node);
     g.node_index_by_id.insert(node_id.clone(), idx);
-    g.nodes_by_uri.entry(uri.clone()).or_default().push(node_id);
+    g.nodes_by_uri.entry(uri.clone()).or_default().push(node_id.clone());
     g.node_ids_by_qualified_name
         .entry(qualified.to_string())
         .or_default()
         .push(NodeId::new(uri, qualified));
+    if let Some(pid) = parent_id {
+        g.children_by_parent_id
+            .entry(pid.clone())
+            .or_default()
+            .push(node_id);
+    }
     g.invalidate_query_indexes();
 }

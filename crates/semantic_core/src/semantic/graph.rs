@@ -21,6 +21,13 @@ struct GraphQueryIndexes {
     index_to_node_id: HashMap<NodeIndex, NodeId>,
 }
 
+/// Lazily computed workspace-level cache of `has_materialized_shape` per NodeId.
+/// Invalidated together with `query_indexes` on structural mutations.
+#[derive(Debug, Clone, Default)]
+struct ShapeCache {
+    by_node_id: HashMap<NodeId, bool>,
+}
+
 /// Semantic graph: nodes (model elements) and edges (relationships).
 /// Uses petgraph StableGraph for efficient add/remove and future algorithm support.
 #[derive(Debug)]
@@ -29,10 +36,13 @@ pub struct SemanticGraph {
     pub node_index_by_id: HashMap<NodeId, NodeIndex>,
     pub nodes_by_uri: HashMap<Url, Vec<NodeId>>,
     pub node_ids_by_qualified_name: HashMap<String, Vec<NodeId>>,
+    /// Incrementally maintained parent → children index. O(1) children lookup.
+    pub children_by_parent_id: HashMap<NodeId, Vec<NodeId>>,
     pub pending_expression_relationships: Vec<PendingExpressionRelationship>,
     pub pending_relationships: Vec<PendingRelationship>,
     pub import_lookup_cache: Mutex<HashMap<(NodeId, String, bool), Vec<NodeId>>>,
     query_indexes: Mutex<Option<Arc<GraphQueryIndexes>>>,
+    shape_cache: Mutex<ShapeCache>,
 }
 
 impl Default for SemanticGraph {
@@ -48,10 +58,12 @@ impl Clone for SemanticGraph {
             node_index_by_id: self.node_index_by_id.clone(),
             nodes_by_uri: self.nodes_by_uri.clone(),
             node_ids_by_qualified_name: self.node_ids_by_qualified_name.clone(),
+            children_by_parent_id: self.children_by_parent_id.clone(),
             pending_expression_relationships: self.pending_expression_relationships.clone(),
             pending_relationships: self.pending_relationships.clone(),
             import_lookup_cache: Mutex::new(HashMap::new()),
             query_indexes: Mutex::new(None),
+            shape_cache: Mutex::new(ShapeCache::default()),
         }
     }
 }
@@ -82,10 +94,12 @@ impl SemanticGraph {
             node_index_by_id: HashMap::new(),
             nodes_by_uri: HashMap::new(),
             node_ids_by_qualified_name: HashMap::new(),
+            children_by_parent_id: HashMap::new(),
             pending_expression_relationships: Vec::new(),
             pending_relationships: Vec::new(),
             import_lookup_cache: Mutex::new(HashMap::new()),
             query_indexes: Mutex::new(None),
+            shape_cache: Mutex::new(ShapeCache::default()),
         }
     }
 
@@ -114,6 +128,24 @@ impl SemanticGraph {
         if let Ok(mut guard) = self.query_indexes.lock() {
             *guard = None;
         }
+        if let Ok(mut cache) = self.shape_cache.lock() {
+            cache.by_node_id.clear();
+        }
+    }
+
+    /// Returns the cached `has_materialized_shape` result for the node, if available.
+    pub(crate) fn get_cached_shape(&self, node: &SemanticNode) -> Option<bool> {
+        self.shape_cache
+            .lock()
+            .ok()
+            .and_then(|cache| cache.by_node_id.get(&node.id).copied())
+    }
+
+    /// Stores a `has_materialized_shape` result in the workspace-level cache.
+    pub(crate) fn set_cached_shape(&self, node_id: &NodeId, value: bool) {
+        if let Ok(mut cache) = self.shape_cache.lock() {
+            cache.by_node_id.insert(node_id.clone(), value);
+        }
     }
 
     /// Removes all nodes (and their incident edges) for the given URI.
@@ -122,17 +154,39 @@ impl SemanticGraph {
             self.clear_import_lookup_cache();
             return;
         };
-        for id in node_ids {
+        // Collect parent_ids before removal so we can update the children index.
+        let parent_ids: Vec<(NodeId, Option<NodeId>)> = node_ids
+            .iter()
+            .map(|id| {
+                let parent = self
+                    .node_index_by_id
+                    .get(id)
+                    .and_then(|&idx| self.graph.node_weight(idx))
+                    .and_then(|n| n.parent_id.clone());
+                (id.clone(), parent)
+            })
+            .collect();
+
+        for id in &node_ids {
             let mut remove_lookup_entry = false;
             if let Some(ids) = self.node_ids_by_qualified_name.get_mut(&id.qualified_name) {
-                ids.retain(|existing| existing != &id);
+                ids.retain(|existing| existing != id);
                 remove_lookup_entry = ids.is_empty();
             }
             if remove_lookup_entry {
                 self.node_ids_by_qualified_name.remove(&id.qualified_name);
             }
-            if let Some(idx) = self.node_index_by_id.remove(&id) {
+            if let Some(idx) = self.node_index_by_id.remove(id) {
                 self.graph.remove_node(idx);
+            }
+            self.children_by_parent_id.remove(id);
+        }
+        // Remove each node from its parent's children list.
+        for (id, parent_id) in parent_ids {
+            if let Some(pid) = parent_id {
+                if let Some(children) = self.children_by_parent_id.get_mut(&pid) {
+                    children.retain(|c| c != &id);
+                }
             }
         }
         self.invalidate_query_indexes();
@@ -184,7 +238,13 @@ impl SemanticGraph {
             self.node_ids_by_qualified_name
                 .entry(id.qualified_name.clone())
                 .or_default()
-                .push(id);
+                .push(id.clone());
+            if let Some(parent_id) = &node.parent_id {
+                self.children_by_parent_id
+                    .entry(parent_id.clone())
+                    .or_default()
+                    .push(id);
+            }
         }
         for (src_id, tgt_id, edge) in other.iter_edges() {
             if let (Some(&src_idx), Some(&tgt_idx)) = (
@@ -274,18 +334,13 @@ impl SemanticGraph {
             .collect()
     }
 
-    /// Returns child nodes of the given node (by matching parent_id).
+    /// Returns child nodes of the given node using the parent→children index (O(1) lookup).
     pub fn children_of(&self, parent: &SemanticNode) -> Vec<&SemanticNode> {
-        self.nodes_by_uri
-            .get(&parent.id.uri)
+        self.children_by_parent_id
+            .get(&parent.id)
             .into_iter()
             .flatten()
-            .filter_map(|id| {
-                self.node_index_by_id
-                    .get(id)
-                    .and_then(|&idx| self.graph.node_weight(idx))
-            })
-            .filter(|n| n.parent_id.as_ref() == Some(&parent.id))
+            .filter_map(|id| self.get_node(id))
             .collect()
     }
 
@@ -811,6 +866,12 @@ impl SemanticGraph {
             .entry(node.id.qualified_name.clone())
             .or_default()
             .push(node.id.clone());
+        if let Some(parent_id) = &node.parent_id {
+            self.children_by_parent_id
+                .entry(parent_id.clone())
+                .or_default()
+                .push(node.id.clone());
+        }
         self.invalidate_query_indexes();
     }
 
