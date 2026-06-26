@@ -1,4 +1,5 @@
 use serde::{Deserialize, Serialize};
+use ts_rs::TS;
 
 use crate::semantic::ibd::{qualified_name_to_dot, IbdContainerGroupDto, IbdDataDto, IbdPortDto};
 use crate::semantic::interconnection_projection::{
@@ -7,8 +8,9 @@ use crate::semantic::interconnection_projection::{
 };
 use crate::semantic::visualization_workspace::IbdScopeTrace;
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, TS)]
 #[serde(rename_all = "camelCase")]
+#[ts(rename = "InterconnectionSceneViewDTO")]
 pub struct InterconnectionSceneViewDto {
     pub id: String,
     pub name: String,
@@ -17,40 +19,49 @@ pub struct InterconnectionSceneViewDto {
     pub root_ids: Vec<String>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, TS)]
 #[serde(rename_all = "camelCase")]
+#[ts(rename = "InterconnectionSceneNodeDTO")]
 pub struct InterconnectionNodeDto {
     pub id: String,
     pub semantic_id: String,
     #[serde(skip_serializing_if = "Option::is_none")]
+    #[ts(optional)]
     pub definition_id: Option<String>,
     pub qualified_name: String,
     pub name: String,
     pub kind: String,
     #[serde(skip_serializing_if = "Option::is_none")]
+    #[ts(optional)]
     pub type_name: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
+    #[ts(optional)]
     pub parent_id: Option<String>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, TS)]
 #[serde(rename_all = "camelCase")]
+#[ts(rename = "InterconnectionScenePortDTO")]
 pub struct InterconnectionPortDto {
     pub id: String,
     pub semantic_id: String,
     #[serde(skip_serializing_if = "Option::is_none")]
+    #[ts(optional)]
     pub definition_id: Option<String>,
     pub owner_node_id: String,
     pub name: String,
     #[serde(skip_serializing_if = "Option::is_none")]
+    #[ts(optional)]
     pub type_name: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
+    #[ts(optional)]
     pub direction: Option<String>,
     pub side_hint: String,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, TS)]
 #[serde(rename_all = "camelCase")]
+#[ts(rename = "InterconnectionSceneEdgeDTO")]
 pub struct InterconnectionEdgeDto {
     pub id: String,
     pub kind: String,
@@ -59,17 +70,22 @@ pub struct InterconnectionEdgeDto {
     pub source_node_id: String,
     pub target_node_id: String,
     #[serde(skip_serializing_if = "Option::is_none")]
+    #[ts(optional)]
     pub semantic_id: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
+    #[ts(optional)]
     pub label: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
+    #[ts(optional)]
     pub source_expression: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
+    #[ts(optional)]
     pub target_expression: Option<String>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, TS)]
 #[serde(rename_all = "camelCase")]
+#[ts(rename = "InterconnectionSceneContainerDTO")]
 pub struct InterconnectionContainerDto {
     pub id: String,
     pub label: String,
@@ -78,18 +94,21 @@ pub struct InterconnectionContainerDto {
     pub depth: usize,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, TS)]
 #[serde(rename_all = "camelCase")]
+#[ts(rename = "InterconnectionSceneDiagnosticDTO")]
 pub struct InterconnectionSceneDiagnosticDto {
     pub severity: String,
     pub code: String,
     pub message: String,
     #[serde(skip_serializing_if = "Option::is_none")]
+    #[ts(optional)]
     pub connector_id: Option<String>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, TS)]
 #[serde(rename_all = "camelCase")]
+#[ts(rename = "InterconnectionSceneDTO")]
 pub struct InterconnectionSceneDto {
     pub schema_version: u32,
     pub view: InterconnectionSceneViewDto,
