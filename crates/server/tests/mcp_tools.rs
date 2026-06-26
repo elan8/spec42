@@ -67,7 +67,8 @@ fn mcp_spec42_check_unknown_path_returns_error() {
             err.contains("No .sysml")
                 || err.contains("not found")
                 || err.contains("Failed to resolve")
-                || err.contains("cannot find"),
+                || err.contains("cannot find")
+                || err.contains("Path does not exist"),
             "unexpected error: {err}"
         );
     });
