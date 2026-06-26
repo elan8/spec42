@@ -48,10 +48,15 @@ pub fn compute_semantic_diagnostics_with_unit_registry(
     let mut diagnostics = Vec::new();
     let total_start = Instant::now();
     let mut section_timings = Vec::<(String, u128, usize)>::new();
+
+    // Pre-compute per-URI inputs shared across all passes.
+    let nodes = graph.nodes_for_uri(uri);
+    let connect_edges = graph.connect_statement_edges_for_uri(uri);
+
     // 0) Explicit builder diagnostics (e.g. ambiguous endpoint resolution).
     let t0 = Instant::now();
     let d0 = diagnostics.len();
-    for node in graph.nodes_for_uri(uri) {
+    for node in &nodes {
         if node.element_kind != "diagnostic" {
             continue;
         }
@@ -96,8 +101,7 @@ pub fn compute_semantic_diagnostics_with_unit_registry(
     // 1) Connection endpoints must be ports; port types must be compatible
     let t1 = Instant::now();
     let d1 = diagnostics.len();
-    let connection_occurrences = graph.connect_statement_edges_for_uri(uri);
-    for (src_id, tgt_id, connect) in connection_occurrences {
+    for (src_id, tgt_id, connect) in &connect_edges {
         let connection_range = connect.range;
         if let (Some(src), Some(tgt)) = (graph.get_node(&src_id), graph.get_node(&tgt_id)) {
             let both_part_like = is_part_like(&src.element_kind) && is_part_like(&tgt.element_kind);
@@ -152,15 +156,15 @@ pub fn compute_semantic_diagnostics_with_unit_registry(
     // 2) Unconnected ports (ports in this URI that are not an endpoint of any connection)
     let t2 = Instant::now();
     let d2 = diagnostics.len();
-    let connected_port_keys: HashSet<String> = graph
-        .connection_edge_node_pairs_for_uri(uri)
-        .into_iter()
-        .flat_map(|(a, b)| [a, b])
-        .filter_map(|id| graph.get_node(&id))
+    // Derive connected port keys from the pre-collected connect_edges (avoids a second edge scan).
+    let connected_port_keys: HashSet<String> = connect_edges
+        .iter()
+        .flat_map(|(a, b, _)| [a, b])
+        .filter_map(|id| graph.get_node(id))
         .filter_map(port_anchor_key)
         .collect();
 
-    for node in graph.nodes_for_uri(uri) {
+    for node in &nodes {
         if is_port_like(&node.element_kind)
             && node.element_kind == "port"
             && !is_synthetic(node)
@@ -191,7 +195,7 @@ pub fn compute_semantic_diagnostics_with_unit_registry(
     let t3 = Instant::now();
     let d3 = diagnostics.len();
     let mut seen_connections: HashSet<String> = HashSet::new();
-    for (src_id, tgt_id, connect) in graph.connect_statement_edges_for_uri(uri) {
+    for (src_id, tgt_id, connect) in &connect_edges {
         let key = connection_duplicate_key(
             Some(connect.source_expression.as_str()),
             Some(connect.target_expression.as_str()),
@@ -218,7 +222,7 @@ pub fn compute_semantic_diagnostics_with_unit_registry(
     // 4) Multiplicity validation (syntax and interval sanity)
     let t4 = Instant::now();
     let d4 = diagnostics.len();
-    for node in graph.nodes_for_uri(uri) {
+    for node in &nodes {
         if let Some(multiplicity) = node.attributes.get("multiplicity").and_then(|v| v.as_str()) {
             if let Some(message) = multiplicity_issue_message(multiplicity) {
                 diagnostics.push(diag(
@@ -277,7 +281,7 @@ pub fn compute_semantic_diagnostics_with_unit_registry(
     // 8) Redefines consistency, when the parser/graph captures a `redefines` attribute.
     let t8 = Instant::now();
     let d8 = diagnostics.len();
-    for node in graph.nodes_for_uri(uri) {
+    for node in &nodes {
         let Some(redefines_raw) = node.attributes.get("redefines").and_then(|v| v.as_str()) else {
             continue;
         };
@@ -312,7 +316,7 @@ pub fn compute_semantic_diagnostics_with_unit_registry(
     // 9) Inherited feature value assignment must use explicit redefinition (`:>>`).
     let t9 = Instant::now();
     let d9 = diagnostics.len();
-    for node in graph.nodes_for_uri(uri) {
+    for node in &nodes {
         if node.element_kind == "ref" {
             continue;
         }
@@ -363,7 +367,7 @@ pub fn compute_semantic_diagnostics_with_unit_registry(
     // 9b) Inherited attribute values must match declared enum types (not string literals).
     let t9b = Instant::now();
     let d9b = diagnostics.len();
-    for node in graph.nodes_for_uri(uri) {
+    for node in &nodes {
         if node.element_kind != "attribute" {
             continue;
         }
@@ -423,7 +427,7 @@ pub fn compute_semantic_diagnostics_with_unit_registry(
     // 10) Allocation usage conformance checks.
     let t10 = Instant::now();
     let d10 = diagnostics.len();
-    for node in graph.nodes_for_uri(uri) {
+    for node in &nodes {
         if node.element_kind != "allocation" {
             continue;
         }
@@ -516,7 +520,7 @@ pub fn compute_semantic_diagnostics_with_unit_registry(
     // 11) Verdict normalization and domain validation.
     let t11 = Instant::now();
     let d11 = diagnostics.len();
-    for node in graph.nodes_for_uri(uri) {
+    for node in &nodes {
         // Match evaluation: constraint/calc *definitions* are templates; requirement defs
         // can carry inline `require constraint` analysis on the same node.
         let is_analysis_template_def =
@@ -587,7 +591,7 @@ pub fn compute_semantic_diagnostics_with_unit_registry(
     // 12) Verdict normalization and domain validation.
     let t12 = Instant::now();
     let d12 = diagnostics.len();
-    for node in graph.nodes_for_uri(uri) {
+    for node in &nodes {
         if node.element_kind != "verdict" {
             continue;
         }
@@ -627,7 +631,7 @@ pub fn compute_semantic_diagnostics_with_unit_registry(
     // 13) Case-kind objective binding diagnostics.
     let t13 = Instant::now();
     let d13 = diagnostics.len();
-    for node in graph.nodes_for_uri(uri) {
+    for node in &nodes {
         if node.element_kind != "objective" {
             continue;
         }

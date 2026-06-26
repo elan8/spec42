@@ -78,4 +78,8 @@ pub fn finalize_workspace_graph(graph: &mut SemanticGraph) {
     link_workspace_relationships(graph);
     prepare_analysis_evaluation_context(graph);
     resolve_workspace_pending_relationships(graph);
+    // Edge additions above go via graph.graph.add_edge() directly, bypassing
+    // insert_workspace_edge. Invalidate here so the first post-finalization query
+    // builds the edge index with all edges present.
+    graph.invalidate_query_indexes();
 }

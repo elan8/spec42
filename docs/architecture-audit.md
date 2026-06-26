@@ -1,7 +1,7 @@
 # Spec42 Architecture & Technical-Debt Audit
 
 **Date:** 2026-06-25  
-**Last updated:** 2026-06-25  
+**Last updated:** 2026-06-26  
 **Scope:** Full workspace (`crates/*`, ~104.5k LOC, 8 crates).  
 **Cross-referenced against:** `docs/engineering/ROBOT-VACUUM-PERFORMANCE-ANALYSIS.md`
 
@@ -15,6 +15,8 @@
 | — | **URL normalisation fix** — `FileSystemDocumentProvider::path_to_url` now lowercases Windows drive letters, matching kernel's normalisation; fixes previously-broken `built_workspace_parity` test | in-tree |
 | — | `RelationshipKind` got `Serialize, Deserialize` + `#[serde(rename_all = "camelCase")]`; `ConnectStatementDetail` got `Serialize, Deserialize` | in-tree |
 | — | New `SemanticGraph::edges_for_uri()` returning full `SemanticEdge` detail | in-tree |
+| P1-3 | **`Arc<SemanticGraph>`** — `HostWorkspaceSnapshot` and `InMemoryWorkspace` now share one `Arc<SemanticGraph>`; `build_workspace_snapshot` clones the `Arc` instead of the graph; incremental update still does one unavoidable deep clone for mutation but shares the result | in-tree |
+| P2-1 | **Diagnostics engine O(edges_in_uri) optimisation** — added `edges_by_uri` and `connect_edges_by_declaring_uri` indexes to `GraphQueryIndexes`; rewrote five O(all_edges) edge-scan methods; pre-collect `nodes` and `connect_edges` once in `compute_semantic_diagnostics_with_unit_registry` instead of re-querying per pass; fixed stale-cache bug in all three kernel graph-mutation paths (`update_semantic_graph_for_uri`, `rebuild_all_document_links`, staged rebuild) by adding `invalidate_query_indexes()` after relationship linking | in-tree |
 
 ---
 
@@ -76,15 +78,11 @@ The dependency graph is acyclic. This is good.
 
 ## 2. Data Duplication & Redundancy
 
-### 2.1 `SemanticGraph` cloned per snapshot, twice incrementally (P1, perf)
+### 2.1 ~~`SemanticGraph` cloned per snapshot, twice incrementally~~ **Fixed (P1-3)**
 
-- `build.rs:237-242`: cloned into `InMemoryWorkspace` while `HostWorkspaceSnapshot` also stores it
-- `update.rs:106`: full deep clone on every incremental edit
-- `update.rs:176`: cloned again into the language workspace
+`HostWorkspaceSnapshot.semantic_graph` and `InMemoryWorkspace.semantic_graph` are now both `Arc<SemanticGraph>`. `build_workspace_snapshot` clones the `Arc` (pointer copy) instead of the graph. The incremental update path still performs one unavoidable deep clone (into a `mut` graph for mutation), then wraps the result in `Arc` and shares it into the language workspace — no second deep clone.
 
-`SemanticGraph::clone` (`graph.rs:44`) deep-copies the petgraph, three index maps, and pending vecs — this is the dominant allocation on every rebuild.
-
-**Recommendation:** Wrap in `Arc<SemanticGraph>`. Share between snapshot and `InMemoryWorkspace`. Apply copy-on-write only to the changed URI's nodes during incremental updates.
+Remaining: incremental update (`update.rs`) still re-links all relationships and re-resolves all pending expressions across the entire workspace (P2-3).
 
 ### 2.2 Five parallel model representations (P2)
 
@@ -127,14 +125,11 @@ Keys are re-parsed on hot paths with `.get("key").and_then(|v| v.as_str())`. A t
 
 ## 4. Performance Hotspots
 
-### 4.1 Diagnostics engine: 20 sequential passes, repeated graph scans (P2)
+### 4.1 ~~Diagnostics engine: 20 sequential passes, repeated graph scans~~ **Fixed (P2)**
 
-`engine_impl.rs:42-760` is a single 760-line function running ~20 named passes. Problems:
+`engine_impl.rs` now pre-collects `nodes` and `connect_edges` once at the top of `compute_semantic_diagnostics_with_unit_registry` and passes them to all passes. Edge lookup methods (`edges_for_uri`, `connect_statement_edges_for_uri`, `edges_for_uri_as_strings`) use `edges_by_uri` and `connect_edges_by_declaring_uri` indexes built in a single O(all_edges) pass during `build_query_indexes()`, then served in O(edges_in_uri) per query. The stale-cache hazard from direct `graph.graph.add_edge()` calls in all three mutation paths is addressed with explicit `invalidate_query_indexes()` calls.
 
-- Each pass calls `graph.nodes_for_uri(uri)` which allocates a fresh `Vec<&SemanticNode>` (`graph.rs:250`) — called ~10 times per document.
-- Several passes call `connect_statement_edges_for_uri` or `edges_for_uri_as_strings` which scan **all** `graph.edge_references()` to filter down to one URI (`graph.rs:631-709`). This is O(all_edges) per pass per document.
-
-**Recommendation:** Pre-compute once: the URI's node list and the URI-incident edge list. Split passes into named functions taking shared input. Index edges by URI during graph construction.
+Remaining: sub-check modules (passes 5–7, 14–18) still call `graph.nodes_for_uri(uri)` internally. A `DiagnosticsContext` struct could eliminate these too (Phase C).
 
 ### 4.2 Host validation is single-threaded; kernel uses hand-rolled threads (P2)
 
@@ -268,13 +263,13 @@ Verify whether these are still reachable; retire if not.
 |---|---------|----------|
 | ~~P1-1~~ | ~~Add `invalidate_query_indexes()` in `insert_workspace_edge`~~ **Done** | `graph.rs` |
 | P1-2 | Eliminate the `kernel` duplicate validation stack | `kernel/src/validation/`, `kernel/src/workspace/services.rs` |
-| P1-3 | `Arc<SemanticGraph>` — stop deep-cloning the graph on each snapshot/edit | `build.rs:237`, `update.rs:106,176` |
+| ~~P1-3~~ | ~~`Arc<SemanticGraph>` — stop deep-cloning the graph on each snapshot/edit~~ **Done** | `build.rs`, `update.rs` |
 
 ### P2 — Important (performance, maintainability)
 
 | # | Finding | Location |
 |---|---------|----------|
-| P2-1 | Refactor `engine_impl.rs` diagnostics into shared-input passes + index edges by URI | `engine_impl.rs:42-760`, `graph.rs:631-709` |
+| ~~P2-1~~ | ~~Refactor `engine_impl.rs` diagnostics into shared-input passes + index edges by URI~~ **Done** | `engine_impl.rs`, `graph.rs` |
 | P2-2 | `rayon` par_iter for host validation; drop `host_documents.clone()` | `facts.rs:38,60` |
 | P2-3 | Scope `finalize_workspace_graph` to changed URI + dependents | `update.rs:101`, `pipeline.rs:77` |
 | P2-4 | `thiserror` enums for `semantic_core` and `kernel`; remove string-code matching | `update.rs:50`, `pipeline.rs:19` |

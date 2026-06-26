@@ -16,9 +16,14 @@ use crate::semantic::model::{
 use crate::semantic::workspace_uri;
 
 /// Cached reverse index from petgraph node index to [`NodeId`] (invalidated on structural mutation).
+/// Also indexes edges by URI for O(edges_in_uri) queries instead of O(all_edges).
 #[derive(Debug, Clone)]
 struct GraphQueryIndexes {
     index_to_node_id: HashMap<NodeIndex, NodeId>,
+    /// All edges where the source **or** target node belongs to a given URI.
+    edges_by_uri: HashMap<Url, Vec<(NodeId, NodeId, SemanticEdge)>>,
+    /// Connection edges indexed by their `declaring_uri` (from `ConnectStatementDetail`).
+    connect_edges_by_declaring_uri: HashMap<Url, Vec<(NodeId, NodeId, ConnectStatementDetail)>>,
 }
 
 /// Lazily computed workspace-level cache of `has_materialized_shape` per NodeId.
@@ -108,7 +113,51 @@ impl SemanticGraph {
         for (id, idx) in &self.node_index_by_id {
             index_to_node_id.insert(*idx, id.clone());
         }
-        GraphQueryIndexes { index_to_node_id }
+
+        // Build URI edge indexes in a single pass over all edges.
+        let mut edges_by_uri: HashMap<Url, Vec<(NodeId, NodeId, SemanticEdge)>> = HashMap::new();
+        let mut connect_edges_by_declaring_uri: HashMap<
+            Url,
+            Vec<(NodeId, NodeId, ConnectStatementDetail)>,
+        > = HashMap::new();
+
+        for e in self.graph.edge_references() {
+            let Some(src_id) = index_to_node_id.get(&e.source()) else {
+                continue;
+            };
+            let Some(tgt_id) = index_to_node_id.get(&e.target()) else {
+                continue;
+            };
+            let weight = e.weight();
+
+            // Index by source URI; also by target URI when it differs.
+            edges_by_uri
+                .entry(src_id.uri.clone())
+                .or_default()
+                .push((src_id.clone(), tgt_id.clone(), weight.clone()));
+            if tgt_id.uri != src_id.uri {
+                edges_by_uri
+                    .entry(tgt_id.uri.clone())
+                    .or_default()
+                    .push((src_id.clone(), tgt_id.clone(), weight.clone()));
+            }
+
+            // Index connect-statement edges by their declaring URI.
+            if weight.kind == RelationshipKind::Connection {
+                if let Some(connect) = &weight.connect {
+                    connect_edges_by_declaring_uri
+                        .entry(connect.declaring_uri.clone())
+                        .or_default()
+                        .push((src_id.clone(), tgt_id.clone(), connect.clone()));
+                }
+            }
+        }
+
+        GraphQueryIndexes {
+            index_to_node_id,
+            edges_by_uri,
+            connect_edges_by_declaring_uri,
+        }
     }
 
     fn query_indexes(&self) -> Arc<GraphQueryIndexes> {
@@ -124,7 +173,7 @@ impl SemanticGraph {
         built
     }
 
-    pub(crate) fn invalidate_query_indexes(&self) {
+    pub fn invalidate_query_indexes(&self) {
         if let Ok(mut guard) = self.query_indexes.lock() {
             *guard = None;
         }
@@ -616,70 +665,28 @@ impl SemanticGraph {
     /// Returns connection edges that touch the given URI, as (source NodeId, target NodeId).
     /// Used for semantic checks (port type compatibility, endpoint kind).
     pub fn connection_edge_node_pairs_for_uri(&self, uri: &Url) -> Vec<(NodeId, NodeId)> {
-        let ids: std::collections::HashSet<_> = self
-            .nodes_by_uri
+        let indexes = self.query_indexes();
+        indexes
+            .edges_by_uri
             .get(uri)
             .into_iter()
             .flatten()
-            .cloned()
-            .collect();
-        if ids.is_empty() {
-            return Vec::new();
-        }
-        let indexes = self.query_indexes();
-        let id_by_idx = &indexes.index_to_node_id;
-        let mut out = Vec::new();
-        for e in self.graph.edge_references() {
-            if e.weight().kind != RelationshipKind::Connection {
-                continue;
-            }
-            let src_id = match id_by_idx.get(&e.source()) {
-                Some(id) => id.clone(),
-                None => continue,
-            };
-            let tgt_id = match id_by_idx.get(&e.target()) {
-                Some(id) => id.clone(),
-                None => continue,
-            };
-            if ids.contains(&src_id) || ids.contains(&tgt_id) {
-                out.push((src_id, tgt_id));
-            }
-        }
-        out
+            .filter(|(_, _, e)| e.kind == RelationshipKind::Connection)
+            .map(|(src, tgt, _)| (src.clone(), tgt.clone()))
+            .collect()
     }
 
     /// Returns all `Connection` edges incident to nodes in the given URI.
     pub fn connection_edges_touching_uri(&self, uri: &Url) -> Vec<(NodeId, NodeId, SemanticEdge)> {
-        let ids: std::collections::HashSet<_> = self
-            .nodes_by_uri
+        let indexes = self.query_indexes();
+        indexes
+            .edges_by_uri
             .get(uri)
             .into_iter()
             .flatten()
+            .filter(|(_, _, e)| e.kind == RelationshipKind::Connection)
             .cloned()
-            .collect();
-        if ids.is_empty() {
-            return Vec::new();
-        }
-        let indexes = self.query_indexes();
-        let id_by_idx = &indexes.index_to_node_id;
-        let mut out = Vec::new();
-        for e in self.graph.edge_references() {
-            if e.weight().kind != RelationshipKind::Connection {
-                continue;
-            }
-            let src_id = match id_by_idx.get(&e.source()) {
-                Some(id) => id.clone(),
-                None => continue,
-            };
-            let tgt_id = match id_by_idx.get(&e.target()) {
-                Some(id) => id.clone(),
-                None => continue,
-            };
-            if ids.contains(&src_id) || ids.contains(&tgt_id) {
-                out.push((src_id, tgt_id, e.weight().clone()));
-            }
-        }
-        out
+            .collect()
     }
 
     /// Returns `Connection` edges declared in the given URI with `connect` metadata.
@@ -687,71 +694,22 @@ impl SemanticGraph {
         &self,
         uri: &Url,
     ) -> Vec<(NodeId, NodeId, ConnectStatementDetail)> {
-        let ids: std::collections::HashSet<_> = self
-            .nodes_by_uri
-            .get(uri)
-            .into_iter()
-            .flatten()
-            .cloned()
-            .collect();
-        if ids.is_empty() {
-            return Vec::new();
-        }
         let indexes = self.query_indexes();
-        let id_by_idx = &indexes.index_to_node_id;
-        let mut out = Vec::new();
-        for e in self.graph.edge_references() {
-            let Some(connect) = e.weight().connect.clone() else {
-                continue;
-            };
-            if connect.declaring_uri != *uri {
-                continue;
-            }
-            if e.weight().kind != RelationshipKind::Connection {
-                continue;
-            }
-            let src_id = match id_by_idx.get(&e.source()) {
-                Some(id) => id.clone(),
-                None => continue,
-            };
-            let tgt_id = match id_by_idx.get(&e.target()) {
-                Some(id) => id.clone(),
-                None => continue,
-            };
-            out.push((src_id, tgt_id, connect));
-        }
-        out
+        indexes
+            .connect_edges_by_declaring_uri
+            .get(uri)
+            .cloned()
+            .unwrap_or_default()
     }
 
     /// Returns all edges incident to nodes in the given URI with full edge detail.
     pub fn edges_for_uri(&self, uri: &Url) -> Vec<(NodeId, NodeId, SemanticEdge)> {
-        let ids: std::collections::HashSet<_> = self
-            .nodes_by_uri
-            .get(uri)
-            .into_iter()
-            .flatten()
-            .cloned()
-            .collect();
-        if ids.is_empty() {
-            return Vec::new();
-        }
         let indexes = self.query_indexes();
-        let id_by_idx = &indexes.index_to_node_id;
-        let mut out = Vec::new();
-        for e in self.graph.edge_references() {
-            let src_id = match id_by_idx.get(&e.source()) {
-                Some(id) => id.clone(),
-                None => continue,
-            };
-            let tgt_id = match id_by_idx.get(&e.target()) {
-                Some(id) => id.clone(),
-                None => continue,
-            };
-            if ids.contains(&src_id) || ids.contains(&tgt_id) {
-                out.push((src_id, tgt_id, e.weight().clone()));
-            }
-        }
-        out
+        indexes
+            .edges_by_uri
+            .get(uri)
+            .cloned()
+            .unwrap_or_default()
     }
 
     /// Returns edges incident to nodes in the given URI as (source, target, kind, optional edge name).
@@ -760,38 +718,21 @@ impl SemanticGraph {
         &self,
         uri: &Url,
     ) -> Vec<(String, String, RelationshipKind, Option<String>)> {
-        let ids: std::collections::HashSet<_> = self
-            .nodes_by_uri
+        let indexes = self.query_indexes();
+        indexes
+            .edges_by_uri
             .get(uri)
             .into_iter()
             .flatten()
-            .cloned()
-            .collect();
-        if ids.is_empty() {
-            return Vec::new();
-        }
-        let indexes = self.query_indexes();
-        let id_by_idx = &indexes.index_to_node_id;
-        let mut out = Vec::new();
-        for e in self.graph.edge_references() {
-            let src_id = match id_by_idx.get(&e.source()) {
-                Some(id) => id.clone(),
-                None => continue,
-            };
-            let tgt_id = match id_by_idx.get(&e.target()) {
-                Some(id) => id.clone(),
-                None => continue,
-            };
-            if ids.contains(&src_id) || ids.contains(&tgt_id) {
-                out.push((
-                    src_id.qualified_name,
-                    tgt_id.qualified_name,
-                    e.weight().kind.clone(),
-                    None::<String>, // edge name for connection
-                ));
-            }
-        }
-        out
+            .map(|(src, tgt, e)| {
+                (
+                    src.qualified_name.clone(),
+                    tgt.qualified_name.clone(),
+                    e.kind.clone(),
+                    None::<String>,
+                )
+            })
+            .collect()
     }
 
     /// Returns workspace URIs represented in the graph, excluding configured library roots.

@@ -176,6 +176,7 @@ fn update_semantic_graph_for_uri(
             semantic::link_workspace_relationships(&mut state.semantic_graph);
             semantic::resolve_workspace_pending_relationships(&mut state.semantic_graph);
             semantic::evaluate_expressions(&mut state.semantic_graph);
+            state.semantic_graph.invalidate_query_indexes();
         }
     }
 }
@@ -639,6 +640,7 @@ pub(crate) fn rebuild_all_document_links(
             );
         }
     }
+    state.semantic_graph.invalidate_query_indexes();
     let cross_edge_resolution_ms = elapsed_ms(cross_edge_resolution_start);
 
     let workspace_relationship_linking_start = Instant::now();
@@ -652,6 +654,7 @@ pub(crate) fn rebuild_all_document_links(
     let expression_evaluation_start = Instant::now();
     semantic::evaluate_expressions(&mut state.semantic_graph);
     let expression_evaluation_ms = elapsed_ms(expression_evaluation_start);
+    state.semantic_graph.invalidate_query_indexes();
     let cross_document_edges_ms = elapsed_ms(cross_document_edges_start);
 
     let refresh_symbols_start = Instant::now();
@@ -821,6 +824,9 @@ pub(crate) fn rebuild_semantic_graph_staged(
             );
         }
     }
+    // Direct graph.add_edge() calls above bypass insert_workspace_edge; invalidate so the
+    // subsequent link/resolve steps don't see a stale edge index.
+    semantic_graph.invalidate_query_indexes();
     let cross_edge_resolution_ms = elapsed_ms(cross_edge_resolution_start);
 
     let workspace_relationship_linking_start = Instant::now();
@@ -834,6 +840,8 @@ pub(crate) fn rebuild_semantic_graph_staged(
     let expression_evaluation_start = Instant::now();
     semantic::evaluate_expressions(&mut semantic_graph);
     let expression_evaluation_ms = elapsed_ms(expression_evaluation_start);
+    // Ensure the edge index is fresh after all relationship mutations above.
+    semantic_graph.invalidate_query_indexes();
     let cross_document_edges_ms = elapsed_ms(cross_document_edges_start);
 
     let refresh_symbols_start = Instant::now();
