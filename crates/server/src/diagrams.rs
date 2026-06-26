@@ -1,7 +1,7 @@
 ﻿use std::path::{Path, PathBuf};
 
 use sysml_model::SysmlVisualizationResultDto;
-use spec42_host::HostWorkspaceSnapshot;
+use workspace::HostWorkspaceSnapshot;
 
 use crate::cli::{Cli, DiagramExportArgs, DiagramExportFormat};
 use crate::headless_renderer::render_shared_svg;

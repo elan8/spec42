@@ -18,11 +18,11 @@ path = "src/lib.rs"
 
 [features]
 default = ["embed-stdlib", "embed-domain-libraries"]
-embed-stdlib = ["spec42_host/embed-stdlib"]
-embed-domain-libraries = ["spec42_host/embed-domain-libraries"]
+embed-stdlib = ["workspace/embed-stdlib"]
+embed-domain-libraries = ["workspace/embed-domain-libraries"]
 
 [dependencies]
-spec42_host = { path = "../spec42_host", default-features = false }
+workspace = { path = "../workspace", default-features = false }
 lsp_server = { path = "../lsp_server" }
 sysml_model = { path = "../sysml_model" }
 kpar = { path = "../kpar" }

@@ -1,4 +1,4 @@
-use std::collections::BTreeSet;
+﻿use std::collections::BTreeSet;
 use std::fs;
 use std::path::{Path, PathBuf};
 
@@ -14,13 +14,13 @@ use crate::stdlib::{
     StandardLibraryPaths, StandardLibraryStatus,
 };
 use crate::sysand::{dependency_roots_from_status, detect_sysand_status, SysandStatus};
-use spec42_host::{
+use workspace::{
     catalog::HostLibraryRequest,
     EngineBuilder, Spec42Engine,
 };
 
 #[cfg(test)]
-use spec42_host::catalog::{
+use workspace::catalog::{
     resolve_domain_libraries_component_for_test, resolve_stdlib_component_for_test,
 };
 

@@ -1,3 +1,3 @@
-//! Re-export domain libraries management from `spec42_host`.
+﻿//! Re-export domain libraries management from `spec42_host`.
 
-pub use spec42_host::library::domain::*;
+pub use workspace::library::domain::*;

@@ -13,6 +13,7 @@ name = "lsp_server"
 default = []
 
 [dependencies]
+workspace = { path = "../workspace", default-features = false }
 language_service = { path = "../language_service" }
 sysml_model = { path = "../sysml_model" }
 sysml_tokens = { path = "../sysml_tokens" }

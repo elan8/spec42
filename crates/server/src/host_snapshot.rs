@@ -4,7 +4,7 @@ use std::path::{Path, PathBuf};
 use std::sync::Arc;
 
 use lsp_server::{BuiltWorkspaceInput, SemanticValidationReport, ValidationRequest};
-use spec42_host::{
+use workspace::{
     HostContext, HostFilesystemProvider, HostWorkspaceSnapshot, Spec42Engine, WorkspaceLoadRequest,
 };
 

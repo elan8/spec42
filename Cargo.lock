@@ -1125,6 +1125,7 @@ dependencies = [
  "tracing-subscriber",
  "url",
  "walkdir",
+ "workspace",
 ]
 
 [[package]]
@@ -1897,7 +1898,6 @@ dependencies = [
  "serde",
  "serde_json",
  "serde_yaml",
- "spec42_host",
  "sysml-v2-parser",
  "sysml_model",
  "tempfile",
@@ -1907,6 +1907,7 @@ dependencies = [
  "tower-http",
  "tower-lsp",
  "url",
+ "workspace",
  "zip",
 ]
 
@@ -1972,26 +1973,6 @@ checksum = "52d1cfed4120b4d927bf7c0f86d2087a4a7d6027c906d9f9d525a80573b9be51"
 dependencies = [
  "libc",
  "windows-sys 0.61.2",
-]
-
-[[package]]
-name = "spec42_host"
-version = "0.32.0"
-dependencies = [
- "directories",
- "kpar",
- "language_service",
- "serde",
- "serde_json",
- "sha2",
- "sysml-v2-parser",
- "sysml_model",
- "tempfile",
- "thiserror 2.0.18",
- "toml",
- "url",
- "walkdir",
- "zip",
 ]
 
 [[package]]
@@ -3136,6 +3117,28 @@ dependencies = [
  "serde_json",
  "unicode-xid",
  "wasmparser",
+]
+
+[[package]]
+name = "workspace"
+version = "0.32.0"
+dependencies = [
+ "directories",
+ "kpar",
+ "language_service",
+ "petgraph",
+ "serde",
+ "serde_json",
+ "sha2",
+ "sysml-v2-parser",
+ "sysml_model",
+ "tempfile",
+ "thiserror 2.0.18",
+ "toml",
+ "tracing",
+ "url",
+ "walkdir",
+ "zip",
 ]
 
 [[package]]

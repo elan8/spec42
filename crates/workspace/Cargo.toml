@@ -1,0 +1,124 @@
+﻿[package]
+name = "workspace"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
+description = "Protocol-neutral workspace build, snapshot, comparison and library management"
+build = "build.rs"
+
+[features]
+default = ["embed-stdlib", "embed-domain-libraries"]
+embed-stdlib = []
+embed-domain-libraries = []
+
+[build-dependencies]
+serde = { workspace = true }
+serde_json = { workspace = true }
+sha2 = "0.10"
+zip = { version = "2", default-features = false, features = ["deflate"] }
+kpar = { path = "../kpar" }
+
+[dependencies]
+kpar = { path = "../kpar" }
+sysml_model = { path = "../sysml_model" }
+language_service = { path = "../language_service" }
+serde = { workspace = true }
+serde_json = { workspace = true }
+thiserror = { workspace = true }
+sha2 = "0.10"
+toml = "0.8"
+zip = { version = "2", default-features = false, features = ["deflate"] }
+directories = "5"
+url = "2"
+walkdir = "2"
+sysml-v2-parser = { workspace = true }
+petgraph = { workspace = true }
+tracing = "0.1"
+
+[dev-dependencies]
+tempfile = "3"
+
+[[test]]
+name = "dependency_guardrails"
+path = "tests/dependency_guardrails.rs"
+
+[[test]]
+name = "library_source_resolution"
+path = "tests/library_source_resolution.rs"
+
+[[test]]
+name = "snapshot_single_build"
+path = "tests/snapshot_single_build.rs"
+
+[[test]]
+name = "robot_vacuum_snapshot"
+path = "tests/robot_vacuum_snapshot.rs"
+
+[[test]]
+name = "artifact_metadata_serde"
+path = "tests/artifact_metadata_serde.rs"
+
+[[test]]
+name = "host_errors"
+path = "tests/host_errors.rs"
+
+[[test]]
+name = "cancellation"
+path = "tests/cancellation.rs"
+
+[[test]]
+name = "resource_limits"
+path = "tests/resource_limits.rs"
+
+[[test]]
+name = "comparison_serde"
+path = "tests/comparison_serde.rs"
+
+[[test]]
+name = "comparison_elements"
+path = "tests/comparison_elements.rs"
+
+[[test]]
+name = "comparison_relationships"
+path = "tests/comparison_relationships.rs"
+
+[[test]]
+name = "comparison_diagnostics"
+path = "tests/comparison_diagnostics.rs"
+
+[[test]]
+name = "comparison_views"
+path = "tests/comparison_views.rs"
+
+[[test]]
+name = "comparison_identity"
+path = "tests/comparison_identity.rs"
+
+[[test]]
+name = "document_changes"
+path = "tests/document_changes.rs"
+
+[[test]]
+name = "incremental_parity"
+path = "tests/incremental_parity.rs"
+
+[[test]]
+name = "incremental_fallback"
+path = "tests/incremental_fallback.rs"
+
+[[test]]
+name = "incremental_benchmark"
+path = "tests/incremental_benchmark.rs"
+
+[[test]]
+name = "deferred_validation"
+path = "tests/deferred_validation.rs"
+
+[[test]]
+name = "robot_vacuum_performance"
+path = "tests/robot_vacuum_performance.rs"
+
+[[example]]
+name = "profile_robot_vacuum"
+path = "examples/profile_robot_vacuum.rs"
