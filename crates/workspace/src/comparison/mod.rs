@@ -1,4 +1,4 @@
-//! Semantic comparison between two immutable workspace snapshots.
+﻿//! Semantic comparison between two immutable workspace snapshots.
 
 mod diagnostics;
 mod elements;
@@ -21,7 +21,7 @@ pub use views::{
     HostViewPayloadChange,
 };
 
-use crate::error::HostResult;
+use crate::error::WorkspaceResult;
 use crate::snapshot::HostWorkspaceSnapshot;
 use crate::version::{rfc3339_timestamp, HostArtifactMetadata, HostSchemaVersions};
 
@@ -43,7 +43,7 @@ pub struct SemanticComparisonReport {
 pub fn compare_snapshots(
     previous: &HostWorkspaceSnapshot,
     next: &HostWorkspaceSnapshot,
-) -> HostResult<SemanticComparisonReport> {
+) -> WorkspaceResult<SemanticComparisonReport> {
     let previous_artifact = previous.metadata().clone();
     let next_artifact = next.metadata().clone();
     let identity_preservation =

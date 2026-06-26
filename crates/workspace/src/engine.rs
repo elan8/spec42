@@ -1,7 +1,7 @@
 ﻿use std::path::{Path, PathBuf};
 
 use crate::catalog::{resolve_library_catalog, HostLibraryRequest, LibraryCatalog};
-use crate::error::{HostResult, Spec42HostError};
+use crate::error::{WorkspaceResult, WorkspaceError};
 use crate::library::{
     domain::DomainLibrariesConfig,
     stdlib::StandardLibraryConfig,
@@ -78,7 +78,7 @@ impl Spec42Engine {
         provider: impl SysmlDocumentProvider,
         request: WorkspaceLoadRequest,
         context: HostContext,
-    ) -> HostResult<Arc<HostWorkspaceSnapshot>> {
+    ) -> WorkspaceResult<Arc<HostWorkspaceSnapshot>> {
         crate::snapshot::load_workspace_snapshot(self, provider, request, context)
     }
 
@@ -88,7 +88,7 @@ impl Spec42Engine {
         changes: crate::snapshot::DocumentChanges,
         request: WorkspaceLoadRequest,
         context: HostContext,
-    ) -> HostResult<Arc<HostWorkspaceSnapshot>> {
+    ) -> WorkspaceResult<Arc<HostWorkspaceSnapshot>> {
         crate::snapshot::update_workspace_snapshot(self, previous, changes, request, context)
     }
 }
@@ -164,9 +164,9 @@ impl EngineBuilder {
         self
     }
 
-    pub fn build(self) -> HostResult<Spec42Engine> {
+    pub fn build(self) -> WorkspaceResult<Spec42Engine> {
         let cache_dir = self.cache_dir.ok_or_else(|| {
-            Spec42HostError::unresolved_library_environment(
+            WorkspaceError::unresolved_library_environment(
                 "cache_dir is required to build a Spec42Engine",
             )
         })?;

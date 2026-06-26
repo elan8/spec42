@@ -5,7 +5,7 @@ use std::collections::HashSet;
 use sysml_model::{SysmlDocument, SysmlDocumentSourceKind};
 use url::Url;
 
-use crate::error::{HostResult, Spec42HostError};
+use crate::error::{WorkspaceResult, WorkspaceError};
 
 use super::build::enrich_document_hashes;
 
@@ -43,7 +43,7 @@ impl DocumentChanges {
         self
     }
 
-    pub(crate) fn validate(&self) -> HostResult<()> {
+    pub(crate) fn validate(&self) -> WorkspaceResult<()> {
         let mut seen = HashSet::new();
         for uri in self
             .added
@@ -53,7 +53,7 @@ impl DocumentChanges {
             .chain(self.removed.iter().map(|uri| uri.to_string()))
         {
             if !seen.insert(uri.clone()) {
-                return Err(Spec42HostError::invalid_document_uri(format!(
+                return Err(WorkspaceError::invalid_document_uri(format!(
                     "document URI appears in multiple change buckets: {uri}"
                 )));
             }
@@ -66,7 +66,7 @@ impl DocumentChanges {
 pub fn apply_document_changes(
     previous: &[SysmlDocument],
     changes: &DocumentChanges,
-) -> HostResult<Vec<SysmlDocument>> {
+) -> WorkspaceResult<Vec<SysmlDocument>> {
     changes.validate()?;
 
     let removed: HashSet<String> = changes

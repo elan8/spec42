@@ -5,7 +5,7 @@ use std::collections::BTreeMap;
 use sysml_model::{SysmlVisualizationResultDto, SysmlVisualizationViewCandidateDto};
 use sha2::{Digest, Sha256};
 
-use crate::error::HostResult;
+use crate::error::WorkspaceResult;
 use crate::snapshot::HostWorkspaceSnapshot;
 
 #[derive(Debug, Clone, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
@@ -48,7 +48,7 @@ pub struct HostViewComparison {
 pub(crate) fn compare_views(
     previous: &HostWorkspaceSnapshot,
     next: &HostWorkspaceSnapshot,
-) -> HostResult<HostViewComparison> {
+) -> WorkspaceResult<HostViewComparison> {
     let previous_catalog = catalog_map(previous);
     let next_catalog = catalog_map(next);
 

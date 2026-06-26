@@ -1,4 +1,4 @@
-//! Structured errors for the host embedding boundary.
+﻿//! Structured errors for the host embedding boundary.
 
 use serde::Serialize;
 use thiserror::Error;
@@ -12,7 +12,7 @@ pub(crate) use map::{
 
 #[derive(Debug, Error, Serialize)]
 #[serde(tag = "code", content = "details")]
-pub enum Spec42HostError {
+pub enum WorkspaceError {
     #[error("invalid_document_uri: {message}")]
     InvalidDocumentUri {
         #[serde(rename = "message")]
@@ -35,7 +35,7 @@ pub enum Spec42HostError {
     InternalInvariantFailure { message: String },
 }
 
-impl Spec42HostError {
+impl WorkspaceError {
     pub fn invalid_document_uri(message: impl Into<String>) -> Self {
         Self::InvalidDocumentUri {
             message: message.into(),
@@ -92,4 +92,4 @@ impl Spec42HostError {
     }
 }
 
-pub type HostResult<T> = Result<T, Spec42HostError>;
+pub type WorkspaceResult<T> = Result<T, WorkspaceError>;

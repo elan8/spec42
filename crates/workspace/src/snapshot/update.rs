@@ -9,7 +9,7 @@ use sysml_model::{
     finalize_workspace_graph, SemanticGraph, SysmlDocument, WorkspaceParsedDocument,
 };
 
-use crate::error::{map_language_service_error, map_render_snapshot_error, HostResult};
+use crate::error::{map_language_service_error, map_render_snapshot_error, WorkspaceResult};
 use crate::provider::InMemoryDocumentProvider;
 use crate::snapshot::build::{
     assemble_host_workspace_snapshot, build_workspace_snapshot, HostWorkspaceSnapshot,
@@ -27,7 +27,7 @@ pub fn update_workspace_snapshot(
     changes: DocumentChanges,
     request: WorkspaceLoadRequest,
     context: HostContext,
-) -> HostResult<Arc<HostWorkspaceSnapshot>> {
+) -> WorkspaceResult<Arc<HostWorkspaceSnapshot>> {
     context.check_continue(HostPipelinePhase::LoadingDocuments)?;
 
     let merged_documents = apply_document_changes(previous.documents(), &changes)?;
@@ -98,7 +98,7 @@ fn try_incremental_update(
     merged_documents: &[SysmlDocument],
     request: &WorkspaceLoadRequest,
     context: &HostContext,
-) -> HostResult<HostWorkspaceSnapshot> {
+) -> WorkspaceResult<HostWorkspaceSnapshot> {
     let changed = &changes.changed[0];
     let uri = changed.uri.clone();
 
@@ -136,7 +136,7 @@ fn try_incremental_update(
 fn patch_parsed_documents(
     previous: &[WorkspaceParsedDocument],
     changed: &SysmlDocument,
-) -> HostResult<Vec<WorkspaceParsedDocument>> {
+) -> WorkspaceResult<Vec<WorkspaceParsedDocument>> {
     let parse_start = Instant::now();
     let mut parsed_documents: Vec<WorkspaceParsedDocument> = previous
         .iter()
@@ -166,7 +166,7 @@ fn assemble_snapshot_from_state(
     parsed_documents: Vec<WorkspaceParsedDocument>,
     request: &WorkspaceLoadRequest,
     context: &HostContext,
-) -> HostResult<HostWorkspaceSnapshot> {
+) -> WorkspaceResult<HostWorkspaceSnapshot> {
     let build_instant = Instant::now();
     let target_files = discover_target_files(&request.targets)?;
     let library_paths = previous.library_paths().to_vec();

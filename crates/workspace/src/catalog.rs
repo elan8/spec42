@@ -1,4 +1,4 @@
-//! Library catalog resolution for host embedding.
+﻿//! Library catalog resolution for host embedding.
 
 use std::collections::BTreeSet;
 use std::path::{Path, PathBuf};
@@ -6,7 +6,7 @@ use std::path::{Path, PathBuf};
 use serde::{Deserialize, Serialize};
 use sha2::{Digest, Sha256};
 
-use crate::error::{HostResult, Spec42HostError};
+use crate::error::{WorkspaceResult, WorkspaceError};
 use crate::library::{
     domain::{
         domain_libraries_paths_from_data_dir, install_embedded_domain_libraries,
@@ -74,7 +74,7 @@ pub struct LibraryCatalog {
     pub domain_libraries_paths: DomainLibrariesPaths,
 }
 
-pub fn resolve_library_catalog(request: &HostLibraryRequest) -> HostResult<LibraryCatalog> {
+pub fn resolve_library_catalog(request: &HostLibraryRequest) -> WorkspaceResult<LibraryCatalog> {
     let standard_library_paths = standard_library_paths_from_data_dir(request.cache_dir.clone());
     let domain_libraries_paths = domain_libraries_paths_from_data_dir(request.cache_dir.clone());
 
@@ -106,7 +106,7 @@ pub fn resolve_library_catalog(request: &HostLibraryRequest) -> HostResult<Libra
 fn resolve_stdlib_component(
     request: &HostLibraryRequest,
     standard_library_paths: &StandardLibraryPaths,
-) -> HostResult<StdlibComponent> {
+) -> WorkspaceResult<StdlibComponent> {
     if request.no_stdlib
         || request.config_no_stdlib
         || std::env::var("SPEC42_NO_STDLIB")
@@ -123,7 +123,7 @@ fn resolve_stdlib_component(
 
     if let Some(path) = request.stdlib_path_override.as_ref() {
         let resolved = resolve_explicit_library_path(path, &request.cache_dir, "standard-library")
-            .map_err(Spec42HostError::unresolved_library_environment)?;
+            .map_err(WorkspaceError::unresolved_library_environment)?;
         return Ok(StdlibComponent {
             path: Some(resolved.install_path),
             roots: resolved.package_roots.roots,
@@ -134,7 +134,7 @@ fn resolve_stdlib_component(
     if let Some(value) = std::env::var_os("SPEC42_STDLIB_PATH") {
         let path = PathBuf::from(value);
         let resolved = resolve_explicit_library_path(&path, &request.cache_dir, "standard-library")
-            .map_err(Spec42HostError::unresolved_library_environment)?;
+            .map_err(WorkspaceError::unresolved_library_environment)?;
         return Ok(StdlibComponent {
             path: Some(resolved.install_path),
             roots: resolved.package_roots.roots,
@@ -144,7 +144,7 @@ fn resolve_stdlib_component(
     }
     if let Some(path) = request.config_stdlib_path.as_ref() {
         let resolved = resolve_explicit_library_path(path, &request.cache_dir, "standard-library")
-            .map_err(Spec42HostError::unresolved_library_environment)?;
+            .map_err(WorkspaceError::unresolved_library_environment)?;
         return Ok(StdlibComponent {
             path: Some(resolved.install_path),
             roots: resolved.package_roots.roots,
@@ -154,7 +154,7 @@ fn resolve_stdlib_component(
     }
 
     if let Some(metadata) = load_managed_metadata(standard_library_paths)
-        .map_err(Spec42HostError::unresolved_library_environment)?
+        .map_err(WorkspaceError::unresolved_library_environment)?
     {
         let managed_path = PathBuf::from(&metadata.install_path);
         let expected_path =
@@ -179,7 +179,7 @@ fn resolve_stdlib_component(
     #[allow(clippy::const_is_empty)]
     if request.use_embedded_stdlib && !EMBEDDED_STDLIB_ARCHIVE.is_empty() {
         let metadata = install_embedded_standard_library(standard_library_paths, &request.standard_library)
-            .map_err(Spec42HostError::unresolved_library_environment)?;
+            .map_err(WorkspaceError::unresolved_library_environment)?;
         let path = PathBuf::from(&metadata.install_path);
         return Ok(StdlibComponent {
             roots: stdlib_resolution_roots(&path, Some(&metadata)),
@@ -209,11 +209,11 @@ fn resolve_stdlib_component(
 fn resolve_domain_libraries_component(
     request: &HostLibraryRequest,
     domain_libraries_paths: &DomainLibrariesPaths,
-) -> HostResult<DomainLibrariesComponent> {
+) -> WorkspaceResult<DomainLibrariesComponent> {
     if let Some(path) = request.domain_libraries_path_override.as_ref() {
         let resolved =
             resolve_explicit_library_path(path, &request.cache_dir, "domain-libraries")
-                .map_err(Spec42HostError::unresolved_library_environment)?;
+                .map_err(WorkspaceError::unresolved_library_environment)?;
         return Ok(DomainLibrariesComponent {
             path: Some(resolved.install_path),
             source: Some("flag".to_string()),
@@ -223,7 +223,7 @@ fn resolve_domain_libraries_component(
         let path = PathBuf::from(value);
         let resolved =
             resolve_explicit_library_path(&path, &request.cache_dir, "domain-libraries")
-                .map_err(Spec42HostError::unresolved_library_environment)?;
+                .map_err(WorkspaceError::unresolved_library_environment)?;
         return Ok(DomainLibrariesComponent {
             path: Some(resolved.install_path),
             source: Some("env".to_string()),
@@ -231,7 +231,7 @@ fn resolve_domain_libraries_component(
     }
 
     if let Some(metadata) = load_domain_libraries_metadata(domain_libraries_paths)
-        .map_err(Spec42HostError::unresolved_library_environment)?
+        .map_err(WorkspaceError::unresolved_library_environment)?
     {
         let managed_path = PathBuf::from(&metadata.install_path);
         let expected_path =
@@ -254,7 +254,7 @@ fn resolve_domain_libraries_component(
     #[allow(clippy::const_is_empty)]
     if request.use_embedded_domain_libraries && !EMBEDDED_DOMAIN_LIBRARIES_ARCHIVE.is_empty() {
         let metadata = install_embedded_domain_libraries(domain_libraries_paths, &request.domain_libraries)
-            .map_err(Spec42HostError::unresolved_library_environment)?;
+            .map_err(WorkspaceError::unresolved_library_environment)?;
         return Ok(DomainLibrariesComponent {
             path: Some(PathBuf::from(metadata.install_path)),
             source: Some("bundled".to_string()),
@@ -322,13 +322,13 @@ fn canonicalize_lossy(path: &Path) -> PathBuf {
 pub fn resolve_stdlib_component_for_test(
     request: &HostLibraryRequest,
     standard_library_paths: &StandardLibraryPaths,
-) -> HostResult<StdlibComponent> {
+) -> WorkspaceResult<StdlibComponent> {
     resolve_stdlib_component(request, standard_library_paths)
 }
 
 pub fn resolve_domain_libraries_component_for_test(
     request: &HostLibraryRequest,
     domain_libraries_paths: &DomainLibrariesPaths,
-) -> HostResult<DomainLibrariesComponent> {
+) -> WorkspaceResult<DomainLibrariesComponent> {
     resolve_domain_libraries_component(request, domain_libraries_paths)
 }

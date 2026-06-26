@@ -26,7 +26,7 @@ pub(crate) fn collect_host_validation_report(
     workspace_root: Option<&std::path::Path>,
     library_paths_display: &[std::path::PathBuf],
     strict_diagnostics: bool,
-) -> crate::error::HostResult<HostValidationReport> {
+) -> crate::error::WorkspaceResult<HostValidationReport> {
     let target_urls = target_file_urls(target_files)?;
     let unit_registry = UnitRegistry::from_graph(graph);
     let document_text: HashMap<&str, &str> = documents
@@ -65,7 +65,7 @@ pub(crate) fn collect_host_validation_report(
 pub(crate) fn project_host_semantic_model(
     graph: &SemanticGraph,
     target_files: &[std::path::PathBuf],
-) -> crate::error::HostResult<HostSemanticProjection> {
+) -> crate::error::WorkspaceResult<HostSemanticProjection> {
     let target_urls = target_file_urls(target_files)?;
     let mut nodes = Vec::new();
     for uri in &target_urls {
@@ -118,7 +118,7 @@ pub(crate) fn project_host_semantic_model(
     })
 }
 
-fn target_file_urls(target_files: &[std::path::PathBuf]) -> crate::error::HostResult<BTreeSet<Url>> {
+fn target_file_urls(target_files: &[std::path::PathBuf]) -> crate::error::WorkspaceResult<BTreeSet<Url>> {
     target_files
         .iter()
         .map(|path| path_to_file_url(path.as_path()))

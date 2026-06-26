@@ -3,7 +3,7 @@
 mod build;
 mod changes;
 mod context;
-mod discovery;
+pub mod discovery;
 mod facts;
 mod metadata;
 mod output;

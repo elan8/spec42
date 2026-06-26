@@ -1,4 +1,4 @@
-//! Protocol-neutral workspace build, snapshot, comparison and library management for Spec42.
+﻿//! Protocol-neutral workspace build, snapshot, comparison and library management for Spec42.
 
 pub mod catalog;
 pub mod semantic;
@@ -21,7 +21,7 @@ pub use comparison::{
     IdentityPreservationStatus, SemanticComparisonReport,
 };
 pub use engine::{EngineBuilder, HostEngineMetadata, Spec42Engine};
-pub use error::{HostResult, Spec42HostError};
+pub use error::{WorkspaceResult, WorkspaceError};
 pub use library::{
     bundle::LibraryBundleConfig,
     domain::{

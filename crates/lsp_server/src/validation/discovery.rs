@@ -1,80 +1,28 @@
-use std::collections::BTreeSet;
 use std::path::{Path, PathBuf};
 
 use tower_lsp::lsp_types::Url;
-use walkdir::WalkDir;
 
 use crate::common::util;
+use workspace::snapshot::discovery;
 
 use super::ValidationRequest;
 
 pub(super) fn resolve_workspace_root(
     request: &ValidationRequest,
 ) -> Result<Option<PathBuf>, String> {
-    if let Some(root) = &request.workspace_root {
-        return normalize_existing_path(root).map(Some);
-    }
-    let first = request
-        .targets
-        .first()
-        .ok_or_else(|| "No target path was provided.".to_string())?;
-    if first.is_dir() {
-        return normalize_existing_path(first).map(Some);
-    }
-    normalize_existing_path(first)?
-        .parent()
-        .map(Path::to_path_buf)
-        .ok_or_else(|| {
-            format!(
-                "Could not infer a workspace root from target file {}.",
-                first.display()
-            )
-        })
+    let workspace_root = request.workspace_root.as_deref();
+    workspace::snapshot::discovery::resolve_workspace_root(&request.targets, workspace_root)
         .map(Some)
+        .map_err(|e| e.to_string())
 }
 
 pub(super) fn discover_target_files(targets: &[PathBuf]) -> Result<Vec<PathBuf>, String> {
-    let mut files = BTreeSet::new();
-    for target in targets {
-        let path = normalize_existing_path(target)?;
-        if path.is_file() {
-            if is_sysml_like(&path) {
-                files.insert(path);
-            }
-            continue;
-        }
-        for entry in WalkDir::new(&path)
-            .follow_links(false)
-            .into_iter()
-            .filter_map(Result::ok)
-        {
-            if !entry.file_type().is_file() {
-                continue;
-            }
-            let entry_path = entry.path().to_path_buf();
-            if is_sysml_like(&entry_path) {
-                files.insert(entry_path);
-            }
-        }
+    // Allow empty result (unlike workspace's strict version) — callers handle the empty case.
+    match discovery::discover_target_files(targets) {
+        Ok(files) => Ok(files),
+        Err(e) if e.to_string().contains("No .sysml") => Ok(vec![]),
+        Err(e) => Err(e.to_string()),
     }
-    Ok(files.into_iter().collect())
-}
-
-fn normalize_existing_path(path: &Path) -> Result<PathBuf, String> {
-    let path = path
-        .canonicalize()
-        .map_err(|err| format!("Failed to resolve {}: {err}", path.display()))?;
-    if !path.exists() {
-        return Err(format!("Path does not exist: {}", path.display()));
-    }
-    Ok(path)
-}
-
-fn is_sysml_like(path: &Path) -> bool {
-    matches!(
-        path.extension().and_then(|ext| ext.to_str()),
-        Some("sysml") | Some("kerml")
-    )
 }
 
 pub(super) fn path_to_file_url(path: &Path) -> Result<Url, String> {

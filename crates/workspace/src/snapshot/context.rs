@@ -1,10 +1,10 @@
-//! Execution context for workspace loads.
+﻿//! Execution context for workspace loads.
 
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::Arc;
 use std::time::{Duration, Instant};
 
-use crate::error::{HostResult, Spec42HostError};
+use crate::error::{WorkspaceResult, WorkspaceError};
 
 /// Cooperative cancellation handle shared across threads.
 #[derive(Debug, Clone, Default)]
@@ -93,13 +93,13 @@ impl HostContext {
         self
     }
 
-    pub(crate) fn check_continue(&self, phase: HostPipelinePhase) -> HostResult<()> {
+    pub(crate) fn check_continue(&self, phase: HostPipelinePhase) -> WorkspaceResult<()> {
         if self.cancellation.is_cancelled() {
-            return Err(Spec42HostError::cancelled());
+            return Err(WorkspaceError::cancelled());
         }
         if let Some(deadline) = self.deadline {
             if Instant::now() >= deadline {
-                return Err(Spec42HostError::cancelled());
+                return Err(WorkspaceError::cancelled());
             }
         }
         if let Some(progress) = &self.progress {
@@ -112,10 +112,10 @@ impl HostContext {
         &self,
         document_count: usize,
         total_bytes: u64,
-    ) -> HostResult<()> {
+    ) -> WorkspaceResult<()> {
         if let Some(max_documents) = self.limits.max_documents {
             if document_count > max_documents {
-                return Err(Spec42HostError::resource_limit_exceeded(
+                return Err(WorkspaceError::resource_limit_exceeded(
                     "max_documents",
                     format!(
                         "workspace contains {document_count} documents, limit is {max_documents}"
@@ -125,7 +125,7 @@ impl HostContext {
         }
         if let Some(max_total_bytes) = self.limits.max_total_bytes {
             if total_bytes > max_total_bytes {
-                return Err(Spec42HostError::resource_limit_exceeded(
+                return Err(WorkspaceError::resource_limit_exceeded(
                     "max_total_bytes",
                     format!(
                         "workspace content is {total_bytes} bytes, limit is {max_total_bytes}"
@@ -140,10 +140,10 @@ impl HostContext {
         &self,
         node_count: usize,
         relationship_count: usize,
-    ) -> HostResult<()> {
+    ) -> WorkspaceResult<()> {
         if let Some(max_graph_nodes) = self.limits.max_graph_nodes {
             if node_count > max_graph_nodes {
-                return Err(Spec42HostError::resource_limit_exceeded(
+                return Err(WorkspaceError::resource_limit_exceeded(
                     "max_graph_nodes",
                     format!("semantic graph has {node_count} nodes, limit is {max_graph_nodes}"),
                 ));
@@ -151,7 +151,7 @@ impl HostContext {
         }
         if let Some(max_graph_relationships) = self.limits.max_graph_relationships {
             if relationship_count > max_graph_relationships {
-                return Err(Spec42HostError::resource_limit_exceeded(
+                return Err(WorkspaceError::resource_limit_exceeded(
                     "max_graph_relationships",
                     format!(
                         "semantic graph has {relationship_count} relationships, limit is {max_graph_relationships}"

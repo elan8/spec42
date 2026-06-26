@@ -20,7 +20,7 @@ use crate::catalog::LibraryCatalog;
 use crate::engine::HostEngineMetadata;
 use crate::error::{
     map_graph_error, map_language_service_error, map_provider_error, map_render_snapshot_error,
-    map_view_error, HostResult, Spec42HostError,
+    map_view_error, WorkspaceResult, WorkspaceError,
 };
 use crate::snapshot::context::{HostContext, HostPipelinePhase};
 use crate::snapshot::discovery::{discover_target_files, path_to_file_url, resolve_workspace_root};
@@ -105,7 +105,7 @@ impl HostWorkspaceSnapshot {
         self.validation_report.get().is_some()
     }
 
-    pub fn ensure_validation(&self) -> HostResult<&HostValidationReport> {
+    pub fn ensure_validation(&self) -> WorkspaceResult<&HostValidationReport> {
         if let Some(report) = self.validation_report.get() {
             return Ok(report);
         }
@@ -143,7 +143,7 @@ impl HostWorkspaceSnapshot {
     /// Ensures validation has run, then moves the typed structs into a
     /// [`Spec42ProjectionOutput`] so the caller can persist or inspect them
     /// without going through JSON.
-    pub fn into_projection_output(self) -> HostResult<Spec42ProjectionOutput> {
+    pub fn into_projection_output(self) -> WorkspaceResult<Spec42ProjectionOutput> {
         let validation_report = self.ensure_validation()?.clone();
         Ok(Spec42ProjectionOutput {
             metadata: self.metadata,
@@ -156,7 +156,7 @@ impl HostWorkspaceSnapshot {
         &self,
         view: &str,
         selected_view: Option<&str>,
-    ) -> Result<SysmlVisualizationResultDto, Spec42HostError> {
+    ) -> Result<SysmlVisualizationResultDto, WorkspaceError> {
         let options = visualization_build_options(view);
         let full_ibd = if options.ibd_build_scope == IbdBuildScope::ViewExposedPackages
             && (view == "general-view"
@@ -195,13 +195,13 @@ pub(crate) fn build_workspace_snapshot(
     provider: impl SysmlDocumentProvider,
     request: WorkspaceLoadRequest,
     context: &HostContext,
-) -> HostResult<HostWorkspaceSnapshot> {
+) -> WorkspaceResult<HostWorkspaceSnapshot> {
     let build_instant = Instant::now();
 
     context.check_continue(HostPipelinePhase::LoadingDocuments)?;
     let mut documents = match provider.load_documents() {
         Err(_message) if context.cancellation.is_cancelled() => {
-            return Err(Spec42HostError::cancelled());
+            return Err(WorkspaceError::cancelled());
         }
         Err(message) => return Err(map_provider_error(message)),
         Ok(documents) => documents,
@@ -224,7 +224,7 @@ pub(crate) fn build_workspace_snapshot(
     let library_urls = library_paths
         .iter()
         .map(|path| path_to_file_url(path.as_path()))
-        .collect::<HostResult<Vec<_>>>()?;
+        .collect::<WorkspaceResult<Vec<_>>>()?;
 
     let workspace_root_uri = path_to_file_url(&workspace_root)?;
 
@@ -383,11 +383,11 @@ fn empty_validation_report() -> &'static HostValidationReport {
 pub(crate) fn init_validation_report(
     timing: ValidationTiming,
     eager_report: HostValidationReport,
-) -> HostResult<OnceLock<HostValidationReport>> {
+) -> WorkspaceResult<OnceLock<HostValidationReport>> {
     let slot = OnceLock::new();
     if timing == ValidationTiming::Eager {
         slot.set(eager_report).map_err(|_| {
-            Spec42HostError::internal_invariant_failure("validation report slot already initialized")
+            WorkspaceError::internal_invariant_failure("validation report slot already initialized")
         })?;
     }
     Ok(slot)
@@ -398,7 +398,7 @@ pub fn load_workspace_snapshot(
     provider: impl SysmlDocumentProvider,
     request: WorkspaceLoadRequest,
     context: HostContext,
-) -> HostResult<Arc<HostWorkspaceSnapshot>> {
+) -> WorkspaceResult<Arc<HostWorkspaceSnapshot>> {
     let catalog = engine.library_catalog().clone();
     let metadata = engine.metadata().clone();
     let snapshot = build_workspace_snapshot(
