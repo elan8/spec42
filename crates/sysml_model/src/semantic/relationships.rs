@@ -575,26 +575,47 @@ pub fn add_semantic_edge_once(
     };
     if edge.kind == RelationshipKind::Connection {
         if let Some(connect) = edge.connect.clone() {
+            // Collect edge data before mutating — borrow checker requires immutable scan
+            // to complete before any mutable access to the same graph field.
+            #[derive(Clone)]
+            enum ExistingConnectState {
+                NoConnect(petgraph::graph::EdgeIndex),
+                Duplicate,
+                Other,
+            }
             let mut saw_connection = false;
+            let mut action = None;
             for existing in g.graph.edges_connecting(src_idx, tgt_idx) {
                 if existing.weight().kind != RelationshipKind::Connection {
                     continue;
                 }
                 saw_connection = true;
                 if existing.weight().connect.is_none() {
-                    if let Some(weight) = g.graph.edge_weight_mut(existing.id()) {
-                        weight.connect = Some(connect);
-                    }
-                    return AddSemanticEdgeResult::Added;
+                    action = Some(ExistingConnectState::NoConnect(existing.id()));
+                    break;
                 }
                 if let Some(existing_connect) = &existing.weight().connect {
                     if existing_connect.source_expression == connect.source_expression
                         && existing_connect.target_expression == connect.target_expression
                         && existing_connect.container_prefix == connect.container_prefix
                     {
-                        return AddSemanticEdgeResult::DuplicateConnect;
+                        action = Some(ExistingConnectState::Duplicate);
+                        break;
                     }
                 }
+                action = Some(ExistingConnectState::Other);
+            }
+            match action {
+                Some(ExistingConnectState::NoConnect(eid)) => {
+                    if let Some(weight) = g.graph.edge_weight_mut(eid) {
+                        weight.connect = Some(connect);
+                    }
+                    return AddSemanticEdgeResult::Added;
+                }
+                Some(ExistingConnectState::Duplicate) => {
+                    return AddSemanticEdgeResult::DuplicateConnect;
+                }
+                _ => {}
             }
             if saw_connection {
                 g.graph.add_edge(src_idx, tgt_idx, edge);

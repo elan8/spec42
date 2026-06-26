@@ -33,10 +33,9 @@ struct ShapeCache {
     by_node_id: HashMap<NodeId, bool>,
 }
 
-/// Semantic graph: nodes (model elements) and edges (relationships).
-/// Uses petgraph StableGraph for efficient add/remove and future algorithm support.
+/// Inner data of the semantic graph. Use [`SemanticGraph`] as the public handle.
 #[derive(Debug)]
-pub struct SemanticGraph {
+pub struct SemanticGraphData {
     pub graph: StableGraph<SemanticNode, SemanticEdge, Directed>,
     pub node_index_by_id: HashMap<NodeId, NodeIndex>,
     pub nodes_by_uri: HashMap<Url, Vec<NodeId>>,
@@ -50,13 +49,13 @@ pub struct SemanticGraph {
     shape_cache: Mutex<ShapeCache>,
 }
 
-impl Default for SemanticGraph {
+impl Default for SemanticGraphData {
     fn default() -> Self {
         Self::new()
     }
 }
 
-impl Clone for SemanticGraph {
+impl Clone for SemanticGraphData {
     fn clone(&self) -> Self {
         Self {
             graph: self.graph.clone(),
@@ -70,6 +69,46 @@ impl Clone for SemanticGraph {
             query_indexes: Mutex::new(None),
             shape_cache: Mutex::new(ShapeCache::default()),
         }
+    }
+}
+
+/// Cheap-clone handle to a semantic graph. Cloning increments an Arc refcount.
+/// Mutation via `DerefMut` triggers copy-on-write (clones inner data only when shared).
+#[derive(Debug)]
+pub struct SemanticGraph(Arc<SemanticGraphData>);
+
+impl SemanticGraph {
+    pub fn new() -> Self {
+        SemanticGraph::default()
+    }
+
+    pub fn into_data(self) -> SemanticGraphData {
+        Arc::try_unwrap(self.0).unwrap_or_else(|arc| (*arc).clone())
+    }
+}
+
+impl Default for SemanticGraph {
+    fn default() -> Self {
+        SemanticGraph(Arc::new(SemanticGraphData::new()))
+    }
+}
+
+impl Clone for SemanticGraph {
+    fn clone(&self) -> Self {
+        SemanticGraph(Arc::clone(&self.0))
+    }
+}
+
+impl std::ops::Deref for SemanticGraph {
+    type Target = SemanticGraphData;
+    fn deref(&self) -> &SemanticGraphData {
+        &self.0
+    }
+}
+
+impl std::ops::DerefMut for SemanticGraph {
+    fn deref_mut(&mut self) -> &mut SemanticGraphData {
+        Arc::make_mut(&mut self.0)
     }
 }
 
@@ -92,7 +131,7 @@ pub struct PendingRelationship {
     pub target_kinds: Option<Vec<String>>,
 }
 
-impl SemanticGraph {
+impl SemanticGraphData {
     pub fn new() -> Self {
         Self {
             graph: StableGraph::new(),
@@ -244,7 +283,7 @@ impl SemanticGraph {
 
     /// Merges nodes and edges from another graph (built from a single document).
     pub fn merge(&mut self, other: SemanticGraph) {
-        self.merge_inner(other, None);
+        self.merge_inner(other.into_data(), None);
     }
 
     /// Merges another graph but skips nodes already declared in the workspace.
@@ -256,12 +295,12 @@ impl SemanticGraph {
         other: SemanticGraph,
         shadowed_packages: &std::collections::HashSet<String>,
     ) {
-        self.merge_inner(other, Some(shadowed_packages));
+        self.merge_inner(other.into_data(), Some(shadowed_packages));
     }
 
     fn merge_inner(
         &mut self,
-        other: SemanticGraph,
+        other: SemanticGraphData,
         shadowed_packages: Option<&std::collections::HashSet<String>>,
     ) {
         self.pending_relationships

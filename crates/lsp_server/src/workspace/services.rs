@@ -591,9 +591,11 @@ pub(crate) fn rebuild_all_document_links(
         })
         .collect();
 
+    let mut graph = std::mem::take(&mut state.semantic_graph);
+
     let remove_nodes_start = Instant::now();
     for uri in &uris {
-        state.semantic_graph.remove_nodes_for_uri(uri);
+        graph.remove_nodes_for_uri(uri);
     }
     let remove_nodes_ms = elapsed_ms(remove_nodes_start);
 
@@ -623,7 +625,7 @@ pub(crate) fn rebuild_all_document_links(
     for handle in handles {
         let batch = handle.join().unwrap_or_default();
         for (_uri, g) in batch {
-            state.semantic_graph.merge(g);
+            graph.merge(g);
         }
     }
     let rebuild_graphs_ms = elapsed_ms(rebuild_graphs_start);
@@ -641,12 +643,10 @@ pub(crate) fn rebuild_all_document_links(
         uri_buckets[i % worker_count].push(uri.clone());
     }
 
+    // Share the graph across parallel workers — cheap Arc clone via SemanticGraph::clone.
     let mut cross_handles = Vec::with_capacity(worker_count);
-    // Move the graph into an Arc for shared read access in workers
-    let graph_arc = std::sync::Arc::new(std::mem::take(&mut state.semantic_graph));
-
     for bucket in uri_buckets {
-        let graph_ref = graph_arc.clone();
+        let graph_ref = graph.clone();
         cross_handles.push(std::thread::spawn(move || {
             let mut edges = Vec::new();
             for uri in bucket {
@@ -662,40 +662,37 @@ pub(crate) fn rebuild_all_document_links(
     for handle in cross_handles {
         resolved_edges.extend(handle.join().unwrap_or_default());
     }
-
-    // Move the graph back to state after all worker Arc clones are dropped.
-    state.semantic_graph =
-        std::sync::Arc::try_unwrap(graph_arc).unwrap_or_else(|arc| (*arc).clone());
+    // All worker clones are dropped; DerefMut below is copy-on-write only if needed.
 
     for (src_id, tgt_id, kind) in resolved_edges {
         if let (Some(&src_idx), Some(&tgt_idx)) = (
-            state.semantic_graph.node_index_by_id.get(&src_id),
-            state.semantic_graph.node_index_by_id.get(&tgt_id),
+            graph.node_index_by_id.get(&src_id),
+            graph.node_index_by_id.get(&tgt_id),
         ) {
-            state.semantic_graph.graph.add_edge(
+            graph.graph.add_edge(
                 src_idx,
                 tgt_idx,
                 sysml_model::SemanticEdge::plain(kind),
             );
         }
     }
-    state.semantic_graph.invalidate_query_indexes();
+    graph.invalidate_query_indexes();
     let cross_edge_resolution_ms = elapsed_ms(cross_edge_resolution_start);
 
     let workspace_relationship_linking_start = Instant::now();
     // Typing/specializes/subject edges were already resolved by the parallel phase above
     // for every URI. Only derivation-connection wiring remains.
-    semantic::link_workspace_derivations(&mut state.semantic_graph);
+    semantic::link_workspace_derivations(&mut graph);
     let workspace_relationship_linking_ms = elapsed_ms(workspace_relationship_linking_start);
 
     let pending_relationship_resolution_start = Instant::now();
-    semantic::resolve_workspace_pending_relationships(&mut state.semantic_graph);
+    semantic::resolve_workspace_pending_relationships(&mut graph);
     let pending_relationship_resolution_ms = elapsed_ms(pending_relationship_resolution_start);
 
     let expression_evaluation_start = Instant::now();
-    semantic::evaluate_expressions(&mut state.semantic_graph);
+    semantic::evaluate_expressions(&mut graph);
     let expression_evaluation_ms = elapsed_ms(expression_evaluation_start);
-    state.semantic_graph.invalidate_query_indexes();
+    graph.invalidate_query_indexes();
     let cross_document_edges_ms = elapsed_ms(cross_document_edges_start);
 
     let refresh_symbols_start = Instant::now();
@@ -711,16 +708,17 @@ pub(crate) fn rebuild_all_document_links(
             all_symbols.extend(search_symbols);
             continue;
         }
-        let mut new_entries = semantic::symbol_entries_for_uri(&state.semantic_graph, uri);
+        let mut new_entries = semantic::symbol_entries_for_uri(&graph, uri);
         library_search::add_short_name_symbol_entries(&mut new_entries, &index_entry.content, uri);
         all_symbols.extend(new_entries);
     }
     state.symbol_table = all_symbols;
+    state.semantic_graph = graph;
     let refresh_symbols_ms = elapsed_ms(refresh_symbols_start);
 
     RebuildAllDocumentLinksMetrics {
         uri_count: state.index.len(),
-        parsed_doc_count: uris.len(), // Use uris.len() as we processed all requested uris
+        parsed_doc_count: uris.len(),
         remove_nodes_ms,
         rebuild_graphs_ms,
         cross_edge_resolution_ms,
@@ -831,10 +829,8 @@ pub(crate) fn rebuild_semantic_graph_staged(
     }
 
     let mut cross_handles = Vec::with_capacity(worker_count);
-    let graph_arc = std::sync::Arc::new(semantic_graph);
-
     for bucket in uri_buckets {
-        let graph_ref = graph_arc.clone();
+        let graph_ref = semantic_graph.clone();
         cross_handles.push(std::thread::spawn(move || {
             let mut edges = Vec::new();
             for uri in bucket {
@@ -850,8 +846,6 @@ pub(crate) fn rebuild_semantic_graph_staged(
     for handle in cross_handles {
         resolved_edges.extend(handle.join().unwrap_or_default());
     }
-
-    semantic_graph = std::sync::Arc::try_unwrap(graph_arc).unwrap_or_else(|arc| (*arc).clone());
 
     for (src_id, tgt_id, kind) in resolved_edges {
         if let (Some(&src_idx), Some(&tgt_idx)) = (

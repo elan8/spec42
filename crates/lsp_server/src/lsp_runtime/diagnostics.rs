@@ -167,22 +167,26 @@ async fn collect_diagnostics_for_document(
     text: &str,
 ) -> Vec<Diagnostic> {
     let uri_norm = util::normalize_file_uri(uri);
-    let locked = state.read().await;
+    // Snapshot only what's needed, then release the lock so the 2+ second
+    // diagnostic computation runs lock-free and doesn't block concurrent writers.
+    let (graph, library_paths, suppress_transient) = {
+        let locked = state.read().await;
+        (
+            locked.semantic_graph.clone(),
+            locked.library_paths.clone(),
+            locked.semantic_lifecycle.suppresses_transient_semantic_diagnostics(),
+        )
+    };
     let mut diagnostics = diagnostics_core::collect_document_diagnostics(
-        &locked.semantic_graph,
-        &locked.library_paths,
+        &graph,
+        &library_paths,
         &config.check_providers,
         &uri_norm,
         text,
         false,
         diagnostics_core::lsp_postprocess_options(),
     );
-    diagnostics = filter_transient_startup_semantic_diagnostics(
-        diagnostics,
-        locked
-            .semantic_lifecycle
-            .suppresses_transient_semantic_diagnostics(),
-    );
+    diagnostics = filter_transient_startup_semantic_diagnostics(diagnostics, suppress_transient);
     diagnostics
 }
 

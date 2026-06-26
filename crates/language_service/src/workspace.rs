@@ -1,5 +1,4 @@
 ﻿use std::collections::HashMap;
-use std::sync::Arc;
 
 use sysml_model::{
     build_semantic_graph_from_documents, SemanticGraph, SysmlDocument, TextPosition,
@@ -24,7 +23,7 @@ struct DocumentEntry {
 pub struct InMemoryWorkspace {
     documents: HashMap<Url, DocumentEntry>,
     path_to_uri: HashMap<String, Url>,
-    semantic_graph: Arc<SemanticGraph>,
+    semantic_graph: SemanticGraph,
     symbol_table: Vec<SymbolEntry>,
 }
 
@@ -54,12 +53,12 @@ impl InMemoryWorkspace {
     /// Build a workspace from pre-loaded SysML documents (workspace + optional library docs).
     pub fn from_documents(documents: Vec<SysmlDocument>) -> Result<Self, String> {
         let (semantic_graph, parsed_docs) = build_semantic_graph_from_documents(&documents)?;
-        Self::from_graph_and_documents(Arc::new(semantic_graph), parsed_docs, &documents)
+        Self::from_graph_and_documents(semantic_graph, parsed_docs, &documents)
     }
 
     /// Build a workspace from an already-built semantic graph and parsed documents.
     pub fn from_graph_and_documents(
-        semantic_graph: Arc<SemanticGraph>,
+        semantic_graph: SemanticGraph,
         parsed_docs: Vec<WorkspaceParsedDocument>,
         documents: &[SysmlDocument],
     ) -> Result<Self, String> {
@@ -147,7 +146,7 @@ impl WorkspaceSnapshot for InMemoryWorkspace {
     }
 
     fn semantic_graph(&self) -> &SemanticGraph {
-        &*self.semantic_graph
+        &self.semantic_graph
     }
 
     fn symbol_table(&self) -> &[SymbolEntry] {

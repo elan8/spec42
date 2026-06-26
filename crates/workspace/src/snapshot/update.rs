@@ -121,7 +121,7 @@ fn try_incremental_update(
     )?;
     context.check_continue(HostPipelinePhase::BuildingGraph)?;
 
-    let semantic_graph = Arc::new(graph);
+    let semantic_graph = graph;
     assemble_snapshot_from_state(
         engine,
         previous,
@@ -162,7 +162,7 @@ fn assemble_snapshot_from_state(
     engine: &Spec42Engine,
     previous: &HostWorkspaceSnapshot,
     documents: &[SysmlDocument],
-    semantic_graph: Arc<SemanticGraph>,
+    semantic_graph: SemanticGraph,
     parsed_documents: Vec<WorkspaceParsedDocument>,
     request: &WorkspaceLoadRequest,
     context: &HostContext,
@@ -176,7 +176,7 @@ fn assemble_snapshot_from_state(
 
     context.check_continue(HostPipelinePhase::BuildingLanguageWorkspace)?;
     let language_workspace = InMemoryWorkspace::from_graph_and_documents(
-        Arc::clone(&semantic_graph),
+        semantic_graph.clone(),
         parsed_documents.clone(),
         documents,
     )
