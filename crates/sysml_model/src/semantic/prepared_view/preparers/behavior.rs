@@ -559,17 +559,8 @@ pub fn prepare_state_prepared_view(response: &SysmlVisualizationResultDto) -> Pr
     }
 }
 
-fn to_prepared_range(range: &crate::semantic::extracted_model::RangeDto) -> RangeDto {
-    RangeDto {
-        start: crate::semantic::dto::PositionDto {
-            line: range.start.line,
-            character: range.start.character,
-        },
-        end: crate::semantic::dto::PositionDto {
-            line: range.end.line,
-            character: range.end.character,
-        },
-    }
+fn to_prepared_range(range: &RangeDto) -> RangeDto {
+    range.clone()
 }
 
 fn diagram_to_prepared(

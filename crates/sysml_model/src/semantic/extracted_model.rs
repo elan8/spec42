@@ -1,6 +1,7 @@
 //! Activity and sequence diagram extraction for sysml/model response.
 
 use crate::semantic::ast_util::identification_name;
+use crate::semantic::dto::{PositionDto, RangeDto};
 use serde::Serialize;
 use ts_rs::TS;
 use sysml_v2_parser::ast::{
@@ -127,22 +128,6 @@ fn expr_to_string(n: &sysml_v2_parser::Node<sysml_v2_parser::Expression>) -> Str
         }
         Expression::Null => String::new(),
     }
-}
-
-/// Position DTO for JSON (matches vscode sysmlModelTypes)
-#[derive(Debug, Clone, Serialize, TS)]
-#[ts(rename = "BehaviorPositionDTO")]
-pub struct PositionDto {
-    pub line: u32,
-    pub character: u32,
-}
-
-/// Range DTO for JSON
-#[derive(Debug, Clone, Serialize, TS)]
-#[ts(rename = "BehaviorRangeDTO")]
-pub struct RangeDto {
-    pub start: PositionDto,
-    pub end: PositionDto,
 }
 
 fn span_to_range_dto(span: &Span) -> RangeDto {

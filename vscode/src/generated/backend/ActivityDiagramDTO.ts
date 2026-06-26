@@ -2,8 +2,8 @@
 import type { ActivityActionDTO } from "./ActivityActionDTO";
 import type { ActivityInterfaceDTO } from "./ActivityInterfaceDTO";
 import type { ActivityStateDTO } from "./ActivityStateDTO";
-import type { BehaviorRangeDTO } from "./BehaviorRangeDTO";
 import type { ControlFlowDTO } from "./ControlFlowDTO";
 import type { DecisionNodeDTO } from "./DecisionNodeDTO";
+import type { RangeDTO } from "./RangeDTO";
 
-export type ActivityDiagramDTO = { id: string, name: string, packagePath: string, label: string, sourceKind: string, uri?: string, actions: Array<ActivityActionDTO>, interface?: ActivityInterfaceDTO, decisions: Array<DecisionNodeDTO>, flows: Array<ControlFlowDTO>, states: Array<ActivityStateDTO>, range: BehaviorRangeDTO, };
+export type ActivityDiagramDTO = { id: string, name: string, packagePath: string, label: string, sourceKind: string, uri?: string, actions: Array<ActivityActionDTO>, interface?: ActivityInterfaceDTO, decisions: Array<DecisionNodeDTO>, flows: Array<ControlFlowDTO>, states: Array<ActivityStateDTO>, range: RangeDTO, };

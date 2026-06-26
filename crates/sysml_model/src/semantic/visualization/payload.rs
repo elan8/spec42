@@ -280,18 +280,19 @@ pub fn warn_if_behavior_payload_missing(view: &str, state_count: usize, activity
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::semantic::dto::{PositionDto, RangeDto};
     use crate::semantic::extracted_model::{
-        ActivityActionDto, ControlFlowDto, RangeDto, SequenceLifelineDto, SequenceMessageDto,
-        StateNodeDto, StateNodeElementDto,
+        ActivityActionDto, ControlFlowDto, SequenceLifelineDto, SequenceMessageDto, StateNodeDto,
+        StateNodeElementDto,
     };
 
     fn empty_range() -> RangeDto {
         RangeDto {
-            start: crate::semantic::extracted_model::PositionDto {
+            start: PositionDto {
                 line: 0,
                 character: 0,
             },
-            end: crate::semantic::extracted_model::PositionDto {
+            end: PositionDto {
                 line: 0,
                 character: 0,
             },

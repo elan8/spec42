@@ -4,9 +4,9 @@ use std::collections::{HashMap, HashSet};
 
 use url::Url;
 
+use crate::semantic::dto::{PositionDto, RangeDto};
 use crate::semantic::extracted_model::{
     ActivityActionDto, ActivityDiagramDto, ActivityStateDto, ControlFlowDto, DecisionNodeDto,
-    PositionDto, RangeDto,
 };
 use crate::semantic::graph::SemanticGraph;
 use crate::semantic::model::{RelationshipKind, SemanticNode};

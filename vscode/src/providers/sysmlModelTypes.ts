@@ -14,8 +14,6 @@ export type { ActivityActionDTO } from "../generated/backend/ActivityActionDTO";
 export type { ActivityDiagramDTO } from "../generated/backend/ActivityDiagramDTO";
 export type { ActivityInterfaceDTO } from "../generated/backend/ActivityInterfaceDTO";
 export type { ActivityStateDTO } from "../generated/backend/ActivityStateDTO";
-export type { BehaviorPositionDTO } from "../generated/backend/BehaviorPositionDTO";
-export type { BehaviorRangeDTO } from "../generated/backend/BehaviorRangeDTO";
 export type { BranchDTO } from "../generated/backend/BranchDTO";
 export type { ControlFlowDTO } from "../generated/backend/ControlFlowDTO";
 export type { DecisionNodeDTO } from "../generated/backend/DecisionNodeDTO";

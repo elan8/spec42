@@ -13,9 +13,10 @@ use std::collections::{HashMap, HashSet};
 use crate::semantic::text_span::TextRange;
 use url::Url;
 
+use crate::semantic::dto::{PositionDto, RangeDto};
 use crate::semantic::extracted_model::{
-    PositionDto, RangeDto, SequenceActivationDto, SequenceDiagramDto, SequenceFragmentDto,
-    SequenceLifelineDto, SequenceMessageDto, SequenceOperandDto,
+    SequenceActivationDto, SequenceDiagramDto, SequenceFragmentDto, SequenceLifelineDto,
+    SequenceMessageDto, SequenceOperandDto,
 };
 use crate::semantic::graph::SemanticGraph;
 use crate::semantic::model::{NodeId, RelationshipKind, SemanticNode};
