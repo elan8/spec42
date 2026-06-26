@@ -1,100 +1,65 @@
-import type { InterconnectionSceneContainerDTO } from "../generated/backend/InterconnectionSceneContainerDTO";
-import type { InterconnectionSceneDiagnosticDTO } from "../generated/backend/InterconnectionSceneDiagnosticDTO";
+import type { ActivityDiagramDTO } from "../generated/backend/ActivityDiagramDTO";
+import type { GraphEdgeDTO } from "../generated/backend/GraphEdgeDTO";
+import type { GraphNodeDTO } from "../generated/backend/GraphNodeDTO";
+import type { IbdDataDTO } from "../generated/backend/IbdDataDTO";
 import type { InterconnectionSceneDTO } from "../generated/backend/InterconnectionSceneDTO";
-import type { InterconnectionSceneEdgeDTO } from "../generated/backend/InterconnectionSceneEdgeDTO";
-import type { InterconnectionSceneNodeDTO } from "../generated/backend/InterconnectionSceneNodeDTO";
-import type { InterconnectionScenePortDTO } from "../generated/backend/InterconnectionScenePortDTO";
-import type { InterconnectionSceneViewDTO } from "../generated/backend/InterconnectionSceneViewDTO";
+import type { SequenceDiagramDTO } from "../generated/backend/SequenceDiagramDTO";
+import type { SysMLElementDTO } from "../generated/backend/SysMLElementDTO";
+import type { SysMLGraphDTO } from "../generated/backend/SysMLGraphDTO";
+import type { SysMLModelStatsDTO } from "../generated/backend/SysMLModelStatsDTO";
+import type { SysMLVisualizationResult } from "../generated/backend/SysMLVisualizationResult";
+import type { WorkspaceModelDTO } from "../generated/backend/WorkspaceModelDTO";
 
-export type {
-  InterconnectionSceneContainerDTO,
-  InterconnectionSceneDiagnosticDTO,
-  InterconnectionSceneDTO,
-  InterconnectionSceneEdgeDTO,
-  InterconnectionSceneNodeDTO,
-  InterconnectionScenePortDTO,
-  InterconnectionSceneViewDTO,
-};
-
-export interface PositionDTO {
-  line: number;
-  character: number;
-}
-
-export interface RangeDTO {
-  start: PositionDTO;
-  end: PositionDTO;
-}
-
-export interface RelationshipDTO {
-  type: string;
-  source: string;
-  target: string;
-  name?: string;
-}
-
-export interface GraphNodeDTO {
-  id: string;
-  type: string;
-  name: string;
-  uri?: string;
-  parentId?: string;
-  range: RangeDTO;
-  attributes: Record<string, unknown>;
-}
-
-export interface GraphEdgeDTO {
-  source: string;
-  target: string;
-  /** Preferred; server may send rel_type instead of type */
-  type?: string;
-  rel_type?: string;
-  name?: string;
-}
-
-export interface SysMLGraphDTO {
-  nodes: GraphNodeDTO[];
-  edges: GraphEdgeDTO[];
-}
-
-export interface SysMLElementDTO {
-  id?: string;
-  type: string;
-  name: string;
-  uri?: string;
-  range: RangeDTO;
-  children: SysMLElementDTO[];
-  attributes: Record<string, unknown>;
-  relationships: RelationshipDTO[];
-  errors?: string[];
-}
-
-export interface SysMLModelStatsDTO {
-  totalElements: number;
-  resolvedElements: number;
-  unresolvedElements: number;
-  parseTimeMs: number;
-  modelBuildTimeMs: number;
-  parseCached: boolean;
-}
-
-export interface WorkspaceFileModelDTO {
-  uri: string;
-  elements: SysMLElementDTO[];
-}
-
-export interface WorkspaceModelSummaryDTO {
-  scannedFiles: number;
-  loadedFiles: number;
-  failures: number;
-  truncated: boolean;
-}
-
-export interface WorkspaceModelDTO {
-  files: WorkspaceFileModelDTO[];
-  semantic: SysMLElementDTO[];
-  summary: WorkspaceModelSummaryDTO;
-}
+export type { ActivityActionDTO } from "../generated/backend/ActivityActionDTO";
+export type { ActivityDiagramDTO } from "../generated/backend/ActivityDiagramDTO";
+export type { ActivityInterfaceDTO } from "../generated/backend/ActivityInterfaceDTO";
+export type { ActivityStateDTO } from "../generated/backend/ActivityStateDTO";
+export type { BehaviorPositionDTO } from "../generated/backend/BehaviorPositionDTO";
+export type { BehaviorRangeDTO } from "../generated/backend/BehaviorRangeDTO";
+export type { BranchDTO } from "../generated/backend/BranchDTO";
+export type { ControlFlowDTO } from "../generated/backend/ControlFlowDTO";
+export type { DecisionNodeDTO } from "../generated/backend/DecisionNodeDTO";
+export type { GraphEdgeDTO } from "../generated/backend/GraphEdgeDTO";
+export type { GraphNodeDTO } from "../generated/backend/GraphNodeDTO";
+export type { IbdConnectorDTO } from "../generated/backend/IbdConnectorDTO";
+export type { IbdContainerGroupDTO } from "../generated/backend/IbdContainerGroupDTO";
+export type { IbdDataDTO } from "../generated/backend/IbdDataDTO";
+export type { IbdPackageContainerGroupDTO } from "../generated/backend/IbdPackageContainerGroupDTO";
+export type { IbdPartDTO } from "../generated/backend/IbdPartDTO";
+export type { IbdPortDTO } from "../generated/backend/IbdPortDTO";
+export type { IbdRootViewDTO } from "../generated/backend/IbdRootViewDTO";
+export type { InterconnectionSceneContainerDTO } from "../generated/backend/InterconnectionSceneContainerDTO";
+export type { InterconnectionSceneDiagnosticDTO } from "../generated/backend/InterconnectionSceneDiagnosticDTO";
+export type { InterconnectionSceneDTO } from "../generated/backend/InterconnectionSceneDTO";
+export type { InterconnectionSceneEdgeDTO } from "../generated/backend/InterconnectionSceneEdgeDTO";
+export type { InterconnectionSceneNodeDTO } from "../generated/backend/InterconnectionSceneNodeDTO";
+export type { InterconnectionScenePortDTO } from "../generated/backend/InterconnectionScenePortDTO";
+export type { InterconnectionSceneViewDTO } from "../generated/backend/InterconnectionSceneViewDTO";
+export type { PositionDTO } from "../generated/backend/PositionDTO";
+export type { PreparedEdgeDTO } from "../generated/backend/PreparedEdgeDTO";
+export type { PreparedNodeDTO } from "../generated/backend/PreparedNodeDTO";
+export type { PreparedViewDTO } from "../generated/backend/PreparedViewDTO";
+export type { RangeDTO } from "../generated/backend/RangeDTO";
+export type { RegionDTO } from "../generated/backend/RegionDTO";
+export type { RelationshipDTO } from "../generated/backend/RelationshipDTO";
+export type { SequenceActivationDTO } from "../generated/backend/SequenceActivationDTO";
+export type { SequenceDiagramDTO } from "../generated/backend/SequenceDiagramDTO";
+export type { SequenceFragmentDTO } from "../generated/backend/SequenceFragmentDTO";
+export type { SequenceLifelineDTO } from "../generated/backend/SequenceLifelineDTO";
+export type { SequenceMessageDTO } from "../generated/backend/SequenceMessageDTO";
+export type { SequenceOperandDTO } from "../generated/backend/SequenceOperandDTO";
+export type { StateMachineDTO } from "../generated/backend/StateMachineDTO";
+export type { StateNodeDTO } from "../generated/backend/StateNodeDTO";
+export type { StateNodeElementDTO } from "../generated/backend/StateNodeElementDTO";
+export type { StateTransitionDTO } from "../generated/backend/StateTransitionDTO";
+export type { SysMLElementDTO } from "../generated/backend/SysMLElementDTO";
+export type { SysMLGraphDTO } from "../generated/backend/SysMLGraphDTO";
+export type { SysMLModelStatsDTO } from "../generated/backend/SysMLModelStatsDTO";
+export type { SysMLVisualizationResult } from "../generated/backend/SysMLVisualizationResult";
+export type { VisualizationViewCandidateDTO } from "../generated/backend/VisualizationViewCandidateDTO";
+export type { WorkspaceFileModelDTO } from "../generated/backend/WorkspaceFileModelDTO";
+export type { WorkspaceModelDTO } from "../generated/backend/WorkspaceModelDTO";
+export type { WorkspaceModelSummaryDTO } from "../generated/backend/WorkspaceModelSummaryDTO";
 
 /** LSP notification `spec42/semanticIndexReady` payload. */
 export interface SemanticIndexReadyParams {
@@ -108,74 +73,10 @@ export interface SysMLModelParams {
   scope?: Array<"graph" | "ibd" | "stats" | "activityDiagrams" | "sequenceDiagrams" | "workspaceVisualization">;
 }
 
-export interface IbdPartDTO {
-  id: string;
-  nodeId?: string;
-  name: string;
-  qualifiedName: string;
-  uri?: string;
-  containerId?: string;
-  type: string;
-  attributes?: Record<string, unknown>;
-}
-
-export interface IbdPortDTO {
-  id: string;
-  portId?: string;
-  name: string;
-  parentId: string;
-  direction?: string;
-  portType?: string;
-  portSide?: string;
-}
-
-export interface IbdConnectorDTO {
-  source: string;
-  target: string;
-  sourceId: string;
-  targetId: string;
-  sourcePartId?: string;
-  targetPartId?: string;
-  sourcePortId?: string;
-  targetPortId?: string;
-  type: string;
-}
-
-export interface IbdContainerGroupDTO {
-  id: string;
-  label: string;
-  depth: number;
-  qualifiedName: string;
-  parentId?: string;
-  memberPartIds: string[];
-}
-
-export interface IbdPackageContainerGroupDTO {
-  id: string;
-  label: string;
-  qualifiedPackage: string;
-  parentId?: string;
-  memberPartIds: string[];
-}
-
-export interface IbdRootViewDTO {
-  parts: IbdPartDTO[];
-  ports: IbdPortDTO[];
-  connectors: IbdConnectorDTO[];
-  containerGroups?: IbdContainerGroupDTO[];
-  packageContainerGroups?: IbdPackageContainerGroupDTO[];
-}
-
-export interface IbdDataDTO {
-  schemaVersion?: number;
-  parts: IbdPartDTO[];
-  ports: IbdPortDTO[];
-  connectors: IbdConnectorDTO[];
-  containerGroups?: IbdContainerGroupDTO[];
-  packageContainerGroups?: IbdPackageContainerGroupDTO[];
-  rootCandidates: string[];
-  rootViews?: Record<string, IbdRootViewDTO>;
-  defaultRoot?: string;
+export interface SysMLVisualizationParams {
+  workspaceRootUri: string;
+  view: string;
+  selectedView?: string;
 }
 
 export interface SysMLModelResult {
@@ -186,170 +87,7 @@ export interface SysMLModelResult {
   activityDiagrams?: ActivityDiagramDTO[];
   sequenceDiagrams?: SequenceDiagramDTO[];
   ibd?: IbdDataDTO;
-  stats?: SysMLModelStatsDTO;
-}
-
-export interface VisualizationViewCandidateDTO {
-  id: string;
-  name: string;
-  rendererView?: string;
-  supported: boolean;
-  viewType?: string;
-  description?: string;
-}
-
-export interface SysMLVisualizationParams {
-  workspaceRootUri: string;
-  view: string;
-  selectedView?: string;
-}
-
-export interface SysMLVisualizationResult {
-  version: number;
-  modelReady?: boolean;
-  view: string;
-  workspaceRootUri: string;
-  viewCandidates: VisualizationViewCandidateDTO[];
-  selectedView?: string;
-  selectedViewName?: string;
-  emptyStateMessage?: string;
-  graph?: SysMLGraphDTO;
-  generalViewGraph?: SysMLGraphDTO;
-  workspaceModel?: WorkspaceModelDTO;
-  activityDiagrams?: ActivityDiagramDTO[];
-  sequenceDiagrams?: SequenceDiagramDTO[];
-  ibd?: IbdDataDTO;
   interconnectionScene?: InterconnectionSceneDTO;
-  preparedView?: {
-    title: string;
-    view: string;
-    nodes: unknown[];
-    edges: unknown[];
-    meta?: Record<string, unknown>;
-  };
+  preparedView?: SysMLVisualizationResult["preparedView"];
   stats?: SysMLModelStatsDTO;
-}
-
-// ---------------------------------------------------------------------------
-// Activity Diagrams (optional - our server returns empty if not implemented)
-// ---------------------------------------------------------------------------
-
-export interface ActivityDiagramDTO {
-  id?: string;
-  name: string;
-  packagePath?: string;
-  sourceKind?: "actionDef" | "performer" | string;
-  actions: ActivityActionDTO[];
-  interface?: ActivityInterfaceDTO;
-  decisions: DecisionNodeDTO[];
-  flows: ControlFlowDTO[];
-  states: ActivityStateDTO[];
-  range: RangeDTO;
-}
-
-export interface ActivityInterfaceDTO {
-  inputs: string[];
-  outputs: string[];
-}
-
-export interface ActivityActionDTO {
-  name: string;
-  type: string;
-  kind?: string;
-  inputs?: string[];
-  outputs?: string[];
-  condition?: string;
-  subActions?: ActivityActionDTO[];
-  isDefinition?: boolean;
-  range?: RangeDTO;
-  parent?: string;
-  children?: string[];
-}
-
-export interface DecisionNodeDTO {
-  name: string;
-  condition: string;
-  branches: { condition: string; target: string }[];
-  range: RangeDTO;
-}
-
-export interface ControlFlowDTO {
-  from: string;
-  to: string;
-  condition?: string;
-  guard?: string;
-  range: RangeDTO;
-}
-
-export interface ActivityStateDTO {
-  name: string;
-  type: "initial" | "final" | "intermediate";
-  entryActions?: string[];
-  exitActions?: string[];
-  doActivity?: string;
-  range: RangeDTO;
-}
-
-export interface SequenceDiagramDTO {
-  id: string;
-  name: string;
-  packagePath?: string;
-  uri?: string;
-  lifelines: SequenceLifelineDTO[];
-  messages: SequenceMessageDTO[];
-  activations: SequenceActivationDTO[];
-  fragments: SequenceFragmentDTO[];
-  range?: RangeDTO;
-}
-
-export interface SequenceLifelineDTO {
-  id: string;
-  name: string;
-  type?: string;
-  uri?: string;
-  range?: RangeDTO;
-}
-
-export interface SequenceMessageDTO {
-  id: string;
-  name: string;
-  from: string;
-  to: string;
-  kind: "sync" | "async" | "return" | "create" | string;
-  order: number;
-  label?: string;
-  uri?: string;
-  range?: RangeDTO;
-}
-
-export interface SequenceActivationDTO {
-  id: string;
-  lifeline: string;
-  startMessage?: string;
-  finishMessage?: string;
-  order: number;
-  uri?: string;
-  range?: RangeDTO;
-}
-
-export interface SequenceOperandDTO {
-  id: string;
-  guard?: string;
-  messageIds: string[];
-  fragments?: SequenceFragmentDTO[];
-  uri?: string;
-  range?: RangeDTO;
-}
-
-export interface SequenceFragmentDTO {
-  id: string;
-  kind: "opt" | "alt" | "loop" | "ref" | string;
-  label?: string;
-  target?: string;
-  messageIds: string[];
-  operands: SequenceOperandDTO[];
-  fragments?: SequenceFragmentDTO[];
-  order: number;
-  uri?: string;
-  range?: RangeDTO;
 }

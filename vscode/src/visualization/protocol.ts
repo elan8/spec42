@@ -12,7 +12,7 @@ export interface PreparedViewPayload {
     view: string;
     nodes: unknown[];
     edges: unknown[];
-    meta?: Record<string, unknown>;
+    meta?: unknown;
 }
 
 export interface WebviewRenderIdentity {

@@ -81,12 +81,12 @@ export async function dumpGraphForGeneralView(
 
   report += "\n--- All contains edges (first 5) ---\n";
   containsEdges.slice(0, 5).forEach((e) => {
-    report += `  ${e.source} -> ${e.target} (type: ${e.type || e.rel_type})\n`;
+    report += `  ${e.source} -> ${e.target} (type: ${e.type})\n`;
   });
 
   report += "\n--- All typing edges (first 5) ---\n";
   typingEdges.slice(0, 5).forEach((e) => {
-    report += `  ${e.source} -> ${e.target} (type: ${e.type || e.rel_type})\n`;
+    report += `  ${e.source} -> ${e.target} (type: ${e.type})\n`;
   });
 
   const jsonPath = outPath.replace(/\.txt$/, ".json");

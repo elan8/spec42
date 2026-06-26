@@ -1127,7 +1127,7 @@ export class ModelExplorerProvider
       children: (el.children ?? []).map((c) => this.cloneElement(c)),
       attributes: el.attributes ? { ...el.attributes } : {},
       relationships: [...(el.relationships ?? [])],
-      errors: el.errors ? [...el.errors] : undefined,
+      errors: el.errors ? [...el.errors] : null,
     };
   }
 

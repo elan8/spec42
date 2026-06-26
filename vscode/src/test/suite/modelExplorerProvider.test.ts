@@ -47,6 +47,7 @@ function createElement(id: string, name = id, uri?: string): SysMLElementDTO {
     children: [],
     attributes: {},
     relationships: [],
+    errors: null,
   };
 }
 

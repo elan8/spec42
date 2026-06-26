@@ -2,6 +2,7 @@
 
 use crate::semantic::ast_util::identification_name;
 use serde::Serialize;
+use ts_rs::TS;
 use sysml_v2_parser::ast::{
     ActionDefBody, ActionDefBodyElement, FlowUsageKind, PackageBody, PackageBodyElement,
     PartDefBody, PartDefBodyElement, PartUsageBody, PartUsageBodyElement, RootElement,
@@ -129,14 +130,16 @@ fn expr_to_string(n: &sysml_v2_parser::Node<sysml_v2_parser::Expression>) -> Str
 }
 
 /// Position DTO for JSON (matches vscode sysmlModelTypes)
-#[derive(Debug, Clone, Serialize)]
+#[derive(Debug, Clone, Serialize, TS)]
+#[ts(rename = "BehaviorPositionDTO")]
 pub struct PositionDto {
     pub line: u32,
     pub character: u32,
 }
 
 /// Range DTO for JSON
-#[derive(Debug, Clone, Serialize)]
+#[derive(Debug, Clone, Serialize, TS)]
+#[ts(rename = "BehaviorRangeDTO")]
 pub struct RangeDto {
     pub start: PositionDto,
     pub end: PositionDto,
@@ -160,8 +163,9 @@ fn span_to_range_dto(span: &Span) -> RangeDto {
 // Activity diagrams
 // ---------------------------------------------------------------------------
 
-#[derive(Debug, Clone, Serialize)]
+#[derive(Debug, Clone, Serialize, TS)]
 #[serde(rename_all = "camelCase")]
+#[ts(rename = "ActivityDiagramDTO", optional_fields)]
 pub struct ActivityDiagramDto {
     pub id: String,
     pub name: String,
@@ -181,8 +185,9 @@ pub struct ActivityDiagramDto {
     pub range: RangeDto,
 }
 
-#[derive(Debug, Clone, Serialize)]
+#[derive(Debug, Clone, Serialize, TS)]
 #[serde(rename_all = "camelCase")]
+#[ts(rename = "ActivityActionDTO", optional_fields)]
 pub struct ActivityActionDto {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub id: Option<String>,
@@ -203,15 +208,17 @@ pub struct ActivityActionDto {
     pub swim_lane: Option<String>,
 }
 
-#[derive(Debug, Clone, Serialize)]
+#[derive(Debug, Clone, Serialize, TS)]
 #[serde(rename_all = "camelCase")]
+#[ts(rename = "ActivityInterfaceDTO")]
 pub struct ActivityInterfaceDto {
     pub inputs: Vec<String>,
     pub outputs: Vec<String>,
 }
 
-#[derive(Debug, Clone, Serialize)]
+#[derive(Debug, Clone, Serialize, TS)]
 #[serde(rename_all = "camelCase")]
+#[ts(rename = "DecisionNodeDTO")]
 pub struct DecisionNodeDto {
     pub name: String,
     pub condition: String,
@@ -219,14 +226,16 @@ pub struct DecisionNodeDto {
     pub range: RangeDto,
 }
 
-#[derive(Debug, Clone, Serialize)]
+#[derive(Debug, Clone, Serialize, TS)]
+#[ts(rename = "BranchDTO")]
 pub struct BranchDto {
     pub condition: String,
     pub target: String,
 }
 
-#[derive(Debug, Clone, Serialize)]
+#[derive(Debug, Clone, Serialize, TS)]
 #[serde(rename_all = "camelCase")]
+#[ts(rename = "ControlFlowDTO", optional_fields)]
 pub struct ControlFlowDto {
     pub from: String,
     pub to: String,
@@ -237,8 +246,9 @@ pub struct ControlFlowDto {
     pub range: RangeDto,
 }
 
-#[derive(Debug, Clone, Serialize)]
+#[derive(Debug, Clone, Serialize, TS)]
 #[serde(rename_all = "camelCase")]
+#[ts(rename = "ActivityStateDTO")]
 pub struct ActivityStateDto {
     pub name: String,
     #[serde(rename = "type")]
@@ -250,8 +260,9 @@ pub struct ActivityStateDto {
 // Sequence diagrams
 // ---------------------------------------------------------------------------
 
-#[derive(Debug, Clone, Serialize)]
+#[derive(Debug, Clone, Serialize, TS)]
 #[serde(rename_all = "camelCase")]
+#[ts(rename = "SequenceDiagramDTO", optional_fields)]
 pub struct SequenceDiagramDto {
     pub id: String,
     pub name: String,
@@ -269,8 +280,9 @@ pub struct SequenceDiagramDto {
     pub range: RangeDto,
 }
 
-#[derive(Debug, Clone, Serialize)]
+#[derive(Debug, Clone, Serialize, TS)]
 #[serde(rename_all = "camelCase")]
+#[ts(rename = "SequenceLifelineDTO", optional_fields)]
 pub struct SequenceLifelineDto {
     pub id: String,
     pub name: String,
@@ -279,8 +291,9 @@ pub struct SequenceLifelineDto {
     pub range: RangeDto,
 }
 
-#[derive(Debug, Clone, Serialize)]
+#[derive(Debug, Clone, Serialize, TS)]
 #[serde(rename_all = "camelCase")]
+#[ts(rename = "SequenceMessageDTO", optional_fields)]
 pub struct SequenceMessageDto {
     pub id: String,
     pub name: String,
@@ -295,8 +308,9 @@ pub struct SequenceMessageDto {
     pub range: RangeDto,
 }
 
-#[derive(Debug, Clone, Serialize)]
+#[derive(Debug, Clone, Serialize, TS)]
 #[serde(rename_all = "camelCase")]
+#[ts(rename = "SequenceActivationDTO", optional_fields)]
 pub struct SequenceActivationDto {
     pub id: String,
     pub name: String,
@@ -310,8 +324,9 @@ pub struct SequenceActivationDto {
     pub range: RangeDto,
 }
 
-#[derive(Debug, Clone, Serialize)]
+#[derive(Debug, Clone, Serialize, TS)]
 #[serde(rename_all = "camelCase")]
+#[ts(rename = "SequenceOperandDTO", optional_fields)]
 pub struct SequenceOperandDto {
     pub id: String,
     pub name: String,
@@ -324,8 +339,9 @@ pub struct SequenceOperandDto {
     pub range: RangeDto,
 }
 
-#[derive(Debug, Clone, Serialize)]
+#[derive(Debug, Clone, Serialize, TS)]
 #[serde(rename_all = "camelCase")]
+#[ts(rename = "SequenceFragmentDTO", optional_fields)]
 pub struct SequenceFragmentDto {
     pub id: String,
     pub name: String,
@@ -342,8 +358,9 @@ pub struct SequenceFragmentDto {
     pub range: RangeDto,
 }
 
-#[derive(Debug, Clone, Serialize)]
+#[derive(Debug, Clone, Serialize, TS)]
 #[serde(rename_all = "camelCase")]
+#[ts(rename = "StateMachineDTO", optional_fields)]
 pub struct StateMachineDto {
     pub id: String,
     pub name: String,
@@ -359,8 +376,9 @@ pub struct StateMachineDto {
     pub range: RangeDto,
 }
 
-#[derive(Debug, Clone, Serialize)]
+#[derive(Debug, Clone, Serialize, TS)]
 #[serde(rename_all = "camelCase")]
+#[ts(rename = "RegionDTO", optional_fields)]
 pub struct RegionDto {
     pub id: String,
     pub name: String,
@@ -368,8 +386,9 @@ pub struct RegionDto {
     pub parent_id: Option<String>,
 }
 
-#[derive(Debug, Clone, Serialize)]
+#[derive(Debug, Clone, Serialize, TS)]
 #[serde(rename_all = "camelCase")]
+#[ts(rename = "StateNodeDTO", optional_fields)]
 pub struct StateNodeDto {
     pub id: String,
     pub name: String,
@@ -387,8 +406,9 @@ pub struct StateNodeDto {
     pub element: StateNodeElementDto,
 }
 
-#[derive(Debug, Clone, Serialize)]
+#[derive(Debug, Clone, Serialize, TS)]
 #[serde(rename_all = "camelCase")]
+#[ts(rename = "StateNodeElementDTO", optional_fields)]
 pub struct StateNodeElementDto {
     pub id: String,
     pub name: String,
@@ -399,8 +419,9 @@ pub struct StateNodeElementDto {
     pub range: RangeDto,
 }
 
-#[derive(Debug, Clone, Serialize)]
+#[derive(Debug, Clone, Serialize, TS)]
 #[serde(rename_all = "camelCase")]
+#[ts(rename = "StateTransitionDTO", optional_fields)]
 pub struct StateTransitionDto {
     pub id: String,
     pub source: String,

@@ -31,15 +31,15 @@ function graphNodeToElementDTO(
   visited: Set<string> = new Set()
 ): SysMLElementDTO {
   if (visited.has(node.id)) {
-    return { id: node.id, type: node.type, name: node.name, range: node.range, children: [], attributes: node.attributes || {}, relationships: [] };
+    return { id: node.id, type: node.type, name: node.name, range: node.range, children: [], attributes: node.attributes || {}, relationships: [], errors: null };
   }
   visited.add(node.id);
   const children = (graph.nodes || []).filter((n) => n.parentId === node.id);
   const childDTOs = children.map((c) => graphNodeToElementDTO(c, graph, visited));
-  const edgeType = (e: { type?: string; rel_type?: string }) => e.type || e.rel_type || '';
+  const edgeType = (e: { type?: string }) => e.type || '';
   const relationships = (graph.edges || [])
     .filter((e) => e.source === node.id && edgeType(e).toLowerCase() !== 'contains')
-    .map((e) => ({ source: e.source, target: e.target, type: edgeType(e), name: e.name }));
+    .map((e) => ({ source: e.source, target: e.target, type: edgeType(e), name: e.name ?? null }));
   return {
     id: node.id,
     type: node.type,
@@ -48,6 +48,7 @@ function graphNodeToElementDTO(
     children: childDTOs,
     attributes: node.attributes || {},
     relationships,
+    errors: null,
   };
 }
 
