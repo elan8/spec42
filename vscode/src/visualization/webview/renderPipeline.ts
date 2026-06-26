@@ -72,9 +72,11 @@ export async function renderVisualization(
     }
 
     const dataForPrepare = baseData;
-    const prepareStartedAt = Date.now();
+    const inputStartedAt = Date.now();
     const sharedInput = buildSharedRendererInput(dataForPrepare, view);
+    const inputMs = Date.now() - inputStartedAt;
     const sharedRendererViewSet = new Set<string>(SYSML_ENABLED_VIEWS);
+    const prepareStartedAt = Date.now();
     const sharedPrepared = sharedRendererViewSet.has(view) && sharedInput
         ? prepareSharedViewData(sharedInput)
         : null;
@@ -102,6 +104,7 @@ export async function renderVisualization(
                 : 'visualizer:webviewRenderCompleted',
             {
                 view,
+                inputMs,
                 prepareMs,
                 totalMs: Date.now() - renderStartedAt,
                 outcome: supersededByNewerRequest ? 'cancelled' : renderOutcome,
@@ -122,6 +125,7 @@ export async function renderVisualization(
     const renderSafetyTimeout = setTimeout(() => {
         ctx.webviewPerf('visualizer:webviewRenderSafetyTimeout', {
             view,
+            inputMs,
             prepareMs,
             elapsedMs: Date.now() - renderStartedAt,
         });
@@ -137,6 +141,7 @@ export async function renderVisualization(
         }
         ctx.webviewPerf('visualizer:webviewRenderStarted', {
             view,
+            inputMs,
             prepareMs,
             graphNodes: dataForPrepare?.graph?.nodes?.length || 0,
             graphEdges: dataForPrepare?.graph?.edges?.length || 0,
@@ -212,6 +217,12 @@ export async function renderVisualization(
                         },
                     );
                 },
+                onPerformance: (event, data) => {
+                    ctx.webviewPerf(`visualizer:${event}`, {
+                        ...data,
+                        currentView: view,
+                    });
+                },
             });
             bindSharedCanvasRefs(ctx, ctx.vizElement);
             ensureSharedCanvasZoom(ctx, ctx.sharedRenderController.getFitTransform());
@@ -248,6 +259,7 @@ export async function renderVisualization(
         renderOutcome = 'error';
         ctx.webviewPerf('visualizer:webviewRenderFailed', {
             view,
+            inputMs,
             prepareMs,
             totalMs: Date.now() - renderStartedAt,
             error: error instanceof Error ? error.message : String(error),

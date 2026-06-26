@@ -39,6 +39,7 @@ export async function renderVisualization(
   prepared: PreparedView,
   options: RenderOptions = {},
 ): Promise<RenderController> {
+  const renderStartedAt = Date.now();
   target.innerHTML = "";
   const theme = resolveDiagramTheme(options.theme);
   const width = Math.max(720, target.clientWidth || 960);
@@ -111,21 +112,36 @@ export async function renderVisualization(
   let bounds: ContentBounds;
   if (view === "action-flow-view") {
     addActionFlowMarkers(svg.select("defs").empty() ? svg.append("defs") : svg.select("defs"), theme);
+    const drawStartedAt = Date.now();
     bounds = contentBoundsFromExtents(await renderActionFlowView({ root, prepared, theme, width, height, options }));
+    options.onPerformance?.("sharedRenderer:draw", { view, drawMs: Date.now() - drawStartedAt });
   } else if (view === "state-transition-view") {
     addStateTransitionMarkers(svg.select("defs").empty() ? svg.append("defs") : svg.select("defs"), theme);
+    const drawStartedAt = Date.now();
     bounds = contentBoundsFromExtents(await renderStateTransitionView({ root, prepared, theme, width, height, options }));
+    options.onPerformance?.("sharedRenderer:draw", { view, drawMs: Date.now() - drawStartedAt });
   } else if (view === "sequence-view") {
     addSequenceMarkers(svg.select("defs").empty() ? svg.append("defs") : svg.select("defs"), theme);
+    const drawStartedAt = Date.now();
     bounds = contentBoundsFromExtents(renderSequenceView({ root, prepared, theme, width, height, options }));
+    options.onPerformance?.("sharedRenderer:draw", { view, drawMs: Date.now() - drawStartedAt });
   } else if (view === "browser-view") {
+    const drawStartedAt = Date.now();
     bounds = contentBoundsFromExtents(renderBrowserView({ root, prepared, theme, width, height, options }));
+    options.onPerformance?.("sharedRenderer:draw", { view, drawMs: Date.now() - drawStartedAt });
   } else if (view === "grid-view") {
+    const drawStartedAt = Date.now();
     bounds = contentBoundsFromExtents(renderGridView({ root, prepared, theme, width, height, options }));
+    options.onPerformance?.("sharedRenderer:draw", { view, drawMs: Date.now() - drawStartedAt });
   } else if (view === "geometry-view") {
+    const drawStartedAt = Date.now();
     bounds = contentBoundsFromExtents(renderGeometryView({ root, prepared, theme, width, height, options }));
+    options.onPerformance?.("sharedRenderer:draw", { view, drawMs: Date.now() - drawStartedAt });
   } else {
+    const layoutStartedAt = Date.now();
     const layout = await layoutPrepared(prepared);
+    const layoutMs = Date.now() - layoutStartedAt;
+    const drawStartedAt = Date.now();
     if (isInterconnectionView) {
       if (shouldDrawIbdViewFrame(prepared)) {
         drawIbdViewFrame(root, prepared, contentBounds(layout), theme);
@@ -138,6 +154,18 @@ export async function renderVisualization(
       drawEdges(root, layout.edges, isInterconnectionView, theme);
       drawNodes(root, layout.nodes, options, isInterconnectionView, theme);
     }
+    options.onPerformance?.("sharedRenderer:layout", {
+      view,
+      layoutMs,
+      nodeCount: prepared.nodes.length,
+      edgeCount: prepared.edges.length,
+    });
+    options.onPerformance?.("sharedRenderer:draw", {
+      view,
+      drawMs: Date.now() - drawStartedAt,
+      laidOutNodes: layout.nodes.length,
+      laidOutEdges: layout.edges.length,
+    });
     bounds = contentBounds(layout);
   }
 
@@ -155,6 +183,12 @@ export async function renderVisualization(
     );
   };
   fitView();
+  options.onPerformance?.("sharedRenderer:render", {
+    view,
+    totalMs: Date.now() - renderStartedAt,
+    nodeCount: prepared.nodes.length,
+    edgeCount: prepared.edges.length,
+  });
 
   return {
     reset: () => fitView(),

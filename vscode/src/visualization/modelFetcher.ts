@@ -7,6 +7,7 @@ import type {
     SysMLGraphDTO,
     VisualizationViewCandidateDTO,
 } from '../providers/sysmlModelTypes';
+import type { VisualizerUpdateMessage } from './protocol';
 
 export interface FetchModelParams {
     workspaceRootUri: string;
@@ -15,31 +16,7 @@ export interface FetchModelParams {
     selectedView?: string;
 }
 
-export interface UpdateMessage {
-    command: 'update';
-    updateId?: string;
-    modelReady?: boolean;
-    modelStatusMessage?: string;
-    graph?: SysMLGraphDTO;
-    elements?: SysMLElementDTO[];
-    generalViewGraph?: SysMLGraphDTO;
-    ibd?: IbdDataDTO;
-    interconnectionScene?: InterconnectionSceneDTO;
-    preparedView?: {
-        title: string;
-        view: string;
-        nodes: unknown[];
-        edges: unknown[];
-        meta?: Record<string, unknown>;
-    };
-    activityDiagrams: unknown[];
-    sequenceDiagrams: unknown[];
-    currentView: string;
-    viewCandidates?: VisualizationViewCandidateDTO[];
-    selectedView?: string;
-    selectedViewName?: string;
-    emptyStateMessage?: string;
-}
+export type UpdateMessage = VisualizerUpdateMessage;
 
 export function hashContent(content: string): string {
     let hash = 0;

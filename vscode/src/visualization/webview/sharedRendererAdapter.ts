@@ -43,6 +43,7 @@ export function prepareSharedViewData(payload: unknown): PreparedView {
 export interface SharedRenderAdapterOptions {
     selectedNodeId?: string | null;
     onNodeNavigate?: (node: PreparedNode) => void;
+    onPerformance?: (event: string, data: Record<string, unknown>) => void;
 }
 
 export interface SharedRenderAdapterController {
@@ -64,6 +65,7 @@ export async function renderSharedView(
         onNodeClick: options.onNodeNavigate,
         theme: { colorScheme: "vscode" },
         delegateZoom: true,
+        onPerformance: options.onPerformance,
     });
 
     return {

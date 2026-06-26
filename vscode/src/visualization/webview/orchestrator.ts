@@ -8,6 +8,7 @@ import { createExportHandler } from './export';
 import { registerMessageRouter } from './messageRouter';
 import { renderVisualization as renderVisualizationPipeline } from './renderPipeline';
 import { RenderScheduler } from './renderScheduler';
+import { installGlobalCommandBindings } from './globalCommands';
 import { setupVisualizerControls } from './uiControls';
 import type { VisualizerContext } from './visualizerContext';
 import {
@@ -90,6 +91,7 @@ export function initializeOrchestrator(api: { postMessage: (msg: unknown) => voi
         getViewState: () => ({ currentView: ctx.currentView }),
         postMessage: (msg) => ctx.vscode.postMessage(msg),
         getExportSvg: () => ctx.sharedRenderController?.exportSvg() ?? null,
+        onPerformance: (event, data) => ctx.webviewPerf(event, data),
     });
 
     function showLoading(message = 'Rendering diagram...') {
@@ -351,16 +353,14 @@ export function initializeOrchestrator(api: { postMessage: (msg: unknown) => voi
         });
     });
 
-    window.changeView = changeView;
-
     const resetZoomBound = () => resetZoom(ctx);
     const zoomToFitBound = () => zoomToFit(ctx);
 
-    window.exportPNG = (scale) => ctx.exportHandler.exportPNG(scale);
-    window.exportSVG = () => ctx.exportHandler.exportSVG();
-    window.exportJSON = () => ctx.exportHandler.exportJSON();
-    window.resetZoom = resetZoomBound;
-    window.zoomToFit = zoomToFitBound;
+    installGlobalCommandBindings(ctx, {
+        changeView,
+        resetZoom: resetZoomBound,
+        zoomToFit: zoomToFitBound,
+    });
 
     setupVisualizerControls({
         getCurrentView: () => ctx.currentView,

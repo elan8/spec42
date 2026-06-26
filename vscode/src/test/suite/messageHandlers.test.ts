@@ -68,4 +68,15 @@ describe("createMessageDispatcher", () => {
     assert.strictEqual(ctx.getLastContentHash(), "");
     assert.deepStrictEqual(ctx.calls, [{ force: true, triggerSource: "viewSelectionChanged" }]);
   });
+
+  it("ignores invalid webview messages", () => {
+    const ctx = createContext();
+
+    ctx.dispatcher(null);
+    ctx.dispatcher({ view: "interconnection-view" });
+
+    assert.strictEqual(ctx.getCurrentView(), "general-view");
+    assert.strictEqual(ctx.getLastContentHash(), "seed");
+    assert.deepStrictEqual(ctx.calls, []);
+  });
 });

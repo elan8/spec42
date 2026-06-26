@@ -200,6 +200,9 @@ jobs:
             shared/diagram-renderer/package-lock.json
             vscode/package-lock.json
 
+      - name: Check frontend ELK dependency parity
+        run: node scripts/check-frontend-elk-parity.mjs
+
       - name: npm ci (diagram renderer)
         run: cd shared/diagram-renderer && npm ci
 

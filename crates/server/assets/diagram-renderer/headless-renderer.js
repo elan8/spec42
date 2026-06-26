@@ -776,152 +776,25 @@ var Spec42HeadlessRendererBundle = (() => {
     return prepareGraph(visualization?.graph, visualization);
   }
 
-  // ../shared/diagram-renderer/src/graph-to-element-tree.ts
-  function isBuilderDiagnosticNode(node) {
-    const kind = String(node.type || node.element_type || "").toLowerCase();
-    return kind === "diagnostic";
-  }
-  function graphToElementTree(graph) {
-    if (!graph?.nodes?.length) return [];
-    const nodes = graph.nodes.filter((node) => !isBuilderDiagnosticNode(node));
-    const edges = graph.edges || [];
-    const nodeMap = /* @__PURE__ */ new Map();
-    nodes.forEach((node) => {
-      nodeMap.set(String(node.id), {
-        id: node.id,
-        name: node.name,
-        type: node.type || node.element_type,
-        range: node.range,
-        attributes: node.attributes || {},
-        relationships: [],
-        children: []
-      });
-    });
-    const getEdgeType = (edge) => String(edge.type || edge.rel_type || "").toLowerCase();
-    edges.forEach((edge) => {
-      if (getEdgeType(edge) === "contains" && edge.source && edge.target) {
-        const parent = nodeMap.get(String(edge.source));
-        const child = nodeMap.get(String(edge.target));
-        if (parent && child) {
-          parent.children.push(child);
-        }
-      }
-      const relTypes = ["typing", "specializes", "connection", "bind", "allocate", "transition", "satisfy", "verify", "subject"];
-      if (relTypes.includes(getEdgeType(edge))) {
-        const src = nodeMap.get(String(edge.source));
-        if (src) {
-          src.relationships.push({
-            source: edge.source,
-            target: edge.target,
-            type: edge.type,
-            name: edge.name
-          });
-        }
-      }
-    });
-    const targetsOfContains = new Set(
-      edges.filter((edge) => getEdgeType(edge) === "contains").map((edge) => String(edge.target))
-    );
-    return nodes.filter((node) => !targetsOfContains.has(String(node.id))).map((node) => nodeMap.get(String(node.id))).filter((node) => Boolean(node));
-  }
-
   // ../shared/diagram-renderer/src/prepare/normalize-payload.ts
+  function asArray2(value) {
+    return Array.isArray(value) ? value : [];
+  }
+  function countItems(value) {
+    return asArray2(value).length;
+  }
+  function aliasDiagramsField(data, sourceKey) {
+    const source = asArray2(data[sourceKey]);
+    return {
+      ...data,
+      diagrams: source
+    };
+  }
   function normalizeVisualizationPayload(data) {
     if (!data) {
       return data;
     }
     const view = String(data.view || "general-view");
-    const graph = data.graph;
-    const dataAny = data;
-    const hasGraph = graph?.nodes;
-    const elements = hasGraph ? graphToElementTree(graph) : data.elements || [];
-    const edgeType = (e) => e.type || e.rel_type || "";
-    const relationships = hasGraph ? (graph?.edges || []).filter((e) => edgeType(e) !== "contains").map((e) => ({
-      source: e.source,
-      target: e.target,
-      type: edgeType(e),
-      name: e.name
-    })) : data.relationships || [];
-    function collectAllElements(elementList, collected = [], parentElement = null) {
-      elementList.forEach((el) => {
-        if (parentElement && !el.parent) {
-          el.parent = parentElement.name;
-        }
-        collected.push(el);
-        if (el.children && el.children.length > 0) {
-          collectAllElements(el.children, collected, el);
-        }
-      });
-      return collected;
-    }
-    function removeCircularRefs(obj) {
-      if (!obj || typeof obj !== "object") return obj;
-      if (obj.parentElement) {
-        delete obj.parentElement;
-      }
-      if (obj.children && Array.isArray(obj.children)) {
-        obj.children.forEach((child) => removeCircularRefs(child));
-      }
-      return obj;
-    }
-    const allElements = collectAllElements(elements);
-    const normalizePath = (value) => String(value || "").replace(/::/g, ".").trim();
-    const toPackagePath = (value) => {
-      const normalized = normalizePath(value);
-      if (!normalized) return "";
-      const segments = normalized.split(".").filter(Boolean);
-      if (segments.length <= 1) return "";
-      return segments.slice(0, -1).join("::");
-    };
-    const countWithFallback = (values, fallback = 0) => Array.isArray(values) ? values.length : fallback;
-    const elementIdentityMeta = /* @__PURE__ */ new Map();
-    const registerElementMeta = (el, ancestry) => {
-      const name = String(el?.name || "").trim();
-      const explicitId = String(el?.id || "").trim();
-      const explicitQualified = normalizePath(el?.qualifiedName || el?.attributes?.qualifiedName || "");
-      const fallbackQualified = [...ancestry, name].filter(Boolean).join(".");
-      const qualifiedPath = explicitQualified || fallbackQualified || explicitId || name;
-      const stableId = explicitId || qualifiedPath || name;
-      const packagePath = toPackagePath(qualifiedPath) || ancestry.join("::");
-      [
-        explicitId,
-        name,
-        explicitQualified,
-        qualifiedPath
-      ].filter(Boolean).forEach((key) => {
-        elementIdentityMeta.set(String(key), { stableId, qualifiedPath, packagePath });
-      });
-      if (Array.isArray(el?.children) && el.children.length > 0) {
-        const nextAncestry = name ? [...ancestry, name] : ancestry;
-        el.children.forEach((child) => registerElementMeta(child, nextAncestry));
-      }
-    };
-    elements.forEach((el) => registerElementMeta(el, []));
-    const lookupElementMeta = (candidate, fallbackName) => {
-      const keys = [
-        candidate?.id,
-        candidate?.qualifiedName,
-        candidate?.attributes?.qualifiedName,
-        candidate?.name,
-        fallbackName
-      ].filter(Boolean);
-      for (const key of keys) {
-        const direct = elementIdentityMeta.get(String(key));
-        if (direct) return direct;
-        const normalized = normalizePath(key);
-        if (normalized) {
-          const normalizedMatch = elementIdentityMeta.get(normalized);
-          if (normalizedMatch) return normalizedMatch;
-        }
-      }
-      const fallbackQualified = normalizePath(candidate?.qualifiedName || candidate?.id || fallbackName || candidate?.name || "");
-      return {
-        stableId: String(candidate?.id || fallbackQualified || fallbackName || candidate?.name || "").trim(),
-        qualifiedPath: fallbackQualified,
-        packagePath: toPackagePath(fallbackQualified)
-      };
-    };
-    const buildSelectorLabel = (name, packagePath) => packagePath ? `${name} - ${packagePath}` : name;
     switch (view) {
       case "general-view":
         return data;
@@ -940,679 +813,29 @@ var Spec42HeadlessRendererBundle = (() => {
         };
       }
       case "action-flow-view": {
-        const actionElementsByName = /* @__PURE__ */ new Map();
-        allElements.forEach((el) => {
-          const typeLower = String(el?.type || "").toLowerCase();
-          if (typeLower === "action" || typeLower === "action def" || typeLower === "action definition") {
-            const key = String(el?.name || "").trim();
-            if (!actionElementsByName.has(key)) actionElementsByName.set(key, []);
-            actionElementsByName.get(key).push(el);
-          }
-        });
-        const takeActionMeta = (diagram, fallbackIndex) => {
-          const matches = actionElementsByName.get(String(diagram?.name || "").trim()) || [];
-          const matchedElement = matches.shift() || null;
-          const meta = lookupElementMeta(matchedElement || diagram, `activity-diagram-${fallbackIndex + 1}`);
-          return {
-            id: String(diagram?.id || meta.stableId || `activity-diagram-${fallbackIndex + 1}`),
-            packagePath: String(diagram?.packagePath || meta.packagePath || "")
-          };
-        };
-        const rankActionDiagram = (diagram) => {
-          const flowCount = countWithFallback(diagram?.flows);
-          const nodeCount = countWithFallback(diagram?.nodes) || countWithFallback(diagram?.actions);
-          const sourceKind = String(diagram?.sourceKind || "");
-          const sourceBonus = sourceKind === "actionDef" ? 1e4 : sourceKind === "performer" ? 5e3 : 0;
-          return sourceBonus + flowCount * 100 + nodeCount * 10;
-        };
-        const normalizeActivityDiagram = (diagram, index) => {
-          const meta = takeActionMeta(diagram, index);
-          const decisionsAsNodes = (diagram.decisions || []).map((d) => ({
-            ...d,
-            id: d.id || d.name,
-            type: "decision",
-            kind: "decision"
-          }));
-          const stateNodes = (diagram.states || []).map((state, idx) => ({
-            ...state,
-            id: state.id || state.name || `state_${idx + 1}`,
-            name: state.name || state.id || `State ${idx + 1}`,
-            type: state.type || state.stateType || "state",
-            kind: state.type || state.stateType || "state"
-          })).filter((state) => {
-            const kind = String(state.kind || state.type || "").toLowerCase();
-            return ["initial", "final", "decision", "merge", "fork", "join"].some((allowed) => kind.includes(allowed));
-          });
-          const allNodes = [
-            ...(diagram.actions || []).map((a) => ({
-              ...a,
-              id: a.id || a.name,
-              inputs: Array.isArray(a.inputs) ? a.inputs : [],
-              outputs: Array.isArray(a.outputs) ? a.outputs : [],
-              uri: a.uri || diagram.uri,
-              range: a.range || diagram.range,
-              parent: a.parent === diagram.name ? void 0 : a.parent
-            })),
-            ...decisionsAsNodes,
-            ...stateNodes
-          ];
-          const allowedKinds = /* @__PURE__ */ new Set(["action", "perform", "decision", "merge", "fork", "join", "initial", "final"]);
-          const nodes = allNodes.filter((node) => {
-            const kind = String(node.kind || node.type || "action").toLowerCase();
-            return allowedKinds.has(kind);
-          });
-          const nodeIds = new Set(nodes.map((node) => String(node.id || node.name)));
-          const nodeIdByAlias = /* @__PURE__ */ new Map();
-          const registerAlias = (alias, nodeId) => {
-            const key = String(alias || "").trim();
-            if (!key) return;
-            if (!nodeIdByAlias.has(key)) nodeIdByAlias.set(key, nodeId);
-            const normalized = key.replace(/::/g, ".");
-            if (!nodeIdByAlias.has(normalized)) nodeIdByAlias.set(normalized, nodeId);
-            const lastSegment = normalized.split(".").filter(Boolean).pop();
-            if (lastSegment && !nodeIdByAlias.has(lastSegment)) nodeIdByAlias.set(lastSegment, nodeId);
-          };
-          nodes.forEach((node) => {
-            const nodeId = String(node.id || node.name);
-            registerAlias(node.id, nodeId);
-            registerAlias(node.name, nodeId);
-            registerAlias(node.qualifiedName, nodeId);
-          });
-          const resolveNodeId = (value) => {
-            const key = String(value || "").trim();
-            if (!key) return "";
-            const normalized = key.replace(/::/g, ".");
-            const segments = normalized.split(".").filter(Boolean);
-            const first = segments[0] || "";
-            const last = segments[segments.length - 1] || "";
-            return nodeIdByAlias.get(key) || nodeIdByAlias.get(normalized) || (last ? nodeIdByAlias.get(last) : void 0) || (first ? nodeIdByAlias.get(first) : void 0) || key;
-          };
-          const flows = (diagram.flows || []).map((flow, idx) => ({
-            ...flow,
-            from: resolveNodeId(flow.from),
-            to: resolveNodeId(flow.to),
-            id: flow.id || `${diagram.name}::flow::${idx + 1}`,
-            flowKind: flow.flowKind || flow.type || "control"
-          }));
-          const incomingFlowCount = /* @__PURE__ */ new Map();
-          const outgoingFlowCount = /* @__PURE__ */ new Map();
-          flows.forEach((f) => {
-            if (f.from && nodeIds.has(f.from)) {
-              outgoingFlowCount.set(f.from, (outgoingFlowCount.get(f.from) || 0) + 1);
-            }
-            if (f.to && nodeIds.has(f.to)) {
-              incomingFlowCount.set(f.to, (incomingFlowCount.get(f.to) || 0) + 1);
-            }
-          });
-          const cleanFlows = flows.filter(
-            (f) => f.from !== f.to && nodeIds.has(f.from) && nodeIds.has(f.to)
-          );
-          const normalizedNodes = nodes.map((node) => {
-            const nodeId = node.id || node.name;
-            const incoming = incomingFlowCount.get(nodeId) || 0;
-            const outgoing = outgoingFlowCount.get(nodeId) || 0;
-            const hasGuards = cleanFlows.some((flow) => flow.from === nodeId && (flow.guard || flow.condition));
-            let normalizedKind = String(node.kind || node.type || "action").toLowerCase();
-            if (normalizedKind === "action" && outgoing > 1 && hasGuards) normalizedKind = "decision";
-            else if (normalizedKind === "action" && outgoing > 1) normalizedKind = "fork";
-            else if (normalizedKind === "action" && incoming > 1) normalizedKind = "merge";
-            return {
-              ...node,
-              id: nodeId,
-              name: node.name || nodeId || "Action",
-              kind: normalizedKind
-            };
-          });
-          const sourceKind = String(diagram?.sourceKind || "actionDef");
-          const hasRenderableContent = normalizedNodes.length > 0 && cleanFlows.length > 0;
-          return {
-            id: meta.id,
-            name: diagram.name,
-            label: buildSelectorLabel(String(diagram.name || `Action ${index + 1}`), meta.packagePath),
-            packagePath: meta.packagePath,
-            sourceKind,
-            nodes: normalizedNodes,
-            flows: cleanFlows,
-            interface: {
-              inputs: Array.isArray(diagram.interface?.inputs) ? diagram.interface.inputs : [],
-              outputs: Array.isArray(diagram.interface?.outputs) ? diagram.interface.outputs : []
-            },
-            hasBehavioralFlow: cleanFlows.length > 0,
-            hasRenderableContent
-          };
-        };
-        if (data.activityDiagrams && data.activityDiagrams.length > 0) {
-          const diagrams2 = data.activityDiagrams.map((diagram, index) => normalizeActivityDiagram(diagram, index)).filter((diagram) => diagram.hasRenderableContent).sort((a, b) => {
-            const scoreDelta = rankActionDiagram(b) - rankActionDiagram(a);
-            if (scoreDelta !== 0) return scoreDelta;
-            return String(a.label || a.name).localeCompare(String(b.label || b.name));
-          });
-          return {
-            ...data,
-            diagrams: diagrams2,
-            activityDiagramCandidates: diagrams2.map((diagram) => ({
-              id: diagram.id,
-              name: diagram.name,
-              label: diagram.label,
-              packagePath: diagram.packagePath,
-              sourceKind: diagram.sourceKind,
-              nodeCount: countWithFallback(diagram.nodes),
-              flowCount: countWithFallback(diagram.flows)
-            }))
-          };
-        }
-        const actionDefs = allElements.filter((el) => {
-          if (!el.type) return false;
-          const typeLower = el.type.toLowerCase();
-          return typeLower === "action" || typeLower === "action def" || typeLower === "action definition";
-        });
-        const activityActionDefs = actionDefs.filter((a) => a.children && a.children.length > 0);
-        const diagrams = activityActionDefs.map((actionDef, index) => {
-          const meta = lookupElementMeta(actionDef, `activity-diagram-${index + 1}`);
-          const nodes = actionDef.children.filter((c) => {
-            const type2 = String(c.type || "").toLowerCase();
-            return type2.includes("action") || type2.includes("perform") || type2.includes("decision") || type2.includes("merge") || type2.includes("fork") || type2.includes("join");
-          }).map((c) => ({
-            name: c.name,
-            type: c.type || "action",
-            kind: String(c.type || "action").toLowerCase().includes("perform") ? "perform" : "action",
-            id: c.id || c.name,
-            inputs: [],
-            outputs: []
-          }));
-          const interfaceInputs = actionDef.children.filter((c) => String(c.type || "").toLowerCase() === "in out parameter" && String(c.attributes?.direction || "").toLowerCase() === "in").map((c) => c.name).filter(Boolean);
-          const interfaceOutputs = actionDef.children.filter((c) => String(c.type || "").toLowerCase() === "in out parameter" && String(c.attributes?.direction || "").toLowerCase() === "out").map((c) => c.name).filter(Boolean);
-          return {
-            id: meta.stableId,
-            name: actionDef.name,
-            label: buildSelectorLabel(String(actionDef.name || `Action ${index + 1}`), meta.packagePath),
-            packagePath: meta.packagePath,
-            sourceKind: "actionDef",
-            nodes,
-            flows: [],
-            interface: {
-              inputs: interfaceInputs,
-              outputs: interfaceOutputs
-            },
-            hasBehavioralFlow: false,
-            hasRenderableContent: nodes.length > 0
-          };
-        }).filter((diagram) => diagram.hasRenderableContent).sort((a, b) => {
-          const scoreDelta = rankActionDiagram(b) - rankActionDiagram(a);
-          if (scoreDelta !== 0) return scoreDelta;
-          return String(a.label || a.name).localeCompare(String(b.label || b.name));
-        });
+        const activityDiagrams = asArray2(data.activityDiagrams);
+        const diagrams = activityDiagrams.map((diagram) => ({
+          ...diagram,
+          nodes: diagram.nodes ?? diagram.actions,
+          hasBehavioralFlow: countItems(diagram.flows) > 0,
+          hasRenderableContent: countItems(diagram.flows) > 0 && countItems(diagram.nodes ?? diagram.actions) > 0
+        }));
         return {
           ...data,
-          diagrams,
-          activityDiagramCandidates: diagrams.map((diagram) => ({
-            id: diagram.id,
-            name: diagram.name,
-            label: diagram.label,
-            packagePath: diagram.packagePath,
-            sourceKind: diagram.sourceKind,
-            nodeCount: countWithFallback(diagram.nodes),
-            flowCount: countWithFallback(diagram.flows)
-          }))
-        };
-      }
-      case "sequence-view": {
-        const sequenceElementsByName = /* @__PURE__ */ new Map();
-        allElements.forEach((el) => {
-          const typeLower = String(el?.type || "").toLowerCase();
-          if (typeLower.includes("interaction") || typeLower.includes("sequence")) {
-            const key = String(el?.name || "").trim();
-            if (!sequenceElementsByName.has(key)) sequenceElementsByName.set(key, []);
-            sequenceElementsByName.get(key).push(el);
-          }
-        });
-        const normalizeMessageKind = (value) => {
-          const normalized = String(value || "").toLowerCase();
-          if (normalized.includes("create")) return "create";
-          if (normalized.includes("return")) return "return";
-          if (normalized.includes("async")) return "async";
-          return "sync";
-        };
-        const normalizeFragmentKind = (value) => {
-          const normalized = String(value || "").toLowerCase();
-          if (normalized.includes("loop")) return "loop";
-          if (normalized.includes("alt")) return "alt";
-          if (normalized.includes("ref")) return "ref";
-          return "opt";
-        };
-        const normalizeSequenceFragment = (fragment, fragmentIndex, messageIds) => ({
-          id: String(fragment?.id || `fragment_${fragmentIndex + 1}`),
-          kind: normalizeFragmentKind(fragment?.kind),
-          label: String(fragment?.label || fragment?.guard || ""),
-          target: String(fragment?.target || fragment?.targetRef || fragment?.target_ref || ""),
-          messageIds: (fragment?.messageIds || fragment?.message_ids || []).filter((id2) => messageIds.has(String(id2))).map((id2) => String(id2)),
-          operands: (fragment?.operands || []).map((operand, operandIndex) => ({
-            id: String(operand?.id || `${fragment?.id || `fragment_${fragmentIndex + 1}`}::operand_${operandIndex + 1}`),
-            guard: String(operand?.guard || ""),
-            messageIds: (operand?.messageIds || operand?.message_ids || []).filter((id2) => messageIds.has(String(id2))).map((id2) => String(id2)),
-            fragments: (operand?.fragments || []).map((nested, nestedIndex) => normalizeSequenceFragment(nested, nestedIndex, messageIds)),
-            uri: operand?.uri,
-            range: operand?.range
-          })),
-          fragments: (fragment?.fragments || []).map((nested, nestedIndex) => normalizeSequenceFragment(nested, nestedIndex, messageIds)),
-          order: Number(fragment?.order ?? fragmentIndex + 1),
-          uri: fragment?.uri,
-          range: fragment?.range
-        });
-        const normalizeSequenceDiagram = (diagram, index) => {
-          const matches = sequenceElementsByName.get(String(diagram?.name || "").trim()) || [];
-          const matchedElement = matches.shift() || null;
-          const meta = lookupElementMeta(matchedElement || diagram, `sequence-diagram-${index + 1}`);
-          const lifelines = (diagram?.lifelines || []).map((lifeline, lifelineIndex) => ({
-            id: String(lifeline?.id || lifeline?.name || `lifeline_${lifelineIndex + 1}`),
-            name: String(lifeline?.name || lifeline?.id || `Lifeline ${lifelineIndex + 1}`),
-            type: String(lifeline?.type || ""),
-            uri: lifeline?.uri,
-            range: lifeline?.range
-          }));
-          const lifelineIds = new Set(lifelines.map((lifeline) => lifeline.id));
-          const messages = (diagram?.messages || []).map((message, messageIndex) => ({
-            id: String(message?.id || `message_${messageIndex + 1}`),
-            name: String(message?.name || message?.label || `Message ${messageIndex + 1}`),
-            from: String(message?.from || ""),
-            to: String(message?.to || ""),
-            kind: normalizeMessageKind(message?.kind),
-            order: Number(message?.order ?? messageIndex + 1),
-            label: String(message?.label || message?.name || ""),
-            uri: message?.uri,
-            range: message?.range
-          })).filter((message) => lifelineIds.has(message.from) && lifelineIds.has(message.to)).sort((a, b) => a.order - b.order || String(a.id).localeCompare(String(b.id)));
-          const messageIds = new Set(messages.map((message) => String(message.id)));
-          const activations = (diagram?.activations || []).map((activation, activationIndex) => ({
-            id: String(activation?.id || `activation_${activationIndex + 1}`),
-            lifeline: String(activation?.lifeline || activation?.on || ""),
-            startMessage: String(activation?.startMessage || activation?.start_message || ""),
-            finishMessage: String(activation?.finishMessage || activation?.finish_message || ""),
-            order: Number(activation?.order ?? activationIndex + 1),
-            uri: activation?.uri,
-            range: activation?.range
-          })).filter((activation) => lifelineIds.has(activation.lifeline));
-          const fragments = (diagram?.fragments || []).map((fragment, fragmentIndex) => normalizeSequenceFragment(fragment, fragmentIndex, messageIds)).sort((a, b) => a.order - b.order || String(a.id).localeCompare(String(b.id)));
-          return {
-            id: String(diagram?.id || meta.stableId || `sequence-diagram-${index + 1}`),
-            name: String(diagram?.name || `Sequence ${index + 1}`),
-            label: buildSelectorLabel(String(diagram?.name || `Sequence ${index + 1}`), String(diagram?.packagePath || meta.packagePath || "")),
-            packagePath: String(diagram?.packagePath || meta.packagePath || ""),
-            uri: diagram?.uri,
-            lifelines,
-            messages,
-            activations,
-            fragments,
-            range: diagram?.range,
-            hasRenderableContent: lifelines.length > 0 && messages.length > 0
-          };
-        };
-        const diagrams = (data.sequenceDiagrams || []).map((diagram, index) => normalizeSequenceDiagram(diagram, index)).filter((diagram) => diagram.hasRenderableContent).sort((a, b) => {
-          const scoreDelta = countWithFallback(b.messages) * 100 + countWithFallback(b.fragments) * 10 + countWithFallback(b.lifelines) - (countWithFallback(a.messages) * 100 + countWithFallback(a.fragments) * 10 + countWithFallback(a.lifelines));
-          if (scoreDelta !== 0) return scoreDelta;
-          return String(a.label || a.name).localeCompare(String(b.label || b.name));
-        });
-        return {
-          ...data,
-          diagrams,
-          sequenceDiagramCandidates: diagrams.map((diagram) => ({
-            id: diagram.id,
-            name: diagram.name,
-            label: diagram.label,
-            packagePath: diagram.packagePath,
-            lifelineCount: countWithFallback(diagram.lifelines),
-            messageCount: countWithFallback(diagram.messages),
-            fragmentCount: countWithFallback(diagram.fragments)
-          }))
+          diagrams
         };
       }
       case "state-transition-view": {
-        let findMachineRoots2 = function(elementList, insideMachine = false) {
-          elementList.forEach((el) => {
-            const startsMachine = isLikelyStateMachine(el) && !insideMachine;
-            if (startsMachine) {
-              machineRoots.push(el);
-            }
-            if (Array.isArray(el?.children) && el.children.length > 0) {
-              findMachineRoots2(el.children, insideMachine || startsMachine);
-            }
-          });
-        }, makeStableId2 = function(prefix, el, path2) {
-          const explicitId = String(el?.id || "").trim();
-          if (explicitId) return explicitId;
-          const explicitQName = String(el?.qualifiedName || "").trim();
-          if (explicitQName) return explicitQName;
-          const fallbackName = String(el?.name || prefix).trim() || prefix;
-          return [prefix, ...path2, fallbackName].join("::");
-        }, buildMachine2 = function(root2, machineIndex) {
-          const machineId = makeStableId2(`state-machine-${machineIndex + 1}`, root2, []);
-          const normalizedStates = [];
-          const stateIdByAlias = /* @__PURE__ */ new Map();
-          const transitionElements = [];
-          function registerStateAlias(state, normalizedId) {
-            [
-              state?.id,
-              state?.name,
-              state?.qualifiedName,
-              state?.parent
-            ].forEach((candidate) => {
-              const key = normalizeKey(candidate);
-              if (key) stateIdByAlias.set(key, normalizedId);
-            });
-          }
-          function collectTransitionElements(elementList) {
-            elementList.forEach((el) => {
-              if (isTransitionElement(el)) {
-                transitionElements.push(el);
-              }
-              if (Array.isArray(el?.children) && el.children.length > 0) {
-                collectTransitionElements(el.children);
-              }
-            });
-          }
-          function collectStates(elementList, parentStateId, path2, depth) {
-            elementList.forEach((el) => {
-              if (!isStateElement(el) || isTransitionElement(el)) {
-                return;
-              }
-              const stateId = makeStableId2(`state-${normalizedStates.length + 1}`, el, path2);
-              const nestedChildren = Array.isArray(el?.children) ? el.children.filter((child) => isStateElement(child)) : [];
-              const kind = (() => {
-                const t = typeLower(el?.type);
-                if (t.includes("initial")) return "initial";
-                if (t.includes("final")) return "final";
-                if (nestedChildren.length > 0 || hasTransitionChildren(el)) return "composite";
-                return "state";
-              })();
-              const normalizedState = {
-                id: stateId,
-                name: String(el?.name || `State ${normalizedStates.length + 1}`),
-                qualifiedName: el?.qualifiedName || el?.id || el?.name || stateId,
-                type: el?.type || "state",
-                kind,
-                parentId: parentStateId,
-                childIds: [],
-                isDefinition: isStateDefinition(el),
-                depth,
-                element: removeCircularRefs(el)
-              };
-              normalizedStates.push(normalizedState);
-              registerStateAlias(el, stateId);
-              if (nestedChildren.length > 0) {
-                collectStates(nestedChildren, stateId, [...path2, normalizedState.name], depth + 1);
-              }
-            });
-          }
-          const rootStateChildren = Array.isArray(root2?.children) ? root2.children.filter((child) => isStateElement(child)) : [];
-          if (Array.isArray(root2?.children) && root2.children.length > 0) {
-            collectTransitionElements(root2.children);
-          }
-          collectStates(rootStateChildren, null, [String(root2?.name || `StateMachine${machineIndex + 1}`)], 0);
-          const statesById = /* @__PURE__ */ new Map();
-          normalizedStates.forEach((state) => statesById.set(state.id, state));
-          normalizedStates.forEach((state) => {
-            if (state.parentId && statesById.has(state.parentId)) {
-              statesById.get(state.parentId).childIds.push(state.id);
-            }
-          });
-          const transitionRecords = transitionElements.map((transitionElement, transitionIndex) => {
-            const sourceAliases = extractTransitionEndpointAliases(transitionElement, "source");
-            const targetAliases = extractTransitionEndpointAliases(transitionElement, "target");
-            return {
-              element: transitionElement,
-              index: transitionIndex,
-              matched: false,
-              name: String(transitionElement?.name || "").trim(),
-              label: String(
-                transitionElement?.label || transitionElement?.guard || transitionElement?.attributes?.label || transitionElement?.attributes?.guard || ""
-              ).trim(),
-              sourceAliases,
-              targetAliases
-            };
-          });
-          function resolveStateIdFromRelationshipEndpoint(value) {
-            const aliasCandidates = Array.from(new Set([
-              normalizeKey(value),
-              lastSegment(value)
-            ].filter(Boolean)));
-            for (const alias of aliasCandidates) {
-              const match = stateIdByAlias.get(alias);
-              if (match) return match;
-            }
-            return null;
-          }
-          function matchTransitionRecord(rel, sourceId, targetId) {
-            const relName = String(rel?.name || "").trim();
-            const relSourceName = lastSegment(rel?.source) || statesById.get(sourceId)?.name || "";
-            const relTargetName = lastSegment(rel?.target) || statesById.get(targetId)?.name || "";
-            const availableRecords = transitionRecords.filter((record) => !record.matched);
-            const scoredRecords = availableRecords.map((record) => {
-              let score = 0;
-              const sourceMatches = record.sourceAliases.some((alias) => {
-                const resolved = resolveStateIdFromRelationshipEndpoint(alias);
-                return resolved === sourceId || lastSegment(alias) === normalizeKey(relSourceName);
-              });
-              const targetMatches = record.targetAliases.some((alias) => {
-                const resolved = resolveStateIdFromRelationshipEndpoint(alias);
-                return resolved === targetId || lastSegment(alias) === normalizeKey(relTargetName);
-              });
-              if (sourceMatches) score += 5;
-              if (targetMatches) score += 5;
-              if (record.name && relName && record.name === relName) score += 8;
-              if (record.name && likelySyntheticTransitionName(relName)) score += 3;
-              if (!record.sourceAliases.length && !record.targetAliases.length) {
-                score += 1;
-              }
-              return { record, score };
-            }).filter(({ score }) => score > 0);
-            scoredRecords.sort((a, b) => {
-              if (b.score !== a.score) return b.score - a.score;
-              return a.record.index - b.record.index;
-            });
-            const best = scoredRecords[0]?.record || null;
-            if (best) {
-              best.matched = true;
-            }
-            return best;
-          }
-          const transitions = relationships.filter((rel) => typeLower(rel?.type).includes("transition")).map((rel, relIndex) => {
-            const sourceId = resolveStateIdFromRelationshipEndpoint(rel?.source);
-            const targetId = resolveStateIdFromRelationshipEndpoint(rel?.target);
-            if (!sourceId || !targetId) {
-              return null;
-            }
-            const transitionRecord = matchTransitionRecord(rel, sourceId, targetId);
-            const resolvedName = String(
-              !likelySyntheticTransitionName(rel?.name) && rel?.name || transitionRecord?.name || rel?.name || `transition_${relIndex + 1}`
-            ).trim();
-            const resolvedLabel = String(
-              rel?.label || rel?.guard || (!likelySyntheticTransitionName(rel?.name) && rel?.name || "") || transitionRecord?.label || transitionRecord?.name || ""
-            ).trim();
-            return {
-              id: String(rel?.id || `${machineId}::transition::${relIndex + 1}`),
-              name: resolvedName,
-              label: resolvedLabel,
-              source: sourceId,
-              target: targetId,
-              sourceName: statesById.get(sourceId)?.name || String(rel?.source || ""),
-              targetName: statesById.get(targetId)?.name || String(rel?.target || ""),
-              selfLoop: sourceId === targetId,
-              relationship: rel
-            };
-          }).filter(Boolean);
-          const hasInitialState = normalizedStates.some((state) => state.kind === "initial");
-          if (!hasInitialState && normalizedStates.length > 0) {
-            const incomingCount = /* @__PURE__ */ new Map();
-            normalizedStates.forEach((state) => incomingCount.set(state.id, 0));
-            transitions.forEach((transition2) => {
-              incomingCount.set(transition2.target, (incomingCount.get(transition2.target) || 0) + 1);
-            });
-            const preferredInitial = normalizedStates.find((state) => /^idle$/i.test(state.name)) || normalizedStates.find((state) => /^manual$/i.test(state.name)) || normalizedStates.filter((state) => state.kind !== "final").sort((a, b) => {
-              const incomingDelta = (incomingCount.get(a.id) || 0) - (incomingCount.get(b.id) || 0);
-              if (incomingDelta !== 0) return incomingDelta;
-              return a.name.localeCompare(b.name);
-            })[0];
-            if (preferredInitial) {
-              const entryId = `${machineId}::entry`;
-              normalizedStates.unshift({
-                id: entryId,
-                name: "entry",
-                qualifiedName: entryId,
-                type: "initial state",
-                kind: "initial",
-                parentId: null,
-                childIds: [],
-                isDefinition: false,
-                depth: 0,
-                element: { name: "entry", type: "initial state", id: entryId }
-              });
-              transitions.unshift({
-                id: `${machineId}::entry-transition`,
-                name: "entry",
-                label: "entry",
-                source: entryId,
-                target: preferredInitial.id,
-                sourceName: "entry",
-                targetName: preferredInitial.name,
-                selfLoop: false,
-                relationship: null
-              });
-            }
-          }
-          return {
-            id: machineId,
-            name: String(root2?.name || `State Machine ${machineIndex + 1}`),
-            label: buildSelectorLabel(
-              String(root2?.name || `State Machine ${machineIndex + 1}`),
-              lookupElementMeta(root2, machineId).packagePath
-            ),
-            packagePath: lookupElementMeta(root2, machineId).packagePath,
-            container: removeCircularRefs(root2),
-            states: normalizedStates,
-            transitions
-          };
-        };
-        var findMachineRoots = findMachineRoots2, makeStableId = makeStableId2, buildMachine = buildMachine2;
-        const serverStateMachines = Array.isArray(data.stateMachines) ? data.stateMachines.filter((machine) => machine && typeof machine === "object") : [];
-        if (serverStateMachines.length > 0) {
-          const stateMachines2 = serverStateMachines.map((machine) => ({
-            ...machine,
-            label: machine.label ?? buildSelectorLabel(
-              String(machine.name || "State Machine"),
-              String(machine.packagePath || machine.package_path || lookupElementMeta(machine, machine.id).packagePath || "")
-            ),
-            packagePath: machine.packagePath ?? machine.package_path
-          })).sort((a, b) => {
-            const stateCountDelta = (b.states?.length ?? 0) - (a.states?.length ?? 0);
-            if (stateCountDelta !== 0) return stateCountDelta;
-            const transitionCountDelta = (b.transitions?.length ?? 0) - (a.transitions?.length ?? 0);
-            if (transitionCountDelta !== 0) return transitionCountDelta;
-            return String(a.label || a.name).localeCompare(String(b.label || b.name));
-          });
-          const flatStates2 = stateMachines2.flatMap((machine) => machine.states ?? []);
-          const flatTransitions2 = stateMachines2.flatMap((machine) => machine.transitions ?? []);
-          return {
-            ...data,
-            stateMachines: stateMachines2,
-            stateMachineCandidates: stateMachines2.map((machine) => ({
-              id: machine.id,
-              name: machine.name,
-              label: machine.label,
-              packagePath: machine.packagePath,
-              stateCount: countWithFallback(machine.states),
-              transitionCount: countWithFallback(machine.transitions)
-            })),
-            states: flatStates2,
-            transitions: flatTransitions2
-          };
-        }
-        const typeLower = (value) => String(value || "").toLowerCase();
-        const normalizeKey = (value) => String(value || "").replace(/::/g, ".").trim();
-        const lastSegment = (value) => {
-          const normalized = normalizeKey(value);
-          if (!normalized) return "";
-          const parts = normalized.split(".");
-          return parts[parts.length - 1] || "";
-        };
-        const asStringList = (value) => {
-          if (Array.isArray(value)) {
-            return value.flatMap((item) => asStringList(item));
-          }
-          if (value == null) return [];
-          if (typeof value === "object") {
-            return Object.values(value).flatMap((item) => asStringList(item));
-          }
-          const normalized = normalizeKey(value);
-          return normalized ? [normalized] : [];
-        };
-        const extractTransitionEndpointAliases = (el, direction) => {
-          const keys = direction === "source" ? ["source", "src", "from", "first", "state", "start"] : ["target", "tgt", "to", "then", "next", "destination"];
-          const directCandidates = keys.flatMap((key) => asStringList(el?.[key]));
-          const attributeCandidates = keys.flatMap((key) => asStringList(el?.attributes?.[key]));
-          const nestedCandidates = keys.flatMap((key) => asStringList(el?.value?.[key]));
-          return Array.from(/* @__PURE__ */ new Set([...directCandidates, ...attributeCandidates, ...nestedCandidates]));
-        };
-        const likelySyntheticTransitionName = (value) => /^transition_\d+$/i.test(String(value || "").trim());
-        const isTransitionElement = (el) => typeLower(el?.type).includes("transition");
-        const isStateElement = (el) => {
-          const t = typeLower(el?.type);
-          return (t.includes("state") || t.includes("exhibit")) && !isTransitionElement(el);
-        };
-        const isStateDefinition = (el) => {
-          const t = typeLower(el?.type);
-          return t.includes("state") && (t.includes("def") || t.includes("definition"));
-        };
-        const hasStateChildren = (el) => Array.isArray(el?.children) && el.children.some((child) => isStateElement(child));
-        const hasTransitionChildren = (el) => Array.isArray(el?.children) && el.children.some((child) => isTransitionElement(child));
-        const isLikelyStateMachine = (el) => {
-          if (!isStateElement(el)) return false;
-          const t = typeLower(el?.type);
-          const n = typeLower(el?.name);
-          const hasOwnedBehavior = hasTransitionChildren(el) || hasStateChildren(el);
-          return n.endsWith("states") || n.includes("statemachine") || isStateDefinition(el) || hasOwnedBehavior || t.includes("exhibit") && hasOwnedBehavior;
-        };
-        const machineRoots = [];
-        findMachineRoots2(elements);
-        let stateMachines = machineRoots.map((root2, index) => buildMachine2(root2, index)).filter((machine) => {
-          const realStates = machine.states.filter((state) => state.kind !== "initial" || state.name !== "entry");
-          return realStates.length > 0;
-        });
-        if (stateMachines.length === 0) {
-          const fallbackStates = allElements.filter((el) => isStateElement(el) && !isStateDefinition(el));
-          if (fallbackStates.length > 0) {
-            const fallbackRoot = {
-              id: "fallback-state-machine",
-              name: "State Machine",
-              type: "state machine",
-              children: fallbackStates
-            };
-            stateMachines = [buildMachine2(fallbackRoot, 0)];
-          }
-        }
-        stateMachines = stateMachines.sort((a, b) => {
-          const stateCountDelta = b.states.length - a.states.length;
-          if (stateCountDelta !== 0) return stateCountDelta;
-          const transitionCountDelta = b.transitions.length - a.transitions.length;
-          if (transitionCountDelta !== 0) return transitionCountDelta;
-          return String(a.label || a.name).localeCompare(String(b.label || b.name));
-        });
-        const flatStates = stateMachines.flatMap((machine) => machine.states);
-        const flatTransitions = stateMachines.flatMap((machine) => machine.transitions);
+        const stateMachines = asArray2(data.stateMachines);
         return {
           ...data,
           stateMachines,
-          stateMachineCandidates: stateMachines.map((machine) => ({
-            id: machine.id,
-            name: machine.name,
-            label: machine.label,
-            packagePath: machine.packagePath,
-            stateCount: countWithFallback(machine.states),
-            transitionCount: countWithFallback(machine.transitions)
-          })),
-          states: flatStates,
-          transitions: flatTransitions
+          states: stateMachines.flatMap((machine) => asArray2(machine.states)),
+          transitions: stateMachines.flatMap((machine) => asArray2(machine.transitions))
         };
       }
+      case "sequence-view":
+        return aliasDiagramsField(data, "sequenceDiagrams");
       default:
         return data;
     }
@@ -1778,6 +1001,12 @@ var Spec42HeadlessRendererBundle = (() => {
   function treeRootHints(visualization) {
     return asArray(projectionHints(visualization).treeRoots).map((value) => asString(value)).filter(Boolean);
   }
+  function optionalUri(node) {
+    return nodeUri(node) ?? void 0;
+  }
+  function optionalRange(node) {
+    return nodeRange(node) ?? void 0;
+  }
   function buildHierarchyRows(graphNodes, treeRoots) {
     const byId = new Map(graphNodes.map((node) => [node.id, node]));
     const childrenByParent = /* @__PURE__ */ new Map();
@@ -1835,8 +1064,8 @@ var Spec42HeadlessRendererBundle = (() => {
       kind: elementTypeOf(node) || "element",
       parentId: asString(node.parent_id ?? node.parentId ?? asRecord(node.attributes).parentId),
       qualifiedName: qualifiedNameOf(node),
-      uri: nodeUri(node),
-      range: nodeRange(node)
+      uri: optionalUri(node),
+      range: optionalRange(node)
     }));
     const hierarchyLayout = browserLayoutHint(visualization) === "hierarchy";
     const rows = hierarchyLayout ? buildHierarchyRows(graphNodes, treeRootHints(visualization)) : graphNodes.map((row) => ({ ...row, depth: 0, hasChildren: false })).sort((left, right) => left.qualifiedName.localeCompare(right.qualifiedName));
@@ -1849,7 +1078,7 @@ var Spec42HeadlessRendererBundle = (() => {
         kind: row.kind,
         uri: row.uri,
         range: row.range,
-        attributes: row
+        attributes: { ...row }
       })),
       edges: [],
       meta: { rows, hierarchyLayout, provisional: !hierarchyLayout }
@@ -1874,8 +1103,8 @@ var Spec42HeadlessRendererBundle = (() => {
         attributeCount: asArray(attrs.attributes).length,
         partCount: asArray(attrs.parts).length,
         portCount: asArray(attrs.ports).length,
-        uri: nodeUri(node),
-        range: nodeRange(node)
+        uri: optionalUri(node),
+        range: optionalRange(node)
       };
     }).sort((left, right) => left.qualifiedName.localeCompare(right.qualifiedName));
     const nodeIds = cells.map((cell) => cell.id).filter(Boolean);
@@ -1912,8 +1141,8 @@ var Spec42HeadlessRendererBundle = (() => {
       label: asString(node.name ?? node.qualifiedName ?? node.id, "Unnamed"),
       kind: elementTypeOf(node) || "element",
       qualifiedName: qualifiedNameOf(node),
-      uri: nodeUri(node),
-      range: nodeRange(node)
+      uri: optionalUri(node),
+      range: optionalRange(node)
     }));
     const nodeIds = new Set(elements.map((element) => element.id));
     return {
@@ -1949,6 +1178,13 @@ var Spec42HeadlessRendererBundle = (() => {
 
   // ../shared/diagram-renderer/src/prepare/index.ts
   function prepareViewData(visualizationInput) {
+    const passthrough = asRecord(visualizationInput).preparedView;
+    if (passthrough && typeof passthrough === "object") {
+      const candidate = asRecord(passthrough);
+      if (typeof candidate.view === "string" && Array.isArray(candidate.nodes) && Array.isArray(candidate.edges)) {
+        return candidate;
+      }
+    }
     const normalized = normalizeVisualizationPayload(asRecord(visualizationInput));
     const visualization = asRecord(normalized);
     const view = visualization?.view || "general-view";
@@ -5478,7 +4714,7 @@ var Spec42HeadlessRendererBundle = (() => {
   function asRecord2(value) {
     return value && typeof value === "object" ? value : {};
   }
-  function asArray2(value) {
+  function asArray3(value) {
     return Array.isArray(value) ? value : [];
   }
   function asString3(value, fallback = "") {
@@ -5505,10 +4741,10 @@ var Spec42HeadlessRendererBundle = (() => {
   }
   function renderSequenceView(ctx) {
     const diagram = asRecord2(ctx.prepared.meta?.sequenceDiagram);
-    const lifelines = asArray2(diagram.lifelines).map(asRecord2);
-    const messages = asArray2(diagram.messages).map(asRecord2).sort((a, b) => Number(a.order ?? 0) - Number(b.order ?? 0));
-    const activations = asArray2(diagram.activations).map(asRecord2);
-    const fragments = asArray2(diagram.fragments).map(asRecord2);
+    const lifelines = asArray3(diagram.lifelines).map(asRecord2);
+    const messages = asArray3(diagram.messages).map(asRecord2).sort((a, b) => Number(a.order ?? 0) - Number(b.order ?? 0));
+    const activations = asArray3(diagram.activations).map(asRecord2);
+    const fragments = asArray3(diagram.fragments).map(asRecord2);
     const renderOptions = ctx.options ?? {};
     ctx.root.append("text").attr("x", ctx.width / 2).attr("y", 32).attr("text-anchor", "middle").style("font-size", "14px").style("font-weight", "700").style("fill", ctx.theme.textPrimary).text(ctx.prepared.title || "Sequence");
     if (lifelines.length === 0 || messages.length === 0) {
@@ -5574,10 +4810,10 @@ var Spec42HeadlessRendererBundle = (() => {
     const fragmentLayer = ctx.root.insert("g", ".sequence-messages").attr("class", "sequence-fragments");
     for (const fragment of fragments) {
       const kind = asString3(fragment.kind ?? fragment.type, "fragment");
-      const operands = asArray2(fragment.operands).map(asRecord2);
+      const operands = asArray3(fragment.operands).map(asRecord2);
       const referencedMessages = /* @__PURE__ */ new Set();
       for (const operand of operands) {
-        asArray2(operand.message_ids ?? operand.messageIds ?? operand.messages).forEach((id2) => referencedMessages.add(asString3(id2)));
+        asArray3(operand.message_ids ?? operand.messageIds ?? operand.messages).forEach((id2) => referencedMessages.add(asString3(id2)));
       }
       const matching = [...referencedMessages].map((id2) => messagePosition.get(id2)).filter((value) => Boolean(value));
       if (matching.length === 0 && messages.length > 0) {
@@ -5724,7 +4960,7 @@ var Spec42HeadlessRendererBundle = (() => {
   function asRecord3(value) {
     return value && typeof value === "object" ? value : {};
   }
-  function asArray3(value) {
+  function asArray4(value) {
     return Array.isArray(value) ? value : [];
   }
   function asString4(value, fallback = "") {
@@ -5746,7 +4982,7 @@ var Spec42HeadlessRendererBundle = (() => {
     return truncateLabel(segments[segments.length - 1] ?? id2, 10);
   }
   function renderBrowserView(ctx) {
-    const rows = asArray3(ctx.prepared.meta?.rows).map(asRecord3);
+    const rows = asArray4(ctx.prepared.meta?.rows).map(asRecord3);
     const sourceRows = rows.length > 0 ? rows : ctx.prepared.nodes.map((node) => ({ id: node.id, label: node.label, kind: node.kind }));
     const hierarchyLayout = Boolean(ctx.prepared.meta?.hierarchyLayout);
     const rowHeight = 28;
@@ -5814,7 +5050,7 @@ var Spec42HeadlessRendererBundle = (() => {
     if (relationshipMatrix) {
       return renderRelationshipMatrix(ctx);
     }
-    const cells = asArray3(ctx.prepared.meta?.cells).map(asRecord3);
+    const cells = asArray4(ctx.prepared.meta?.cells).map(asRecord3);
     const rows = cells.length > 0 ? cells : ctx.prepared.nodes.map((node) => asRecord3(node.attributes));
     const left = 52;
     const top = 92;
@@ -5860,9 +5096,9 @@ var Spec42HeadlessRendererBundle = (() => {
     return { minX: 0, minY: 0, maxX: left + tableWidth + 80, maxY: top + (rows.length + 2) * rowHeight + 80 };
   }
   function renderRelationshipMatrix(ctx) {
-    const rowIds = asArray3(ctx.prepared.meta?.matrixRowIds).map((value) => asString4(value)).filter(Boolean);
-    const colIds = asArray3(ctx.prepared.meta?.matrixColIds).map((value) => asString4(value)).filter(Boolean);
-    const matrixCells = asArray3(ctx.prepared.meta?.matrixCells).map(asRecord3);
+    const rowIds = asArray4(ctx.prepared.meta?.matrixRowIds).map((value) => asString4(value)).filter(Boolean);
+    const colIds = asArray4(ctx.prepared.meta?.matrixColIds).map((value) => asString4(value)).filter(Boolean);
+    const matrixCells = asArray4(ctx.prepared.meta?.matrixCells).map(asRecord3);
     const cellSize = 34;
     const headerSize = 120;
     const left = 180;
@@ -5892,7 +5128,7 @@ var Spec42HeadlessRendererBundle = (() => {
     return { minX: 0, minY: 0, maxX: left + width, maxY: top + height };
   }
   function renderGeometryView(ctx) {
-    const elements = asArray3(ctx.prepared.meta?.elements).map(asRecord3);
+    const elements = asArray4(ctx.prepared.meta?.elements).map(asRecord3);
     const nodes = elements.length > 0 ? elements : ctx.prepared.nodes.map((node) => ({ id: node.id, label: node.label, kind: node.kind }));
     const geometryMode = asString4(ctx.prepared.meta?.geometryMode, "2d");
     const geometryProjection = asString4(ctx.prepared.meta?.geometryProjection, "orthographic");
@@ -6041,7 +5277,7 @@ var Spec42HeadlessRendererBundle = (() => {
     if (typeof value === "number" || typeof value === "boolean") return String(value);
     return fallback;
   }
-  function asArray4(value) {
+  function asArray5(value) {
     return Array.isArray(value) ? value : [];
   }
   function normalizeUnitBrackets(text) {
@@ -6070,10 +5306,10 @@ var Spec42HeadlessRendererBundle = (() => {
     };
   }
   function detailItems(attributes, key) {
-    return asArray4(attributes[key]).map((item) => normalizeDetailItem(item)).filter((item) => Boolean(item));
+    return asArray5(attributes[key]).map((item) => normalizeDetailItem(item)).filter((item) => Boolean(item));
   }
   function fallbackDetailItems(attributes, key) {
-    return asArray4(attributes[key]).map((item) => normalizeDetailItem(item)).filter((item) => Boolean(item));
+    return asArray5(attributes[key]).map((item) => normalizeDetailItem(item)).filter((item) => Boolean(item));
   }
   function collectCompartments(node) {
     const attributes = node.attributes ?? {};
@@ -7287,6 +6523,7 @@ var Spec42HeadlessRendererBundle = (() => {
 
   // ../shared/diagram-renderer/src/renderer.ts
   async function renderVisualization(target, prepared, options = {}) {
+    const renderStartedAt = Date.now();
     target.innerHTML = "";
     const theme = resolveDiagramTheme(options.theme);
     const width = Math.max(720, target.clientWidth || 960);
@@ -7323,21 +6560,36 @@ var Spec42HeadlessRendererBundle = (() => {
     let bounds;
     if (view === "action-flow-view") {
       addActionFlowMarkers(svg.select("defs").empty() ? svg.append("defs") : svg.select("defs"), theme);
+      const drawStartedAt = Date.now();
       bounds = contentBoundsFromExtents(await renderActionFlowView({ root: root2, prepared, theme, width, height, options }));
+      options.onPerformance?.("sharedRenderer:draw", { view, drawMs: Date.now() - drawStartedAt });
     } else if (view === "state-transition-view") {
       addStateTransitionMarkers(svg.select("defs").empty() ? svg.append("defs") : svg.select("defs"), theme);
+      const drawStartedAt = Date.now();
       bounds = contentBoundsFromExtents(await renderStateTransitionView({ root: root2, prepared, theme, width, height, options }));
+      options.onPerformance?.("sharedRenderer:draw", { view, drawMs: Date.now() - drawStartedAt });
     } else if (view === "sequence-view") {
       addSequenceMarkers(svg.select("defs").empty() ? svg.append("defs") : svg.select("defs"), theme);
+      const drawStartedAt = Date.now();
       bounds = contentBoundsFromExtents(renderSequenceView({ root: root2, prepared, theme, width, height, options }));
+      options.onPerformance?.("sharedRenderer:draw", { view, drawMs: Date.now() - drawStartedAt });
     } else if (view === "browser-view") {
+      const drawStartedAt = Date.now();
       bounds = contentBoundsFromExtents(renderBrowserView({ root: root2, prepared, theme, width, height, options }));
+      options.onPerformance?.("sharedRenderer:draw", { view, drawMs: Date.now() - drawStartedAt });
     } else if (view === "grid-view") {
+      const drawStartedAt = Date.now();
       bounds = contentBoundsFromExtents(renderGridView({ root: root2, prepared, theme, width, height, options }));
+      options.onPerformance?.("sharedRenderer:draw", { view, drawMs: Date.now() - drawStartedAt });
     } else if (view === "geometry-view") {
+      const drawStartedAt = Date.now();
       bounds = contentBoundsFromExtents(renderGeometryView({ root: root2, prepared, theme, width, height, options }));
+      options.onPerformance?.("sharedRenderer:draw", { view, drawMs: Date.now() - drawStartedAt });
     } else {
+      const layoutStartedAt = Date.now();
       const layout = await layoutPrepared(prepared);
+      const layoutMs = Date.now() - layoutStartedAt;
+      const drawStartedAt = Date.now();
       if (isInterconnectionView) {
         if (shouldDrawIbdViewFrame(prepared)) {
           drawIbdViewFrame(root2, prepared, contentBounds(layout), theme);
@@ -7350,6 +6602,18 @@ var Spec42HeadlessRendererBundle = (() => {
         drawEdges(root2, layout.edges, isInterconnectionView, theme);
         drawNodes(root2, layout.nodes, options, isInterconnectionView, theme);
       }
+      options.onPerformance?.("sharedRenderer:layout", {
+        view,
+        layoutMs,
+        nodeCount: prepared.nodes.length,
+        edgeCount: prepared.edges.length
+      });
+      options.onPerformance?.("sharedRenderer:draw", {
+        view,
+        drawMs: Date.now() - drawStartedAt,
+        laidOutNodes: layout.nodes.length,
+        laidOutEdges: layout.edges.length
+      });
       bounds = contentBounds(layout);
     }
     let lastFitTransform = identity2;
@@ -7366,6 +6630,12 @@ var Spec42HeadlessRendererBundle = (() => {
       );
     };
     fitView();
+    options.onPerformance?.("sharedRenderer:render", {
+      view,
+      totalMs: Date.now() - renderStartedAt,
+      nodeCount: prepared.nodes.length,
+      edgeCount: prepared.edges.length
+    });
     return {
       reset: () => fitView(),
       getFitTransform: () => lastFitTransform,
@@ -7377,6 +6647,17 @@ var Spec42HeadlessRendererBundle = (() => {
   }
 
   // ../shared/diagram-renderer/src/headless-export.ts
+  function preparedViewFromPayload(payload) {
+    const prepared = payload.preparedView;
+    if (!prepared || typeof prepared !== "object") {
+      return null;
+    }
+    const view = prepared;
+    if (typeof view.view !== "string" || !Array.isArray(view.nodes) || !Array.isArray(view.edges)) {
+      return null;
+    }
+    return prepared;
+  }
   var VirtualStyle = class {
     constructor() {
       this.values = /* @__PURE__ */ new Map();
@@ -7600,7 +6881,7 @@ var Spec42HeadlessRendererBundle = (() => {
     target.clientHeight = options.height ?? 900;
     document2.body.appendChild(target);
     try {
-      const prepared = prepareViewData(payload);
+      const prepared = preparedViewFromPayload(payload) ?? prepareViewData(payload);
       const controller = await renderVisualization(target, prepared, {
         delegateZoom: true,
         theme: { colorScheme: options.colorScheme ?? "light" }

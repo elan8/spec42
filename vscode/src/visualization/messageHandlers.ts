@@ -5,6 +5,7 @@ import { LspModelProvider, toVscodeRange } from '../providers/lspModelProvider';
 import type { SysMLElement } from '../types/sysmlTypes';
 import type { RenderOutcome } from './renderContract';
 import { onRenderComplete } from './renderTracker';
+import { isWebviewToHostMessage, type WebviewToHostMessage } from './protocol';
 
 export interface MessageHandlerContext {
     panel: vscode.WebviewPanel;
@@ -18,18 +19,24 @@ export interface MessageHandlerContext {
     setLastContentHash: (hash: string) => void;
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-type WebviewMessage = { command: string; [key: string]: any };
-
-export function createMessageDispatcher(ctx: MessageHandlerContext): (msg: WebviewMessage) => void {
+export function createMessageDispatcher(ctx: MessageHandlerContext): (msg: unknown) => void {
     const handlers = createMessageHandlers(ctx);
     const { panel, document, setCurrentView, setSelectedView, setLastContentHash, updateVisualization } = ctx;
 
-    return (message: WebviewMessage) => {
+    return (message: unknown) => {
+        if (!isWebviewToHostMessage(message)) {
+            if (isVerboseLoggingEnabled()) {
+                handlers.logWebviewMessage('warn', ['Ignoring invalid webview message', message]);
+            }
+            return;
+        }
         switch (message.command) {
             case 'webviewLog':
                 if (message.level === 'error' || isVerboseLoggingEnabled()) {
-                    handlers.logWebviewMessage(message.level, message.args ?? []);
+                    handlers.logWebviewMessage(
+                        typeof message.level === 'string' ? message.level : 'info',
+                        message.args ?? [],
+                    );
                 }
                 break;
             case 'webviewPerf':
@@ -41,13 +48,13 @@ export function createMessageDispatcher(ctx: MessageHandlerContext): (msg: Webvi
                 }
                 break;
             case 'jumpToElement':
-                handlers.jumpToElement(message.elementName, message.skipCentering, message.parentContext, message.elementQualifiedName, message.elementUri, message.elementRange);
+                handlers.jumpToElement(message.elementName ?? '', message.skipCentering, message.parentContext, message.elementQualifiedName, message.elementUri, message.elementRange);
                 break;
             case 'renameElement':
-                handlers.renameElement(message.oldName, message.newName);
+                handlers.renameElement(message.oldName ?? '', message.newName ?? '');
                 break;
             case 'export':
-                handlers.handleExport(message.format, message.data);
+                handlers.handleExport(message.format ?? '', typeof message.data === 'string' ? message.data : '');
                 break;
             case 'viewChanged':
                 setCurrentView(message.view ?? '');
@@ -90,10 +97,15 @@ export function createMessageDispatcher(ctx: MessageHandlerContext): (msg: Webvi
                 });
                 break;
             case 'testDiagramExported':
-                handleTestDiagramExported(message.viewId, message.svgString).catch(err =>
+                handleTestDiagramExported(message.viewId ?? 'unknown', message.svgString ?? '').catch(err =>
                     // eslint-disable-next-line no-console
                     console.error('[SysML Visualizer] Failed to write test diagram:', err)
                 );
+                break;
+            default:
+                if (isVerboseLoggingEnabled()) {
+                    handlers.logWebviewMessage('warn', ['Ignoring unknown webview command', (message as WebviewToHostMessage).command]);
+                }
                 break;
         }
     };

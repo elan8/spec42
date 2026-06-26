@@ -7,6 +7,7 @@ import {
     setVisualizerBootstrapCompleted,
     setVisualizerUpdateInFlight,
 } from './visualizerReadiness';
+import type { WebviewRenderIdentity } from './protocol';
 
 export interface UpdateFlowDeps {
     panel: vscode.WebviewPanel;
@@ -57,23 +58,31 @@ async function safePostMessage(
 /** Workspace semantic trees may contain parent/child cycles; omit from webview payloads. */
 export function toWebviewUpdateMessage(msg: UpdateMessage): UpdateMessage {
     const { elements: _elements, ...safe } = msg;
-    try {
-        return JSON.parse(JSON.stringify(safe)) as UpdateMessage;
-    } catch (error) {
-        logError('updateFlow:webviewSerializeFailed', error);
-        return {
-            command: 'update',
-            modelReady: false,
-            modelStatusMessage: 'Diagram data could not be sent to the visualizer.',
-            graph: { nodes: [], edges: [] },
-            generalViewGraph: { nodes: [], edges: [] },
-            activityDiagrams: [],
-            sequenceDiagrams: [],
-            currentView: safe.currentView,
-            viewCandidates: [],
-            emptyStateMessage: 'Diagram data could not be sent to the visualizer.',
-        };
-    }
+    return safe;
+}
+
+export function createWebviewRenderIdentity(msg: UpdateMessage, contentHash: string): WebviewRenderIdentity {
+    return {
+        contentHash,
+        currentView: msg.currentView,
+        selectedView: msg.selectedView,
+        selectedViewName: msg.selectedViewName,
+        emptyStateMessage: msg.emptyStateMessage,
+        preparedView: msg.preparedView
+            ? {
+                title: msg.preparedView.title,
+                view: msg.preparedView.view,
+                nodeCount: msg.preparedView.nodes.length,
+                edgeCount: msg.preparedView.edges.length,
+            }
+            : undefined,
+        graph: msg.graph
+            ? {
+                nodeCount: msg.graph.nodes?.length ?? 0,
+                edgeCount: msg.graph.edges?.length ?? 0,
+            }
+            : undefined,
+    };
 }
 
 export function createUpdateVisualizationFlow(deps: UpdateFlowDeps): { update: (force: boolean, triggerSource?: string) => Promise<void> } {
@@ -114,7 +123,7 @@ export function createUpdateVisualizationFlow(deps: UpdateFlowDeps): { update: (
         });
     }
 
-    async function doUpdateVisualization(triggerSource: string): Promise<void> {
+    async function doUpdateVisualization(triggerSource: string, contentHash: string): Promise<void> {
         const document = getDocument?.();
         const workspaceRootUri = getWorkspaceRootUri();
         const updateStartedAt = Date.now();
@@ -208,7 +217,11 @@ export function createUpdateVisualizationFlow(deps: UpdateFlowDeps): { update: (
                     graphEdges: msg.graph?.edges?.length || 0,
                     updateId,
                 });
-                const webviewMsg = toWebviewUpdateMessage({ ...msg, updateId });
+                const webviewMsg = toWebviewUpdateMessage({
+                    ...msg,
+                    updateId,
+                    renderIdentity: createWebviewRenderIdentity(msg, contentHash),
+                });
                 const delivered = await safePostMessage(panel, webviewMsg, isDisposed);
                 logPerf('visualizer:webviewPostMessageCompleted', {
                     command: msg.command,
@@ -304,7 +317,7 @@ export function createUpdateVisualizationFlow(deps: UpdateFlowDeps): { update: (
             await new Promise(resolve => setTimeout(resolve, 0));
             const startedAt = Date.now();
             try {
-                await doUpdateVisualization(triggerSource);
+                await doUpdateVisualization(triggerSource, contentHash);
                 bootstrapCompleted = true;
                 setVisualizerBootstrapCompleted(true);
                 logPerf('visualizer:updateCompleted', {

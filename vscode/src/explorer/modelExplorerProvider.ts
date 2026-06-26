@@ -9,6 +9,12 @@ import type {
 } from "../providers/sysmlModelTypes";
 import { graphToElementTree } from "../visualization/graphToElementTree";
 import { rangeContainsPosition, rangeSpanScore } from "../utils/range";
+import type {
+  InFlightWorkspaceLoad,
+  WorkspaceLoadOptions,
+  WorkspaceLoadResult,
+  WorkspaceLoadStatus,
+} from "./workspaceLoadState";
 
 function logPerf(event: string, extra?: Record<string, unknown>): void {
   logPerfEvent(event, extra);
@@ -373,16 +379,6 @@ function percentileMs(values: number[], percentile: number): number {
 
 type ExplorerTreeItem = ExplorerInfoItem | FileTreeItem | ModelTreeItem;
 
-type WorkspaceLoadStatus = {
-  state: "idle" | "pending" | "indexing" | "ready" | "degraded";
-  scannedFiles: number;
-  loadedFiles: number;
-  perPatternLimit?: number;
-  truncated: boolean;
-  cancelled: boolean;
-  failures: number;
-};
-
 type ModelExplorerDebugState = {
   lastRevealedElementId?: string;
   pendingDocumentLoadUri?: string;
@@ -394,27 +390,6 @@ type InFlightDocumentLoad = {
   generation: number;
   cts: vscode.CancellationTokenSource;
   promise: Promise<void>;
-};
-
-type WorkspaceLoadOptions = {
-  runId: string;
-  token?: vscode.CancellationToken;
-};
-
-type WorkspaceLoadResult = {
-  runId: string;
-  fileCount: number;
-  loadedFiles: number;
-  failures: number;
-  cancelled: number;
-  committed: boolean;
-  stale: boolean;
-  totalMs: number;
-};
-
-type InFlightWorkspaceLoad = {
-  runId: string;
-  promise: Promise<WorkspaceLoadResult>;
 };
 
 export class ModelExplorerProvider

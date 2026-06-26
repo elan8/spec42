@@ -7,6 +7,7 @@ export interface RenderOptions {
   selectedNodeId?: string | null;
   theme?: DiagramThemeOverrides;
   delegateZoom?: boolean;
+  onPerformance?: (event: string, data: Record<string, unknown>) => void;
 }
 
 export const nodeWidth = 200;

@@ -12,6 +12,7 @@ export interface ExportHandlerOpts {
     postMessage: (msg: unknown) => void;
     /** Prefer shared renderer export when the diagram is rendered via adapter. */
     getExportSvg?: () => string | null;
+    onPerformance?: (event: string, data: Record<string, unknown>) => void;
 }
 
 export function prepareSvgForExport(svgElement: SVGSVGElement | null): SVGSVGElement | null {
@@ -203,9 +204,10 @@ export function prepareSvgForExport(svgElement: SVGSVGElement | null): SVGSVGEle
 }
 
 export function createExportHandler(opts: ExportHandlerOpts) {
-    const { getCurrentData, getViewState, postMessage, getExportSvg } = opts;
+    const { getCurrentData, getViewState, postMessage, getExportSvg, onPerformance } = opts;
 
     function exportJSON(): void {
+        const startedAt = Date.now();
         const currentData = getCurrentData();
         if (!currentData) {
             console.error('No data available for JSON export');
@@ -222,12 +224,18 @@ export function createExportHandler(opts: ExportHandlerOpts) {
                 format: 'json',
                 data: reader.result
             });
+            onPerformance?.('visualizer:exportCompleted', {
+                format: 'json',
+                currentView: getViewState().currentView,
+                totalMs: Date.now() - startedAt,
+            });
         };
 
         reader.readAsDataURL(blob);
     }
 
     function exportPNG(scale?: number): void {
+        const startedAt = Date.now();
         const scaleFactor = scale || 2;
 
         const svgElement = document.querySelector('#visualization svg') as SVGSVGElement | null;
@@ -263,6 +271,12 @@ export function createExportHandler(opts: ExportHandlerOpts) {
                 format: 'png',
                 data: pngData
             });
+            onPerformance?.('visualizer:exportCompleted', {
+                format: 'png',
+                currentView: getViewState().currentView,
+                scale: scaleFactor,
+                totalMs: Date.now() - startedAt,
+            });
         };
         img.onerror = function () {
             console.error('Failed to load SVG image for PNG export');
@@ -271,6 +285,7 @@ export function createExportHandler(opts: ExportHandlerOpts) {
     }
 
     function exportSVG(): void {
+        const startedAt = Date.now();
         const svgString = getSvgStringForExport();
         if (!svgString) {
             console.error('No SVG available for export');
@@ -283,6 +298,11 @@ export function createExportHandler(opts: ExportHandlerOpts) {
                 command: 'export',
                 format: 'svg',
                 data: reader.result
+            });
+            onPerformance?.('visualizer:exportCompleted', {
+                format: 'svg',
+                currentView: getViewState().currentView,
+                totalMs: Date.now() - startedAt,
             });
         };
         reader.readAsDataURL(svgBlob);

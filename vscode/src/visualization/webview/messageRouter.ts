@@ -7,10 +7,15 @@ import { replayLastRenderComplete } from './renderComplete';
 import { destroySharedRenderController } from './zoomController';
 import type { VisualizerContext } from './visualizerContext';
 import { updateActiveViewButton } from './viewControls';
+import { isHostToWebviewMessage } from '../protocol';
 
 export function registerMessageRouter(ctx: VisualizerContext): void {
     window.addEventListener('message', (event) => {
         const message = event.data;
+        if (!isHostToWebviewMessage(message)) {
+            ctx.webviewLog('warn', 'Ignoring invalid host message', message);
+            return;
+        }
         switch (message.command) {
             case 'showLoading':
                 ctx.showLoading(message.message || 'Parsing SysML model...');
@@ -39,14 +44,25 @@ export function registerMessageRouter(ctx: VisualizerContext): void {
                     if (typeof message.updateId === 'string' && message.updateId.length > 0) {
                         ctx.lastUpdateId = message.updateId;
                     }
-                    const newHash = quickHash({
-                        graph: message.graph,
-                        generalViewGraph: message.generalViewGraph,
-                        ibd: message.ibd,
-                        interconnectionScene: message.interconnectionScene,
-                        selectedView: message.selectedView,
-                        emptyStateMessage: message.emptyStateMessage,
+                    const newHash = message.renderIdentity?.contentHash ?? quickHash({
                         currentView: message.currentView,
+                        selectedView: message.selectedView,
+                        selectedViewName: message.selectedViewName,
+                        emptyStateMessage: message.emptyStateMessage,
+                        preparedView: message.preparedView
+                            ? {
+                                title: message.preparedView.title,
+                                view: message.preparedView.view,
+                                nodeCount: message.preparedView.nodes.length,
+                                edgeCount: message.preparedView.edges.length,
+                            }
+                            : undefined,
+                        graph: message.graph
+                            ? {
+                                nodeCount: message.graph.nodes?.length ?? 0,
+                                edgeCount: message.graph.edges?.length ?? 0,
+                            }
+                            : undefined,
                     });
 
                     if (message.modelReady === false) {

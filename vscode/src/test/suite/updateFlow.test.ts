@@ -226,6 +226,102 @@ describe("createUpdateVisualizationFlow", () => {
     assert.deepStrictEqual(requests, [{ view: "general-view" }, { view: "action-flow-view" }]);
   });
 
+  it("allows a later selected view change to trigger a new fetch after bootstrap", async () => {
+    let getVisualizationCount = 0;
+    let selectedView: string | undefined;
+    let lastContentHash = "";
+    const requests: Array<{ selectedView: string | undefined }> = [];
+    const { panel } = createMockPanel();
+    const document = createMockDocument("file:///drone.sysml");
+
+    const flow = createUpdateVisualizationFlow({
+      panel,
+      getDocument: () => document,
+      getWorkspaceRootUri: () => "file:///workspace",
+      getCurrentView: () => "general-view",
+      getSelectedView: () => selectedView,
+      setCurrentView: () => {},
+      getIsNavigating: () => false,
+      getNeedsUpdateWhenVisible: () => false,
+      getLastContentHash: () => lastContentHash,
+      setLastContentHash: (hash) => { lastContentHash = hash; },
+      setNeedsUpdateWhenVisible: () => {},
+      fetchUpdateMessage: async () => {
+        getVisualizationCount += 1;
+        requests.push({ selectedView });
+        return {
+          command: "update",
+          modelReady: true,
+          graph: { nodes: [], edges: [] },
+          generalViewGraph: { nodes: [], edges: [] },
+          activityDiagrams: [],
+          sequenceDiagrams: [],
+          currentView: "general-view",
+          selectedView,
+          viewCandidates: [],
+        };
+      },
+    });
+
+    await flow.update(true, "webviewReady");
+    selectedView = "AnalysisView";
+    await flow.update(true, "viewSelectionChanged");
+
+    assert.strictEqual(getVisualizationCount, 2);
+    assert.deepStrictEqual(requests, [{ selectedView: undefined }, { selectedView: "AnalysisView" }]);
+  });
+
+  it("posts a shallow sanitized update with render identity and without cyclic elements", async () => {
+    const { panel, messages } = createMockPanel();
+    const document = createMockDocument("file:///drone.sysml");
+
+    const flow = createUpdateVisualizationFlow({
+      panel,
+      getDocument: () => document,
+      getWorkspaceRootUri: () => "file:///workspace",
+      getCurrentView: () => "general-view",
+      getSelectedView: () => undefined,
+      setCurrentView: () => {},
+      getIsNavigating: () => false,
+      getNeedsUpdateWhenVisible: () => false,
+      getLastContentHash: () => "",
+      setLastContentHash: () => {},
+      setNeedsUpdateWhenVisible: () => {},
+      fetchUpdateMessage: async () => {
+        const element: { name: string; self?: unknown } = { name: "Drone" };
+        element.self = element;
+        return {
+          command: "update",
+          modelReady: true,
+          graph: { nodes: [{ id: "Drone", name: "Drone", type: "part" }], edges: [] } as any,
+          elements: [element] as any,
+          generalViewGraph: { nodes: [], edges: [] },
+          preparedView: { title: "Drone", view: "general-view", nodes: [{ id: "Drone" }], edges: [] },
+          activityDiagrams: [],
+          sequenceDiagrams: [],
+          currentView: "general-view",
+          viewCandidates: [],
+        };
+      },
+    });
+
+    await flow.update(true, "webviewReady");
+
+    const update = messages.find((message) => (message as { command?: string }).command === "update") as {
+      elements?: unknown;
+      renderIdentity?: { contentHash?: string; preparedView?: { nodeCount: number; edgeCount: number } };
+    };
+    assert.ok(update);
+    assert.strictEqual(update.elements, undefined);
+    assert.strictEqual(typeof update.renderIdentity?.contentHash, "string");
+    assert.deepStrictEqual(update.renderIdentity?.preparedView, {
+      title: "Drone",
+      view: "general-view",
+      nodeCount: 1,
+      edgeCount: 0,
+    });
+  });
+
   it("suppresses loading and modelNotReady flashes for lifecycle updates after bootstrap", async () => {
     let getVisualizationCount = 0;
     let lastContentHash = "";

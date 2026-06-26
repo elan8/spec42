@@ -4,7 +4,7 @@
  */
 
 export function buildSharedRendererInput(
-    data: Record<string, unknown> | null | undefined,
+    data: object | null | undefined,
     view: string,
 ): Record<string, unknown> | null {
     if (!data) {
@@ -16,11 +16,11 @@ export function buildSharedRendererInput(
     };
 }
 
-export function interconnectionBannerCounts(data: Record<string, unknown> | null | undefined): {
+export function interconnectionBannerCounts(data: object | null | undefined): {
     partCount: number;
     connectorCount: number;
 } {
-    const ibd = data?.ibd as { parts?: unknown[]; connectors?: unknown[] } | undefined;
+    const ibd = (data as { ibd?: { parts?: unknown[]; connectors?: unknown[] } } | null | undefined)?.ibd;
     return {
         partCount: Array.isArray(ibd?.parts) ? ibd.parts.length : 0,
         connectorCount: Array.isArray(ibd?.connectors) ? ibd.connectors.length : 0,
