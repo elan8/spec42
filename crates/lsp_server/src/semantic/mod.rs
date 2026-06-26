@@ -3,7 +3,8 @@
 // All protocol-neutral semantic logic lives in the workspace crate.
 pub use workspace::semantic::{
     add_cross_document_edges_for_uri, build_graph_from_doc, declared_packages_in_content,
-    evaluate_expressions, hover_markdown_for_node, link_workspace_relationships, NodeId,
+    evaluate_expressions, hover_markdown_for_node, link_workspace_derivations,
+    link_workspace_relationships, NodeId,
     RelationshipKind, resolve_cross_document_edges_for_uri,
     resolve_expression_endpoint_strict, resolve_imported_node_ids_for_simple_name,
     resolve_member_via_type, resolve_type_reference_targets,

@@ -74,6 +74,7 @@ fn parse_scanned_entry(
     if let Some(dir) = cache_dir {
         let hash = parse_cache::content_hash(content.as_bytes());
         if let Some(root) = parse_cache::load(dir, &hash) {
+            tracing::debug!(uri = %uri, "parse cache hit");
             return ParsedScanEntry {
                 ordinal,
                 uri,
@@ -83,6 +84,7 @@ fn parse_scanned_entry(
                 parse_metadata: ParseMetadata { parse_time_ms: 0, parse_cached: true },
             };
         }
+        tracing::debug!(uri = %uri, "parse cache miss — parsing and storing");
         // Cache miss: parse normally then store.
         let entry = parse_scanned_entry_cold(ordinal, uri, content);
         if let Some(root) = &entry.parsed {
@@ -681,7 +683,9 @@ pub(crate) fn rebuild_all_document_links(
     let cross_edge_resolution_ms = elapsed_ms(cross_edge_resolution_start);
 
     let workspace_relationship_linking_start = Instant::now();
-    semantic::link_workspace_relationships(&mut state.semantic_graph);
+    // Typing/specializes/subject edges were already resolved by the parallel phase above
+    // for every URI. Only derivation-connection wiring remains.
+    semantic::link_workspace_derivations(&mut state.semantic_graph);
     let workspace_relationship_linking_ms = elapsed_ms(workspace_relationship_linking_start);
 
     let pending_relationship_resolution_start = Instant::now();
@@ -867,7 +871,9 @@ pub(crate) fn rebuild_semantic_graph_staged(
     let cross_edge_resolution_ms = elapsed_ms(cross_edge_resolution_start);
 
     let workspace_relationship_linking_start = Instant::now();
-    semantic::link_workspace_relationships(&mut semantic_graph);
+    // Typing/specializes/subject edges were already resolved by the parallel phase above
+    // for every URI. Only derivation-connection wiring remains.
+    semantic::link_workspace_derivations(&mut semantic_graph);
     let workspace_relationship_linking_ms = elapsed_ms(workspace_relationship_linking_start);
 
     let pending_relationship_resolution_start = Instant::now();

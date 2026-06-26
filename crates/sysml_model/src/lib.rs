@@ -67,7 +67,7 @@ pub use semantic::reference_resolution::{
     resolve_member_via_type, ExposeExpandMode, ExposeTargetResolution, ResolveResult,
 };
 pub use semantic::relationships::{
-    add_cross_document_edges_for_uri, link_workspace_relationships,
+    add_cross_document_edges_for_uri, link_workspace_derivations, link_workspace_relationships,
     resolve_cross_document_edges_for_uri, resolve_workspace_pending_relationships,
     TYPE_REFERENCE_ATTR_KEYS,
 };

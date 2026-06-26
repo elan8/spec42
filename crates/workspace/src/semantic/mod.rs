@@ -18,7 +18,7 @@ pub use reference_resolution::{
     resolve_expression_endpoint_strict, resolve_member_via_type, ResolveResult,
 };
 pub use relationships::{
-    add_cross_document_edges_for_uri, link_workspace_relationships,
+    add_cross_document_edges_for_uri, link_workspace_derivations, link_workspace_relationships,
     resolve_cross_document_edges_for_uri, resolve_workspace_pending_relationships,
 };
 pub use sysml_model::declared_packages_in_content;

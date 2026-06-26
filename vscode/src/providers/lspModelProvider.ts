@@ -430,7 +430,22 @@ export class LspModelProvider {
       const requestStartedAt = Date.now();
       const sharedPromise = (async () => {
         let requestAttempts = 1;
+        logPerf("lspModelProvider:sendRequestStart", {
+          requestId,
+          caller,
+          uri: trimmed,
+          // Wall-clock ms since epoch — compare against backend:sysmlModelHandlerStart
+          // to see if the 5-10s delay is in the JS event loop or in the transport.
+          wallClockMs: Date.now(),
+        });
         let result = await doRequest();
+        logPerf("lspModelProvider:sendRequestDone", {
+          requestId,
+          caller,
+          uri: trimmed,
+          requestMs: Date.now() - requestStartedAt,
+          wallClockMs: Date.now(),
+        });
         let nodeCount = result.graph?.nodes?.length ?? 0;
         let edgeCount = result.graph?.edges?.length ?? 0;
 

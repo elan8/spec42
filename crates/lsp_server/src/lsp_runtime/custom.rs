@@ -1,6 +1,7 @@
 ﻿use crate::host::config::Spec42Config;
 use crate::views::dto;
 use crate::workspace::state::SemanticLifecycle;
+use crate::workspace::viz_cache::WorkspaceRenderCache;
 use crate::workspace::ServerState;
 use sysml_model::{visualization_model_not_ready, SysmlVisualizationResultDto};
 use std::time::Instant;
@@ -27,7 +28,8 @@ async fn log_perf(client: &Client, enabled: bool, event: &str, fields: Vec<(&str
 
 pub(crate) async fn sysml_model_result(
     client: &Client,
-    state: &mut ServerState,
+    state: &ServerState,
+    cache: &mut WorkspaceRenderCache,
     _config: &Spec42Config,
     params: serde_json::Value,
 ) -> Result<(dto::SysmlModelResultDto, Option<Url>)> {
@@ -43,16 +45,16 @@ pub(crate) async fn sysml_model_result(
     }
     if workspace_visualization_requested {
         if let Some(root) = crate::views::workspace_artifacts::primary_workspace_root(state) {
-            let _ = crate::views::workspace_artifacts::ensure_render_snapshot(state, &root);
+            let _ = crate::views::workspace_artifacts::ensure_render_snapshot(state, cache, &root);
             if crate::views::ibd_requested(&scope) {
-                let _ = crate::views::workspace_artifacts::materialize_model_explorer(state, &root);
+                let _ = crate::views::workspace_artifacts::materialize_model_explorer(state, cache, &root);
             }
         }
     }
     let model_explorer_bundle =
         if workspace_visualization_requested {
             crate::views::workspace_artifacts::primary_workspace_root(state).and_then(|root| {
-                crate::views::workspace_artifacts::materialize_model_explorer(state, &root).ok()
+                crate::views::workspace_artifacts::materialize_model_explorer(state, cache, &root).ok()
             })
         } else {
             None
@@ -244,7 +246,8 @@ pub(crate) fn sysml_feature_inspector_result(
 }
 
 pub(crate) fn sysml_visualization_result(
-    state: &mut ServerState,
+    state: &ServerState,
+    cache: &mut WorkspaceRenderCache,
     params: serde_json::Value,
 ) -> Result<(
     SysmlVisualizationResultDto,
@@ -273,6 +276,7 @@ pub(crate) fn sysml_visualization_result(
     let build_start = Instant::now();
     let outcome = crate::views::workspace_artifacts::build_visualization_with_cache(
         state,
+        cache,
         &workspace_root_uri,
         &view,
         selected_view.as_deref(),
@@ -389,10 +393,13 @@ pub(crate) fn sysml_server_stats_result(
     }
 }
 
-pub(crate) fn sysml_clear_cache_result(state: &mut ServerState) -> dto::SysmlClearCacheResultDto {
+pub(crate) fn sysml_clear_cache_result(
+    state: &mut ServerState,
+    cache: &mut WorkspaceRenderCache,
+) -> dto::SysmlClearCacheResultDto {
     let docs = state.index.len();
     let syms = state.symbol_table.len();
-    crate::views::workspace_artifacts::clear_workspace_viz_caches(state);
+    crate::views::workspace_artifacts::clear_workspace_viz_caches(cache);
     state.index.clear();
     state.symbol_table.clear();
     state.semantic_graph = crate::semantic::SemanticGraph::default();

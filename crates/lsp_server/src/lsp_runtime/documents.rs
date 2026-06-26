@@ -399,7 +399,14 @@ pub(crate) async fn initialized(
             .await
             .unwrap_or_default()
         };
+        let library_parsed_count = library_parsed.iter().filter(|e| e.parse_metadata.parse_cached).count();
+        let library_total_count = library_parsed.len();
         let parsed_entries: Vec<_> = parsed_entries.into_iter().chain(library_parsed).collect();
+        info!(
+            library_cache_hits = library_parsed_count,
+            library_total = library_total_count,
+            "startup: library parse cache stats"
+        );
         let merge_index_start = Instant::now();
         let mut st = state.write().await;
         for parsed_entry in &parsed_entries {
@@ -606,26 +613,64 @@ pub(crate) async fn did_open(
     let uri = params.text_document.uri.clone();
     let uri_norm = util::normalize_file_uri(&uri);
     let text = params.text_document.text;
+    let did_open_start = Instant::now();
     let warning = {
+        let lock_start = Instant::now();
         let mut state = state.write().await;
+        let lock_wait_ms = lock_start.elapsed().as_millis();
         let warning = store_document_text(&mut state, &uri_norm, text.clone());
+        let mut library_added = 0usize;
+        let mut relink_ms = 0u128;
         if !crate::workspace::library_closure::library_full_scan_enabled()
             && !state.library_paths.is_empty()
             && !util::uri_under_any_library(&uri_norm, &state.library_paths)
         {
             let added = crate::workspace::services::ingest_missing_library_closure(&mut state);
+            library_added = added;
             if added > 0 {
+                let relink_start = Instant::now();
                 crate::workspace::services::rebuild_all_document_links(&mut state);
+                relink_ms = relink_start.elapsed().as_millis();
             }
         }
         state.semantic_state_version = state.semantic_state_version.wrapping_add(1);
-        warning
+        let perf_logging_enabled = state.perf_logging_enabled;
+        (warning, lock_wait_ms, library_added, relink_ms, perf_logging_enabled)
     };
+    let (warning, lock_wait_ms, library_added, relink_ms, perf_logging_enabled) = warning;
+    if perf_logging_enabled {
+        client
+            .log_message(
+                MessageType::INFO,
+                format!(
+                    "[SysML][perf] {{\"event\":\"backend:didOpen\",\"uri\":{:?},\"lockWaitMs\":{},\"libraryAdded\":{},\"relinkMs\":{}}}",
+                    uri_norm.as_str(), lock_wait_ms, library_added, relink_ms
+                ),
+            )
+            .await;
+    }
     if let Some(message) = warning {
         client.log_message(MessageType::WARNING, message).await;
     }
+    let diag_start = Instant::now();
     publish_document_diagnostics(client, state, config, uri, &text).await;
-    schedule_workspace_diagnostics_republish(client, state, config);
+    if perf_logging_enabled {
+        client
+            .log_message(
+                MessageType::INFO,
+                format!(
+                    "[SysML][perf] {{\"event\":\"backend:didOpenComplete\",\"uri\":{:?},\"diagnosticsMs\":{},\"totalMs\":{}}}",
+                    uri_norm.as_str(),
+                    diag_start.elapsed().as_millis(),
+                    did_open_start.elapsed().as_millis()
+                ),
+            )
+            .await;
+    }
+    // Workspace diagnostics are NOT republished here. did_open fires whenever
+    // VS Code switches to a file tab, which is far too frequent. The workspace
+    // diagnostics were already published at the end of the startup scan and
+    // will be updated by did_change when files actually change.
 }
 
 pub(crate) async fn did_change(

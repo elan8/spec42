@@ -13,13 +13,14 @@ use std::sync::Arc;
 use std::time::Instant;
 use std::{future::Future, pin::Pin};
 
-use tokio::sync::RwLock;
+use tokio::sync::{Mutex, RwLock};
 use tower_lsp::jsonrpc::Result;
 use tower_lsp::lsp_types::*;
 use tower_lsp::{Client, LanguageServer, LspService, Server};
 
 use crate::host::config::Spec42Config;
 use crate::views::dto;
+use crate::workspace::viz_cache::WorkspaceRenderCache;
 use crate::workspace::ServerState;
 use custom::{
     mark_sysml_model_parse_cached, sysml_clear_cache_result, sysml_feature_inspector_result,
@@ -31,6 +32,7 @@ use sysml_model::SysmlVisualizationResultDto;
 struct Backend {
     client: Client,
     state: Arc<RwLock<ServerState>>,
+    render_cache: Arc<Mutex<WorkspaceRenderCache>>,
     config: Arc<Spec42Config>,
     start_time: Instant,
     server_name: String,
@@ -342,11 +344,27 @@ impl LanguageServer for Backend {
 impl Backend {
     async fn sysml_model(&self, params: serde_json::Value) -> Result<dto::SysmlModelResultDto> {
         let request_start = Instant::now();
+        // Log handler dispatch time BEFORE acquiring the lock so we can compare
+        // against the frontend's getModelRequestStart timestamp and see how long
+        // the request sat in the transport/queue before reaching this handler.
+        {
+            let is_perf = self.state.try_read().map(|s| s.perf_logging_enabled).unwrap_or(false);
+            if is_perf {
+                self.client
+                    .log_message(
+                        MessageType::INFO,
+                        "[SysML][perf] {\"event\":\"backend:sysmlModelHandlerStart\"}",
+                    )
+                    .await;
+            }
+        }
         let read_lock_wait_start = Instant::now();
-        let mut state = self.state.write().await;
+        let state = self.state.read().await;
+        let mut render_cache = self.render_cache.lock().await;
         let read_lock_wait_ms = read_lock_wait_start.elapsed().as_millis().max(1);
         let (response, parse_cached_uri) =
-            sysml_model_result(&self.client, &mut state, &self.config, params).await?;
+            sysml_model_result(&self.client, &state, &mut render_cache, &self.config, params).await?;
+        drop(render_cache);
         drop(state);
 
         let cache_mark_lock_wait_start = Instant::now();
@@ -410,9 +428,11 @@ impl Backend {
         params: serde_json::Value,
     ) -> Result<SysmlVisualizationResultDto> {
         let request_start = Instant::now();
-        let mut state = self.state.write().await;
+        let state = self.state.read().await;
+        let mut render_cache = self.render_cache.lock().await;
         let perf_logging_enabled = state.perf_logging_enabled;
-        let (response, build_meta) = sysml_visualization_result(&mut state, params)?;
+        let (response, build_meta) = sysml_visualization_result(&state, &mut render_cache, params)?;
+        drop(render_cache);
         drop(state);
         if perf_logging_enabled {
             let graph_nodes = response
@@ -480,7 +500,8 @@ impl Backend {
 
     async fn sysml_clear_cache(&self) -> Result<dto::SysmlClearCacheResultDto> {
         let mut state = self.state.write().await;
-        Ok(sysml_clear_cache_result(&mut state))
+        let mut render_cache = self.render_cache.lock().await;
+        Ok(sysml_clear_cache_result(&mut state, &mut render_cache))
     }
 
     async fn sysml_library_search(
@@ -527,6 +548,7 @@ pub async fn run(config: Arc<Spec42Config>, server_name: &str) {
     crate::host::logging::init_tracing();
     let (stdin, stdout) = (tokio::io::stdin(), tokio::io::stdout());
     let state = Arc::new(RwLock::new(ServerState::default()));
+    let render_cache = Arc::new(Mutex::new(WorkspaceRenderCache::default()));
     let start_time = Instant::now();
     let server_name = server_name.to_string();
     let custom_rpc_methods = config.custom_rpc_method_names();
@@ -535,6 +557,7 @@ pub async fn run(config: Arc<Spec42Config>, server_name: &str) {
     let mut builder = LspService::build(move |client| Backend {
         client,
         state: Arc::clone(&state),
+        render_cache: Arc::clone(&render_cache),
         config: Arc::clone(&runtime_config),
         start_time,
         server_name: server_name.clone(),

@@ -780,6 +780,33 @@ pub fn link_workspace_relationships(g: &mut SemanticGraph) {
     link_case_subject_relationships(g);
 }
 
+/// Wire derivation connections after a full parallel cross-document edge resolution.
+///
+/// When [`resolve_cross_document_edges_for_uri`] is run in parallel for every URI in
+/// the workspace, it already resolves typing, specializes, and subject edges for all
+/// nodes.  In that full-build path, calling [`link_workspace_relationships`] afterwards
+/// redundantly re-resolves those same edges for all 1 681+ nodes.  Use this slimmer
+/// variant at the full-build call sites to skip the redundant loops and only wire the
+/// one thing the parallel phase does not cover: derivation connections.
+///
+/// The incremental update path (single-file change) still needs the full
+/// [`link_workspace_relationships`] because only one URI's edges were refreshed.
+pub fn link_workspace_derivations(g: &mut SemanticGraph) {
+    let connection_ids: Vec<NodeId> = g
+        .node_index_by_id
+        .keys()
+        .filter(|node_id| {
+            g.get_node(node_id)
+                .map(|node| node.element_kind == "derivation connection")
+                .unwrap_or(false)
+        })
+        .cloned()
+        .collect();
+    for connection_id in connection_ids {
+        try_wire_derivation_connection(g, &connection_id.uri, &connection_id);
+    }
+}
+
 /// Finds a PartDef in the root by qualified name by walking PackageBodyElements.
 pub fn find_part_def_in_root<'a>(
     root: &'a RootNamespace,

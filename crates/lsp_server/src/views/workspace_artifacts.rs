@@ -1,4 +1,4 @@
-﻿//! Cached workspace render snapshot and lazy view bundles for the LSP server.
+//! Cached workspace render snapshot and lazy view bundles for the LSP server.
 
 use std::collections::HashMap;
 use std::time::Instant;
@@ -13,7 +13,7 @@ use tower_lsp::lsp_types::Url;
 
 use crate::common::util;
 use crate::workspace::state::{IndexEntry, ServerState};
-use crate::workspace::viz_cache::{VisualizationCacheKey, WorkspaceRenderCacheEntry};
+use crate::workspace::viz_cache::{VisualizationCacheKey, WorkspaceRenderCache, WorkspaceRenderCacheEntry};
 
 fn workspace_parsed_documents_for_visualization(
     index: &HashMap<Url, IndexEntry>,
@@ -40,8 +40,12 @@ fn workspace_root_matches(left: &Url, right: &Url) -> bool {
     left == right
 }
 
-fn render_cache_valid(entry: &WorkspaceRenderCacheEntry, state: &ServerState, root: &Url) -> bool {
-    entry.semantic_state_version == state.semantic_state_version
+fn render_cache_valid(
+    entry: &WorkspaceRenderCacheEntry,
+    semantic_state_version: u64,
+    root: &Url,
+) -> bool {
+    entry.semantic_state_version == semantic_state_version
         && workspace_root_matches(&entry.workspace_root_uri, root)
 }
 
@@ -61,12 +65,13 @@ fn visualization_response_is_cacheable(
 }
 
 fn cached_visualization_response(
-    state: &ServerState,
+    cache: &WorkspaceRenderCache,
+    semantic_state_version: u64,
     workspace_root_uri: &Url,
     cache_key: &VisualizationCacheKey,
 ) -> Option<sysml_model::SysmlVisualizationResultDto> {
-    let entry = state.workspace_render_cache.entry.as_ref()?;
-    if !render_cache_valid(entry, state, workspace_root_uri) {
+    let entry = cache.entry.as_ref()?;
+    if !render_cache_valid(entry, semantic_state_version, workspace_root_uri) {
         return None;
     }
     let cached = entry.visualization_responses.get(cache_key)?;
@@ -77,27 +82,22 @@ fn cached_visualization_response(
     }
 }
 
-pub(crate) fn clear_workspace_viz_caches(state: &mut ServerState) {
-    state.workspace_render_cache.clear();
+pub(crate) fn clear_workspace_viz_caches(cache: &mut WorkspaceRenderCache) {
+    cache.clear();
 }
 
-pub(crate) fn ensure_render_snapshot<'a>(
-    state: &'a mut ServerState,
+pub(crate) fn ensure_render_snapshot(
+    state: &ServerState,
+    cache: &mut WorkspaceRenderCache,
     workspace_root_uri: &Url,
-) -> Result<&'a sysml_model::WorkspaceRenderSnapshot, String> {
+) -> Result<(), String> {
     let workspace_root_uri = util::normalize_file_uri(workspace_root_uri);
-    let cache_hit = state
-        .workspace_render_cache
+    let cache_hit = cache
         .entry
         .as_ref()
-        .is_some_and(|entry| render_cache_valid(entry, state, &workspace_root_uri));
+        .is_some_and(|entry| render_cache_valid(entry, state.semantic_state_version, &workspace_root_uri));
     if cache_hit {
-        return Ok(&state
-            .workspace_render_cache
-            .entry
-            .as_ref()
-            .expect("render cache hit")
-            .snapshot);
+        return Ok(());
     }
 
     let workspace_uris = sysml_model::workspace_uris_for_root(
@@ -113,7 +113,7 @@ pub(crate) fn ensure_render_snapshot<'a>(
         &workspace_root_uri,
         state.semantic_state_version,
     )?;
-    state.workspace_render_cache.entry = Some(WorkspaceRenderCacheEntry {
+    cache.entry = Some(WorkspaceRenderCacheEntry {
         semantic_state_version: state.semantic_state_version,
         workspace_root_uri: workspace_root_uri.clone(),
         snapshot,
@@ -121,22 +121,17 @@ pub(crate) fn ensure_render_snapshot<'a>(
         prepared_views: HashMap::new(),
         visualization_responses: HashMap::new(),
     });
-    Ok(&state
-        .workspace_render_cache
-        .entry
-        .as_ref()
-        .expect("render cache initialized")
-        .snapshot)
+    Ok(())
 }
 
 pub(crate) fn materialize_model_explorer(
-    state: &mut ServerState,
+    state: &ServerState,
+    cache: &mut WorkspaceRenderCache,
     workspace_root_uri: &Url,
 ) -> Result<ModelExplorerBundle, String> {
     let workspace_root_uri = util::normalize_file_uri(workspace_root_uri);
-    ensure_render_snapshot(state, &workspace_root_uri)?;
-    let entry = state
-        .workspace_render_cache
+    ensure_render_snapshot(state, cache, &workspace_root_uri)?;
+    let entry = cache
         .entry
         .as_mut()
         .expect("render cache initialized");
@@ -146,7 +141,7 @@ pub(crate) fn materialize_model_explorer(
             &entry.snapshot,
         ));
     }
-    Ok(entry.model_explorer.as_ref().expect("model explorer").clone()    )
+    Ok(entry.model_explorer.as_ref().expect("model explorer").clone())
 }
 
 pub(crate) struct VisualizationBuildOutcome {
@@ -155,7 +150,8 @@ pub(crate) struct VisualizationBuildOutcome {
 }
 
 pub(crate) fn build_visualization_with_cache(
-    state: &mut ServerState,
+    state: &ServerState,
+    cache: &mut WorkspaceRenderCache,
     workspace_root_uri: &Url,
     view: &str,
     selected_view: Option<&str>,
@@ -168,7 +164,7 @@ pub(crate) fn build_visualization_with_cache(
         selected_view: selected_view.map(str::to_string),
     };
 
-    if let Some(cached) = cached_visualization_response(state, &workspace_root_uri, &cache_key) {
+    if let Some(cached) = cached_visualization_response(cache, state.semantic_state_version, &workspace_root_uri, &cache_key) {
         return Ok(VisualizationBuildOutcome {
             response: cached,
             meta: VisualizationBuildMeta {
@@ -178,10 +174,9 @@ pub(crate) fn build_visualization_with_cache(
         });
     }
 
-    ensure_render_snapshot(state, &workspace_root_uri)?;
+    ensure_render_snapshot(state, cache, &workspace_root_uri)?;
 
-    let snapshot = state
-        .workspace_render_cache
+    let snapshot = cache
         .entry
         .as_ref()
         .expect("render cache initialized")
@@ -200,8 +195,7 @@ pub(crate) fn build_visualization_with_cache(
     };
 
     let full_ibd = if ibd_artifact_mode == IbdArtifactMode::FullWorkspace {
-        let cached = state
-            .workspace_render_cache
+        let cached = cache
             .entry
             .as_ref()
             .and_then(|entry| entry.model_explorer.as_ref())
@@ -224,16 +218,14 @@ pub(crate) fn build_visualization_with_cache(
 
     if visualization_response_is_cacheable(&response) {
         if let Some(prepared) = response.prepared_view.clone() {
-            state
-                .workspace_render_cache
+            cache
                 .entry
                 .as_mut()
                 .expect("render cache initialized")
                 .prepared_views
                 .insert(cache_key.clone(), prepared);
         }
-        state
-            .workspace_render_cache
+        cache
             .entry
             .as_mut()
             .expect("render cache initialized")
@@ -252,6 +244,7 @@ pub(crate) fn primary_workspace_root(state: &ServerState) -> Option<Url> {
 mod cache_tests {
     use super::*;
     use crate::workspace::state::{IndexEntry, ParseMetadata, SemanticLifecycle, ServerState};
+    use crate::workspace::viz_cache::WorkspaceRenderCache;
     use sysml_model::{build_semantic_graph_with_provider, FileSystemDocumentProvider};
     use std::path::PathBuf;
 
@@ -294,10 +287,12 @@ mod cache_tests {
 
     #[test]
     fn warm_interconnection_visualization_hits_response_cache() {
-        let (mut state, root) = drone_workspace_state();
+        let (state, root) = drone_workspace_state();
+        let mut cache = WorkspaceRenderCache::default();
         let options = sysml_model::interconnection_build_options("interconnection-view");
         let cold = build_visualization_with_cache(
-            &mut state,
+            &state,
+            &mut cache,
             &root,
             "interconnection-view",
             Some("connections"),
@@ -315,7 +310,8 @@ mod cache_tests {
         );
 
         let warm = build_visualization_with_cache(
-            &mut state,
+            &state,
+            &mut cache,
             &root,
             "interconnection-view",
             Some("connections"),
