@@ -913,6 +913,14 @@ pub(super) fn build_from_package_body_element(
                 &satisfy_node.target,
                 RelationshipKind::Satisfy,
             );
+            if let Some(elements) = &satisfy_node.body_elements {
+                super::requirement_body::walk_satisfy_constraint_elements(
+                    elements,
+                    uri,
+                    container_prefix,
+                    g,
+                );
+            }
         }
         PBE::AllocationUsage(alloc_node) => {
             let name = &alloc_node.name;
@@ -1479,6 +1487,62 @@ pub(super) fn build_from_package_body_element(
                     attrs,
                     parent_id,
                 );
+                // Wire InOutDecl / ReturnDecl as typed child graph nodes.
+                if let CalcDefBody::Brace { elements } = &c_node.body {
+                    let calc_id = NodeId::new(uri, &qualified);
+                    for element in elements {
+                        match &element.value {
+                            CalcDefBodyElement::InOutDecl(in_out) => {
+                                super::action::add_in_out_decl(
+                                    g,
+                                    uri,
+                                    container_prefix,
+                                    &calc_id,
+                                    in_out,
+                                );
+                            }
+                            CalcDefBodyElement::ReturnDecl(ret) => {
+                                let ret_qualified = qualified_name_for_node(
+                                    g,
+                                    uri,
+                                    container_prefix,
+                                    &ret.value.name,
+                                    "return parameter",
+                                );
+                                let mut ret_attrs = HashMap::new();
+                                ret_attrs.insert(
+                                    "direction".to_string(),
+                                    serde_json::json!("return"),
+                                );
+                                ret_attrs.insert(
+                                    "parameterType".to_string(),
+                                    serde_json::json!(&ret.value.type_name),
+                                );
+                                add_node_and_recurse(
+                                    g,
+                                    uri,
+                                    &ret_qualified,
+                                    "return parameter",
+                                    ret.value.name.clone(),
+                                    span_to_range(&ret.span),
+                                    ret_attrs,
+                                    Some(&calc_id),
+                                );
+                                add_typing_edge_if_exists(
+                                    g,
+                                    uri,
+                                    &ret_qualified,
+                                    &ret.value.type_name,
+                                    container_prefix,
+                                );
+                            }
+                            CalcDefBodyElement::Expression(_)
+                            | CalcDefBodyElement::Other(_)
+                            | CalcDefBodyElement::Error(_)
+                            | CalcDefBodyElement::Doc(_) => {}
+                        }
+                    }
+                }
             }
         }
         PBE::CaseDef(c_node) => {

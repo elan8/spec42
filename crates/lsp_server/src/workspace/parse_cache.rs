@@ -28,10 +28,14 @@ const MAGIC: &[u8; 4] = b"KPC\0";
 const VERSION_FIELD_LEN: usize = 16;
 
 fn version_field() -> [u8; VERSION_FIELD_LEN] {
-    let v = env!("CARGO_PKG_VERSION").as_bytes();
+    // First 12 bytes: spec42 semver string; last 4 bytes: PARSE_AST_VERSION (le).
+    // Incorporating the parser schema version invalidates caches when the AST
+    // schema changes between parser releases, even within a single spec42 version.
+    let spec42 = env!("CARGO_PKG_VERSION").as_bytes();
     let mut field = [0u8; VERSION_FIELD_LEN];
-    let len = v.len().min(VERSION_FIELD_LEN);
-    field[..len].copy_from_slice(&v[..len]);
+    let spec42_len = spec42.len().min(12);
+    field[..spec42_len].copy_from_slice(&spec42[..spec42_len]);
+    field[12..16].copy_from_slice(&sysml_v2_parser::PARSE_AST_VERSION.to_le_bytes());
     field
 }
 

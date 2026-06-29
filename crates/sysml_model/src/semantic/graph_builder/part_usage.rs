@@ -197,6 +197,14 @@ pub(super) fn build_from_part_usage_body_element(
                 &satisfy_node.target,
                 RelationshipKind::Satisfy,
             );
+            if let Some(elements) = &satisfy_node.body_elements {
+                super::requirement_body::walk_satisfy_constraint_elements(
+                    elements,
+                    uri,
+                    container_prefix,
+                    g,
+                );
+            }
         }
         PUBE::Ref(r) => {
             let n = &r.value;

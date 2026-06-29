@@ -63,7 +63,12 @@ fn collect_semantic_ranges_package_body_element(
             }
         }
         PBE::Import(imp_node) => {
-            out.push((span_to_source_range(&imp_node.span), TYPE_NAMESPACE));
+            // Use the precise target span so only the qualified name is highlighted,
+            // not the leading `import` keyword or trailing `::*` suffix.
+            out.push((
+                span_to_source_range(&imp_node.value.target_span),
+                TYPE_NAMESPACE,
+            ));
         }
         PBE::PartDef(pd_node) => {
             out.push((span_to_source_range(&pd_node.span), TYPE_CLASS));
@@ -791,7 +796,9 @@ fn collect_semantic_ranges_requirement_def_body_element(
                 RequirementDefBody::Semicolon => {}
             }
         }
-        RDBE::Import(import) => out.push((span_to_source_range(&import.span), TYPE_NAMESPACE)),
+        RDBE::Import(import) => {
+            out.push((span_to_source_range(&import.value.target_span), TYPE_NAMESPACE))
+        }
         RDBE::TextualRep(textual) => {
             if let Some(ref span) = textual.value.language_span {
                 out.push((span_to_source_range(span), TYPE_STRING));

@@ -708,6 +708,21 @@ pub(super) fn walk_requirement_def_body(
     }
 }
 
+/// Walk constraint body elements from a braced `satisfy` body (parser 0.27.0+).
+///
+/// `satisfy … { … }` bodies expose structured constraint members. Since a satisfy
+/// statement maps to a graph edge (not a node), we cannot attach child nodes here.
+/// This function is a placeholder that acknowledges the structured data without
+/// dropping it silently — full wiring (parameter nodes, expression diagnostics)
+/// can be added once satisfy gains a dedicated graph node.
+pub(super) fn walk_satisfy_constraint_elements(
+    _elements: &[sysml_v2_parser::Node<ConstraintDefBodyElement>],
+    _uri: &Url,
+    _container_prefix: Option<&str>,
+    _g: &mut SemanticGraph,
+) {
+}
+
 fn extract_attribute_initializer_from_span(
     uri: &Url,
     span: &sysml_v2_parser::Span,

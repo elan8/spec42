@@ -4,8 +4,8 @@ use std::collections::HashMap;
 
 use sysml_v2_parser::ast::{
     ActionBodyDecl, ActionDefBody, ActionDefBodyElement, ActionUsage, ActionUsageBody,
-    ActionUsageBodyElement, AssignStmt, ForLoop, InOut, Perform, RefDecl, StateDefBody, StateUsage,
-    ThenAction,
+    ActionUsageBodyElement, AssignStmt, ForLoop, InOut, Perform, RefBody, RefDecl, StateDefBody,
+    StateUsage, ThenAction,
 };
 use url::Url;
 
@@ -120,6 +120,12 @@ pub(super) fn add_in_out_decl(
         "parameterType".to_string(),
         serde_json::json!(&parameter.type_name),
     );
+    if let Some(ref v) = parameter.value {
+        attrs.insert(
+            "defaultValue".to_string(),
+            serde_json::json!(super::expressions::expression_to_debug_string(v)),
+        );
+    }
     add_node_and_recurse(
         g,
         uri,
@@ -203,6 +209,12 @@ fn add_ref_decl(
         Some(parent_id),
     );
     add_typing_edge_if_exists(g, uri, &qualified, &n.type_name, container_prefix);
+    if let RefBody::Brace { elements } = &n.body {
+        if !elements.is_empty() {
+            let ref_node_id = NodeId::new(uri, &qualified);
+            build_from_action_def_body(elements, uri, container_prefix, &ref_node_id, g);
+        }
+    }
 }
 
 fn add_assign_stmt(
