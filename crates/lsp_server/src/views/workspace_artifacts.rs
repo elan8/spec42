@@ -95,7 +95,7 @@ pub(crate) fn ensure_render_snapshot(
     let cache_hit = cache
         .entry
         .as_ref()
-        .is_some_and(|entry| render_cache_valid(entry, state.semantic_state_version, &workspace_root_uri));
+        .is_some_and(|entry| render_cache_valid(entry, state.coordinator.version(), &workspace_root_uri));
     if cache_hit {
         return Ok(());
     }
@@ -111,10 +111,10 @@ pub(crate) fn ensure_render_snapshot(
         &viz_docs,
         &state.library_paths,
         &workspace_root_uri,
-        state.semantic_state_version,
+        state.coordinator.version(),
     )?;
     cache.entry = Some(WorkspaceRenderCacheEntry {
-        semantic_state_version: state.semantic_state_version,
+        semantic_state_version: state.coordinator.version(),
         workspace_root_uri: workspace_root_uri.clone(),
         snapshot,
         model_explorer: None,
@@ -164,7 +164,7 @@ pub(crate) fn build_visualization_with_cache(
         selected_view: selected_view.map(str::to_string),
     };
 
-    if let Some(cached) = cached_visualization_response(cache, state.semantic_state_version, &workspace_root_uri, &cache_key) {
+    if let Some(cached) = cached_visualization_response(cache, state.coordinator.version(), &workspace_root_uri, &cache_key) {
         return Ok(VisualizationBuildOutcome {
             response: cached,
             meta: VisualizationBuildMeta {
@@ -243,6 +243,7 @@ pub(crate) fn primary_workspace_root(state: &ServerState) -> Option<Url> {
 #[cfg(test)]
 mod cache_tests {
     use super::*;
+    use crate::workspace::coordinator::SemanticCoordinator;
     use crate::workspace::state::{IndexEntry, ParseMetadata, SemanticLifecycle, ServerState};
     use crate::workspace::viz_cache::WorkspaceRenderCache;
     use sysml_model::{build_semantic_graph_with_provider, FileSystemDocumentProvider};
@@ -273,10 +274,12 @@ mod cache_tests {
                 )
             })
             .collect();
+        let mut coordinator = SemanticCoordinator::default();
+        coordinator.begin_startup();
+        coordinator.complete_startup();
         let state = ServerState {
             workspace_roots: vec![workspace_root_uri.clone()],
-            semantic_lifecycle: SemanticLifecycle::Ready,
-            semantic_state_version: 1,
+            coordinator,
             index,
             symbol_table: Vec::new(),
             semantic_graph,

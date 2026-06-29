@@ -14,9 +14,8 @@ use crate::workspace::{
     clear_documents_under_roots, ingest_parsed_scan_entries, ingest_parsed_scan_entries_batch,
     parse_scanned_entries, rebuild_all_document_links, rebuild_semantic_graph_staged,
     refresh_document, remove_document, scan_sysml_files, store_document_text_fast,
-    SemanticLifecycle, ServerState,
+    RelinkToken, SemanticLifecycle, ServerState,
 };
-
 
 use super::capabilities::server_capabilities;
 use super::diagnostics::{publish_document_diagnostics, publish_workspace_diagnostics};
@@ -24,7 +23,6 @@ use super::lifecycle::{scan_roots, workspace_roots_from_initialize};
 
 static WORKSPACE_DIAGNOSTICS_DEBOUNCE_GEN: AtomicU64 = AtomicU64::new(0);
 const WORKSPACE_DIAGNOSTICS_DEBOUNCE_MS: u64 = 450;
-static SEMANTIC_RELINK_DEBOUNCE_GEN: AtomicU64 = AtomicU64::new(0);
 const SEMANTIC_RELINK_DEBOUNCE_MS: u64 = 90;
 
 fn schedule_workspace_diagnostics_republish(
@@ -43,7 +41,7 @@ fn schedule_workspace_diagnostics_republish(
         }
         let lifecycle = {
             let locked = state.read().await;
-            locked.semantic_lifecycle
+            locked.coordinator.lifecycle()
         };
         if !lifecycle.supports_semantic_queries() {
             return;
@@ -52,41 +50,38 @@ fn schedule_workspace_diagnostics_republish(
     });
 }
 
+/// Schedules an async semantic relink with a 90 ms debounce.
+///
+/// `token` is issued by [`SemanticCoordinator::schedule_relink`] and
+/// encapsulates the current relink generation and snapshot version.
+/// Only the relink task whose token is still current when the debounce
+/// fires will run; all earlier tasks self-cancel via
+/// [`SemanticCoordinator::is_token_current`].
 fn schedule_semantic_relink_after_change(
     client: &Client,
     state: &Arc<RwLock<ServerState>>,
     config: &Arc<Spec42Config>,
     changed_uri: Url,
-    expected_state_version: u64,
+    token: RelinkToken,
 ) {
-    let generation = SEMANTIC_RELINK_DEBOUNCE_GEN.fetch_add(1, Ordering::SeqCst) + 1;
     let client = client.clone();
     let state = Arc::clone(state);
     let config = Arc::clone(config);
     tokio::spawn(async move {
         tokio::time::sleep(Duration::from_millis(SEMANTIC_RELINK_DEBOUNCE_MS)).await;
-        if SEMANTIC_RELINK_DEBOUNCE_GEN.load(Ordering::SeqCst) != generation {
-            return;
-        }
 
         let snapshot = {
             let locked = state.read().await;
-            if locked.semantic_state_version != expected_state_version
-                || matches!(
-                    locked.semantic_lifecycle,
-                    SemanticLifecycle::Cold | SemanticLifecycle::Indexing
-                )
-            {
+            if !locked.coordinator.is_token_current(&token) {
                 return;
             }
             (
-                locked.semantic_state_version,
                 locked.index.clone(),
                 locked.library_paths.clone(),
                 locked.perf_logging_enabled,
             )
         };
-        let (snapshot_version, index, library_paths, perf_logging_enabled) = snapshot;
+        let (index, library_paths, perf_logging_enabled) = snapshot;
         let relink_start = Instant::now();
         let staged = tokio::task::spawn_blocking(move || {
             rebuild_semantic_graph_staged(&index, &library_paths, None)
@@ -102,19 +97,14 @@ fn schedule_semantic_relink_after_change(
             return;
         };
 
-        // Build the set of URIs that need diagnostics republished: the changed
-        // file itself plus any workspace files that import from it.
+        // Commit under write lock — coordinator validates the token is still current.
         let diag_uris = {
             let mut locked = state.write().await;
-            if locked.semantic_state_version != snapshot_version {
-                return;
-            }
             locked.semantic_graph = new_graph;
             locked.symbol_table = new_symbols;
-            locked.semantic_state_version = locked.semantic_state_version.wrapping_add(1);
-            // Relink is done; restore lifecycle so waiting query handlers can proceed.
-            if locked.semantic_lifecycle == SemanticLifecycle::Reindexing {
-                locked.semantic_lifecycle = SemanticLifecycle::Ready;
+            if !locked.coordinator.commit_relink(&token) {
+                // A newer relink superseded us while we were building the graph.
+                return;
             }
             let mut uris =
                 crate::workspace::import_graph::workspace_uris_importing_declarations_from(
@@ -137,7 +127,7 @@ fn schedule_semantic_relink_after_change(
             "backend:asyncSemanticRelink",
             vec![
                 ("uri", format!("{:?}", changed_uri.as_str())),
-                ("generation", generation.to_string()),
+                ("generation", token.generation().to_string()),
                 ("relinkTotalMs", relink_metrics.total_ms.to_string()),
                 (
                     "relinkRebuildGraphsMs",
@@ -213,28 +203,22 @@ pub(crate) fn semantic_index_ready_notification(
 ) -> SemanticIndexReadyNotificationDto {
     SemanticIndexReadyNotificationDto {
         lifecycle: "ready".to_string(),
-        semantic_state_version: state.semantic_state_version,
+        semantic_state_version: state.coordinator.version(),
         workspace_file_count: workspace_file_count(state),
     }
 }
 
-async fn set_semantic_lifecycle(
+/// Sends the `spec42/semanticIndexReady` LSP notification to the client.
+/// The coordinator must already be in `Ready` state before calling this.
+async fn send_semantic_ready_notification(
     client: &Client,
     state: &Arc<RwLock<ServerState>>,
-    semantic_lifecycle: SemanticLifecycle,
 ) {
-    let notification = {
-        let mut st = state.write().await;
-        st.semantic_lifecycle = semantic_lifecycle;
-        if semantic_lifecycle == SemanticLifecycle::Ready {
-            Some(semantic_index_ready_notification(&st))
-        } else {
-            None
-        }
+    let params = {
+        let st = state.read().await;
+        semantic_index_ready_notification(&st)
     };
-    if let Some(params) = notification {
-        client.send_notification::<SemanticIndexReady>(params).await;
-    }
+    client.send_notification::<SemanticIndexReady>(params).await;
 }
 
 pub(crate) async fn initialize(
@@ -275,7 +259,7 @@ pub(crate) async fn initialize(
         state.startup_trace_id = startup_trace_id;
         state.code_lens_enabled = code_lens_enabled;
         state.perf_logging_enabled = perf_logging_enabled;
-        state.semantic_lifecycle = SemanticLifecycle::Cold;
+        state.coordinator.reset();
     }
     Ok(InitializeResult {
         server_info: Some(ServerInfo {
@@ -312,10 +296,11 @@ pub(crate) async fn initialized(
         workspace_roots.clone()
     };
     if scan_roots.is_empty() && library_paths.is_empty() {
-        set_semantic_lifecycle(client, state, SemanticLifecycle::Ready).await;
+        state.write().await.coordinator.complete_startup();
+        send_semantic_ready_notification(client, state).await;
         return;
     }
-    set_semantic_lifecycle(client, state, SemanticLifecycle::Indexing).await;
+    state.write().await.coordinator.begin_startup();
     if perf_logging_enabled {
         info!(
             trace_id = %startup_trace_id.as_deref().unwrap_or("-"),
@@ -398,7 +383,7 @@ pub(crate) async fn initialized(
             {
                 let mut st = state.write().await;
                 st.semantic_graph = cached_graph.clone();
-                st.semantic_state_version = st.semantic_state_version.wrapping_add(1);
+                st.coordinator.bump_version();
             }
             if perf_logging_enabled {
                 info!(
@@ -477,7 +462,7 @@ pub(crate) async fn initialized(
             }
         }
         let ingest_results = ingest_parsed_scan_entries_batch(&mut st, parsed_entries);
-        st.semantic_state_version = st.semantic_state_version.wrapping_add(1);
+        st.coordinator.bump_version();
         let ingest_ms = merge_index_start.elapsed().as_millis() as u64;
         drop(st);
 
@@ -494,7 +479,7 @@ pub(crate) async fn initialized(
             let (snapshot_version, index_snapshot, library_paths_snapshot) = {
                 let st_read = state.read().await;
                 (
-                    st_read.semantic_state_version,
+                    st_read.coordinator.version(),
                     st_read.index.clone(),
                     st_read.library_paths.clone(),
                 )
@@ -519,14 +504,14 @@ pub(crate) async fn initialized(
                 (snapshot_version, new_graph, new_symbols, staged_relink_metrics);
 
             let mut st = state.write().await;
-            if st.semantic_state_version != snapshot_version {
+            if st.coordinator.version() != snapshot_version {
                 stale_retries += 1;
                 if stale_retries < 3 {
                     drop(st);
                     continue;
                 }
                 let fallback_metrics = rebuild_all_document_links(&mut st);
-                st.semantic_state_version = st.semantic_state_version.wrapping_add(1);
+                st.coordinator.bump_version();
                 relink_metrics = fallback_metrics;
                 relink_used_fallback = true;
             } else {
@@ -534,7 +519,7 @@ pub(crate) async fn initialized(
                 metrics.total_ms = relink_start.elapsed().as_millis() as u32;
                 st.semantic_graph = new_graph;
                 st.symbol_table = new_symbols;
-                st.semantic_state_version = st.semantic_state_version.wrapping_add(1);
+                st.coordinator.bump_version();
                 relink_metrics = metrics;
 
                 // On cache miss, persist the newly-built library graph so future startups
@@ -629,7 +614,8 @@ pub(crate) async fn initialized(
             );
         }
         let diagnostics_start = Instant::now();
-        set_semantic_lifecycle(&client, &state, SemanticLifecycle::Ready).await;
+        state.write().await.coordinator.complete_startup();
+        send_semantic_ready_notification(&client, &state).await;
         publish_workspace_diagnostics(&client, &state, &config, None).await;
         let diagnostics_ms = diagnostics_start.elapsed().as_millis() as u64;
         log_perf(
@@ -720,40 +706,31 @@ pub(crate) async fn did_open(
 
     let (warning, lock_wait_ms, perf_logging_enabled, scheduled_relink) = if already_indexed {
         // Fast path: content unchanged — skip re-parse and re-evaluation entirely.
-        // The write lock is taken only to bump the state version.
+        // The write lock is taken only to bump the coordinator version.
         let lock_start = Instant::now();
         let mut st = state.write().await;
         let lock_wait_ms = lock_start.elapsed().as_millis();
         let perf_logging_enabled = st.perf_logging_enabled;
-        st.semantic_state_version = st.semantic_state_version.wrapping_add(1);
+        st.coordinator.bump_version();
         (None, lock_wait_ms, perf_logging_enabled, false)
     } else {
-        // New or changed file: parse and update the graph without the expensive
-        // cross-document evaluation pass, then schedule an async relink so that
-        // cross-document edges and expression evaluation happen outside the lock.
+        // New or changed file: parse without the expensive cross-document
+        // evaluation pass, then schedule an async relink so that cross-document
+        // edges and expression evaluation happen outside the lock.
         let lock_start = Instant::now();
         let mut st = state.write().await;
         let lock_wait_ms = lock_start.elapsed().as_millis();
         let warning = store_document_text_fast(&mut st, &uri_norm, text.clone());
-        let semantic_state_version = st.semantic_state_version.wrapping_add(1);
-        st.semantic_state_version = semantic_state_version;
-        // Signal that a relink is in flight so query handlers wait for full resolution.
-        if st.semantic_lifecycle == SemanticLifecycle::Ready {
-            st.semantic_lifecycle = SemanticLifecycle::Reindexing;
-        }
+        // schedule_relink transitions lifecycle to Reindexing, bumps version,
+        // and returns a token that the async task uses to self-cancel if superseded.
+        let token = st.coordinator.schedule_relink();
         let perf_logging_enabled = st.perf_logging_enabled;
         drop(st);
         // Diagnostics are intentionally NOT spawned here. The graph has been
         // parsed and locally linked but cross-document edges and expression
         // evaluation haven't run yet. Diagnostics will be published by the
         // async relink task below once the graph is fully resolved.
-        schedule_semantic_relink_after_change(
-            client,
-            state,
-            config,
-            uri_norm.clone(),
-            semantic_state_version,
-        );
+        schedule_semantic_relink_after_change(client, state, config, uri_norm.clone(), token);
         (warning, lock_wait_ms, perf_logging_enabled, true)
     };
 
@@ -813,47 +790,30 @@ pub(crate) async fn did_change(
     let uri_norm = util::normalize_file_uri(&uri);
     let version = params.text_document.version;
     let apply_start = Instant::now();
-    let warnings = {
-        let mut state = state.write().await;
+    let (warnings, perf_logging_enabled, token) = {
+        let mut st = state.write().await;
         let warnings = crate::workspace::apply_document_changes_fast(
-            &mut state,
+            &mut st,
             &uri_norm,
             version,
             params.content_changes,
         );
-        state.semantic_state_version = state.semantic_state_version.wrapping_add(1);
-        warnings
+        let perf_logging_enabled = st.perf_logging_enabled;
+        // schedule_relink transitions lifecycle to Reindexing and bumps the version.
+        let token = st.coordinator.schedule_relink();
+        (warnings, perf_logging_enabled, token)
     };
     let apply_ms = apply_start.elapsed().as_millis() as u64;
-    let perf_logging_enabled = {
-        let state = state.read().await;
-        state.perf_logging_enabled
-    };
     for (ty, message) in warnings {
         if ty == MessageType::LOG && !perf_logging_enabled {
             continue;
         }
         client.log_message(ty, message).await;
     }
-    let semantic_state_version = {
-        let mut locked = state.write().await;
-        // Signal that a relink is in flight so query handlers wait for full resolution.
-        if locked.semantic_lifecycle == SemanticLifecycle::Ready {
-            locked.semantic_lifecycle = SemanticLifecycle::Reindexing;
-        }
-        locked.semantic_state_version
-    };
-    // Diagnostics are NOT published here. The graph has been parsed but
-    // cross-document edges and expression evaluation haven't run yet.
-    // schedule_semantic_relink_after_change publishes diagnostics for this
-    // URI and its peers once the fully-resolved graph is committed.
-    schedule_semantic_relink_after_change(
-        client,
-        state,
-        config,
-        uri_norm.clone(),
-        semantic_state_version,
-    );
+    // Diagnostics are NOT published here. Cross-document edges and expression
+    // evaluation haven't run yet; the relink task publishes diagnostics after
+    // committing the fully-resolved graph.
+    schedule_semantic_relink_after_change(client, state, config, uri_norm.clone(), token);
     log_perf(
         client,
         perf_logging_enabled,
@@ -862,10 +822,6 @@ pub(crate) async fn did_change(
             ("uri", format!("{:?}", uri_norm.as_str())),
             ("version", version.to_string()),
             ("applyChangesMs", apply_ms.to_string()),
-            (
-                "scheduledSemanticStateVersion",
-                semantic_state_version.to_string(),
-            ),
         ],
     )
     .await;
@@ -905,8 +861,7 @@ pub(crate) async fn did_change_watched_files(
                         let warning = {
                             let mut state = state.write().await;
                             let warning = refresh_document(&mut state, &uri_norm, content);
-                            state.semantic_state_version =
-                                state.semantic_state_version.wrapping_add(1);
+                            state.coordinator.bump_version();
                             warning
                         };
                         refresh_document_ms += refresh_start.elapsed().as_millis() as u64;
@@ -928,7 +883,7 @@ pub(crate) async fn did_change_watched_files(
         } else if event.typ == FileChangeType::DELETED {
             let mut state = state.write().await;
             remove_document(&mut state, &uri_norm);
-            state.semantic_state_version = state.semantic_state_version.wrapping_add(1);
+            state.coordinator.bump_version();
             deleted_uris.push(uri_norm);
         }
     }
@@ -986,8 +941,7 @@ pub(crate) async fn did_change_configuration(
         } else {
             let _ = clear_documents_under_roots(&mut state, &old_library_paths);
             state.library_paths = new_library_paths.clone();
-            state.semantic_lifecycle = SemanticLifecycle::Reindexing;
-            state.semantic_state_version = state.semantic_state_version.wrapping_add(1);
+            state.coordinator.begin_library_reindex();
             true
         }
     };
@@ -1032,7 +986,7 @@ pub(crate) async fn did_change_configuration(
         }
         let ingest_ms = ingest_start.elapsed().as_millis() as u64;
         let relink_metrics = rebuild_all_document_links(&mut st);
-        st.semantic_state_version = st.semantic_state_version.wrapping_add(1);
+        st.coordinator.complete_reindex();
         drop(st);
         if summary.roots_skipped_non_file > 0
             || summary.read_failures > 0
@@ -1051,7 +1005,7 @@ pub(crate) async fn did_change_configuration(
         for warning in warnings {
             client.log_message(MessageType::WARNING, warning).await;
         }
-        set_semantic_lifecycle(&client, &state, SemanticLifecycle::Ready).await;
+        send_semantic_ready_notification(&client, &state).await;
         let diagnostics_start = Instant::now();
         publish_workspace_diagnostics(&client, &state, &config, None).await;
         log_perf(
@@ -1100,18 +1054,24 @@ pub(crate) async fn did_change_configuration(
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::workspace::state::SemanticLifecycle;
+    use crate::workspace::coordinator::SemanticCoordinator;
 
     #[test]
     fn semantic_index_ready_notification_includes_version_and_file_count() {
+        let mut coordinator = SemanticCoordinator::default();
+        coordinator.begin_startup();
+        // Simulate 6 bumps so the version reaching Ready is 7.
+        for _ in 0..6 {
+            coordinator.bump_version();
+        }
+        coordinator.complete_startup();
         let state = ServerState {
-            semantic_state_version: 7,
-            semantic_lifecycle: SemanticLifecycle::Ready,
+            coordinator,
             ..ServerState::default()
         };
         let params = semantic_index_ready_notification(&state);
         assert_eq!(params.lifecycle, "ready");
-        assert_eq!(params.semantic_state_version, 7);
+        assert_eq!(params.semantic_state_version, 8); // begin(1) + 6 bumps + complete(1) = 8
         assert_eq!(params.workspace_file_count, 0);
     }
 }

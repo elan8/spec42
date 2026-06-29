@@ -95,6 +95,6 @@ impl WorkspaceSnapshot for ServerStateSnapshot<'_> {
     }
 
     fn supports_semantic_queries(&self) -> bool {
-        self.state.semantic_lifecycle.supports_semantic_queries()
+        self.state.coordinator.lifecycle().supports_semantic_queries()
     }
 }

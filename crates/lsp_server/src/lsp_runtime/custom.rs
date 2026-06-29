@@ -40,7 +40,7 @@ pub(crate) async fn sysml_model_result(
         scope.iter().any(|entry| entry == "workspaceVisualization");
     let params_ms = params_start.elapsed().as_millis().max(1);
     let build_start = Instant::now();
-    if workspace_visualization_requested && !state.semantic_lifecycle.supports_semantic_queries() {
+    if workspace_visualization_requested && !state.coordinator.lifecycle().supports_semantic_queries() {
         return Ok((crate::views::empty_model_response(build_start), None));
     }
     if workspace_visualization_requested {
@@ -255,8 +255,8 @@ pub(crate) fn sysml_visualization_result(
 )> {
     let (workspace_root_uri, view, selected_view) =
         crate::views::parse_sysml_visualization_params(&params)?;
-    if !state.semantic_lifecycle.supports_semantic_queries() {
-        let message = match state.semantic_lifecycle {
+    if !state.coordinator.lifecycle().supports_semantic_queries() {
+        let message = match state.coordinator.lifecycle() {
             SemanticLifecycle::Indexing => {
                 "SysML workspace is still indexing. The diagram will appear when indexing completes."
             }

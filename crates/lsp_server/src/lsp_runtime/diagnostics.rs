@@ -25,7 +25,7 @@ async fn perf_logging_enabled(state: &Arc<RwLock<ServerState>>) -> bool {
 
 async fn diagnostics_publication_ready(state: &Arc<RwLock<ServerState>>) -> bool {
     let locked = state.read().await;
-    locked.semantic_lifecycle.supports_semantic_queries()
+    locked.coordinator.lifecycle().supports_semantic_queries()
 }
 
 fn semantic_diagnostic_code(diagnostic: &Diagnostic) -> Option<&str> {
@@ -69,7 +69,7 @@ pub(crate) async fn publish_document_diagnostics(
     let (ready, is_library) = {
         let locked = state.read().await;
         (
-            locked.semantic_lifecycle.supports_semantic_queries(),
+            locked.coordinator.lifecycle().supports_semantic_queries(),
             util::uri_under_any_library(&uri, &locked.library_paths),
         )
     };
@@ -182,7 +182,7 @@ async fn collect_diagnostics_for_document(
         (
             locked.semantic_graph.clone(),
             locked.library_paths.clone(),
-            locked.semantic_lifecycle.suppresses_transient_semantic_diagnostics(),
+            locked.coordinator.lifecycle().suppresses_transient_semantic_diagnostics(),
             config.check_providers.clone(),
         )
     };

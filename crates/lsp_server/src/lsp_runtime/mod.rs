@@ -23,6 +23,7 @@ use crate::views::dto;
 use crate::workspace::viz_cache::WorkspaceRenderCache;
 use crate::workspace::state::SemanticLifecycle;
 use crate::workspace::ServerState;
+use tokio::sync::watch;
 use custom::{
     mark_sysml_model_parse_cached, sysml_clear_cache_result, sysml_feature_inspector_result,
     sysml_library_search_result, sysml_model_result, sysml_server_stats_result,
@@ -37,6 +38,9 @@ struct Backend {
     config: Arc<Spec42Config>,
     start_time: Instant,
     server_name: String,
+    /// Lifecycle watch receiver kept outside the `RwLock` so query handlers
+    /// can wait for `Reindexing → Ready` without acquiring any lock.
+    lifecycle_rx: watch::Receiver<SemanticLifecycle>,
 }
 
 #[tower_lsp::async_trait]
@@ -361,17 +365,13 @@ impl Backend {
         }
         // Wait for any in-flight async relink to complete so the response
         // reflects a fully-resolved semantic graph (satisfy/perform/subject edges etc).
-        let relink_wait_deadline =
-            std::time::Instant::now() + std::time::Duration::from_secs(30);
-        loop {
-            let lifecycle = self.state.read().await.semantic_lifecycle;
-            if lifecycle != SemanticLifecycle::Reindexing
-                || std::time::Instant::now() >= relink_wait_deadline
-            {
-                break;
-            }
-            tokio::time::sleep(std::time::Duration::from_millis(20)).await;
-        }
+        // The watch receiver wakes instantly when commit_relink fires — no polling needed.
+        let mut lifecycle_rx = self.lifecycle_rx.clone();
+        let _ = tokio::time::timeout(
+            std::time::Duration::from_secs(30),
+            lifecycle_rx.wait_for(|&l| l != SemanticLifecycle::Reindexing),
+        )
+        .await;
         let read_lock_wait_start = Instant::now();
         let state = self.state.read().await;
         let mut render_cache = self.render_cache.lock().await;
@@ -567,6 +567,10 @@ pub async fn run(config: Arc<Spec42Config>, server_name: &str) {
     let server_name = server_name.to_string();
     let custom_rpc_methods = config.custom_rpc_method_names();
     let runtime_config = Arc::clone(&config);
+    // Subscribe to lifecycle changes before handing state to LspService.
+    // The receiver lives outside the RwLock so sysml/model can wait for
+    // Reindexing→Ready without acquiring any lock.
+    let lifecycle_rx = state.try_read().unwrap().coordinator.subscribe();
 
     let mut builder = LspService::build(move |client| Backend {
         client,
@@ -575,6 +579,7 @@ pub async fn run(config: Arc<Spec42Config>, server_name: &str) {
         config: Arc::clone(&runtime_config),
         start_time,
         server_name: server_name.clone(),
+        lifecycle_rx: lifecycle_rx.clone(),
     })
     .custom_method("sysml/model", Backend::sysml_model)
     .custom_method("sysml/visualization", Backend::sysml_visualization)
