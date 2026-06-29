@@ -8,11 +8,21 @@ use petgraph::stable_graph::{NodeIndex, StableGraph};
 use petgraph::visit::{EdgeRef, IntoEdgeReferences};
 use petgraph::Directed;
 use petgraph::Direction;
+use serde::{Deserialize, Deserializer, Serialize, Serializer};
 use url::Url;
 
 use crate::semantic::model::{
     ConnectStatementDetail, NodeId, RelationshipKind, SemanticEdge, SemanticNode,
 };
+
+fn serialize_url<S: Serializer>(url: &Url, s: S) -> Result<S::Ok, S::Error> {
+    s.serialize_str(url.as_str())
+}
+
+fn deserialize_url<'de, D: Deserializer<'de>>(d: D) -> Result<Url, D::Error> {
+    let s = String::deserialize(d)?;
+    Url::parse(&s).map_err(serde::de::Error::custom)
+}
 use crate::semantic::workspace_uri;
 
 /// Cached reverse index from petgraph node index to [`NodeId`] (invalidated on structural mutation).
@@ -34,18 +44,24 @@ struct ShapeCache {
 }
 
 /// Inner data of the semantic graph. Use [`SemanticGraph`] as the public handle.
-#[derive(Debug)]
+#[derive(Debug, Serialize, Deserialize)]
 pub struct SemanticGraphData {
     pub graph: StableGraph<SemanticNode, SemanticEdge, Directed>,
+    /// Rebuilt after deserialization via [`rebuild_derived_indexes`].
+    #[serde(skip)]
     pub node_index_by_id: HashMap<NodeId, NodeIndex>,
     pub nodes_by_uri: HashMap<Url, Vec<NodeId>>,
     pub node_ids_by_qualified_name: HashMap<String, Vec<NodeId>>,
-    /// Incrementally maintained parent → children index. O(1) children lookup.
+    /// Rebuilt after deserialization via [`rebuild_derived_indexes`].
+    #[serde(skip)]
     pub children_by_parent_id: HashMap<NodeId, Vec<NodeId>>,
     pub pending_expression_relationships: Vec<PendingExpressionRelationship>,
     pub pending_relationships: Vec<PendingRelationship>,
+    #[serde(skip)]
     pub import_lookup_cache: Mutex<HashMap<(NodeId, String, bool), Vec<NodeId>>>,
+    #[serde(skip)]
     query_indexes: Mutex<Option<Arc<GraphQueryIndexes>>>,
+    #[serde(skip)]
     shape_cache: Mutex<ShapeCache>,
 }
 
@@ -99,6 +115,21 @@ impl Clone for SemanticGraph {
     }
 }
 
+impl Serialize for SemanticGraph {
+    fn serialize<S: Serializer>(&self, s: S) -> Result<S::Ok, S::Error> {
+        self.0.serialize(s)
+    }
+}
+
+impl<'de> Deserialize<'de> for SemanticGraph {
+    fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
+        SemanticGraphData::deserialize(d).map(|mut data| {
+            data.rebuild_derived_indexes();
+            SemanticGraph(Arc::new(data))
+        })
+    }
+}
+
 impl std::ops::Deref for SemanticGraph {
     type Target = SemanticGraphData;
     fn deref(&self) -> &SemanticGraphData {
@@ -112,8 +143,9 @@ impl std::ops::DerefMut for SemanticGraph {
     }
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct PendingExpressionRelationship {
+    #[serde(serialize_with = "serialize_url", deserialize_with = "deserialize_url")]
     pub uri: Url,
     pub source_expression: String,
     pub target_expression: String,
@@ -122,8 +154,9 @@ pub struct PendingExpressionRelationship {
     pub source_range: TextRange,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct PendingRelationship {
+    #[serde(serialize_with = "serialize_url", deserialize_with = "deserialize_url")]
     pub uri: Url,
     pub source_qualified: String,
     pub target_qualified: String,
@@ -132,6 +165,24 @@ pub struct PendingRelationship {
 }
 
 impl SemanticGraphData {
+    /// Rebuild `node_index_by_id` and `children_by_parent_id` from the petgraph
+    /// `graph` after deserialization (both fields are `#[serde(skip)]`).
+    pub fn rebuild_derived_indexes(&mut self) {
+        self.node_index_by_id = HashMap::with_capacity(self.graph.node_count());
+        self.children_by_parent_id = HashMap::new();
+        for idx in self.graph.node_indices() {
+            if let Some(node) = self.graph.node_weight(idx) {
+                self.node_index_by_id.insert(node.id.clone(), idx);
+                if let Some(parent_id) = &node.parent_id {
+                    self.children_by_parent_id
+                        .entry(parent_id.clone())
+                        .or_default()
+                        .push(node.id.clone());
+                }
+            }
+        }
+    }
+
     pub fn new() -> Self {
         Self {
             graph: StableGraph::new(),
@@ -392,6 +443,11 @@ impl SemanticGraphData {
             .take(5)
             .map(|u| u.as_str().to_string())
             .collect()
+    }
+
+    /// Returns all URIs that have nodes in the graph.
+    pub fn all_uris(&self) -> Vec<Url> {
+        self.nodes_by_uri.keys().cloned().collect()
     }
 
     /// Returns all nodes that belong to the given URI (document).
@@ -775,6 +831,17 @@ impl SemanticGraphData {
     }
 
     /// Returns workspace URIs represented in the graph, excluding configured library roots.
+    /// Returns a clone of this graph containing only nodes from library paths.
+    /// Used to extract a cacheable library-only subgraph after a full startup build.
+    pub fn extract_library_subgraph(&self, library_paths: &[Url]) -> SemanticGraph {
+        let mut subgraph = SemanticGraph(Arc::new(self.clone()));
+        let workspace_uris: Vec<Url> = subgraph.workspace_uris_excluding_libraries(library_paths);
+        for uri in workspace_uris {
+            subgraph.remove_nodes_for_uri(&uri);
+        }
+        subgraph
+    }
+
     pub fn workspace_uris_excluding_libraries(&self, library_paths: &[Url]) -> Vec<Url> {
         self.nodes_by_uri
             .keys()

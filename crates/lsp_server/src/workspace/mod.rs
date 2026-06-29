@@ -1,4 +1,5 @@
 pub(crate) mod import_graph;
+pub(crate) mod library_graph_cache;
 pub(crate) mod parse_cache;
 pub(crate) mod library_closure;
 pub(crate) mod library_search;

@@ -92,7 +92,7 @@ impl ThenActionChain {
     }
 }
 
-fn add_in_out_decl(
+pub(super) fn add_in_out_decl(
     g: &mut SemanticGraph,
     uri: &Url,
     container_prefix: Option<&str>,

@@ -732,6 +732,7 @@ fn merge_document_graphs_into(
 pub(crate) fn rebuild_semantic_graph_staged(
     index: &std::collections::HashMap<Url, IndexEntry>,
     library_paths: &[Url],
+    base_graph: Option<semantic::SemanticGraph>,
 ) -> (
     semantic::SemanticGraph,
     Vec<crate::language::SymbolEntry>,
@@ -739,20 +740,31 @@ pub(crate) fn rebuild_semantic_graph_staged(
 ) {
     let total_start = Instant::now();
     let (workspace_uris, library_uris) = semantic_graph_uris_split(index, library_paths);
+    // On cache hit the index only has workspace entries, so library_uris will be empty.
+    // We still collect them to compute the total URI set for cross-doc resolution.
+    let cached_library_uris: Vec<Url> = if let Some(ref bg) = base_graph {
+        bg.all_uris()
+    } else {
+        Vec::new()
+    };
     let uris: Vec<Url> = workspace_uris
         .iter()
         .chain(library_uris.iter())
+        .chain(cached_library_uris.iter())
         .cloned()
         .collect();
 
     let rebuild_graphs_start = Instant::now();
-    let mut semantic_graph = semantic::SemanticGraph::new();
+    // If a base graph was provided (library graph cache hit), start from it so
+    // library nodes are already present for cross-document resolution.
+    let mut semantic_graph = base_graph.unwrap_or_else(semantic::SemanticGraph::new);
     let workspace_packages: std::collections::HashSet<String> = workspace_uris
         .iter()
         .filter_map(|uri| index.get(uri))
         .flat_map(|entry| semantic::declared_packages_in_content(&entry.content))
         .collect();
     merge_document_graphs_into(&mut semantic_graph, index, &workspace_uris, None);
+    // library_uris is empty on cache hit — the base graph already has library nodes.
     merge_document_graphs_into(
         &mut semantic_graph,
         index,

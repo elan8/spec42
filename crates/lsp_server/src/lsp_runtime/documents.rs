@@ -17,6 +17,7 @@ use crate::workspace::{
     ServerState,
 };
 
+
 use super::capabilities::server_capabilities;
 use super::diagnostics::{publish_document_diagnostics, publish_workspace_diagnostics};
 use super::lifecycle::{scan_roots, workspace_roots_from_initialize};
@@ -85,7 +86,7 @@ fn schedule_semantic_relink_after_change(
         let (snapshot_version, index, library_paths, perf_logging_enabled) = snapshot;
         let relink_start = Instant::now();
         let staged = tokio::task::spawn_blocking(move || {
-            rebuild_semantic_graph_staged(&index, &library_paths)
+            rebuild_semantic_graph_staged(&index, &library_paths, None)
         })
         .await;
         let Ok((new_graph, new_symbols, relink_metrics)) = staged else {
@@ -353,14 +354,50 @@ pub(crate) async fn initialized(
         .await
         .unwrap_or_default();
         let parse_worker_ms = parse_worker_start.elapsed().as_millis() as u64;
-        let workspace_closure_inputs: Vec<(String, String)> = parsed_entries
-            .iter()
-            .map(|entry| (entry.uri.to_string(), entry.content.clone()))
-            .collect();
-        let library_entries = if crate::workspace::library_closure::library_full_scan_enabled() {
-            Vec::new()
+
+        // --- Library graph cache check (Level 1 + Level 2) ---
+        // If the library graph was built previously and library files haven't
+        // changed (verified via file metadata fingerprint), skip all library
+        // disk I/O, parsing, and graph construction.
+        // Keep a clone for the post-rebuild cache store call (cache miss path).
+        let library_paths_for_store = library_paths_for_closure.clone();
+        let library_graph_cache_hit = if !crate::workspace::library_closure::library_full_scan_enabled()
+            && !library_paths_for_closure.is_empty()
+        {
+            let lp = library_paths_for_closure.clone();
+            tokio::task::spawn_blocking(move || {
+                crate::workspace::library_graph_cache::load(&lp)
+            })
+            .await
+            .ok()
+            .flatten()
         } else {
-            match tokio::task::spawn_blocking(move || {
+            None
+        };
+
+        let (library_parsed_count, library_total_count, parsed_entries) = if let Some(cached_graph) = library_graph_cache_hit.as_ref() {
+            // Cache hit: inject the pre-built library graph into state now so the
+            // relink loop can merge workspace documents on top of it.
+            {
+                let mut st = state.write().await;
+                st.semantic_graph = cached_graph.clone();
+                st.semantic_state_version = st.semantic_state_version.wrapping_add(1);
+            }
+            if perf_logging_enabled {
+                info!(
+                    trace_id = %startup_trace_id.as_deref().unwrap_or("-"),
+                    "startup:library-graph-cache:hit"
+                );
+            }
+            // Only workspace entries go through relink; library graph is pre-loaded.
+            (0usize, 0usize, parsed_entries)
+        } else {
+            // Cache miss: load library files from disk the normal way.
+            let workspace_closure_inputs: Vec<(String, String)> = parsed_entries
+                .iter()
+                .map(|entry| (entry.uri.to_string(), entry.content.clone()))
+                .collect();
+            let library_entries = match tokio::task::spawn_blocking(move || {
                 let workspace_sources: Vec<sysml_model::WorkspaceSource<'_>> =
                     workspace_closure_inputs
                         .iter()
@@ -385,28 +422,30 @@ pub(crate) async fn initialized(
                     warn!("library import closure task failed: {err}");
                     Vec::new()
                 }
-            }
+            };
+            let library_parsed = if library_entries.is_empty() {
+                Vec::new()
+            } else {
+                let parallel =
+                    library_entries.len() >= parallel_parse_min_files && should_parallel_parse;
+                // Library files are stable between upgrades — use the parse cache.
+                tokio::task::spawn_blocking(move || {
+                    parse_scanned_entries(library_entries, parallel, cache_dir)
+                })
+                .await
+                .unwrap_or_default()
+            };
+            let lpc = library_parsed.iter().filter(|e| e.parse_metadata.parse_cached).count();
+            let ltc = library_parsed.len();
+            info!(
+                library_cache_hits = lpc,
+                library_total = ltc,
+                "startup: library parse cache stats"
+            );
+            let combined = parsed_entries.into_iter().chain(library_parsed).collect();
+            (lpc, ltc, combined)
         };
-        let library_parsed = if library_entries.is_empty() {
-            Vec::new()
-        } else {
-            let parallel =
-                library_entries.len() >= parallel_parse_min_files && should_parallel_parse;
-            // Library files are stable between upgrades — use the parse cache.
-            tokio::task::spawn_blocking(move || {
-                parse_scanned_entries(library_entries, parallel, cache_dir)
-            })
-            .await
-            .unwrap_or_default()
-        };
-        let library_parsed_count = library_parsed.iter().filter(|e| e.parse_metadata.parse_cached).count();
-        let library_total_count = library_parsed.len();
-        let parsed_entries: Vec<_> = parsed_entries.into_iter().chain(library_parsed).collect();
-        info!(
-            library_cache_hits = library_parsed_count,
-            library_total = library_total_count,
-            "startup: library parse cache stats"
-        );
+        let library_graph_cache_was_hit = library_graph_cache_hit.is_some();
         let merge_index_start = Instant::now();
         let mut st = state.write().await;
         for parsed_entry in &parsed_entries {
@@ -443,9 +482,19 @@ pub(crate) async fn initialized(
                     st_read.library_paths.clone(),
                 )
             };
+            let base_graph_for_rebuild = library_graph_cache_was_hit
+                .then(|| {
+                    let st_read = state.try_read().ok();
+                    st_read.map(|st| st.semantic_graph.clone())
+                })
+                .flatten();
             let (new_graph, new_symbols, staged_relink_metrics) =
                 tokio::task::spawn_blocking(move || {
-                    rebuild_semantic_graph_staged(&index_snapshot, &library_paths_snapshot)
+                    rebuild_semantic_graph_staged(
+                        &index_snapshot,
+                        &library_paths_snapshot,
+                        base_graph_for_rebuild,
+                    )
                 })
                 .await
                 .unwrap_or_else(|e| panic!("startup relink task panicked: {e:?}"));
@@ -470,6 +519,19 @@ pub(crate) async fn initialized(
                 st.symbol_table = new_symbols;
                 st.semantic_state_version = st.semantic_state_version.wrapping_add(1);
                 relink_metrics = metrics;
+
+                // On cache miss, persist the newly-built library graph so future startups
+                // can skip the ~10s disk I/O + ~2.4s graph construction.
+                if !library_graph_cache_was_hit
+                    && !library_paths_for_store.is_empty()
+                    && !crate::workspace::library_closure::library_full_scan_enabled()
+                {
+                    let graph_to_cache = st.semantic_graph.extract_library_subgraph(&st.library_paths);
+                    let lp = library_paths_for_store;
+                    tokio::task::spawn_blocking(move || {
+                        crate::workspace::library_graph_cache::store(&lp, &graph_to_cache);
+                    });
+                }
             }
 
             if !crate::workspace::library_closure::library_full_scan_enabled()
@@ -610,6 +672,7 @@ pub(crate) async fn initialized(
                 ),
                 ("loaded", uris_loaded.len().to_string()),
                 ("candidateFiles", summary.candidate_files.to_string()),
+                ("libraryCacheHit", library_graph_cache_was_hit.to_string()),
             ],
         )
         .await;
@@ -626,101 +689,22 @@ pub(crate) async fn did_open(
     let uri_norm = util::normalize_file_uri(&uri);
     let text = params.text_document.text;
     let did_open_start = Instant::now();
-    // Phase 1: fast write lock — store text, collect workspace sources for closure check.
-    let (warning, lock_wait_ms, perf_logging_enabled, needs_closure_check, workspace_sources, library_paths_for_closure) = {
+    let (warning, lock_wait_ms, perf_logging_enabled) = {
         let lock_start = Instant::now();
         let mut st = state.write().await;
         let lock_wait_ms = lock_start.elapsed().as_millis();
         let warning = store_document_text(&mut st, &uri_norm, text.clone());
         st.semantic_state_version = st.semantic_state_version.wrapping_add(1);
         let perf_logging_enabled = st.perf_logging_enabled;
-        let needs_closure_check = !crate::workspace::library_closure::library_full_scan_enabled()
-            && !st.library_paths.is_empty()
-            && !util::uri_under_any_library(&uri_norm, &st.library_paths);
-        let workspace_sources: Vec<(String, String)> = if needs_closure_check {
-            st.index
-                .iter()
-                .filter(|(uri, entry)| {
-                    entry.include_in_semantic_graph
-                        && !util::uri_under_any_library(uri, &st.library_paths)
-                })
-                .map(|(uri, entry)| (uri.to_string(), entry.content.clone()))
-                .collect()
-        } else {
-            Vec::new()
-        };
-        let library_paths_for_closure = st.library_paths.clone();
-        (warning, lock_wait_ms, perf_logging_enabled, needs_closure_check, workspace_sources, library_paths_for_closure)
+        (warning, lock_wait_ms, perf_logging_enabled)
     };
-    // Write lock released — do the expensive disk I/O + parsing outside any lock.
-    let mut library_added = 0usize;
-    let mut relink_ms = 0u128;
-    if needs_closure_check && !workspace_sources.is_empty() {
-        let loaded = tokio::task::spawn_blocking(move || {
-            let sources: Vec<sysml_model::WorkspaceSource<'_>> = workspace_sources
-                .iter()
-                .map(|(path, content)| sysml_model::WorkspaceSource {
-                    path: path.as_str(),
-                    content: content.as_str(),
-                })
-                .collect();
-            crate::workspace::library_closure::load_library_closure_scan_entries(
-                &sources,
-                &library_paths_for_closure,
-            )
-        })
-        .await
-        .ok()
-        .and_then(|r| r.ok())
-        .unwrap_or_default();
-        if !loaded.is_empty() {
-            // Phase 2: write lock — ingest the loaded library files and rebuild.
-            let mut st = state.write().await;
-            for (uri, content) in loaded {
-                let uri_norm = util::normalize_file_uri(&uri);
-                if st.index.contains_key(&uri_norm) {
-                    continue;
-                }
-                let parsed_result = crate::common::util::parse_for_editor(&content);
-                let parse_errors: Vec<String> = parsed_result
-                    .errors
-                    .iter()
-                    .take(5)
-                    .map(|e| e.message.clone())
-                    .collect();
-                crate::workspace::services::store_parsed_document_text(
-                    &mut st,
-                    &uri_norm,
-                    content,
-                    Some(parsed_result.root),
-                    crate::workspace::state::ParseMetadata {
-                        parse_time_ms: 0,
-                        parse_cached: false,
-                    },
-                    &parse_errors,
-                    parsed_result.errors.len(),
-                    "library_closure",
-                    false,
-                );
-                library_added += 1;
-            }
-            if library_added > 0 {
-                let relink_start = Instant::now();
-                crate::workspace::services::rebuild_all_document_links(&mut st);
-                st.semantic_state_version = st.semantic_state_version.wrapping_add(1);
-                relink_ms = relink_start.elapsed().as_millis();
-            }
-        }
-    }
-    let (warning, lock_wait_ms, library_added, relink_ms, perf_logging_enabled) =
-        (warning, lock_wait_ms, library_added, relink_ms, perf_logging_enabled);
     if perf_logging_enabled {
         client
             .log_message(
                 MessageType::INFO,
                 format!(
-                    "[SysML][perf] {{\"event\":\"backend:didOpen\",\"uri\":{:?},\"lockWaitMs\":{},\"libraryAdded\":{},\"relinkMs\":{}}}",
-                    uri_norm.as_str(), lock_wait_ms, library_added, relink_ms
+                    "[SysML][perf] {{\"event\":\"backend:didOpen\",\"uri\":{:?},\"lockWaitMs\":{}}}",
+                    uri_norm.as_str(), lock_wait_ms,
                 ),
             )
             .await;

@@ -66,7 +66,17 @@ pub(crate) async fn publish_document_diagnostics(
     text: &str,
 ) {
     let started_at = Instant::now();
-    if !diagnostics_publication_ready(state).await {
+    let (ready, is_library) = {
+        let locked = state.read().await;
+        (
+            locked.semantic_lifecycle.supports_semantic_queries(),
+            util::uri_under_any_library(&uri, &locked.library_paths),
+        )
+    };
+    if is_library {
+        return;
+    }
+    if !ready {
         if perf_logging_enabled(state).await {
             info!(
                 event = "diagnostics:document:deferred",
@@ -167,25 +177,29 @@ async fn collect_diagnostics_for_document(
     text: &str,
 ) -> Vec<Diagnostic> {
     let uri_norm = util::normalize_file_uri(uri);
-    // Snapshot only what's needed, then release the lock so the 2+ second
-    // diagnostic computation runs lock-free and doesn't block concurrent writers.
-    let (graph, library_paths, suppress_transient) = {
+    let (graph, library_paths, suppress_transient, check_providers) = {
         let locked = state.read().await;
         (
             locked.semantic_graph.clone(),
             locked.library_paths.clone(),
             locked.semantic_lifecycle.suppresses_transient_semantic_diagnostics(),
+            config.check_providers.clone(),
         )
     };
-    let mut diagnostics = diagnostics_core::collect_document_diagnostics(
-        &graph,
-        &library_paths,
-        &config.check_providers,
-        &uri_norm,
-        text,
-        false,
-        diagnostics_core::lsp_postprocess_options(),
-    );
+    let text = text.to_owned();
+    let mut diagnostics = tokio::task::spawn_blocking(move || {
+        diagnostics_core::collect_document_diagnostics(
+            &graph,
+            &library_paths,
+            &check_providers,
+            &uri_norm,
+            &text,
+            false,
+            diagnostics_core::lsp_postprocess_options(),
+        )
+    })
+    .await
+    .unwrap_or_default();
     diagnostics = filter_transient_startup_semantic_diagnostics(diagnostics, suppress_transient);
     diagnostics
 }

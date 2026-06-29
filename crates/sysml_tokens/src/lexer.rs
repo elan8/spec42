@@ -18,6 +18,7 @@ pub fn tokenize_line(
     let mut already_continued_block = false;
     let mut last_was_colon = false;
     let mut expect_package_name = false;
+    let mut expect_import_name = false;
 
     while i < n {
         if !already_continued_block && (in_block_comment || still_in_block_comment) {
@@ -222,10 +223,21 @@ pub fn tokenize_line(
                 last_was_colon = false;
                 if word == "package" {
                     expect_package_name = true;
+                    expect_import_name = false;
+                } else if word == "import" {
+                    expect_import_name = true;
+                    expect_package_name = false;
+                } else {
+                    expect_import_name = false;
+                    expect_package_name = false;
                 }
                 TYPE_KEYWORD
             } else if expect_package_name {
                 expect_package_name = false;
+                expect_import_name = false;
+                TYPE_NAMESPACE
+            } else if expect_import_name {
+                expect_import_name = false;
                 TYPE_NAMESPACE
             } else if last_was_colon {
                 last_was_colon = false;

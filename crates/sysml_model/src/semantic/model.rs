@@ -18,8 +18,9 @@ fn deserialize_url<'de, D: Deserializer<'de>>(d: D) -> Result<Url, D::Error> {
 
 /// Unique identifier for a node in the semantic graph.
 /// Combines document URI and qualified name for workspace-wide uniqueness.
-#[derive(Clone, Debug, Hash, Eq, PartialEq)]
+#[derive(Clone, Debug, Hash, Eq, PartialEq, Serialize, Deserialize)]
 pub struct NodeId {
+    #[serde(serialize_with = "serialize_url", deserialize_with = "deserialize_url")]
     pub uri: Url,
     pub qualified_name: String,
 }
@@ -398,7 +399,7 @@ pub struct ConnectStatementDetail {
 }
 
 /// Edge weight in the semantic graph: relationship kind plus optional connect metadata.
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct SemanticEdge {
     pub kind: RelationshipKind,
     /// Set when this `Connection` came from a resolved `connect` (or pending-expression resolve).
@@ -463,7 +464,7 @@ impl RelationshipKind {
 }
 
 /// A node in the semantic graph representing a model element.
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct SemanticNode {
     pub id: NodeId,
     pub element_kind: ElementKind,

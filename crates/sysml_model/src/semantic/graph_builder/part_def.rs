@@ -1,8 +1,8 @@
 use std::collections::HashMap;
 
 use sysml_v2_parser::ast::{
-    CalcDefBody, InterfaceDefBody, OccurrenceUsageBody, PartDefBody, PartDefBodyElement,
-    PartUsageBody,
+    CalcDefBody, CalcDefBodyElement, InterfaceDefBody, OccurrenceUsageBody, PartDefBody,
+    PartDefBodyElement, PartUsageBody,
 };
 use url::Url;
 
@@ -468,8 +468,60 @@ pub(super) fn build_from_part_def_body_element(
             if let Some(ref t) = calc_node.value.type_name {
                 add_typing_edge_if_exists(g, uri, &qualified, t, container_prefix);
             }
-            if let CalcDefBody::Brace { .. } = &calc_node.value.body {
-                // Calc body members (parameters, return) are not expanded into the graph yet.
+            if let CalcDefBody::Brace { elements } = &calc_node.value.body {
+                let calc_node_id = NodeId::new(uri, &qualified);
+                for element in elements {
+                    match &element.value {
+                        CalcDefBodyElement::InOutDecl(in_out) => {
+                            super::action::add_in_out_decl(
+                                g,
+                                uri,
+                                container_prefix,
+                                &calc_node_id,
+                                in_out,
+                            );
+                        }
+                        CalcDefBodyElement::ReturnDecl(ret) => {
+                            let ret_qualified = qualified_name_for_node(
+                                g,
+                                uri,
+                                container_prefix,
+                                &ret.value.name,
+                                "return parameter",
+                            );
+                            let mut attrs = HashMap::new();
+                            attrs.insert(
+                                "direction".to_string(),
+                                serde_json::json!("return"),
+                            );
+                            attrs.insert(
+                                "parameterType".to_string(),
+                                serde_json::json!(&ret.value.type_name),
+                            );
+                            add_node_and_recurse(
+                                g,
+                                uri,
+                                &ret_qualified,
+                                "return parameter",
+                                ret.value.name.clone(),
+                                span_to_range(&ret.span),
+                                attrs,
+                                Some(&calc_node_id),
+                            );
+                            add_typing_edge_if_exists(
+                                g,
+                                uri,
+                                &ret_qualified,
+                                &ret.value.type_name,
+                                container_prefix,
+                            );
+                        }
+                        CalcDefBodyElement::Expression(_)
+                        | CalcDefBodyElement::Other(_)
+                        | CalcDefBodyElement::Error(_)
+                        | CalcDefBodyElement::Doc(_) => {}
+                    }
+                }
             }
         }
         PDBE::Perform(perform_node) => {
