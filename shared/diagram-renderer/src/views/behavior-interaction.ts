@@ -23,7 +23,9 @@ export function nodeSupportsSourceNavigation(node: PreparedNode): boolean {
 
 export function jumpPayloadFromNode(node: PreparedNode, parentContext?: string): BehaviorJumpPayload {
   const attrs = (node.attributes ?? {}) as Record<string, unknown>;
-  const qualifiedName = asString(attrs.qualifiedName ?? node.id);
+  // Prefer semanticId (uses :: notation) over qualifiedName (may use dot notation
+  // in interconnection views), so findElement can match graph node IDs directly.
+  const qualifiedName = asString(attrs.semanticId ?? attrs.qualifiedName ?? node.id);
   const looksQualified = qualifiedName.includes("::");
   const uri = asString(node.uri ?? node.sourcePath) || undefined;
   return {

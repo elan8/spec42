@@ -212,9 +212,9 @@ export function createMessageHandlers(context: MessageHandlerContext) {
             typeof elementRange.start.line === 'number',
         );
 
-        if (document && !hasExplicitLocation) {
+        if (!hasExplicitLocation) {
             const dto = await lspModelProvider.findElement(
-                resolvedUri || workspaceRootUri,
+                workspaceRootUri || resolvedUri,
                 elementName,
                 parentContext,
                 elementQualifiedName,

@@ -31,7 +31,7 @@ function graphNodeToElementDTO(
   visited: Set<string> = new Set()
 ): SysMLElementDTO {
   if (visited.has(node.id)) {
-    return { id: node.id, type: node.type, name: node.name, range: node.range, children: [], attributes: node.attributes || {}, relationships: [], errors: null };
+    return { id: node.id, type: node.type, name: node.name, uri: node.uri, range: node.range, children: [], attributes: node.attributes || {}, relationships: [], errors: null };
   }
   visited.add(node.id);
   const children = (graph.nodes || []).filter((n) => n.parentId === node.id);
@@ -44,6 +44,7 @@ function graphNodeToElementDTO(
     id: node.id,
     type: node.type,
     name: node.name,
+    uri: node.uri,
     range: node.range,
     children: childDTOs,
     attributes: node.attributes || {},
@@ -634,7 +635,10 @@ export class LspModelProvider {
     const nodes = result.graph.nodes;
 
     if (elementQualifiedName) {
-      const byId = nodes.find((n) => (n.id || "").toLowerCase() === elementQualifiedName.toLowerCase());
+      // Interconnection diagrams use dot-notation qualified names; graph node IDs use ::.
+      // Normalize both to :: for comparison.
+      const normalizedQn = elementQualifiedName.replace(/\./g, "::");
+      const byId = nodes.find((n) => (n.id || "").toLowerCase().replace(/\./g, "::") === normalizedQn.toLowerCase());
       if (byId) {
         log("findElement: found by id", elementQualifiedName);
         return graphNodeToElementDTO(byId, result.graph);
