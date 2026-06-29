@@ -97,15 +97,15 @@ fn schedule_semantic_relink_after_change(
             return;
         };
 
-        // Commit under write lock — coordinator validates the token is still current.
+        // Commit under write lock — validate the token before writing anything.
         let diag_uris = {
             let mut locked = state.write().await;
-            locked.semantic_graph = new_graph;
-            locked.symbol_table = new_symbols;
             if !locked.coordinator.commit_relink(&token) {
                 // A newer relink superseded us while we were building the graph.
                 return;
             }
+            locked.semantic_graph = new_graph;
+            locked.symbol_table = new_symbols;
             let mut uris =
                 crate::workspace::import_graph::workspace_uris_importing_declarations_from(
                     &locked,
@@ -721,17 +721,20 @@ pub(crate) async fn did_open(
         let mut st = state.write().await;
         let lock_wait_ms = lock_start.elapsed().as_millis();
         let warning = store_document_text_fast(&mut st, &uri_norm, text.clone());
-        // schedule_relink transitions lifecycle to Reindexing, bumps version,
-        // and returns a token that the async task uses to self-cancel if superseded.
-        let token = st.coordinator.schedule_relink();
         let perf_logging_enabled = st.perf_logging_enabled;
+        // Only schedule a relink when the graph is in a queryable state.
+        // If startup is still running (Indexing/Cold), the startup scan will
+        // build the full graph itself — no separate relink needed.
+        let scheduled_relink = matches!(
+            st.coordinator.lifecycle(),
+            SemanticLifecycle::Ready | SemanticLifecycle::Reindexing
+        );
+        let token = scheduled_relink.then(|| st.coordinator.schedule_relink());
         drop(st);
-        // Diagnostics are intentionally NOT spawned here. The graph has been
-        // parsed and locally linked but cross-document edges and expression
-        // evaluation haven't run yet. Diagnostics will be published by the
-        // async relink task below once the graph is fully resolved.
-        schedule_semantic_relink_after_change(client, state, config, uri_norm.clone(), token);
-        (warning, lock_wait_ms, perf_logging_enabled, true)
+        if let Some(token) = token {
+            schedule_semantic_relink_after_change(client, state, config, uri_norm.clone(), token);
+        }
+        (warning, lock_wait_ms, perf_logging_enabled, scheduled_relink)
     };
 
     if perf_logging_enabled {
@@ -799,8 +802,14 @@ pub(crate) async fn did_change(
             params.content_changes,
         );
         let perf_logging_enabled = st.perf_logging_enabled;
-        // schedule_relink transitions lifecycle to Reindexing and bumps the version.
-        let token = st.coordinator.schedule_relink();
+        // Only schedule a relink when the graph is in a queryable state.
+        // If startup is still running (Indexing/Cold), skip — startup will
+        // build the full graph itself.
+        let token = matches!(
+            st.coordinator.lifecycle(),
+            SemanticLifecycle::Ready | SemanticLifecycle::Reindexing
+        )
+        .then(|| st.coordinator.schedule_relink());
         (warnings, perf_logging_enabled, token)
     };
     let apply_ms = apply_start.elapsed().as_millis() as u64;
@@ -813,7 +822,9 @@ pub(crate) async fn did_change(
     // Diagnostics are NOT published here. Cross-document edges and expression
     // evaluation haven't run yet; the relink task publishes diagnostics after
     // committing the fully-resolved graph.
-    schedule_semantic_relink_after_change(client, state, config, uri_norm.clone(), token);
+    if let Some(token) = token {
+        schedule_semantic_relink_after_change(client, state, config, uri_norm.clone(), token);
+    }
     log_perf(
         client,
         perf_logging_enabled,
