@@ -30,6 +30,13 @@ pub(crate) struct ServerState {
     pub(crate) index: std::collections::HashMap<Url, IndexEntry>,
     pub(crate) symbol_table: Vec<SymbolEntry>,
     pub(crate) semantic_graph: semantic::SemanticGraph,
+    /// Snapshot of the library-only portion of the semantic graph.
+    ///
+    /// Set during startup when library files are loaded from cache (no library paths
+    /// configured) or extracted from the full graph on cache miss. Passed as `base_graph`
+    /// to `rebuild_semantic_graph_staged` during async relinking so that library types
+    /// remain available even though they are not stored in the `index`.
+    pub(crate) library_graph_snapshot: Option<semantic::SemanticGraph>,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]

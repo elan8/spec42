@@ -29,9 +29,18 @@ pub(crate) fn scan_sysml_files(roots: Vec<Url>) -> (Vec<(Url, String)>, ScanSumm
             }
             summary.candidate_files += 1;
             match std::fs::read_to_string(entry.path()) {
-                Ok(content) => match Url::from_file_path(entry.path()) {
+                Ok(raw) => match Url::from_file_path(entry.path()) {
                     Ok(uri) => {
                         summary.files_loaded += 1;
+                        // Normalize CRLF → LF so disk content matches what VS Code
+                        // sends in textDocument/didOpen (which always uses LF).
+                        // Without this, files with CRLF line endings always appear
+                        // "changed" in did_open, triggering unnecessary relinking.
+                        let content = if raw.contains('\r') {
+                            raw.replace("\r\n", "\n").replace('\r', "\n")
+                        } else {
+                            raw
+                        };
                         out.push((uri, content));
                     }
                     Err(_) => summary.uri_failures += 1,

@@ -79,12 +79,18 @@ fn schedule_semantic_relink_after_change(
                 locked.index.clone(),
                 locked.library_paths.clone(),
                 locked.perf_logging_enabled,
+                // Library files are not stored in the index when loaded from the
+                // graph cache (cache hit path). Pass the library graph snapshot so
+                // library types survive the workspace rebuild regardless of whether
+                // library_paths is empty or not.
+                locked.library_graph_snapshot.clone(),
             )
         };
-        let (index, library_paths, perf_logging_enabled) = snapshot;
+        let (index, library_paths, perf_logging_enabled, base_graph) = snapshot;
+        let library_snapshot_uris = base_graph.as_ref().map(|g| g.all_uris().len()).unwrap_or(0);
         let relink_start = Instant::now();
         let staged = tokio::task::spawn_blocking(move || {
-            rebuild_semantic_graph_staged(&index, &library_paths, None)
+            rebuild_semantic_graph_staged(&index, &library_paths, base_graph)
         })
         .await;
         let Ok((new_graph, new_symbols, relink_metrics)) = staged else {
@@ -128,6 +134,7 @@ fn schedule_semantic_relink_after_change(
             vec![
                 ("uri", format!("{:?}", changed_uri.as_str())),
                 ("generation", token.generation().to_string()),
+                ("librarySnapshotUris", library_snapshot_uris.to_string()),
                 ("relinkTotalMs", relink_metrics.total_ms.to_string()),
                 (
                     "relinkRebuildGraphsMs",
@@ -383,6 +390,7 @@ pub(crate) async fn initialized(
             {
                 let mut st = state.write().await;
                 st.semantic_graph = cached_graph.clone();
+                st.library_graph_snapshot = Some(cached_graph.clone());
                 st.coordinator.bump_version();
             }
             if perf_logging_enabled {
@@ -529,6 +537,7 @@ pub(crate) async fn initialized(
                     && !crate::workspace::library_closure::library_full_scan_enabled()
                 {
                     let graph_to_cache = st.semantic_graph.extract_library_subgraph(&st.library_paths);
+                    st.library_graph_snapshot = Some(graph_to_cache.clone());
                     let lp = library_paths_for_store;
                     tokio::task::spawn_blocking(move || {
                         crate::workspace::library_graph_cache::store(&lp, &graph_to_cache);
@@ -696,13 +705,15 @@ pub(crate) async fn did_open(
     // Check whether the file is already indexed with identical content before
     // taking the write lock. If so, the startup scan already built the semantic
     // graph for this URI and no expensive re-evaluation is needed.
-    let already_indexed = {
+    let open_status = {
         let st = state.read().await;
-        st.index
-            .get(&uri_norm)
-            .map(|entry| entry.content == text)
-            .unwrap_or(false)
+        match st.index.get(&uri_norm) {
+            None => "newFile",
+            Some(entry) if entry.content != text => "contentChanged",
+            _ => "alreadyIndexed",
+        }
     };
+    let already_indexed = open_status == "alreadyIndexed";
 
     let (warning, lock_wait_ms, perf_logging_enabled, scheduled_relink) = if already_indexed {
         // Fast path: content unchanged — skip re-parse and re-evaluation entirely.
@@ -742,8 +753,8 @@ pub(crate) async fn did_open(
             .log_message(
                 MessageType::INFO,
                 format!(
-                    "[SysML][perf] {{\"event\":\"backend:didOpen\",\"uri\":{:?},\"lockWaitMs\":{},\"alreadyIndexed\":{},\"scheduledRelink\":{}}}",
-                    uri_norm.as_str(), lock_wait_ms, already_indexed, scheduled_relink,
+                    "[SysML][perf] {{\"event\":\"backend:didOpen\",\"uri\":{:?},\"lockWaitMs\":{},\"openStatus\":{:?},\"scheduledRelink\":{}}}",
+                    uri_norm.as_str(), lock_wait_ms, open_status, scheduled_relink,
                 ),
             )
             .await;

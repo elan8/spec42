@@ -1379,9 +1379,9 @@ export class ModelExplorerProvider
         incomingRelationshipCounts: this.incomingRelationshipCounts,
       })
     );
-    item.childrenItems = (element.children ?? []).map((child) =>
-      this.createModelTreeItem(child, uri, item)
-    );
+    item.childrenItems = (element.children ?? [])
+      .filter((child) => child.type !== "import")
+      .map((child) => this.createModelTreeItem(child, uri, item));
     this.registerElementItem(item);
     return item;
   }
