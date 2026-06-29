@@ -10,7 +10,7 @@ import {
 import type { WebviewRenderIdentity } from './protocol';
 
 export interface UpdateFlowDeps {
-    panel: vscode.WebviewPanel;
+    panel: { webview: vscode.Webview; visible: boolean };
     getDocument?: () => vscode.TextDocument | undefined;
     getWorkspaceRootUri: () => string;
     lspModelProvider?: unknown;
@@ -38,7 +38,7 @@ function isWebviewDisposedError(error: unknown): boolean {
 }
 
 async function safePostMessage(
-    panel: vscode.WebviewPanel,
+    panel: { webview: vscode.Webview; visible: boolean },
     message: unknown,
     isDisposed?: () => boolean,
 ): Promise<boolean> {

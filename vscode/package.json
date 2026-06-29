@@ -35,8 +35,7 @@
   ],
   "activationEvents": [
     "workspaceContains:**/*.sysml",
-    "workspaceContains:**/*.kerml",
-    "onWebviewPanel:sysmlVisualizer"
+    "workspaceContains:**/*.kerml"
   ],
   "main": "./out/extension.js",
   "contributes": {
@@ -68,35 +67,83 @@
       {
         "language": "sysml",
         "scopes": {
-          "keyword": ["keyword"],
-          "string": ["string"],
-          "number": ["number"],
-          "comment": ["comment"],
-          "operator": ["keyword.operator"],
-          "variable": ["variable"],
-          "type": ["type"],
-          "namespace": ["namespace"],
-          "class": ["type"],
-          "interface": ["interface"],
-          "property": ["variable.member"],
-          "function": ["function"]
+          "keyword": [
+            "keyword"
+          ],
+          "string": [
+            "string"
+          ],
+          "number": [
+            "number"
+          ],
+          "comment": [
+            "comment"
+          ],
+          "operator": [
+            "keyword.operator"
+          ],
+          "variable": [
+            "variable"
+          ],
+          "type": [
+            "type"
+          ],
+          "namespace": [
+            "namespace"
+          ],
+          "class": [
+            "type"
+          ],
+          "interface": [
+            "interface"
+          ],
+          "property": [
+            "variable.member"
+          ],
+          "function": [
+            "function"
+          ]
         }
       },
       {
         "language": "kerml",
         "scopes": {
-          "keyword": ["keyword"],
-          "string": ["string"],
-          "number": ["number"],
-          "comment": ["comment"],
-          "operator": ["keyword.operator"],
-          "variable": ["variable"],
-          "type": ["type"],
-          "namespace": ["namespace"],
-          "class": ["type"],
-          "interface": ["interface"],
-          "property": ["variable.member"],
-          "function": ["function"]
+          "keyword": [
+            "keyword"
+          ],
+          "string": [
+            "string"
+          ],
+          "number": [
+            "number"
+          ],
+          "comment": [
+            "comment"
+          ],
+          "operator": [
+            "keyword.operator"
+          ],
+          "variable": [
+            "variable"
+          ],
+          "type": [
+            "type"
+          ],
+          "namespace": [
+            "namespace"
+          ],
+          "class": [
+            "type"
+          ],
+          "interface": [
+            "interface"
+          ],
+          "property": [
+            "variable.member"
+          ],
+          "function": [
+            "function"
+          ]
         }
       }
     ],
@@ -466,6 +513,13 @@
           "title": "Spec42",
           "icon": "design/logo.svg"
         }
+      ],
+      "secondarySidebar": [
+        {
+          "id": "sysmlVisualizerContainer",
+          "title": "SysML Visualizer",
+          "icon": "design/logo.svg"
+        }
       ]
     },
     "views": {
@@ -483,6 +537,13 @@
           "name": "Library",
           "type": "webview",
           "contextualTitle": "Spec42 Library"
+        }
+      ],
+      "sysmlVisualizerContainer": [
+        {
+          "type": "webview",
+          "id": "sysmlVisualizerView",
+          "name": "SysML Visualizer"
         }
       ]
     },
@@ -686,7 +747,7 @@
         "spec42.debug": {
           "type": "boolean",
           "default": false,
-          "description": "Enable debug logging to the SysML output channel (View → Output → SysML)."
+          "description": "Enable debug logging to the SysML output channel (View \u00e2\u2020\u2019 Output \u00e2\u2020\u2019 SysML)."
         },
         "spec42.logging.verbose": {
           "type": "boolean",

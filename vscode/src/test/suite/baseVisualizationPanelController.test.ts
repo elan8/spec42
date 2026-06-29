@@ -16,39 +16,39 @@ import {
 import { setVisualizationGateState } from "../../visualization/visualizationGate";
 import { waitFor } from "./testUtils";
 
+import type { VisualizerHost } from "../../visualization/visualizerHost";
+
 function createMockPanel() {
   const messages: unknown[] = [];
   const disposeHandlers: Array<() => void> = [];
-  const viewStateHandlers: Array<() => void> = [];
-  const panel = {
+  const visibilityHandlers: Array<() => void> = [];
+  const panel: VisualizerHost = {
     title: "SysML Visualizer",
     visible: true,
-    viewColumn: vscode.ViewColumn.One,
     webview: {
       html: "",
       cspSource: "https://webview.vscode-cdn.net",
       asWebviewUri: (uri: vscode.Uri) => uri,
       postMessage: (message: unknown) => {
         messages.push(message);
-        return true;
+        return Promise.resolve(true);
       },
       onDidReceiveMessage: () => ({ dispose() {} }),
-    },
+    } as unknown as vscode.Webview,
     onDidDispose: (handler: () => void) => {
       disposeHandlers.push(handler);
       return { dispose() {} };
     },
-    onDidChangeViewState: (handler: () => void) => {
-      viewStateHandlers.push(handler);
-      return { dispose() {} };
+    onVisibilityChange: (handler: () => void) => {
+      visibilityHandlers.push(handler);
     },
     reveal: () => {},
     dispose: () => {
       disposeHandlers.forEach((handler) => handler());
     },
-  } as unknown as vscode.WebviewPanel;
+  };
 
-  return { panel, messages, viewStateHandlers };
+  return { panel, messages, visibilityHandlers };
 }
 
 describe("BaseVisualizationPanelController", () => {

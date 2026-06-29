@@ -7,6 +7,7 @@ import { waitForDocumentDiagnostics } from './documentQuiescence';
 import { resetVisualizerRenderTracker } from './renderTracker';
 import { setVisualizerBootstrapCompleted } from './visualizerReadiness';
 import { createUpdateVisualizationFlow } from './updateFlow';
+import type { VisualizerHost } from './visualizerHost';
 
 export interface BaseVisualizerRestoreState {
     workspaceRootUri: string;
@@ -58,17 +59,8 @@ export function parseFileUri(value: string, label: string, logError: (message: s
     }
 }
 
-export function getVisualizerColumn(): vscode.ViewColumn {
-    const activeColumn = vscode.window.activeTextEditor?.viewColumn;
-    return activeColumn === vscode.ViewColumn.One
-        ? vscode.ViewColumn.Two
-        : activeColumn === vscode.ViewColumn.Two
-            ? vscode.ViewColumn.Three
-            : vscode.ViewColumn.Beside;
-}
-
 export class BaseVisualizationPanelController<TRestoreState extends BaseVisualizerRestoreState> {
-    private readonly _panel: vscode.WebviewPanel;
+    private readonly _host: VisualizerHost;
     private readonly _config: VisualizationPanelVariantConfig<TRestoreState>;
     private readonly _context?: vscode.ExtensionContext;
     private readonly _disposables: vscode.Disposable[] = [];
@@ -79,43 +71,39 @@ export class BaseVisualizationPanelController<TRestoreState extends BaseVisualiz
     private _lifecycleDebounceTimer: ReturnType<typeof setTimeout> | undefined;
     private _lastContentHash = '';
     private _needsUpdateWhenVisible = false;
-    private _lastViewColumn: vscode.ViewColumn | undefined;
     private _updateFlow: ReturnType<typeof createUpdateVisualizationFlow>;
     private _disposed = false;
 
     constructor(
-        panel: vscode.WebviewPanel,
+        host: VisualizerHost,
         extensionUri: vscode.Uri,
         context: vscode.ExtensionContext | undefined,
         config: VisualizationPanelVariantConfig<TRestoreState>,
     ) {
-        this._panel = panel;
+        this._host = host;
         this._context = context;
         this._config = config;
         const extensionVersion = vscode.extensions.getExtension('Elan8.spec42')?.packageJSON?.version ?? '0.0.0';
-        this._lastViewColumn = panel.viewColumn;
 
-        this._panel.onDidDispose(() => this.dispose(), null, this._disposables);
-        this._panel.onDidChangeViewState(() => {
-            const columnChanged = this._panel.viewColumn !== this._lastViewColumn;
-            this._lastViewColumn = this._panel.viewColumn;
-            if (this._panel.visible && (this._needsUpdateWhenVisible || columnChanged)) {
+        this._host.onDidDispose(() => this.dispose(), null, this._disposables);
+        this._host.onVisibilityChange(() => {
+            if (this._host.visible && this._needsUpdateWhenVisible) {
                 this._needsUpdateWhenVisible = false;
                 this._lastContentHash = '';
                 void this.updateVisualization(true, 'panelReveal');
             }
-        }, null, this._disposables);
+        }, this._disposables);
 
-        configureVisualizerWebview(this._panel.webview, extensionUri);
-        this._panel.webview.html = getWebviewHtml(
-            this._panel.webview,
+        configureVisualizerWebview(this._host.webview, extensionUri);
+        this._host.webview.html = getWebviewHtml(
+            this._host.webview,
             extensionUri,
             extensionVersion,
             config.enabledViews,
         );
 
         this._updateFlow = createUpdateVisualizationFlow({
-            panel: this._panel,
+            panel: this._host,
             getDocument: () => this._config.getRuntimeState().document,
             getWorkspaceRootUri: () => this._config.getRuntimeState().workspaceRootUri,
             lspModelProvider: this._config.getRuntimeState().lspModelProvider,
@@ -145,7 +133,7 @@ export class BaseVisualizationPanelController<TRestoreState extends BaseVisualiz
         this._requestCurrentViewTimer = setTimeout(() => {
             this._requestCurrentViewTimer = undefined;
             try {
-                this._panel.webview.postMessage({ command: 'requestCurrentView' });
+                this._host.webview.postMessage({ command: 'requestCurrentView' });
             } catch {
                 // ignore teardown races
             }
@@ -158,7 +146,7 @@ export class BaseVisualizationPanelController<TRestoreState extends BaseVisualiz
         this._startupRetryTimers.push(startupRetryTimer);
 
         const dispatch = createMessageDispatcher({
-            panel: this._panel,
+            panel: { webview: this._host.webview },
             document: this._config.getRuntimeState().document,
             workspaceRootUri: this._config.getRuntimeState().workspaceRootUri,
             lspModelProvider: this._config.getRuntimeState().lspModelProvider,
@@ -174,17 +162,13 @@ export class BaseVisualizationPanelController<TRestoreState extends BaseVisualiz
             },
             setLastContentHash: (hash) => { this._lastContentHash = hash; },
         });
-        this._panel.webview.onDidReceiveMessage(dispatch, null, this._disposables);
+        this._host.webview.onDidReceiveMessage(dispatch, null, this._disposables);
 
         this.persistRestoreState();
     }
 
-    get panel(): vscode.WebviewPanel {
-        return this._panel;
-    }
-
     getWebview(): vscode.Webview {
-        return this._panel.webview;
+        return this._host.webview;
     }
 
     getDocument(): vscode.TextDocument | undefined {
@@ -203,13 +187,13 @@ export class BaseVisualizationPanelController<TRestoreState extends BaseVisualiz
         this._config.getRuntimeState().lspModelProvider = provider;
     }
 
-    updatePanelTitle(title: string): void {
-        this._panel.title = title;
+    updateTitle(title: string): void {
+        this._host.title = title;
         this.persistRestoreState();
     }
 
-    reveal(column = getVisualizerColumn()): void {
-        this._panel.reveal(column);
+    reveal(): void {
+        this._host.reveal();
     }
 
     updateRuntimeState(mutator: (runtimeState: VisualizationPanelRuntimeState) => void): void {
@@ -238,7 +222,7 @@ export class BaseVisualizationPanelController<TRestoreState extends BaseVisualiz
 
     changeView(viewId: string): void {
         const normalizedView = this.normalizeView(viewId);
-        this._panel.webview.postMessage({ command: 'changeView', view: normalizedView });
+        this._host.webview.postMessage({ command: 'changeView', view: normalizedView });
         this._config.updateCurrentView(normalizedView);
         this.persistRestoreState();
     }
@@ -289,7 +273,7 @@ export class BaseVisualizationPanelController<TRestoreState extends BaseVisualiz
         if (!this._context) {
             return;
         }
-        const state = this._config.serializeRestoreState(this._config.getRuntimeState(), this._panel.title);
+        const state = this._config.serializeRestoreState(this._config.getRuntimeState(), this._host.title);
         this._context.workspaceState.update(this._config.restoreStateKey, state);
     }
 
@@ -304,7 +288,6 @@ export class BaseVisualizationPanelController<TRestoreState extends BaseVisualiz
         this._disposed = true;
         resetVisualizerRenderTracker();
         setVisualizerBootstrapCompleted(false);
-        this.clearRestoreState();
         if (this._requestCurrentViewTimer) {
             clearTimeout(this._requestCurrentViewTimer);
             this._requestCurrentViewTimer = undefined;
@@ -321,7 +304,7 @@ export class BaseVisualizationPanelController<TRestoreState extends BaseVisualiz
             clearTimeout(this._lifecycleDebounceTimer);
             this._lifecycleDebounceTimer = undefined;
         }
-        this._panel.dispose();
+        this._host.dispose();
         while (this._disposables.length) {
             const disposable = this._disposables.pop();
             disposable?.dispose();

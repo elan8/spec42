@@ -8,46 +8,20 @@ import { SYSML_ENABLED_VIEWS } from './webview/constants';
 import { logError } from '../logger';
 import {
     BaseVisualizationPanelController,
-    getVisualizerColumn,
-    parseFileUri,
     type BaseVisualizerRestoreState,
     type VisualizationPanelRuntimeState,
     type VisualizationPanelVariantConfig,
 } from './baseVisualizationPanelController';
-import { getVisualizerLocalResourceRoots } from './htmlBuilder';
+import { getVisualizerLocalResourceRoots, configureVisualizerWebview, getWebviewHtml } from './htmlBuilder';
+import { createWebviewViewHost } from './visualizerHost';
 
 export const RESTORE_STATE_KEY = 'sysmlVisualizerRestoreState';
+export const VISUALIZER_VIEW_ID = 'sysmlVisualizerView';
+
 const VISUALIZER_OPEN_CONTEXT_KEY = 'sysml.visualizerOpen';
 
 function setVisualizerOpenContext(isOpen: boolean): void {
     void vscode.commands.executeCommand('setContext', VISUALIZER_OPEN_CONTEXT_KEY, isOpen);
-}
-
-function getVisualizerTabIcon(extensionUri: vscode.Uri): { light: vscode.Uri; dark: vscode.Uri } {
-    return {
-        light: vscode.Uri.joinPath(extensionUri, 'media', 'icons', 'sysml-visualizer-logo.light.svg'),
-        dark: vscode.Uri.joinPath(extensionUri, 'media', 'icons', 'sysml-visualizer-logo.dark.svg'),
-    };
-}
-
-async function findRepresentativeWorkspaceDocument(workspaceRootUri: vscode.Uri): Promise<vscode.TextDocument> {
-    const sysml = await vscode.workspace.findFiles(
-        new vscode.RelativePattern(workspaceRootUri, '**/*.sysml'),
-        '**/node_modules/**',
-        1
-    );
-    const kerml = sysml.length === 0
-        ? await vscode.workspace.findFiles(
-            new vscode.RelativePattern(workspaceRootUri, '**/*.kerml'),
-            '**/node_modules/**',
-            1
-        )
-        : [];
-    const target = sysml[0] ?? kerml[0];
-    if (!target) {
-        throw new Error(`No SysML/KerML documents found under ${workspaceRootUri.toString()}`);
-    }
-    return await vscode.workspace.openTextDocument(target);
 }
 
 export interface VisualizerRestoreState extends BaseVisualizerRestoreState {
@@ -56,9 +30,9 @@ export interface VisualizerRestoreState extends BaseVisualizerRestoreState {
 
 function createVariantConfig(runtimeState: VisualizationPanelRuntimeState): VisualizationPanelVariantConfig<VisualizerRestoreState> {
     return {
-        panelTypeId: 'sysmlVisualizer',
+        panelTypeId: VISUALIZER_VIEW_ID,
         restoreStateKey: RESTORE_STATE_KEY,
-        defaultTitle: 'SysML Model Visualizer',
+        defaultTitle: 'SysML Visualizer',
         enabledViews: SYSML_ENABLED_VIEWS,
         defaultView: 'general-view',
         getLoadingMessage: () => getVisualizerLoadingMessage(),
@@ -69,16 +43,13 @@ function createVariantConfig(runtimeState: VisualizationPanelRuntimeState): Visu
         updateSelectedView: (selectedView) => {
             runtimeState.selectedView = selectedView || undefined;
         },
-        serializeRestoreState: (state, panelTitle) => ({
+        serializeRestoreState: (state) => ({
             workspaceRootUri: state.workspaceRootUri,
             currentView: state.currentView,
             selectedView: state.selectedView,
-            title: panelTitle !== 'SysML Model Visualizer' ? panelTitle : undefined,
         }),
         fetchUpdateMessage: (params: FetchModelParams) => fetchModelData(params),
         getContentHashSource: (state) => JSON.stringify({
-            uri: state.document?.uri.toString() ?? null,
-            version: state.document?.version ?? 0,
             workspaceRootUri: state.workspaceRootUri,
             currentView: state.currentView,
             selectedView: state.selectedView ?? null,
@@ -93,172 +64,159 @@ function createVariantConfig(runtimeState: VisualizationPanelRuntimeState): Visu
     };
 }
 
-export class VisualizationPanel {
+/**
+ * WebviewView provider that registers the SysML Visualizer in the secondary sidebar.
+ * VS Code calls resolveWebviewView once when the view becomes visible for the first time
+ * and retains it (retainContextWhenHidden: true) so the diagram survives panel switches.
+ */
+export class VisualizationPanel implements vscode.WebviewViewProvider {
     public static currentPanel: VisualizationPanel | undefined;
 
-    private readonly _runtimeState: VisualizationPanelRuntimeState;
-    private readonly _controller: BaseVisualizationPanelController<VisualizerRestoreState>;
+    private _extensionContext: vscode.ExtensionContext;
+    private _lspModelProvider: LspModelProvider;
+    private _runtimeState: VisualizationPanelRuntimeState | undefined;
+    private _controller: BaseVisualizationPanelController<VisualizerRestoreState> | undefined;
 
-    private constructor(
-        panel: vscode.WebviewPanel,
-        extensionUri: vscode.Uri,
-        document: vscode.TextDocument,
-        lspModelProvider: LspModelProvider,
-        workspaceRootUri: string,
-        context?: vscode.ExtensionContext,
-        initialCurrentView?: string,
-        initialSelectedView?: string,
-    ) {
-        this._runtimeState = {
-            workspaceRootUri,
-            currentView: new Set<string>(SYSML_ENABLED_VIEWS).has(initialCurrentView || '')
-                ? initialCurrentView || 'general-view'
-                : 'general-view',
-            selectedView: initialSelectedView,
-            document,
-            lspModelProvider,
-        };
-        this._controller = new BaseVisualizationPanelController(
-            panel,
-            extensionUri,
-            context,
-            createVariantConfig(this._runtimeState),
-        );
-        setVisualizerOpenContext(true);
-        panel.onDidDispose(() => {
-            if (VisualizationPanel.currentPanel === this) {
-                VisualizationPanel.currentPanel = undefined;
-            }
-            setVisualizerOpenContext(false);
-        });
+    private constructor(context: vscode.ExtensionContext, lspModelProvider: LspModelProvider) {
+        this._extensionContext = context;
+        this._lspModelProvider = lspModelProvider;
     }
 
-    public static createOrShow(
+    public static register(
         context: vscode.ExtensionContext,
-        document: vscode.TextDocument,
-        customTitle?: string,
-        lspModelProvider?: LspModelProvider,
-        workspaceRootUri?: vscode.Uri,
-    ): void {
-        const extensionUri = context.extensionUri;
-        const visualizerColumn = getVisualizerColumn();
-        const title = customTitle || 'SysML Model Visualizer';
-        const resolvedWorkspaceRootUri = workspaceRootUri
-            ?? vscode.workspace.getWorkspaceFolder(document.uri)?.uri
-            ?? vscode.workspace.workspaceFolders?.[0]?.uri;
-        if (!resolvedWorkspaceRootUri || !lspModelProvider) {
-            throw new Error('Cannot open the visualizer without a workspace root URI and model provider.');
-        }
+        lspModelProvider: LspModelProvider,
+    ): VisualizationPanel {
+        const instance = new VisualizationPanel(context, lspModelProvider);
+        VisualizationPanel.currentPanel = instance;
+        context.subscriptions.push(
+            vscode.window.registerWebviewViewProvider(VISUALIZER_VIEW_ID, instance, {
+                webviewOptions: {
+                    retainContextWhenHidden: true,
+                },
+            })
+        );
+        return instance;
+    }
 
-        if (VisualizationPanel.currentPanel) {
-            VisualizationPanel.currentPanel._controller.updatePanelTitle(title);
-            VisualizationPanel.currentPanel._controller.reveal(visualizerColumn);
-            VisualizationPanel.currentPanel._controller.setLspModelProvider(lspModelProvider);
-            const runtimeState = VisualizationPanel.currentPanel._runtimeState;
-            const workspaceChanged = runtimeState.workspaceRootUri !== resolvedWorkspaceRootUri.toString();
-            if (runtimeState.document !== document || workspaceChanged) {
-                runtimeState.document = document;
-                runtimeState.workspaceRootUri = resolvedWorkspaceRootUri.toString();
-                VisualizationPanel.currentPanel._controller.refresh();
-            }
-            VisualizationPanel.currentPanel._controller.persistRestoreState();
+    /** Called by VS Code when the view becomes visible for the first time (or after reload). */
+    public resolveWebviewView(
+        webviewView: vscode.WebviewView,
+        _resolveContext: vscode.WebviewViewResolveContext,
+        _token: vscode.CancellationToken,
+    ): void {
+        webviewView.webview.options = {
+            enableScripts: true,
+            localResourceRoots: getVisualizerLocalResourceRoots(this._extensionContext.extensionUri),
+        };
+
+        const workspaceRootUri = vscode.workspace.workspaceFolders?.[0]?.uri;
+        if (!workspaceRootUri) {
+            const extVersion = vscode.extensions.getExtension('Elan8.spec42')?.packageJSON?.version ?? '0.0.0';
+            configureVisualizerWebview(webviewView.webview, this._extensionContext.extensionUri);
+            webviewView.webview.html = getWebviewHtml(
+                webviewView.webview,
+                this._extensionContext.extensionUri,
+                extVersion,
+                SYSML_ENABLED_VIEWS,
+            );
             return;
         }
 
-        const panel = vscode.window.createWebviewPanel(
-            'sysmlVisualizer',
-            title,
-            visualizerColumn,
-            {
-                enableScripts: true,
-                retainContextWhenHidden: true,
-                localResourceRoots: getVisualizerLocalResourceRoots(extensionUri),
-            }
-        );
-        panel.iconPath = getVisualizerTabIcon(extensionUri);
+        const saved = this._extensionContext.workspaceState.get<VisualizerRestoreState>(RESTORE_STATE_KEY);
 
-        VisualizationPanel.currentPanel = new VisualizationPanel(
-            panel,
-            extensionUri,
-            document,
-            lspModelProvider,
-            resolvedWorkspaceRootUri.toString(),
-            context,
+        this._runtimeState = {
+            workspaceRootUri: workspaceRootUri.toString(),
+            currentView: saved?.currentView && new Set<string>(SYSML_ENABLED_VIEWS).has(saved.currentView)
+                ? saved.currentView
+                : 'general-view',
+            selectedView: saved?.selectedView,
+            lspModelProvider: this._lspModelProvider,
+        };
+
+        const host = createWebviewViewHost(webviewView);
+        this._controller = new BaseVisualizationPanelController(
+            host,
+            this._extensionContext.extensionUri,
+            this._extensionContext,
+            createVariantConfig(this._runtimeState),
         );
+
+        setVisualizerOpenContext(true);
+        webviewView.onDidDispose(() => {
+            setVisualizerOpenContext(false);
+            this._controller = undefined;
+            this._runtimeState = undefined;
+        });
     }
 
-    public static async restore(
-        panel: vscode.WebviewPanel,
+    /** Reveal the view in the secondary sidebar. */
+    public static reveal(): void {
+        void vscode.commands.executeCommand(`${VISUALIZER_VIEW_ID}.focus`);
+    }
+
+    /** For backwards compatibility — used by commands that previously called createOrShow. */
+    public static createOrShow(
         context: vscode.ExtensionContext,
-        lspModelProvider: LspModelProvider,
-        savedState: VisualizerRestoreState,
-    ): Promise<void> {
-        const extensionUri = context.extensionUri;
-        const workspaceRootUri = parseFileUri(savedState.workspaceRootUri, 'workspaceRootUri', logError);
-        if (!workspaceRootUri) {
-            throw new Error('Saved visualization state does not contain a valid workspace root URI.');
+        _document?: vscode.TextDocument,
+        _customTitle?: string,
+        lspModelProvider?: LspModelProvider,
+        _workspaceRootUri?: vscode.Uri,
+    ): void {
+        if (lspModelProvider && VisualizationPanel.currentPanel) {
+            VisualizationPanel.currentPanel._lspModelProvider = lspModelProvider;
+            VisualizationPanel.currentPanel._controller?.setLspModelProvider(lspModelProvider);
         }
-        const document = await findRepresentativeWorkspaceDocument(workspaceRootUri);
-        if (savedState.title) {
-            panel.title = savedState.title;
-        }
-        panel.iconPath = getVisualizerTabIcon(extensionUri);
-        VisualizationPanel.currentPanel = new VisualizationPanel(
-            panel,
-            extensionUri,
-            document,
-            lspModelProvider,
-            workspaceRootUri.toString(),
-            context,
-            savedState.currentView,
-            savedState.selectedView,
-        );
+        VisualizationPanel.reveal();
     }
 
     public exportVisualization(format: string, scale = 2): void {
-        this._controller.getWebview().postMessage({ command: 'export', format: format.toLowerCase(), scale });
+        this._controller?.getWebview().postMessage({ command: 'export', format: format.toLowerCase(), scale });
     }
 
-    public getDocument(): vscode.TextDocument {
-        return this._runtimeState.document!;
+    public getDocument(): vscode.TextDocument | undefined {
+        return this._runtimeState?.document;
     }
 
     public isNavigating(): boolean {
-        return this._controller.isNavigating();
+        return this._controller?.isNavigating() ?? false;
     }
 
     public tracksUri(uri: vscode.Uri): boolean {
-        const workspaceRootUri = vscode.Uri.parse(this._runtimeState.workspaceRootUri);
-        const rootPath = workspaceRootUri.fsPath.toLowerCase();
+        const workspaceRootUri = this._runtimeState?.workspaceRootUri;
+        if (!workspaceRootUri) return false;
+        const rootPath = vscode.Uri.parse(workspaceRootUri).fsPath.toLowerCase();
         return uri.fsPath.toLowerCase().startsWith(rootPath);
     }
 
-    public getWebview(): vscode.Webview {
-        return this._controller.getWebview();
+    public getWebview(): vscode.Webview | undefined {
+        return this._controller?.getWebview();
     }
 
     public setLspModelProvider(provider: LspModelProvider): void {
-        this._controller.setLspModelProvider(provider);
+        this._lspModelProvider = provider;
+        this._controller?.setLspModelProvider(provider);
     }
 
     public changeView(viewId: string): void {
-        this._controller.changeView(viewId);
+        this._controller?.changeView(viewId);
     }
 
     public selectPackage(packageName: string): void {
+        if (!this._runtimeState || !this._controller) return;
         this._runtimeState.selectedView = packageName;
         this._controller.refresh();
         this._controller.persistRestoreState();
     }
 
     public clearPackageSelection(): void {
+        if (!this._runtimeState || !this._controller) return;
         this._runtimeState.selectedView = undefined;
         this._controller.refresh();
         this._controller.persistRestoreState();
     }
 
     public highlightElementByName(elementName: string, skipCentering = true): void {
-        this.getWebview().postMessage({
+        this._controller?.getWebview().postMessage({
             command: 'highlightElement',
             elementName,
             skipCentering,
@@ -274,30 +232,35 @@ export class VisualizationPanel {
     }
 
     public notifyFileChanged(uri: vscode.Uri): void {
-        void this._controller.notifyTrackedUriChanged(uri, 'fileChanged');
+        void this._controller?.notifyTrackedUriChanged(uri, 'fileChanged');
     }
 
     public refresh(): void {
-        this._controller.refresh();
+        this._controller?.refresh();
     }
 
     public notifyWorkspaceLifecycleChanged(): void {
-        this._controller.notifyWorkspaceLifecycleChanged();
+        this._controller?.notifyWorkspaceLifecycleChanged();
     }
 
     public requestUpdate(triggerSource = 'testSeed'): void {
-        this._controller.requestUpdate(triggerSource);
+        this._controller?.requestUpdate(triggerSource);
     }
 
     public prepareViewForTests(viewId: string, selectedView?: string): void {
+        if (!this._runtimeState || !this._controller) return;
         this._runtimeState.currentView = this._controller.normalizeView(viewId);
         this._runtimeState.selectedView = selectedView;
         this._controller.requestUpdate('testSeed');
     }
 
+    /** No-op: VS Code manages WebviewView lifecycle. */
     public dispose(): void {
-        VisualizationPanel.currentPanel = undefined;
+        // The WebviewView is owned by VS Code; we can only refresh on next open.
+        this._controller?.clearRestoreState();
+        this._controller = undefined;
+        this._runtimeState = undefined;
         setVisualizerOpenContext(false);
-        this._controller.dispose();
     }
 }
+

@@ -11,10 +11,8 @@ import {
   registerExplorerCommands,
 } from "./activation/commands/explorer";
 import { registerLibraryCommands } from "./activation/commands/library";
-import {
-  registerVisualizerCommands,
-  registerVisualizerPanelSerializer,
-} from "./activation/commands/visualizer";
+import { registerVisualizerCommands } from "./activation/commands/visualizer";
+import { VisualizationPanel } from "./visualization/visualizationPanel";
 import {
   deactivateLanguageClient,
   registerLanguageClientDebugCommands,
@@ -116,7 +114,7 @@ export function activate(context: vscode.ExtensionContext): void {
     logPerf
   );
 
-  registerVisualizerPanelSerializer(context, handles.lspModelProvider);
+  VisualizationPanel.register(context, handles.lspModelProvider);
   registerVisualizerCommands(context, handles);
   registerExplorerCommands(
     context,

@@ -6,12 +6,9 @@ import { graphScopesForContext } from "../../providers/lspModelProvider";
 import type { LspModelProvider } from "../../providers/lspModelProvider";
 import { ModelTreeItem } from "../../explorer/modelExplorerProvider";
 import {
-  RESTORE_STATE_KEY,
   VisualizationPanel,
-  VisualizerRestoreState,
 } from "../../visualization/visualizationPanel";
 import { SYSML_ENABLED_VIEWS } from "../../visualization/webview/constants";
-import { configureVisualizerWebview, getWebviewHtml } from "../../visualization/htmlBuilder";
 import { waitForVisualizerRender } from "../../visualization/renderTracker";
 import type { RenderOutcome } from "../../visualization/renderContract";
 import { getConfigNumber, isSysmlDoc } from "../configBridge";
@@ -34,54 +31,6 @@ function getVisualizationViews(): Array<{ id: string; label: string; description
   ].filter((v) => enabledViews.has(v.id));
 }
 
-export function registerVisualizerPanelSerializer(
-  context: vscode.ExtensionContext,
-  lspModelProvider: LspModelProvider
-): void {
-  context.subscriptions.push(
-    vscode.window.registerWebviewPanelSerializer("sysmlVisualizer", {
-      async deserializeWebviewPanel(
-        panel: vscode.WebviewPanel,
-        _state: unknown
-      ) {
-        const saved = context.workspaceState.get<VisualizerRestoreState>(
-          RESTORE_STATE_KEY
-        );
-        const extVersion =
-          vscode.extensions.getExtension(EXTENSION_ID)?.packageJSON?.version ??
-          "0.0.0";
-        if (!saved?.workspaceRootUri) {
-          configureVisualizerWebview(panel.webview, context.extensionUri);
-          panel.webview.html = getWebviewHtml(
-            panel.webview,
-            context.extensionUri,
-            extVersion,
-            SYSML_ENABLED_VIEWS,
-          );
-          return;
-        }
-        try {
-          await VisualizationPanel.restore(
-            panel,
-            context,
-            lspModelProvider,
-            saved
-          );
-        } catch (err) {
-          logError("Failed to restore visualization panel", err);
-          configureVisualizerWebview(panel.webview, context.extensionUri);
-          panel.webview.html = getWebviewHtml(
-            panel.webview,
-            context.extensionUri,
-            extVersion,
-            SYSML_ENABLED_VIEWS,
-          );
-        }
-      },
-    })
-  );
-}
-
 export function registerVisualizerCommands(
   context: vscode.ExtensionContext,
   handles: LspClientHandles
@@ -89,49 +38,12 @@ export function registerVisualizerCommands(
   const { lspModelProvider } = handles;
 
   context.subscriptions.push(
-    vscode.commands.registerCommand("sysml.showVisualizer", async () => {
+    vscode.commands.registerCommand("sysml.showVisualizer", () => {
       if (!getLanguageClient() || !isLanguageClientReady()) {
         vscode.window.showErrorMessage("SysML language server is not running.");
         return;
       }
-      let editor =
-        vscode.window.activeTextEditor ??
-        vscode.window.visibleTextEditors.find(
-          (e) =>
-            (e.document.languageId === "sysml" || e.document.languageId === "kerml") &&
-            !e.document.isClosed
-        );
-      if (
-        editor &&
-        editor.document.languageId !== "sysml" &&
-        editor.document.languageId !== "kerml"
-      ) {
-        editor = undefined;
-      }
-      if (!editor) {
-        editor = vscode.window.visibleTextEditors.find(
-          (e) =>
-            (e.document.languageId === "sysml" || e.document.languageId === "kerml") &&
-            !e.document.isClosed
-        );
-      }
-      if (!editor) {
-        vscode.window.showWarningMessage("No SysML/KerML document is open. Open a .sysml or .kerml file first.");
-        return;
-      }
-      try {
-        VisualizationPanel.createOrShow(
-          context,
-          editor.document,
-          undefined,
-          lspModelProvider
-        );
-      } catch (error) {
-        logError("Failed to open SysML visualizer", error);
-        void vscode.window.showErrorMessage(
-          `Failed to open visualizer: ${error instanceof Error ? error.message : String(error)}`
-        );
-      }
+      VisualizationPanel.reveal();
     })
   );
 
@@ -321,13 +233,7 @@ export function registerVisualizerCommands(
               eol: firstDoc.eol,
               save: () => Promise.resolve(false),
             } as unknown as vscode.TextDocument;
-            const title = `SysML Visualization - ${fileNames.length} file(s)`;
-            VisualizationPanel.createOrShow(
-              context,
-              combinedDocumentProxy,
-              title,
-              lspModelProvider
-            );
+            VisualizationPanel.reveal();
             setTimeout(() => {
               VisualizationPanel.currentPanel?.selectPackage(packageName);
             }, 500);
@@ -335,12 +241,7 @@ export function registerVisualizerCommands(
           }
         }
 
-        VisualizationPanel.createOrShow(
-          context,
-          document,
-          undefined,
-          lspModelProvider
-        );
+        VisualizationPanel.reveal();
         setTimeout(() => {
           VisualizationPanel.currentPanel?.selectPackage(packageName);
         }, 500);
@@ -419,14 +320,12 @@ export function registerVisualizerCommands(
   );
 
   context.subscriptions.push(
-    vscode.commands.registerCommand("sysml.refreshVisualization", async () => {
+    vscode.commands.registerCommand("sysml.refreshVisualization", () => {
       if (!VisualizationPanel.currentPanel) {
         vscode.window.showWarningMessage("No visualization panel is currently open");
         return;
       }
-      const doc = VisualizationPanel.currentPanel.getDocument();
-      VisualizationPanel.currentPanel.dispose();
-      VisualizationPanel.createOrShow(context, doc, undefined, lspModelProvider);
+      VisualizationPanel.currentPanel.refresh();
     })
   );
 

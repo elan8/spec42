@@ -8,7 +8,7 @@ import { onRenderComplete } from './renderTracker';
 import { isWebviewToHostMessage, type WebviewToHostMessage } from './protocol';
 
 export interface MessageHandlerContext {
-    panel: vscode.WebviewPanel;
+    panel: { webview: vscode.Webview; viewColumn?: vscode.ViewColumn };
     document?: vscode.TextDocument;
     workspaceRootUri: string;
     lspModelProvider: LspModelProvider;
