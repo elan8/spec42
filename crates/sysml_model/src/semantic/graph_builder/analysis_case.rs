@@ -272,7 +272,9 @@ pub(super) fn build_from_analysis_body(
             | UseCaseDefBodyElement::IncludeUseCase(_)
             | UseCaseDefBodyElement::ForLoop(_)
             | UseCaseDefBodyElement::ThenAction(_)
-            | UseCaseDefBodyElement::Annotation(_) => {}
+            | UseCaseDefBodyElement::Annotation(_)
+            | UseCaseDefBodyElement::MetadataAnnotation(_)
+            | UseCaseDefBodyElement::CaseReturnDecl(_) => {}
             UseCaseDefBodyElement::FlowUsage(flow) => {
                 super::flow_usage::materialize_flow_usage(
                     flow,

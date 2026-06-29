@@ -519,7 +519,8 @@ pub(super) fn build_from_part_def_body_element(
                         CalcDefBodyElement::Expression(_)
                         | CalcDefBodyElement::Other(_)
                         | CalcDefBodyElement::Error(_)
-                        | CalcDefBodyElement::Doc(_) => {}
+                        | CalcDefBodyElement::Doc(_)
+                        | CalcDefBodyElement::MetadataAnnotation(_) => {}
                     }
                 }
             }

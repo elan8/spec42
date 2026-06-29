@@ -489,7 +489,9 @@ fn extract_calc_metadata(
                         expression = Some(rendered);
                     }
                 }
-                CalcDefBodyElement::Error(_) | CalcDefBodyElement::Doc(_) => {}
+                CalcDefBodyElement::Error(_)
+                | CalcDefBodyElement::Doc(_)
+                | CalcDefBodyElement::MetadataAnnotation(_) => {}
             }
         }
     }
@@ -1539,7 +1541,8 @@ pub(super) fn build_from_package_body_element(
                             CalcDefBodyElement::Expression(_)
                             | CalcDefBodyElement::Other(_)
                             | CalcDefBodyElement::Error(_)
-                            | CalcDefBodyElement::Doc(_) => {}
+                            | CalcDefBodyElement::Doc(_)
+                            | CalcDefBodyElement::MetadataAnnotation(_) => {}
                         }
                     }
                 }
@@ -1807,7 +1810,8 @@ pub(super) fn build_from_package_body_element(
                         }
                         ViewDefBodyElement::Error(_)
                         | ViewDefBodyElement::Other(_)
-                        | ViewDefBodyElement::Doc(_) => {}
+                        | ViewDefBodyElement::Doc(_)
+                        | ViewDefBodyElement::MetadataAnnotation(_) => {}
                     }
                 }
             }
