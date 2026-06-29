@@ -1,6 +1,6 @@
 # Spec42 Roadmap
 
-**Current version:** 0.32.x (2026-06-29)  
+**Current version:** 0.33.x (2026-06-29)  
 **Target:** 1.0.0
 
 This document describes what needs to be true for Spec42 1.0, tracks the remaining work, and lists what is deliberately deferred beyond 1.0. It is the single authoritative planning reference; engineering detail lives in the linked documents.
@@ -25,7 +25,7 @@ The 1.0 bar is:
 
 ---
 
-## Current state (as of 0.32.0)
+## Current state (as of 0.33.0)
 
 The table below shows what is **already complete** and will ship in 1.0 without additional work.
 
@@ -158,7 +158,7 @@ Affected files (see individual update notes below):
 
 ### R7 — sysml-v2-parser alignment
 
-Track the OMG SysML v2 specification release cycle. The parser is currently at **0.27.0** (pinned 2026-06-29). Before 1.0:
+Track the OMG SysML v2 specification release cycle. The parser is currently at **0.28.0** (pinned 2026-06-29). Before 1.0:
 
 - Confirm the pinned parser covers the OMG submission being targeted (currently aligned with 0.32 / 2026-06-22 spec).
 - Update graph builders for any new AST body/member enums introduced in parser releases between 0.27.0 and the 1.0 release pin.
@@ -168,7 +168,7 @@ See [AST-SEMANTIC-COVERAGE.md](engineering/AST-SEMANTIC-COVERAGE.md) for the cur
 
 ### R8 — Release version and changelog
 
-- Bump workspace version from `0.32.x` to `1.0.0` across all crates.
+- Bump workspace version from `0.33.x` to `1.0.0` across all crates.
 - Write a `CHANGELOG.md` (or `RELEASE-NOTES.md`) covering the major 0.x milestones for users upgrading from earlier versions.
 - Tag the release in git and publish the GitHub Action at `elan8/spec42@v1`.
 
@@ -197,7 +197,7 @@ The following capabilities are explicitly out of scope for 1.0. They may appear 
 
 `sysml-v2-parser` is an external crate (crates.io primary, `.cargo/config.toml` patch for pre-publish testing). Spec42's semantic quality is directly coupled to parser coverage.
 
-**Current pin:** `0.27.0`
+**Current pin:** `0.28.0`
 
 **Coupling policy:**
 

@@ -15,7 +15,7 @@ fn host_artifact_metadata_round_trips_through_json() {
             renderer_compatibility_version: 1,
             comparison_schema_version: 1,
         },
-        engine_version: "0.32.0".to_string(),
+        engine_version: "0.33.0".to_string(),
         library_catalog_hash: "catalog-hash".to_string(),
         built_at: "2026-06-22T12:34:56Z".to_string(),
         document_hashes,

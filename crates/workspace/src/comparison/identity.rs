@@ -67,7 +67,7 @@ mod tests {
     fn sample_metadata(catalog_hash: &str, uri: &str) -> HostArtifactMetadata {
         HostArtifactMetadata {
             schema_versions: HostSchemaVersions::current(),
-            engine_version: "0.32.0".to_string(),
+            engine_version: "0.33.0".to_string(),
             library_catalog_hash: catalog_hash.to_string(),
             built_at: "2026-06-22T10:00:00Z".to_string(),
             document_hashes: BTreeMap::from([(uri.to_string(), "hash".to_string())]),

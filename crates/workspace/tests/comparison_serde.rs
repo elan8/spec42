@@ -18,14 +18,14 @@ fn semantic_comparison_report_round_trips_through_json() {
         compared_at: "2026-06-22T12:00:00Z".to_string(),
         previous_artifact: workspace::HostArtifactMetadata {
             schema_versions: HostSchemaVersions::current(),
-            engine_version: "0.32.0".to_string(),
+            engine_version: "0.33.0".to_string(),
             library_catalog_hash: "prev".to_string(),
             built_at: "2026-06-22T11:00:00Z".to_string(),
             document_hashes: BTreeMap::new(),
         },
         next_artifact: workspace::HostArtifactMetadata {
             schema_versions: HostSchemaVersions::current(),
-            engine_version: "0.32.0".to_string(),
+            engine_version: "0.33.0".to_string(),
             library_catalog_hash: "next".to_string(),
             built_at: "2026-06-22T12:00:00Z".to_string(),
             document_hashes: BTreeMap::new(),

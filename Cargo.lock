@@ -431,7 +431,7 @@ dependencies = [
 
 [[package]]
 name = "diagram"
-version = "0.32.0"
+version = "0.33.0"
 dependencies = [
  "serde",
 ]
@@ -1033,7 +1033,7 @@ dependencies = [
 
 [[package]]
 name = "kpar"
-version = "0.32.0"
+version = "0.33.0"
 dependencies = [
  "chrono",
  "clap",
@@ -1048,7 +1048,7 @@ dependencies = [
 
 [[package]]
 name = "language_service"
-version = "0.32.0"
+version = "0.33.0"
 dependencies = [
  "serde",
  "serde_json",
@@ -1133,7 +1133,7 @@ dependencies = [
 
 [[package]]
 name = "lsp_server"
-version = "0.32.0"
+version = "0.33.0"
 dependencies = [
  "bincode",
  "clap",
@@ -1915,7 +1915,7 @@ dependencies = [
 
 [[package]]
 name = "server"
-version = "0.32.0"
+version = "0.33.0"
 dependencies = [
  "anyhow",
  "axum",
@@ -2071,7 +2071,7 @@ dependencies = [
 
 [[package]]
 name = "sysml_model"
-version = "0.32.0"
+version = "0.33.0"
 dependencies = [
  "petgraph",
  "serde",
@@ -2085,7 +2085,7 @@ dependencies = [
 
 [[package]]
 name = "sysml_tokens"
-version = "0.32.0"
+version = "0.33.0"
 dependencies = [
  "serde",
  "sysml-v2-parser",
@@ -3200,7 +3200,7 @@ dependencies = [
 
 [[package]]
 name = "workspace"
-version = "0.32.0"
+version = "0.33.0"
 dependencies = [
  "directories",
  "kpar",

@@ -5,6 +5,42 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.33.0] - 2026-06-29
+
+### Added
+
+- **`workspace` crate** — Protocol-neutral embedding for workspace build, snapshot loading, semantic comparison, incremental updates, cancellation, and resource limits (ADR 0003).
+- **Semantic comparison** — `compare_snapshots` returns a versioned `SemanticComparisonReport` for element, relationship, diagnostic, and view catalog diffs with identity-preservation assessment.
+- **Artifact metadata** — `HostArtifactMetadata` records schema versions, engine version, library catalog hash, and per-document source hashes.
+- **TypeScript bindings (`sysml_model`)** — `ts-rs` integration exports shared DTOs (including unified `Position` and `Range`) for the diagram renderer and extension surfaces.
+- **Component view module** — Part and port expansion for semantic graph queries.
+- **Library parse caching** — LSP server caches library graph parses across workspace sessions.
+- **`WorkspaceRenderCache`** — LSP visualization warm-cache integration for `sysml/visualization` requests.
+- **Incremental snapshot updates** — Experimental incremental workspace updates with parity, fallback, and benchmark tests.
+- **Robot vacuum showcase** — Integration tests and performance analysis documentation for the release-gating fixture.
+- **Performance guardrails** — Nightly budget enforcement via `scripts/check-perf-budgets.mjs` on large-workspace and drone-interconnection fixtures.
+- **`edges_for_uri`** — Semantic graph query method for URI-scoped edge lookup with improved serialization.
+- **Parent-child relationship handling** — Semantic graph evaluation now models parent-child relationships explicitly.
+
+### Changed
+
+- **Crate restructuring** — `semantic_core` renamed to `sysml_model`, `kernel` renamed to `lsp_server`, and embedding concerns extracted into the new `workspace` crate.
+- **Parser dependency** — Bumped `sysml-v2-parser` to **0.28.0** on [crates.io](https://crates.io/crates/sysml-v2-parser); graph builders updated for new AST body/member enums.
+- **DTO unification** — Neutral `TextPosition`/`TextRange` span types and unified `Position`/`Range` DTOs across `sysml_model`.
+- **LSP server** — Refactored document handling for improved concurrency; library graph caching; streamlined diagnostics and visualization data paths.
+- **Semantic graph** — `Arc`-based memory management, query performance improvements, and stale-cache invalidation fixes.
+- **IBD payload merging** — Refactored merge path with enhanced workspace instance mapping.
+- **Element kind handling** — Refactored predicates for improved type safety and consistency.
+- **CI workflows** — Updated for crate renaming; diagram renderer performance tracking in CI.
+- **Documentation** — Engineering docs, Sequence View notes, and architecture references updated for current crate names.
+- **Release surface alignment** — Rust workspace, `spec42` server, VS Code extension, Zed extension, and GitHub Action examples aligned at `0.33.0`.
+
+### Fixed
+
+- **Stale semantic graph cache** — Cache invalidation after graph mutations restores correct query results.
+- **LSP integration test** — Diagnostic handling for loose-file workspaces.
+- **MCP tools test** — Additional error-message assertion for tool failure paths.
+
 ## [0.32.0] - 2026-06-22
 
 ### Added
@@ -693,6 +729,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Parser is aligned with the SysML v2 Release validation suite; it does not claim full OMG spec compliance.
 - Some constructs may have incomplete semantic token or outline coverage.
 
+[0.33.0]: https://github.com/elan8/spec42/releases/tag/v0.33.0
 [0.32.0]: https://github.com/elan8/spec42/releases/tag/v0.32.0
 [0.31.0]: https://github.com/elan8/spec42/releases/tag/v0.31.0
 [0.30.0]: https://github.com/elan8/spec42/releases/tag/v0.30.0
