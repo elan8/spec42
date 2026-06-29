@@ -121,7 +121,7 @@ fn apply_ast_semantic_ranges(
             if let Some((ast_type, range_idx, span_len)) =
                 token_ast_type(*line, *start, *len, ast_ranges)
             {
-                if span_len > 2 * *len {
+                if span_len > 2 * *len && ast_type != TYPE_NAMESPACE {
                     continue;
                 }
                 if *type_idx == TYPE_TYPE && ast_type == TYPE_PROPERTY {

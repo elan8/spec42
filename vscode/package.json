@@ -68,35 +68,35 @@
       {
         "language": "sysml",
         "scopes": {
-          "keyword": "keyword",
-          "string": "string",
-          "number": "number",
-          "comment": "comment",
-          "operator": "keyword.operator",
-          "variable": "variable",
-          "type": "type",
-          "namespace": "namespace",
-          "class": "type",
-          "interface": "interface",
-          "property": "variable.member",
-          "function": "function"
+          "keyword": ["keyword"],
+          "string": ["string"],
+          "number": ["number"],
+          "comment": ["comment"],
+          "operator": ["keyword.operator"],
+          "variable": ["variable"],
+          "type": ["type"],
+          "namespace": ["namespace"],
+          "class": ["type"],
+          "interface": ["interface"],
+          "property": ["variable.member"],
+          "function": ["function"]
         }
       },
       {
         "language": "kerml",
         "scopes": {
-          "keyword": "keyword",
-          "string": "string",
-          "number": "number",
-          "comment": "comment",
-          "operator": "keyword.operator",
-          "variable": "variable",
-          "type": "type",
-          "namespace": "namespace",
-          "class": "type",
-          "interface": "interface",
-          "property": "variable.member",
-          "function": "function"
+          "keyword": ["keyword"],
+          "string": ["string"],
+          "number": ["number"],
+          "comment": ["comment"],
+          "operator": ["keyword.operator"],
+          "variable": ["variable"],
+          "type": ["type"],
+          "namespace": ["namespace"],
+          "class": ["type"],
+          "interface": ["interface"],
+          "property": ["variable.member"],
+          "function": ["function"]
         }
       }
     ],
