@@ -553,6 +553,9 @@ export class ModelExplorerProvider
       }
       return;
     }
+    if (!this.treeView.visible) {
+      return;
+    }
     this.ensureTreeCache();
     const item = this.findElementTreeItem(docUri, elementId, range);
     if (!item) {

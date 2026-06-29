@@ -13,8 +13,8 @@ use crate::views::dto::SemanticIndexReadyNotificationDto;
 use crate::workspace::{
     clear_documents_under_roots, ingest_parsed_scan_entries, ingest_parsed_scan_entries_batch,
     parse_scanned_entries, rebuild_all_document_links, rebuild_semantic_graph_staged,
-    refresh_document, remove_document, scan_sysml_files, store_document_text, SemanticLifecycle,
-    ServerState,
+    refresh_document, remove_document, scan_sysml_files, store_document_text_fast,
+    SemanticLifecycle, ServerState,
 };
 
 
@@ -72,7 +72,10 @@ fn schedule_semantic_relink_after_change(
         let snapshot = {
             let locked = state.read().await;
             if locked.semantic_state_version != expected_state_version
-                || !locked.semantic_lifecycle.supports_semantic_queries()
+                || matches!(
+                    locked.semantic_lifecycle,
+                    SemanticLifecycle::Cold | SemanticLifecycle::Indexing
+                )
             {
                 return;
             }
@@ -99,7 +102,9 @@ fn schedule_semantic_relink_after_change(
             return;
         };
 
-        let peer_uris = {
+        // Build the set of URIs that need diagnostics republished: the changed
+        // file itself plus any workspace files that import from it.
+        let diag_uris = {
             let mut locked = state.write().await;
             if locked.semantic_state_version != snapshot_version {
                 return;
@@ -107,15 +112,24 @@ fn schedule_semantic_relink_after_change(
             locked.semantic_graph = new_graph;
             locked.symbol_table = new_symbols;
             locked.semantic_state_version = locked.semantic_state_version.wrapping_add(1);
-            crate::workspace::import_graph::workspace_uris_importing_declarations_from(
-                &locked,
-                &changed_uri,
-            )
+            // Relink is done; restore lifecycle so waiting query handlers can proceed.
+            if locked.semantic_lifecycle == SemanticLifecycle::Reindexing {
+                locked.semantic_lifecycle = SemanticLifecycle::Ready;
+            }
+            let mut uris =
+                crate::workspace::import_graph::workspace_uris_importing_declarations_from(
+                    &locked,
+                    &changed_uri,
+                );
+            // Always include the changed file — it was skipped during the fast
+            // graph update and needs diagnostics from the fully-resolved graph.
+            if !uris.contains(&changed_uri) {
+                uris.push(changed_uri.clone());
+            }
+            uris
         };
 
-        if !peer_uris.is_empty() {
-            publish_workspace_diagnostics(&client, &state, &config, Some(&peer_uris)).await;
-        }
+        publish_workspace_diagnostics(&client, &state, &config, Some(&diag_uris)).await;
 
         log_perf(
             &client,
@@ -155,7 +169,7 @@ fn schedule_semantic_relink_after_change(
                     "relinkRefreshSymbolsMs",
                     relink_metrics.refresh_symbols_ms.to_string(),
                 ),
-                ("peerDiagnosticsRepublish", peer_uris.len().to_string()),
+                ("diagUrisCount", diag_uris.len().to_string()),
                 ("elapsedMs", relink_start.elapsed().as_millis().to_string()),
             ],
         )
@@ -692,22 +706,64 @@ pub(crate) async fn did_open(
     let uri_norm = util::normalize_file_uri(&uri);
     let text = params.text_document.text;
     let did_open_start = Instant::now();
-    let (warning, lock_wait_ms, perf_logging_enabled) = {
+
+    // Check whether the file is already indexed with identical content before
+    // taking the write lock. If so, the startup scan already built the semantic
+    // graph for this URI and no expensive re-evaluation is needed.
+    let already_indexed = {
+        let st = state.read().await;
+        st.index
+            .get(&uri_norm)
+            .map(|entry| entry.content == text)
+            .unwrap_or(false)
+    };
+
+    let (warning, lock_wait_ms, perf_logging_enabled, scheduled_relink) = if already_indexed {
+        // Fast path: content unchanged — skip re-parse and re-evaluation entirely.
+        // The write lock is taken only to bump the state version.
         let lock_start = Instant::now();
         let mut st = state.write().await;
         let lock_wait_ms = lock_start.elapsed().as_millis();
-        let warning = store_document_text(&mut st, &uri_norm, text.clone());
-        st.semantic_state_version = st.semantic_state_version.wrapping_add(1);
         let perf_logging_enabled = st.perf_logging_enabled;
-        (warning, lock_wait_ms, perf_logging_enabled)
+        st.semantic_state_version = st.semantic_state_version.wrapping_add(1);
+        (None, lock_wait_ms, perf_logging_enabled, false)
+    } else {
+        // New or changed file: parse and update the graph without the expensive
+        // cross-document evaluation pass, then schedule an async relink so that
+        // cross-document edges and expression evaluation happen outside the lock.
+        let lock_start = Instant::now();
+        let mut st = state.write().await;
+        let lock_wait_ms = lock_start.elapsed().as_millis();
+        let warning = store_document_text_fast(&mut st, &uri_norm, text.clone());
+        let semantic_state_version = st.semantic_state_version.wrapping_add(1);
+        st.semantic_state_version = semantic_state_version;
+        // Signal that a relink is in flight so query handlers wait for full resolution.
+        if st.semantic_lifecycle == SemanticLifecycle::Ready {
+            st.semantic_lifecycle = SemanticLifecycle::Reindexing;
+        }
+        let perf_logging_enabled = st.perf_logging_enabled;
+        drop(st);
+        // Diagnostics are intentionally NOT spawned here. The graph has been
+        // parsed and locally linked but cross-document edges and expression
+        // evaluation haven't run yet. Diagnostics will be published by the
+        // async relink task below once the graph is fully resolved.
+        schedule_semantic_relink_after_change(
+            client,
+            state,
+            config,
+            uri_norm.clone(),
+            semantic_state_version,
+        );
+        (warning, lock_wait_ms, perf_logging_enabled, true)
     };
+
     if perf_logging_enabled {
         client
             .log_message(
                 MessageType::INFO,
                 format!(
-                    "[SysML][perf] {{\"event\":\"backend:didOpen\",\"uri\":{:?},\"lockWaitMs\":{}}}",
-                    uri_norm.as_str(), lock_wait_ms,
+                    "[SysML][perf] {{\"event\":\"backend:didOpen\",\"uri\":{:?},\"lockWaitMs\":{},\"alreadyIndexed\":{},\"scheduledRelink\":{}}}",
+                    uri_norm.as_str(), lock_wait_ms, already_indexed, scheduled_relink,
                 ),
             )
             .await;
@@ -715,20 +771,31 @@ pub(crate) async fn did_open(
     if let Some(message) = warning {
         client.log_message(MessageType::WARNING, message).await;
     }
-    let diag_start = Instant::now();
-    publish_document_diagnostics(client, state, config, uri, &text).await;
-    if perf_logging_enabled {
-        client
-            .log_message(
-                MessageType::INFO,
-                format!(
-                    "[SysML][perf] {{\"event\":\"backend:didOpenComplete\",\"uri\":{:?},\"diagnosticsMs\":{},\"totalMs\":{}}}",
-                    uri_norm.as_str(),
-                    diag_start.elapsed().as_millis(),
-                    did_open_start.elapsed().as_millis()
-                ),
-            )
-            .await;
+    // Only publish diagnostics immediately when the graph is already fully
+    // resolved (already_indexed path). For new/changed files the relink task
+    // owns diagnostic publication after the fully-resolved graph is committed.
+    if already_indexed {
+        let client = client.clone();
+        let state = Arc::clone(state);
+        let config = Arc::clone(config);
+        let uri_norm_log = uri_norm.clone();
+        tokio::spawn(async move {
+            let diag_start = Instant::now();
+            publish_document_diagnostics(&client, &state, &config, uri, &text).await;
+            if perf_logging_enabled {
+                client
+                    .log_message(
+                        MessageType::INFO,
+                        format!(
+                            "[SysML][perf] {{\"event\":\"backend:didOpenComplete\",\"uri\":{:?},\"diagnosticsMs\":{},\"totalMs\":{}}}",
+                            uri_norm_log.as_str(),
+                            diag_start.elapsed().as_millis(),
+                            did_open_start.elapsed().as_millis()
+                        ),
+                    )
+                    .await;
+            }
+        });
     }
     // Workspace diagnostics are NOT republished here. did_open fires whenever
     // VS Code switches to a file tab, which is far too frequent. The workspace
@@ -758,10 +825,6 @@ pub(crate) async fn did_change(
         warnings
     };
     let apply_ms = apply_start.elapsed().as_millis() as u64;
-    let text = {
-        let state = state.read().await;
-        crate::workspace::indexed_text_or_empty(&state, &uri_norm)
-    };
     let perf_logging_enabled = {
         let state = state.read().await;
         state.perf_logging_enabled
@@ -772,13 +835,18 @@ pub(crate) async fn did_change(
         }
         client.log_message(ty, message).await;
     }
-    let diagnostics_start = Instant::now();
-    publish_document_diagnostics(client, state, config, uri, &text).await;
-    let diagnostics_ms = diagnostics_start.elapsed().as_millis() as u64;
     let semantic_state_version = {
-        let locked = state.read().await;
+        let mut locked = state.write().await;
+        // Signal that a relink is in flight so query handlers wait for full resolution.
+        if locked.semantic_lifecycle == SemanticLifecycle::Ready {
+            locked.semantic_lifecycle = SemanticLifecycle::Reindexing;
+        }
         locked.semantic_state_version
     };
+    // Diagnostics are NOT published here. The graph has been parsed but
+    // cross-document edges and expression evaluation haven't run yet.
+    // schedule_semantic_relink_after_change publishes diagnostics for this
+    // URI and its peers once the fully-resolved graph is committed.
     schedule_semantic_relink_after_change(
         client,
         state,
@@ -794,7 +862,6 @@ pub(crate) async fn did_change(
             ("uri", format!("{:?}", uri_norm.as_str())),
             ("version", version.to_string()),
             ("applyChangesMs", apply_ms.to_string()),
-            ("diagnosticsMs", diagnostics_ms.to_string()),
             (
                 "scheduledSemanticStateVersion",
                 semantic_state_version.to_string(),

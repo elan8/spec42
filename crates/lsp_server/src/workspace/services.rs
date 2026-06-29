@@ -284,6 +284,39 @@ pub(crate) fn store_document_text(
     )
 }
 
+/// Like `store_document_text` but skips the expensive cross-document evaluation
+/// pass (`evaluate: false`). The caller is responsible for scheduling an async
+/// relink to rebuild cross-document edges and expression evaluation.
+pub(crate) fn store_document_text_fast(
+    state: &mut ServerState,
+    uri_norm: &Url,
+    text: String,
+) -> Option<String> {
+    let parse_start = Instant::now();
+    let parsed_result = util::parse_for_editor(&text);
+    let parse_time_ms = elapsed_ms(parse_start);
+    let parse_errors = parsed_result
+        .errors
+        .iter()
+        .take(5)
+        .map(|e| e.message.clone())
+        .collect::<Vec<_>>();
+    store_parsed_document_text(
+        state,
+        uri_norm,
+        text,
+        Some(parsed_result.root),
+        ParseMetadata {
+            parse_time_ms,
+            parse_cached: false,
+        },
+        &parse_errors,
+        parsed_result.errors.len(),
+        "store_document_text_fast",
+        false,
+    )
+}
+
 pub(crate) fn refresh_document(
     state: &mut ServerState,
     uri_norm: &Url,

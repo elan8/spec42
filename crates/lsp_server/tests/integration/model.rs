@@ -847,7 +847,11 @@ fn lsp_sysml_model_includes_general_view_source_data_for_full_drone_fixture() {
         }
     });
     send_message(&mut stdin, &did_open.to_string());
-    std::thread::sleep(std::time::Duration::from_millis(180));
+    // The async relink debounces at 90ms then runs rebuild_semantic_graph_staged.
+    // Relationship edges (satisfy, perform, subject) require link_workspace_relationships
+    // which only runs after the relink commits. Use a generous sleep so the relink
+    // completes even on slow debug builds.
+    std::thread::sleep(std::time::Duration::from_millis(500));
 
     let model_id = next_id();
     let model_req = serde_json::json!({

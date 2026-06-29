@@ -21,6 +21,7 @@ use tower_lsp::{Client, LanguageServer, LspService, Server};
 use crate::host::config::Spec42Config;
 use crate::views::dto;
 use crate::workspace::viz_cache::WorkspaceRenderCache;
+use crate::workspace::state::SemanticLifecycle;
 use crate::workspace::ServerState;
 use custom::{
     mark_sysml_model_parse_cached, sysml_clear_cache_result, sysml_feature_inspector_result,
@@ -357,6 +358,19 @@ impl Backend {
                     )
                     .await;
             }
+        }
+        // Wait for any in-flight async relink to complete so the response
+        // reflects a fully-resolved semantic graph (satisfy/perform/subject edges etc).
+        let relink_wait_deadline =
+            std::time::Instant::now() + std::time::Duration::from_secs(30);
+        loop {
+            let lifecycle = self.state.read().await.semantic_lifecycle;
+            if lifecycle != SemanticLifecycle::Reindexing
+                || std::time::Instant::now() >= relink_wait_deadline
+            {
+                break;
+            }
+            tokio::time::sleep(std::time::Duration::from_millis(20)).await;
         }
         let read_lock_wait_start = Instant::now();
         let state = self.state.read().await;
