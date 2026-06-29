@@ -11,38 +11,37 @@ const MESSAGE_GAP = 78;
 const LIFELINE_BOX_WIDTH = 132;
 const LIFELINE_BOX_HEIGHT = 38;
 
-function asRecord(value: unknown): Record<string, unknown> {
+export function asRecord(value: unknown): Record<string, unknown> {
   return value && typeof value === "object" ? (value as Record<string, unknown>) : {};
 }
 
-function asArray(value: unknown): unknown[] {
+export function asArray(value: unknown): unknown[] {
   return Array.isArray(value) ? value : [];
 }
 
-function asString(value: unknown, fallback = ""): string {
+export function asString(value: unknown, fallback = ""): string {
   if (typeof value === "string") return value;
   if (typeof value === "number" || typeof value === "boolean") return String(value);
   return fallback;
 }
 
-function messageRow(order: number): number {
+export function messageRow(order: number): number {
   return LIFELINE_TOP + 58 + (Math.max(1, order) - 1) * MESSAGE_GAP;
 }
 
-function messageRef(message: Record<string, unknown>): string {
+export function messageRef(message: Record<string, unknown>): string {
   return asString(message.id ?? message.name ?? message.label);
 }
 
-function findPreparedLifeline(preparedNodes: PreparedNode[], lifeline: Record<string, unknown>): PreparedNode | undefined {
+export function findPreparedLifeline(preparedNodes: PreparedNode[], lifeline: Record<string, unknown>): PreparedNode | undefined {
   const id = asString(lifeline.id ?? lifeline.name);
   const name = asString(lifeline.name ?? lifeline.label);
-  return preparedNodes.find(
-    (node) =>
-      node.id === id ||
-      node.label === name ||
-      asString(node.attributes?.qualifiedName) === id ||
-      asString(node.attributes?.qualifiedName) === name,
-  );
+  return preparedNodes.find((node) => {
+    const qualifiedName = asString(node.attributes?.qualifiedName);
+    if (id && (node.id === id || qualifiedName === id)) return true;
+    if (name && (node.label === name || qualifiedName === name)) return true;
+    return false;
+  });
 }
 
 function addSequenceMarkers(defs: d3.Selection<SVGDefsElement, unknown, null, undefined>, theme: DiagramTheme): void {

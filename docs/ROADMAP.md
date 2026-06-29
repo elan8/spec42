@@ -112,13 +112,11 @@ All five phases of the embedding plan are complete. See [ADR 0003](adr/0003-spec
 
 ## Remaining work for 1.0
 
-### R1 — Remove `domain_rules` placeholder crate
+### ~~R1 — Remove `domain_rules` placeholder crate~~ ✓ done
 
-`crates/domain_rules/` exists as a placeholder in the workspace but contains no code and is not used by any other crate. It must be either implemented or removed before 1.0 to avoid implying a capability that does not exist.
+`crates/domain_rules/` was an empty placeholder (no code, not a workspace member). Removed 2026-06-29.
 
-**Decision needed:** implement (what rules, what API?) or remove and re-add if/when domain rule checking is designed. Removing is strongly preferred given no concrete scope exists.
-
-### R2 — Promote Sequence View from experimental to stable
+### ~~R2 — Promote Sequence View from experimental to stable~~ ✓ done
 
 The Sequence View projection is complete per the conformance matrix, but the code path carries an experimental marker. Before 1.0:
 
