@@ -3,7 +3,9 @@
 use sysml_v2_parser::ast::Identification;
 use sysml_v2_parser::Span;
 
-use crate::types::{TYPE_CLASS, TYPE_FUNCTION, TYPE_INTERFACE, TYPE_NAMESPACE, TYPE_TYPE};
+use crate::types::{
+    TYPE_CLASS, TYPE_FUNCTION, TYPE_INTERFACE, TYPE_NAMESPACE, TYPE_PROPERTY, TYPE_TYPE,
+};
 
 /// 0-based source range (LSP convention) for semantic tokens and range checks.
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -145,4 +147,86 @@ fn identifier_bounds(slice: &str) -> Option<(usize, usize)> {
         return None;
     }
     Some((ws, ws + end))
+}
+
+/// Locate a whole-word occurrence of `word` inside `span` on a single source line.
+pub fn word_range_within_span(
+    source: &str,
+    span: &SourceRange,
+    word: &str,
+) -> Option<SourceRange> {
+    if word.is_empty() || span.start_line != span.end_line {
+        return None;
+    }
+    let line = source.lines().nth(span.start_line as usize)?;
+    let line_start = span.start_character as usize;
+    let line_end = span.end_character as usize;
+    if line_end <= line_start {
+        return None;
+    }
+    let slice: String = line
+        .chars()
+        .skip(line_start)
+        .take(line_end - line_start)
+        .collect();
+    let mut search_at = 0usize;
+    while let Some(rel) = slice[search_at..].find(word) {
+        let abs = search_at + rel;
+        let before_ok = abs == 0 || !is_ident_byte(slice.as_bytes().get(abs - 1).copied());
+        let after = abs + word.len();
+        let after_ok = after >= slice.len() || !is_ident_byte(slice.as_bytes().get(after).copied());
+        if before_ok && after_ok {
+            let char_start = slice[..abs].chars().count();
+            let char_end = char_start + word.chars().count();
+            return Some(SourceRange {
+                start_line: span.start_line,
+                start_character: line_start as u32 + char_start as u32,
+                end_line: span.end_line,
+                end_character: line_start as u32 + char_end as u32,
+            });
+        }
+        search_at = abs + 1;
+    }
+    None
+}
+
+fn is_ident_byte(b: Option<u8>) -> bool {
+    b.is_some_and(|b| b.is_ascii_alphanumeric() || b == b'_')
+}
+
+/// Push a definition shell span (refined to the declared name during merge) plus optional specializes type.
+pub fn push_ident_definition_spans(
+    span: &Span,
+    specializes_span: Option<&Span>,
+    token_type: u32,
+    out: &mut Vec<(SourceRange, u32)>,
+) {
+    out.push((span_to_source_range(span), token_type));
+    if let Some(s) = specializes_span {
+        out.push((span_to_source_range(s), TYPE_TYPE));
+    }
+}
+
+/// Push usage name/type ranges using parser spans when present, otherwise source lookup in the node span.
+pub fn push_usage_name_type_spans(
+    source: &str,
+    node_span: &Span,
+    name: &str,
+    type_name: Option<&str>,
+    name_span: Option<&Span>,
+    type_span: Option<&Span>,
+    out: &mut Vec<(SourceRange, u32)>,
+) {
+    if let Some(s) = name_span {
+        out.push((span_to_source_range(s), TYPE_PROPERTY));
+    } else if let Some(r) = word_range_within_span(source, &span_to_source_range(node_span), name) {
+        out.push((r, TYPE_PROPERTY));
+    }
+    if let Some(s) = type_span {
+        out.push((span_to_source_range(s), TYPE_TYPE));
+    } else if let Some(type_name) = type_name {
+        if let Some(r) = word_range_within_span(source, &span_to_source_range(node_span), type_name) {
+            out.push((r, TYPE_TYPE));
+        }
+    }
 }

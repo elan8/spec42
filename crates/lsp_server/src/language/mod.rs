@@ -1133,7 +1133,7 @@ mod tests {
             .unwrap_or_else(|_| Url::parse("file:///VehicleDefinitions.sysml").unwrap());
 
         // Semantic tokens (using server's ast_semantic_ranges)
-        let ranges = crate::semantic_tokens::ast_semantic_ranges(&root);
+        let ranges = crate::semantic_tokens::ast_semantic_ranges(&root, &content);
         let target_dir = std::env::var_os("CARGO_TARGET_DIR")
             .map(std::path::PathBuf::from)
             .unwrap_or_else(|| {

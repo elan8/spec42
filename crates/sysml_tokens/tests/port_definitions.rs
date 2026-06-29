@@ -31,7 +31,7 @@ port def SensorDataPort {
     out position : String;
 }"#;
     let parsed = parse_for_editor(content);
-    let ranges = ast_semantic_ranges(&parsed.root);
+    let ranges = ast_semantic_ranges(&parsed.root, content);
     let (tokens, _) = semantic_tokens_full(content, Some(&ranges));
     let decoded = decode_semantic_tokens(&tokens.data);
 
@@ -69,7 +69,7 @@ fn nested_port_usage_body_tokenizes_member_names() {
   }
 }"#;
     let parsed = parse_for_editor(content);
-    let ranges = ast_semantic_ranges(&parsed.root);
+    let ranges = ast_semantic_ranges(&parsed.root, content);
     let (tokens, _) = semantic_tokens_full(content, Some(&ranges));
     let decoded = decode_semantic_tokens(&tokens.data);
 

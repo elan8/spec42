@@ -1,4 +1,4 @@
-﻿use sysml_tokens::{ast_semantic_ranges, semantic_tokens_full, TYPE_CLASS, TYPE_KEYWORD};
+﻿use sysml_tokens::{ast_semantic_ranges, semantic_tokens_full, TYPE_CLASS, TYPE_KEYWORD, TYPE_PROPERTY, TYPE_TYPE};
 use sysml_v2_parser::parse_for_editor;
 
 fn decode_semantic_tokens(data: &[u32]) -> Vec<(u32, u32, u32, u32)> {
@@ -62,7 +62,7 @@ fn definition_keywords_stay_keyword_after_ast_merge() {
   item def StartMissionEvent;
 }"#;
     let parsed = parse_for_editor(content);
-    let ranges = ast_semantic_ranges(&parsed.root);
+    let ranges = ast_semantic_ranges(&parsed.root, content);
     let (tokens, _) = semantic_tokens_full(content, Some(&ranges));
     let decoded = decode_semantic_tokens(&tokens.data);
 
@@ -135,13 +135,41 @@ fn state_def_body_tokenizes_final_state_and_transition_target() {
   }
 }"#;
     let parsed = parse_for_editor(content);
-    let ranges = ast_semantic_ranges(&parsed.root);
+    let ranges = ast_semantic_ranges(&parsed.root, content);
     let (tokens, _) = semantic_tokens_full(content, Some(&ranges));
     let decoded = decode_semantic_tokens(&tokens.data);
     assert!(token_text(content, &decoded, "done"), "final state name");
     assert!(
         token_text(content, &decoded, "off"),
         "transition source/target"
+    );
+}
+
+#[test]
+fn nested_state_usage_tokenizes_name_and_type() {
+    let content = r#"package P {
+  state def Machine {
+    state idle : Idle;
+  }
+  state def Idle;
+}"#;
+    let parsed = parse_for_editor(content);
+    let ranges = ast_semantic_ranges(&parsed.root, content);
+    let (tokens, _) = semantic_tokens_full(content, Some(&ranges));
+    let decoded = decode_semantic_tokens(&tokens.data);
+
+    let usage_line = tokens_on_line(content, &decoded, 2);
+    assert_eq!(
+        usage_line.iter().find(|(t, _)| t == "idle").map(|(_, ty)| *ty),
+        Some(TYPE_PROPERTY),
+        "usage line: {:?}",
+        usage_line
+    );
+    assert_eq!(
+        usage_line.iter().find(|(t, _)| t == "Idle").map(|(_, ty)| *ty),
+        Some(TYPE_TYPE),
+        "usage line: {:?}",
+        usage_line
     );
 }
 
@@ -153,7 +181,7 @@ fn action_usage_tokenizes_send_payload() {
   }
 }"#;
     let parsed = parse_for_editor(content);
-    let ranges = ast_semantic_ranges(&parsed.root);
+    let ranges = ast_semantic_ranges(&parsed.root, content);
     let (tokens, _) = semantic_tokens_full(content, Some(&ranges));
     let decoded = decode_semantic_tokens(&tokens.data);
     assert!(token_text(content, &decoded, "payload"));
@@ -169,7 +197,7 @@ fn interface_def_body_tokenizes_end_names() {
   }
 }"#;
     let parsed = parse_for_editor(content);
-    let ranges = ast_semantic_ranges(&parsed.root);
+    let ranges = ast_semantic_ranges(&parsed.root, content);
     let (tokens, _) = semantic_tokens_full(content, Some(&ranges));
     let decoded = decode_semantic_tokens(&tokens.data);
     assert!(token_text(content, &decoded, "source"));

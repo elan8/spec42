@@ -69,10 +69,14 @@ pub(crate) fn semantic_tokens_full_request(
     let started_at = Instant::now();
     let uri_norm = util::normalize_file_uri(&uri);
     let (text, ast_ranges) = match state.index.get(&uri_norm) {
-        Some(entry) => (
-            entry.content.clone(),
-            entry.parsed.as_ref().map(ast_semantic_ranges),
-        ),
+        Some(entry) => {
+            let text = entry.content.clone();
+            let ast_ranges = entry
+                .parsed
+                .as_ref()
+                .map(|root| ast_semantic_ranges(root, &text));
+            (text, ast_ranges)
+        }
         None => return Ok(None),
     };
     let (tokens, logs) = semantic_tokens_full(&text, ast_ranges.as_deref());
@@ -101,10 +105,14 @@ pub(crate) fn semantic_tokens_range_request(
     let started_at = Instant::now();
     let uri_norm = util::normalize_file_uri(&uri);
     let (text, ast_ranges) = match state.index.get(&uri_norm) {
-        Some(entry) => (
-            entry.content.clone(),
-            entry.parsed.as_ref().map(ast_semantic_ranges),
-        ),
+        Some(entry) => {
+            let text = entry.content.clone();
+            let ast_ranges = entry
+                .parsed
+                .as_ref()
+                .map(|root| ast_semantic_ranges(root, &text));
+            (text, ast_ranges)
+        }
         None => return Ok(None),
     };
     let (tokens, logs) = semantic_tokens_range(

@@ -44,7 +44,7 @@ fn part_def_body_tokenizes_ref_and_part_usage_names() {
   }
 }"#;
     let parsed = parse_for_editor(content);
-    let ranges = ast_semantic_ranges(&parsed.root);
+    let ranges = ast_semantic_ranges(&parsed.root, content);
     let (tokens, _) = semantic_tokens_full(content, Some(&ranges));
     let decoded = decode_semantic_tokens(&tokens.data);
     assert!(token_text(content, &decoded, "axle"));
@@ -60,7 +60,7 @@ fn item_def_body_tokenizes_inner_attribute_name() {
   }
 }"#;
     let parsed = parse_for_editor(content);
-    let ranges = ast_semantic_ranges(&parsed.root);
+    let ranges = ast_semantic_ranges(&parsed.root, content);
     let (tokens, _) = semantic_tokens_full(content, Some(&ranges));
     let decoded = decode_semantic_tokens(&tokens.data);
     assert!(
@@ -77,7 +77,7 @@ fn metadata_def_body_tokenizes_inner_attribute_name() {
   }
 }"#;
     let parsed = parse_for_editor(content);
-    let ranges = ast_semantic_ranges(&parsed.root);
+    let ranges = ast_semantic_ranges(&parsed.root, content);
     let (tokens, _) = semantic_tokens_full(content, Some(&ranges));
     let decoded = decode_semantic_tokens(&tokens.data);
     assert!(
