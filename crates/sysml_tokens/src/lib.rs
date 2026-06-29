@@ -11,7 +11,7 @@ mod lexer;
 mod types;
 
 pub use ast_ranges::ast_semantic_ranges;
-pub use ast_util::{identification_name, span_to_source_range, SourceRange};
+pub use ast_util::{identification_name, refine_declaration_ranges, span_to_source_range, SourceRange};
 pub use types::*;
 
 use lexer::tokenize_line;
@@ -127,8 +127,7 @@ fn apply_ast_semantic_ranges(
                 if *type_idx == TYPE_TYPE && ast_type == TYPE_PROPERTY {
                     continue;
                 }
-                if *type_idx == TYPE_KEYWORD && (ast_type == TYPE_PROPERTY || ast_type == TYPE_TYPE)
-                {
+                if *type_idx == TYPE_KEYWORD && ast_type != TYPE_KEYWORD {
                     continue;
                 }
                 if let Some(log) = log_out.as_mut() {
@@ -220,7 +219,8 @@ pub fn semantic_tokens_full(
     }
     let log_lines = Vec::new();
     if let Some(ranges) = ast_ranges {
-        apply_ast_semantic_ranges(&mut all_tokens, ranges, &lines, None);
+        let refined = refine_declaration_ranges(text, ranges);
+        apply_ast_semantic_ranges(&mut all_tokens, &refined, &lines, None);
     }
     (
         SemanticTokensDto {
@@ -281,7 +281,8 @@ pub fn semantic_tokens_range(
 
     let log_lines = Vec::new();
     if let Some(ranges) = ast_ranges {
-        apply_ast_semantic_ranges(&mut all_tokens, ranges, &lines, None);
+        let refined = refine_declaration_ranges(text, ranges);
+        apply_ast_semantic_ranges(&mut all_tokens, &refined, &lines, None);
     }
 
     (
