@@ -20,7 +20,7 @@ For a full regional grid fixture workspace and `systemContext` diagram, set `SYS
 
 ```powershell
 $env:SYSML_POWERSYSTEMS_DIR = "C:\path\to\grid-fixture"
-cargo test -p kernel --test lsp_integration integration::powersystems_performance::powersystems_system_context_performance_report -- --ignored --nocapture
+cargo test -p lsp_server --test lsp_integration integration::powersystems_performance::powersystems_system_context_performance_report -- --ignored --nocapture
 ```
 
 Output: `target/spec42-perf/grid-system-context-performance.json`.
@@ -30,7 +30,7 @@ Output: `target/spec42-perf/grid-system-context-performance.json`.
 The nightly job runs the drone example smoke test (no external fixture):
 
 ```bash
-cargo test -p kernel --test lsp_integration integration::powersystems_performance::drone_interconnection_performance_smoke_report -- --nocapture
+cargo test -p lsp_server --test lsp_integration integration::powersystems_performance::drone_interconnection_performance_smoke_report -- --nocapture
 ```
 
 Output: `target/spec42-perf/drone-interconnection-performance.json` (includes `scopedIbdPerUriMs`, scoped URI counts, and slim-payload sizes).

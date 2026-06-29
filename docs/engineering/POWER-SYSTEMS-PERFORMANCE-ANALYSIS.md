@@ -168,7 +168,7 @@ flowchart TB
 
 | Check | Location | Result (drone `connections`, Linux debug test) |
 |-------|----------|--------------------------------------------------|
-| Scoped vs full IBD scene parity | `crates/semantic_core/tests/scoped_ibd_parity.rs` | Pass — CI gate on `examples/drone` |
+| Scoped vs full IBD scene parity | `crates/sysml_model/tests/scoped_ibd_parity.rs` | Pass — CI gate on `examples/drone` |
 | Scoped IBD URI reduction | perf report `phaseBreakdown` | 6 workspace URIs → 1 scoped URI |
 | Scoped IBD build time | `scopedIbdPerUriMs` vs `ibdPerUriMs` | 81 ms vs 301 ms (in-process) |
 | Slim LSP payload | `visualization.hasIbd` / `hasInterconnectionScene` | Scene present; `ibd` omitted (~123 KB response) |
@@ -211,10 +211,10 @@ Open **View → Output → SysML** and correlate:
 
 | Path | Purpose |
 |------|---------|
-| `crates/semantic_core/tests/scoped_ibd_parity.rs` | Scoped vs full IBD interconnection scene parity (CI) |
-| `crates/kernel/tests/integration/powersystems_performance.rs` | Drill-down perf test + drone smoke |
-| `crates/kernel/tests/integration/interconnection_visualization.rs` | LSP slim payload contract |
-| `crates/kernel/tests/integration/perf_report.rs` | Shared perf report helpers |
+| `crates/sysml_model/tests/scoped_ibd_parity.rs` | Scoped vs full IBD interconnection scene parity (CI) |
+| `crates/lsp_server/tests/integration/powersystems_performance.rs` | Drill-down perf test + drone smoke |
+| `crates/lsp_server/tests/integration/interconnection_visualization.rs` | LSP slim payload contract |
+| `crates/lsp_server/tests/integration/perf_report.rs` | Shared perf report helpers |
 | `target/spec42-perf/drone-interconnection-performance.json` | Latest in-repo smoke report |
 | `target/spec42-perf/grid-system-context-performance.json` | Latest grid drill-down report |
 | `docs/engineering/PERFORMANCE-GUARDRAILS.md` | Nightly large-workspace budgets |

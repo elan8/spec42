@@ -1,4 +1,4 @@
-# ADR 0003: `spec42_host` crate for protocol-neutral embedding
+# ADR 0003: `workspace` crate for protocol-neutral embedding
 
 | Field | Value |
 | --- | --- |
@@ -17,7 +17,7 @@ Spec42 today exposes its semantic engine through four primary surfaces:
 | MCP (`spec42-mcp`) | stdio MCP | AI assistants |
 | HTTP (`spec42 api serve`) | REST | Local integrations, dashboards |
 
-ADR 0002 introduced `language_service` so editor intelligence is available without `tower-lsp`. `semantic_core` already provides graph construction, resolution, diagnostics, and visualization helpers without filesystem or protocol coupling.
+ADR 0002 introduced `language_service` so editor intelligence is available without `tower-lsp`. `sysml_model` already provides graph construction, resolution, diagnostics, and visualization helpers without filesystem or protocol coupling.
 
 Embedding hosts integrate Spec42 as Rust libraries to build immutable projection artifacts for Git-native or service-hosted SysML v2 workflows. An external integration spike proved the semantic boundary is usable, but the practical integration surface still lives in the `spec42` server crate:
 
@@ -38,11 +38,11 @@ The read-only HTTP API (ADR 0001) is useful for debugging and parity tests, but 
 
 ## Decision
 
-Introduce a new workspace crate, `crates/spec42_host`, that provides a **stable, protocol-neutral embedding API** for host services.
+Introduce a new workspace crate, `crates/workspace`, that provides a **stable, protocol-neutral embedding API** for host services.
 
 ### Responsibilities
 
-`spec42_host` owns:
+`workspace` owns:
 
 1. **Library catalog resolution** — typed distinction between archives, bundles, managed installs, and resolved package roots; explicit cache directory; no implicit writes to a user profile in server embedding mode.
 2. **Engine builder** — `Spec42Engine::builder()` replacing `Cli`-shaped environment setup for embedders.
@@ -75,23 +75,23 @@ let prepared = snapshot.prepare_view(renderer_view, selected_view)?;
 ### Layering
 
 ```text
-semantic_core       — graph, resolution, diagnostics, providers, render snapshot helpers
+sysml_model       — graph, resolution, diagnostics, providers, render snapshot helpers
 language_service    — editor intelligence over WorkspaceSnapshot
-spec42_host         — library catalog, engine builder, immutable snapshot, host DTOs
+workspace         — library catalog, engine builder, immutable snapshot, host DTOs
 kernel              — LSP/runtime adapters
-server (spec42)     — CLI, MCP, HTTP; thin wrappers over spec42_host
+server (spec42)     — CLI, MCP, HTTP; thin wrappers over workspace
 ```
 
 ### Dependency rules
 
-- `spec42_host` depends on **`semantic_core` and `language_service` only** (plus shared workspace deps such as `serde`, `thiserror`, `sysml-v2-parser`).
-- `spec42_host` must **not** depend on `kernel`, `tower-lsp`, `tokio`, `clap`, `rmcp`, or Axum.
-- `server` and `kernel` migrate call sites to `spec42_host` instead of duplicating environment and snapshot assembly.
+- `workspace` depends on **`sysml_model` and `language_service` only** (plus shared workspace deps such as `serde`, `thiserror`, `sysml-v2-parser`).
+- `workspace` must **not** depend on `lsp_server`, `tower-lsp`, `tokio`, `clap`, `rmcp`, or Axum.
+- `server` and `lsp_server` migrate call sites to `workspace` instead of duplicating environment and snapshot assembly.
 - Enforce the dependency rule with a crate-level guardrail test, matching ADR 0002.
 
 ### Migration of existing surfaces
 
-Existing surfaces remain; they become consumers of `spec42_host`:
+Existing surfaces remain; they become consumers of `workspace`:
 
 | Surface | Current integration point | After migration |
 | --- | --- | --- |
@@ -100,7 +100,7 @@ Existing surfaces remain; they become consumers of `spec42_host`:
 | HTTP `/v1/validate`, `/v1/model/*` | `perform_*` in `crates/server` | same snapshot builder as CLI |
 | MCP model summary | `perform_check_with_semantics` | same snapshot builder |
 | LSP / kernel | `validate_paths_with_semantics`, render snapshot | kernel adapts snapshot or shared builder |
-| Embedding host projection worker | fake `Cli` + server crate | direct `spec42_host` dependency |
+| Embedding host projection worker | fake `Cli` + server crate | direct `workspace` dependency |
 
 `resolve_environment(&Cli)` remains as a thin adapter over the engine builder for backward compatibility during migration.
 
@@ -114,13 +114,13 @@ Existing surfaces remain; they become consumers of `spec42_host`:
 
 ## Implementation plan
 
-Detailed sequencing, acceptance criteria, and file-level tasks live in [HOST-EMBEDDING-IMPLEMENTATION-PLAN.md](../engineering/HOST-EMBEDDING-IMPLEMENTATION-PLAN.md).
+All five phases are complete. See the phase summaries below.
 
 ### Phase summary
 
 | Phase | Focus |
 | --- | --- |
-| 1 | `spec42_host` crate skeleton + typed library catalog |
+| 1 | `workspace` crate skeleton + typed library catalog |
 | 2 | `HostWorkspaceSnapshot` — single build for validation and views |
 | 3 | Version metadata, structured errors, `HostContext` |
 | 4 | `compare_snapshots` API |
@@ -130,7 +130,7 @@ Phases 1 and 2 are the critical path for host embedding MVP.
 
 ### Parity requirement
 
-Every phase must preserve external behaviour on CLI, HTTP, and MCP unless a host API change is explicitly versioned. `spec42_host` embedding integration tests and `language_service` headless tests are additional embedding baselines.
+Every phase must preserve external behaviour on CLI, HTTP, and MCP unless a host API change is explicitly versioned. `workspace` embedding integration tests and `language_service` headless tests are additional embedding baselines.
 
 ## Consequences
 
@@ -147,14 +147,14 @@ Every phase must preserve external behaviour on CLI, HTTP, and MCP unless a host
 
 - New public API surface to maintain, version, and test.
 - Extraction from `server` is a non-trivial refactor; care is required to avoid a second parallel pipeline.
-- `spec42_host` initially performs full workspace rebuilds; incremental updates come later.
-- Some kernel concerns (document lifecycle, LSP sync) remain outside `spec42_host` by design.
+- `workspace` initially performs full workspace rebuilds; incremental updates come later.
+- Some kernel concerns (document lifecycle, LSP sync) remain outside `workspace` by design.
 
 ### Risks
 
 | Risk | Mitigation |
 | --- | --- |
-| `spec42_host` duplicates pipeline logic | Extract from `server`; make `server` a consumer, not a parallel implementation |
+| `workspace` duplicates pipeline logic | Extract from `server`; make `server` a consumer, not a parallel implementation |
 | Public schema churn | Introduce `HostSchemaVersions` before hosts persist production artifacts |
 | Incremental update correctness | Ship only after full-rebuild parity tests; keep full rebuild as fallback |
 | Implicit profile/cache writes in servers | Require explicit `cache_dir` or read-only catalog in embedding mode |
@@ -168,19 +168,18 @@ Every phase must preserve external behaviour on CLI, HTTP, and MCP unless a host
 | Use the read-only HTTP API as the production embedding boundary | Process/network overhead, no in-memory changesets, poor fit for multi-tenant workers |
 | Put all embedding logic in the host service | Duplicates library resolution and snapshot assembly; drifts from CLI/LSP parity |
 | Extend `language_service` to own validation and views | Violates layering; `language_service` is editor intelligence, not full workspace projection |
-| Depend on `kernel` from embedders | Pulls LSP/runtime concerns into the embedding host |
+| Depend on `lsp_server` from embedders | Pulls LSP/runtime concerns into the embedding host |
 | gRPC sidecar around `spec42` CLI | Child-process boundary; no shared in-memory snapshots or cancellation |
 
 ## Relationship to other ADRs
 
 | ADR | Relationship |
 | --- | --- |
-| [0001](0001-read-only-systems-modeling-http-api.md) | HTTP API becomes a thin consumer of `spec42_host`; remains useful for parity and local debugging |
-| [0002](0002-language-service-crate.md) | `spec42_host` builds on `language_service::InMemoryWorkspace` / `WorkspaceSnapshot` inside immutable snapshots |
+| [0001](0001-read-only-systems-modeling-http-api.md) | HTTP API becomes a thin consumer of `workspace`; remains useful for parity and local debugging |
+| [0002](0002-language-service-crate.md) | `workspace` builds on `language_service::InMemoryWorkspace` / `WorkspaceSnapshot` inside immutable snapshots |
 
 ## References
 
-- [HOST-EMBEDDING-IMPLEMENTATION-PLAN.md](../engineering/HOST-EMBEDDING-IMPLEMENTATION-PLAN.md)
 - [SEMANTIC_CORE_ARCHITECTURE.md](../architecture/SEMANTIC_CORE_ARCHITECTURE.md)
 - [STDLIB-RESOLUTION-GUIDE.md](../engineering/STDLIB-RESOLUTION-GUIDE.md)
 - [ADR 0002: `language_service` crate](0002-language-service-crate.md)

@@ -6,7 +6,7 @@ This guide describes how Spec42 loads and resolves the OMG **SysML v2 standard l
 
 Related docs:
 
-- [`resolution-contract.md`](../../crates/semantic_core/docs/resolution-contract.md) — pipeline and resolver roles
+- [`resolution-contract.md`](../../crates/sysml_model/docs/resolution-contract.md) — pipeline and resolver roles
 - [`DIAGNOSTIC-CHECKS-ROADMAP.md`](DIAGNOSTIC-CHECKS-ROADMAP.md) — diagnostic inventory
 
 ---
@@ -43,7 +43,7 @@ workspace sources
 
 Disable typing seeds with `LibraryClosureOptions { bootstrap_typing_references: false, .. }`. Full library tree scans remain available via `SPEC42_LIBRARY_FULL_SCAN` (dev override only).
 
-Key file: `crates/semantic_core/src/semantic/library_loader.rs`
+Key file: `crates/sysml_model/src/semantic/library_loader.rs`
 
 ### 1.3 SysML namespace bootstrap
 
@@ -267,14 +267,14 @@ flowchart TD
 ## 7. Local development commands
 
 ```powershell
-# Rebuild Spec42 after semantic_core changes
+# Rebuild Spec42 after sysml_model changes
 cd C:\Git\spec42
 cargo build -p spec42
 
 # Contract tests (mandatory before merge)
-cargo test -p semantic_core resolution_contract
-cargo test -p semantic_core --test metadata_semantics
-cargo test -p semantic_core --test requirement_derivation_semantics
+cargo test -p sysml_model resolution_contract
+cargo test -p sysml_model --test metadata_semantics
+cargo test -p sysml_model --test requirement_derivation_semantics
 
 # Domain + robot corpora
 C:\Git\spec42\target\debug\spec42.exe `

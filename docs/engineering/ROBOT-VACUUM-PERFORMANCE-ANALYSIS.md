@@ -1,6 +1,6 @@
 # Robot Vacuum Performance Analysis
 
-Analysis of loading the [sysml-robot-vacuum-cleaner](https://github.com/elan8/sysml-robot-vacuum-cleaner) showcase model through the **`spec42_host` embedding path** and rendering the first meaningful view (`productStructure` via `general-view`). Measurements from June 2026 profiling on Linux (Ubuntu, `perf_event_paranoid=4`).
+Analysis of loading the [sysml-robot-vacuum-cleaner](https://github.com/elan8/sysml-robot-vacuum-cleaner) showcase model through the **`workspace` embedding path** and rendering the first meaningful view (`productStructure` via `general-view`). Measurements from June 2026 profiling on Linux (Ubuntu, `perf_event_paranoid=4`).
 
 ## Scenario
 
@@ -124,7 +124,7 @@ flowchart TB
 Captured with `kernel.perf_event_paranoid=1` (June 2026):
 
 ```bash
-cargo flamegraph --profile profiling -p spec42_host --example profile_robot_vacuum \
+cargo flamegraph --profile profiling -p workspace --example profile_robot_vacuum \
   --output target/spec42-perf/robot-vacuum-host.flamegraph.svg -- --embedded-libs
 ```
 
@@ -203,7 +203,7 @@ Cumulative progression (release, single run, view-first harness):
 
 ### Embedding path (graph reuse, deferred validation, render snapshot, scoped IBD)
 
-Implemented in `spec42_host`, `semantic_core`, and `kernel` (view-first embedding path with `ValidationTiming::Deferred`):
+Implemented in `workspace`, `semantic_core`, and `kernel` (view-first embedding path with `ValidationTiming::Deferred`):
 
 | Metric | Before (release) | After embedding opts | Change |
 | --- | ---: | ---: | --- |
@@ -257,7 +257,7 @@ Implemented in `semantic_core` (`ibd/extract_impl.rs`, `ibd/connectors.rs`):
 | `extend_instance_def_mappings` without full `mappings.clone()` | Less finalize allocation |
 | Reuse cached `nodes` for `def_container_prefixes` | No second `nodes_for_uri` |
 
-Regression ceilings (release, view-first harness): load ≤ 3,000 ms, prepare ≤ 2,500 ms, total ≤ 5,500 ms — see `spec42_host::robot_vacuum_perf::release_perf_thresholds()`.
+Regression ceilings (release, view-first harness): load ≤ 3,000 ms, prepare ≤ 2,500 ms, total ≤ 5,500 ms — see `workspace::robot_vacuum_perf::release_perf_thresholds()`.
 
 **Remaining headroom:** `prepared_view` snapshot cache (repeat views), parallel per-document materialize (multi-core load), parse-once cache in filesystem provider (embedded-lib hosts), release IDE binary, incremental `update_snapshot` for edits.
 
@@ -274,7 +274,7 @@ After workspace-level validation optimizations (shared `UnitRegistry` per report
 Regression ceilings: `release_validation_perf_thresholds()` in `robot_vacuum_perf.rs` (eager ≤ 3.5 s, deferred ensure ≤ 3.0 s, view-then-validation ≤ 5.5 s).
 
 ```bash
-cargo test -p spec42_host --test robot_vacuum_performance \
+cargo test -p workspace --test robot_vacuum_performance \
   robot_vacuum_host_validation_performance_report --release -- --ignored --nocapture
 ```
 
@@ -288,15 +288,15 @@ export CARGO_TARGET_DIR=/home/jeroen/git/spec42/target
 export TMPDIR=/home/jeroen/git/spec42/target/tmp
 
 # Single release report
-cargo test -p spec42_host --test robot_vacuum_performance \
+cargo test -p workspace --test robot_vacuum_performance \
   robot_vacuum_host_phase_performance_report --release -- --ignored --nocapture
 
 # Full matrix (3× per scenario, ~5 min release)
-cargo test -p spec42_host --test robot_vacuum_performance \
+cargo test -p workspace --test robot_vacuum_performance \
   robot_vacuum_host_performance_matrix_report --release -- --ignored --nocapture
 
 # Profiling example (writes target/spec42-perf/robot-vacuum-host-phases.json)
-cargo build -p spec42_host --profile profiling --example profile_robot_vacuum
+cargo build -p workspace --profile profiling --example profile_robot_vacuum
 target/profiling/examples/profile_robot_vacuum --embedded-libs
 target/profiling/examples/profile_robot_vacuum --matrix
 ```
@@ -320,6 +320,6 @@ Opening the same model in VS Code adds LSP startup indexing, `sysml/model` Model
 
 ### Harness code
 
-- [`crates/spec42_host/src/robot_vacuum_perf.rs`](../crates/spec42_host/src/robot_vacuum_perf.rs)
-- [`crates/spec42_host/examples/profile_robot_vacuum.rs`](../crates/spec42_host/examples/profile_robot_vacuum.rs)
-- [`crates/spec42_host/tests/robot_vacuum_performance.rs`](../crates/spec42_host/tests/robot_vacuum_performance.rs)
+- [`crates/workspace/src/robot_vacuum_perf.rs`](../crates/workspace/src/robot_vacuum_perf.rs)
+- [`crates/workspace/examples/profile_robot_vacuum.rs`](../crates/workspace/examples/profile_robot_vacuum.rs)
+- [`crates/workspace/tests/robot_vacuum_performance.rs`](../crates/workspace/tests/robot_vacuum_performance.rs)

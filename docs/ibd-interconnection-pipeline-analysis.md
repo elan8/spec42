@@ -15,12 +15,12 @@ Post–Phase 5 stabilization (same day):
 
 ### Landed
 
-- **`InterconnectionSceneDto`** — built in Rust ([interconnection_scene.rs](../crates/semantic_core/src/semantic/interconnection_scene.rs)), attached to LSP visualization payloads.
-- **Instance-centric scoping** — `normalize_ibd_to_instance_paths`, architecture-scope filtering, variant/alternative exclusion ([visualization_workspace.rs](../crates/semantic_core/src/semantic/visualization_workspace.rs)).
+- **`InterconnectionSceneDto`** — built in Rust ([interconnection_scene.rs](../crates/sysml_model/src/semantic/interconnection_scene.rs)), attached to LSP visualization payloads.
+- **Instance-centric scoping** — `normalize_ibd_to_instance_paths`, architecture-scope filtering, variant/alternative exclusion ([visualization_workspace.rs](../crates/sysml_model/src/semantic/visualization_workspace.rs)).
 - **Canonical prepare path** — [interconnection-scene.ts](../shared/diagram-renderer/src/prepare/interconnection-scene.ts); [interconnection.ts](../shared/diagram-renderer/src/prepare/interconnection.ts) requires `interconnectionScene` from the language server.
 - **Layout** — ELK node ID sanitization, `edgeCoords: ROOT`, `InterconnectionLayoutDto` built during layout ([interconnection-layout-dto.ts](../shared/diagram-renderer/src/render/interconnection-layout-dto.ts), [layout.ts](../shared/diagram-renderer/src/render/layout.ts), [ibd-route.ts](../shared/diagram-renderer/src/render/ibd-route.ts)). Offset candidates are confined to layout (not semantic inference): pick the offset that best aligns ELK sections with resolved port centers.
 - **Debug export** — `sysml.debug.exportInterconnectionPipeline` (VS Code) and [pipeline-export.ts](../shared/diagram-renderer/src/pipeline-export.ts).
-- **Fixtures** — `grid-system-context-scene.json`, `grid-connections-scene.json`, `nested-ring-minimal.json` (scene). Regenerate grid scenes: `cargo test -p semantic_core --test view_expose_powersystems_interconnection export_powersystems -- --nocapture`.
+- **Fixtures** — `grid-system-context-scene.json`, `grid-connections-scene.json`, `nested-ring-minimal.json` (scene). Regenerate grid scenes: `cargo test -p sysml_model --test view_expose_powersystems_interconnection export_powersystems -- --nocapture`.
 - **Phase 4 core (drawing)** — [drawing.ts](../shared/diagram-renderer/src/render/drawing.ts) reads port anchors and route points from `layout.interconnectionLayout` (no `_portAnchors` / `layoutRoutePoints` on attributes).
 - **Phase 5 (frontend)** — [interconnection-legacy.ts](../shared/diagram-renderer/src/prepare/interconnection-legacy.ts) deleted; IBD root-selection heuristics removed from [normalize-payload.ts](../shared/diagram-renderer/src/prepare/normalize-payload.ts); layout/routing collapsed to canonical-only path.
 
@@ -33,11 +33,11 @@ Post–Phase 5 stabilization (same day):
 | `drawing.interconnection.test.ts` | `shared/diagram-renderer` | Edge paths resolve from layout DTO without attribute fallback |
 | `route-quality.test.ts` | `shared/diagram-renderer` | Detached endpoints, bounds, node-boundary fallback detection |
 | `modelFetcher.test.ts` | `vscode` | `interconnectionScene` forwarded from LSP result to webview update message |
-| `interconnection_elk` (unit) | `semantic_core` | Rust `build_elk_graph_from_scene` structural parity vs TS ELK input goldens |
+| `interconnection_elk` (unit) | `sysml_model` | Rust `build_elk_graph_from_scene` structural parity vs TS ELK input goldens |
 | `interconnection_elk_svg_from_scene_fixture` | `server` | **Test-only:** legacy Rust ELK SVG from `interconnectionScene` fixture ([legacy_elk_svg.rs](../crates/server/src/legacy_elk_svg.rs)); production CLI/API uses shared headless renderer + `preparedView` |
 | `interconnection_elk_layout_matches_typescript_golden_when_present` | `server` | Rust ELK.js layout positions within ±2px of TS goldens (when `*-elk-layout.json` present) |
-| `view_expose_powersystems_interconnection` | `semantic_core` | Semantic scoping, connector invariants, scene export (skipped if power systems repo absent) |
-| `scoped_ibd_parity` | `semantic_core` | Scoped vs full-workspace IBD interconnection scene parity on `examples/drone` (CI) |
+| `view_expose_powersystems_interconnection` | `sysml_model` | Semantic scoping, connector invariants, scene export (skipped if power systems repo absent) |
+| `scoped_ibd_parity` | `sysml_model` | Scoped vs full-workspace IBD interconnection scene parity on `examples/drone` (CI) |
 | `drone_interconnection_performance_smoke_report` | `kernel` | Nightly in-repo perf smoke: scoped IBD timing, slim LSP payload bytes |
 | `lsp_interconnection_visualization_returns_slim_scene_only_payload_for_drone` | `kernel` | LSP `sysml/visualization` omits `ibd` when `interconnectionScene` is present |
 | `powersystems.visualization.test.ts` | `vscode` | LSP scene + `exportInterconnectionPipeline` route summary (optional soak; requires power systems workspace) |
@@ -77,8 +77,8 @@ The current code already contains a lot of the needed backend knowledge, but it 
 The pipeline is roughly:
 
 1. Rust semantic graph construction builds the workspace semantic graph.
-2. Rust IBD extraction builds `IbdDataDto` in [crates/semantic_core/src/semantic/ibd.rs](../crates/semantic_core/src/semantic/ibd.rs).
-3. Rust visualization workspace selection evaluates SysML views and scopes IBD payloads in [crates/semantic_core/src/semantic/visualization_workspace.rs](../crates/semantic_core/src/semantic/visualization_workspace.rs).
+2. Rust IBD extraction builds `IbdDataDto` in [crates/sysml_model/src/semantic/ibd.rs](../crates/sysml_model/src/semantic/ibd.rs).
+3. Rust visualization workspace selection evaluates SysML views and scopes IBD payloads in [crates/sysml_model/src/semantic/visualization_workspace.rs](../crates/sysml_model/src/semantic/visualization_workspace.rs).
 4. The VS Code extension fetches visualization DTOs (including `interconnectionScene`) in [vscode/src/visualization/modelFetcher.ts](../vscode/src/visualization/modelFetcher.ts).
 5. The webview passes the update message through [vscode/src/visualization/dtoAdapter.ts](../vscode/src/visualization/dtoAdapter.ts) into the shared renderer.
 6. For interconnection views, [shared/diagram-renderer/src/prepare/interconnection.ts](../shared/diagram-renderer/src/prepare/interconnection.ts) requires `interconnectionScene`; [normalize-payload.ts](../shared/diagram-renderer/src/prepare/normalize-payload.ts) no longer rebuilds ibd scope for this view.
@@ -122,7 +122,7 @@ The recent `northSouthRing` issue is a good example: the backend could send a co
 
 ### 3. Port Side Inference Is Split and Fragile
 
-Rust has `infer_port_side` in [ibd.rs](../crates/semantic_core/src/semantic/ibd.rs), and TypeScript has another side inference path in [render/layout.ts](../shared/diagram-renderer/src/render/layout.ts).
+Rust has `infer_port_side` in [ibd.rs](../crates/sysml_model/src/semantic/ibd.rs), and TypeScript has another side inference path in [render/layout.ts](../shared/diagram-renderer/src/render/layout.ts).
 
 The TypeScript path also derives port usage from connector endpoints, then uses this to override target ports to `WEST` and source ports to `EAST`. This may improve left-to-right diagrams, but it is fragile because it depends on endpoint string matching. The current code now has to match:
 
@@ -151,7 +151,7 @@ There is also Rust-side ELK support in [crates/server/src/elk_layout.rs](../crat
 
 ### 5. View Scoping Is Spread Across Backend and Frontend
 
-Rust evaluates explicit SysML views and selects/scopes IBD data in [visualization_workspace.rs](../crates/semantic_core/src/semantic/visualization_workspace.rs). Then the TypeScript normalizer still selects roots and root views in [prepare/normalize-payload.ts](../shared/diagram-renderer/src/prepare/normalize-payload.ts), and interconnection preparation may collapse boundaries again.
+Rust evaluates explicit SysML views and selects/scopes IBD data in [visualization_workspace.rs](../crates/sysml_model/src/semantic/visualization_workspace.rs). Then the TypeScript normalizer still selects roots and root views in [prepare/normalize-payload.ts](../shared/diagram-renderer/src/prepare/normalize-payload.ts), and interconnection preparation may collapse boundaries again.
 
 This makes it hard to reason about a view like `systemContext`:
 

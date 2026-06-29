@@ -9,16 +9,16 @@ Primary local reference used for the candidate list:
 
 ## Current diagnostic pipeline
 
-Diagnostics are currently assembled in `crates/kernel/src/analysis/diagnostics_core.rs`:
+Diagnostics are currently assembled in `crates/lsp_server/src/analysis/diagnostics_core.rs`:
 
 1. Syntax diagnostics from `sysml-v2-parser::parse_with_diagnostics`.
 2. A lightweight textual `untyped_part_usage` hint.
-3. Semantic graph checks from `semantic_core::collect_diagnostics_from_graph`, only when there is no parser error.
+3. Semantic graph checks from `sysml_model::collect_diagnostics_from_graph`, only when there is no parser error.
 4. A `missing_library_context` hint when unresolved references likely come from missing library configuration.
 5. LSP/CLI postprocessing, including startup suppression of transient unresolved reference diagnostics.
 
 The semantic checks are mostly implemented in
-`crates/semantic_core/src/semantic/diagnostics/engine_impl.rs`.
+`crates/sysml_model/src/semantic/diagnostics/engine_impl.rs`.
 
 ## Current checks
 
@@ -260,9 +260,9 @@ Fixes applied against `SysML_v2.txt` after drone-example and vacuum-corpus audit
 
 ### Regression coverage
 
-- `crates/semantic_core/tests/drone_diagnostics.rs` — drone actor + view filter fixtures
-- `crates/semantic_core/tests/p1_diagnostics.rs` — actor/part/subject typing
-- `crates/semantic_core/tests/p2_diagnostics_semantics.rs` — metaclass filter expressions
+- `crates/sysml_model/tests/drone_diagnostics.rs` — drone actor + view filter fixtures
+- `crates/sysml_model/tests/p1_diagnostics.rs` — actor/part/subject typing
+- `crates/sysml_model/tests/p2_diagnostics_semantics.rs` — metaclass filter expressions
 
 ### Remaining limitations (deferred)
 

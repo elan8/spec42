@@ -1,27 +1,27 @@
-# semantic_core Architecture and Functionality
+# sysml_model Architecture and Functionality
 
-This document explains what `semantic_core` does, how its modules fit together, and how visualization is built from the semantic graph.
+This document explains what `sysml_model` does, how its modules fit together, and how visualization is built from the semantic graph.
 
 ## Purpose
 
-`semantic_core` is the reusable, non-LSP semantic engine for SysML v2:
+`sysml_model` is the reusable, non-LSP semantic engine for SysML v2:
 
 - it ingests SysML documents from pluggable sources
 - parses and links them into a `SemanticGraph`
 - provides semantic resolution/evaluation helpers
 - exposes visualization-oriented DTOs and graph-first visualization metadata APIs
 
-The crate is designed to be consumed by multiple hosts (`kernel`, `spec42_host`, embedding services, and future integrators), without hard-coding filesystem or editor runtime concerns into the semantic core.
+The crate is designed to be consumed by multiple hosts (`lsp_server`, `workspace`, embedding services, and future integrators), without hard-coding filesystem or editor runtime concerns into the semantic core.
 
 ## Consumer boundaries
 
-| Consumer | Uses `semantic_core` for |
+| Consumer | Uses `sysml_model` for |
 | --- | --- |
-| `kernel` | LSP/runtime adapters, tower-lsp diagnostics postprocess, validation pipeline orchestration |
-| `spec42_host` | single-build workspace snapshots: graph construction, render snapshot, host diagnostics, view preparation |
+| `lsp_server` | LSP/runtime adapters, tower-lsp diagnostics postprocess, validation pipeline orchestration |
+| `workspace` | single-build workspace snapshots: graph construction, render snapshot, host diagnostics, view preparation |
 | `language_service` | editor intelligence over `WorkspaceSnapshot` (built from snapshot documents) |
 
-`spec42_host` owns immutable snapshot assembly. It calls `build_semantic_graph_from_documents`, `build_render_snapshot`, and `build_sysml_visualization_workspace` once per load. Server surfaces reuse the same graph through `kernel::semantic_report_from_built_workspace` for CLI-equivalent diagnostics.
+`workspace` owns immutable snapshot assembly. It calls `build_semantic_graph_from_documents`, `build_render_snapshot`, and `build_sysml_visualization_workspace` once per load. Server surfaces reuse the same graph through `kernel::semantic_report_from_built_workspace` for CLI-equivalent diagnostics.
 
 
 ## High-Level Capabilities
@@ -122,8 +122,8 @@ flowchart TD
 
 ### Key Principle
 
-- `semantic_core` owns semantic and reusable projection logic.
-- Hosts (`kernel`, embedding services) decide transport/runtime concerns and final response wiring.
+- `sysml_model` owns semantic and reusable projection logic.
+- Hosts (`lsp_server`, embedding services) decide transport/runtime concerns and final response wiring.
 
 This enables multiple ingestion backends (filesystem, DB, in-memory) while preserving one semantic pipeline.
 
@@ -143,30 +143,30 @@ TypeScript semantic prepare remains as fallback for non-LSP/headless compatibili
 
 ### `language_service` (editor intelligence)
 
-- sits between `semantic_core` and protocol adapters (`kernel` LSP, in-browser HTTP/Monaco hosts)
+- sits between `sysml_model` and protocol adapters (`lsp_server` LSP, in-browser HTTP/Monaco hosts)
 - exposes navigation APIs against logical document paths and `TextPosition` / `TextRange`
-- no dependency on `tower-lsp`, `tokio`, or `kernel`
+- no dependency on `tower-lsp`, `tokio`, or `lsp_server`
 - `InMemoryWorkspace` supports headless tests and host-style in-memory document pipelines
 
-### `kernel` (LSP/runtime host)
+### `lsp_server` (LSP/runtime host)
 
 - uses filesystem provider for workspace scans
 - uses semantic graph and helper projections for model/visualization endpoints
 - maps semantic-core diagnostics into LSP diagnostics at the boundary
 - delegates navigation (hover, definition, references) to `language_service` via `WorkspaceSnapshot`
-- keeps LSP protocol/runtime behavior outside semantic_core and language_service
+- keeps LSP protocol/runtime behavior outside sysml_model and language_service
 
 ### Embedding hosts (service/API)
 
 - can use in-memory (or future DB) providers
 - avoids temporary workspace-only coupling for semantic graph creation
-- consumes graph-first visualization metadata API from semantic_core
+- consumes graph-first visualization metadata API from sysml_model
 - can depend on `language_service` for editor navigation without the LSP stack
 - maps semantic-core diagnostics into host-specific storage/API DTOs at the boundary
 
 ## Data Contracts
 
-Shared DTOs in `semantic_core::semantic::dto` provide:
+Shared DTOs in `sysml_model::semantic::dto` provide:
 
 - graph primitives (`SysmlGraphDto`, `GraphNodeDto`, `GraphEdgeDto`)
 - model structure (`SysmlElementDto`, `WorkspaceModelDto`)
@@ -177,10 +177,10 @@ This keeps host responses aligned around a common semantic contract.
 
 Core boundary notes:
 
-- `semantic_core` now uses neutral core span types (`TextPosition`, `TextRange`) and `url::Url`.
-- LSP-specific mappings happen in `kernel` boundary adapters only.
-- Semantic diagnostics rule evaluation is owned by `semantic_core::semantic::diagnostics`.
-- `kernel` diagnostics code is limited to parser/runtime orchestration plus mapping
+- `sysml_model` now uses neutral core span types (`TextPosition`, `TextRange`) and `url::Url`.
+- LSP-specific mappings happen in `lsp_server` boundary adapters only.
+- Semantic diagnostics rule evaluation is owned by `sysml_model::semantic::diagnostics`.
+- `lsp_server` diagnostics code is limited to parser/runtime orchestration plus mapping
   `SemanticDiagnostic` to `tower_lsp::lsp_types::Diagnostic`.
 - Kernel core↔LSP span conversions are centralized in `kernel::common::text_span` as
   the single conversion entrypoint for runtime/view modules.
@@ -190,14 +190,14 @@ Core boundary notes:
 When adding new functionality:
 
 1. Add new data source as a `SysmlDocumentProvider` (do not add direct filesystem logic into graph core).
-2. Keep semantic/graph logic in `semantic_core`.
+2. Keep semantic/graph logic in `sysml_model`.
 3. Keep transport/runtime concerns in host crates.
 4. Prefer graph-first APIs for reusable features.
 5. Add tests for provider parity and graph behavior consistency.
 
 ## Summary
 
-`semantic_core` is now structured as a reusable semantic platform:
+`sysml_model` is now structured as a reusable semantic platform:
 
 - source abstraction for ingestion
 - graph-centric semantic processing

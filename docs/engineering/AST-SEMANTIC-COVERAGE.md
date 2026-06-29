@@ -41,62 +41,62 @@ The OMG standard library and Elan8 domain libraries ship **inside the Spec42 ser
 
 ## Recent changes (metadata §7.27, parser 0.25.1)
 
-- **Metadata def body shorthand** — `:> annotatedElement : Type;` and `:>> baseType = expr meta Type;` parse via `metadata_body` / `metadata_binding` in sysml-v2-parser; projected as `attribute` children with `subsetsFeature`, `redefines`, and `attributeType` in [`attribute_body.rs`](../../crates/semantic_core/src/semantic/graph_builder/attribute_body.rs); covered by [`metadata_semantics.rs`](../../crates/semantic_core/tests/metadata_semantics.rs) (`requirement_metadata_def_shorthand_projects_restriction_attributes`).
-- **Inline metadata bodies** — `@` / `#` annotations walk `AttributeBody` members via [`metadata_def.rs`](../../crates/semantic_core/src/semantic/graph_builder/metadata_def.rs) and [`metadata_keyword.rs`](../../crates/semantic_core/src/semantic/graph_builder/metadata_keyword.rs); covered by [`metadata_semantics.rs`](../../crates/semantic_core/tests/metadata_semantics.rs).
-- **`about` targets** — package-level and inline metadata store `aboutTargets` and emit `RelationshipKind::Annotation` edges in [`relationships.rs`](../../crates/semantic_core/src/semantic/relationships.rs).
-- **Diagnostics** — `metadata_about_unresolved`, `metadata_binding_missing`, `metadata_binding_unknown`, `metadata_annotated_element_incompatible` in [`view_metadata_conformance.rs`](../../crates/semantic_core/src/semantic/diagnostics/checks/view_metadata_conformance.rs).
-- **Action / use-case `#keyword`** — wired in [`action.rs`](../../crates/semantic_core/src/semantic/graph_builder/action.rs) and [`use_case.rs`](../../crates/semantic_core/src/semantic/graph_builder/use_case.rs).
+- **Metadata def body shorthand** — `:> annotatedElement : Type;` and `:>> baseType = expr meta Type;` parse via `metadata_body` / `metadata_binding` in sysml-v2-parser; projected as `attribute` children with `subsetsFeature`, `redefines`, and `attributeType` in [`attribute_body.rs`](../../crates/sysml_model/src/semantic/graph_builder/attribute_body.rs); covered by [`metadata_semantics.rs`](../../crates/sysml_model/tests/metadata_semantics.rs) (`requirement_metadata_def_shorthand_projects_restriction_attributes`).
+- **Inline metadata bodies** — `@` / `#` annotations walk `AttributeBody` members via [`metadata_def.rs`](../../crates/sysml_model/src/semantic/graph_builder/metadata_def.rs) and [`metadata_keyword.rs`](../../crates/sysml_model/src/semantic/graph_builder/metadata_keyword.rs); covered by [`metadata_semantics.rs`](../../crates/sysml_model/tests/metadata_semantics.rs).
+- **`about` targets** — package-level and inline metadata store `aboutTargets` and emit `RelationshipKind::Annotation` edges in [`relationships.rs`](../../crates/sysml_model/src/semantic/relationships.rs).
+- **Diagnostics** — `metadata_about_unresolved`, `metadata_binding_missing`, `metadata_binding_unknown`, `metadata_annotated_element_incompatible` in [`view_metadata_conformance.rs`](../../crates/sysml_model/src/semantic/diagnostics/checks/view_metadata_conformance.rs).
+- **Action / use-case `#keyword`** — wired in [`action.rs`](../../crates/sysml_model/src/semantic/graph_builder/action.rs) and [`use_case.rs`](../../crates/sysml_model/src/semantic/graph_builder/use_case.rs).
 
 ## Recent changes (graph depth P4a)
 
 - **Parser 0.20.0** — flow/allocation `DefinitionBody` members parse as `OccurrenceMember`; Spec42 bump unlocks semantics and token tests.
-- **DefinitionBody semantics** — flow def, flow usage, and allocation def inner `attribute`/`part` members materialize on graph; covered by [`definition_body_semantics.rs`](../../crates/semantic_core/tests/definition_body_semantics.rs).
+- **DefinitionBody semantics** — flow def, flow usage, and allocation def inner `attribute`/`part` members materialize on graph; covered by [`definition_body_semantics.rs`](../../crates/sysml_model/tests/definition_body_semantics.rs).
 - **Semantic tokens** — `FlowDef`/`FlowUsage`/`AllocationDef`/`OccurrenceDef` recurse `DefinitionBody` in [`ast_ranges.rs`](../../crates/sysml_semantic_tokens/src/ast_ranges.rs); covered by [`flow_def_tokens.rs`](../../crates/sysml_semantic_tokens/tests/flow_def_tokens.rs).
-- **General View** — `require constraint` child nodes filtered from `generalViewGraph` while `requirementConstraints` inline on owner; unit test in [`model_projection.rs`](../../crates/semantic_core/src/semantic/model_projection.rs).
+- **General View** — `require constraint` child nodes filtered from `generalViewGraph` while `requirementConstraints` inline on owner; unit test in [`model_projection.rs`](../../crates/sysml_model/src/semantic/model_projection.rs).
 
 ## Recent changes (graph depth P3)
 
-- **DefinitionBody** — [`definition_body.rs`](../../crates/semantic_core/src/semantic/graph_builder/definition_body.rs) and [`occurrence_body.rs`](../../crates/semantic_core/src/semantic/graph_builder/occurrence_body.rs) walk occurrence-level members on `occurrence def`, `flow def`, and `flow usage` shells.
-- **PartDefBody** — `EnumerationUsage`, `ItemUsage` `AttributeBody`, `OpaqueMember`, and `OccurrenceUsage` brace bodies projected in [`part_def.rs`](../../crates/semantic_core/src/semantic/graph_builder/part_def.rs); covered by [`part_def_body_semantics.rs`](../../crates/semantic_core/tests/part_def_body_semantics.rs) and [`definition_body_semantics.rs`](../../crates/semantic_core/tests/definition_body_semantics.rs).
+- **DefinitionBody** — [`definition_body.rs`](../../crates/sysml_model/src/semantic/graph_builder/definition_body.rs) and [`occurrence_body.rs`](../../crates/sysml_model/src/semantic/graph_builder/occurrence_body.rs) walk occurrence-level members on `occurrence def`, `flow def`, and `flow usage` shells.
+- **PartDefBody** — `EnumerationUsage`, `ItemUsage` `AttributeBody`, `OpaqueMember`, and `OccurrenceUsage` brace bodies projected in [`part_def.rs`](../../crates/sysml_model/src/semantic/graph_builder/part_def.rs); covered by [`part_def_body_semantics.rs`](../../crates/sysml_model/tests/part_def_body_semantics.rs) and [`definition_body_semantics.rs`](../../crates/sysml_model/tests/definition_body_semantics.rs).
 - **Semantic tokens** — `ItemDef`/`IndividualDef`/`MetadataDef` inner attributes and expanded `PartDefBodyElement` coverage in [`ast_ranges.rs`](../../crates/sysml_semantic_tokens/src/ast_ranges.rs); requirement `RequirementActorDecl`, `TextualRep` `language_span`, and `#keyword` members; covered by [`part_def_tokens.rs`](../../crates/sysml_semantic_tokens/tests/part_def_tokens.rs).
-- **Hover / symbols** — signatures and `SymbolKind` for `require constraint`, `enumeration`, `opaque member`, `individual def`, `stakeholder`, `purpose`, and `verified requirement` in [`hover.rs`](../../crates/kernel/src/semantic/presentation/hover.rs) and [`symbol_entries.rs`](../../crates/kernel/src/semantic/presentation/symbol_entries.rs).
+- **Hover / symbols** — signatures and `SymbolKind` for `require constraint`, `enumeration`, `opaque member`, `individual def`, `stakeholder`, `purpose`, and `verified requirement` in [`hover.rs`](../../crates/lsp_server/src/semantic/presentation/hover.rs) and [`symbol_entries.rs`](../../crates/lsp_server/src/semantic/presentation/symbol_entries.rs).
 
 ## Recent changes (graph depth P2)
 
-- **Action-flow view** — `enrich_activity_diagrams_from_graph` merges graph action children and `Flow`/`Perform` edges into activity diagrams; covered by [`activity_graph_semantics.rs`](../../crates/semantic_core/tests/activity_graph_semantics.rs).
+- **Action-flow view** — `enrich_activity_diagrams_from_graph` merges graph action children and `Flow`/`Perform` edges into activity diagrams; covered by [`activity_graph_semantics.rs`](../../crates/sysml_model/tests/activity_graph_semantics.rs).
 - **Semantic tokens** — `ActionDefBody` and `RequirementDefBody` recurse in [`ast_ranges.rs`](../../crates/sysml_semantic_tokens/src/ast_ranges.rs); covered by [`action_definitions.rs`](../../crates/sysml_semantic_tokens/tests/action_definitions.rs).
-- **Item / individual defs** — shared [`attribute_body.rs`](../../crates/semantic_core/src/semantic/graph_builder/attribute_body.rs) walks inner attributes; covered by [`item_def_body_semantics.rs`](../../crates/semantic_core/tests/item_def_body_semantics.rs).
+- **Item / individual defs** — shared [`attribute_body.rs`](../../crates/sysml_model/src/semantic/graph_builder/attribute_body.rs) walks inner attributes; covered by [`item_def_body_semantics.rs`](../../crates/sysml_model/tests/item_def_body_semantics.rs).
 - **Require constraint nodes** — `require constraint` projected as child nodes while retaining `analysisConstraints` for diagnostics.
 
 ## Recent changes (graph depth P1)
 
-- **Action bodies** — `ActionDefBody` and `ActionUsageBody` walked in [`action.rs`](../../crates/semantic_core/src/semantic/graph_builder/action.rs): nested `action` usages, `then action` chains (`Perform` / `Flow`), `assign`, `ref`, `state usage`, `for` loops; covered by [`action_body_semantics.rs`](../../crates/semantic_core/tests/action_body_semantics.rs).
-- **Interface bodies** — `interface end` nodes carry `portType` alongside `endType`; end-typing post-pass wires `Connection` edges on plain `interface def` builds; covered by [`interface_body_semantics.rs`](../../crates/semantic_core/tests/interface_body_semantics.rs).
-- **Requirement bodies** — `verify` members and `subject` declarations emit `verified requirement` nodes and `Subject` edges in [`requirement_body.rs`](../../crates/semantic_core/src/semantic/graph_builder/requirement_body.rs); covered by [`requirement_body_semantics.rs`](../../crates/semantic_core/tests/requirement_body_semantics.rs).
+- **Action bodies** — `ActionDefBody` and `ActionUsageBody` walked in [`action.rs`](../../crates/sysml_model/src/semantic/graph_builder/action.rs): nested `action` usages, `then action` chains (`Perform` / `Flow`), `assign`, `ref`, `state usage`, `for` loops; covered by [`action_body_semantics.rs`](../../crates/sysml_model/tests/action_body_semantics.rs).
+- **Interface bodies** — `interface end` nodes carry `portType` alongside `endType`; end-typing post-pass wires `Connection` edges on plain `interface def` builds; covered by [`interface_body_semantics.rs`](../../crates/sysml_model/tests/interface_body_semantics.rs).
+- **Requirement bodies** — `verify` members and `subject` declarations emit `verified requirement` nodes and `Subject` edges in [`requirement_body.rs`](../../crates/sysml_model/src/semantic/graph_builder/requirement_body.rs); covered by [`requirement_body_semantics.rs`](../../crates/sysml_model/tests/requirement_body_semantics.rs).
 
 ## Recent changes (0.19.0 follow-through)
 
-- `Transition.accept` / `TransitionAccept`, `is_initial`, and `FinalState` projected in [`state.rs`](../../crates/semantic_core/src/semantic/graph_builder/state.rs); `PayloadClause` on actions via [`payload.rs`](../../crates/semantic_core/src/semantic/graph_builder/payload.rs).
-- `MetadataKeywordUsage` (`#keyword`) on part/state/requirement/verification bodies via [`metadata_keyword.rs`](../../crates/semantic_core/src/semantic/graph_builder/metadata_keyword.rs).
-- Viewpoint `stakeholder` / `purpose` / `TextualRep` in [`requirement_body.rs`](../../crates/semantic_core/src/semantic/graph_builder/requirement_body.rs); `languageSpan` on `textualRep` nodes for precise diagnostics.
-- Verification-local `AttributeDef` in [`verification.rs`](../../crates/semantic_core/src/semantic/graph_builder/verification.rs) (mirrors analysis case).
-- Parser-wave fixtures under [`tests/fixtures/parser_wave/`](../../crates/semantic_core/tests/fixtures/parser_wave/) and integration tests in [`p2_diagnostics_semantics.rs`](../../crates/semantic_core/tests/p2_diagnostics_semantics.rs).
+- `Transition.accept` / `TransitionAccept`, `is_initial`, and `FinalState` projected in [`state.rs`](../../crates/sysml_model/src/semantic/graph_builder/state.rs); `PayloadClause` on actions via [`payload.rs`](../../crates/sysml_model/src/semantic/graph_builder/payload.rs).
+- `MetadataKeywordUsage` (`#keyword`) on part/state/requirement/verification bodies via [`metadata_keyword.rs`](../../crates/sysml_model/src/semantic/graph_builder/metadata_keyword.rs).
+- Viewpoint `stakeholder` / `purpose` / `TextualRep` in [`requirement_body.rs`](../../crates/sysml_model/src/semantic/graph_builder/requirement_body.rs); `languageSpan` on `textualRep` nodes for precise diagnostics.
+- Verification-local `AttributeDef` in [`verification.rs`](../../crates/sysml_model/src/semantic/graph_builder/verification.rs) (mirrors analysis case).
+- Parser-wave fixtures under [`tests/fixtures/parser_wave/`](../../crates/sysml_model/tests/fixtures/parser_wave/) and integration tests in [`p2_diagnostics_semantics.rs`](../../crates/sysml_model/tests/p2_diagnostics_semantics.rs).
 
 ## Prior release (0.18.0 follow-through)
 
-- `metadata def` and package-level `metadata` usage bodies walk `AttributeBodyElement` in [`metadata_def.rs`](../../crates/semantic_core/src/semantic/graph_builder/metadata_def.rs); covered by [`metadata_semantics.rs`](../../crates/semantic_core/tests/metadata_semantics.rs).
-- Parser accepts dot feature chains in `expose` targets; view evaluation resolves feature chains and import-style membership via [`resolve_expose_target`](../../crates/semantic_core/src/semantic/reference_resolution.rs) in [`explicit_views.rs`](../../crates/semantic_core/src/semantic/explicit_views.rs); covered by [`expose_feature_chains.rs`](../../crates/semantic_core/tests/expose_feature_chains.rs), [`view_expose_inherited_parts.rs`](../../crates/semantic_core/tests/view_expose_inherited_parts.rs), and [`VIEW-EXPOSE-ROADMAP.md`](VIEW-EXPOSE-ROADMAP.md).
-- `unresolved_specializes_reference` (RULE7) includes case and metadata definition kinds via shared [`SPECIALIZES_TARGET_KINDS`](../../crates/semantic_core/src/semantic/relationships.rs); analysis def `:>` regression in kernel integration diagnostics.
+- `metadata def` and package-level `metadata` usage bodies walk `AttributeBodyElement` in [`metadata_def.rs`](../../crates/sysml_model/src/semantic/graph_builder/metadata_def.rs); covered by [`metadata_semantics.rs`](../../crates/sysml_model/tests/metadata_semantics.rs).
+- Parser accepts dot feature chains in `expose` targets; view evaluation resolves feature chains and import-style membership via [`resolve_expose_target`](../../crates/sysml_model/src/semantic/reference_resolution.rs) in [`explicit_views.rs`](../../crates/sysml_model/src/semantic/explicit_views.rs); covered by [`expose_feature_chains.rs`](../../crates/sysml_model/tests/expose_feature_chains.rs), [`view_expose_inherited_parts.rs`](../../crates/sysml_model/tests/view_expose_inherited_parts.rs), and [`VIEW-EXPOSE-ROADMAP.md`](VIEW-EXPOSE-ROADMAP.md).
+- `unresolved_specializes_reference` (RULE7) includes case and metadata definition kinds via shared [`SPECIALIZES_TARGET_KINDS`](../../crates/sysml_model/src/semantic/relationships.rs); analysis def `:>` regression in kernel integration diagnostics.
 
 ## Prior release (0.17.0 follow-through)
 
-- `AttributeUsage` / `PortUsage` usage-header operators (`:>`, `::>`, `=>`) are stored on graph nodes as `subsetsFeature`, `referencesFeature`, and `crossesFeature` in [`part_def.rs`](../../crates/semantic_core/src/semantic/graph_builder/part_def.rs), [`part_usage.rs`](../../crates/semantic_core/src/semantic/graph_builder/part_usage.rs), and [`port_def.rs`](../../crates/semantic_core/src/semantic/graph_builder/port_def.rs).
+- `AttributeUsage` / `PortUsage` usage-header operators (`:>`, `::>`, `=>`) are stored on graph nodes as `subsetsFeature`, `referencesFeature`, and `crossesFeature` in [`part_def.rs`](../../crates/sysml_model/src/semantic/graph_builder/part_def.rs), [`part_usage.rs`](../../crates/sysml_model/src/semantic/graph_builder/part_usage.rs), and [`port_def.rs`](../../crates/sysml_model/src/semantic/graph_builder/port_def.rs).
 
 ## Prior release (0.16.0 follow-through)
 
-- `RequirementActorDecl` in requirement bodies is wired in [`requirement_body.rs`](../../crates/semantic_core/src/semantic/graph_builder/requirement_body.rs) (distinct from use-case `ActorDecl`).
+- `RequirementActorDecl` in requirement bodies is wired in [`requirement_body.rs`](../../crates/sysml_model/src/semantic/graph_builder/requirement_body.rs) (distinct from use-case `ActorDecl`).
 - `EnumerationUsage` in part def bodies projects enumeration shell nodes and inner `AttributeBody` members (P3).
-- Nested `PortBody` members are walked in [`port_def.rs`](../../crates/semantic_core/src/semantic/graph_builder/port_def.rs) and covered by [`nested_port_body_semantics.rs`](../../crates/semantic_core/tests/nested_port_body_semantics.rs).
+- Nested `PortBody` members are walked in [`port_def.rs`](../../crates/sysml_model/src/semantic/graph_builder/port_def.rs) and covered by [`nested_port_body_semantics.rs`](../../crates/sysml_model/tests/nested_port_body_semantics.rs).
 - Token ranges recurse port bodies in [`ast_ranges.rs`](../../crates/sysml_semantic_tokens/src/ast_ranges.rs).
 
 ## Recent changes (graph depth P4b–P8)

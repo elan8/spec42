@@ -16,7 +16,7 @@ Normative graphical reference: `SysML-v2-Release/bnf/images/` (284 SVG figures i
 
 ## Executive summary
 
-Spec42 has **one semantic visualization pipeline** (`semantic_core` → `SysmlVisualizationResultDto`) and now uses `shared/diagram-renderer` for publication SVG across VS Code, CLI, and HTTP API:
+Spec42 has **one semantic visualization pipeline** (`sysml_model` → `SysmlVisualizationResultDto`) and now uses `shared/diagram-renderer` for publication SVG across VS Code, CLI, and HTTP API:
 
 | Surface | Renderer | SysML v2 graphical notation | Suitable for publication |
 | --- | --- | --- | --- |
@@ -41,7 +41,7 @@ flowchart TB
     SYSML[".sysml sources + libraries"]
   end
 
-  subgraph semantic [Shared — semantic_core / kernel]
+  subgraph semantic [Shared — sysml_model / kernel]
     PROJ["View projection\nexpose / filter / traceability"]
     DTO["SysmlVisualizationResultDto\ngraph, interconnectionScene,\nactivity, state, sequence, …"]
   end
@@ -66,7 +66,7 @@ flowchart TB
 
 ### Shared layer (identical inputs)
 
-All surfaces call `build_sysml_visualization_for_paths` in `kernel` / `semantic_core` with the same view id and optional `selected_view` (explicit `view` usage name from the model). The payload includes:
+All surfaces call `build_sysml_visualization_for_paths` in `kernel` / `sysml_model` with the same view id and optional `selected_view` (explicit `view` usage name from the model). The payload includes:
 
 - `graph` / `general_view_graph` for General View and filtered variants (requirement traceability, parts tree, and so on)
 - `interconnection_scene` for Interconnection View (IBD)
@@ -147,7 +147,7 @@ Sign-off checklist: [GENERAL-IBD-BNF-SIGNOFF.md](../archive/GENERAL-IBD-BNF-SIGN
 
 2. **Graphical notation (BNF figures)** — How elements appear on diagrams: definition vs usage borders, port squares, specialization arrows, satisfy edges, and so on. Only the **VS Code shared renderer** targets this layer, and only partially.
 
-3. **Rendering usages in the model** — `Views.sysml` defines `rendering asTreeDiagram`, `asInterconnectionDiagram`, `asElementTable`, and so on. Models may omit explicit `render` (`viewRendering [0..1]`). Tools choose a default renderer for the view definition kind; Spec42 maps standard view defs to renderer ids in `semantic_core`.
+3. **Rendering usages in the model** — `Views.sysml` defines `rendering asTreeDiagram`, `asInterconnectionDiagram`, `asElementTable`, and so on. Models may omit explicit `render` (`viewRendering [0..1]`). Tools choose a default renderer for the view definition kind; Spec42 maps standard view defs to renderer ids in `sysml_model`.
 
 **CLI/API SVG now implements the same layer-2 renderer as VS Code.** Claiming full OMG BNF coverage for all 284 figures would still be incorrect; the claim is limited to shipped views and documented partial/provisional views.
 
@@ -248,8 +248,8 @@ Regenerate with `node scripts/generate-conformance-matrix.mjs`.
 | Headless renderer runner | `crates/server/src/headless_renderer.rs` |
 | Headless renderer bundle | `crates/server/assets/diagram-renderer/headless-renderer.js` |
 | QuickJS ELK layout probes | `crates/server/src/elk_layout.rs` |
-| Visualization DTO builder | `crates/semantic_core/src/semantic/visualization_workspace.rs` |
-| Interconnection scene | `crates/semantic_core/src/semantic/interconnection_scene.rs` |
+| Visualization DTO builder | `crates/sysml_model/src/semantic/visualization_workspace.rs` |
+| Interconnection scene | `crates/sysml_model/src/semantic/interconnection_scene.rs` |
 | Shared renderer entry | `shared/diagram-renderer/src/renderer.ts` |
 | Node notation rules | `shared/diagram-renderer/src/node-notation.ts` |
 | VS Code export | `vscode/src/visualization/webview/export.ts` |
