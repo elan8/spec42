@@ -148,9 +148,8 @@ jobs:
             /tmp/spec42-vscode-test-exports/**
 
   large-workspace-performance:
-    name: Large workspace performance report (informational)
+    name: Large workspace performance report
     runs-on: ubuntu-latest
-    continue-on-error: true
     steps:
       - uses: actions/checkout@v6
         with:
@@ -212,22 +211,21 @@ jobs:
 
       - name: Run large workspace performance report
         run: |
-          set +e
           cargo test -p lsp_server --test lsp_integration integration::workspace::lsp_large_workspace_performance_report -- --ignored --nocapture 2>&1 | tee large-workspace-perf.txt
-          status=${PIPESTATUS[0]}
-          set -e
           {
             echo "## Large workspace performance report"
             echo
             grep "SPEC42_PERF_REPORT" large-workspace-perf.txt || echo "No SPEC42_PERF_REPORT line emitted."
-            echo
-            if [ "$status" -ne 0 ]; then
-              echo "Perf report command exited with status $status (informational)."
-              echo
-            fi
-            echo "Budgets are report-only until baselines are accepted."
           } >> "$GITHUB_STEP_SUMMARY"
-          exit 0
+
+      - name: Check large workspace performance budgets
+        run: node scripts/check-perf-budgets.mjs target/spec42-perf/large-workspace-performance.json
+
+      - name: Run drone interconnection performance report
+        run: cargo test -p lsp_server --test lsp_integration integration::powersystems_performance::drone_interconnection_performance_smoke_report -- --nocapture
+
+      - name: Check drone interconnection performance budgets
+        run: node scripts/check-perf-budgets.mjs target/spec42-perf/drone-interconnection-performance.json
 
   interconnection-visualization-performance:
     name: Interconnection visualization perf (informational)

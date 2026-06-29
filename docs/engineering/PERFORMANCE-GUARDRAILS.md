@@ -1,6 +1,6 @@
 # Nightly Performance Guardrails
 
-Spec42 tracks large-workspace performance as a release-readiness signal. The nightly performance job is intentionally report-only while baselines settle; it records metrics but does not fail pull requests.
+Spec42 tracks large-workspace and drone-interconnection performance in nightly CI. Budget violations fail the nightly job. These are nightly gates only — they do not block PRs.
 
 ## Reported Scenarios
 
@@ -25,15 +25,18 @@ cargo test -p lsp_server --test lsp_integration integration::powersystems_perfor
 
 Output: `target/spec42-perf/grid-system-context-performance.json`.
 
-### Interconnection smoke (nightly CI, in-repo)
+### Interconnection smoke (nightly CI, in-repo, budget-enforced)
 
-The nightly job runs the drone example smoke test (no external fixture):
+The nightly job runs the drone example smoke test (no external fixture) and checks its budgets:
 
 ```bash
 cargo test -p lsp_server --test lsp_integration integration::powersystems_performance::drone_interconnection_performance_smoke_report -- --nocapture
+node scripts/check-perf-budgets.mjs target/spec42-perf/drone-interconnection-performance.json
 ```
 
-Output: `target/spec42-perf/drone-interconnection-performance.json` (includes `scopedIbdPerUriMs`, scoped URI counts, and slim-payload sizes).
+Output: `target/spec42-perf/drone-interconnection-performance.json` (includes `scopedIbdPerUriMs`, scoped URI counts, slim-payload sizes, and embedded budgets).
+
+Budget violations exit non-zero and fail the nightly job. Budgets are embedded in the Rust test that emits the report; update them there if the underlying performance improves or the model grows.
 
 Optional grid drill-down in nightly CI: set repository variable `SYSML_POWERSYSTEMS_DIR` to a checkout path on the runner (or mount via self-hosted runner).
 
@@ -41,17 +44,20 @@ See [POWER-SYSTEMS-PERFORMANCE-ANALYSIS.md](./POWER-SYSTEMS-PERFORMANCE-ANALYSIS
 
 See [ROBOT-VACUUM-PERFORMANCE-ANALYSIS.md](./ROBOT-VACUUM-PERFORMANCE-ANALYSIS.md) for embedding-host cold-path profiling on the robot-vacuum showcase fixture.
 
-## Initial Budgets
+## Enforced Budgets
 
-These budgets are not enforced yet:
+Budgets are embedded in the Rust test that emits each report (not in this document). The values below reflect the current embedded budgets.
 
-| Metric | Report-only budget |
-| --- | ---: |
-| Workspace indexing | 5000 ms |
-| `sysml/model` | 2500 ms |
-| `sysml/visualization` | 1500 ms |
+| Fixture | Metric | Budget |
+| --- | --- | ---: |
+| large-workspace | workspace model request | 5 000 ms |
+| large-workspace | document model request | 2 500 ms |
+| large-workspace | visualization request | 1 500 ms |
+| drone-interconnection | workspace model request | 5 000 ms |
+| drone-interconnection | cold headless visualization build | 1 500 ms |
+| drone-interconnection | warm visualization cache hit | 1 500 ms |
 
-Treat repeated regressions above these numbers as release risks. Once the team accepts stable baselines across nightly runners, consider promoting specific budgets into PR gates.
+These are nightly gates. Budget violations fail the nightly `large-workspace-performance` job via `scripts/check-perf-budgets.mjs`. To promote to PR gates, move the relevant perf test into `ci.yml`.
 
 ## Debounced workspace diagnostics
 

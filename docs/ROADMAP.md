@@ -124,30 +124,15 @@ The Sequence View projection is complete per the conformance matrix, but the cod
 - Ensure the sequence-view rendering path has regression fixtures alongside General/IBD/Action/State.
 - Update `SUPPORTED-WORKFLOWS.md` to include sequence diagrams as a release-gating workflow.
 
-### R3 — Enforce performance guardrails in CI
+### ~~R3 — Enforce performance guardrails in CI~~ ✓ done
 
-The nightly performance job records metrics against budgets but does not fail builds. Before 1.0:
+`scripts/check-perf-budgets.mjs` reads a perf report JSON and exits non-zero on any budget violation. Added to the nightly `large-workspace-performance` job (2026-06-29): covers large-workspace and drone-interconnection fixtures. Budgets are nightly gates; to promote to PR gates move the relevant test into `ci.yml`. See `PERFORMANCE-GUARDRAILS.md` for current thresholds.
 
-- Establish stable nightly baselines for the large-workspace and drone-interconnection scenarios.
-- Promote at least workspace-indexing and `sysml/visualization` (general-view) to hard CI gates once baselines are stable across nightly runners.
-- Document the promoted thresholds in `PERFORMANCE-GUARDRAILS.md`.
+### ~~R4 — Conformance matrix CI enforcement~~ ✓ done (was already in place)
 
-Current report-only budgets (reference):
+`ci.yml` already blocks on `node scripts/generate-conformance-matrix.mjs --check` in the `rust-core` job (line 87-88). The script throws if `docs/reference/CONFORMANCE-MATRIX.md` is stale relative to `docs/reference/conformance-metadata.json`.
 
-| Metric | Report-only budget |
-|--------|--------------------|
-| Workspace indexing | 5 000 ms |
-| `sysml/model` | 2 500 ms |
-| `sysml/visualization` | 1 500 ms |
-
-### R4 — Conformance matrix CI enforcement
-
-The conformance matrix is generated from `docs/reference/conformance-metadata.json` via `scripts/generate-conformance-matrix.mjs`. The competitive roadmap requires it to be enforced by CI (i.e., the checked-in matrix must match the generated output).
-
-- Add a CI step that regenerates the matrix and fails if `docs/reference/CONFORMANCE-MATRIX.md` is stale.
-- Ensure the script and metadata are kept in sync with each new diagnostic code or view status change.
-
-### R5 — Fix stale crate names in engineering documentation
+### ~~R5 — Fix stale crate names in engineering documentation~~ ✓ done
 
 Several engineering documents still reference pre-refactor crate names:
 
@@ -165,7 +150,7 @@ Affected files (see individual update notes below):
 - `docs/architecture/SEMANTIC_CORE_ARCHITECTURE.md`
 - `docs/adr/0003-spec42-host-embedding-crate.md`
 
-### R6 — VS Code extension marketplace readiness
+### ~~R6 — VS Code extension marketplace readiness~~ ✓ done
 
 - The extension must be published or ready to publish to the VS Code Marketplace under a stable publisher ID.
 - `vscode/README.md` must reflect current features without references to in-progress work.
