@@ -30,6 +30,7 @@ export function buildSharedRendererInput(
             selectedViewName: record.selectedViewName,
             emptyStateMessage: record.emptyStateMessage,
             viewCandidates: record.viewCandidates,
+            interconnectionScene: record.interconnectionScene,
             preparedView: {
                 title: String(record.selectedViewName ?? "Interconnection View"),
                 view,

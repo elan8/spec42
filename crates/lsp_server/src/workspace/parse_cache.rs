@@ -225,7 +225,7 @@ mod tests {
 
         evict_stale_entries(dir.path());
 
-        assert!(stale_path.exists() == false, "stale entry should be deleted");
+        assert!(!stale_path.exists(), "stale entry should be deleted");
         assert!(
             load(dir.path(), &keep_hash).is_some(),
             "current entry should survive eviction"

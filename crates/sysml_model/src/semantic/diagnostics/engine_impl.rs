@@ -103,7 +103,7 @@ pub fn compute_semantic_diagnostics_with_unit_registry(
     let d1 = diagnostics.len();
     for (src_id, tgt_id, connect) in &connect_edges {
         let connection_range = connect.range;
-        if let (Some(src), Some(tgt)) = (graph.get_node(&src_id), graph.get_node(&tgt_id)) {
+        if let (Some(src), Some(tgt)) = (graph.get_node(src_id), graph.get_node(tgt_id)) {
             let both_part_like = is_part_like(&src.element_kind) && is_part_like(&tgt.element_kind);
             if !both_part_like {
                 if !is_port_like(&src.element_kind) {
@@ -199,8 +199,8 @@ pub fn compute_semantic_diagnostics_with_unit_registry(
         let key = connection_duplicate_key(
             Some(connect.source_expression.as_str()),
             Some(connect.target_expression.as_str()),
-            &src_id,
-            &tgt_id,
+            src_id,
+            tgt_id,
         );
         if !seen_connections.insert(key) {
             diagnostics.push(diag(

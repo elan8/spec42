@@ -221,7 +221,7 @@ fn expand_def_subtree(
         return;
     }
 
-    let can_recurse = max_depth.map_or(true, |max| current_depth < max);
+    let can_recurse = max_depth.is_none_or(|max| current_depth < max);
 
     for part_child in graph.children_of(def_node) {
         if !is_part_like(part_child.element_kind.as_str()) {
@@ -291,6 +291,7 @@ fn expand_def_subtree(
     visiting_defs.remove(&def_node.id);
 }
 
+#[allow(clippy::too_many_arguments)]
 fn expand_usage_children(
     graph: &SemanticGraph,
     usage_node: &SemanticNode,
@@ -309,7 +310,7 @@ fn expand_usage_children(
         if !existing_paths.insert(child_path.clone()) {
             continue;
         }
-        let can_recurse = max_depth.map_or(true, |max| current_depth < max);
+        let can_recurse = max_depth.is_none_or(|max| current_depth < max);
         let mut sub_out = Vec::new();
         if can_recurse {
             expand_usage_children(

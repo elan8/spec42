@@ -77,7 +77,6 @@ describe("dtoAdapter", () => {
         assert.ok(input);
         assert.ok(input.preparedView);
         assert.strictEqual(input.ibd, undefined);
-        assert.strictEqual(input.interconnectionScene, undefined);
         assert.deepStrictEqual((input.preparedView as { nodes?: unknown[] }).nodes, []);
         assert.deepStrictEqual((input.preparedView as { edges?: unknown[] }).edges, []);
     });

@@ -346,6 +346,9 @@ pub(crate) async fn initialized(
             .await
             .ok();
         }
+        tokio::task::spawn_blocking(crate::workspace::library_graph_cache::evict_stale_entries)
+            .await
+            .ok();
         let parse_worker_start = Instant::now();
         let parsed_entries = tokio::task::spawn_blocking(move || {
             // Workspace files are not cached — they change on every edit.
@@ -375,7 +378,7 @@ pub(crate) async fn initialized(
             None
         };
 
-        let (library_parsed_count, library_total_count, parsed_entries) = if let Some(cached_graph) = library_graph_cache_hit.as_ref() {
+        let (_library_parsed_count, _library_total_count, parsed_entries) = if let Some(cached_graph) = library_graph_cache_hit.as_ref() {
             // Cache hit: inject the pre-built library graph into state now so the
             // relink loop can merge workspace documents on top of it.
             {

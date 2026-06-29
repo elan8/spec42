@@ -518,7 +518,6 @@ pub(crate) fn index_library_paths_for_search(
 }
 
 /// Load import-closure library files for the current workspace index (semantic graph merge).
-
 pub(crate) fn rebuild_all_document_links(
     state: &mut ServerState,
 ) -> RebuildAllDocumentLinksMetrics {
@@ -757,7 +756,7 @@ pub(crate) fn rebuild_semantic_graph_staged(
     let rebuild_graphs_start = Instant::now();
     // If a base graph was provided (library graph cache hit), start from it so
     // library nodes are already present for cross-document resolution.
-    let mut semantic_graph = base_graph.unwrap_or_else(semantic::SemanticGraph::new);
+    let mut semantic_graph = base_graph.unwrap_or_default();
     let workspace_packages: std::collections::HashSet<String> = workspace_uris
         .iter()
         .filter_map(|uri| index.get(uri))

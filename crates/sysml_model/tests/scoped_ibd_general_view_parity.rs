@@ -23,9 +23,7 @@ fn repo_examples_dir(relative: &str) -> PathBuf {
 fn optional_robot_vacuum_fixture_root() -> Option<PathBuf> {
     let repo_root = PathBuf::from(std::env::var_os("SYSML_ROBOT_VACUUM_DIR")?);
     let model = repo_root.join("model");
-    if model.is_dir() {
-        Some(repo_root)
-    } else if repo_root.is_dir() {
+    if model.is_dir() || repo_root.is_dir() {
         Some(repo_root)
     } else {
         None
