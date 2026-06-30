@@ -197,18 +197,6 @@
         "category": "Spec42"
       },
       {
-        "command": "spec42.examples.openPrimaryFile",
-        "title": "Examples: Open Main File",
-        "icon": "$(go-to-file)",
-        "category": "Spec42"
-      },
-      {
-        "command": "spec42.examples.openAndVisualize",
-        "title": "Examples: Visualize Example",
-        "icon": "$(graph)",
-        "category": "Spec42"
-      },
-      {
         "command": "spec42.examples.openRecommended",
         "title": "Examples: Open Recommended Example",
         "icon": "$(star-full)",
@@ -415,16 +403,6 @@
           "command": "spec42.examples.openWorkspace",
           "when": "view == spec42Examples && (viewItem == spec42ExampleFolder || viewItem == spec42ExampleFolderRecommended)",
           "group": "navigation@1"
-        },
-        {
-          "command": "spec42.examples.openPrimaryFile",
-          "when": "view == spec42Examples && (viewItem == spec42ExampleFolder || viewItem == spec42ExampleFolderRecommended)",
-          "group": "navigation@2"
-        },
-        {
-          "command": "spec42.examples.openAndVisualize",
-          "when": "view == spec42Examples && (viewItem == spec42ExampleFolder || viewItem == spec42ExampleFolderRecommended)",
-          "group": "navigation@3"
         },
         {
           "command": "sysml.openLocation",

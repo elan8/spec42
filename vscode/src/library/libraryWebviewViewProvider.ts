@@ -258,7 +258,7 @@ export class LibraryWebviewViewProvider implements vscode.WebviewViewProvider {
   <link nonce="${nonce}" rel="stylesheet" href="${codiconsCss}">
   <style>
     body { font-family: var(--vscode-font-family); color: var(--vscode-foreground); padding: 8px; }
-    .section { border-top: 1px solid var(--vscode-panel-border); padding: 7px 0; }
+    .section { border-top: 1px solid var(--vscode-panel-border); padding: 4px 0; }
     .section:first-child { border-top: none; padding-top: 0; }
     .section-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
     .title { font-weight: 600; }
@@ -349,95 +349,70 @@ export class LibraryWebviewViewProvider implements vscode.WebviewViewProvider {
 
       const std = el('div', 'section');
       const stdHead = el('div', 'section-head');
+      stdHead.title = 'Release ' + (status?.stdlib?.pinnedVersion || 'unknown') + ' / ' + countText(status?.stdlib?.packageCount, status?.stdlib?.symbolCount) + ' / server-bundled';
       stdHead.appendChild(el('div', 'title', 'Standard Library'));
       stdHead.appendChild(el('span', 'pill ok', formatBundle(status?.stdlib?.format)));
       std.appendChild(stdHead);
-      std.appendChild(compactRow([
-        'Release ' + (status?.stdlib?.pinnedVersion || 'unknown'),
-        countText(status?.stdlib?.packageCount, status?.stdlib?.symbolCount),
-        'server-bundled'
-      ]));
-      const stdActions = el('div', 'actions');
-      stdActions.appendChild(button('Show standard library information', 'info', 'showStdlibInfo'));
-      std.appendChild(stdActions);
       nodes.push(std);
 
       const domain = status?.domain || {};
       const domainSection = el('div', 'section');
       const domainHead = el('div', 'section-head');
-      domainHead.appendChild(el('div', 'title', 'Domain Libraries'));
       const domainPillClass = domain.available ? 'ok' : 'warning';
       const domainPillLabel = domain.available ? formatBundle(domain.format) : 'unavailable';
+      domainHead.title = 'Revision ' + (domain.pinnedVersion || 'unknown') + ' / ' + countText(domain.packageCount, domain.symbolCount) + (domain.resolvedPath ? ' / ' + domain.resolvedPath : '');
+      domainHead.appendChild(el('div', 'title', 'Domain Libraries'));
       domainHead.appendChild(el('span', 'pill ' + domainPillClass, domainPillLabel));
       domainSection.appendChild(domainHead);
-      domainSection.appendChild(compactRow([
-        'Revision ' + (domain.pinnedVersion || 'unknown'),
-        countText(domain.packageCount, domain.symbolCount),
-        domain.sourceKind === 'bundled' ? 'server-bundled' : (domain.sourceKind || '')
-      ]));
-      if (domain.resolvedPath) {
-        domainSection.appendChild(el('div', 'detail path', domain.resolvedPath));
-      }
-      const domainActions = el('div', 'actions');
-      domainActions.appendChild(button('Show domain libraries information', 'info', 'showDomainLibrariesInfo'));
-      domainSection.appendChild(domainActions);
       nodes.push(domainSection);
 
       const custom = status?.custom || {};
       const customSection = el('div', 'section');
       const customHead = el('div', 'section-head');
-      customHead.appendChild(el('div', 'title', 'Custom Libraries'));
       const missing = Array.isArray(custom.missingPaths) ? custom.missingPaths : [];
+      customHead.title = countText(custom.packageCount, custom.symbolCount) + (missing.length ? ' / ' + String(missing.length) + ' missing' : '');
+      customHead.appendChild(el('div', 'title', 'Custom Libraries'));
       customHead.appendChild(el('span', 'pill ' + (missing.length ? 'warning' : 'info'), String((custom.configuredPaths || []).length) + ' path(s)'));
+      customHead.appendChild(button('Manage custom library paths', 'settings-gear', 'manageCustomLibraries'));
       customSection.appendChild(customHead);
-      customSection.appendChild(compactRow([
-        countText(custom.packageCount, custom.symbolCount),
-        missing.length ? String(missing.length) + ' missing' : 'configured paths healthy'
-      ]));
       if (missing.length) {
         const list = el('ul', 'warning-list');
         missing.forEach(path => list.appendChild(el('li', '', path)));
         customSection.appendChild(list);
       }
-      const customActions = el('div', 'actions');
-      customActions.appendChild(button('Manage custom library paths', 'settings-gear', 'manageCustomLibraries'));
-      customSection.appendChild(customActions);
       nodes.push(customSection);
 
       const sysand = status?.sysand || {};
-      const sysandClass = sysand.installed && !sysand.warnings?.length ? 'ok' : (sysand.manifestPresent || sysand.warnings?.length ? 'warning' : 'info');
-      const sysandLabel = !sysand.installed && sysand.manifestPresent
-        ? 'project detected, not installed'
-        : sysand.installed
-          ? 'installed'
-          : 'optional';
-      const sysandSection = el('div', 'section');
-      const sysandHead = el('div', 'section-head');
-      sysandHead.appendChild(el('div', 'title', 'Sysand Dependencies'));
-      sysandHead.appendChild(el('span', 'pill ' + sysandClass, sysandLabel));
-      sysandSection.appendChild(sysandHead);
-      const sysandDetails = [
-        sysand.version || '',
-        sysand.projectRoot ? 'project: ' + sysand.projectRoot : 'no project manifest',
-        String((sysand.dependencyRoots || []).length) + ' dependency root(s)',
-        sysand.lockPresent ? 'lockfile present' : ''
-      ].filter(Boolean).join(' / ');
-      sysandSection.appendChild(el('div', 'detail', sysandDetails));
-      if (Array.isArray(sysand.warnings) && sysand.warnings.length) {
-        const list = el('ul', 'warning-list');
-        sysand.warnings.forEach(warning => list.appendChild(el('li', '', warning)));
-        sysandSection.appendChild(list);
+      if (sysand.installed || sysand.manifestPresent) {
+        const sysandClass = sysand.installed && !sysand.warnings?.length ? 'ok' : 'warning';
+        const sysandLabel = !sysand.installed && sysand.manifestPresent
+          ? 'project, not installed'
+          : sysand.projectRoot ? 'project ready' : 'installed';
+        const sysandSection = el('div', 'section');
+        const sysandHead = el('div', 'section-head');
+        sysandHead.title = [
+          sysand.version || '',
+          sysand.projectRoot ? 'project: ' + sysand.projectRoot : 'no project manifest',
+          String((sysand.dependencyRoots || []).length) + ' dependency root(s)',
+          sysand.lockPresent ? 'lockfile present' : ''
+        ].filter(Boolean).join(' / ');
+        sysandHead.appendChild(el('div', 'title', 'Sysand Dependencies'));
+        sysandHead.appendChild(el('span', 'pill ' + sysandClass, sysandLabel));
+        sysandSection.appendChild(sysandHead);
+        if (Array.isArray(sysand.warnings) && sysand.warnings.length) {
+          const list = el('ul', 'warning-list');
+          sysand.warnings.forEach(warning => list.appendChild(el('li', '', warning)));
+          sysandSection.appendChild(list);
+        }
+        const sysandActions = el('div', 'actions');
+        sysandActions.appendChild(button('Refresh dependency roots and restart language server', 'sync', 'refreshSysandDependencies'));
+        if (!sysand.installed && sysand.manifestPresent) {
+          sysandActions.appendChild(button('Copy Sysand install command', 'copy', 'copySysandInstall'));
+          sysandActions.appendChild(button('Open Sysand documentation', 'link-external', 'openSysandDocs'));
+        }
+        sysandSection.appendChild(sysandActions);
+        nodes.push(sysandSection);
       }
-      const sysandActions = el('div', 'actions');
-      sysandActions.appendChild(button('Show Sysand status', 'package', 'showSysandStatus'));
-      sysandActions.appendChild(button('Refresh dependency roots and restart language server', 'sync', 'refreshSysandDependencies'));
-      if (!sysand.installed && sysand.manifestPresent) {
-        sysandActions.appendChild(button('Copy Sysand install command', 'copy', 'copySysandInstall'));
-        sysandActions.appendChild(button('Open Sysand documentation', 'link-external', 'openSysandDocs'));
-      }
-      sysandActions.appendChild(button('Show SysML output', 'output', 'showOutput'));
-      sysandSection.appendChild(sysandActions);
-      nodes.push(sysandSection);
 
       dashboard.replaceChildren(...nodes);
     }

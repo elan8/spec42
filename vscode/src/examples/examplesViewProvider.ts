@@ -78,7 +78,7 @@ export class ExampleTreeItem extends vscode.TreeItem {
       ? "spec42ExampleFolderRecommended"
       : "spec42ExampleFolder";
     this.command = {
-      command: "spec42.examples.openPrimaryFile",
+      command: "spec42.examples.openWorkspace",
       title: "Open Example",
       arguments: [this],
     };
