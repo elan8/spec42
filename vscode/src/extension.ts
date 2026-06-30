@@ -11,6 +11,8 @@ import {
   registerExplorerCommands,
 } from "./activation/commands/explorer";
 import { registerLibraryCommands } from "./activation/commands/library";
+import { HelpViewProvider } from "./help/helpViewProvider";
+import { SysmlReferencePanel } from "./help/sysmlReferencePanel";
 import { registerVisualizerCommands } from "./activation/commands/visualizer";
 import { VisualizationPanel } from "./visualization/visualizationPanel";
 import {
@@ -143,6 +145,17 @@ export function activate(context: vscode.ExtensionContext): void {
     treeDataProvider: examplesViewProvider,
   });
   context.subscriptions.push(examplesTreeView);
+
+  const helpTreeView = vscode.window.createTreeView("spec42Help", {
+    treeDataProvider: new HelpViewProvider(),
+  });
+  context.subscriptions.push(helpTreeView);
+
+  context.subscriptions.push(
+    vscode.commands.registerCommand("spec42.help.openReference", () => {
+      SysmlReferencePanel.open(context);
+    })
+  );
 
   context.subscriptions.push(
     treeView.onDidChangeVisibility((event) => {

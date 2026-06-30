@@ -203,6 +203,12 @@
         "category": "Spec42"
       },
       {
+        "command": "spec42.help.openReference",
+        "title": "Help: SysML v2 Quick Reference",
+        "icon": "$(book)",
+        "category": "Spec42"
+      },
+      {
         "command": "spec42.status.showActions",
         "title": "Status: Show Spec42 Actions",
         "icon": "$(list-selection)",
@@ -374,13 +380,6 @@
           "group": "navigation"
         }
       ],
-      "editor/title": [
-        {
-          "command": "sysml.showVisualizer",
-          "when": "(resourceLangId == sysml || resourceLangId == kerml) && !sysml.visualizerOpen",
-          "group": "navigation@-10"
-        }
-      ],
       "explorer/context": [
         {
           "command": "sysml.visualizeFolder",
@@ -505,6 +504,10 @@
         {
           "id": "sysmlModelExplorer",
           "name": "Model Explorer"
+        },
+        {
+          "id": "spec42Help",
+          "name": "Help"
         },
         {
           "id": "spec42Examples",

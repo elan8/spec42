@@ -62,22 +62,18 @@
                 <span class="codicon codicon-symbol-structure" style="font-size: 13px; opacity: 0.85;"></span>
                 <span>View selector <span style="font-size: 10px; opacity: 0.7;">(pick a defined SysML view)</span></span>
             </div>
-            <div style="font-weight: 600; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; opacity: 0.7; margin-top: 2px;">General View Relationships</div>
+            <div style="font-weight: 600; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; opacity: 0.7; margin-top: 2px;">General View</div>
             <div style="display: flex; align-items: center; gap: 10px;">
                 <svg width="40" height="12"><line x1="0" y1="6" x2="32" y2="6" stroke="var(--vscode-editor-foreground)" stroke-width="2" stroke-dasharray="5,3"/><polyline points="32,2 40,6 32,10" fill="none" stroke="var(--vscode-editor-foreground)" stroke-width="1.5"/></svg>
                 <span>Typing <code style="font-size: 10px; opacity: 0.8;">: Type</code></span>
             </div>
             <div style="display: flex; align-items: center; gap: 10px;">
-                <svg width="40" height="12"><line x1="0" y1="6" x2="32" y2="6" stroke="var(--vscode-editor-foreground)" stroke-width="2"/><polygon points="32,2 40,6 32,10" fill="var(--vscode-editor-foreground)"/></svg>
+                <svg width="40" height="12"><line x1="0" y1="6" x2="31" y2="6" stroke="var(--vscode-editor-foreground)" stroke-width="2"/><polygon points="32,2 40,6 32,10" fill="var(--vscode-editor-background)" stroke="var(--vscode-editor-foreground)" stroke-width="1.5"/></svg>
                 <span>Specialization <code style="font-size: 10px; opacity: 0.8;">:&gt;</code></span>
             </div>
             <div style="display: flex; align-items: center; gap: 10px;">
-                <svg width="40" height="14"><polygon points="0,3 7,7 0,11" fill="none" stroke="var(--vscode-editor-foreground)" stroke-width="1.2"/><line x1="7" y1="7" x2="40" y2="7" stroke="var(--vscode-editor-foreground)" stroke-width="2"/></svg>
+                <svg width="40" height="14"><polygon points="0,7 5,3 10,7 5,11" fill="var(--vscode-editor-foreground)"/><line x1="10" y1="7" x2="40" y2="7" stroke="var(--vscode-editor-foreground)" stroke-width="2"/></svg>
                 <span>Containment <code style="font-size: 10px; opacity: 0.8;">◆</code></span>
-            </div>
-            <div style="display: flex; align-items: center; gap: 10px;">
-                <svg width="40" height="12"><line x1="0" y1="6" x2="32" y2="6" stroke="var(--vscode-editor-foreground)" stroke-width="2"/><polygon points="32,2 40,6 32,10" fill="var(--vscode-editor-foreground)"/></svg>
-                <span>Connection</span>
             </div>
             <div style="display: flex; align-items: center; gap: 10px;">
                 <svg width="40" height="12"><line x1="0" y1="6" x2="40" y2="6" stroke="var(--vscode-editor-foreground)" stroke-width="1.8" stroke-dasharray="2,2"/></svg>
@@ -87,35 +83,7 @@
                 <svg width="40" height="12"><line x1="0" y1="6" x2="32" y2="6" stroke="var(--vscode-editor-foreground)" stroke-width="2" stroke-dasharray="8,4"/><polygon points="32,2 40,6 32,10" fill="var(--vscode-editor-foreground)"/></svg>
                 <span>Allocation</span>
             </div>
-            <div style="font-weight: 600; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; opacity: 0.7; margin-top: 6px;">Structure</div>
-            <div style="display: flex; align-items: center; gap: 10px;">
-                <svg width="40" height="12"><line x1="0" y1="6" x2="32" y2="6" stroke="#5A9B6E" stroke-width="1.5" stroke-dasharray="2,3"/><polygon points="32,2 40,6 32,10" fill="#5A9B6E"/></svg>
-                <span>Hierarchy <span style="font-size: 10px; opacity: 0.7;">(parent→child)</span></span>
-            </div>
-            <div style="font-weight: 600; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; opacity: 0.7; margin-top: 6px;">Interconnection View</div>
-            <div style="display: flex; align-items: center; gap: 10px;">
-                <svg width="46" height="16">
-                    <rect x="2" y="1" width="12" height="12" fill="#0E7C7B" stroke="white" stroke-width="1.5"></rect>
-                    <line x1="4" y1="7" x2="11" y2="7" stroke="white" stroke-width="1.4"></line>
-                    <polyline points="8,4 11,7 8,10" fill="none" stroke="white" stroke-width="1.4"></polyline>
-                </svg>
-                <span>Input port <span style="font-size: 10px; opacity: 0.7;">(teal)</span></span>
-            </div>
-            <div style="display: flex; align-items: center; gap: 10px;">
-                <svg width="46" height="16">
-                    <rect x="2" y="1" width="12" height="12" fill="#2D8A6E" stroke="white" stroke-width="1.5"></rect>
-                    <line x1="4" y1="7" x2="11" y2="7" stroke="white" stroke-width="1.4"></line>
-                    <polyline points="8,4 11,7 8,10" fill="none" stroke="white" stroke-width="1.4"></polyline>
-                </svg>
-                <span>Output port <span style="font-size: 10px; opacity: 0.7;">(green)</span></span>
-            </div>
-            <div style="display: flex; align-items: center; gap: 10px;">
-                <svg width="46" height="16">
-                    <rect x="2" y="1" width="12" height="12" fill="#4A9B7F" stroke="white" stroke-width="1.5"></rect>
-                    <line x1="5" y1="7" x2="11" y2="7" stroke="white" stroke-width="1.4"></line>
-                </svg>
-                <span>Bidirectional port <span style="font-size: 10px; opacity: 0.7;">(both sides)</span></span>
-            </div>
+
         </div>
     </div>
     <!-- Loading overlay (outside visualization to avoid being removed) -->
