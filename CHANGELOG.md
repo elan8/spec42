@@ -5,6 +5,20 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Changed
+
+- **VS Code settings cleanup** — Removed eight display-only / legacy configuration properties (`spec42.standardLibrary.*`, `spec42.domainLibraries.*`) that were not user-configurable; removed `spec42.codeLens.enabled` (code lens disabled for now) and `spec42.startup.workspaceIndexing` (only `background` mode is tested); fixed encoding corruption in `spec42.debug` description. Sync scripts updated accordingly.
+
+### Fixed
+
+- **Windows drive-letter normalization** — `workspace::snapshot::discovery::path_to_file_url` now lowercases the drive letter in `file://` URIs (`file:///C:/…` → `file:///c:/…`), matching the normalization applied by `FileSystemDocumentProvider`; previously target URIs and document URIs could differ in case, causing `project_host_semantic_model` to return an empty projection on Windows.
+- **`HostSemanticProjection` excludes diagnostic pseudo-nodes** — `ElementKind::Diagnostic` nodes (internal builder markers for unresolvable connect/allocate endpoints) are now filtered out of `HostSemanticProjection`; they are already emitted as first-class `SemanticDiagnostic` entries via `HostValidationReport`.
+- **Serde defaults for `HostSemanticModelNode.attributes` and `HostSemanticModelRelationship.connect`** — Added `#[serde(default)]` so older persisted projection artifacts without these fields deserialize correctly instead of failing with a missing-field error.
+- **Backward-compatible deserialization for renamed element and relationship kinds** — `ElementKind::parse` now accepts `"requirement usage"` (→ `Requirement`) and `"verification case"` (→ `Verification`); `RelationshipKind::Subject` accepts `"verification"` via `#[serde(alias)]` and `from_persisted_type`; canonical serialization is unchanged.
+- **Flaky diagnostics test removed** — `did_change_republishs_peer_diagnostics_after_debounce` deleted; peer-file diagnostic republish timing is non-deterministic under CI load and the behavior is covered by workspace integration tests.
+
 ## [0.34.0] - 2026-06-30
 
 ### Added
