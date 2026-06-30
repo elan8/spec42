@@ -888,7 +888,7 @@ export function registerWorkspaceIndexing(
   vscode.commands.executeCommand(
     "setContext",
     "sysml.visualizerOpen",
-    !!VisualizationPanel.currentPanel
+    VisualizationPanel.isOpen
   );
   if (hasWorkspaceFolders && modelExplorerProvider) {
     scheduleWorkspaceExplorerPending(modelExplorerProvider);
@@ -930,7 +930,7 @@ export function getDebugExtensionState(): DebugExtensionState {
       pendingWorkspaceLoadRunId:
         modelExplorerProvider?.getDebugState().pendingWorkspaceLoadRunId,
     },
-    visualizerOpen: VisualizationPanel.currentPanel !== undefined,
+    visualizerOpen: VisualizationPanel.isOpen,
     lastVisualizerRender: lastRender
       ? {
           view: lastRender.view,

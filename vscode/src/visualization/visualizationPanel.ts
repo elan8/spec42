@@ -21,6 +21,7 @@ export const VISUALIZER_VIEW_ID = 'sysmlVisualizerView';
 const VISUALIZER_OPEN_CONTEXT_KEY = 'sysml.visualizerOpen';
 
 function setVisualizerOpenContext(isOpen: boolean): void {
+    VisualizationPanel._contextIsOpen = isOpen;
     void vscode.commands.executeCommand('setContext', VISUALIZER_OPEN_CONTEXT_KEY, isOpen);
 }
 
@@ -71,11 +72,17 @@ function createVariantConfig(runtimeState: VisualizationPanelRuntimeState): Visu
  */
 export class VisualizationPanel implements vscode.WebviewViewProvider {
     public static currentPanel: VisualizationPanel | undefined;
+    public static _contextIsOpen: boolean = false;
 
     private _extensionContext: vscode.ExtensionContext;
     private _lspModelProvider: LspModelProvider;
     private _runtimeState: VisualizationPanelRuntimeState | undefined;
     private _controller: BaseVisualizationPanelController<VisualizerRestoreState> | undefined;
+    private _webviewView: vscode.WebviewView | undefined;
+
+    public static get isOpen(): boolean {
+        return VisualizationPanel._contextIsOpen;
+    }
 
     private constructor(context: vscode.ExtensionContext, lspModelProvider: LspModelProvider) {
         this._extensionContext = context;
@@ -104,6 +111,7 @@ export class VisualizationPanel implements vscode.WebviewViewProvider {
         _resolveContext: vscode.WebviewViewResolveContext,
         _token: vscode.CancellationToken,
     ): void {
+        this._webviewView = webviewView;
         webviewView.webview.options = {
             enableScripts: true,
             localResourceRoots: getVisualizerLocalResourceRoots(this._extensionContext.extensionUri),
@@ -146,6 +154,7 @@ export class VisualizationPanel implements vscode.WebviewViewProvider {
             setVisualizerOpenContext(false);
             this._controller = undefined;
             this._runtimeState = undefined;
+            this._webviewView = undefined;
         });
     }
 
@@ -254,13 +263,19 @@ export class VisualizationPanel implements vscode.WebviewViewProvider {
         this._controller.requestUpdate('testSeed');
     }
 
-    /** No-op: VS Code manages WebviewView lifecycle. */
+    /** Close the secondary sidebar so VS Code destroys the WebviewView. */
     public dispose(): void {
-        // The WebviewView is owned by VS Code; we can only refresh on next open.
         this._controller?.clearRestoreState();
-        this._controller = undefined;
-        this._runtimeState = undefined;
-        setVisualizerOpenContext(false);
+        if (this._webviewView?.visible) {
+            // Closing the auxiliary bar triggers onDidDispose, which clears state and
+            // sets the context key. On next reveal, resolveWebviewView runs again.
+            void vscode.commands.executeCommand('workbench.action.toggleAuxiliaryBar');
+        } else {
+            this._controller = undefined;
+            this._runtimeState = undefined;
+            this._webviewView = undefined;
+            setVisualizerOpenContext(false);
+        }
     }
 }
 
