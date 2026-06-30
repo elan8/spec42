@@ -11,7 +11,6 @@ const generatedTsPath = path.join(
   "generated",
   "domainLibrariesDefaults.ts"
 );
-const packageJsonPath = path.join(repoRoot, "vscode", "package.json");
 const check = process.argv.includes("--check");
 
 const config = JSON.parse(fs.readFileSync(configPath, "utf8"));
@@ -34,14 +33,6 @@ export const DOMAIN_LIBRARIES_DEFAULTS = {
 } as const;
 `;
 
-const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, "utf8"));
-const properties = packageJson.contributes?.configuration?.properties ?? {};
-const expectedPackageDefaults = {
-  "spec42.domainLibraries.version": config.version,
-  "spec42.domainLibraries.repo": config.repo,
-  "spec42.domainLibraries.format": config.format,
-};
-
 if (check) {
   const currentGenerated = fs.existsSync(generatedTsPath)
     ? fs.readFileSync(generatedTsPath, "utf8")
@@ -51,22 +42,7 @@ if (check) {
       "vscode/src/generated/domainLibrariesDefaults.ts is out of date. Run `node scripts/sync-domain-libraries-config.mjs`."
     );
   }
-  for (const [key, expected] of Object.entries(expectedPackageDefaults)) {
-    const actual = properties[key]?.default;
-    if (actual !== expected) {
-      throw new Error(
-        `vscode/package.json default for ${key} is out of date (${actual ?? "missing"} vs ${expected}). Run \`node scripts/sync-domain-libraries-config.mjs\`.`
-      );
-    }
-  }
 } else {
   fs.mkdirSync(path.dirname(generatedTsPath), { recursive: true });
   fs.writeFileSync(generatedTsPath, generatedTs, "utf8");
-  for (const [key, value] of Object.entries(expectedPackageDefaults)) {
-    if (!properties[key]) {
-      throw new Error(`vscode/package.json is missing configuration property ${key}.`);
-    }
-    properties[key].default = value;
-  }
-  fs.writeFileSync(packageJsonPath, `${JSON.stringify(packageJson, null, 2)}\n`, "utf8");
 }
