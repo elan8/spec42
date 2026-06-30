@@ -990,7 +990,7 @@ fn performance_report_schema_keeps_required_top_level_keys() {
 }
 
 #[test]
-#[ignore = "report-only performance guardrail; CI records metrics without enforcing budgets yet"]
+#[ignore = "local smoke only; fixture is tiny (vscode/testFixture/large-workspace) and not wired to CI — run manually to spot-check workspace model + document model request latency"]
 fn lsp_large_workspace_performance_report() {
     let root = repo_root()
         .join("vscode")

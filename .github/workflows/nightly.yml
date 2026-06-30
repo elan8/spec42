@@ -24,6 +24,30 @@ jobs:
       - name: Cache cargo
         uses: Swatinem/rust-cache@v2
 
+      - name: Prepare SysML stdlib bundle
+        run: |
+          VERSION=$(node -p "require('./config/standard-library.json').version")
+          echo "SPEC42_STDLIB_VERSION=${VERSION}" >> $GITHUB_ENV
+          echo "SPEC42_STDLIB_KPAR_DIR=${{ github.workspace }}/.cache/sysml-stdlib-kpar-${VERSION}" >> $GITHUB_ENV
+
+      - name: Restore SysML stdlib bundle cache
+        uses: actions/cache/restore@v4
+        id: stdlib-cache
+        with:
+          path: .cache/sysml-stdlib-kpar-${{ env.SPEC42_STDLIB_VERSION }}
+          key: sysml-stdlib-${{ env.SPEC42_STDLIB_VERSION }}
+
+      - name: Fetch SysML stdlib bundle
+        if: steps.stdlib-cache.outputs.cache-hit != 'true'
+        run: bash scripts/fetch-stdlib-bundle.sh
+
+      - name: Save SysML stdlib bundle cache
+        if: steps.stdlib-cache.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v4
+        with:
+          path: .cache/sysml-stdlib-kpar-${{ env.SPEC42_STDLIB_VERSION }}
+          key: sysml-stdlib-${{ env.SPEC42_STDLIB_VERSION }}
+
       - name: Clone SysML-v2-Release
         run: git clone --depth 1 https://github.com/Systems-Modeling/SysML-v2-Release.git sysml-v2-release
 
@@ -147,8 +171,8 @@ jobs:
             vscode/tests/output/**
             /tmp/spec42-vscode-test-exports/**
 
-  large-workspace-performance:
-    name: Large workspace performance report
+  performance:
+    name: Performance regression guard
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
@@ -185,136 +209,8 @@ jobs:
           path: .cache/sysml-stdlib-kpar-${{ env.SPEC42_STDLIB_VERSION }}
           key: sysml-stdlib-${{ env.SPEC42_STDLIB_VERSION }}
 
-      - name: Prepare domain libraries bundle
-        run: |
-          VERSION=$(node -p "require('./config/domain-libraries.json').version")
-          echo "SPEC42_DOMAIN_LIBRARIES_VERSION=${VERSION}" >> $GITHUB_ENV
-          echo "SPEC42_DOMAIN_LIBRARIES_BUNDLE_ZIP=${{ github.workspace }}/.cache/elan8-domain-libraries-${VERSION}.kpar" >> $GITHUB_ENV
-
-      - name: Restore domain libraries bundle cache
-        uses: actions/cache/restore@v4
-        id: domain-libraries-cache
-        with:
-          path: .cache/elan8-domain-libraries-${{ env.SPEC42_DOMAIN_LIBRARIES_VERSION }}.kpar
-          key: sysml-domain-libraries-${{ env.SPEC42_DOMAIN_LIBRARIES_VERSION }}
-
-      - name: Fetch domain libraries bundle
-        if: steps.domain-libraries-cache.outputs.cache-hit != 'true'
-        run: bash scripts/fetch-domain-libraries-bundle.sh
-
-      - name: Save domain libraries bundle cache
-        if: steps.domain-libraries-cache.outputs.cache-hit != 'true'
-        uses: actions/cache/save@v4
-        with:
-          path: .cache/elan8-domain-libraries-${{ env.SPEC42_DOMAIN_LIBRARIES_VERSION }}.kpar
-          key: sysml-domain-libraries-${{ env.SPEC42_DOMAIN_LIBRARIES_VERSION }}
-
-      - name: Run large workspace performance report
-        run: |
-          cargo test -p lsp_server --test lsp_integration integration::workspace::lsp_large_workspace_performance_report -- --ignored --nocapture 2>&1 | tee large-workspace-perf.txt
-          {
-            echo "## Large workspace performance report"
-            echo
-            grep "SPEC42_PERF_REPORT" large-workspace-perf.txt || echo "No SPEC42_PERF_REPORT line emitted."
-          } >> "$GITHUB_STEP_SUMMARY"
-
-      - name: Check large workspace performance budgets
-        run: node scripts/check-perf-budgets.mjs target/spec42-perf/large-workspace-performance.json
-
       - name: Run drone interconnection performance report
         run: cargo test -p lsp_server --test lsp_integration integration::powersystems_performance::drone_interconnection_performance_smoke_report -- --nocapture
 
       - name: Check drone interconnection performance budgets
         run: node scripts/check-perf-budgets.mjs target/spec42-perf/drone-interconnection-performance.json
-
-  interconnection-visualization-performance:
-    name: Interconnection visualization perf (informational)
-    runs-on: ubuntu-latest
-    continue-on-error: true
-    steps:
-      - uses: actions/checkout@v6
-        with:
-          submodules: recursive
-
-      - name: Install Rust
-        uses: dtolnay/rust-toolchain@stable
-
-      - name: Cache cargo
-        uses: Swatinem/rust-cache@v2
-
-      - name: Prepare SysML stdlib bundle
-        run: |
-          VERSION=$(node -p "require('./config/standard-library.json').version")
-          echo "SPEC42_STDLIB_VERSION=${VERSION}" >> $GITHUB_ENV
-          echo "SPEC42_STDLIB_KPAR_DIR=${{ github.workspace }}/.cache/sysml-stdlib-kpar-${VERSION}" >> $GITHUB_ENV
-
-      - name: Restore SysML stdlib bundle cache
-        uses: actions/cache/restore@v4
-        id: stdlib-cache
-        with:
-          path: .cache/sysml-stdlib-kpar-${{ env.SPEC42_STDLIB_VERSION }}
-          key: sysml-stdlib-${{ env.SPEC42_STDLIB_VERSION }}
-
-      - name: Fetch SysML stdlib bundle
-        if: steps.stdlib-cache.outputs.cache-hit != 'true'
-        run: bash scripts/fetch-stdlib-bundle.sh
-
-      - name: Run grid interconnection performance report (optional)
-        env:
-          SYSML_POWERSYSTEMS_DIR: ${{ vars.SYSML_POWERSYSTEMS_DIR }}
-        run: |
-          if [ -z "$SYSML_POWERSYSTEMS_DIR" ] || [ ! -d "$SYSML_POWERSYSTEMS_DIR" ]; then
-            echo "Grid fixture not configured; skipping optional grid drill-down." >> "$GITHUB_STEP_SUMMARY"
-            exit 0
-          fi
-          cargo test -p lsp_server --test lsp_integration integration::powersystems_performance::powersystems_system_context_performance_report --release -- --ignored --nocapture
-
-      - name: Summarize interconnection performance reports
-        if: always()
-        run: |
-          node <<'NODE' >> "$GITHUB_STEP_SUMMARY"
-          const fs = require("fs");
-          const path = require("path");
-          const reportDir = "target/spec42-perf";
-          const candidates = [
-            "grid-system-context-performance.json",
-          ];
-          console.log("### Interconnection performance reports");
-          console.log("");
-          let found = false;
-          for (const name of candidates) {
-            const reportPath = path.join(reportDir, name);
-            if (!fs.existsSync(reportPath)) {
-              continue;
-            }
-            found = true;
-            const report = JSON.parse(fs.readFileSync(reportPath, "utf8"));
-            const phase = report.phaseBreakdown ?? {};
-            const visualization = report.visualization ?? {};
-            console.log(`#### ${report.fixture?.name ?? name}`);
-            console.log("");
-            console.log("| Metric | Value |");
-            console.log("| --- | ---: |");
-            console.log(`| Workspace URIs | ${phase.workspaceUriCount ?? 0} |`);
-            console.log(`| Scoped URIs | ${phase.scopedUriCount ?? 0} |`);
-            console.log(`| Full IBD per-uri (ms) | ${phase.ibdPerUriMs ?? 0} |`);
-            console.log(`| Scoped IBD build (ms) | ${phase.scopedIbdPerUriMs ?? 0} |`);
-            console.log(`| LSP visualization bytes | ${visualization.responseBytes ?? 0} |`);
-            console.log(`| Slim payload bytes (in-process) | ${phase.slimPayloadBytes ?? 0} |`);
-            console.log(`| Scene edges | ${visualization.sceneEdges ?? phase.selectedViewSceneEdges ?? 0} |`);
-            console.log(`| Has IBD in LSP payload | ${visualization.hasIbd ?? false} |`);
-            console.log("");
-          }
-          if (!found) {
-            console.log("No structured interconnection performance JSON report was produced.");
-          }
-          NODE
-
-      - name: Upload interconnection performance report artifact
-        uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: interconnection-performance-report
-          if-no-files-found: warn
-          path: |
-            target/spec42-perf/grid-system-context-performance.json

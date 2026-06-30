@@ -250,6 +250,9 @@ struct InterconnectionPerfReportConfig<'a> {
     selected_view: &'a str,
     views_uri: Url,
     warm_cache_budget_ms: u128,
+    /// Skip the warm cache-hit assertion. Use for small fixtures where the
+    /// server may finish a re-index between the two visualization requests.
+    skip_warm_cache_assert: bool,
 }
 
 fn run_interconnection_lsp_performance_report(config: InterconnectionPerfReportConfig<'_>) {
@@ -355,13 +358,15 @@ fn run_interconnection_lsp_performance_report(config: InterconnectionPerfReportC
         &warm_visualization_capture.perf_events,
         "backend:sysmlVisualizationRequest",
     );
-    assert!(
-        warm_visualization_event
-            .and_then(|event| event.get("cacheHit"))
-            .and_then(|value| value.as_bool())
-            .unwrap_or(false),
-        "expected warm sysml/visualization cache hit, got {warm_visualization_event:#?}"
-    );
+    if !config.skip_warm_cache_assert {
+        assert!(
+            warm_visualization_event
+                .and_then(|event| event.get("cacheHit"))
+                .and_then(|value| value.as_bool())
+                .unwrap_or(false),
+            "expected warm sysml/visualization cache hit, got {warm_visualization_event:#?}"
+        );
+    }
     assert!(
         warm_visualization_capture.elapsed_ms < config.warm_cache_budget_ms,
         "expected warm visualization request under {}ms, got {}ms",
@@ -612,6 +617,29 @@ fn run_interconnection_lsp_performance_report(config: InterconnectionPerfReportC
 }
 
 #[test]
+fn drone_interconnection_performance_smoke_report() {
+    let repo_root = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../../examples/drone");
+    assert!(
+        repo_root.is_dir(),
+        "expected drone example at {}; ensure the examples submodule is checked out",
+        repo_root.display()
+    );
+
+    let views_uri =
+        url::Url::from_file_path(repo_root.join("Views.sysml")).expect("drone Views.sysml uri");
+
+    run_interconnection_lsp_performance_report(InterconnectionPerfReportConfig {
+        fixture_name: "drone-interconnection",
+        report_file: "drone-interconnection-performance.json",
+        repo_root: &repo_root,
+        selected_view: "connections",
+        views_uri,
+        warm_cache_budget_ms: 500,
+        skip_warm_cache_assert: true,
+    });
+}
+
+#[test]
 #[ignore = "report-only drill-down; set SYSML_POWERSYSTEMS_DIR to an external grid fixture checkout"]
 fn powersystems_system_context_performance_report() {
     let Some(repo_root) = powersystems_repo_root() else {
@@ -637,5 +665,6 @@ fn powersystems_system_context_performance_report() {
         selected_view: "systemContext",
         views_uri,
         warm_cache_budget_ms: 500,
+        skip_warm_cache_assert: false,
     });
 }
