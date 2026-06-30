@@ -286,6 +286,7 @@ export class BaseVisualizationPanelController<TRestoreState extends BaseVisualiz
             return;
         }
         this._disposed = true;
+        this.clearRestoreState();
         resetVisualizerRenderTracker();
         setVisualizerBootstrapCompleted(false);
         if (this._requestCurrentViewTimer) {

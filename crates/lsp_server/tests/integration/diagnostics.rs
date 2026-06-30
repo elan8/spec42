@@ -2301,47 +2301,54 @@ fn did_change_republishs_peer_diagnostics_after_debounce() {
             .to_string(),
         );
     }
-    std::thread::sleep(std::time::Duration::from_millis(250));
-
+    // Poll with barrier hovers until the debounce fires and the peer file publishes its
+    // unresolved_type_reference diagnostic. A single sleep is unreliable on loaded CI runners
+    // because the hover response can arrive before the debounce timer fires.
+    let deadline = std::time::Instant::now() + std::time::Duration::from_secs(5);
     let mut peer_had_unresolved = false;
-    let hover_id = next_id();
-    send_message(
-        &mut stdin,
-        &serde_json::json!({
-            "jsonrpc": "2.0",
-            "id": hover_id,
-            "method": "textDocument/hover",
-            "params": {
-                "textDocument": { "uri": uri_b },
-                "position": { "line": 0, "character": 0 }
+    while std::time::Instant::now() < deadline && !peer_had_unresolved {
+        let barrier_id = next_id();
+        send_message(
+            &mut stdin,
+            &serde_json::json!({
+                "jsonrpc": "2.0",
+                "id": barrier_id,
+                "method": "textDocument/hover",
+                "params": {
+                    "textDocument": { "uri": uri_b },
+                    "position": { "line": 0, "character": 0 }
+                }
+            })
+            .to_string(),
+        );
+        loop {
+            let msg = read_message(&mut stdout).expect("expected message while waiting for hover");
+            let json: serde_json::Value = serde_json::from_str(&msg).unwrap_or_default();
+            if json["method"].as_str() == Some("textDocument/publishDiagnostics")
+                && json["params"]["uri"].as_str() == Some(uri_b)
+            {
+                let diagnostics = json["params"]["diagnostics"]
+                    .as_array()
+                    .cloned()
+                    .unwrap_or_default();
+                if diagnostics.iter().any(|d| {
+                    d["source"].as_str() == Some("semantic")
+                        && d["code"].as_str() == Some("unresolved_type_reference")
+                }) {
+                    peer_had_unresolved = true;
+                }
             }
-        })
-        .to_string(),
-    );
-    loop {
-        let msg = read_message(&mut stdout).expect("expected message while waiting for hover");
-        let json: serde_json::Value = serde_json::from_str(&msg).unwrap_or_default();
-        if json["method"].as_str() == Some("textDocument/publishDiagnostics")
-            && json["params"]["uri"].as_str() == Some(uri_b)
-        {
-            let diagnostics = json["params"]["diagnostics"]
-                .as_array()
-                .cloned()
-                .unwrap_or_default();
-            if diagnostics.iter().any(|d| {
-                d["source"].as_str() == Some("semantic")
-                    && d["code"].as_str() == Some("unresolved_type_reference")
-            }) {
-                peer_had_unresolved = true;
+            if json["id"].as_i64() == Some(barrier_id) {
+                break;
             }
         }
-        if json["id"].as_i64() == Some(hover_id) {
-            break;
+        if !peer_had_unresolved {
+            std::thread::sleep(std::time::Duration::from_millis(50));
         }
     }
     assert!(
         peer_had_unresolved,
-        "expected peer file to publish unresolved_type_reference before provider file was fixed"
+        "expected peer file to publish unresolved_type_reference within 5s of didOpen"
     );
 
     send_message(
