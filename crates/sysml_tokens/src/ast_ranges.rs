@@ -105,7 +105,7 @@ fn collect_semantic_ranges_package_body_element(
             match &pu_node.body {
                 PartUsageBody::Brace { elements } => {
                     for n in elements {
-                        collect_semantic_ranges_part_usage_body_element(n, out);
+                        collect_semantic_ranges_part_usage_body_element(ctx, n, out);
                     }
                 }
                 PartUsageBody::Semicolon => {}
@@ -170,7 +170,7 @@ fn collect_semantic_ranges_package_body_element(
             match &rd_node.body {
                 RequirementDefBody::Brace { elements } => {
                     for element in elements {
-                        collect_semantic_ranges_requirement_def_body_element(element, out);
+                        collect_semantic_ranges_requirement_def_body_element(ctx, element, out);
                     }
                 }
                 RequirementDefBody::Semicolon => {}
@@ -189,7 +189,7 @@ fn collect_semantic_ranges_package_body_element(
             match &ru_node.body {
                 RequirementDefBody::Brace { elements } => {
                     for element in elements {
-                        collect_semantic_ranges_requirement_def_body_element(element, out);
+                        collect_semantic_ranges_requirement_def_body_element(ctx, element, out);
                     }
                 }
                 RequirementDefBody::Semicolon => {}
@@ -263,7 +263,7 @@ fn collect_semantic_ranges_package_body_element(
                 TYPE_CLASS,
                 out,
             );
-            collect_semantic_ranges_attribute_body(&id_node.value.body, out);
+            collect_semantic_ranges_attribute_body(ctx, &id_node.value.body, out);
         }
         PBE::IndividualDef(id_node) => {
             push_ident_definition_spans(
@@ -272,7 +272,7 @@ fn collect_semantic_ranges_package_body_element(
                 TYPE_CLASS,
                 out,
             );
-            collect_semantic_ranges_attribute_body(&id_node.value.body, out);
+            collect_semantic_ranges_attribute_body(ctx, &id_node.value.body, out);
         }
         PBE::MetadataDef(md_node) => {
             push_ident_definition_spans(
@@ -281,7 +281,7 @@ fn collect_semantic_ranges_package_body_element(
                 TYPE_CLASS,
                 out,
             );
-            collect_semantic_ranges_attribute_body(&md_node.value.body, out);
+            collect_semantic_ranges_attribute_body(ctx, &md_node.value.body, out);
         }
         PBE::OccurrenceDef(occ_node) => {
             push_ident_definition_spans(
@@ -290,7 +290,7 @@ fn collect_semantic_ranges_package_body_element(
                 TYPE_CLASS,
                 out,
             );
-            collect_semantic_ranges_definition_body(&occ_node.value.body, out);
+            collect_semantic_ranges_definition_body(ctx, &occ_node.value.body, out);
         }
         PBE::FlowDef(flow_node) => {
             push_ident_definition_spans(
@@ -299,7 +299,7 @@ fn collect_semantic_ranges_package_body_element(
                 TYPE_INTERFACE,
                 out,
             );
-            collect_semantic_ranges_definition_body(&flow_node.value.body, out);
+            collect_semantic_ranges_definition_body(ctx, &flow_node.value.body, out);
         }
         PBE::FlowUsage(flow_node) => {
             if let Some(ref name) = flow_node.value.name {
@@ -313,7 +313,7 @@ fn collect_semantic_ranges_package_body_element(
                     out,
                 );
             }
-            collect_semantic_ranges_definition_body(&flow_node.value.body, out);
+            collect_semantic_ranges_definition_body(ctx, &flow_node.value.body, out);
         }
         PBE::AllocationDef(alloc_node) => {
             push_ident_definition_spans(
@@ -322,7 +322,7 @@ fn collect_semantic_ranges_package_body_element(
                 TYPE_INTERFACE,
                 out,
             );
-            collect_semantic_ranges_definition_body(&alloc_node.value.body, out);
+            collect_semantic_ranges_definition_body(ctx, &alloc_node.value.body, out);
         }
         PBE::StateDef(sd_node) => {
             push_ident_definition_spans(
@@ -409,7 +409,7 @@ fn collect_semantic_ranges_package_body_element(
                 None,
                 out,
             );
-            collect_semantic_ranges_attribute_body(&mu_node.value.body, out);
+            collect_semantic_ranges_attribute_body(ctx, &mu_node.value.body, out);
         }
         PBE::OccurrenceUsage(ou_node) => {
             push_usage_name_type_spans(
@@ -423,7 +423,7 @@ fn collect_semantic_ranges_package_body_element(
             );
             if let OccurrenceUsageBody::Brace { elements } = &ou_node.value.body {
                 for element in elements {
-                    collect_semantic_ranges_occurrence_body_element(element, out);
+                    collect_semantic_ranges_occurrence_body_element(ctx, element, out);
                 }
             }
         }
@@ -437,7 +437,7 @@ fn collect_semantic_ranges_package_body_element(
                 None,
                 out,
             );
-            collect_semantic_ranges_definition_body(&au_node.value.body, out);
+            collect_semantic_ranges_definition_body(ctx, &au_node.value.body, out);
         }
         PBE::ConcernUsage(cu_node) => {
             push_usage_name_type_spans(
@@ -452,7 +452,7 @@ fn collect_semantic_ranges_package_body_element(
             match &cu_node.value.body {
                 RequirementDefBody::Brace { elements } => {
                     for element in elements {
-                        collect_semantic_ranges_requirement_def_body_element(element, out);
+                        collect_semantic_ranges_requirement_def_body_element(ctx, element, out);
                     }
                 }
                 RequirementDefBody::Semicolon => {}
@@ -513,6 +513,7 @@ fn collect_semantic_ranges_package_body_element(
 }
 
 fn collect_semantic_ranges_definition_body(
+    ctx: &RangeCtx<'_>,
     body: &DefinitionBody,
     out: &mut Vec<(SourceRange, u32)>,
 ) {
@@ -522,7 +523,7 @@ fn collect_semantic_ranges_definition_body(
     for node in elements {
         match &node.value {
             DefinitionBodyElement::OccurrenceMember(member) => {
-                collect_semantic_ranges_occurrence_body_element(member, out);
+                collect_semantic_ranges_occurrence_body_element(ctx, member, out);
             }
             DefinitionBodyElement::Doc(_)
             | DefinitionBodyElement::Error(_)
@@ -531,17 +532,37 @@ fn collect_semantic_ranges_definition_body(
     }
 }
 
-fn collect_semantic_ranges_attribute_body(body: &AttributeBody, out: &mut Vec<(SourceRange, u32)>) {
+fn collect_semantic_ranges_attribute_body(
+    ctx: &RangeCtx<'_>,
+    body: &AttributeBody,
+    out: &mut Vec<(SourceRange, u32)>,
+) {
     let AttributeBody::Brace { elements } = body else {
         return;
     };
     for node in elements {
         match &node.value {
             AttributeBodyElement::AttributeDef(attribute) => {
-                out.push((span_to_source_range(&attribute.span), TYPE_PROPERTY));
+                push_usage_name_type_spans(
+                    ctx.source,
+                    &attribute.span,
+                    &attribute.value.name,
+                    attribute.value.typing.as_deref(),
+                    attribute.value.name_span.as_ref(),
+                    attribute.value.typing_span.as_ref(),
+                    out,
+                );
             }
             AttributeBodyElement::AttributeUsage(attribute) => {
-                out.push((span_to_source_range(&attribute.span), TYPE_PROPERTY));
+                push_usage_name_type_spans(
+                    ctx.source,
+                    &attribute.span,
+                    &attribute.value.name,
+                    attribute.value.typing.as_deref(),
+                    attribute.value.name_span.as_ref(),
+                    attribute.value.typing_span.as_ref(),
+                    out,
+                );
             }
             AttributeBodyElement::Doc(_)
             | AttributeBodyElement::Error(_)
@@ -654,7 +675,7 @@ fn collect_semantic_ranges_state_def_body_element(
             );
             if let RequirementDefBody::Brace { elements } = &ru_node.body {
                 for element in elements {
-                    collect_semantic_ranges_requirement_def_body_element(element, out);
+                    collect_semantic_ranges_requirement_def_body_element(ctx, element, out);
                 }
             }
         }
@@ -663,13 +684,22 @@ fn collect_semantic_ranges_state_def_body_element(
 }
 
 fn collect_semantic_ranges_occurrence_body_element(
+    ctx: &RangeCtx<'_>,
     node: &sysml_v2_parser::Node<OccurrenceBodyElement>,
     out: &mut Vec<(SourceRange, u32)>,
 ) {
     use OccurrenceBodyElement as OBE;
     match &node.value {
         OBE::AttributeUsage(attribute) => {
-            out.push((span_to_source_range(&attribute.span), TYPE_PROPERTY));
+            push_usage_name_type_spans(
+                ctx.source,
+                &attribute.span,
+                &attribute.value.name,
+                attribute.value.typing.as_deref(),
+                attribute.value.name_span.as_ref(),
+                attribute.value.typing_span.as_ref(),
+                out,
+            );
         }
         OBE::PartUsage(part_usage) => {
             if let Some(ref span) = part_usage.value.name_span {
@@ -680,7 +710,7 @@ fn collect_semantic_ranges_occurrence_body_element(
             }
             if let PartUsageBody::Brace { elements } = &part_usage.body {
                 for child in elements {
-                    collect_semantic_ranges_part_usage_body_element(child, out);
+                    collect_semantic_ranges_part_usage_body_element(ctx, child, out);
                 }
             }
         }
@@ -688,13 +718,13 @@ fn collect_semantic_ranges_occurrence_body_element(
             out.push((span_to_source_range(&occurrence_usage.span), TYPE_PROPERTY));
             if let OccurrenceUsageBody::Brace { elements } = &occurrence_usage.body {
                 for child in elements {
-                    collect_semantic_ranges_occurrence_body_element(child, out);
+                    collect_semantic_ranges_occurrence_body_element(ctx, child, out);
                 }
             }
         }
         OBE::FlowUsage(flow) => {
             out.push((span_to_source_range(&flow.span), TYPE_PROPERTY));
-            collect_semantic_ranges_definition_body(&flow.value.body, out);
+            collect_semantic_ranges_definition_body(ctx, &flow.value.body, out);
         }
         OBE::Doc(_)
         | OBE::Error(_)
@@ -741,7 +771,17 @@ fn collect_semantic_ranges_part_def_body_element(
                 out,
             );
         }
-        PDBE::AttributeUsage(n) => out.push((span_to_source_range(&n.span), TYPE_PROPERTY)),
+        PDBE::AttributeUsage(n) => {
+            push_usage_name_type_spans(
+                ctx.source,
+                &n.span,
+                &n.value.name,
+                n.value.typing.as_deref(),
+                n.value.name_span.as_ref(),
+                n.value.typing_span.as_ref(),
+                out,
+            );
+        }
         PDBE::PortUsage(n) => collect_semantic_ranges_port_usage(n, out),
         PDBE::PartUsage(pu_node) => {
             if let Some(ref span) = pu_node.value.name_span {
@@ -752,7 +792,7 @@ fn collect_semantic_ranges_part_def_body_element(
             }
             if let PartUsageBody::Brace { elements } = &pu_node.body {
                 for child in elements {
-                    collect_semantic_ranges_part_usage_body_element(child, out);
+                    collect_semantic_ranges_part_usage_body_element(ctx, child, out);
                 }
             }
         }
@@ -764,7 +804,7 @@ fn collect_semantic_ranges_part_def_body_element(
                 TYPE_CLASS,
                 out,
             );
-            collect_semantic_ranges_attribute_body(&id_node.value.body, out);
+            collect_semantic_ranges_attribute_body(ctx, &id_node.value.body, out);
         }
         PDBE::ItemUsage(item_node) => {
             push_usage_name_type_spans(
@@ -776,7 +816,7 @@ fn collect_semantic_ranges_part_def_body_element(
                 None,
                 out,
             );
-            collect_semantic_ranges_attribute_body(&item_node.body, out);
+            collect_semantic_ranges_attribute_body(ctx, &item_node.body, out);
         }
         PDBE::PartDef(pd_node) => {
             push_ident_definition_spans(
@@ -795,7 +835,7 @@ fn collect_semantic_ranges_part_def_body_element(
             out.push((span_to_source_range(&occurrence_usage.span), TYPE_PROPERTY));
             if let OccurrenceUsageBody::Brace { elements } = &occurrence_usage.body {
                 for child in elements {
-                    collect_semantic_ranges_occurrence_body_element(child, out);
+                    collect_semantic_ranges_occurrence_body_element(ctx, child, out);
                 }
             }
         }
@@ -838,7 +878,7 @@ fn collect_semantic_ranges_part_def_body_element(
         }
         PDBE::EnumerationUsage(enum_node) => {
             out.push((span_to_source_range(&enum_node.span), TYPE_PROPERTY));
-            collect_semantic_ranges_attribute_body(&enum_node.body, out);
+            collect_semantic_ranges_attribute_body(ctx, &enum_node.body, out);
         }
         PDBE::MetadataKeywordUsage(mk_node) => {
             collect_semantic_ranges_metadata_keyword_usage(mk_node, out);
@@ -857,7 +897,7 @@ fn collect_semantic_ranges_part_def_body_element(
             match &ru_node.body {
                 RequirementDefBody::Brace { elements } => {
                     for element in elements {
-                        collect_semantic_ranges_requirement_def_body_element(element, out);
+                        collect_semantic_ranges_requirement_def_body_element(ctx, element, out);
                     }
                 }
                 RequirementDefBody::Semicolon => {}
@@ -865,7 +905,7 @@ fn collect_semantic_ranges_part_def_body_element(
         }
         PDBE::FlowUsage(flow) => {
             out.push((span_to_source_range(&flow.span), TYPE_PROPERTY));
-            collect_semantic_ranges_definition_body(&flow.value.body, out);
+            collect_semantic_ranges_definition_body(ctx, &flow.value.body, out);
         }
         PDBE::Connect(_)
         | PDBE::InterfaceUsage(_)
@@ -880,12 +920,23 @@ fn collect_semantic_ranges_part_def_body_element(
 }
 
 fn collect_semantic_ranges_part_usage_body_element(
+    ctx: &RangeCtx<'_>,
     node: &sysml_v2_parser::Node<PartUsageBodyElement>,
     out: &mut Vec<(SourceRange, u32)>,
 ) {
     use sysml_v2_parser::ast::PartUsageBodyElement as PUBE;
     match &node.value {
-        PUBE::AttributeUsage(n) => out.push((span_to_source_range(&n.span), TYPE_PROPERTY)),
+        PUBE::AttributeUsage(n) => {
+            push_usage_name_type_spans(
+                ctx.source,
+                &n.span,
+                &n.value.name,
+                n.value.typing.as_deref(),
+                n.value.name_span.as_ref(),
+                n.value.typing_span.as_ref(),
+                out,
+            );
+        }
         PUBE::PartUsage(n) => {
             if let Some(ref s) = n.value.name_span {
                 out.push((span_to_source_range(s), TYPE_PROPERTY));
@@ -895,7 +946,7 @@ fn collect_semantic_ranges_part_usage_body_element(
             }
             if let PartUsageBody::Brace { elements } = &n.body {
                 for child in elements {
-                    collect_semantic_ranges_part_usage_body_element(child, out);
+                    collect_semantic_ranges_part_usage_body_element(ctx, child, out);
                 }
             }
         }
@@ -1046,6 +1097,7 @@ fn collect_semantic_ranges_state_usage(
 }
 
 fn collect_semantic_ranges_requirement_def_body_element(
+    ctx: &RangeCtx<'_>,
     node: &sysml_v2_parser::Node<RequirementDefBodyElement>,
     out: &mut Vec<(SourceRange, u32)>,
 ) {
@@ -1067,10 +1119,26 @@ fn collect_semantic_ranges_requirement_def_body_element(
             ));
         }
         RDBE::AttributeDef(attribute) => {
-            out.push((span_to_source_range(&attribute.span), TYPE_PROPERTY));
+            push_usage_name_type_spans(
+                ctx.source,
+                &attribute.span,
+                &attribute.value.name,
+                attribute.value.typing.as_deref(),
+                attribute.value.name_span.as_ref(),
+                attribute.value.typing_span.as_ref(),
+                out,
+            );
         }
         RDBE::AttributeUsage(attribute) => {
-            out.push((span_to_source_range(&attribute.span), TYPE_PROPERTY));
+            push_usage_name_type_spans(
+                ctx.source,
+                &attribute.span,
+                &attribute.value.name,
+                attribute.value.typing.as_deref(),
+                attribute.value.name_span.as_ref(),
+                attribute.value.typing_span.as_ref(),
+                out,
+            );
         }
         RDBE::VerifyRequirement(verify) => {
             if let Some(requirement) = &verify.value.requirement {
@@ -1097,7 +1165,7 @@ fn collect_semantic_ranges_requirement_def_body_element(
             match &frame.value.body {
                 RequirementDefBody::Brace { elements } => {
                     for element in elements {
-                        collect_semantic_ranges_requirement_def_body_element(element, out);
+                        collect_semantic_ranges_requirement_def_body_element(ctx, element, out);
                     }
                 }
                 RequirementDefBody::Semicolon => {}
