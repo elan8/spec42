@@ -4,7 +4,7 @@
   "publisher": "Elan8",
   "icon": "logo/logo.png",
   "description": "SysML v2 and KerML editor with live validation, navigation, Model Explorer, diagram views, CLI checks and GitHub Action support.",
-  "version": "0.33.0",
+  "version": "0.34.0",
   "license": "MIT",
   "keywords": [
     "sysml",
@@ -654,55 +654,10 @@
           "default": [],
           "description": "Custom paths to additional SysML library roots. Files under these paths are indexed for hover, go-to-definition, and completion."
         },
-        "spec42.standardLibrary.enabled": {
-          "type": "boolean",
-          "default": true,
-          "description": "Legacy: reserved for future use. The standard library is bundled with the Spec42 server."
-        },
-        "spec42.standardLibrary.version": {
-          "type": "string",
-          "default": "2026-04",
-          "description": "Display-only: SysML v2 release tag that matches the bundled standard library in this extension."
-        },
-        "spec42.standardLibrary.repo": {
-          "type": "string",
-          "default": "Systems-Modeling/SysML-v2-Release",
-          "description": "Legacy: not used for downloads; the library ships inside the Spec42 binary."
-        },
-        "spec42.standardLibrary.contentPath": {
-          "type": "string",
-          "default": "sysml.library.kpar",
-          "description": "Display-only: content path inside the official release (bundled by the server)."
-        },
-        "spec42.standardLibrary.format": {
-          "type": "string",
-          "default": "kpar",
-          "description": "Display-only: bundled standard library distribution format (kpar)."
-        },
-        "spec42.domainLibraries.version": {
-          "type": "string",
-          "default": "0.1.0",
-          "description": "Display-only: version of the bundled Elan8 domain libraries KPAR."
-        },
-        "spec42.domainLibraries.repo": {
-          "type": "string",
-          "default": "elan8/sysml-domain-libraries",
-          "description": "Display-only: source repository for bundled domain libraries."
-        },
-        "spec42.domainLibraries.format": {
-          "type": "string",
-          "default": "kpar",
-          "description": "Display-only: bundled domain libraries distribution format (kpar)."
-        },
         "spec42.statusBar.enabled": {
           "type": "boolean",
           "default": true,
           "description": "Show a SysML status bar item with error/warning counts for the active SysML/KerML file."
-        },
-        "spec42.codeLens.enabled": {
-          "type": "boolean",
-          "default": true,
-          "description": "Enable SysML code lenses such as inline reference counts above declarations. This can be expensive in larger workspaces."
         },
         "spec42.performanceLogging.enabled": {
           "type": "boolean",
@@ -715,20 +670,10 @@
           "minimum": 50,
           "description": "Maximum number of .sysml or .kerml files to discover per workspace folder and file type during workspace indexing. Increase for larger repositories at the cost of slower loading."
         },
-        "spec42.startup.workspaceIndexing": {
-          "type": "string",
-          "enum": [
-            "lazy",
-            "background",
-            "eager"
-          ],
-          "default": "background",
-          "description": "Control when the Model Explorer indexes the full workspace at startup. 'lazy' loads only the active document until workspace mode is requested, 'background' starts indexing after a short delay (default), and 'eager' starts indexing immediately."
-        },
         "spec42.debug": {
           "type": "boolean",
           "default": false,
-          "description": "Enable debug logging to the SysML output channel (View \u00e2\u2020\u2019 Output \u00e2\u2020\u2019 SysML)."
+          "description": "Enable debug logging to the SysML output channel (View \u2192 Output \u2192 SysML)."
         },
         "spec42.logging.verbose": {
           "type": "boolean",

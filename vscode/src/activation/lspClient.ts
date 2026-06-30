@@ -374,7 +374,7 @@ export function startLanguageClient(
       libraryPaths,
       startupTraceId,
       codeLens: {
-        enabled: getConfigBoolean("codeLens.enabled", true),
+        enabled: false,
       },
       performanceLogging: {
         enabled: getConfigBoolean("performanceLogging.enabled", false),
@@ -618,9 +618,6 @@ export function registerServerConfigChangeHandler(
         event.affectsConfiguration("spec42.logging.verbose") ||
         event.affectsConfiguration("spec42.debug") ||
         event.affectsConfiguration("sysml-language-server.debug");
-      const codeLensConfigChanged =
-        event.affectsConfiguration("spec42.codeLens.enabled") ||
-        event.affectsConfiguration("sysml-language-server.codeLens.enabled");
       const performanceLoggingConfigChanged =
         event.affectsConfiguration("spec42.performanceLogging.enabled") ||
         event.affectsConfiguration("sysml-language-server.performanceLogging.enabled");
@@ -636,7 +633,7 @@ export function registerServerConfigChangeHandler(
         );
       }
 
-      if (codeLensConfigChanged || performanceLoggingConfigChanged) {
+      if (performanceLoggingConfigChanged) {
         void vscode.window
           .showInformationMessage(
             "A SysML server setting changed. Restart the SysML language server to apply it.",

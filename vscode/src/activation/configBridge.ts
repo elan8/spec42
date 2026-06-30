@@ -5,19 +5,14 @@ import { STANDARD_LIBRARY_DEFAULTS } from "../generated/standardLibraryDefaults"
 const CONFIG_SECTION = "spec42";
 const LEGACY_CONFIG_SECTION = "sysml-language-server";
 
-export type StartupWorkspaceIndexingMode = "lazy" | "background" | "eager";
-
 export type StandardLibraryConfig = {
-  enabled: boolean;
   version: string;
-  repo: string;
   format: string;
   contentPath: string;
 };
 
 export type DomainLibrariesConfig = {
   version: string;
-  repo: string;
   format: string;
   contentPath: string;
 };
@@ -49,43 +44,18 @@ export function getConfigNumber(key: string, defaultValue: number): number {
   return primary.get<number>(key) ?? legacy.get<number>(key) ?? defaultValue;
 }
 
-export function getStartupWorkspaceIndexingMode(): StartupWorkspaceIndexingMode {
-  const configured = getConfigString("startup.workspaceIndexing");
-  if (
-    configured === "lazy" ||
-    configured === "background" ||
-    configured === "eager"
-  ) {
-    return configured;
-  }
-  return "background";
-}
-
 export function getStandardLibraryConfig(): StandardLibraryConfig {
   return {
-    enabled: getConfigBoolean("standardLibrary.enabled", true),
-    version:
-      getConfigString("standardLibrary.version") ??
-      STANDARD_LIBRARY_DEFAULTS.version,
-    repo:
-      getConfigString("standardLibrary.repo") ?? STANDARD_LIBRARY_DEFAULTS.repo,
-    format:
-      getConfigString("standardLibrary.format") ?? STANDARD_LIBRARY_DEFAULTS.format,
-    contentPath:
-      getConfigString("standardLibrary.contentPath") ??
-      STANDARD_LIBRARY_DEFAULTS.contentPath,
+    version: STANDARD_LIBRARY_DEFAULTS.version,
+    format: STANDARD_LIBRARY_DEFAULTS.format,
+    contentPath: STANDARD_LIBRARY_DEFAULTS.contentPath,
   };
 }
 
 export function getDomainLibrariesConfig(): DomainLibrariesConfig {
   return {
-    version:
-      getConfigString("domainLibraries.version") ??
-      DOMAIN_LIBRARIES_DEFAULTS.version,
-    repo:
-      getConfigString("domainLibraries.repo") ?? DOMAIN_LIBRARIES_DEFAULTS.repo,
-    format:
-      getConfigString("domainLibraries.format") ?? DOMAIN_LIBRARIES_DEFAULTS.format,
+    version: DOMAIN_LIBRARIES_DEFAULTS.version,
+    format: DOMAIN_LIBRARIES_DEFAULTS.format,
     contentPath: DOMAIN_LIBRARIES_DEFAULTS.contentPath,
   };
 }

@@ -17,7 +17,6 @@ import { VisualizationPanel } from "../visualization/visualizationPanel";
 import { rangeContainsPosition, rangeSpanScore } from "../utils/range";
 import {
   activeSysmlDocument,
-  getStartupWorkspaceIndexingMode,
   isSysmlDoc,
 } from "./configBridge";
 import {
@@ -882,7 +881,6 @@ export function registerWorkspaceIndexing(
   );
 
   const hasWorkspaceFolders = (vscode.workspace.workspaceFolders?.length ?? 0) > 0;
-  const startupWorkspaceIndexingMode = getStartupWorkspaceIndexingMode();
   log("Activation complete. Workspace folders:", hasWorkspaceFolders);
   vscode.commands.executeCommand("setContext", "sysml.hasWorkspace", hasWorkspaceFolders);
   vscode.commands.executeCommand(
@@ -893,9 +891,7 @@ export function registerWorkspaceIndexing(
   if (hasWorkspaceFolders && modelExplorerProvider) {
     scheduleWorkspaceExplorerPending(modelExplorerProvider);
     log(
-      "Startup workspace model load deferred until semantic index is ready",
-      "mode=",
-      startupWorkspaceIndexingMode
+      "Startup workspace model load deferred until semantic index is ready"
     );
   }
 }

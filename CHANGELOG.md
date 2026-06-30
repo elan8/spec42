@@ -5,6 +5,32 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.34.0] - 2026-06-30
+
+### Added
+
+- **SysML v2 Quick Reference panel** — New Help section in the Spec42 sidebar with a "SysML v2 Quick Reference" entry that opens a rich editor tab covering definitions, usages, relationship symbols, annotations, and views — verified against the OMG SysML v2 Language Specification.
+- **Spec42 documentation site** — VitePress site published at `https://elan8.github.io/spec42/` via GitHub Pages, with getting-started guide, example walkthroughs, visualizer reference, library guide, and SysML v2 quick reference. Automated deployment via `.github/workflows/docs.yml`.
+- **Help sidebar panel** — Sidebar section with quick actions: open visualizer, open recommended example, open quick reference, link to Spec42 docs, link to OMG SysML v2 spec.
+- **Drone interconnection performance smoke report** — Nightly CI enforces latency budgets against the in-repo drone example (`drone_interconnection_performance_smoke_report`).
+
+### Changed
+
+- **Visualizer moved to secondary sidebar** — SysML Visualizer is now a persistent sidebar panel (`WebviewViewProvider`) in the secondary sidebar instead of a transient editor panel; removed the editor-title toolbar button.
+- **Semantic token accuracy** — Improved token classification for state definitions, flow definitions, port definitions, action definitions, and part definitions; new golden-token regression suite; better declaration-range resolution in `ast_util.rs`.
+- **LSP document processing** — New `workspace/coordinator.rs`; cleaner semantic lifecycle management with explicit `SemanticLifecycle` states; improved relink scheduling and reduced redundant re-processing.
+- **Library graph handling** — Enhanced caching and concurrency in LSP server library graph loading.
+- **Diagram legend accuracy** — Specialization edge now shows a correct hollow triangle; containment shows a proper diamond; removed the incorrect "Hierarchy" entry.
+- **Nightly CI cleanup** — `large-workspace-performance` job (tiny fixture, no budget signal) replaced by `performance` (drone interconnection, blocking); `interconnection-visualization-performance` job (always skipped without external fixture) removed; stdlib bundle caching added to `sysml-release-validation` job.
+- **Library sidebar** — Simplified styling and layout of the library panel.
+- **Release surface alignment** — Rust workspace, `spec42` server, VS Code extension, Zed extension, and GitHub Action examples aligned at `0.34.0`.
+
+### Fixed
+
+- **Visualizer open state tracking** — `visualizerOpen` in the extension debug state now correctly reflects whether the visualizer view has been resolved, rather than always returning `true` after activation.
+- **`BaseVisualizationPanelController.dispose()`** — Restore state is now cleared on dispose in all code paths (previously only cleared when going through `VisualizationPanel.dispose()`).
+- **Flaky diagnostics test** — `did_change_republishs_peer_diagnostics_after_debounce` now uses barrier-based polling with a 5-second deadline instead of a fixed `sleep(250ms)`, eliminating race conditions on loaded CI runners.
+
 ## [0.33.0] - 2026-06-29
 
 ### Added

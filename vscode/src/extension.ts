@@ -4,7 +4,6 @@ import { LibraryWebviewViewProvider } from "./library/libraryWebviewViewProvider
 import { DOMAIN_LIBRARIES_DEFAULTS } from "./generated/domainLibrariesDefaults";
 import { STANDARD_LIBRARY_DEFAULTS } from "./generated/standardLibraryDefaults";
 import { log, logPerfEvent, logStartupEvent } from "./logger";
-import { getConfigString } from "./activation/configBridge";
 import {
   createExamplesViewProvider,
   onRestartServerComplete,
@@ -90,16 +89,12 @@ export function activate(context: vscode.ExtensionContext): void {
     handles.lspModelProvider,
     {
       getStdlibHeading: () => ({
-        pinnedVersion:
-          getConfigString("standardLibrary.version") ?? STANDARD_LIBRARY_DEFAULTS.version,
-        format:
-          getConfigString("standardLibrary.format") ?? STANDARD_LIBRARY_DEFAULTS.format,
+        pinnedVersion: STANDARD_LIBRARY_DEFAULTS.version,
+        format: STANDARD_LIBRARY_DEFAULTS.format,
       }),
       getDomainLibrariesHeading: () => ({
-        pinnedVersion:
-          getConfigString("domainLibraries.version") ?? DOMAIN_LIBRARIES_DEFAULTS.version,
-        format:
-          getConfigString("domainLibraries.format") ?? DOMAIN_LIBRARIES_DEFAULTS.format,
+        pinnedVersion: DOMAIN_LIBRARIES_DEFAULTS.version,
+        format: DOMAIN_LIBRARIES_DEFAULTS.format,
       }),
       getDomainLibrariesStatus: handles.readDomainLibrariesStatus,
       getConfiguredLibraryPaths: () => handles.libraryPaths,
