@@ -70,6 +70,9 @@ pub(crate) fn project_host_semantic_model(
     let mut nodes = Vec::new();
     for uri in &target_urls {
         for node in graph.nodes_for_uri(uri) {
+            if node.element_kind == sysml_model::ElementKind::Diagnostic {
+                continue;
+            }
             nodes.push(HostSemanticModelNode {
                 uri: node.id.uri.to_string(),
                 qualified_name: node.id.qualified_name.clone(),
@@ -218,6 +221,53 @@ fn parse_diagnostics(uri: &Url, text: &str) -> Vec<SemanticDiagnostic> {
 
 fn has_semantic_code(diagnostics: &[SemanticDiagnostic], code: &str) -> bool {
     diagnostics.iter().any(|diagnostic| diagnostic.code == code)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use sysml_model::{build_semantic_graph_with_provider, InMemoryDocumentProvider};
+
+    fn make_provider(uri: &str, content: &str) -> InMemoryDocumentProvider {
+        let doc = sysml_model::SysmlDocument {
+            uri: url::Url::parse(uri).unwrap(),
+            content: content.to_string(),
+            path_hint: None,
+            source_kind: sysml_model::SysmlDocumentSourceKind::Workspace,
+            sha256: None,
+            byte_size: None,
+        };
+        InMemoryDocumentProvider::new(vec![doc])
+    }
+
+    #[test]
+    fn diagnostic_nodes_excluded_from_projection_and_present_in_validation() {
+        // A connect statement with an unresolvable source produces a diagnostic node in the graph.
+        let content = r#"
+package Pkg {
+    part def A { port pA; }
+    part def B { port pB; }
+    part a : A;
+    part b : B;
+    connection : connect a::pA to b::pBMissing;
+}
+"#;
+        let uri = "file:///workspace/pkg.sysml";
+        let provider = make_provider(uri, content);
+        let (graph, _docs) = build_semantic_graph_with_provider(&provider).expect("graph");
+
+        let target = std::path::PathBuf::from("/workspace/pkg.sysml");
+        let projection =
+            project_host_semantic_model(&graph, &[target.clone()]).expect("projection");
+
+        assert!(
+            projection
+                .nodes
+                .iter()
+                .all(|n| n.element_kind != sysml_model::ElementKind::Diagnostic),
+            "diagnostic pseudo-nodes must not appear in HostSemanticProjection"
+        );
+    }
 }
 
 fn summarize_host_documents(documents: &[HostValidatedDocument]) -> HostValidationSummary {
