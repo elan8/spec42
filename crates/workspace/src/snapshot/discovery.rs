@@ -74,7 +74,7 @@ pub(crate) fn path_to_file_url(path: &Path) -> WorkspaceResult<Url> {
             .join(path)
     };
     let canonical = std::fs::canonicalize(&absolute).unwrap_or(absolute);
-    if canonical.is_dir() {
+    let url = if canonical.is_dir() {
         Url::from_directory_path(&canonical)
     } else {
         Url::from_file_path(&canonical)
@@ -84,7 +84,28 @@ pub(crate) fn path_to_file_url(path: &Path) -> WorkspaceResult<Url> {
             "Failed to convert path to file URI: {}",
             canonical.display()
         ))
-    })
+    })?;
+    Ok(normalize_file_url_drive_letter(url))
+}
+
+/// Lowercases the Windows drive letter in a `file://` URL (`file:///C:/...` → `file:///c:/...`).
+/// Keeps URIs consistent with those produced by `FileSystemDocumentProvider` so that
+/// semantic graph lookups by URI don't fail due to drive-letter case mismatches.
+fn normalize_file_url_drive_letter(url: Url) -> Url {
+    if url.scheme() != "file" {
+        return url;
+    }
+    let path = url.path();
+    if path.len() >= 3 {
+        let bytes = path.as_bytes();
+        if bytes[0] == b'/' && bytes[1].is_ascii_uppercase() && bytes[2] == b':' {
+            let new_path = format!("/{}{}", (bytes[1] as char).to_ascii_lowercase(), &path[2..]);
+            if let Ok(normalized) = Url::parse(&format!("file://{new_path}")) {
+                return normalized;
+            }
+        }
+    }
+    url
 }
 
 fn normalize_existing_path(path: &Path) -> WorkspaceResult<PathBuf> {

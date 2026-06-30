@@ -29,6 +29,7 @@ pub struct HostSemanticModelNode {
     /// Element-specific attributes extracted during graph construction.
     /// Keys and value shapes are kind-dependent (e.g. `"typeRef"`, `"multiplicity"`,
     /// `"redefines"`, `"evaluatedValue"`, …).
+    #[serde(default)]
     pub attributes: HashMap<String, Value>,
 }
 
@@ -42,6 +43,7 @@ pub struct HostSemanticModelRelationship {
     /// Relationship kind (typed enum, serialises as its canonical lowercase string).
     pub kind: RelationshipKind,
     /// Present when this `Connection` edge was resolved from an explicit `connect` statement.
+    #[serde(default)]
     pub connect: Option<ConnectStatementDetail>,
 }
 
