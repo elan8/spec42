@@ -7,7 +7,7 @@ use crate::dto::HoverResult;
 use crate::keywords::keyword_hover_markdown;
 use crate::lookup::collect_symbol_matches_for_lookup;
 use crate::presentation_hover::hover_markdown_for_node;
-use crate::references::TYPE_LOOKUP_KINDS;
+use crate::references::TYPE_LOOKUP_ELEMENT_KINDS;
 use crate::symbol::symbol_hover_markdown;
 use crate::text::{unit_value_suffix_at_position, word_at_position};
 use crate::workspace::WorkspaceSnapshot;
@@ -181,7 +181,7 @@ fn resolve_hover_type_reference_target<'a>(
             graph,
             node,
             &candidate,
-            TYPE_LOOKUP_KINDS,
+            TYPE_LOOKUP_ELEMENT_KINDS,
         )
         .into_iter()
         .next()

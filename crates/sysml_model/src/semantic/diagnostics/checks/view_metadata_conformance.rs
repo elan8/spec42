@@ -7,7 +7,7 @@ use crate::semantic::diagnostics::helpers::{
     diag, diagnostic_range, is_synthetic, is_unknown_range, parse_attribute_text_range,
 };
 use crate::semantic::diagnostics::types::DiagnosticSeverity;
-use crate::semantic::model::RelationshipKind;
+use crate::semantic::model::{ElementKind, RelationshipKind};
 use crate::semantic::reference_resolution::{resolve_expose_target, ExposeTargetResolution};
 use crate::semantic::relationships::{
     resolve_type_target_in_workspace, ANNOTATED_ELEMENT_TARGET_KINDS,
@@ -184,7 +184,7 @@ pub(in crate::semantic::diagnostics) fn collect_view_metadata_conformance_diagno
         if node.element_kind != "view rendering" || is_synthetic(node) {
             continue;
         }
-        let allowed = ["rendering def", "rendering"];
+        let allowed = [ElementKind::RenderingDef, ElementKind::Rendering];
         let type_ref = node
             .attributes
             .get("renderingType")
@@ -229,7 +229,7 @@ pub(in crate::semantic::diagnostics) fn collect_view_metadata_conformance_diagno
             .get("annotationName")
             .and_then(|v| v.as_str())
             .unwrap_or(node.name.as_str());
-        let allowed = ["metadata def"];
+        let allowed = [ElementKind::MetadataDef];
         if resolve_type_target_in_workspace(graph, node, annotation_name, &allowed).is_some() {
             continue;
         }
@@ -294,12 +294,12 @@ pub(in crate::semantic::diagnostics) fn collect_view_metadata_conformance_diagno
                 node,
                 target,
                 &[
-                    "requirement def",
-                    "concern",
-                    "concern def",
-                    "requirement",
-                    "part def",
-                    "part",
+                    ElementKind::RequirementDef,
+                    ElementKind::Concern,
+                    ElementKind::ConcernDef,
+                    ElementKind::Requirement,
+                    ElementKind::PartDef,
+                    ElementKind::Part,
                 ],
             )
             .is_some()
@@ -397,7 +397,7 @@ pub(in crate::semantic::diagnostics) fn collect_view_metadata_conformance_diagno
         } else {
             continue;
         };
-        if resolve_type_target_in_workspace(graph, node, &keyword, &["metadata def"]).is_some() {
+        if resolve_type_target_in_workspace(graph, node, &keyword, &[ElementKind::MetadataDef]).is_some() {
             continue;
         }
         let diag_key = format!("metadata_kw|{}", node.id.qualified_name);

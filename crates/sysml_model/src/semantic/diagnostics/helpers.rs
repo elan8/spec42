@@ -472,7 +472,8 @@ pub(super) fn resolves_to_enum_def(
     type_ref: &str,
 ) -> bool {
     use crate::resolve_type_reference_targets;
-    !resolve_type_reference_targets(graph, context_node, type_ref, &["enum def"]).is_empty()
+    use crate::ElementKind;
+    !resolve_type_reference_targets(graph, context_node, type_ref, &[ElementKind::EnumDef]).is_empty()
 }
 
 pub(super) fn unresolved_type_diagnostic_range(

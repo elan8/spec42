@@ -236,7 +236,7 @@ pub(in crate::semantic::diagnostics) fn collect_name_resolution_diagnostics(
                         .iter()
                         .any(|candidate| {
                             candidate.id.uri == *uri
-                                && RULE6_ALLOWED_KINDS.contains(&candidate.element_kind.as_str())
+                                && RULE6_ALLOWED_KINDS.contains(&candidate.element_kind)
                         })
                 })
         } else {
@@ -374,8 +374,7 @@ pub(in crate::semantic::diagnostics) fn collect_name_resolution_diagnostics(
                     .or_insert_with(|| {
                         graph.nodes_named(&normalized).iter().any(|candidate| {
                             candidate.id.uri == *uri
-                                && SPECIALIZES_TARGET_KINDS
-                                    .contains(&candidate.element_kind.as_str())
+                                && SPECIALIZES_TARGET_KINDS.contains(&candidate.element_kind)
                         })
                     })
             } else {

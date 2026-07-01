@@ -1,8 +1,8 @@
 ﻿use std::collections::HashSet;
 
 use sysml_model::{
-    resolve_member_via_type, resolve_type_reference_targets, NodeId, ResolveResult, TextPosition,
-    TextRange,
+    resolve_member_via_type, resolve_type_reference_targets, ElementKind, NodeId, ResolveResult,
+    TextPosition, TextRange,
 };
 use url::Url;
 
@@ -31,6 +31,26 @@ pub const TYPE_LOOKUP_KINDS: &[&str] = &[
     "use case def",
     "concern def",
     "kermlDecl",
+];
+
+/// [`ElementKind`] equivalent of [`TYPE_LOOKUP_KINDS`], for call sites that take the
+/// type-safe allowed-kinds slice (e.g. `resolve_type_reference_targets`).
+pub const TYPE_LOOKUP_ELEMENT_KINDS: &[ElementKind] = &[
+    ElementKind::PartDef,
+    ElementKind::PortDef,
+    ElementKind::Interface,
+    ElementKind::ItemDef,
+    ElementKind::AttributeDef,
+    ElementKind::ActionDef,
+    ElementKind::ActorDef,
+    ElementKind::OccurrenceDef,
+    ElementKind::FlowDef,
+    ElementKind::AllocationDef,
+    ElementKind::StateDef,
+    ElementKind::RequirementDef,
+    ElementKind::UseCaseDef,
+    ElementKind::ConcernDef,
+    ElementKind::KermlDecl,
 ];
 
 #[derive(Debug, Clone)]
@@ -189,7 +209,7 @@ pub fn goto_definition_at_position(
                 graph,
                 node,
                 &word,
-                TYPE_LOOKUP_KINDS,
+                TYPE_LOOKUP_ELEMENT_KINDS,
             )
             .into_iter()
             .find_map(|target_id| graph.get_node(&target_id))
@@ -298,7 +318,7 @@ pub fn resolve_symbol_target_at_position(
                 graph,
                 node,
                 &word,
-                TYPE_LOOKUP_KINDS,
+                TYPE_LOOKUP_ELEMENT_KINDS,
             )
             .into_iter()
             .find_map(|target_id| graph.get_node(&target_id))

@@ -4,11 +4,10 @@ use url::Url;
 
 use crate::semantic::diagnostics::helpers::{diag, diagnostic_range, is_synthetic};
 use crate::semantic::diagnostics::types::DiagnosticSeverity;
-use crate::semantic::model::RelationshipKind;
+use crate::semantic::kinds::VERIFIED_REQUIREMENT_TARGET_KINDS;
+use crate::semantic::model::{ElementKind, RelationshipKind};
 use crate::semantic::reference_resolution::resolve_expression_endpoint_strict;
 use crate::{resolve_type_reference_targets, ResolveResult, SemanticDiagnostic, SemanticGraph};
-
-const VERIFIED_REQUIREMENT_TARGET_KINDS: &[&str] = &["requirement def", "requirement"];
 
 fn is_requirement_kind(kind: &crate::ElementKind) -> bool {
     matches!(kind.as_str(), "requirement" | "requirement def")
@@ -187,7 +186,7 @@ pub(in crate::semantic::diagnostics) fn collect_requirement_case_conformance_dia
         if node.element_kind != "include use case" || is_synthetic(node) {
             continue;
         }
-        let allowed = ["use case def", "use case"];
+        let allowed = [ElementKind::UseCaseDef, ElementKind::UseCase];
         let Some(include_target) = node
             .attributes
             .get("includeTarget")

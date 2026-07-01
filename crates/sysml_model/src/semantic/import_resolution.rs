@@ -1,15 +1,11 @@
 use std::collections::HashSet;
 
 use crate::semantic::graph::SemanticGraph;
-use crate::semantic::kinds::{self, is_namespace};
-use crate::semantic::model::{NodeId, SemanticNode};
+use crate::semantic::kinds::{self, element_kind_allowed, is_namespace};
+use crate::semantic::model::{ElementKind, NodeId, SemanticNode};
 use crate::semantic::resolution::naming::{
     normalize_declared_type_ref, normalize_for_lookup, type_ref_candidates_with_kind,
 };
-
-fn element_kind_allowed(element_kind: &crate::ElementKind, allowed_kinds: &[&str]) -> bool {
-    allowed_kinds.contains(&element_kind.as_str())
-}
 
 fn import_visibility(import: &SemanticNode) -> String {
     import
@@ -70,7 +66,7 @@ fn dedupe_node_ids(ids: Vec<NodeId>) -> Vec<NodeId> {
 fn unique_graph_wide_named_members(
     graph: &SemanticGraph,
     simple_name: &str,
-    allowed_kinds: &[&str],
+    allowed_kinds: &[ElementKind],
 ) -> Vec<NodeId> {
     let matches: Vec<NodeId> = graph
         .nodes_by_uri
@@ -196,7 +192,7 @@ fn exact_named_members_or_disambiguated(
 fn allowed_exact_named_members(
     graph: &SemanticGraph,
     qualified_name: &str,
-    allowed_kinds: &[&str],
+    allowed_kinds: &[ElementKind],
 ) -> Vec<NodeId> {
     exact_named_members(graph, qualified_name)
         .into_iter()
@@ -434,7 +430,7 @@ pub fn resolve_type_reference_targets(
     graph: &SemanticGraph,
     context_node: &SemanticNode,
     type_ref: &str,
-    allowed_kinds: &[&str],
+    allowed_kinds: &[ElementKind],
 ) -> Vec<NodeId> {
     let normalized_type_ref = normalize_declared_type_ref(type_ref);
     if normalized_type_ref.is_empty() {

@@ -9,12 +9,14 @@ use url::Url;
 use crate::semantic::ast_util::identification_name;
 use crate::semantic::graph::{PendingExpressionRelationship, SemanticGraph};
 use crate::semantic::import_resolution::resolve_type_reference_targets;
-use crate::semantic::kinds::{self, SUBJECT_TYPE_TARGET_KINDS, VERIFIED_REQUIREMENT_TARGET_KINDS};
+use crate::semantic::kinds::{
+    self, element_kind_allowed, SUBJECT_TYPE_TARGET_KINDS, VERIFIED_REQUIREMENT_TARGET_KINDS,
+};
 pub use crate::semantic::kinds::{
     ANNOTATED_ELEMENT_TARGET_KINDS, SPECIALIZES_TARGET_KINDS, TYPING_TARGET_KINDS,
 };
 use crate::semantic::model::{
-    ConnectStatementDetail, NodeId, RelationshipKind, SemanticEdge, SemanticNode,
+    ConnectStatementDetail, ElementKind, NodeId, RelationshipKind, SemanticEdge, SemanticNode,
 };
 use crate::semantic::reference_resolution::{resolve_expression_endpoint_strict, ResolveResult};
 pub use crate::semantic::resolution::naming::{
@@ -69,15 +71,11 @@ fn specializes_refs_from_value(value: &serde_json::Value) -> Vec<String> {
     }
 }
 
-fn element_kind_allowed(element_kind: &crate::ElementKind, allowed_kinds: &[&str]) -> bool {
-    allowed_kinds.contains(&element_kind.as_str())
-}
-
 fn resolve_pending_target(
     graph: &SemanticGraph,
     source_node: &SemanticNode,
     target_qualified: &str,
-    allowed_kinds: &[&str],
+    allowed_kinds: &[ElementKind],
 ) -> Vec<NodeId> {
     let mut resolved =
         resolve_type_reference_targets(graph, source_node, target_qualified, allowed_kinds);
@@ -96,7 +94,7 @@ pub fn resolve_type_target_in_workspace(
     g: &SemanticGraph,
     context_node: &SemanticNode,
     type_ref: &str,
-    allowed_target_kinds: &[&str],
+    allowed_target_kinds: &[ElementKind],
 ) -> Option<NodeId> {
     let normalized_type_ref = normalize_declared_type_ref(type_ref);
     if normalized_type_ref.is_empty() {
@@ -216,7 +214,7 @@ fn add_edge_if_both_exist_opt(
     source_qualified: &str,
     target_qualified: &str,
     kind: RelationshipKind,
-    target_kinds: Option<&[&str]>,
+    target_kinds: Option<&[ElementKind]>,
 ) -> bool {
     let src_key = normalize_for_lookup(source_qualified);
     let tgt_key = normalize_for_lookup(target_qualified);
@@ -230,14 +228,12 @@ fn add_edge_if_both_exist_opt(
                 source_qualified: src_key,
                 target_qualified: tgt_key,
                 kind,
-                target_kinds: target_kinds
-                    .map(|kinds| kinds.iter().map(|kind| crate::ElementKind::parse(kind)).collect()),
+                target_kinds: target_kinds.map(|kinds| kinds.to_vec()),
             });
         return false;
     };
     if let Some(kinds) = target_kinds {
-        let ek = tgt_node.element_kind.as_str();
-        if !kinds.contains(&ek) {
+        if !kinds.contains(&tgt_node.element_kind) {
             return false;
         }
     }
@@ -327,12 +323,11 @@ pub fn resolve_pending_relationships_for_uri(g: &mut SemanticGraph, uri: &Url) {
                     if target_kinds.is_empty() {
                         Vec::new()
                     } else {
-                        let allowed: Vec<&str> = target_kinds.iter().map(|k| k.as_str()).collect();
                         resolve_pending_target(
                             g,
                             source_node,
                             &pending_edge.target_qualified,
-                            &allowed,
+                            target_kinds,
                         )
                     }
                 } else {
@@ -1061,7 +1056,7 @@ fn resolve_typing_edge_cross_document_inner(
     if normalized_type_ref.is_empty() {
         return None;
     }
-    let target_element_kinds: &[&str] = match kind {
+    let target_element_kinds: &[ElementKind] = match kind {
         RelationshipKind::Typing => TYPING_TARGET_KINDS,
         RelationshipKind::Specializes => SPECIALIZES_TARGET_KINDS,
         _ => return None,

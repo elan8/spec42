@@ -100,13 +100,15 @@ It re-stores `version`/`workspace_root_uri`/`workspace_uris` that are already in
 
 ## 3. String-Heavy APIs
 
-### 3.1 ~158 `element_kind` string comparisons survive (P2)
+### 3.1 ~158 `element_kind` string comparisons survive (P2) — **partially fixed**
 
 Despite the new `ElementKind` enum, most call sites in `semantic_core` still use `element_kind == "port"` or `element_kind.as_str()` matches, enabled by the `PartialEq<str>` impls on `ElementKind`. This defeats the exhaustiveness guarantees the enum was introduced to provide.
 
-Examples: `engine_impl.rs:22-28,55,163,316,367,427,591,631`
+**Fixed:** the "allowed target kinds" resolution/allowlist system is now `ElementKind`-typed end to end — `kinds.rs` (`TYPING_TARGET_KINDS`, `SPECIALIZES_TARGET_KINDS`, `RULE6_ALLOWED_KINDS`, `SUBJECT_TYPE_TARGET_KINDS`, `VERIFIED_REQUIREMENT_TARGET_KINDS`, `ANNOTATED_ELEMENT_TARGET_KINDS`, all `*_SUBSET_TARGETS`, `allowed_for_role`, `allowed_typing_target_kinds`, `allowed_specializes_target_kinds`, `allowed_subset_redefine_target_kinds`, `is_part_like`/`is_port_like`, `expected_typing_definition_label`), `import_resolution.rs::resolve_type_reference_targets` and friends, `relationships.rs::resolve_type_target_in_workspace`/`resolve_pending_target`/`add_edge_if_both_exist_opt`, plus call sites in `diagnostics/checks/*.rs` and `language_service` (`TYPE_LOOKUP_ELEMENT_KINDS`). Three duplicate `element_kind_allowed(&str)` helpers were consolidated into one `ElementKind`-typed function in `kinds.rs`.
 
-**Recommendation:** Remove `PartialEq<str>` from `ElementKind`. Update all comparison sites to use enum variants or predicate functions from `kinds.rs`. Thread `ElementKind` (not `&str`) through `add_node_and_recurse` in the graph builder.
+**Still open:** direct `element_kind == "literal"` / `element_kind.as_str()` comparisons elsewhere (e.g. `engine_impl.rs:22-28,55,163,316,367,427,591,631`, and scattered `node.element_kind != "view rendering"`-style checks in the diagnostics checks files) still rely on the `PartialEq<str>` impl.
+
+**Recommendation:** Remove `PartialEq<str>` from `ElementKind` once the remaining call sites are converted. Update all comparison sites to use enum variants or predicate functions from `kinds.rs`. Thread `ElementKind` (not `&str`) through `add_node_and_recurse` in the graph builder.
 
 ### 3.2 Untyped `SemanticNode.attributes` bag (~70+ keys) (P2)
 

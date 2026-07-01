@@ -12,10 +12,9 @@ use url::Url;
 use crate::semantic::ast_util::{span_to_range, text_range_to_json};
 use crate::semantic::graph::SemanticGraph;
 use crate::semantic::import_resolution::resolve_type_reference_targets;
+use crate::semantic::kinds::VERIFIED_REQUIREMENT_TARGET_KINDS;
 use crate::semantic::model::{NodeId, RelationshipKind};
 use crate::semantic::relationships::{add_edge_if_both_exist, add_typing_edge_if_exists};
-
-const VERIFIED_REQUIREMENT_TARGET_KINDS: &[&str] = &["requirement def", "requirement"];
 use crate::semantic::text_span::TextRange;
 
 use super::expressions::expression_to_debug_string;

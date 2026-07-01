@@ -46,112 +46,113 @@ pub const DISAMBIGUATION_SUFFIXES: &[&str] = &[
     "rendering_def",
 ];
 
-pub const TYPING_TARGET_KINDS: &[&str] = &[
-    "part def",
-    "port def",
-    "interface",
-    "item def",
-    "attribute def",
-    "action def",
-    "actor def",
-    "occurrence def",
-    "flow def",
-    "allocation def",
-    "state def",
-    "requirement def",
-    "requirement",
-    "use case def",
-    "concern def",
-    "analysis def",
-    "verification def",
-    "view def",
-    "viewpoint def",
-    "rendering def",
-    "metadata def",
-    "enum def",
-    "alias",
-    "kermlDecl",
+pub const TYPING_TARGET_KINDS: &[ElementKind] = &[
+    ElementKind::PartDef,
+    ElementKind::PortDef,
+    ElementKind::Interface,
+    ElementKind::ItemDef,
+    ElementKind::AttributeDef,
+    ElementKind::ActionDef,
+    ElementKind::ActorDef,
+    ElementKind::OccurrenceDef,
+    ElementKind::FlowDef,
+    ElementKind::AllocationDef,
+    ElementKind::StateDef,
+    ElementKind::RequirementDef,
+    ElementKind::Requirement,
+    ElementKind::UseCaseDef,
+    ElementKind::ConcernDef,
+    ElementKind::AnalysisDef,
+    ElementKind::VerificationDef,
+    ElementKind::ViewDef,
+    ElementKind::ViewpointDef,
+    ElementKind::RenderingDef,
+    ElementKind::MetadataDef,
+    ElementKind::EnumDef,
+    ElementKind::Alias,
+    ElementKind::KermlDecl,
 ];
 
-pub const SPECIALIZES_TARGET_KINDS: &[&str] = &[
-    "part def",
-    "port def",
-    "interface",
-    "item def",
-    "attribute def",
-    "action def",
-    "actor def",
-    "occurrence def",
-    "flow def",
-    "allocation def",
-    "state def",
-    "requirement def",
-    "use case def",
-    "concern def",
-    "enum def",
-    "alias",
-    "kermlDecl",
-    "individual def",
-    "connection def",
-    "metadata def",
-    "constraint def",
-    "calc def",
-    "case def",
-    "analysis def",
-    "verification def",
-    "view def",
-    "viewpoint def",
-    "rendering def",
+pub const SPECIALIZES_TARGET_KINDS: &[ElementKind] = &[
+    ElementKind::PartDef,
+    ElementKind::PortDef,
+    ElementKind::Interface,
+    ElementKind::ItemDef,
+    ElementKind::AttributeDef,
+    ElementKind::ActionDef,
+    ElementKind::ActorDef,
+    ElementKind::OccurrenceDef,
+    ElementKind::FlowDef,
+    ElementKind::AllocationDef,
+    ElementKind::StateDef,
+    ElementKind::RequirementDef,
+    ElementKind::UseCaseDef,
+    ElementKind::ConcernDef,
+    ElementKind::EnumDef,
+    ElementKind::Alias,
+    ElementKind::KermlDecl,
+    ElementKind::IndividualDef,
+    ElementKind::ConnectionDef,
+    ElementKind::MetadataDef,
+    ElementKind::ConstraintDef,
+    ElementKind::CalcDef,
+    ElementKind::CaseDef,
+    ElementKind::AnalysisDef,
+    ElementKind::VerificationDef,
+    ElementKind::ViewDef,
+    ElementKind::ViewpointDef,
+    ElementKind::RenderingDef,
 ];
 
 /// Allowed resolved kinds for Rule 6 unresolved-type diagnostics (typing + definitional targets).
-pub const RULE6_ALLOWED_KINDS: &[&str] = &[
-    "part def",
-    "port def",
-    "interface",
-    "item def",
-    "attribute def",
-    "action def",
-    "actor def",
-    "occurrence def",
-    "flow def",
-    "allocation def",
-    "state def",
-    "requirement def",
-    "use case def",
-    "concern def",
-    "analysis def",
-    "verification def",
-    "enum def",
-    "alias",
-    "kermlDecl",
-    "view def",
-    "viewpoint def",
-    "metadata def",
-    "rendering def",
+pub const RULE6_ALLOWED_KINDS: &[ElementKind] = &[
+    ElementKind::PartDef,
+    ElementKind::PortDef,
+    ElementKind::Interface,
+    ElementKind::ItemDef,
+    ElementKind::AttributeDef,
+    ElementKind::ActionDef,
+    ElementKind::ActorDef,
+    ElementKind::OccurrenceDef,
+    ElementKind::FlowDef,
+    ElementKind::AllocationDef,
+    ElementKind::StateDef,
+    ElementKind::RequirementDef,
+    ElementKind::UseCaseDef,
+    ElementKind::ConcernDef,
+    ElementKind::AnalysisDef,
+    ElementKind::VerificationDef,
+    ElementKind::EnumDef,
+    ElementKind::Alias,
+    ElementKind::KermlDecl,
+    ElementKind::ViewDef,
+    ElementKind::ViewpointDef,
+    ElementKind::MetadataDef,
+    ElementKind::RenderingDef,
 ];
 
-pub const SUBJECT_TYPE_TARGET_KINDS: &[&str] = &[
-    "part def",
-    "port def",
-    "interface",
-    "item def",
-    "attribute def",
-    "requirement def",
-    "action def",
-    "actor def",
-    "occurrence def",
-    "flow def",
-    "allocation def",
-    "state def",
-    "use case def",
-    "concern def",
-    "analysis def",
+pub const SUBJECT_TYPE_TARGET_KINDS: &[ElementKind] = &[
+    ElementKind::PartDef,
+    ElementKind::PortDef,
+    ElementKind::Interface,
+    ElementKind::ItemDef,
+    ElementKind::AttributeDef,
+    ElementKind::RequirementDef,
+    ElementKind::ActionDef,
+    ElementKind::ActorDef,
+    ElementKind::OccurrenceDef,
+    ElementKind::FlowDef,
+    ElementKind::AllocationDef,
+    ElementKind::StateDef,
+    ElementKind::UseCaseDef,
+    ElementKind::ConcernDef,
+    ElementKind::AnalysisDef,
 ];
 
-pub const VERIFIED_REQUIREMENT_TARGET_KINDS: &[&str] = &["requirement def", "requirement"];
+pub const VERIFIED_REQUIREMENT_TARGET_KINDS: &[ElementKind] =
+    &[ElementKind::RequirementDef, ElementKind::Requirement];
 
-pub fn allowed_for_role(role: ResolutionRole) -> &'static [&'static str] {
+pub fn allowed_for_role(role: ResolutionRole) -> &'static [ElementKind] {
     match role {
         ResolutionRole::Typing => TYPING_TARGET_KINDS,
         ResolutionRole::Specializes => SPECIALIZES_TARGET_KINDS,
@@ -162,33 +163,33 @@ pub fn allowed_for_role(role: ResolutionRole) -> &'static [&'static str] {
     }
 }
 
-pub const ANNOTATED_ELEMENT_TARGET_KINDS: &[&str] = &[
-    "part def",
-    "part",
-    "port def",
-    "port",
-    "action def",
-    "action",
-    "state def",
-    "state",
-    "requirement def",
-    "requirement",
-    "use case def",
-    "use case",
-    "concern def",
-    "concern",
-    "item def",
-    "item",
-    "interface",
-    "metadata def",
-    "metadata usage",
-    "constraint def",
-    "constraint",
-    "package",
+pub const ANNOTATED_ELEMENT_TARGET_KINDS: &[ElementKind] = &[
+    ElementKind::PartDef,
+    ElementKind::Part,
+    ElementKind::PortDef,
+    ElementKind::Port,
+    ElementKind::ActionDef,
+    ElementKind::Action,
+    ElementKind::StateDef,
+    ElementKind::State,
+    ElementKind::RequirementDef,
+    ElementKind::Requirement,
+    ElementKind::UseCaseDef,
+    ElementKind::UseCase,
+    ElementKind::ConcernDef,
+    ElementKind::Concern,
+    ElementKind::ItemDef,
+    ElementKind::Item,
+    ElementKind::Interface,
+    ElementKind::MetadataDef,
+    ElementKind::MetadataUsage,
+    ElementKind::ConstraintDef,
+    ElementKind::Constraint,
+    ElementKind::Package,
 ];
 
-pub fn element_kind_allowed(element_kind: &ElementKind, allowed_kinds: &[&str]) -> bool {
-    allowed_kinds.contains(&element_kind.as_str())
+pub fn element_kind_allowed(element_kind: &ElementKind, allowed_kinds: &[ElementKind]) -> bool {
+    allowed_kinds.contains(element_kind)
 }
 
 pub fn is_namespace(element_kind: &ElementKind) -> bool {
@@ -212,11 +213,12 @@ pub fn is_part_like(element_kind: &ElementKind) -> bool {
     matches!(
         element_kind,
         ElementKind::Part | ElementKind::PartDef | ElementKind::ItemDef | ElementKind::OccurrenceDef
-    ) || element_kind.as_str().contains("part")
+    ) || matches!(element_kind, ElementKind::Unknown(s) if s.contains("part"))
 }
 
 pub fn is_port_like(element_kind: &ElementKind) -> bool {
-    element_kind.as_str().contains("port")
+    matches!(element_kind, ElementKind::Port | ElementKind::PortDef)
+        || matches!(element_kind, ElementKind::Unknown(s) if s.contains("port"))
 }
 
 pub fn is_requirement(element_kind: &ElementKind) -> bool {
@@ -278,8 +280,8 @@ pub fn is_semantic_metadata_base_type_redefine(owner: &SemanticNode, node: &Sema
             .is_some_and(|value| value.contains("SemanticMetadata"))
 }
 
-pub fn is_compatible_kind(target_kind: &ElementKind, allowed: &[&str]) -> bool {
-    allowed.contains(&target_kind.as_str())
+pub fn is_compatible_kind(target_kind: &ElementKind, allowed: &[ElementKind]) -> bool {
+    allowed.contains(target_kind)
 }
 
 pub fn is_compatible_specializes_target(def_kind: &ElementKind, target: &SemanticNode) -> bool {
@@ -293,126 +295,142 @@ pub fn is_compatible_specializes_target(def_kind: &ElementKind, target: &Semanti
 }
 
 /// Per-usage typing compatibility (diagnostics layer).
-pub fn allowed_typing_target_kinds(usage_kind: &ElementKind) -> &'static [&'static str] {
-    match usage_kind.as_str() {
-        "part" => &["part def", "item def", "occurrence def"],
-        "port" => &["port def"],
-        "item" => &["item def", "part def"],
-        "attribute" => &["attribute def", "enum def"],
-        "action" => &["action def"],
-        "state" => &["state def"],
-        "requirement" => &["requirement def"],
-        "use case" => &["use case def"],
-        "analysis" => &["analysis def"],
-        "verification" => &["verification def"],
-        "view" => &["view def"],
-        "viewpoint" => &["viewpoint def"],
-        "concern" => &["concern def"],
-        "actor" | "stakeholder" => &["part def", "item def", "occurrence def"],
-        "flow" => &["flow def"],
-        "allocation" => &["allocation def"],
-        "interface" => &["interface"],
-        "metadata usage" => &["metadata def"],
-        "metadata keyword" => &["metadata def"],
-        "rendering" => &["rendering def"],
-        "view rendering" => &["rendering def", "rendering"],
-        "perform" => &["action def", "action"],
-        "subject" => SUBJECT_TYPE_TARGET_KINDS,
-        "verified requirement" => VERIFIED_REQUIREMENT_TARGET_KINDS,
-        "include use case" => &["use case def", "use case"],
-        "ref" => &[
-            "part def",
-            "port def",
-            "item def",
-            "attribute def",
-            "action def",
-            "state def",
-            "requirement def",
-            "use case def",
-            "analysis def",
-            "verification def",
-            "view def",
-            "viewpoint def",
-            "concern def",
-            "flow def",
-            "allocation def",
-            "interface",
-            "enum def",
-            "occurrence def",
+pub fn allowed_typing_target_kinds(usage_kind: &ElementKind) -> &'static [ElementKind] {
+    match usage_kind {
+        ElementKind::Part => &[ElementKind::PartDef, ElementKind::ItemDef, ElementKind::OccurrenceDef],
+        ElementKind::Port => &[ElementKind::PortDef],
+        ElementKind::Item => &[ElementKind::ItemDef, ElementKind::PartDef],
+        ElementKind::Attribute => &[ElementKind::AttributeDef, ElementKind::EnumDef],
+        ElementKind::Action => &[ElementKind::ActionDef],
+        ElementKind::State => &[ElementKind::StateDef],
+        ElementKind::Requirement => &[ElementKind::RequirementDef],
+        ElementKind::UseCase => &[ElementKind::UseCaseDef],
+        ElementKind::Analysis => &[ElementKind::AnalysisDef],
+        ElementKind::Verification => &[ElementKind::VerificationDef],
+        ElementKind::View => &[ElementKind::ViewDef],
+        ElementKind::Viewpoint => &[ElementKind::ViewpointDef],
+        ElementKind::Concern => &[ElementKind::ConcernDef],
+        ElementKind::Actor | ElementKind::Stakeholder => {
+            &[ElementKind::PartDef, ElementKind::ItemDef, ElementKind::OccurrenceDef]
+        }
+        ElementKind::Flow => &[ElementKind::FlowDef],
+        ElementKind::Allocation => &[ElementKind::AllocationDef],
+        ElementKind::Interface => &[ElementKind::Interface],
+        ElementKind::MetadataUsage => &[ElementKind::MetadataDef],
+        ElementKind::MetadataKeyword => &[ElementKind::MetadataDef],
+        ElementKind::Rendering => &[ElementKind::RenderingDef],
+        ElementKind::ViewRendering => &[ElementKind::RenderingDef, ElementKind::Rendering],
+        ElementKind::Perform => &[ElementKind::ActionDef, ElementKind::Action],
+        ElementKind::Subject => SUBJECT_TYPE_TARGET_KINDS,
+        ElementKind::VerifiedRequirement => VERIFIED_REQUIREMENT_TARGET_KINDS,
+        ElementKind::IncludeUseCase => &[ElementKind::UseCaseDef, ElementKind::UseCase],
+        ElementKind::Ref => &[
+            ElementKind::PartDef,
+            ElementKind::PortDef,
+            ElementKind::ItemDef,
+            ElementKind::AttributeDef,
+            ElementKind::ActionDef,
+            ElementKind::StateDef,
+            ElementKind::RequirementDef,
+            ElementKind::UseCaseDef,
+            ElementKind::AnalysisDef,
+            ElementKind::VerificationDef,
+            ElementKind::ViewDef,
+            ElementKind::ViewpointDef,
+            ElementKind::ConcernDef,
+            ElementKind::FlowDef,
+            ElementKind::AllocationDef,
+            ElementKind::Interface,
+            ElementKind::EnumDef,
+            ElementKind::OccurrenceDef,
         ],
         _ => &[],
     }
 }
 
-pub fn allowed_specializes_target_kinds(def_kind: &ElementKind) -> &'static [&'static str] {
-    match def_kind.as_str() {
-        "part def" => &["part def", "occurrence def"],
-        "port def" => &["port def"],
-        "item def" => &["item def"],
-        "attribute def" => &["attribute def"],
-        "action def" => &["action def"],
-        "state def" => &["state def"],
-        "requirement def" => &["requirement def"],
-        "use case def" => &["use case def"],
-        "analysis def" => &["analysis def"],
-        "verification def" => &["verification def"],
-        "view def" => &["view def"],
-        "viewpoint def" => &["viewpoint def"],
-        "concern def" => &["concern def"],
-        "flow def" => &["flow def"],
-        "allocation def" => &["allocation def"],
-        "enum def" => &["enum def"],
-        "metadata def" => &["metadata def"],
-        "rendering def" => &["rendering def"],
-        "interface" => &["interface"],
+pub fn allowed_specializes_target_kinds(def_kind: &ElementKind) -> &'static [ElementKind] {
+    match def_kind {
+        ElementKind::PartDef => &[ElementKind::PartDef, ElementKind::OccurrenceDef],
+        ElementKind::PortDef => &[ElementKind::PortDef],
+        ElementKind::ItemDef => &[ElementKind::ItemDef],
+        ElementKind::AttributeDef => &[ElementKind::AttributeDef],
+        ElementKind::ActionDef => &[ElementKind::ActionDef],
+        ElementKind::StateDef => &[ElementKind::StateDef],
+        ElementKind::RequirementDef => &[ElementKind::RequirementDef],
+        ElementKind::UseCaseDef => &[ElementKind::UseCaseDef],
+        ElementKind::AnalysisDef => &[ElementKind::AnalysisDef],
+        ElementKind::VerificationDef => &[ElementKind::VerificationDef],
+        ElementKind::ViewDef => &[ElementKind::ViewDef],
+        ElementKind::ViewpointDef => &[ElementKind::ViewpointDef],
+        ElementKind::ConcernDef => &[ElementKind::ConcernDef],
+        ElementKind::FlowDef => &[ElementKind::FlowDef],
+        ElementKind::AllocationDef => &[ElementKind::AllocationDef],
+        ElementKind::EnumDef => &[ElementKind::EnumDef],
+        ElementKind::MetadataDef => &[ElementKind::MetadataDef],
+        ElementKind::RenderingDef => &[ElementKind::RenderingDef],
+        ElementKind::Interface => &[ElementKind::Interface],
         _ => &[],
     }
 }
 
-const PART_SUBSET_TARGETS: &[&str] = &["part", "part def", "item def", "occurrence def"];
-const PORT_SUBSET_TARGETS: &[&str] = &["port", "port def"];
-const ITEM_SUBSET_TARGETS: &[&str] = &["item", "item def", "part def"];
-const ATTRIBUTE_SUBSET_TARGETS: &[&str] = &["attribute", "attribute def", "enum def"];
-const ACTION_SUBSET_TARGETS: &[&str] = &["action", "action def"];
-const STATE_SUBSET_TARGETS: &[&str] = &["state", "state def"];
-const REQUIREMENT_SUBSET_TARGETS: &[&str] = &["requirement", "requirement def"];
-const USE_CASE_SUBSET_TARGETS: &[&str] = &["use case", "use case def"];
-const ANALYSIS_SUBSET_TARGETS: &[&str] = &["analysis", "analysis def"];
-const VERIFICATION_SUBSET_TARGETS: &[&str] = &["verification", "verification def"];
-const VIEW_SUBSET_TARGETS: &[&str] = &["view", "view def"];
-const VIEWPOINT_SUBSET_TARGETS: &[&str] = &["viewpoint", "viewpoint def"];
-const CONCERN_SUBSET_TARGETS: &[&str] = &["concern", "concern def"];
-const ACTOR_SUBSET_TARGETS: &[&str] = &["actor", "part", "part def", "item def", "occurrence def"];
-const FLOW_SUBSET_TARGETS: &[&str] = &["flow", "flow def"];
-const ALLOCATION_SUBSET_TARGETS: &[&str] = &["allocation", "allocation def"];
-const INTERFACE_SUBSET_TARGETS: &[&str] = &["interface"];
+const PART_SUBSET_TARGETS: &[ElementKind] = &[
+    ElementKind::Part,
+    ElementKind::PartDef,
+    ElementKind::ItemDef,
+    ElementKind::OccurrenceDef,
+];
+const PORT_SUBSET_TARGETS: &[ElementKind] = &[ElementKind::Port, ElementKind::PortDef];
+const ITEM_SUBSET_TARGETS: &[ElementKind] = &[ElementKind::Item, ElementKind::ItemDef, ElementKind::PartDef];
+const ATTRIBUTE_SUBSET_TARGETS: &[ElementKind] =
+    &[ElementKind::Attribute, ElementKind::AttributeDef, ElementKind::EnumDef];
+const ACTION_SUBSET_TARGETS: &[ElementKind] = &[ElementKind::Action, ElementKind::ActionDef];
+const STATE_SUBSET_TARGETS: &[ElementKind] = &[ElementKind::State, ElementKind::StateDef];
+const REQUIREMENT_SUBSET_TARGETS: &[ElementKind] =
+    &[ElementKind::Requirement, ElementKind::RequirementDef];
+const USE_CASE_SUBSET_TARGETS: &[ElementKind] = &[ElementKind::UseCase, ElementKind::UseCaseDef];
+const ANALYSIS_SUBSET_TARGETS: &[ElementKind] = &[ElementKind::Analysis, ElementKind::AnalysisDef];
+const VERIFICATION_SUBSET_TARGETS: &[ElementKind] =
+    &[ElementKind::Verification, ElementKind::VerificationDef];
+const VIEW_SUBSET_TARGETS: &[ElementKind] = &[ElementKind::View, ElementKind::ViewDef];
+const VIEWPOINT_SUBSET_TARGETS: &[ElementKind] = &[ElementKind::Viewpoint, ElementKind::ViewpointDef];
+const CONCERN_SUBSET_TARGETS: &[ElementKind] = &[ElementKind::Concern, ElementKind::ConcernDef];
+const ACTOR_SUBSET_TARGETS: &[ElementKind] = &[
+    ElementKind::Actor,
+    ElementKind::Part,
+    ElementKind::PartDef,
+    ElementKind::ItemDef,
+    ElementKind::OccurrenceDef,
+];
+const FLOW_SUBSET_TARGETS: &[ElementKind] = &[ElementKind::Flow, ElementKind::FlowDef];
+const ALLOCATION_SUBSET_TARGETS: &[ElementKind] = &[ElementKind::Allocation, ElementKind::AllocationDef];
+const INTERFACE_SUBSET_TARGETS: &[ElementKind] = &[ElementKind::Interface];
 
-pub fn allowed_subset_redefine_target_kinds(usage_kind: &ElementKind) -> &'static [&'static str] {
-    match usage_kind.as_str() {
-        "part" => PART_SUBSET_TARGETS,
-        "port" => PORT_SUBSET_TARGETS,
-        "item" => ITEM_SUBSET_TARGETS,
-        "attribute" => ATTRIBUTE_SUBSET_TARGETS,
-        "action" => ACTION_SUBSET_TARGETS,
-        "state" => STATE_SUBSET_TARGETS,
-        "requirement" => REQUIREMENT_SUBSET_TARGETS,
-        "use case" => USE_CASE_SUBSET_TARGETS,
-        "analysis" => ANALYSIS_SUBSET_TARGETS,
-        "verification" => VERIFICATION_SUBSET_TARGETS,
-        "view" => VIEW_SUBSET_TARGETS,
-        "viewpoint" => VIEWPOINT_SUBSET_TARGETS,
-        "concern" => CONCERN_SUBSET_TARGETS,
-        "actor" | "stakeholder" => ACTOR_SUBSET_TARGETS,
-        "flow" => FLOW_SUBSET_TARGETS,
-        "allocation" => ALLOCATION_SUBSET_TARGETS,
-        "interface" => INTERFACE_SUBSET_TARGETS,
-        _ => &[],
-    }
-}
-
-pub fn expected_typing_definition_label(usage_kind: &str) -> String {
+pub fn allowed_subset_redefine_target_kinds(usage_kind: &ElementKind) -> &'static [ElementKind] {
     match usage_kind {
-        "actor" | "stakeholder" => "part or item".to_string(),
-        _ => usage_kind.trim_end_matches(" def").to_string(),
+        ElementKind::Part => PART_SUBSET_TARGETS,
+        ElementKind::Port => PORT_SUBSET_TARGETS,
+        ElementKind::Item => ITEM_SUBSET_TARGETS,
+        ElementKind::Attribute => ATTRIBUTE_SUBSET_TARGETS,
+        ElementKind::Action => ACTION_SUBSET_TARGETS,
+        ElementKind::State => STATE_SUBSET_TARGETS,
+        ElementKind::Requirement => REQUIREMENT_SUBSET_TARGETS,
+        ElementKind::UseCase => USE_CASE_SUBSET_TARGETS,
+        ElementKind::Analysis => ANALYSIS_SUBSET_TARGETS,
+        ElementKind::Verification => VERIFICATION_SUBSET_TARGETS,
+        ElementKind::View => VIEW_SUBSET_TARGETS,
+        ElementKind::Viewpoint => VIEWPOINT_SUBSET_TARGETS,
+        ElementKind::Concern => CONCERN_SUBSET_TARGETS,
+        ElementKind::Actor | ElementKind::Stakeholder => ACTOR_SUBSET_TARGETS,
+        ElementKind::Flow => FLOW_SUBSET_TARGETS,
+        ElementKind::Allocation => ALLOCATION_SUBSET_TARGETS,
+        ElementKind::Interface => INTERFACE_SUBSET_TARGETS,
+        _ => &[],
+    }
+}
+
+pub fn expected_typing_definition_label(usage_kind: &ElementKind) -> String {
+    match usage_kind {
+        ElementKind::Actor | ElementKind::Stakeholder => "part or item".to_string(),
+        _ => usage_kind.as_str().trim_end_matches(" def").to_string(),
     }
 }
