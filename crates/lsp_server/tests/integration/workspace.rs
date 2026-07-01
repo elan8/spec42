@@ -537,26 +537,36 @@ fn lsp_workspace_scan_sysml_release() {
         serde_json::json!({ "jsonrpc": "2.0", "method": "initialized", "params": {} });
     send_message(&mut stdin, &initialized.to_string());
 
-    // Allow time for scanning a large repo
+    // Allow time for scanning a large repo before the first attempt.
     std::thread::sleep(std::time::Duration::from_secs(3));
 
-    let sym_id = next_id();
-    let sym_req = serde_json::json!({
-        "jsonrpc": "2.0",
-        "id": sym_id,
-        "method": "workspace/symbol",
-        "params": { "query": "Part" }
-    });
-    send_message(&mut stdin, &sym_req.to_string());
-    let sym_resp = read_response(&mut stdout, sym_id).expect("workspace/symbol response");
-    let sym_json: serde_json::Value =
-        serde_json::from_str(&sym_resp).expect("parse workspace/symbol response");
-    assert_eq!(sym_json["id"], sym_id);
-    let results = sym_json["result"]
-        .as_array()
-        .expect("workspace/symbol returns array");
+    // Scanning the full SysML-v2-Release corpus can take longer than a fixed sleep under
+    // CPU-constrained CI runners; retry instead of asserting on the first response.
+    let mut result_count = 0usize;
+    for _ in 0..20 {
+        let sym_id = next_id();
+        let sym_req = serde_json::json!({
+            "jsonrpc": "2.0",
+            "id": sym_id,
+            "method": "workspace/symbol",
+            "params": { "query": "Part" }
+        });
+        send_message(&mut stdin, &sym_req.to_string());
+        let sym_resp = read_response(&mut stdout, sym_id).expect("workspace/symbol response");
+        let sym_json: serde_json::Value =
+            serde_json::from_str(&sym_resp).expect("parse workspace/symbol response");
+        assert_eq!(sym_json["id"], sym_id);
+        let results = sym_json["result"]
+            .as_array()
+            .expect("workspace/symbol returns array");
+        result_count = results.len();
+        if result_count > 0 {
+            break;
+        }
+        std::thread::sleep(std::time::Duration::from_millis(500));
+    }
     assert!(
-        !results.is_empty(),
+        result_count > 0,
         "workspace/symbol over SysML-v2-Release should return at least one symbol for query 'Part'"
     );
 

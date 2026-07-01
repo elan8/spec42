@@ -4,7 +4,7 @@
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
-BUDGET_FILE="$ROOT/crates/semantic_core/tests/fixtures/omg_14c_metadata_warning_budget.txt"
+BUDGET_FILE="$ROOT/crates/sysml_model/tests/fixtures/omg_14c_metadata_warning_budget.txt"
 RELEASE_DIR="${SYSML_V2_RELEASE_DIR:-$ROOT/sysml-v2-release}"
 OMG_FILE="$RELEASE_DIR/sysml/src/validation/14-Language Extensions/14c-Language Extensions.sysml"
 REPORT_JSON="$(mktemp)"
@@ -32,7 +32,7 @@ if ! [[ "$BUDGET" =~ ^[0-9]+$ ]]; then
   exit 1
 fi
 
-cargo build -p spec42 --release
+cargo build -p server --bin spec42 --release
 
 SPEC42="$ROOT/target/release/spec42"
 if [[ ! -x "$SPEC42" ]]; then
