@@ -12,7 +12,7 @@ use serde::{Deserialize, Deserializer, Serialize, Serializer};
 use url::Url;
 
 use crate::semantic::model::{
-    ConnectStatementDetail, NodeId, RelationshipKind, SemanticEdge, SemanticNode,
+    ConnectStatementDetail, ElementKind, NodeId, RelationshipKind, SemanticEdge, SemanticNode,
 };
 
 fn serialize_url<S: Serializer>(url: &Url, s: S) -> Result<S::Ok, S::Error> {
@@ -161,7 +161,7 @@ pub struct PendingRelationship {
     pub source_qualified: String,
     pub target_qualified: String,
     pub kind: RelationshipKind,
-    pub target_kinds: Option<Vec<String>>,
+    pub target_kinds: Option<Vec<ElementKind>>,
 }
 
 impl SemanticGraphData {

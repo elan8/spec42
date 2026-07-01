@@ -231,7 +231,7 @@ fn add_edge_if_both_exist_opt(
                 target_qualified: tgt_key,
                 kind,
                 target_kinds: target_kinds
-                    .map(|kinds| kinds.iter().map(|kind| kind.to_string()).collect()),
+                    .map(|kinds| kinds.iter().map(|kind| crate::ElementKind::parse(kind)).collect()),
             });
         return false;
     };
@@ -327,7 +327,7 @@ pub fn resolve_pending_relationships_for_uri(g: &mut SemanticGraph, uri: &Url) {
                     if target_kinds.is_empty() {
                         Vec::new()
                     } else {
-                        let allowed: Vec<&str> = target_kinds.iter().map(String::as_str).collect();
+                        let allowed: Vec<&str> = target_kinds.iter().map(|k| k.as_str()).collect();
                         resolve_pending_target(
                             g,
                             source_node,
@@ -372,10 +372,7 @@ pub fn resolve_pending_relationships_for_uri(g: &mut SemanticGraph, uri: &Url) {
             continue;
         };
         if let Some(ref target_kinds) = pending_edge.target_kinds {
-            if !target_kinds
-                .iter()
-                .any(|kind| kind.as_str() == tgt_node.element_kind)
-            {
+            if !target_kinds.contains(&tgt_node.element_kind) {
                 continue;
             }
         }

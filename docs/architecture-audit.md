@@ -117,9 +117,9 @@ Keys are re-parsed on hot paths with `.get("key").and_then(|v| v.as_str())`. A t
 
 **Recommendation:** Introduce typed per-kind attribute structs (e.g. `PartAttributes`, `RequirementAttributes`) as an `enum NodeAttributes`. Keep a small `extra: HashMap<String, Value>` for forward compatibility. At minimum, replace string key literals with typed constants.
 
-### 3.3 `PendingRelationship.target_kinds: Option<Vec<String>>` (P3)
+### 3.3 ~~`PendingRelationship.target_kinds: Option<Vec<String>>`~~ **Fixed (P3)**
 
-`graph.rs:75` — should be `Vec<ElementKind>`.
+`graph.rs:164` — now `Option<Vec<ElementKind>>`. Construction (`relationships.rs`) parses the incoming `&[&str]` allowlists via `ElementKind::parse`, and the final match against `tgt_node.element_kind` is a direct enum comparison instead of a string compare.
 
 ---
 
@@ -286,7 +286,7 @@ Verify whether these are still reachable; retire if not.
 | P3-1 | Persist `import_lookup_cache` across incremental updates | `graph.rs:53,122,139` |
 | P3-2 | Trim duplicated fields in `WorkspaceRenderSnapshot` | `render_snapshot.rs:97-102` |
 | P3-3 | Typed builder-diagnostic side-channel (not graph nodes) | `engine_impl.rs:54-89` |
-| P3-4 | `PendingRelationship.target_kinds` → `Vec<ElementKind>` | `graph.rs:75` |
+| P3-4 | ~~`PendingRelationship.target_kinds` → `Vec<ElementKind>`~~ **Fixed** | `graph.rs:164` |
 | P3-5 | Hoist `walkdir`/`sha2`/`toml`/`zip` into workspace deps | Multiple `Cargo.toml` |
 | P3-6 | Add incremental-vs-full property test; confirm `insta` wiring | `tests/` |
 | P3-7 | Investigate and retire `legacy_elk_svg.rs` and `mcp/diagnostic_catalog.rs` if dead | `server/src/` |
