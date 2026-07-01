@@ -8,7 +8,7 @@ use url::Url;
 
 use super::requirement_body::{add_verified_requirement_node, verify_requirement_target};
 use super::use_case::{self, add_include_use_case_node};
-use super::{add_node_and_recurse, qualified_name_for_node};
+use super::{add_node_and_recurse, expressions, qualified_name_for_node};
 use crate::semantic::analysis_typing::strip_analysis_return_body;
 use crate::semantic::ast_util::span_to_range;
 use crate::semantic::graph::SemanticGraph;
@@ -207,7 +207,10 @@ pub(super) fn build_from_verification_body(
                     "verify",
                 );
                 let mut attrs = HashMap::new();
-                attrs.insert("lhs".to_string(), serde_json::json!(value.lhs.as_str()));
+                attrs.insert(
+                    "lhs".to_string(),
+                    serde_json::json!(expressions::expression_to_debug_string(&value.lhs)),
+                );
                 attrs.insert("rhs".to_string(), serde_json::json!(value.rhs.as_str()));
                 attrs.insert("isThen".to_string(), serde_json::json!(value.is_then));
                 let rhs_trimmed = value.rhs.trim();

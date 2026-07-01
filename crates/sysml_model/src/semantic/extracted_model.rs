@@ -2,6 +2,7 @@
 
 use crate::semantic::ast_util::identification_name;
 use crate::semantic::dto::{PositionDto, RangeDto};
+use crate::semantic::graph_builder::expressions::expression_to_debug_string;
 use serde::Serialize;
 use ts_rs::TS;
 use sysml_v2_parser::ast::{
@@ -909,7 +910,7 @@ fn extract_activity_from_action(
                 }
                 ActionDefBodyElement::Assign(assign) => {
                     let value = &assign.value;
-                    let step_name = format!("assign_{}", value.lhs);
+                    let step_name = format!("assign_{}", expression_to_debug_string(&value.lhs));
                     states.push(ActivityStateDto {
                         name: step_name.clone(),
                         state_type: "assign".to_string(),

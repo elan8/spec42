@@ -232,7 +232,10 @@ fn add_assign_stmt(
         "assign",
     );
     let mut attrs = HashMap::new();
-    attrs.insert("lhs".to_string(), serde_json::json!(value.lhs.as_str()));
+    attrs.insert(
+        "lhs".to_string(),
+        serde_json::json!(expressions::expression_to_debug_string(&value.lhs)),
+    );
     attrs.insert("rhs".to_string(), serde_json::json!(value.rhs.as_str()));
     attrs.insert("isThen".to_string(), serde_json::json!(value.is_then));
     add_node_and_recurse(
@@ -296,7 +299,10 @@ fn add_for_loop(
     );
     let mut attrs = HashMap::new();
     attrs.insert("loopVar".to_string(), serde_json::json!(&fl.var));
-    attrs.insert("loopRange".to_string(), serde_json::json!(&fl.range));
+    attrs.insert(
+        "loopRange".to_string(),
+        serde_json::json!(expressions::expression_to_debug_string(&fl.range)),
+    );
     add_node_and_recurse(
         g,
         uri,
@@ -459,6 +465,57 @@ pub(super) fn build_from_action_def_body(
                     Some(parent_id),
                 );
             }
+            ActionDefBodyElement::DecisionStmt(decision) => {
+                let decide_target = expressions::expression_to_debug_string(&decision.value.decide);
+                let child_qualified =
+                    qualified_name_for_node(g, uri, container_prefix, &decide_target, "decide");
+                let mut attrs = HashMap::new();
+                attrs.insert("decideTarget".to_string(), serde_json::json!(decide_target));
+                add_node_and_recurse(
+                    g,
+                    uri,
+                    &child_qualified,
+                    "decide",
+                    "decide".to_string(),
+                    span_to_range(&decision.span),
+                    attrs,
+                    Some(parent_id),
+                );
+            }
+            ActionDefBodyElement::JoinStmt(join) => {
+                let join_target = expressions::expression_to_debug_string(&join.value.join);
+                let child_qualified =
+                    qualified_name_for_node(g, uri, container_prefix, &join_target, "join");
+                let mut attrs = HashMap::new();
+                attrs.insert("joinTarget".to_string(), serde_json::json!(join_target));
+                add_node_and_recurse(
+                    g,
+                    uri,
+                    &child_qualified,
+                    "join",
+                    "join".to_string(),
+                    span_to_range(&join.span),
+                    attrs,
+                    Some(parent_id),
+                );
+            }
+            ActionDefBodyElement::ForkStmt(fork) => {
+                let fork_target = expressions::expression_to_debug_string(&fork.value.fork);
+                let child_qualified =
+                    qualified_name_for_node(g, uri, container_prefix, &fork_target, "fork");
+                let mut attrs = HashMap::new();
+                attrs.insert("forkTarget".to_string(), serde_json::json!(fork_target));
+                add_node_and_recurse(
+                    g,
+                    uri,
+                    &child_qualified,
+                    "fork",
+                    "fork".to_string(),
+                    span_to_range(&fork.span),
+                    attrs,
+                    Some(parent_id),
+                );
+            }
             ActionDefBodyElement::ActionUsage(action_usage) => {
                 let au_node = action_usage.as_ref();
                 materialize_nested_action_usage(
@@ -570,6 +627,57 @@ pub(super) fn build_from_action_usage_body(
                     "merge",
                     "merge".to_string(),
                     span_to_range(&merge.span),
+                    attrs,
+                    Some(parent_id),
+                );
+            }
+            ActionUsageBodyElement::DecisionStmt(decision) => {
+                let decide_target = expressions::expression_to_debug_string(&decision.value.decide);
+                let child_qualified =
+                    qualified_name_for_node(g, uri, container_prefix, &decide_target, "decide");
+                let mut attrs = HashMap::new();
+                attrs.insert("decideTarget".to_string(), serde_json::json!(decide_target));
+                add_node_and_recurse(
+                    g,
+                    uri,
+                    &child_qualified,
+                    "decide",
+                    "decide".to_string(),
+                    span_to_range(&decision.span),
+                    attrs,
+                    Some(parent_id),
+                );
+            }
+            ActionUsageBodyElement::JoinStmt(join) => {
+                let join_target = expressions::expression_to_debug_string(&join.value.join);
+                let child_qualified =
+                    qualified_name_for_node(g, uri, container_prefix, &join_target, "join");
+                let mut attrs = HashMap::new();
+                attrs.insert("joinTarget".to_string(), serde_json::json!(join_target));
+                add_node_and_recurse(
+                    g,
+                    uri,
+                    &child_qualified,
+                    "join",
+                    "join".to_string(),
+                    span_to_range(&join.span),
+                    attrs,
+                    Some(parent_id),
+                );
+            }
+            ActionUsageBodyElement::ForkStmt(fork) => {
+                let fork_target = expressions::expression_to_debug_string(&fork.value.fork);
+                let child_qualified =
+                    qualified_name_for_node(g, uri, container_prefix, &fork_target, "fork");
+                let mut attrs = HashMap::new();
+                attrs.insert("forkTarget".to_string(), serde_json::json!(fork_target));
+                add_node_and_recurse(
+                    g,
+                    uri,
+                    &child_qualified,
+                    "fork",
+                    "fork".to_string(),
+                    span_to_range(&fork.span),
                     attrs,
                     Some(parent_id),
                 );

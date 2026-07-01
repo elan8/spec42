@@ -179,6 +179,9 @@ fn add_assert_constraint_member(
     );
     let mut attrs = HashMap::new();
     attrs.insert("kind".to_string(), serde_json::json!("assert_constraint"));
+    if assert_node.value.is_negated {
+        attrs.insert("isNegated".to_string(), serde_json::json!(true));
+    }
     if let Some(expression) = constraint_body_expression(&assert_node.value.body) {
         attrs.insert("expression".to_string(), serde_json::json!(expression));
     }

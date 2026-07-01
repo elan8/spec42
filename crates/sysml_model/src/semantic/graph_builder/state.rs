@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 
-use sysml_v2_parser::ast::{StateDefBody, StateDefBodyElement};
+use sysml_v2_parser::ast::{StateDefBody, StateDefBodyElement, TransitionEffect};
 use url::Url;
 
 use crate::semantic::ast_util::span_to_range;
@@ -20,6 +20,67 @@ fn transition_target_is_done(target: &str) -> bool {
         .next()
         .unwrap_or(target)
         .eq_ignore_ascii_case("done")
+}
+
+/// Renders a structured `do` transition effect (`TransitionEffect::{Perform,Accept,Send,Assign,
+/// Expression}`) as a readable debug string for the `effectExpression` attribute.
+fn transition_effect_to_debug_string(effect: &TransitionEffect) -> String {
+    match effect {
+        TransitionEffect::Perform { name, type_name } => {
+            let name_part = name.as_deref().unwrap_or_default();
+            match type_name {
+                Some(t) => format!("action {name_part} : {t}"),
+                None => format!("action {name_part}"),
+            }
+        }
+        TransitionEffect::Accept {
+            payload,
+            type_name,
+            via,
+        } => {
+            let mut s = format!("accept {}", expressions::expression_to_debug_string(payload));
+            if let Some(t) = type_name {
+                s.push_str(&format!(" : {t}"));
+            }
+            if let Some(via) = via {
+                s.push_str(&format!(
+                    " via {}",
+                    expressions::expression_to_debug_string(via)
+                ));
+            }
+            s
+        }
+        TransitionEffect::Send {
+            payload,
+            type_name,
+            via,
+            to,
+        } => {
+            let mut s = format!("send {}", expressions::expression_to_debug_string(payload));
+            if let Some(t) = type_name {
+                s.push_str(&format!(" : {t}"));
+            }
+            if let Some(via) = via {
+                s.push_str(&format!(
+                    " via {}",
+                    expressions::expression_to_debug_string(via)
+                ));
+            }
+            if let Some(to) = to {
+                s.push_str(&format!(
+                    " to {}",
+                    expressions::expression_to_debug_string(to)
+                ));
+            }
+            s
+        }
+        TransitionEffect::Assign { lhs, rhs } => format!(
+            "assign {} := {}",
+            expressions::expression_to_debug_string(lhs),
+            expressions::expression_to_debug_string(rhs)
+        ),
+        TransitionEffect::Expression(expr) => expressions::expression_to_debug_string(expr),
+    }
 }
 
 fn increment_state_def_counter(g: &mut SemanticGraph, parent_id: &NodeId, attribute: &str) {
@@ -136,7 +197,7 @@ pub(super) fn build_from_state_body(
                 if let Some(effect) = &t.effect {
                     attrs.insert(
                         "effectExpression".to_string(),
-                        serde_json::json!(expressions::expression_to_debug_string(effect)),
+                        serde_json::json!(transition_effect_to_debug_string(effect)),
                     );
                 }
                 if let Some(ref accept) = t.accept {
@@ -246,6 +307,64 @@ pub(super) fn build_from_state_body(
                 let entry_id = NodeId::new(uri, &qualified);
                 if let StateDefBody::Brace { elements } = &en.body {
                     build_from_state_body(elements, uri, Some(&qualified), &entry_id, g);
+                }
+            }
+            SDBE::Do(do_node) => {
+                let d = &do_node.value;
+                let qualified = qualified_name_for_node(
+                    g,
+                    uri,
+                    Some(parent_id.qualified_name.as_str()),
+                    "_do",
+                    "action",
+                );
+                let mut attrs = HashMap::new();
+                attrs.insert("compartment".to_string(), serde_json::json!("do"));
+                if let Some(ref an) = d.action_name {
+                    attrs.insert("actionName".to_string(), serde_json::json!(an));
+                }
+                add_node_and_recurse(
+                    g,
+                    uri,
+                    &qualified,
+                    "action",
+                    "do".to_string(),
+                    span_to_range(&do_node.span),
+                    attrs,
+                    Some(parent_id),
+                );
+                let do_id = NodeId::new(uri, &qualified);
+                if let StateDefBody::Brace { elements } = &d.body {
+                    build_from_state_body(elements, uri, Some(&qualified), &do_id, g);
+                }
+            }
+            SDBE::Exit(exit_node) => {
+                let ex = &exit_node.value;
+                let qualified = qualified_name_for_node(
+                    g,
+                    uri,
+                    Some(parent_id.qualified_name.as_str()),
+                    "_exit",
+                    "action",
+                );
+                let mut attrs = HashMap::new();
+                attrs.insert("compartment".to_string(), serde_json::json!("exit"));
+                if let Some(ref an) = ex.action_name {
+                    attrs.insert("actionName".to_string(), serde_json::json!(an));
+                }
+                add_node_and_recurse(
+                    g,
+                    uri,
+                    &qualified,
+                    "action",
+                    "exit".to_string(),
+                    span_to_range(&exit_node.span),
+                    attrs,
+                    Some(parent_id),
+                );
+                let exit_id = NodeId::new(uri, &qualified);
+                if let StateDefBody::Brace { elements } = &ex.body {
+                    build_from_state_body(elements, uri, Some(&qualified), &exit_id, g);
                 }
             }
             SDBE::Ref(r) => {

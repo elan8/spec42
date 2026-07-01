@@ -10,6 +10,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - **VS Code settings cleanup** — Removed eight display-only / legacy configuration properties (`spec42.standardLibrary.*`, `spec42.domainLibraries.*`) that were not user-configurable; removed `spec42.codeLens.enabled` (code lens disabled for now) and `spec42.startup.workspaceIndexing` (only `background` mode is tested); fixed encoding corruption in `spec42.debug` description. Sync scripts updated accordingly.
+- **`sysml-v2-parser` upgraded 0.28.0 → 0.29.0** — brings state `do`/`exit` actions, `decide`/`join`/`fork` control nodes, negated `assert`/`satisfy`, structured transition `do` effects, and structured `ForLoop.range`/`AssignStmt.lhs` expressions. `sysml_model` updated accordingly:
+  - `ElementKind::Decide`/`Join`/`Fork` added; `graph_builder::action` materializes `decide`/`join`/`fork` control nodes the same way `merge` already was.
+  - `graph_builder::state` now handles `StateDefBodyElement::Do`/`::Exit` (previously only `Entry` was parseable upstream) — `do`/`exit` actions in state bodies now materialize as `ElementKind::Action` nodes with `compartment: "do"`/`"exit"`, and `state_views::graph_extractor::compartment_action` picks them up automatically.
+  - `Transition.effect` is now the structured `TransitionEffect` enum (`Perform`/`Accept`/`Send`/`Assign`/`Expression`) instead of a raw expression; `graph_builder::state` renders it to the same `effectExpression` attribute string as before via a new `transition_effect_to_debug_string` helper.
+  - `AssignStmt.lhs` and `ForLoop.range` are now structured `Node<Expression>` instead of raw strings; all `attrs.insert("lhs"/"loopRange", ...)` call sites route through `expression_to_debug_string` (now `pub(crate)` in `graph_builder::expressions`) to preserve the same string-valued attributes.
+  - `AssertConstraintMember.is_negated` (new field for `assert not constraint { ... }`) is now captured as an `isNegated` attribute on the assert-constraint node.
+  - Deliberately not wired up in this pass: `Satisfy.is_negated` (negated `satisfy` has no natural attribute bag today — `Satisfy` only wires an edge) and `ConnectStmt.extra_ends` (n-ary `connect (a, b, c, ...)` — needs a graph-modeling decision for multi-way connectors). Both are additive fields that default to empty/false, so existing binary `connect`/`satisfy` behavior is unaffected.
 
 ### Fixed
 

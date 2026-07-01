@@ -160,7 +160,10 @@ pub(super) fn build_from_analysis_body(
                     "verify",
                 );
                 let mut attrs = HashMap::new();
-                attrs.insert("lhs".to_string(), serde_json::json!(value.lhs.as_str()));
+                attrs.insert(
+                    "lhs".to_string(),
+                    serde_json::json!(expressions::expression_to_debug_string(&value.lhs)),
+                );
                 attrs.insert("rhs".to_string(), serde_json::json!(value.rhs.as_str()));
                 attrs.insert("isThen".to_string(), serde_json::json!(value.is_then));
                 let rhs_trimmed = value.rhs.trim();

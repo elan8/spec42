@@ -679,7 +679,13 @@ fn collect_semantic_ranges_state_def_body_element(
                 }
             }
         }
-        SDBE::Entry(_) | SDBE::Doc(_) | SDBE::Error(_) | SDBE::Annotation(_) | SDBE::Other(_) => {}
+        SDBE::Entry(_)
+        | SDBE::Do(_)
+        | SDBE::Exit(_)
+        | SDBE::Doc(_)
+        | SDBE::Error(_)
+        | SDBE::Annotation(_)
+        | SDBE::Other(_) => {}
     }
 }
 
@@ -1212,6 +1218,9 @@ fn collect_semantic_ranges_action_def_body_element(
         | ADBE::FlowUsage(_)
         | ADBE::FirstStmt(_)
         | ADBE::MergeStmt(_)
+        | ADBE::DecisionStmt(_)
+        | ADBE::JoinStmt(_)
+        | ADBE::ForkStmt(_)
         | ADBE::Decl(_)
         | ADBE::Error(_)
         | ADBE::Doc(_)
@@ -1243,6 +1252,9 @@ fn collect_semantic_ranges_action_usage_body_element(
         | AUBE::FlowUsage(_)
         | AUBE::FirstStmt(_)
         | AUBE::MergeStmt(_)
+        | AUBE::DecisionStmt(_)
+        | AUBE::JoinStmt(_)
+        | AUBE::ForkStmt(_)
         | AUBE::Error(_)
         | AUBE::Doc(_)
         | AUBE::Annotation(_)

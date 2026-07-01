@@ -432,7 +432,7 @@ pub(super) fn expression_is_boolean_valued(
 }
 
 /// Best-effort display of an expression for attributes and diagnostics (not a full SysML text serializer).
-pub(super) fn expression_to_debug_string(
+pub(crate) fn expression_to_debug_string(
     n: &sysml_v2_parser::Node<sysml_v2_parser::Expression>,
 ) -> String {
     use sysml_v2_parser::Expression;
