@@ -33,7 +33,7 @@ fn is_def_or_usage_kind(kind: &crate::ElementKind) -> bool {
             | crate::ElementKind::ConcernDef
             | crate::ElementKind::EnumDef
             | crate::ElementKind::MetadataDef
-            | crate::ElementKind::Interface
+            | crate::ElementKind::InterfaceDef
             | crate::ElementKind::Package
     )
 }

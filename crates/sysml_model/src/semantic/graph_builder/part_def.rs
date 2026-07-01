@@ -385,13 +385,14 @@ pub(super) fn build_from_part_def_body_element(
         }
         PDBE::InterfaceDef(id_node) => {
             let name = identification_name(&id_node.identification);
-            let qualified = qualified_name_for_node(g, uri, container_prefix, &name, "interface");
+            let qualified =
+                qualified_name_for_node(g, uri, container_prefix, &name, "interface def");
             let range = span_to_range(&id_node.span);
             add_node_and_recurse(
                 g,
                 uri,
                 &qualified,
-                "interface",
+                "interface def",
                 name.clone(),
                 range,
                 HashMap::new(),

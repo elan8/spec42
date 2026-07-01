@@ -108,8 +108,10 @@ Despite the new `ElementKind` enum, most call sites in `semantic_core` used to w
 
 **Intentionally left as string comparisons** (not an oversight — converting these would silently change behavior or requires a separate design decision):
 - Literals with no corresponding `ElementKind` variant, which would only ever match `ElementKind::Unknown(s)` — e.g. `"frame"`, `"doc"`, `"comment"`, `"textualRep"`, `"library package"` in a few `diagnostics/checks/*.rs` and view-extractor spots.
-- Generic suffix/substring checks that intentionally span many kinds by naming convention rather than an exact set — `.as_str().ends_with(" def")`, `is_attribute_like_kind`'s `.contains("attribute")` in `lsp_server`, and the `ibd/extract_impl.rs` / `ibd/connectors.rs` predicates, which operate on DTO-level `element_type: String` fields downstream of the graph, not `ElementKind` directly.
+- Generic suffix/substring checks that intentionally span many kinds by naming convention rather than an exact set, and the `ibd/extract_impl.rs` / `ibd/connectors.rs` predicates, `is_attribute_like_kind`'s `.contains("attribute")` in `lsp_server`, which operate on DTO-level `element_type: String` fields downstream of the graph, not `ElementKind` directly.
 - `.as_str()`/`Display` usage for output formatting (error messages, sort keys) — not a comparison.
+
+**Update:** `ElementKind::is_definition()` (model.rs) was added as the canonical, exhaustive-match replacement for the `element_kind.as_str().ends_with(" def")` / `.contains("_def")` / `.contains("definition")` heuristic that appeared in `diagnostics/relationship_endpoint_messages.rs`, `ibd/extract_impl.rs`, `prepared_view/graph_norm.rs`, and three `language_service` files — all now delegate to it (via `ElementKind::parse(kind).is_definition()` at the remaining `&str`/DTO boundaries). Use `is_definition()` for any future "is this a `xxx def` kind" check instead of a new suffix/substring heuristic.
 
 **Recommendation:** `PartialEq<str>` on `ElementKind` is still needed for the intentional cases above — do not remove it. The remaining string-typed DTO layer (`PreparedNodeDto.kind`, `InterconnectionNodeDto.kind`, etc. — see section on DTOs) and the IBD extraction predicates are separate follow-up items.
 

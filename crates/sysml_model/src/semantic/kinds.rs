@@ -29,9 +29,9 @@ pub const DISAMBIGUATION_SUFFIXES: &[&str] = &[
     "attribute_def",
     "enum_def",
     "item_def",
-    "actor_def",
     "occurrence_def",
     "interface",
+    "interface_def",
     "concern_def",
     "alias",
     "kermlDecl",
@@ -49,11 +49,10 @@ pub const DISAMBIGUATION_SUFFIXES: &[&str] = &[
 pub const TYPING_TARGET_KINDS: &[ElementKind] = &[
     ElementKind::PartDef,
     ElementKind::PortDef,
-    ElementKind::Interface,
+    ElementKind::InterfaceDef,
     ElementKind::ItemDef,
     ElementKind::AttributeDef,
     ElementKind::ActionDef,
-    ElementKind::ActorDef,
     ElementKind::OccurrenceDef,
     ElementKind::FlowDef,
     ElementKind::AllocationDef,
@@ -76,11 +75,10 @@ pub const TYPING_TARGET_KINDS: &[ElementKind] = &[
 pub const SPECIALIZES_TARGET_KINDS: &[ElementKind] = &[
     ElementKind::PartDef,
     ElementKind::PortDef,
-    ElementKind::Interface,
+    ElementKind::InterfaceDef,
     ElementKind::ItemDef,
     ElementKind::AttributeDef,
     ElementKind::ActionDef,
-    ElementKind::ActorDef,
     ElementKind::OccurrenceDef,
     ElementKind::FlowDef,
     ElementKind::AllocationDef,
@@ -108,11 +106,10 @@ pub const SPECIALIZES_TARGET_KINDS: &[ElementKind] = &[
 pub const RULE6_ALLOWED_KINDS: &[ElementKind] = &[
     ElementKind::PartDef,
     ElementKind::PortDef,
-    ElementKind::Interface,
+    ElementKind::InterfaceDef,
     ElementKind::ItemDef,
     ElementKind::AttributeDef,
     ElementKind::ActionDef,
-    ElementKind::ActorDef,
     ElementKind::OccurrenceDef,
     ElementKind::FlowDef,
     ElementKind::AllocationDef,
@@ -134,12 +131,11 @@ pub const RULE6_ALLOWED_KINDS: &[ElementKind] = &[
 pub const SUBJECT_TYPE_TARGET_KINDS: &[ElementKind] = &[
     ElementKind::PartDef,
     ElementKind::PortDef,
-    ElementKind::Interface,
+    ElementKind::InterfaceDef,
     ElementKind::ItemDef,
     ElementKind::AttributeDef,
     ElementKind::RequirementDef,
     ElementKind::ActionDef,
-    ElementKind::ActorDef,
     ElementKind::OccurrenceDef,
     ElementKind::FlowDef,
     ElementKind::AllocationDef,
@@ -180,6 +176,7 @@ pub const ANNOTATED_ELEMENT_TARGET_KINDS: &[ElementKind] = &[
     ElementKind::Concern,
     ElementKind::ItemDef,
     ElementKind::Item,
+    ElementKind::InterfaceDef,
     ElementKind::Interface,
     ElementKind::MetadataDef,
     ElementKind::MetadataUsage,
@@ -315,7 +312,7 @@ pub fn allowed_typing_target_kinds(usage_kind: &ElementKind) -> &'static [Elemen
         }
         ElementKind::Flow => &[ElementKind::FlowDef],
         ElementKind::Allocation => &[ElementKind::AllocationDef],
-        ElementKind::Interface => &[ElementKind::Interface],
+        ElementKind::Interface => &[ElementKind::InterfaceDef],
         ElementKind::MetadataUsage => &[ElementKind::MetadataDef],
         ElementKind::MetadataKeyword => &[ElementKind::MetadataDef],
         ElementKind::Rendering => &[ElementKind::RenderingDef],
@@ -340,7 +337,7 @@ pub fn allowed_typing_target_kinds(usage_kind: &ElementKind) -> &'static [Elemen
             ElementKind::ConcernDef,
             ElementKind::FlowDef,
             ElementKind::AllocationDef,
-            ElementKind::Interface,
+            ElementKind::InterfaceDef,
             ElementKind::EnumDef,
             ElementKind::OccurrenceDef,
         ],
@@ -368,7 +365,7 @@ pub fn allowed_specializes_target_kinds(def_kind: &ElementKind) -> &'static [Ele
         ElementKind::EnumDef => &[ElementKind::EnumDef],
         ElementKind::MetadataDef => &[ElementKind::MetadataDef],
         ElementKind::RenderingDef => &[ElementKind::RenderingDef],
-        ElementKind::Interface => &[ElementKind::Interface],
+        ElementKind::InterfaceDef => &[ElementKind::InterfaceDef],
         _ => &[],
     }
 }
@@ -403,7 +400,8 @@ const ACTOR_SUBSET_TARGETS: &[ElementKind] = &[
 ];
 const FLOW_SUBSET_TARGETS: &[ElementKind] = &[ElementKind::Flow, ElementKind::FlowDef];
 const ALLOCATION_SUBSET_TARGETS: &[ElementKind] = &[ElementKind::Allocation, ElementKind::AllocationDef];
-const INTERFACE_SUBSET_TARGETS: &[ElementKind] = &[ElementKind::Interface];
+const INTERFACE_SUBSET_TARGETS: &[ElementKind] =
+    &[ElementKind::Interface, ElementKind::InterfaceDef];
 
 pub fn allowed_subset_redefine_target_kinds(usage_kind: &ElementKind) -> &'static [ElementKind] {
     match usage_kind {

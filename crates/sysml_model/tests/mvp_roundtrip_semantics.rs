@@ -74,7 +74,7 @@ fn mvp_roundtrip_subset_has_authoritative_graph_facts() {
             .collect::<Vec<_>>()
     };
 
-    assert!(node_kind("PowerInterface").contains(&"interface"));
+    assert!(node_kind("PowerInterface").contains(&"interface def"));
     assert!(node_kind("PowerConnection").contains(&"connection def"));
     assert!(node_kind("Battery").contains(&"part def"));
     assert!(node_kind("powerOut").contains(&"port"));

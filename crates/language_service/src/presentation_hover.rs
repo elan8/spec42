@@ -187,12 +187,6 @@ pub fn signature_from_node(node: &SemanticNode) -> Option<String> {
                 .unwrap_or_default();
             format!("item {}{}{};", node.name, type_part, multiplicity)
         }
-        "actor def" => {
-            let type_part = attr_str(node, "actorType")
-                .map(|t| format!(" : {}", t))
-                .unwrap_or_default();
-            format!("actor def {}{};", node.name, type_part)
-        }
         "enumeration" => {
             let type_part = first_attr_str(node, &["enumerationType", "type"])
                 .map(|t| format!(" : {}", t))
@@ -257,7 +251,7 @@ pub fn signature_from_node(node: &SemanticNode) -> Option<String> {
             format!("flow {}{};", node.name, type_part)
         }
         "action def" | "requirement def" | "requirement" | "concern" | "use case def"
-        | "use case" | "interface" | "frame" | "state" => {
+        | "use case" | "interface" | "interface def" | "frame" | "state" | "actor" => {
             format!("{} {};", kind, node.name)
         }
         "in out parameter" => {
@@ -333,7 +327,7 @@ pub fn hover_markdown_for_node(
             None => true,
         };
         if should_show_target {
-            let label = if target.element_kind.as_str().ends_with(" def") {
+            let label = if target.element_kind.is_definition() {
                 "Resolved type"
             } else {
                 "Resolves to"

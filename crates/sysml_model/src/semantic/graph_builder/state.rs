@@ -226,9 +226,10 @@ pub(super) fn build_from_state_body(
                     uri,
                     Some(parent_id.qualified_name.as_str()),
                     "_entry",
-                    "entry",
+                    "action",
                 );
                 let mut attrs = HashMap::new();
+                attrs.insert("compartment".to_string(), serde_json::json!("entry"));
                 if let Some(ref an) = en.action_name {
                     attrs.insert("actionName".to_string(), serde_json::json!(an));
                 }
@@ -236,7 +237,7 @@ pub(super) fn build_from_state_body(
                     g,
                     uri,
                     &qualified,
-                    "entry",
+                    "action",
                     "entry".to_string(),
                     span_to_range(&entry_node.span),
                     attrs,

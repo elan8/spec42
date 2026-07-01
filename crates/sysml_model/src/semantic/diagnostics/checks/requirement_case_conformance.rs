@@ -25,6 +25,7 @@ fn is_requirement_satisfy_target_kind(kind: &crate::ElementKind) -> bool {
             | ElementKind::Port
             | ElementKind::PortDef
             | ElementKind::Interface
+            | ElementKind::InterfaceDef
             | ElementKind::Attribute
             | ElementKind::AttributeDef
             | ElementKind::Item

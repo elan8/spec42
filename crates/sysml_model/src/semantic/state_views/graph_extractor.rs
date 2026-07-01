@@ -272,7 +272,9 @@ fn compartment_action(
     compartment_kind: &str,
 ) -> Option<String> {
     for child in graph.children_of(state) {
-        if child.element_kind != compartment_kind {
+        if child.element_kind != ElementKind::Action
+            || attr_str(child, "compartment").as_deref() != Some(compartment_kind)
+        {
             continue;
         }
         if let Some(action_name) = attr_str(child, "actionName") {

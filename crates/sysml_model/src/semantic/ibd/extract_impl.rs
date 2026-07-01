@@ -15,7 +15,7 @@ use super::dto::{
     IbdConnectorDto, IbdContainerGroupDto, IbdDataDto, IbdPartDto,
     IbdPortDto, IbdRootViewDto,
 };
-use crate::{NodeId, RelationshipKind, SemanticGraph, SemanticNode};
+use crate::{ElementKind, NodeId, RelationshipKind, SemanticGraph, SemanticNode};
 
 pub(crate) fn is_part_like(kind: &str) -> bool {
     let k = kind.to_lowercase();
@@ -34,8 +34,7 @@ pub(crate) fn is_part_instance_kind(kind: &str) -> bool {
 
 /// True when the element kind is a SysML definition (not valid as interconnection-element).
 fn is_definition_element_kind(kind: &str) -> bool {
-    let k = kind.trim().to_lowercase();
-    k.contains(" def") || k.ends_with(" def") || k.contains("_def") || k.contains("definition")
+    ElementKind::parse(kind.trim()).is_definition()
 }
 
 fn is_reference_element_kind(kind: &str) -> bool {

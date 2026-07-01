@@ -32,7 +32,7 @@ fn interface_def_body_materializes_ends_with_port_type() {
     let iface = graph
         .nodes_named("PowerLink")
         .into_iter()
-        .find(|node| node.element_kind == "interface")
+        .find(|node| node.element_kind == "interface def")
         .expect("interface def");
 
     let ends: Vec<_> = graph

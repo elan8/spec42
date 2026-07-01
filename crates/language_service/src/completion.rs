@@ -320,9 +320,7 @@ fn refine_completion_context(
                 .semantic_graph()
                 .find_deepest_node_at_position(uri, pos)
             {
-                if node.element_kind == ElementKind::Package
-                    || node.element_kind.as_str().ends_with(" def")
-                {
+                if node.element_kind == ElementKind::Package || node.element_kind.is_definition() {
                     return CompletionContext::BodyStatement { prefix };
                 }
             }

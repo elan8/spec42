@@ -73,10 +73,10 @@ pub enum ElementKind {
     PartDef,
     PortDef,
     Interface,
+    InterfaceDef,
     ItemDef,
     AttributeDef,
     ActionDef,
-    ActorDef,
     OccurrenceDef,
     FlowDef,
     AllocationDef,
@@ -166,10 +166,10 @@ impl ElementKind {
             ElementKind::PartDef => "part def",
             ElementKind::PortDef => "port def",
             ElementKind::Interface => "interface",
+            ElementKind::InterfaceDef => "interface def",
             ElementKind::ItemDef => "item def",
             ElementKind::AttributeDef => "attribute def",
             ElementKind::ActionDef => "action def",
-            ElementKind::ActorDef => "actor def",
             ElementKind::OccurrenceDef => "occurrence def",
             ElementKind::FlowDef => "flow def",
             ElementKind::AllocationDef => "allocation def",
@@ -255,10 +255,10 @@ impl ElementKind {
             "part def" => ElementKind::PartDef,
             "port def" => ElementKind::PortDef,
             "interface" => ElementKind::Interface,
+            "interface def" => ElementKind::InterfaceDef,
             "item def" => ElementKind::ItemDef,
             "attribute def" => ElementKind::AttributeDef,
             "action def" => ElementKind::ActionDef,
-            "actor def" => ElementKind::ActorDef,
             "occurrence def" => ElementKind::OccurrenceDef,
             "flow def" => ElementKind::FlowDef,
             "allocation def" => ElementKind::AllocationDef,
@@ -334,6 +334,41 @@ impl ElementKind {
             "verify" => ElementKind::Verify,
             other => ElementKind::Unknown(other.to_string()),
         }
+    }
+
+    /// True for SysML v2 `Definition` elements (the `xxx def` declarations) — reusable
+    /// classifiers that usages are typed by. Deliberately excludes `Package` (a `Namespace`,
+    /// not a `Definition` in the SysML metamodel) and structural declarations like `Alias`/
+    /// `KermlDecl`. Exhaustive match — no string suffix/substring comparisons.
+    pub fn is_definition(&self) -> bool {
+        matches!(
+            self,
+            ElementKind::PartDef
+                | ElementKind::PortDef
+                | ElementKind::InterfaceDef
+                | ElementKind::ItemDef
+                | ElementKind::AttributeDef
+                | ElementKind::ActionDef
+                | ElementKind::OccurrenceDef
+                | ElementKind::FlowDef
+                | ElementKind::AllocationDef
+                | ElementKind::StateDef
+                | ElementKind::RequirementDef
+                | ElementKind::UseCaseDef
+                | ElementKind::ConcernDef
+                | ElementKind::AnalysisDef
+                | ElementKind::VerificationDef
+                | ElementKind::ViewDef
+                | ElementKind::ViewpointDef
+                | ElementKind::RenderingDef
+                | ElementKind::MetadataDef
+                | ElementKind::EnumDef
+                | ElementKind::ConstraintDef
+                | ElementKind::CalcDef
+                | ElementKind::CaseDef
+                | ElementKind::IndividualDef
+                | ElementKind::ConnectionDef
+        )
     }
 }
 

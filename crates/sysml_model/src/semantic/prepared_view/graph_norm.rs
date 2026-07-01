@@ -92,11 +92,7 @@ pub fn is_overview_visual_element_type(element_type: &str) -> bool {
 }
 
 pub fn is_definition_kind(kind: &str) -> bool {
-    let normalized = kind.trim().to_lowercase();
-    normalized.contains(" def")
-        || normalized.contains("_def")
-        || normalized.ends_with(" def")
-        || normalized.contains("definition")
+    crate::ElementKind::parse(kind.trim()).is_definition()
 }
 
 pub fn is_reference_kind(kind: &str) -> bool {

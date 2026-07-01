@@ -18,11 +18,10 @@ use crate::workspace::WorkspaceSnapshot;
 pub const TYPE_LOOKUP_KINDS: &[&str] = &[
     "part def",
     "port def",
-    "interface",
+    "interface def",
     "item def",
     "attribute def",
     "action def",
-    "actor def",
     "occurrence def",
     "flow def",
     "allocation def",
@@ -38,11 +37,10 @@ pub const TYPE_LOOKUP_KINDS: &[&str] = &[
 pub const TYPE_LOOKUP_ELEMENT_KINDS: &[ElementKind] = &[
     ElementKind::PartDef,
     ElementKind::PortDef,
-    ElementKind::Interface,
+    ElementKind::InterfaceDef,
     ElementKind::ItemDef,
     ElementKind::AttributeDef,
     ElementKind::ActionDef,
-    ElementKind::ActorDef,
     ElementKind::OccurrenceDef,
     ElementKind::FlowDef,
     ElementKind::AllocationDef,
@@ -129,7 +127,7 @@ fn reference_is_declaration_site(definition: &SourceLocation, reference: &Source
 
 fn is_definition_symbol(entry: &SymbolEntry) -> bool {
     entry.detail.as_deref().is_some_and(|kind| {
-        TYPE_LOOKUP_KINDS.contains(&kind) || kind.ends_with(" def")
+        TYPE_LOOKUP_KINDS.contains(&kind) || ElementKind::parse(kind).is_definition()
     })
 }
 

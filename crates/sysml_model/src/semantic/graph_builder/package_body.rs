@@ -742,7 +742,8 @@ pub(super) fn build_from_package_body_element(
         }
         PBE::InterfaceDef(id_node) => {
             let name = identification_name(&id_node.identification);
-            let qualified = qualified_name_for_node(g, uri, container_prefix, &name, "interface");
+            let qualified =
+                qualified_name_for_node(g, uri, container_prefix, &name, "interface def");
             let range = span_to_range(&id_node.span);
             let mut attrs = HashMap::new();
             insert_def_specialization_attr(&mut attrs, id_node.specializes.as_deref());
@@ -750,7 +751,7 @@ pub(super) fn build_from_package_body_element(
                 g,
                 uri,
                 &qualified,
-                "interface",
+                "interface def",
                 name.clone(),
                 range,
                 attrs,
@@ -1715,13 +1716,13 @@ pub(super) fn build_from_package_body_element(
         }
         PBE::Actor(actor_node) => {
             let name = identification_name(&actor_node.identification);
-            let qualified = qualified_name_for_node(g, uri, container_prefix, &name, "actor def");
+            let qualified = qualified_name_for_node(g, uri, container_prefix, &name, "actor");
             let range = span_to_range(&actor_node.span);
             add_node_and_recurse(
                 g,
                 uri,
                 &qualified,
-                "actor def",
+                "actor",
                 name,
                 range,
                 HashMap::new(),
