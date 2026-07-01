@@ -3,12 +3,12 @@
 use std::collections::HashSet;
 
 use crate::semantic::graph::SemanticGraph;
-use crate::semantic::model::{NodeId, RelationshipKind, SemanticNode};
+use crate::semantic::model::{ElementKind, NodeId, RelationshipKind, SemanticNode};
 use crate::semantic::relationships::{resolve_type_target_in_workspace, SPECIALIZES_TARGET_KINDS};
 
 const ANALYSIS_EXPRESSION_KEY: &str = "analysisExpression";
 const ANALYSIS_CONSTRAINTS_KEY: &str = "analysisConstraints";
-const CASE_DEF_KINDS: &[&str] = &["analysis def", "verification def"];
+const CASE_DEF_KINDS: &[ElementKind] = &[ElementKind::AnalysisDef, ElementKind::VerificationDef];
 
 /// Prepares analysis evaluation metadata after workspace linking.
 pub fn prepare_analysis_evaluation_context(graph: &mut SemanticGraph) {
@@ -25,7 +25,7 @@ pub fn propagate_typed_case_context(graph: &mut SemanticGraph) {
         let Some(node) = graph.get_node(&node_id).cloned() else {
             continue;
         };
-        if !matches!(node.element_kind.as_str(), "analysis" | "verification") {
+        if !matches!(node.element_kind, ElementKind::Analysis | ElementKind::Verification) {
             continue;
         }
         propagate_case_usage_from_typing(graph, &node_id, &node);
@@ -39,7 +39,7 @@ pub fn propagate_typed_requirement_context(graph: &mut SemanticGraph) {
         let Some(node) = graph.get_node(&node_id).cloned() else {
             continue;
         };
-        if node.element_kind != "requirement" {
+        if node.element_kind != ElementKind::Requirement {
             continue;
         }
         if usage_has_analysis_constraints(&node) {
@@ -87,13 +87,13 @@ pub(crate) fn typed_requirement_definition_id(
     graph: &SemanticGraph,
     usage: &SemanticNode,
 ) -> Option<NodeId> {
-    if usage.element_kind != "requirement" {
+    if usage.element_kind != ElementKind::Requirement {
         return None;
     }
     graph
         .outgoing_targets_by_kind(usage, RelationshipKind::Typing)
         .into_iter()
-        .find(|target| target.element_kind == "requirement def")
+        .find(|target| target.element_kind == ElementKind::RequirementDef)
         .map(|target| target.id.clone())
 }
 
@@ -133,8 +133,8 @@ pub(crate) fn typed_requirement_definition_scope_prefixes(
         };
         if graph
             .get_node(&parent_id)
-            .map(|node| node.element_kind.as_str())
-            != Some("requirement def")
+            .map(|node| node.element_kind.clone())
+            != Some(ElementKind::RequirementDef)
         {
             break;
         }
@@ -216,12 +216,11 @@ pub(crate) fn typed_case_definition_scope_prefixes(
         ) else {
             break;
         };
-        if !CASE_DEF_KINDS.contains(
-            &graph
-                .get_node(&parent_id)
-                .map(|node| node.element_kind.as_str())
-                .unwrap_or_default(),
-        ) {
+        if !graph
+            .get_node(&parent_id)
+            .map(|node| CASE_DEF_KINDS.contains(&node.element_kind))
+            .unwrap_or(false)
+        {
             break;
         }
         current_id = parent_id;
@@ -233,12 +232,12 @@ pub(crate) fn typed_case_definition_id(
     graph: &SemanticGraph,
     usage: &SemanticNode,
 ) -> Option<NodeId> {
-    if !matches!(usage.element_kind.as_str(), "analysis" | "verification") {
+    if !matches!(usage.element_kind, ElementKind::Analysis | ElementKind::Verification) {
         return None;
     }
-    let expected_def_kind = match usage.element_kind.as_str() {
-        "analysis" => "analysis def",
-        "verification" => "verification def",
+    let expected_def_kind = match usage.element_kind {
+        ElementKind::Analysis => ElementKind::AnalysisDef,
+        ElementKind::Verification => ElementKind::VerificationDef,
         _ => return None,
     };
     graph
@@ -291,11 +290,11 @@ pub(crate) fn inherited_case_result_qualified(
             SPECIALIZES_TARGET_KINDS,
         )?;
         let target = graph.get_node(&target_id)?;
-        if !CASE_DEF_KINDS.contains(&target.element_kind.as_str()) {
+        if !CASE_DEF_KINDS.contains(&target.element_kind) {
             return None;
         }
         for child in graph.children_of(target) {
-            if child.element_kind == "analysis result" {
+            if child.element_kind == ElementKind::AnalysisResult {
                 return Some(child.id.qualified_name.clone());
             }
         }
@@ -344,7 +343,7 @@ pub(crate) fn inherited_case_expression(
             SPECIALIZES_TARGET_KINDS,
         )?;
         let target = graph.get_node(&target_id)?;
-        if !CASE_DEF_KINDS.contains(&target.element_kind.as_str()) {
+        if !CASE_DEF_KINDS.contains(&target.element_kind) {
             return None;
         }
         if let Some(expression) = target
@@ -370,7 +369,7 @@ pub fn aggregate_assert_constraints(graph: &mut SemanticGraph) {
         let assert_constraints: Vec<serde_json::Value> = graph
             .children_of(&owner)
             .iter()
-            .filter(|child| child.element_kind == "assert constraint")
+            .filter(|child| child.element_kind == ElementKind::AssertConstraint)
             .filter_map(|child| {
                 let expression = child
                     .attributes

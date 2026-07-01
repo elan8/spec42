@@ -20,11 +20,14 @@ use crate::{
 };
 
 fn is_view_kind(kind: &crate::ElementKind) -> bool {
-    matches!(kind.as_str(), "view" | "view def")
+    matches!(kind, crate::ElementKind::View | crate::ElementKind::ViewDef)
 }
 
 fn is_viewpoint_kind(kind: &crate::ElementKind) -> bool {
-    matches!(kind.as_str(), "viewpoint" | "viewpoint def")
+    matches!(
+        kind,
+        crate::ElementKind::Viewpoint | crate::ElementKind::ViewpointDef
+    )
 }
 
 /// Returns LSP diagnostics for semantic rules in the given document.
@@ -57,7 +60,7 @@ pub fn compute_semantic_diagnostics_with_unit_registry(
     let t0 = Instant::now();
     let d0 = diagnostics.len();
     for node in &nodes {
-        if node.element_kind != "diagnostic" {
+        if node.element_kind != crate::ElementKind::Diagnostic {
             continue;
         }
         let code = node
@@ -166,7 +169,7 @@ pub fn compute_semantic_diagnostics_with_unit_registry(
 
     for node in &nodes {
         if is_port_like(&node.element_kind)
-            && node.element_kind == "port"
+            && node.element_kind == crate::ElementKind::Port
             && !is_synthetic(node)
             && is_declaration_port(graph, node)
             && !node.attributes.contains_key("redefines")
@@ -317,7 +320,7 @@ pub fn compute_semantic_diagnostics_with_unit_registry(
     let t9 = Instant::now();
     let d9 = diagnostics.len();
     for node in &nodes {
-        if node.element_kind == "ref" {
+        if node.element_kind == crate::ElementKind::Ref {
             continue;
         }
         if !node.attributes.contains_key("value") || node.attributes.contains_key("redefines") {
@@ -329,7 +332,7 @@ pub fn compute_semantic_diagnostics_with_unit_registry(
         let Some(owner) = graph.get_node(owner_id) else {
             continue;
         };
-        if owner.element_kind == "metadata usage" {
+        if owner.element_kind == crate::ElementKind::MetadataUsage {
             continue;
         }
         let feature_name = node.name.trim();
@@ -368,7 +371,7 @@ pub fn compute_semantic_diagnostics_with_unit_registry(
     let t9b = Instant::now();
     let d9b = diagnostics.len();
     for node in &nodes {
-        if node.element_kind != "attribute" {
+        if node.element_kind != crate::ElementKind::Attribute {
             continue;
         }
         let Some(value) = node.attributes.get("value").and_then(|v| v.as_str()) else {
@@ -428,14 +431,14 @@ pub fn compute_semantic_diagnostics_with_unit_registry(
     let t10 = Instant::now();
     let d10 = diagnostics.len();
     for node in &nodes {
-        if node.element_kind != "allocation" {
+        if node.element_kind != crate::ElementKind::Allocation {
             continue;
         }
         if node.attributes.contains_key("allocationType")
             && graph
                 .outgoing_targets_by_kind(node, RelationshipKind::Typing)
                 .iter()
-                .any(|target| target.element_kind != "allocation def")
+                .any(|target| target.element_kind != crate::ElementKind::AllocationDef)
         {
             diagnostics.push(diag(
                 uri,
@@ -523,8 +526,10 @@ pub fn compute_semantic_diagnostics_with_unit_registry(
     for node in &nodes {
         // Match evaluation: constraint/calc *definitions* are templates; requirement defs
         // can carry inline `require constraint` analysis on the same node.
-        let is_analysis_template_def =
-            matches!(node.element_kind.as_str(), "constraint def" | "calc def");
+        let is_analysis_template_def = matches!(
+            node.element_kind,
+            crate::ElementKind::ConstraintDef | crate::ElementKind::CalcDef
+        );
         if let Some(status) = node
             .attributes
             .get("analysisEvaluationStatus")
@@ -592,7 +597,7 @@ pub fn compute_semantic_diagnostics_with_unit_registry(
     let t12 = Instant::now();
     let d12 = diagnostics.len();
     for node in &nodes {
-        if node.element_kind != "verdict" {
+        if node.element_kind != crate::ElementKind::Verdict {
             continue;
         }
         let Some(raw_token) = node
@@ -632,7 +637,7 @@ pub fn compute_semantic_diagnostics_with_unit_registry(
     let t13 = Instant::now();
     let d13 = diagnostics.len();
     for node in &nodes {
-        if node.element_kind != "objective" {
+        if node.element_kind != crate::ElementKind::Objective {
             continue;
         }
         let Some(binding_kind) = node

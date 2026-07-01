@@ -52,7 +52,7 @@ fn enum_contains_value(graph: &SemanticGraph, enum_type_ref: &str, literal: &str
     graph
         .nodes_named(&normalized)
         .into_iter()
-        .filter(|node| node.element_kind == "enum def")
+        .filter(|node| node.element_kind == crate::ElementKind::EnumDef)
         .flat_map(|node| graph.children_of(node))
         .any(|child| child.name == literal || child.name.ends_with(&format!("::{literal}")))
 }
@@ -96,7 +96,7 @@ pub(in crate::semantic::diagnostics) fn collect_expression_conformance_diagnosti
             continue;
         }
 
-        if node.element_kind == "attribute" {
+        if node.element_kind == crate::ElementKind::Attribute {
             let Some(value) = node.attributes.get("value").and_then(|v| v.as_str()) else {
                 continue;
             };
@@ -208,7 +208,10 @@ pub(in crate::semantic::diagnostics) fn collect_expression_conformance_diagnosti
             }
         }
 
-        if matches!(node.element_kind.as_str(), "constraint def" | "assert") {
+        if matches!(
+            node.element_kind,
+            crate::ElementKind::ConstraintDef | crate::ElementKind::Assert
+        ) {
             if let Some(status) = node
                 .attributes
                 .get("analysisEvaluationStatus")
@@ -239,7 +242,7 @@ pub(in crate::semantic::diagnostics) fn collect_expression_conformance_diagnosti
             }
         }
 
-        if node.element_kind == "filter" {
+        if node.element_kind == crate::ElementKind::Filter {
             let owner_kind = node
                 .attributes
                 .get("filterOwnerKind")
@@ -270,7 +273,7 @@ pub(in crate::semantic::diagnostics) fn collect_expression_conformance_diagnosti
             }
         }
 
-        if node.element_kind == "verify" {
+        if node.element_kind == crate::ElementKind::Verify {
             let Some(lhs) = node.attributes.get("lhs").and_then(|v| v.as_str()) else {
                 continue;
             };
@@ -322,11 +325,13 @@ pub(in crate::semantic::diagnostics) fn collect_expression_conformance_diagnosti
             }
         }
 
-        if node.element_kind == "calc def" || node.element_kind == "calc" {
+        if node.element_kind == crate::ElementKind::CalcDef
+            || node.element_kind == crate::ElementKind::Calc
+        {
             let param_count = graph
                 .children_of(node)
                 .into_iter()
-                .filter(|child| child.element_kind == "in out parameter")
+                .filter(|child| child.element_kind == crate::ElementKind::InOutParameter)
                 .count();
             if let Some(arg_count) = node
                 .attributes

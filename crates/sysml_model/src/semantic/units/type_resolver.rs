@@ -3,7 +3,7 @@
 use std::collections::{HashSet, VecDeque};
 
 use crate::semantic::graph::SemanticGraph;
-use crate::semantic::model::SemanticNode;
+use crate::semantic::model::{ElementKind, SemanticNode};
 
 const MEASUREMENT_UNIT_ROOTS: &[&str] = &[
     "MeasurementUnit",
@@ -81,7 +81,7 @@ pub fn unit_type_for_quantity_type_name(graph: &SemanticGraph, type_name: &str) 
         return Some(normalized.to_string());
     }
     for node in graph.nodes_named(type_name) {
-        if node.element_kind != "attribute def" {
+        if node.element_kind != ElementKind::AttributeDef {
             continue;
         }
         if let Some(unit_node) = unit_type_for_quantity_value(graph, node) {
@@ -193,7 +193,7 @@ package ElectricalQuantities {
         let _voltage = graph
             .nodes_named("Voltage")
             .into_iter()
-            .find(|n| n.element_kind == "attribute def")
+            .find(|n| n.element_kind == ElementKind::AttributeDef)
             .expect("Voltage def");
         let unit_type = unit_type_for_quantity_type_name(&graph, "Voltage").expect("unit type");
         assert_eq!(unit_type, "ElectricPotentialDifferenceUnit");

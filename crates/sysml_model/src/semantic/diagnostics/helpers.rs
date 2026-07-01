@@ -45,7 +45,7 @@ pub(super) fn is_declaration_port(graph: &SemanticGraph, node: &SemanticNode) ->
     let Some(parent) = graph.get_node(parent_id) else {
         return false;
     };
-    parent.element_kind == "part" && !is_synthetic(parent)
+    parent.element_kind == ElementKind::Part && !is_synthetic(parent)
 }
 
 pub(super) fn is_synthetic(node: &SemanticNode) -> bool {
@@ -119,7 +119,7 @@ pub(super) fn diagnostic_range(
     node: &SemanticNode,
     peer: Option<&SemanticNode>,
 ) -> TextRange {
-    if node.element_kind == "port" {
+    if node.element_kind == ElementKind::Port {
         if let Some(range) = preferred_port_anchor_range(node) {
             return range;
         }
@@ -281,7 +281,7 @@ fn port_definition_qualified_name(graph: &SemanticGraph, port: &SemanticNode) ->
     graph
         .outgoing_typing_or_specializes_targets(port)
         .iter()
-        .find(|node| node.element_kind == "port def")
+        .find(|node| node.element_kind == ElementKind::PortDef)
         .map(|node| node.id.qualified_name.clone())
 }
 
@@ -357,7 +357,7 @@ fn effective_port_features(
 ) -> Vec<PortFeature> {
     let mut features = Vec::new();
     for typed in graph.outgoing_typing_or_specializes_targets(port) {
-        if typed.element_kind != "port def" {
+        if typed.element_kind != ElementKind::PortDef {
             continue;
         }
         for child in graph.children_of(typed) {
@@ -384,9 +384,9 @@ fn port_feature_from_child(child: &SemanticNode) -> Option<PortFeature> {
         .get("direction")
         .and_then(|v| v.as_str())
         .and_then(parse_feature_direction)?;
-    let type_ref = match child.element_kind.as_str() {
-        "in out parameter" => child.attributes.get("parameterType")?.as_str()?,
-        "item" => child.attributes.get("itemType")?.as_str()?,
+    let type_ref = match child.element_kind {
+        ElementKind::InOutParameter => child.attributes.get("parameterType")?.as_str()?,
+        ElementKind::Item => child.attributes.get("itemType")?.as_str()?,
         _ => return None,
     };
     Some(PortFeature {

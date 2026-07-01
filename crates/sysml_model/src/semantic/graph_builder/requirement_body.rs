@@ -13,7 +13,7 @@ use crate::semantic::ast_util::{span_to_range, text_range_to_json};
 use crate::semantic::graph::SemanticGraph;
 use crate::semantic::import_resolution::resolve_type_reference_targets;
 use crate::semantic::kinds::VERIFIED_REQUIREMENT_TARGET_KINDS;
-use crate::semantic::model::{NodeId, RelationshipKind};
+use crate::semantic::model::{ElementKind, NodeId, RelationshipKind};
 use crate::semantic::relationships::{add_edge_if_both_exist, add_typing_edge_if_exists};
 use crate::semantic::text_span::TextRange;
 
@@ -398,7 +398,7 @@ pub(super) fn walk_requirement_def_body(
                     .map(|parent| {
                         g.children_of(parent)
                             .iter()
-                            .filter(|child| child.element_kind == "require constraint")
+                            .filter(|child| child.element_kind == ElementKind::RequireConstraint)
                             .count()
                     })
                     .unwrap_or(0);

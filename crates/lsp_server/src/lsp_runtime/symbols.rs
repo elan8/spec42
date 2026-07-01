@@ -1,6 +1,7 @@
 ﻿#![allow(dead_code)] // staged inherited-attribute lens helpers; wired fully in follow-up work
 
 use crate::semantic::{RelationshipKind, SemanticNode};
+use sysml_model::ElementKind;
 use crate::workspace::ServerState;
 use std::time::Instant;
 use tower_lsp::lsp_types::{CodeLens, Url};
@@ -34,7 +35,7 @@ pub(crate) fn inherited_attributes_for_part_def<'a>(
     state: &'a ServerState,
     owner: &'a SemanticNode,
 ) -> Vec<InheritedAttributeLens> {
-    if owner.element_kind != "part def" {
+    if owner.element_kind != ElementKind::PartDef {
         return Vec::new();
     }
     let direct_attribute_names = direct_attribute_names(state, owner);

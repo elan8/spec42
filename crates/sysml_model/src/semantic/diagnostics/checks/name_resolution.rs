@@ -17,24 +17,24 @@ use crate::{resolve_type_reference_targets, SemanticDiagnostic, SemanticGraph, S
 
 fn is_def_or_usage_kind(kind: &crate::ElementKind) -> bool {
     matches!(
-        kind.as_str(),
-        "part def"
-            | "port def"
-            | "item def"
-            | "attribute def"
-            | "action def"
-            | "state def"
-            | "requirement def"
-            | "use case def"
-            | "analysis def"
-            | "verification def"
-            | "view def"
-            | "viewpoint def"
-            | "concern def"
-            | "enum def"
-            | "metadata def"
-            | "interface"
-            | "package"
+        kind,
+        crate::ElementKind::PartDef
+            | crate::ElementKind::PortDef
+            | crate::ElementKind::ItemDef
+            | crate::ElementKind::AttributeDef
+            | crate::ElementKind::ActionDef
+            | crate::ElementKind::StateDef
+            | crate::ElementKind::RequirementDef
+            | crate::ElementKind::UseCaseDef
+            | crate::ElementKind::AnalysisDef
+            | crate::ElementKind::VerificationDef
+            | crate::ElementKind::ViewDef
+            | crate::ElementKind::ViewpointDef
+            | crate::ElementKind::ConcernDef
+            | crate::ElementKind::EnumDef
+            | crate::ElementKind::MetadataDef
+            | crate::ElementKind::Interface
+            | crate::ElementKind::Package
     )
 }
 
@@ -118,23 +118,29 @@ fn collect_duplicate_namespace_members(
     let mut seen: HashSet<String> = HashSet::new();
     for node in graph.nodes_for_uri(uri) {
         if !matches!(
-            node.element_kind.as_str(),
-            "package" | "part def" | "requirement def" | "use case def"
+            node.element_kind,
+            crate::ElementKind::Package
+                | crate::ElementKind::PartDef
+                | crate::ElementKind::RequirementDef
+                | crate::ElementKind::UseCaseDef
         ) {
             continue;
         }
         let mut counts: HashMap<(String, String), usize> = HashMap::new();
         for child in graph.children_of(node) {
             if matches!(
-                child.element_kind.as_str(),
-                "import" | "diagnostic" | "filter" | "doc" | "comment"
-            ) {
+                child.element_kind,
+                crate::ElementKind::Import
+                    | crate::ElementKind::Diagnostic
+                    | crate::ElementKind::Filter
+            ) || matches!(child.element_kind.as_str(), "doc" | "comment")
+            {
                 continue;
             }
             if child.name.trim().is_empty() || child.name.starts_with('_') {
                 continue;
             }
-            if child.element_kind == "alias" {
+            if child.element_kind == crate::ElementKind::Alias {
                 continue;
             }
             *counts

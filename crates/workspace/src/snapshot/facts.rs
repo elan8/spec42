@@ -29,14 +29,20 @@ pub(crate) fn collect_host_validation_report(
 ) -> crate::error::WorkspaceResult<HostValidationReport> {
     let target_urls = target_file_urls(target_files)?;
     let unit_registry = UnitRegistry::from_graph(graph);
-    let document_text: HashMap<&str, &str> = documents
+    // Keyed by normalized URI: document URIs may differ from `target_urls` in drive-letter
+    // case (documents come from whatever the caller/provider constructed, `target_urls` is
+    // always canonicalized by `path_to_file_url`), so raw string keys would silently miss.
+    let document_text: HashMap<String, &str> = documents
         .iter()
-        .map(|doc| (doc.uri.as_str(), doc.content.as_str()))
+        .map(|doc| (language_service::uri::normalize_uri(&doc.uri).to_string(), doc.content.as_str()))
         .collect();
     let mut host_documents = Vec::new();
 
     for uri in &target_urls {
-        let text = document_text.get(uri.as_str()).copied().unwrap_or("");
+        let text = document_text
+            .get(language_service::uri::normalize_uri(uri).as_str())
+            .copied()
+            .unwrap_or("");
         let diagnostics = collect_host_document_diagnostics(
             graph,
             &unit_registry,

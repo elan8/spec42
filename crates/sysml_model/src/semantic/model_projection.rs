@@ -1363,7 +1363,7 @@ pub fn build_workspace_graph_dto(
     let sg_nodes = semantic_graph.workspace_nodes_excluding_libraries(library_paths);
     let nodes: Vec<GraphNodeDto> = sg_nodes
         .iter()
-        .filter(|n| n.element_kind != "diagnostic")
+        .filter(|n| n.element_kind != crate::semantic::model::ElementKind::Diagnostic)
         .map(|n| GraphNodeDto {
             id: n.id.qualified_name.clone(),
             element_type: n.element_kind.as_str().to_string(),

@@ -1,4 +1,5 @@
 use crate::semantic::SemanticGraph;
+use sysml_model::ElementKind;
 
 pub(super) fn has_import_in_scope(
     graph: &SemanticGraph,
@@ -12,7 +13,7 @@ pub(super) fn has_import_in_scope(
         if graph
             .children_of(scope_node)
             .into_iter()
-            .any(|child| child.element_kind == "import")
+            .any(|child| child.element_kind == ElementKind::Import)
         {
             return true;
         }
@@ -21,20 +22,20 @@ pub(super) fn has_import_in_scope(
     false
 }
 
-fn is_namespace_kind(kind: &str) -> bool {
+fn is_namespace_kind(kind: &ElementKind) -> bool {
     matches!(
         kind,
-        "package"
-            | "requirement def"
-            | "requirement"
-            | "use case def"
-            | "use case"
-            | "analysis def"
-            | "analysis"
-            | "verification def"
-            | "verification"
-            | "concern def"
-            | "concern"
+        ElementKind::Package
+            | ElementKind::RequirementDef
+            | ElementKind::Requirement
+            | ElementKind::UseCaseDef
+            | ElementKind::UseCase
+            | ElementKind::AnalysisDef
+            | ElementKind::Analysis
+            | ElementKind::VerificationDef
+            | ElementKind::Verification
+            | ElementKind::ConcernDef
+            | ElementKind::Concern
     )
 }
 
@@ -102,7 +103,7 @@ pub(super) fn import_target_resolves(
             .flatten()
             .filter(|id| id.qualified_name == namespace_target)
             .filter_map(|id| graph.get_node(id))
-            .any(|node| is_namespace_kind(node.element_kind.as_str()));
+            .any(|node| is_namespace_kind(&node.element_kind));
     }
 
     let membership_target = normalized_membership_target(target);
@@ -117,9 +118,9 @@ pub(super) fn import_target_resolves(
             .flatten()
             .filter(|id| id.qualified_name == namespace_target)
             .filter_map(|id| graph.get_node(id))
-            .filter(|node| is_namespace_kind(node.element_kind.as_str()))
+            .filter(|node| is_namespace_kind(&node.element_kind))
             .flat_map(|namespace| graph.children_of(namespace))
-            .any(|child| child.element_kind != "import" && child.name == member_name);
+            .any(|child| child.element_kind != ElementKind::Import && child.name == member_name);
     }
 
     false

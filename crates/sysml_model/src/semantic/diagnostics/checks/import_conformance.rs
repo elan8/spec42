@@ -62,7 +62,7 @@ pub(in crate::semantic::diagnostics) fn collect_import_conformance_diagnostics(
     let mut seen = HashSet::new();
 
     for node in graph.nodes_for_uri(uri) {
-        if node.element_kind != "import" {
+        if node.element_kind != crate::ElementKind::Import {
             continue;
         }
         let Some(target) = import_target(node) else {
@@ -145,7 +145,7 @@ pub(in crate::semantic::diagnostics) fn collect_import_conformance_diagnostics(
     }
 
     for node in graph.nodes_for_uri(uri) {
-        if node.element_kind != "filter" {
+        if node.element_kind != crate::ElementKind::Filter {
             continue;
         }
         let owner_kind = node

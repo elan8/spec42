@@ -5,7 +5,7 @@ use url::Url;
 
 use crate::semantic::ast_util::span_to_range;
 use crate::semantic::graph::SemanticGraph;
-use crate::semantic::model::{NodeId, RelationshipKind};
+use crate::semantic::model::{ElementKind, NodeId, RelationshipKind};
 use crate::semantic::reference_resolution::{resolve_member_via_type, ResolveResult};
 use crate::semantic::relationships::{add_edge_if_both_exist, add_typing_edge_if_exists};
 
@@ -351,7 +351,7 @@ fn infer_attribute_usage_kind(
         ResolveResult::Resolved(target_id) => g
             .get_node(&target_id)
             .map(|target| {
-                if target.element_kind == "port" {
+                if target.element_kind == ElementKind::Port {
                     "port"
                 } else {
                     "attribute"

@@ -5,7 +5,7 @@ use url::Url;
 use crate::semantic::graph::SemanticGraph;
 use crate::semantic::import_resolution::resolve_imported_node_ids_for_simple_name;
 use crate::semantic::kinds::is_namespace;
-use crate::semantic::model::{NodeId, SemanticNode};
+use crate::semantic::model::{ElementKind, NodeId, SemanticNode};
 use crate::semantic::resolution::naming::normalize_for_lookup;
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -82,7 +82,7 @@ pub fn resolve_expression_endpoint_strict(
     for candidate in &candidates {
         let node_id = NodeId::new(uri, candidate);
         if let Some(node) = g.get_node(&node_id) {
-            if node.element_kind != "import" {
+            if node.element_kind != ElementKind::Import {
                 return ResolveResult::Resolved(node_id);
             }
         }
@@ -165,7 +165,7 @@ pub fn resolve_expression_endpoint_strict(
                     .iter()
                     .any(|suffix| node_id.qualified_name.ends_with(suffix)))
                 && g.get_node(node_id)
-                    .is_some_and(|node| node.element_kind != "import")
+                    .is_some_and(|node| node.element_kind != ElementKind::Import)
         })
         .collect();
     matches.sort_by_key(|node_id| node_id.qualified_name.len());
@@ -195,8 +195,8 @@ pub fn resolve_expression_endpoint_workspace(
     }
     let suffix = format!("::{normalized}");
     let endpoint_candidate = |node: &SemanticNode| {
-        node.element_kind != "import"
-            && node.element_kind != "subject"
+        node.element_kind != ElementKind::Import
+            && node.element_kind != ElementKind::Subject
             && (node.id.qualified_name == normalized
                 || node.id.qualified_name.ends_with(&suffix)
                 || node.name == expression)
@@ -237,8 +237,8 @@ pub fn resolve_workspace_member_chain(
         .graph
         .node_weights()
         .filter(|node| {
-            node.element_kind != "import"
-                && node.element_kind != "subject"
+            node.element_kind != ElementKind::Import
+                && node.element_kind != ElementKind::Subject
                 && node.name == segments[0]
         })
         .map(|node| node.id.clone())
@@ -354,7 +354,7 @@ pub fn resolve_member_via_type(
     let direct_children: Vec<NodeId> = g
         .child_named(&owner.id, member)
         .into_iter()
-        .filter(|child| child.element_kind != "import")
+        .filter(|child| child.element_kind != ElementKind::Import)
         .map(|child| child.id.clone())
         .collect();
     match direct_children.len() {
@@ -442,14 +442,14 @@ fn collect_expose_members(
         }
         ExposeExpandMode::DirectMembers => {
             for child in g.children_of(root) {
-                if child.element_kind != "import" {
+                if child.element_kind != ElementKind::Import {
                     out.insert(child.id.qualified_name.clone());
                 }
             }
             if is_part_like_kind(&root.element_kind) {
                 for typed in g.outgoing_typing_or_specializes_targets(root) {
                     for child in g.children_of(typed) {
-                        if child.element_kind != "import" {
+                        if child.element_kind != ElementKind::Import {
                             out.insert(child.id.qualified_name.clone());
                         }
                     }
@@ -466,7 +466,7 @@ fn collect_expose_members(
                     continue;
                 }
                 for child in g.children_of(current) {
-                    if child.element_kind != "import" {
+                    if child.element_kind != ElementKind::Import {
                         stack.push(child.id.clone());
                     }
                 }
@@ -508,7 +508,7 @@ pub fn resolve_expose_target(
 mod tests {
     use url::Url;
 
-    use crate::semantic::model::RelationshipKind;
+    use crate::semantic::model::{ElementKind, RelationshipKind};
     use crate::semantic::source::{SysmlDocument, SysmlDocumentSourceKind};
     use crate::semantic::workspace_graph::build_semantic_graph_from_documents;
 
@@ -623,7 +623,7 @@ mod tests {
         let child = graph
             .nodes_for_uri(&uri)
             .into_iter()
-            .find(|node| node.element_kind == "part def" && node.name == "Child")
+            .find(|node| node.element_kind == ElementKind::PartDef && node.name == "Child")
             .expect("child part def");
         let child_mass = graph
             .child_named(&child.id, "mass")
@@ -635,7 +635,7 @@ mod tests {
             .into_iter()
             .find(|node| {
                 node.name == "mass"
-                    && matches!(node.element_kind.as_str(), "attribute" | "attribute def")
+                    && matches!(node.element_kind, ElementKind::Attribute | ElementKind::AttributeDef)
                     && node.id != child_mass.id
             })
             .expect("base mass");
@@ -679,7 +679,7 @@ mod tests {
         let need = graph
             .nodes_for_uri(&uri)
             .into_iter()
-            .find(|node| node.element_kind == "requirement" && node.name == "need")
+            .find(|node| node.element_kind == ElementKind::Requirement && node.name == "need")
             .expect("need usage");
         let need_def = graph
             .outgoing_typing_or_specializes_targets(need)
@@ -705,7 +705,7 @@ mod tests {
             .into_iter()
             .next()
             .expect("ManagedRequirement status");
-        assert_eq!(managed_status.element_kind, "attribute def");
+        assert_eq!(managed_status.element_kind, ElementKind::AttributeDef);
         let status_attr = graph
             .child_named(&need.id, "status")
             .into_iter()
@@ -750,12 +750,12 @@ mod tests {
         let wide_port = graph
             .nodes_for_uri(&uri)
             .into_iter()
-            .find(|node| node.element_kind == "port def" && node.name == "WidePort")
+            .find(|node| node.element_kind == ElementKind::PortDef && node.name == "WidePort")
             .expect("WidePort def");
         let base_port = graph
             .nodes_for_uri(&uri)
             .into_iter()
-            .find(|node| node.element_kind == "port def" && node.name == "BasePort")
+            .find(|node| node.element_kind == ElementKind::PortDef && node.name == "BasePort")
             .expect("BasePort def");
         let base_width = graph
             .child_named(&base_port.id, "width")
@@ -765,7 +765,7 @@ mod tests {
         let host = graph
             .nodes_for_uri(&uri)
             .into_iter()
-            .find(|node| node.element_kind == "part def" && node.name == "Host")
+            .find(|node| node.element_kind == ElementKind::PartDef && node.name == "Host")
             .expect("Host def");
         let port_usage = graph
             .child_named(&host.id, "p")
@@ -807,12 +807,12 @@ mod tests {
         let child = graph
             .nodes_for_uri(&uri)
             .into_iter()
-            .find(|node| node.element_kind == "enum def" && node.name == "ChildEnum")
+            .find(|node| node.element_kind == ElementKind::EnumDef && node.name == "ChildEnum")
             .expect("ChildEnum def");
         let base = graph
             .nodes_for_uri(&uri)
             .into_iter()
-            .find(|node| node.element_kind == "enum def" && node.name == "BaseEnum")
+            .find(|node| node.element_kind == ElementKind::EnumDef && node.name == "BaseEnum")
             .expect("BaseEnum def");
         assert_eq!(
             child.attributes.get("specializes").and_then(|v| v.as_str()),
@@ -847,12 +847,12 @@ mod tests {
         let use_case = graph
             .nodes_for_uri(&uri)
             .into_iter()
-            .find(|node| node.element_kind == "use case def" && node.name == "MyUseCase")
+            .find(|node| node.element_kind == ElementKind::UseCaseDef && node.name == "MyUseCase")
             .expect("MyUseCase def");
         let case_def = graph
             .nodes_for_uri(&uri)
             .into_iter()
-            .find(|node| node.element_kind == "case def" && node.name == "Case")
+            .find(|node| node.element_kind == ElementKind::CaseDef && node.name == "Case")
             .expect("Case def");
         assert!(
             graph
@@ -900,7 +900,7 @@ mod tests {
         let analysis = graph
             .nodes_for_uri(&uri)
             .into_iter()
-            .find(|node| node.element_kind == "analysis def" && node.name == "PowerAnalysis")
+            .find(|node| node.element_kind == ElementKind::AnalysisDef && node.name == "PowerAnalysis")
             .expect("analysis");
         assert_eq!(
             analysis

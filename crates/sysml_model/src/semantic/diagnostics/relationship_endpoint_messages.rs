@@ -136,7 +136,9 @@ fn find_case_alternate_part_usage(graph: &SemanticGraph, uri: &Url, name: &str) 
         .nodes_for_uri(uri)
         .into_iter()
         .find(|node| {
-            node.element_kind == "part" && node.name != name && node.name.eq_ignore_ascii_case(name)
+            node.element_kind == crate::ElementKind::Part
+                && node.name != name
+                && node.name.eq_ignore_ascii_case(name)
         })
         .map(|node| node.name.clone())
 }

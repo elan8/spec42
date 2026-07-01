@@ -171,7 +171,7 @@ pub(in crate::semantic::diagnostics) fn collect_kind_compatibility_diagnostics(
         if let Some(type_ref) = declared_type_ref(node) {
             let normalized = normalize_declared_type_ref(type_ref);
             if !is_builtin_type_ref(&normalized)
-                && !matches!(node.element_kind.as_str(), "subject" | "ref")
+                && !matches!(node.element_kind, crate::ElementKind::Subject | crate::ElementKind::Ref)
                 && !is_metadata_restriction_attribute(node)
             {
                 let edge_targets = graph.outgoing_typing_or_specializes_targets(node);
@@ -333,7 +333,7 @@ pub(in crate::semantic::diagnostics) fn collect_kind_compatibility_diagnostics(
                             }
                         }
 
-                        if node.element_kind == "attribute" {
+                        if node.element_kind == crate::ElementKind::Attribute {
                             if let Some(value) =
                                 node.attributes.get("value").and_then(|v| v.as_str())
                             {

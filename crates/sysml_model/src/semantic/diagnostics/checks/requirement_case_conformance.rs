@@ -10,42 +10,42 @@ use crate::semantic::reference_resolution::resolve_expression_endpoint_strict;
 use crate::{resolve_type_reference_targets, ResolveResult, SemanticDiagnostic, SemanticGraph};
 
 fn is_requirement_kind(kind: &crate::ElementKind) -> bool {
-    matches!(kind.as_str(), "requirement" | "requirement def")
+    matches!(kind, ElementKind::Requirement | ElementKind::RequirementDef)
 }
 
 fn is_requirement_satisfy_target_kind(kind: &crate::ElementKind) -> bool {
     matches!(
-        kind.as_str(),
-        "requirement"
-            | "requirement def"
-            | "part"
-            | "part def"
-            | "action"
-            | "action def"
-            | "port"
-            | "port def"
-            | "interface"
-            | "attribute"
-            | "attribute def"
-            | "item"
-            | "item def"
-            | "flow"
-            | "flow def"
-            | "state"
-            | "state def"
+        kind,
+        ElementKind::Requirement
+            | ElementKind::RequirementDef
+            | ElementKind::Part
+            | ElementKind::PartDef
+            | ElementKind::Action
+            | ElementKind::ActionDef
+            | ElementKind::Port
+            | ElementKind::PortDef
+            | ElementKind::Interface
+            | ElementKind::Attribute
+            | ElementKind::AttributeDef
+            | ElementKind::Item
+            | ElementKind::ItemDef
+            | ElementKind::Flow
+            | ElementKind::FlowDef
+            | ElementKind::State
+            | ElementKind::StateDef
     )
 }
 
 fn is_use_case_kind(kind: &crate::ElementKind) -> bool {
-    matches!(kind.as_str(), "use case" | "use case def")
+    matches!(kind, ElementKind::UseCase | ElementKind::UseCaseDef)
 }
 
 fn is_view_kind(kind: &crate::ElementKind) -> bool {
-    matches!(kind.as_str(), "view" | "view def")
+    matches!(kind, ElementKind::View | ElementKind::ViewDef)
 }
 
 fn is_viewpoint_kind(kind: &crate::ElementKind) -> bool {
-    matches!(kind.as_str(), "viewpoint" | "viewpoint def")
+    matches!(kind, ElementKind::Viewpoint | ElementKind::ViewpointDef)
 }
 
 fn container_prefix_for(node: &crate::SemanticNode) -> Option<&str> {
@@ -107,7 +107,7 @@ pub(in crate::semantic::diagnostics) fn collect_requirement_case_conformance_dia
     }
 
     for node in graph.nodes_for_uri(uri) {
-        if node.element_kind != "verified requirement" || is_synthetic(node) {
+        if node.element_kind != ElementKind::VerifiedRequirement || is_synthetic(node) {
             continue;
         }
         let Some(requirement_ref) = node
@@ -144,7 +144,7 @@ pub(in crate::semantic::diagnostics) fn collect_requirement_case_conformance_dia
     }
 
     for node in graph.nodes_for_uri(uri) {
-        if node.element_kind != "verify" || is_synthetic(node) {
+        if node.element_kind != ElementKind::Verify || is_synthetic(node) {
             continue;
         }
         let Some(lhs) = node.attributes.get("lhs").and_then(|v| v.as_str()) else {
@@ -183,7 +183,7 @@ pub(in crate::semantic::diagnostics) fn collect_requirement_case_conformance_dia
     }
 
     for node in graph.nodes_for_uri(uri) {
-        if node.element_kind != "include use case" || is_synthetic(node) {
+        if node.element_kind != ElementKind::IncludeUseCase || is_synthetic(node) {
             continue;
         }
         let allowed = [ElementKind::UseCaseDef, ElementKind::UseCase];
@@ -217,8 +217,8 @@ pub(in crate::semantic::diagnostics) fn collect_requirement_case_conformance_dia
 
     for node in graph.nodes_for_uri(uri) {
         if !matches!(
-            node.element_kind.as_str(),
-            "requirement" | "requirement def"
+            node.element_kind,
+            ElementKind::Requirement | ElementKind::RequirementDef
         ) || is_synthetic(node)
         {
             continue;
@@ -296,7 +296,9 @@ pub(in crate::semantic::diagnostics) fn collect_requirement_case_conformance_dia
     }
 
     for node in graph.nodes_for_uri(uri) {
-        if node.element_kind != "verification def" && node.element_kind != "verification" {
+        if node.element_kind != ElementKind::VerificationDef
+            && node.element_kind != ElementKind::Verification
+        {
             continue;
         }
         let verdict_count = node
@@ -312,7 +314,7 @@ pub(in crate::semantic::diagnostics) fn collect_requirement_case_conformance_dia
         let verified_count = graph
             .children_of(node)
             .into_iter()
-            .filter(|child| child.element_kind == "verified requirement")
+            .filter(|child| child.element_kind == ElementKind::VerifiedRequirement)
             .count();
 
         if verdict_count > 1 {
@@ -351,8 +353,11 @@ pub(in crate::semantic::diagnostics) fn collect_requirement_case_conformance_dia
 
     for node in graph.nodes_for_uri(uri) {
         if !matches!(
-            node.element_kind.as_str(),
-            "verification def" | "verification" | "analysis def" | "analysis"
+            node.element_kind,
+            ElementKind::VerificationDef
+                | ElementKind::Verification
+                | ElementKind::AnalysisDef
+                | ElementKind::Analysis
         ) {
             continue;
         }
@@ -364,12 +369,12 @@ pub(in crate::semantic::diagnostics) fn collect_requirement_case_conformance_dia
         let subject_count = graph
             .children_of(node)
             .into_iter()
-            .filter(|child| child.element_kind == "subject")
+            .filter(|child| child.element_kind == ElementKind::Subject)
             .count();
         let objectives: Vec<_> = graph
             .children_of(node)
             .into_iter()
-            .filter(|child| child.element_kind == "objective")
+            .filter(|child| child.element_kind == ElementKind::Objective)
             .collect();
 
         let needs_subject = objectives.iter().any(|objective| {
@@ -428,7 +433,7 @@ pub(in crate::semantic::diagnostics) fn collect_requirement_case_conformance_dia
             let local_results = graph
                 .children_of(node)
                 .into_iter()
-                .filter(|child| child.element_kind == "analysis result")
+                .filter(|child| child.element_kind == ElementKind::AnalysisResult)
                 .count();
             let has_inherited_result = node.attributes.contains_key("analysisExpression")
                 || objectives.iter().any(|objective| {

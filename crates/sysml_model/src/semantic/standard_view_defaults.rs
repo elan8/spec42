@@ -6,6 +6,7 @@
 
 use crate::semantic::explicit_views::FilterExpr;
 use crate::semantic::graph::SemanticGraph;
+use crate::semantic::model::ElementKind;
 use crate::semantic::standard_views::normalize_view_type_name;
 
 /// Merge usage-level filters with defaults for standard view types.
@@ -42,7 +43,7 @@ fn filters_from_stdlib_view_def(
     };
 
     for node in graph.nodes_named(target_name) {
-        if node.element_kind != "view def" {
+        if node.element_kind != ElementKind::ViewDef {
             continue;
         }
         if !node.id.qualified_name.contains("StandardViewDefinitions") {

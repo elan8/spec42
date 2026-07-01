@@ -153,7 +153,7 @@ pub(in crate::semantic::diagnostics) fn collect_connection_conformance_diagnosti
     }
 
     for node in graph.nodes_for_uri(uri) {
-        if node.element_kind != "interface end" {
+        if node.element_kind != crate::ElementKind::InterfaceEnd {
             continue;
         }
         let Some(port_type) = node
@@ -194,7 +194,7 @@ pub(in crate::semantic::diagnostics) fn collect_connection_conformance_diagnosti
     }
 
     for node in graph.nodes_for_uri(uri) {
-        if node.element_kind != "binding" {
+        if node.element_kind != crate::ElementKind::Binding {
             continue;
         }
         let endpoints: Vec<String> = graph
@@ -210,7 +210,9 @@ pub(in crate::semantic::diagnostics) fn collect_connection_conformance_diagnosti
             let right_id = crate::NodeId::new(uri, &endpoints[1]);
             if let (Some(left), Some(right)) = (graph.get_node(&left_id), graph.get_node(&right_id))
             {
-                if left.element_kind == "attribute" && right.element_kind == "attribute" {
+                if left.element_kind == crate::ElementKind::Attribute
+                    && right.element_kind == crate::ElementKind::Attribute
+                {
                     let left_type = left
                         .attributes
                         .get("valueType")

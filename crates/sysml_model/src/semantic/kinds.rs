@@ -244,7 +244,7 @@ pub fn is_known_metadata_redefine(node: &SemanticNode) -> bool {
 
 pub fn is_reflective_sysml_usage_type(type_ref: &str, target: &SemanticNode) -> bool {
     type_ref.contains("SysML::")
-        && matches!(target.element_kind.as_str(), "metadata def" | "kermlDecl")
+        && matches!(target.element_kind, ElementKind::MetadataDef | ElementKind::KermlDecl)
 }
 
 pub fn is_kerml_metadata_supertype(target: &SemanticNode) -> bool {
@@ -257,12 +257,12 @@ pub fn is_kerml_metadata_supertype(target: &SemanticNode) -> bool {
         return true;
     }
     if target.name == "SemanticMetadata"
-        && matches!(target.element_kind.as_str(), "kermlDecl" | "metadata def")
+        && matches!(target.element_kind, ElementKind::KermlDecl | ElementKind::MetadataDef)
     {
         return true;
     }
     target.id.qualified_name.ends_with("::SemanticMetadata")
-        && matches!(target.element_kind.as_str(), "kermlDecl" | "metadata def")
+        && matches!(target.element_kind, ElementKind::KermlDecl | ElementKind::MetadataDef)
 }
 
 pub fn is_semantic_metadata_base_type_redefine(owner: &SemanticNode, node: &SemanticNode) -> bool {
@@ -272,7 +272,7 @@ pub fn is_semantic_metadata_base_type_redefine(owner: &SemanticNode, node: &Sema
             .get("redefines")
             .and_then(|value| value.as_str())
             == Some("baseType")
-        && owner.element_kind == "metadata def"
+        && owner.element_kind == ElementKind::MetadataDef
         && owner
             .attributes
             .get("specializes")

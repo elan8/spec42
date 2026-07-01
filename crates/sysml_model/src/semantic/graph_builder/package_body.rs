@@ -14,7 +14,7 @@ use url::Url;
 use super::requirement_body::{import_member_label, walk_requirement_def_body};
 use crate::semantic::ast_util::{identification_name, span_to_range, text_range_to_json};
 use crate::semantic::graph::SemanticGraph;
-use crate::semantic::model::{NodeId, RelationshipKind};
+use crate::semantic::model::{ElementKind, NodeId, RelationshipKind};
 use crate::semantic::relationships::{
     add_specializes_edge_if_exists, add_typing_edge_if_exists, try_wire_derivation_connection,
 };
@@ -143,7 +143,7 @@ fn add_kerml_library_feature_node(g: &mut SemanticGraph, input: KermlLibraryNode
         span,
     } = input;
     if let Some(parent) = g.get_node(parent_id) {
-        if parent.element_kind == "metadata def"
+        if parent.element_kind == ElementKind::MetadataDef
             && parent
                 .attributes
                 .get("metaclassRole")
@@ -645,7 +645,7 @@ pub(super) fn build_from_package_body_element(
             let name = extract_modeled_decl_name(&fv.keyword, &fv.text, "_feature");
             let semantic_metadata_parent = parent_id.and_then(|pid| {
                 g.get_node(pid).and_then(|parent| {
-                    (parent.element_kind == "metadata def"
+                    (parent.element_kind == ElementKind::MetadataDef
                         && parent
                             .attributes
                             .get("metaclassRole")

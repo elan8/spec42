@@ -9,7 +9,7 @@ use crate::semantic::extracted_model::{
     ActivityActionDto, ActivityDiagramDto, ActivityStateDto, ControlFlowDto, DecisionNodeDto,
 };
 use crate::semantic::graph::SemanticGraph;
-use crate::semantic::model::{RelationshipKind, SemanticNode};
+use crate::semantic::model::{ElementKind, RelationshipKind, SemanticNode};
 use crate::semantic::text_span::TextRange;
 
 fn text_range_to_dto(range: TextRange) -> RangeDto {
@@ -26,7 +26,7 @@ fn text_range_to_dto(range: TextRange) -> RangeDto {
 }
 
 fn is_action_step_kind(kind: &crate::ElementKind) -> bool {
-    matches!(kind.as_str(), "action" | "perform")
+    matches!(kind, ElementKind::Action | ElementKind::Perform)
 }
 
 fn normalized_type_name(type_name: &str) -> String {
@@ -52,11 +52,11 @@ fn control_state_type(type_name: &str) -> Option<&'static str> {
 }
 
 fn control_kind_from_graph_node(node: &SemanticNode) -> Option<&'static str> {
-    match node.element_kind.as_str() {
-        "merge" => Some("merge"),
-        "assign" => Some("assign"),
-        "for loop" => Some("for-loop"),
-        "action" | "perform" => node
+    match node.element_kind {
+        ElementKind::Merge => Some("merge"),
+        ElementKind::Assign => Some("assign"),
+        ElementKind::ForLoop => Some("for-loop"),
+        ElementKind::Action | ElementKind::Perform => node
             .attributes
             .get("actionType")
             .and_then(|value| value.as_str())
@@ -67,7 +67,10 @@ fn control_kind_from_graph_node(node: &SemanticNode) -> Option<&'static str> {
 
 fn is_activity_step_node(node: &SemanticNode) -> bool {
     is_action_step_kind(&node.element_kind)
-        || matches!(node.element_kind.as_str(), "assign" | "merge" | "for loop")
+        || matches!(
+            node.element_kind,
+            ElementKind::Assign | ElementKind::Merge | ElementKind::ForLoop
+        )
         || control_kind_from_graph_node(node).is_some()
 }
 
@@ -130,7 +133,7 @@ fn find_action_def_for_diagram<'a>(
     let candidates: Vec<&SemanticNode> = graph
         .nodes_for_uri(&uri)
         .into_iter()
-        .filter(|node| node.element_kind == "action def" && node.name == diagram.name)
+        .filter(|node| node.element_kind == ElementKind::ActionDef && node.name == diagram.name)
         .collect();
     if candidates.is_empty() {
         return None;
@@ -350,7 +353,7 @@ fn propagate_interface_parameters(
         .map(|interface| interface.outputs.clone())
         .unwrap_or_default();
     for child in graph.children_of(action_def) {
-        if child.element_kind != "in out parameter" {
+        if child.element_kind != ElementKind::InOutParameter {
             continue;
         }
         let direction = child

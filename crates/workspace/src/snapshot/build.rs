@@ -366,6 +366,10 @@ pub(crate) fn assemble_host_workspace_snapshot(
 
 pub(crate) fn enrich_document_hashes(documents: &mut [SysmlDocument]) {
     for document in documents {
+        // Normalize here so the graph and the canonicalized `target_urls` computed via
+        // `path_to_file_url` (which also lowercases the Windows drive letter) key on the
+        // same URI string; providers aren't required to normalize themselves.
+        document.uri = language_service::uri::normalize_uri(&document.uri);
         let bytes = document.content.as_bytes();
         document.byte_size = Some(bytes.len() as i64);
         let mut hasher = Sha256::new();

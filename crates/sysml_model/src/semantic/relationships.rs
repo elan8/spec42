@@ -117,7 +117,7 @@ pub fn add_subject_relationship_to_declared_type_if_resolved(
     if let Some(subject_usage) = g
         .children_of(&case_node)
         .into_iter()
-        .find(|child| child.element_kind == "subject")
+        .find(|child| child.element_kind == ElementKind::Subject)
     {
         if let Some(target_id) = g
             .outgoing_targets_by_kind(subject_usage, RelationshipKind::Typing)
@@ -137,7 +137,7 @@ pub fn add_subject_relationship_to_declared_type_if_resolved(
     let resolution_context = g
         .children_of(&case_node)
         .into_iter()
-        .find(|child| child.element_kind == "subject")
+        .find(|child| child.element_kind == ElementKind::Subject)
         .cloned()
         .unwrap_or(case_node);
     let Some(target_id) = resolve_type_target_in_workspace(
@@ -157,30 +157,30 @@ pub fn add_subject_relationship_to_declared_type_if_resolved(
 }
 
 fn link_case_subject_relationships(g: &mut SemanticGraph) {
-    const CASE_KINDS: &[&str] = &[
-        "analysis def",
-        "analysis",
-        "verification def",
-        "verification",
-        "use case def",
-        "use case",
-        "concern def",
-        "concern",
-        "requirement def",
-        "requirement",
+    const CASE_KINDS: &[ElementKind] = &[
+        ElementKind::AnalysisDef,
+        ElementKind::Analysis,
+        ElementKind::VerificationDef,
+        ElementKind::Verification,
+        ElementKind::UseCaseDef,
+        ElementKind::UseCase,
+        ElementKind::ConcernDef,
+        ElementKind::Concern,
+        ElementKind::RequirementDef,
+        ElementKind::Requirement,
     ];
     let node_ids: Vec<NodeId> = g.node_index_by_id.keys().cloned().collect();
     for node_id in node_ids {
         let Some(case_node) = g.get_node(&node_id).cloned() else {
             continue;
         };
-        if !CASE_KINDS.contains(&case_node.element_kind.as_str()) {
+        if !CASE_KINDS.contains(&case_node.element_kind) {
             continue;
         }
         let subject_type_refs: Vec<String> = g
             .children_of(&case_node)
             .into_iter()
-            .filter(|child| child.element_kind == "subject")
+            .filter(|child| child.element_kind == ElementKind::Subject)
             .filter_map(|child| {
                 child
                     .attributes
@@ -781,7 +781,7 @@ pub fn link_workspace_relationships(g: &mut SemanticGraph) {
         .keys()
         .filter(|node_id| {
             g.get_node(node_id)
-                .map(|node| node.element_kind == "derivation connection")
+                .map(|node| node.element_kind == ElementKind::DerivationConnection)
                 .unwrap_or(false)
         })
         .cloned()
@@ -810,7 +810,7 @@ pub fn link_workspace_derivations(g: &mut SemanticGraph) {
         .keys()
         .filter(|node_id| {
             g.get_node(node_id)
-                .map(|node| node.element_kind == "derivation connection")
+                .map(|node| node.element_kind == ElementKind::DerivationConnection)
                 .unwrap_or(false)
         })
         .cloned()
@@ -902,17 +902,17 @@ pub fn resolve_cross_document_edges_for_uri(
     g: &SemanticGraph,
     uri: &Url,
 ) -> Vec<(NodeId, NodeId, RelationshipKind)> {
-    const CASE_KINDS: &[&str] = &[
-        "analysis def",
-        "analysis",
-        "verification def",
-        "verification",
-        "use case def",
-        "use case",
-        "concern def",
-        "concern",
-        "requirement def",
-        "requirement",
+    const CASE_KINDS: &[ElementKind] = &[
+        ElementKind::AnalysisDef,
+        ElementKind::Analysis,
+        ElementKind::VerificationDef,
+        ElementKind::Verification,
+        ElementKind::UseCaseDef,
+        ElementKind::UseCase,
+        ElementKind::ConcernDef,
+        ElementKind::Concern,
+        ElementKind::RequirementDef,
+        ElementKind::Requirement,
     ];
     let node_ids: Vec<NodeId> = g.nodes_by_uri.get(uri).cloned().unwrap_or_default();
     let mut resolved_edges = Vec::new();
@@ -972,11 +972,11 @@ pub fn resolve_cross_document_edges_for_uri(
         }
 
         // Subject relationships (case/requirement declarations and usages).
-        if CASE_KINDS.contains(&node.element_kind.as_str()) {
+        if CASE_KINDS.contains(&node.element_kind) {
             for subject in g
                 .children_of(node)
                 .into_iter()
-                .filter(|child| child.element_kind == "subject")
+                .filter(|child| child.element_kind == ElementKind::Subject)
             {
                 let target_id = g
                     .outgoing_targets_by_kind(subject, RelationshipKind::Typing)
@@ -1016,7 +1016,7 @@ pub fn resolve_cross_document_edges_for_uri(
             for verified_requirement in g
                 .children_of(node)
                 .into_iter()
-                .filter(|child| child.element_kind == "verified requirement")
+                .filter(|child| child.element_kind == ElementKind::VerifiedRequirement)
             {
                 let Some(requirement_ref) = verified_requirement
                     .attributes

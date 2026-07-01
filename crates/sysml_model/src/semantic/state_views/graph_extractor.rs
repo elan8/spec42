@@ -9,7 +9,7 @@ use crate::semantic::extracted_model::{
     RegionDto, StateMachineDto, StateNodeDto, StateNodeElementDto, StateTransitionDto,
 };
 use crate::semantic::graph::SemanticGraph;
-use crate::semantic::model::{NodeId, RelationshipKind, SemanticNode};
+use crate::semantic::model::{ElementKind, NodeId, RelationshipKind, SemanticNode};
 use crate::semantic::text_span::TextRange;
 
 fn text_range_to_dto(range: TextRange) -> RangeDto {
@@ -60,11 +60,14 @@ pub(super) fn extract_state_machines(
 }
 
 fn is_state_behavior_element(kind: &crate::ElementKind) -> bool {
-    matches!(kind.as_str(), "state" | "final state" | "transition")
+    matches!(
+        kind,
+        ElementKind::State | ElementKind::FinalState | ElementKind::Transition
+    )
 }
 
 fn is_state_machine_root(graph: &SemanticGraph, node: &SemanticNode) -> bool {
-    node.element_kind.as_str() == "state def"
+    node.element_kind == ElementKind::StateDef
         && graph
             .children_of(node)
             .iter()
@@ -149,7 +152,7 @@ fn initial_state_targets(graph: &SemanticGraph, root: &SemanticNode) -> HashSet<
         }
     }
     for child in graph.children_of(root) {
-        if child.element_kind != "transition" {
+        if child.element_kind != ElementKind::Transition {
             continue;
         }
         if child
@@ -207,8 +210,8 @@ fn collect_state_nodes(
 ) {
     let parent_node = parent.unwrap_or(machine_root);
     for child in graph.children_of(parent_node) {
-        match child.element_kind.as_str() {
-            "state" | "final state" => {
+        match child.element_kind {
+            ElementKind::State | ElementKind::FinalState => {
                 let id = child.id.qualified_name.clone();
                 if !state_ids.insert(id.clone()) {
                     continue;
@@ -216,8 +219,8 @@ fn collect_state_nodes(
                 let has_nested_states = graph
                     .children_of(child)
                     .iter()
-                    .any(|node| matches!(node.element_kind.as_str(), "state" | "final state"));
-                let kind = if child.element_kind == "final state" {
+                    .any(|node| matches!(node.element_kind, ElementKind::State | ElementKind::FinalState));
+                let kind = if child.element_kind == ElementKind::FinalState {
                     "final".to_string()
                 } else if is_terminate_state(child) {
                     "terminate".to_string()
@@ -229,7 +232,7 @@ fn collect_state_nodes(
                 let entry = compartment_action(graph, child, "entry");
                 let do_action = compartment_action(graph, child, "do");
                 let exit = compartment_action(graph, child, "exit");
-                let element_type = if child.element_kind == "final state" {
+                let element_type = if child.element_kind == ElementKind::FinalState {
                     "final state"
                 } else {
                     "state"
@@ -304,7 +307,7 @@ fn collect_transition_nodes(
     seen: &mut HashSet<String>,
 ) {
     for child in graph.children_of(parent) {
-        if child.element_kind == "transition" {
+        if child.element_kind == ElementKind::Transition {
             if let Some(transition) = transition_from_node(graph, machine_root, child, state_ids) {
                 if seen.insert(transition.id.clone()) {
                     out.push(transition);
@@ -451,7 +454,7 @@ where
         F: FnMut(&SemanticNode),
     {
         for child in graph.children_of(parent) {
-            if matches!(child.element_kind.as_str(), "state" | "final state") {
+            if matches!(child.element_kind, ElementKind::State | ElementKind::FinalState) {
                 visit(child);
                 walk(graph, child, visit);
             }
@@ -471,10 +474,9 @@ fn attr_str(node: &SemanticNode, key: &str) -> Option<String> {
 fn package_path_for(graph: &SemanticGraph, root: &SemanticNode) -> String {
     let mut segments = Vec::new();
     for ancestor in graph.ancestors_of(root) {
-        if matches!(
-            ancestor.element_kind.as_str(),
-            "package" | "library package"
-        ) {
+        if matches!(&ancestor.element_kind, ElementKind::Package)
+            || matches!(&ancestor.element_kind, ElementKind::Unknown(s) if s == "library package")
+        {
             segments.push(ancestor.name.clone());
         }
     }

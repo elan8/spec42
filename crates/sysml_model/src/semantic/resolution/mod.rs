@@ -5,7 +5,7 @@ use url::Url;
 use crate::semantic::graph::SemanticGraph;
 use crate::semantic::import_resolution::resolve_type_reference_targets;
 use crate::semantic::kinds::{allowed_for_role, ResolutionRole};
-use crate::semantic::model::NodeId;
+use crate::semantic::model::{ElementKind, NodeId};
 use crate::semantic::reference_resolution::{
     resolve_expression_endpoint_strict, resolve_member_via_type, ResolveResult,
 };
@@ -87,7 +87,7 @@ pub fn resolve_expression_endpoint_qualified(
                 .iter()
                 .filter_map(|node_id| {
                     graph.get_node(node_id).and_then(|node| {
-                        (node.element_kind != "import").then_some(node_id.qualified_name.clone())
+                        (node.element_kind != ElementKind::Import).then_some(node_id.qualified_name.clone())
                     })
                 })
                 .min_by_key(|qualified_name| qualified_name.len())

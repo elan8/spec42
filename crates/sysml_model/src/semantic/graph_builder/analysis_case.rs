@@ -10,7 +10,7 @@ use crate::semantic::analysis_typing::{
 };
 use crate::semantic::ast_util::span_to_range;
 use crate::semantic::graph::SemanticGraph;
-use crate::semantic::model::NodeId;
+use crate::semantic::model::{ElementKind, NodeId};
 use crate::semantic::relationships::add_typing_edge_if_exists;
 
 pub(super) fn build_from_analysis_body(
@@ -327,7 +327,7 @@ pub(super) fn build_from_analysis_body(
         .map(|parent| {
             g.children_of(parent)
                 .into_iter()
-                .filter(|child| child.element_kind == "analysis result")
+                .filter(|child| child.element_kind == ElementKind::AnalysisResult)
                 .count()
         })
         .unwrap_or(0);

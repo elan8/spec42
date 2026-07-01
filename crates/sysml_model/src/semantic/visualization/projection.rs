@@ -25,7 +25,7 @@ pub fn build_workspace_graph_dto_for_uris(
         for node in semantic_graph
             .nodes_for_uri(workspace_uri)
             .into_iter()
-            .filter(|n| n.element_kind != "diagnostic")
+            .filter(|n| n.element_kind != crate::semantic::model::ElementKind::Diagnostic)
         {
             node_ids.insert(node.id.qualified_name.clone());
             nodes.push(GraphNodeDto {

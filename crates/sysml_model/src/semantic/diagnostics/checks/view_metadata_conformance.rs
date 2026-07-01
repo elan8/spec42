@@ -37,7 +37,7 @@ pub(in crate::semantic::diagnostics) fn collect_view_metadata_conformance_diagno
     let mut seen = HashSet::new();
 
     for node in graph.nodes_for_uri(uri) {
-        if node.element_kind != "view" || is_synthetic(node) {
+        if node.element_kind != ElementKind::View || is_synthetic(node) {
             continue;
         }
         if let Some(view_type) = node
@@ -68,7 +68,7 @@ pub(in crate::semantic::diagnostics) fn collect_view_metadata_conformance_diagno
     }
 
     for node in graph.nodes_for_uri(uri) {
-        if node.element_kind != "view" || is_synthetic(node) {
+        if node.element_kind != ElementKind::View || is_synthetic(node) {
             continue;
         }
         let has_expose = node
@@ -102,7 +102,7 @@ pub(in crate::semantic::diagnostics) fn collect_view_metadata_conformance_diagno
     }
 
     for node in graph.nodes_for_uri(uri) {
-        if node.element_kind != "view" || is_synthetic(node) {
+        if node.element_kind != ElementKind::View || is_synthetic(node) {
             continue;
         }
         let Some(targets) = node
@@ -181,7 +181,7 @@ pub(in crate::semantic::diagnostics) fn collect_view_metadata_conformance_diagno
     }
 
     for node in graph.nodes_for_uri(uri) {
-        if node.element_kind != "view rendering" || is_synthetic(node) {
+        if node.element_kind != ElementKind::ViewRendering || is_synthetic(node) {
             continue;
         }
         let allowed = [ElementKind::RenderingDef, ElementKind::Rendering];
@@ -213,7 +213,7 @@ pub(in crate::semantic::diagnostics) fn collect_view_metadata_conformance_diagno
     }
 
     for node in graph.nodes_for_uri(uri) {
-        if node.element_kind != "metadata usage" || is_synthetic(node) {
+        if node.element_kind != ElementKind::MetadataUsage || is_synthetic(node) {
             continue;
         }
         if node
@@ -254,14 +254,15 @@ pub(in crate::semantic::diagnostics) fn collect_view_metadata_conformance_diagno
         if is_synthetic(node) {
             continue;
         }
-        let (target, key_prefix) = if node.element_kind == "import" {
+        let (target, key_prefix) = if node.element_kind == ElementKind::Import {
             let Some(parent) = node.parent_id.as_ref().and_then(|id| graph.get_node(id)) else {
                 continue;
             };
-            if !matches!(
-                parent.element_kind.as_str(),
-                "viewpoint" | "viewpoint def" | "frame"
-            ) {
+            if !(matches!(
+                parent.element_kind,
+                ElementKind::Viewpoint | ElementKind::ViewpointDef
+            ) || parent.element_kind.as_str() == "frame")
+            {
                 continue;
             }
             if import_target_resolves(graph, node) {
@@ -273,11 +274,14 @@ pub(in crate::semantic::diagnostics) fn collect_view_metadata_conformance_diagno
                 .and_then(|v| v.as_str())
                 .unwrap_or("import");
             (target.to_string(), "viewpoint_import")
-        } else if matches!(node.element_kind.as_str(), "stakeholder" | "purpose") {
+        } else if matches!(node.element_kind, ElementKind::Stakeholder | ElementKind::Purpose) {
             let Some(parent) = node.parent_id.as_ref().and_then(|id| graph.get_node(id)) else {
                 continue;
             };
-            if !matches!(parent.element_kind.as_str(), "viewpoint" | "viewpoint def") {
+            if !matches!(
+                parent.element_kind,
+                ElementKind::Viewpoint | ElementKind::ViewpointDef
+            ) {
                 continue;
             }
             let Some(target) = node
@@ -334,10 +338,11 @@ pub(in crate::semantic::diagnostics) fn collect_view_metadata_conformance_diagno
         let Some(parent) = node.parent_id.as_ref().and_then(|id| graph.get_node(id)) else {
             continue;
         };
-        if !matches!(
-            parent.element_kind.as_str(),
-            "viewpoint" | "viewpoint def" | "frame" | "requirement def"
-        ) {
+        if !(matches!(
+            parent.element_kind,
+            ElementKind::Viewpoint | ElementKind::ViewpointDef | ElementKind::RequirementDef
+        ) || parent.element_kind.as_str() == "frame")
+        {
             continue;
         }
         let language = node
@@ -385,7 +390,7 @@ pub(in crate::semantic::diagnostics) fn collect_view_metadata_conformance_diagno
                 continue;
             }
             keyword.to_string()
-        } else if node.element_kind == "metadata keyword" {
+        } else if node.element_kind == ElementKind::MetadataKeyword {
             let Some(keyword) = node.attributes.get("keyword").and_then(|v| v.as_str()) else {
                 continue;
             };
@@ -419,7 +424,7 @@ pub(in crate::semantic::diagnostics) fn collect_view_metadata_conformance_diagno
 
     let mut metadata_names: HashMap<String, Vec<String>> = HashMap::new();
     for node in graph.nodes_for_uri(uri) {
-        if node.element_kind != "metadata def" || is_synthetic(node) {
+        if node.element_kind != ElementKind::MetadataDef || is_synthetic(node) {
             continue;
         }
         metadata_names
@@ -455,8 +460,8 @@ pub(in crate::semantic::diagnostics) fn collect_view_metadata_conformance_diagno
 
     for node in graph.nodes_for_uri(uri) {
         if !matches!(
-            node.element_kind.as_str(),
-            "metadata usage" | "metadata keyword"
+            node.element_kind,
+            ElementKind::MetadataUsage | ElementKind::MetadataKeyword
         ) || is_synthetic(node)
         {
             continue;
@@ -501,20 +506,20 @@ pub(in crate::semantic::diagnostics) fn collect_view_metadata_conformance_diagno
     }
 
     for node in graph.nodes_for_uri(uri) {
-        if node.element_kind != "metadata usage" || is_synthetic(node) {
+        if node.element_kind != ElementKind::MetadataUsage || is_synthetic(node) {
             continue;
         }
         let Some(def_node) = graph
             .outgoing_targets_by_kind(node, RelationshipKind::Typing)
             .into_iter()
-            .find(|target| target.element_kind == "metadata def")
+            .find(|target| target.element_kind == ElementKind::MetadataDef)
         else {
             continue;
         };
         let required: HashSet<String> = graph
             .children_of(def_node)
             .into_iter()
-            .filter(|child| child.element_kind == "attribute def")
+            .filter(|child| child.element_kind == ElementKind::AttributeDef)
             .map(|child| child.name.clone())
             .collect();
         if required.is_empty() {
@@ -523,7 +528,7 @@ pub(in crate::semantic::diagnostics) fn collect_view_metadata_conformance_diagno
         let bound: HashSet<String> = graph
             .children_of(node)
             .into_iter()
-            .filter(|child| child.element_kind == "attribute")
+            .filter(|child| child.element_kind == ElementKind::Attribute)
             .map(|child| child.name.clone())
             .collect();
         for name in required.difference(&bound) {
@@ -563,7 +568,7 @@ pub(in crate::semantic::diagnostics) fn collect_view_metadata_conformance_diagno
     }
 
     for node in graph.nodes_for_uri(uri) {
-        if node.element_kind != "metadata def" || is_synthetic(node) {
+        if node.element_kind != ElementKind::MetadataDef || is_synthetic(node) {
             continue;
         }
         let specializes_semantic = graph
@@ -582,7 +587,7 @@ pub(in crate::semantic::diagnostics) fn collect_view_metadata_conformance_diagno
             continue;
         }
         for usage in graph.nodes_for_uri(uri) {
-            if usage.element_kind != "metadata usage" || is_synthetic(usage) {
+            if usage.element_kind != ElementKind::MetadataUsage || is_synthetic(usage) {
                 continue;
             }
             let typed_to_def = graph
@@ -627,7 +632,7 @@ pub(in crate::semantic::diagnostics) fn collect_view_metadata_conformance_diagno
 fn annotated_element_restriction_type(
     child: &crate::semantic::model::SemanticNode,
 ) -> Option<String> {
-    if child.element_kind != "attribute" {
+    if child.element_kind != ElementKind::Attribute {
         return None;
     }
     let is_annotated_element_restriction = child

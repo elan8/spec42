@@ -8,6 +8,7 @@ use tower_lsp::jsonrpc::Result;
 use tower_lsp::lsp_types::{MessageType, Url};
 use tower_lsp::Client;
 
+use sysml_model::ElementKind;
 use sysml_v2_parser::RootNamespace;
 
 use crate::common::util;
@@ -49,7 +50,7 @@ fn build_document_graph_dto(semantic_graph: &semantic::SemanticGraph, uri: &Url)
     let nodes: Vec<GraphNodeDto> = semantic_graph
         .nodes_for_uri(uri)
         .into_iter()
-        .filter(|n| n.element_kind != "diagnostic")
+        .filter(|n| n.element_kind != ElementKind::Diagnostic)
         .map(|n| GraphNodeDto {
             id: n.id.qualified_name.clone(),
             element_type: n.element_kind.as_str().to_string(),

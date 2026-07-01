@@ -19,7 +19,7 @@ use crate::semantic::extracted_model::{
     SequenceMessageDto, SequenceOperandDto,
 };
 use crate::semantic::graph::SemanticGraph;
-use crate::semantic::model::{NodeId, RelationshipKind, SemanticNode};
+use crate::semantic::model::{ElementKind, NodeId, RelationshipKind, SemanticNode};
 
 const SCENARIO_ANCHOR: &str = "InteractionScenario";
 const LIFELINE_ANCHOR: &str = "Lifeline";
@@ -148,7 +148,7 @@ fn collect_part_def_specializes(graph: &SemanticGraph) -> HashMap<String, Vec<St
     // every distinct simple name we discover from edges and node iteration.
     // To stay simple and complete, fall back to a flat scan via node_index.
     for node in iter_all_nodes(graph) {
-        if node.element_kind != "part def" {
+        if node.element_kind != ElementKind::PartDef {
             continue;
         }
         let key = simple_name(&node.name);
@@ -211,8 +211,8 @@ fn build_name_closure(specializes: &HashMap<String, Vec<String>>, anchor: &str) 
 // ---------------------------------------------------------------------------
 
 fn is_scenario_node(node: &SemanticNode, closures: &NameClosures) -> bool {
-    match node.element_kind.as_str() {
-        "part def" => {
+    match node.element_kind {
+        ElementKind::PartDef => {
             // Direct match by simple name.
             let simple = simple_name(&node.name);
             if closures.scenario.contains(&simple) {
@@ -229,7 +229,7 @@ fn is_scenario_node(node: &SemanticNode, closures: &NameClosures) -> bool {
                 })
                 .unwrap_or(false)
         }
-        "part" => {
+        ElementKind::Part => {
             let part_type = node
                 .attributes
                 .get("partType")
@@ -249,9 +249,9 @@ fn build_diagram(
 ) -> Option<SequenceDiagramDto> {
     let scenario_id = scenario.id.qualified_name.clone();
     let package_path = package_path_for(graph, scenario);
-    let source_kind = match scenario.element_kind.as_str() {
-        "part def" => "partDef",
-        "part" => "partUsage",
+    let source_kind = match scenario.element_kind {
+        ElementKind::PartDef => "partDef",
+        ElementKind::Part => "partUsage",
         _ => return None,
     };
 
@@ -323,7 +323,7 @@ impl<'a> ExtractionState<'a> {
         let mut fragments = Vec::new();
         let children = sorted_children(self.graph, scenario);
         for child in children {
-            if child.element_kind != "part" {
+            if child.element_kind != ElementKind::Part {
                 continue;
             }
             let part_type = part_type_of(child);
@@ -407,7 +407,7 @@ impl<'a> ExtractionState<'a> {
         let mut fragments = Vec::new();
         let mut operands = Vec::new();
         for child in sorted_children(self.graph, node) {
-            if child.element_kind != "part" {
+            if child.element_kind != ElementKind::Part {
                 continue;
             }
             let part_type = part_type_of(child);
@@ -459,7 +459,7 @@ impl<'a> ExtractionState<'a> {
         let mut message_ids = Vec::new();
         let mut fragments = Vec::new();
         for child in sorted_children(self.graph, node) {
-            if child.element_kind != "part" {
+            if child.element_kind != ElementKind::Part {
                 continue;
             }
             let child_type = part_type_of(child);
@@ -585,7 +585,7 @@ fn part_type_of(node: &SemanticNode) -> String {
 
 fn ref_value(graph: &SemanticGraph, node: &SemanticNode, names: &[&str]) -> Option<String> {
     for child in graph.children_of(node) {
-        if child.element_kind != "ref" {
+        if child.element_kind != ElementKind::Ref {
             continue;
         }
         if names.iter().any(|n| child.name.eq_ignore_ascii_case(n)) {
@@ -601,7 +601,7 @@ fn ref_value(graph: &SemanticGraph, node: &SemanticNode, names: &[&str]) -> Opti
 
 fn attribute_value(graph: &SemanticGraph, node: &SemanticNode, names: &[&str]) -> Option<String> {
     for child in graph.children_of(node) {
-        if child.element_kind != "attribute" {
+        if child.element_kind != ElementKind::Attribute {
             continue;
         }
         if names.iter().any(|n| child.name.eq_ignore_ascii_case(n)) {
@@ -673,10 +673,9 @@ fn compare_range_lsp(a: &TextRange, b: &TextRange) -> std::cmp::Ordering {
 fn package_path_for(graph: &SemanticGraph, scenario: &SemanticNode) -> String {
     let mut segments = Vec::new();
     for ancestor in graph.ancestors_of(scenario) {
-        if matches!(
-            ancestor.element_kind.as_str(),
-            "package" | "library package"
-        ) {
+        if matches!(&ancestor.element_kind, ElementKind::Package)
+            || matches!(&ancestor.element_kind, ElementKind::Unknown(s) if s == "library package")
+        {
             segments.push(ancestor.name.clone());
         }
     }

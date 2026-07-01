@@ -5,7 +5,9 @@ use url::Url;
 
 use crate::semantic::ast_util::span_to_range;
 use crate::semantic::graph::SemanticGraph;
-use crate::semantic::model::{ConnectStatementDetail, NodeId, RelationshipKind, SemanticEdge};
+use crate::semantic::model::{
+    ConnectStatementDetail, ElementKind, NodeId, RelationshipKind, SemanticEdge,
+};
 use crate::semantic::reference_resolution::{resolve_expression_endpoint_strict, ResolveResult};
 use crate::semantic::relationships::{
     add_edge_if_both_exist, add_pending_expression_relationship, add_typing_edge_if_exists,
@@ -15,7 +17,10 @@ use crate::semantic::relationships::{add_semantic_edge_once, AddSemanticEdgeResu
 use super::{add_node_and_recurse, qualified_name, qualified_name_for_node};
 
 fn is_action_like_kind(kind: &crate::ElementKind) -> bool {
-    matches!(kind.as_str(), "action" | "action def" | "perform" | "merge")
+    matches!(
+        kind,
+        ElementKind::Action | ElementKind::ActionDef | ElementKind::Perform | ElementKind::Merge
+    )
 }
 
 pub(super) fn add_perform_usage_node(
@@ -239,7 +244,8 @@ pub(super) fn add_expression_edge_if_both_exist(
                 let source_is_view = if kind == RelationshipKind::Satisfy {
                     let source_id = NodeId::new(uri, &src);
                     g.get_node(&source_id).is_some_and(|source_node| {
-                        source_node.element_kind == "view" || source_node.element_kind == "view def"
+                        source_node.element_kind == ElementKind::View
+                            || source_node.element_kind == ElementKind::ViewDef
                     })
                 } else {
                     false

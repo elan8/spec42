@@ -9,7 +9,7 @@ use super::{add_node_and_recurse, expressions, qualified_name_for_node, unit_met
 use crate::semantic::ast_util::span_to_range;
 use crate::semantic::graph::SemanticGraph;
 use crate::semantic::kinds::METADATA_RESTRICTION_FEATURE_NAMES;
-use crate::semantic::model::NodeId;
+use crate::semantic::model::{ElementKind, NodeId};
 use crate::semantic::relationships::add_typing_edge_if_exists;
 
 pub(super) fn build_from_attribute_body(
@@ -68,7 +68,7 @@ pub(super) fn build_from_attribute_body(
                 if let Some(ref r) = value.redefines {
                     attrs.insert("redefines".to_string(), serde_json::json!(r));
                     if g.get_node(parent_id).is_some_and(|parent| {
-                        parent.element_kind == "metadata def"
+                        parent.element_kind == ElementKind::MetadataDef
                             && METADATA_RESTRICTION_FEATURE_NAMES.contains(&r.as_str())
                     }) {
                         attrs.insert("subsetsFeature".to_string(), serde_json::json!(r));

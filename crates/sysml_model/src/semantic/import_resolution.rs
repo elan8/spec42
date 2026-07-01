@@ -109,7 +109,7 @@ fn has_any_import_in_scope(graph: &SemanticGraph, context_node: &SemanticNode) -
             if graph
                 .children_of(namespace)
                 .into_iter()
-                .any(|child| child.element_kind == "import")
+                .any(|child| child.element_kind == ElementKind::Import)
             {
                 return true;
             }
@@ -143,7 +143,7 @@ fn owned_namespace_children(graph: &SemanticGraph, namespace_id: &NodeId) -> Vec
     graph
         .children_of(namespace)
         .into_iter()
-        .filter(|child| child.element_kind != "import" && is_namespace(&child.element_kind))
+        .filter(|child| child.element_kind != ElementKind::Import && is_namespace(&child.element_kind))
         .map(|child| child.id.clone())
         .collect()
 }
@@ -156,7 +156,7 @@ fn exact_named_members(graph: &SemanticGraph, qualified_name: &str) -> Vec<NodeI
         .filter(|id| {
             graph
                 .get_node(id)
-                .map(|node| node.element_kind != "import")
+                .map(|node| node.element_kind != ElementKind::Import)
                 .unwrap_or(false)
         })
         .cloned()
@@ -181,7 +181,7 @@ fn exact_named_members_or_disambiguated(
             .filter(|id| {
                 graph
                     .get_node(id)
-                    .map(|node| node.element_kind != "import")
+                    .map(|node| node.element_kind != ElementKind::Import)
                     .unwrap_or(false)
             })
             .cloned(),
@@ -229,7 +229,7 @@ fn exported_members_named_from_namespace(
     };
 
     for child in graph.children_of(namespace) {
-        if child.element_kind != "import" && child.name == simple_name {
+        if child.element_kind != ElementKind::Import && child.name == simple_name {
             out.push(child.id.clone());
         }
     }
@@ -237,7 +237,7 @@ fn exported_members_named_from_namespace(
     for import in graph
         .children_of(namespace)
         .into_iter()
-        .filter(|child| child.element_kind == "import")
+        .filter(|child| child.element_kind == ElementKind::Import)
     {
         if exported_only && import_visibility(import) != "public" {
             continue;
@@ -363,7 +363,7 @@ fn import_namespace_target_candidates(
     let mut candidates = Vec::new();
     if !normalized.contains("::") {
         if let Some(parent) = import.parent_id.as_ref().and_then(|id| graph.get_node(id)) {
-            if parent.element_kind == "package" && !parent.id.qualified_name.is_empty() {
+            if parent.element_kind == ElementKind::Package && !parent.id.qualified_name.is_empty() {
                 candidates.push(format!("{}::{normalized}", parent.id.qualified_name));
             }
         }

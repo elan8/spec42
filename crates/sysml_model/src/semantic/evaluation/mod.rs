@@ -6,7 +6,7 @@ use crate::semantic::analysis_typing::{
     typed_case_definition_scope_prefixes, typed_requirement_definition_scope_prefixes,
 };
 use crate::semantic::graph::SemanticGraph;
-use crate::semantic::model::{NodeId, SemanticNode};
+use crate::semantic::model::{ElementKind, NodeId, SemanticNode};
 use crate::semantic::reference_resolution::{resolve_member_via_type, ResolveResult};
 
 mod units;
@@ -407,7 +407,7 @@ fn evaluate_analysis_display_quantity(
 }
 
 fn is_definition_only_analysis_node(node: &SemanticNode) -> bool {
-    matches!(node.element_kind.as_str(), "constraint def" | "calc def")
+    matches!(node.element_kind, ElementKind::ConstraintDef | ElementKind::CalcDef)
 }
 
 fn parse_verdict_kind_token(expression: &str) -> Option<String> {
@@ -438,7 +438,7 @@ fn resolve_verdict_kind_token(
     graph
         .children_of(node)
         .into_iter()
-        .filter(|child| child.element_kind == "verdict")
+        .filter(|child| child.element_kind == ElementKind::Verdict)
         .find_map(|child| {
             child
                 .attributes
@@ -1298,7 +1298,7 @@ impl<'a> EvalEngine<'a> {
             .graph
             .get_node(&callable_id)
             .ok_or(EvalStatus::Unknown)?;
-        if callable.element_kind != "calc def" {
+        if callable.element_kind != ElementKind::CalcDef {
             return Err(EvalStatus::TypeError);
         }
         let expression = callable
@@ -1399,7 +1399,7 @@ impl<'a> EvalEngine<'a> {
             .graph
             .children_of(context)
             .into_iter()
-            .filter(|child| child.element_kind == "part")
+            .filter(|child| child.element_kind == ElementKind::Part)
             .map(|child| child.name.clone())
             .collect();
         let named_matches: Vec<_> = part_child_names
@@ -1588,7 +1588,7 @@ impl<'a> EvalEngine<'a> {
                     .into_iter()
                     .filter(|node| {
                         node.name == callable_name
-                            && matches!(node.element_kind.as_str(), "calc def" | "constraint def")
+                            && matches!(node.element_kind, ElementKind::CalcDef | ElementKind::ConstraintDef)
                     })
                     .map(|node| node.id.clone()),
             );
@@ -1605,7 +1605,7 @@ impl<'a> EvalEngine<'a> {
             .flatten()
             .filter_map(|node_id| {
                 let node = self.graph.get_node(node_id)?;
-                matches!(node.element_kind.as_str(), "calc def" | "constraint def")
+                matches!(node.element_kind, ElementKind::CalcDef | ElementKind::ConstraintDef)
                     .then_some(node_id.clone())
             })
             .collect()

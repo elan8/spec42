@@ -100,15 +100,18 @@ It re-stores `version`/`workspace_root_uri`/`workspace_uris` that are already in
 
 ## 3. String-Heavy APIs
 
-### 3.1 ~158 `element_kind` string comparisons survive (P2) — **partially fixed**
+### 3.1 ~158 `element_kind` string comparisons survive (P2) — **fixed (production code)**
 
-Despite the new `ElementKind` enum, most call sites in `semantic_core` still use `element_kind == "port"` or `element_kind.as_str()` matches, enabled by the `PartialEq<str>` impls on `ElementKind`. This defeats the exhaustiveness guarantees the enum was introduced to provide.
+Despite the new `ElementKind` enum, most call sites in `semantic_core` used to write `element_kind == "port"` or match on `element_kind.as_str()`, enabled by the `PartialEq<str>` impls on `ElementKind`. This defeated the exhaustiveness guarantees the enum was introduced to provide.
 
-**Fixed:** the "allowed target kinds" resolution/allowlist system is now `ElementKind`-typed end to end — `kinds.rs` (`TYPING_TARGET_KINDS`, `SPECIALIZES_TARGET_KINDS`, `RULE6_ALLOWED_KINDS`, `SUBJECT_TYPE_TARGET_KINDS`, `VERIFIED_REQUIREMENT_TARGET_KINDS`, `ANNOTATED_ELEMENT_TARGET_KINDS`, all `*_SUBSET_TARGETS`, `allowed_for_role`, `allowed_typing_target_kinds`, `allowed_specializes_target_kinds`, `allowed_subset_redefine_target_kinds`, `is_part_like`/`is_port_like`, `expected_typing_definition_label`), `import_resolution.rs::resolve_type_reference_targets` and friends, `relationships.rs::resolve_type_target_in_workspace`/`resolve_pending_target`/`add_edge_if_both_exist_opt`, plus call sites in `diagnostics/checks/*.rs` and `language_service` (`TYPE_LOOKUP_ELEMENT_KINDS`). Three duplicate `element_kind_allowed(&str)` helpers were consolidated into one `ElementKind`-typed function in `kinds.rs`.
+**Fixed:** the "allowed target kinds" resolution/allowlist system (`kinds.rs`, `import_resolution.rs`, `relationships.rs`) and essentially all direct `element_kind` comparison sites across `sysml_model` (`diagnostics/**`, `graph_builder/**`, `reference_resolution.rs`, `activity_graph.rs`, `analysis_typing.rs`, `sequence_views`/`state_views` extractors, `evaluation`, `units/type_resolver.rs`, `resolution/mod.rs`, etc.), plus the equivalent call sites in `language_service` and `lsp_server`, now compare against `ElementKind::Variant` instead of string literals. Three duplicate `element_kind_allowed(&str)` helpers were consolidated into one `ElementKind`-typed function in `kinds.rs`.
 
-**Still open:** direct `element_kind == "literal"` / `element_kind.as_str()` comparisons elsewhere (e.g. `engine_impl.rs:22-28,55,163,316,367,427,591,631`, and scattered `node.element_kind != "view rendering"`-style checks in the diagnostics checks files) still rely on the `PartialEq<str>` impl.
+**Intentionally left as string comparisons** (not an oversight — converting these would silently change behavior or requires a separate design decision):
+- Literals with no corresponding `ElementKind` variant, which would only ever match `ElementKind::Unknown(s)` — e.g. `"frame"`, `"doc"`, `"comment"`, `"textualRep"`, `"library package"` in a few `diagnostics/checks/*.rs` and view-extractor spots.
+- Generic suffix/substring checks that intentionally span many kinds by naming convention rather than an exact set — `.as_str().ends_with(" def")`, `is_attribute_like_kind`'s `.contains("attribute")` in `lsp_server`, and the `ibd/extract_impl.rs` / `ibd/connectors.rs` predicates, which operate on DTO-level `element_type: String` fields downstream of the graph, not `ElementKind` directly.
+- `.as_str()`/`Display` usage for output formatting (error messages, sort keys) — not a comparison.
 
-**Recommendation:** Remove `PartialEq<str>` from `ElementKind` once the remaining call sites are converted. Update all comparison sites to use enum variants or predicate functions from `kinds.rs`. Thread `ElementKind` (not `&str`) through `add_node_and_recurse` in the graph builder.
+**Recommendation:** `PartialEq<str>` on `ElementKind` is still needed for the intentional cases above — do not remove it. The remaining string-typed DTO layer (`PreparedNodeDto.kind`, `InterconnectionNodeDto.kind`, etc. — see section on DTOs) and the IBD extraction predicates are separate follow-up items.
 
 ### 3.2 Untyped `SemanticNode.attributes` bag (~70+ keys) (P2)
 

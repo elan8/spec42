@@ -15,13 +15,17 @@ use crate::{ResolveResult, SemanticDiagnostic, SemanticGraph, SemanticNode};
 
 fn is_action_like(kind: &crate::ElementKind) -> bool {
     matches!(
-        kind.as_str(),
-        "action" | "action def" | "perform" | "merge" | "verdict"
+        kind,
+        crate::ElementKind::Action
+            | crate::ElementKind::ActionDef
+            | crate::ElementKind::Perform
+            | crate::ElementKind::Merge
+            | crate::ElementKind::Verdict
     )
 }
 
 fn is_state_like(kind: &crate::ElementKind) -> bool {
-    matches!(kind.as_str(), "state" | "state def")
+    matches!(kind, crate::ElementKind::State | crate::ElementKind::StateDef)
 }
 
 fn state_def_contains_node(graph: &SemanticGraph, state_def_qn: &str, node: &SemanticNode) -> bool {
@@ -62,7 +66,7 @@ fn state_def_has_initial_transition(
         return true;
     }
     graph.nodes_for_uri(uri).into_iter().any(|node| {
-        node.element_kind == "transition"
+        node.element_kind == crate::ElementKind::Transition
             && !is_synthetic(node)
             && node
                 .attributes
@@ -94,13 +98,13 @@ fn state_def_has_final_indicator(graph: &SemanticGraph, state_def: &SemanticNode
     graph
         .children_of(state_def)
         .into_iter()
-        .any(|child| child.element_kind == "final state")
+        .any(|child| child.element_kind == crate::ElementKind::FinalState)
 }
 
 fn state_def_is_cyclic(graph: &SemanticGraph, state_def: &SemanticNode) -> bool {
     let mut adjacency: HashMap<String, Vec<String>> = HashMap::new();
     for child in graph.children_of(state_def) {
-        if child.element_kind != "transition" || is_synthetic(child) {
+        if child.element_kind != crate::ElementKind::Transition || is_synthetic(child) {
             continue;
         }
         let Some(source) = child
@@ -172,7 +176,7 @@ fn state_def_ancestor(graph: &SemanticGraph, node: &SemanticNode) -> Option<Stri
     let mut current = node.parent_id.as_ref()?;
     loop {
         let parent = graph.get_node(current)?;
-        if parent.element_kind == "state def" {
+        if parent.element_kind == crate::ElementKind::StateDef {
             return Some(parent.id.qualified_name.clone());
         }
         current = parent.parent_id.as_ref()?;
@@ -239,7 +243,7 @@ pub(in crate::semantic::diagnostics) fn collect_behavior_conformance_diagnostics
     }
 
     for node in graph.nodes_for_uri(uri) {
-        if node.element_kind != "transition" || is_synthetic(node) {
+        if node.element_kind != crate::ElementKind::Transition || is_synthetic(node) {
             continue;
         }
         let Some(source_ref) = node.attributes.get("source").and_then(|v| v.as_str()) else {
@@ -333,16 +337,22 @@ pub(in crate::semantic::diagnostics) fn collect_behavior_conformance_diagnostics
             continue;
         };
         let in_action_context = matches!(
-            source_node.element_kind.as_str(),
-            "action def" | "action" | "perform" | "merge"
+            source_node.element_kind,
+            crate::ElementKind::ActionDef
+                | crate::ElementKind::Action
+                | crate::ElementKind::Perform
+                | crate::ElementKind::Merge
         ) || source_node
             .parent_id
             .as_ref()
             .and_then(|id| graph.get_node(id))
             .is_some_and(|parent| {
                 matches!(
-                    parent.element_kind.as_str(),
-                    "action def" | "action" | "verification def" | "verification"
+                    parent.element_kind,
+                    crate::ElementKind::ActionDef
+                        | crate::ElementKind::Action
+                        | crate::ElementKind::VerificationDef
+                        | crate::ElementKind::Verification
                 )
             });
         if !in_action_context {
@@ -372,7 +382,7 @@ pub(in crate::semantic::diagnostics) fn collect_behavior_conformance_diagnostics
     }
 
     for node in graph.nodes_for_uri(uri) {
-        if node.element_kind != "transition" || is_synthetic(node) {
+        if node.element_kind != crate::ElementKind::Transition || is_synthetic(node) {
             continue;
         }
         let Some(guard) = node
@@ -442,13 +452,13 @@ pub(in crate::semantic::diagnostics) fn collect_behavior_conformance_diagnostics
     }
 
     for node in graph.nodes_for_uri(uri) {
-        if node.element_kind != "state def" || is_synthetic(node) {
+        if node.element_kind != crate::ElementKind::StateDef || is_synthetic(node) {
             continue;
         }
         let has_state_children = graph
             .children_of(node)
             .into_iter()
-            .any(|child| child.element_kind == "state");
+            .any(|child| child.element_kind == crate::ElementKind::State);
         if !has_state_children {
             continue;
         }
@@ -473,13 +483,13 @@ pub(in crate::semantic::diagnostics) fn collect_behavior_conformance_diagnostics
     }
 
     for node in graph.nodes_for_uri(uri) {
-        if node.element_kind != "state def" || is_synthetic(node) {
+        if node.element_kind != crate::ElementKind::StateDef || is_synthetic(node) {
             continue;
         }
         let has_state_children = graph
             .children_of(node)
             .into_iter()
-            .any(|child| child.element_kind == "state");
+            .any(|child| child.element_kind == crate::ElementKind::State);
         if !has_state_children {
             continue;
         }
@@ -510,8 +520,8 @@ pub(in crate::semantic::diagnostics) fn collect_behavior_conformance_diagnostics
         if is_synthetic(node) {
             continue;
         }
-        let is_action = node.element_kind == "action";
-        let is_transition = node.element_kind == "transition";
+        let is_action = node.element_kind == crate::ElementKind::Action;
+        let is_transition = node.element_kind == crate::ElementKind::Transition;
         if !is_action && !is_transition {
             continue;
         }
@@ -579,7 +589,7 @@ pub(in crate::semantic::diagnostics) fn collect_behavior_conformance_diagnostics
 
     let mut final_states_by_container: HashMap<String, usize> = HashMap::new();
     for node in graph.nodes_for_uri(uri) {
-        if node.element_kind != "final state" || is_synthetic(node) {
+        if node.element_kind != crate::ElementKind::FinalState || is_synthetic(node) {
             continue;
         }
         let container = node
