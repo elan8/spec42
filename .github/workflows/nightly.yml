@@ -48,6 +48,30 @@ jobs:
           path: .cache/sysml-stdlib-kpar-${{ env.SPEC42_STDLIB_VERSION }}
           key: sysml-stdlib-${{ env.SPEC42_STDLIB_VERSION }}
 
+      - name: Prepare domain libraries bundle
+        run: |
+          VERSION=$(node -p "require('./config/domain-libraries.json').version")
+          echo "SPEC42_DOMAIN_LIBRARIES_VERSION=${VERSION}" >> $GITHUB_ENV
+          echo "SPEC42_DOMAIN_LIBRARIES_BUNDLE_ZIP=${{ github.workspace }}/.cache/elan8-domain-libraries-${VERSION}.kpar" >> $GITHUB_ENV
+
+      - name: Restore domain libraries bundle cache
+        uses: actions/cache/restore@v4
+        id: domain-libraries-cache
+        with:
+          path: .cache/elan8-domain-libraries-${{ env.SPEC42_DOMAIN_LIBRARIES_VERSION }}.kpar
+          key: sysml-domain-libraries-${{ env.SPEC42_DOMAIN_LIBRARIES_VERSION }}
+
+      - name: Fetch domain libraries bundle
+        if: steps.domain-libraries-cache.outputs.cache-hit != 'true'
+        run: bash scripts/fetch-domain-libraries-bundle.sh
+
+      - name: Save domain libraries bundle cache
+        if: steps.domain-libraries-cache.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v4
+        with:
+          path: .cache/elan8-domain-libraries-${{ env.SPEC42_DOMAIN_LIBRARIES_VERSION }}.kpar
+          key: sysml-domain-libraries-${{ env.SPEC42_DOMAIN_LIBRARIES_VERSION }}
+
       - name: Clone SysML-v2-Release
         run: git clone --depth 1 https://github.com/Systems-Modeling/SysML-v2-Release.git sysml-v2-release
 
@@ -208,6 +232,30 @@ jobs:
         with:
           path: .cache/sysml-stdlib-kpar-${{ env.SPEC42_STDLIB_VERSION }}
           key: sysml-stdlib-${{ env.SPEC42_STDLIB_VERSION }}
+
+      - name: Prepare domain libraries bundle
+        run: |
+          VERSION=$(node -p "require('./config/domain-libraries.json').version")
+          echo "SPEC42_DOMAIN_LIBRARIES_VERSION=${VERSION}" >> $GITHUB_ENV
+          echo "SPEC42_DOMAIN_LIBRARIES_BUNDLE_ZIP=${{ github.workspace }}/.cache/elan8-domain-libraries-${VERSION}.kpar" >> $GITHUB_ENV
+
+      - name: Restore domain libraries bundle cache
+        uses: actions/cache/restore@v4
+        id: domain-libraries-cache
+        with:
+          path: .cache/elan8-domain-libraries-${{ env.SPEC42_DOMAIN_LIBRARIES_VERSION }}.kpar
+          key: sysml-domain-libraries-${{ env.SPEC42_DOMAIN_LIBRARIES_VERSION }}
+
+      - name: Fetch domain libraries bundle
+        if: steps.domain-libraries-cache.outputs.cache-hit != 'true'
+        run: bash scripts/fetch-domain-libraries-bundle.sh
+
+      - name: Save domain libraries bundle cache
+        if: steps.domain-libraries-cache.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v4
+        with:
+          path: .cache/elan8-domain-libraries-${{ env.SPEC42_DOMAIN_LIBRARIES_VERSION }}.kpar
+          key: sysml-domain-libraries-${{ env.SPEC42_DOMAIN_LIBRARIES_VERSION }}
 
       - name: Run drone interconnection performance report
         run: cargo test -p lsp_server --test lsp_integration integration::powersystems_performance::drone_interconnection_performance_smoke_report -- --nocapture
