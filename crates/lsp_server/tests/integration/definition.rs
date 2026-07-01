@@ -75,6 +75,9 @@ fn lsp_goto_definition() {
             resolved_uri = Some(uri);
             break;
         }
+        // See lsp_cross_file_goto_definition: give background indexing real wall-clock
+        // time between retries, not just a message-queue round trip.
+        std::thread::sleep(std::time::Duration::from_millis(50));
         lsp_barrier(&mut stdin, &mut stdout);
     }
 
@@ -183,6 +186,11 @@ fn lsp_cross_file_goto_definition() {
             }
             resolved_uri = Some(uri);
         }
+        // `lsp_barrier` only guarantees the server drained its message queue up to this
+        // point, not that background cross-file indexing has finished. Under CPU-starved
+        // CI runners the retry loop could otherwise burn through all iterations before the
+        // background indexer is even scheduled; give it real wall-clock time between tries.
+        std::thread::sleep(std::time::Duration::from_millis(50));
         lsp_barrier(&mut stdin, &mut stdout);
     }
 
@@ -280,6 +288,9 @@ fn lsp_goto_definition_resolves_public_reexported_type() {
             resolved_uri = Some(uri);
             break;
         }
+        // See lsp_cross_file_goto_definition: give background indexing real wall-clock
+        // time between retries, not just a message-queue round trip.
+        std::thread::sleep(std::time::Duration::from_millis(50));
         lsp_barrier(&mut stdin, &mut stdout);
     }
 

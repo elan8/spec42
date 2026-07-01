@@ -93,6 +93,9 @@ fn lsp_cross_file_references() {
         {
             break;
         }
+        // See definition::lsp_cross_file_goto_definition: give background indexing real
+        // wall-clock time between retries, not just a message-queue round trip.
+        std::thread::sleep(std::time::Duration::from_millis(50));
         lsp_barrier(&mut stdin, &mut stdout);
     }
     assert!(
@@ -186,6 +189,9 @@ fn lsp_same_file_homonym_references_are_disambiguated_by_position() {
             break;
         }
         collected_locs = locs.clone();
+        // See definition::lsp_cross_file_goto_definition: give background indexing real
+        // wall-clock time between retries, not just a message-queue round trip.
+        std::thread::sleep(std::time::Duration::from_millis(50));
         lsp_barrier(&mut stdin, &mut stdout);
     }
     let locs = &collected_locs;
@@ -287,6 +293,9 @@ fn lsp_dotted_usage_disambiguates_same_name_members() {
             break;
         }
         collected_locs = locs.clone();
+        // See definition::lsp_cross_file_goto_definition: give background indexing real
+        // wall-clock time between retries, not just a message-queue round trip.
+        std::thread::sleep(std::time::Duration::from_millis(50));
         lsp_barrier(&mut stdin, &mut stdout);
     }
     let locs = &collected_locs;
@@ -396,6 +405,9 @@ fn lsp_same_short_name_in_library_is_not_counted_without_semantic_match() {
             break;
         }
         collected_locs = locs.clone();
+        // See definition::lsp_cross_file_goto_definition: give background indexing real
+        // wall-clock time between retries, not just a message-queue round trip.
+        std::thread::sleep(std::time::Duration::from_millis(50));
         lsp_barrier(&mut stdin, &mut stdout);
     }
 
