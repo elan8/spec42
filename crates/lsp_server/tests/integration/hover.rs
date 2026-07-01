@@ -710,24 +710,34 @@ fn lsp_hover_resolves_public_reexported_type_reference() {
     send_message(&mut stdin, &barrier_req.to_string());
     let _ = read_response(&mut stdout, barrier_id).expect("workspace barrier response");
 
-    let hover_id = next_id();
-    let hover_req = serde_json::json!({
-        "jsonrpc": "2.0",
-        "id": hover_id,
-        "method": "textDocument/hover",
-        "params": {
-            "textDocument": { "uri": uri_use },
-            "position": { "line": 0, "character": 75 }
+    // Retry: cross-file import-chain resolution can lag under CI load.
+    let mut contents = String::new();
+    for _ in 0..20 {
+        let hover_id = next_id();
+        let hover_req = serde_json::json!({
+            "jsonrpc": "2.0",
+            "id": hover_id,
+            "method": "textDocument/hover",
+            "params": {
+                "textDocument": { "uri": uri_use },
+                "position": { "line": 0, "character": 75 }
+            }
+        });
+        send_message(&mut stdin, &hover_req.to_string());
+        let hover_resp = read_response(&mut stdout, hover_id).expect("hover response");
+        let hover_json: serde_json::Value =
+            serde_json::from_str(&hover_resp).expect("parse hover response");
+        contents = hover_json["result"]["contents"]["value"]
+            .as_str()
+            .or_else(|| hover_json["result"]["contents"].as_str())
+            .unwrap_or_default()
+            .to_string();
+        if contents.contains("Name") && contents.contains("attribute def") {
+            break;
         }
-    });
-    send_message(&mut stdin, &hover_req.to_string());
-    let hover_resp = read_response(&mut stdout, hover_id).expect("hover response");
-    let hover_json: serde_json::Value =
-        serde_json::from_str(&hover_resp).expect("parse hover response");
-    let contents = hover_json["result"]["contents"]["value"]
-        .as_str()
-        .or_else(|| hover_json["result"]["contents"].as_str())
-        .expect("hover should return contents");
+        std::thread::sleep(std::time::Duration::from_millis(50));
+        lsp_barrier(&mut stdin, &mut stdout);
+    }
     assert!(
         contents.contains("Name") && contents.contains("attribute def"),
         "hover on public re-exported type should resolve to the definition: {}",

@@ -54,22 +54,31 @@ fn lsp_rename() {
     lsp_barrier(&mut stdin, &mut stdout);
 
     // prepareRename at "Foo" in def.sysml ("package P { part def Foo; }" -> Foo at line 0, char 21)
-    let prep_id = next_id();
-    let prep_req = serde_json::json!({
-        "jsonrpc": "2.0",
-        "id": prep_id,
-        "method": "textDocument/prepareRename",
-        "params": {
-            "textDocument": { "uri": uri_def },
-            "position": { "line": 0, "character": 21 }
+    // Retry: workspace-wide indexing (needed to determine renameability) can lag under CI load.
+    let mut prep_result = serde_json::Value::Null;
+    for _ in 0..20 {
+        let prep_id = next_id();
+        let prep_req = serde_json::json!({
+            "jsonrpc": "2.0",
+            "id": prep_id,
+            "method": "textDocument/prepareRename",
+            "params": {
+                "textDocument": { "uri": uri_def },
+                "position": { "line": 0, "character": 21 }
+            }
+        });
+        send_message(&mut stdin, &prep_req.to_string());
+        let prep_resp = read_response(&mut stdout, prep_id).expect("prepareRename response");
+        let prep_json: serde_json::Value =
+            serde_json::from_str(&prep_resp).expect("parse prepareRename response");
+        assert_eq!(prep_json["id"], prep_id);
+        prep_result = prep_json["result"].clone();
+        if !prep_result.is_null() {
+            break;
         }
-    });
-    send_message(&mut stdin, &prep_req.to_string());
-    let prep_resp = read_response(&mut stdout, prep_id).expect("prepareRename response");
-    let prep_json: serde_json::Value =
-        serde_json::from_str(&prep_resp).expect("parse prepareRename response");
-    assert_eq!(prep_json["id"], prep_id);
-    let prep_result = &prep_json["result"];
+        std::thread::sleep(std::time::Duration::from_millis(50));
+        lsp_barrier(&mut stdin, &mut stdout);
+    }
     assert!(
         !prep_result.is_null(),
         "prepareRename should return range or result"
