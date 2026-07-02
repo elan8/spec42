@@ -1,8 +1,35 @@
 # Tier 2: Consolidating `workspace` and `lsp_server`'s Incremental Update Machinery
 
-**Status:** Proposal — design only, no implementation started.
+**Status:** Phase 1 landed 2026-07-02 (see below). Phases 2-4 not started.
 **Date:** 2026-07-02
 **Related:** `docs/architecture-audit.md` (P1-2, P2-3, P2-4, P2-9), Technical Debt Reduction Plan Tier 2.
+
+## Phase 1 status (done, 2026-07-02)
+
+`WorkspaceSession`/`SessionLifecycle`/`RelinkToken` added to `crates/workspace/src/session.rs`,
+generalizing the token/generation state machine from `lsp_server`'s `SemanticCoordinator`.
+Not yet used by any caller — zero behavior change to `Spec42Engine`'s existing API.
+
+**Deviation from the original design sketch below:** the sketch proposed `WorkspaceSession`
+owning a `tokio::sync::watch`-based subscription channel for lock-free waiting. That was
+rejected: `crates/workspace/tests/dependency_guardrails.rs` enforces that `workspace` never
+depends on `tokio` (or `clap`/`axum`/`rmcp`/`tower-lsp`/`lsp_server`) — a deliberate
+invariant keeping the crate protocol/runtime-neutral so it stays embeddable by consumers
+that don't want a specific async runtime forced on them, and so its public API surface
+doesn't get version-coupled to a specific tokio release. `WorkspaceSession` is therefore a
+plain synchronous state machine with no `subscribe()`. Phase 2 has `lsp_server` (which
+already owns `tokio`) layer its own `watch` channel around `WorkspaceSession::lifecycle()`,
+exactly as `SemanticCoordinator` does today — no capability is lost, it's just pushed to the
+layer that actually needs it.
+
+Also fixed one edge case the original `SemanticCoordinator` pattern didn't defend against:
+`commit_relink` now checks `lifecycle == Reindexing` (not just token generation/version)
+before committing, since `reset()` intentionally doesn't bump the generation counter and a
+token issued before a `reset()` could otherwise still look "current." See `session.rs`'s
+`commit_relink` doc comment.
+
+12 unit tests in `crates/workspace/src/session.rs` cover the full transition table. Full
+workspace `cargo check`/`cargo test` pass, including `dependency_guardrails`.
 
 ## Problem
 
@@ -75,10 +102,15 @@ current callers (CLI, MCP, batch validation).
 
 ## Proposed design
 
+> **Note:** this section is the original design sketch. See "Phase 1 status" above for how
+> it changed during implementation — mainly, no `tokio`/subscription channel inside
+> `workspace` crate, and no bundled snapshot storage. `WorkspaceSession` ended up as a
+> smaller, pure state-machine type; the sketch below is kept for historical context on the
+> original shape.
+
 Add a new `WorkspaceSession` type to `workspace` crate (new module,
-`crates/workspace/src/session.rs`) that wraps an `Arc<HostWorkspaceSnapshot>` with the same
-token/generation/subscription shape `lsp_server`'s `SemanticCoordinator` already validates in
-production:
+`crates/workspace/src/session.rs`) with the same token/generation/subscription shape
+`lsp_server`'s `SemanticCoordinator` already validates in production:
 
 ```rust
 pub struct WorkspaceSession {
@@ -102,16 +134,26 @@ impl WorkspaceSession {
 }
 ```
 
-The actual graph computation inside `begin_relink`'s caller still goes through
-`Spec42Engine::update_snapshot()` (or an async wrapper around it, e.g. `tokio::task::spawn_blocking`)
-— `WorkspaceSession` only owns the *coordination*, not the graph-building. This keeps the
-change additive: `workspace` crate gains a new opt-in type, nothing existing moves or breaks.
+**What actually shipped** (`crates/workspace/src/session.rs`): `WorkspaceSession` owns only
+`lifecycle: SessionLifecycle`, `version: u64`, `relink_generation: u64` — no `tokio`, no
+snapshot storage, no `ArcSwap`/`AtomicU64` (plain `&mut self` mutation, matching
+`SemanticCoordinator`'s existing external-locking discipline). Method names match:
+`begin_startup`/`complete_startup`/`schedule_relink`/`is_token_current`/`commit_relink`/
+`begin_library_reindex`/`complete_reindex`/`bump_version`/`reset`. No `subscribe()` or
+`current()` — see "Phase 1 status" for why.
+
+The actual graph computation inside `schedule_relink`'s caller still goes through
+`Spec42Engine::update_snapshot()` (or an async wrapper around it, e.g. `tokio::task::spawn_blocking`
+in `lsp_server`, which already has the runtime) — `WorkspaceSession` only owns the
+*coordination*, not the graph-building or the snapshot storage. This keeps the change
+additive: `workspace` crate gains a new opt-in type, nothing existing moves or breaks.
 
 ## Migration plan (phased, each phase independently shippable)
 
-**Phase 1 — Add `WorkspaceSession` to `workspace` crate, unused.**
-New type, new tests mirroring `lsp_server`'s existing `coordinator.rs` test suite (adapted).
-Zero behavior change to any existing caller. Lowest risk, can land any time.
+**Phase 1 — Add `WorkspaceSession` to `workspace` crate, unused. ✅ Done 2026-07-02.**
+New type, new tests mirroring `lsp_server`'s existing `coordinator.rs` transition table (it
+turned out `coordinator.rs` itself had no tests — this is now the first test coverage of the
+pattern). Zero behavior change to any existing caller.
 
 **Phase 2 — Migrate `lsp_server`'s `SemanticCoordinator`/`ServerState` to delegate token/
 generation/subscription bookkeeping to `WorkspaceSession`,** keeping `lsp_server`'s own parse
@@ -162,9 +204,11 @@ starting with Phase 1 (pure addition, no risk) whenever there's appetite to begi
 
 ## Open questions for the maintainer
 
-1. Is `tokio` (or another async runtime) already a dependency available to `workspace`
-   crate, or does `WorkspaceSession`'s async relink wrapper need to stay runtime-agnostic
-   (e.g. take a caller-supplied executor closure)?
+1. ~~Is `tokio` (or another async runtime) already a dependency available to `workspace`
+   crate...~~ **Resolved 2026-07-02: no.** `workspace` must stay runtime-agnostic —
+   `tests/dependency_guardrails.rs` forbids `tokio` there deliberately, to keep the crate
+   embeddable without committing consumers to a specific async runtime or version. Confirmed
+   with the maintainer; `WorkspaceSession` has no async API of its own (see "Phase 1 status").
 2. Should Phase 3's `rayon` migration (replacing `std::thread::spawn` in the staged rebuild)
    happen inside `workspace` crate (so CLI/MCP batch validation also benefits) or stay
    `lsp_server`-local until Phase 3 actually merges the logic?

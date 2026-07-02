@@ -8,6 +8,7 @@ pub mod error;
 pub mod library;
 pub mod provider;
 pub mod robot_vacuum_perf;
+pub mod session;
 pub mod snapshot;
 pub mod version;
 
@@ -39,6 +40,7 @@ pub use provider::{
     ChangesetDocumentProvider, FileSystemDocumentProvider, HostFilesystemProvider,
     InMemoryDocumentProvider, SysmlDocument, SysmlDocumentProvider, SysmlDocumentSourceKind,
 };
+pub use session::{RelinkToken, SessionLifecycle, WorkspaceSession};
 pub use snapshot::{
     apply_document_changes, CancellationToken, DocumentChanges, HostContext, HostPipelinePhase,
     HostResourceLimits, HostSemanticModelNode, HostSemanticModelRelationship,
