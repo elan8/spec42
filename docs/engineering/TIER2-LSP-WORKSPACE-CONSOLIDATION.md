@@ -1,8 +1,42 @@
 # Tier 2: Consolidating `workspace` and `lsp_server`'s Incremental Update Machinery
 
-**Status:** Phase 1 landed 2026-07-02 (see below). Phases 2-4 not started.
+**Status:** Phases 1-2 landed 2026-07-02 (see below). Phases 3-4 not started.
 **Date:** 2026-07-02
 **Related:** `docs/architecture-audit.md` (P1-2, P2-3, P2-4, P2-9), Technical Debt Reduction Plan Tier 2.
+
+## Phase 2 status (done, 2026-07-02)
+
+`lsp_server/src/workspace/coordinator.rs`'s `SemanticCoordinator` now delegates its
+generation/version/transition bookkeeping to an internal `workspace::WorkspaceSession`
+instead of tracking `lifecycle`/`version`/`relink_generation` fields itself. Its public API
+is **unchanged** — every method signature, every one of the 8 call-site files
+(`lsp_runtime/{custom,documents,mod}.rs`, `validation/built_workspace.rs`,
+`views/workspace_artifacts.rs`, `workspace/{mod,state}.rs`) needed zero edits.
+
+Two types stayed local to `lsp_server` rather than being replaced by `workspace`'s
+equivalents, deliberately:
+- **`SemanticLifecycle`** (in `workspace/state.rs`) stays a separate enum from
+  `workspace::SessionLifecycle`, translated at the `coordinator.rs` boundary
+  (`to_semantic_lifecycle`). It carries LSP-specific inherent methods
+  (`supports_semantic_queries`, `suppresses_transient_semantic_diagnostics`) that can't be
+  added to a foreign type from another crate — collapsing the two into one type would need
+  moving those methods to free functions or an extension trait for a purely cosmetic gain.
+- **The `tokio::sync::watch` channel** stays in `coordinator.rs`, since `workspace` crate is
+  guarded against depending on `tokio` at all (see Phase 1 below). `SemanticCoordinator` now
+  just calls `self.publish()` (send over its own local channel) after every delegated
+  transition.
+
+`RelinkToken` in `lsp_server` is now a thin wrapper around `workspace::RelinkToken`
+(`generation()` passthrough); the dead `#[cfg(test)] snapshot_version()` accessor (flagged
+by clippy as unused before this change) was dropped rather than carried forward.
+
+`coordinator.rs` shrank 191 → 176 lines, but the more important change is that the actual
+transition-validity logic (generation counters, `debug_assert`s, the `commit_relink` staleness
+check) now has exactly one implementation — in `workspace::WorkspaceSession`, covered by the
+12 tests added in Phase 1 — instead of being duplicated logic with its own (previously
+nonexistent) test coverage. Full `cargo test --workspace` passes, including
+`lsp_server/tests/debt_guardrails.rs` (which enforces `lsp_server`'s own semantic-layer
+purity invariants) and `workspace/tests/dependency_guardrails.rs`.
 
 ## Phase 1 status (done, 2026-07-02)
 
@@ -156,11 +190,11 @@ turned out `coordinator.rs` itself had no tests — this is now the first test c
 pattern). Zero behavior change to any existing caller.
 
 **Phase 2 — Migrate `lsp_server`'s `SemanticCoordinator`/`ServerState` to delegate token/
-generation/subscription bookkeeping to `WorkspaceSession`,** keeping `lsp_server`'s own parse
-cache, library-graph cache, and `std::thread::spawn` staged-rebuild logic as-is for now. This
-is the highest-value, lowest-risk migration step: it removes the coordinator duplication
-(~190 lines) while leaving the graph-building internals (which are already working in
-production) untouched.
+generation bookkeeping to `WorkspaceSession`. ✅ Done 2026-07-02.** Kept `lsp_server`'s own
+parse cache, library-graph cache, `std::thread::spawn` staged-rebuild logic, and `tokio::sync::watch`
+subscription channel as-is (the last one stays local since `workspace` can't depend on
+`tokio` — see Phase 1). Removed the duplicated generation/version transition logic itself;
+see "Phase 2 status" above.
 
 **Phase 3 — Fold the remaining duplicated graph-update logic** (`services.rs`'s
 `update_semantic_graph_for_uri`/`rebuild_semantic_graph_staged`, ~1200 lines) into

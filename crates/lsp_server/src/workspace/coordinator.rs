@@ -3,23 +3,43 @@ use tokio::sync::watch;
 
 use super::state::SemanticLifecycle;
 
+fn to_semantic_lifecycle(lifecycle: workspace::SessionLifecycle) -> SemanticLifecycle {
+    match lifecycle {
+        workspace::SessionLifecycle::Cold => SemanticLifecycle::Cold,
+        workspace::SessionLifecycle::Indexing => SemanticLifecycle::Indexing,
+        workspace::SessionLifecycle::Ready => SemanticLifecycle::Ready,
+        workspace::SessionLifecycle::Reindexing => SemanticLifecycle::Reindexing,
+    }
+}
+
 /// Token returned by [`SemanticCoordinator::schedule_relink`].
 ///
 /// The async relink task carries this value and passes it back to
 /// [`SemanticCoordinator::commit_relink`] to prove it is still the
-/// current (non-superseded) relink.  Both `generation` and
-/// `snapshot_version` must match the coordinator at commit time.
+/// current (non-superseded) relink. Wraps `workspace::RelinkToken`, which
+/// carries the actual generation/version bookkeeping — see
+/// `crates/workspace/src/session.rs`.
 pub(crate) struct RelinkToken {
-    generation: u64,
-    snapshot_version: u64,
+    inner: workspace::RelinkToken,
+}
+
+impl RelinkToken {
+    pub(crate) fn generation(&self) -> u64 {
+        self.inner.generation()
+    }
 }
 
 /// State machine for the semantic graph lifecycle.
 ///
-/// All lifecycle transitions go through named methods on this type,
-/// which enforce valid transitions (via `debug_assert`) and broadcast
-/// each change over a [`watch`] channel so query handlers can wait
-/// outside the `RwLock` with zero overhead.
+/// All lifecycle transitions delegate their generation/version bookkeeping to
+/// `workspace::WorkspaceSession` (see
+/// `docs/engineering/TIER2-LSP-WORKSPACE-CONSOLIDATION.md`, Tier 2 Phase 2). This type
+/// now only owns the LSP-specific pieces `workspace` deliberately doesn't provide (it
+/// stays protocol/runtime-neutral, see `crates/workspace/tests/dependency_guardrails.rs`):
+/// the `tokio::sync::watch` broadcast channel, and translating between
+/// `workspace::SessionLifecycle` and this crate's own `SemanticLifecycle` (kept as a
+/// separate type since it carries LSP-specific inherent methods like
+/// `supports_semantic_queries`).
 ///
 /// ## Valid transitions
 ///
@@ -44,15 +64,7 @@ pub(crate) struct RelinkToken {
 ///
 /// [`subscribe`]: SemanticCoordinator::subscribe
 pub(crate) struct SemanticCoordinator {
-    lifecycle: SemanticLifecycle,
-    /// Bumped on every transition and on bare `bump_version` calls.
-    /// Used as a monotonic "did anything change?" discriminator for
-    /// in-flight async tasks.
-    version: u64,
-    /// Incremented each time a new relink is scheduled.  The newest
-    /// token's generation is the only one that will pass
-    /// `is_token_current`, so older debounce tasks self-cancel.
-    relink_generation: u64,
+    session: workspace::WorkspaceSession,
     lifecycle_tx: Arc<watch::Sender<SemanticLifecycle>>,
 }
 
@@ -60,9 +72,7 @@ impl Default for SemanticCoordinator {
     fn default() -> Self {
         let (tx, _rx) = watch::channel(SemanticLifecycle::Cold);
         Self {
-            lifecycle: SemanticLifecycle::Cold,
-            version: 0,
-            relink_generation: 0,
+            session: workspace::WorkspaceSession::new(),
             lifecycle_tx: Arc::new(tx),
         }
     }
@@ -78,34 +88,32 @@ impl SemanticCoordinator {
     }
 
     pub(crate) fn lifecycle(&self) -> SemanticLifecycle {
-        self.lifecycle
+        to_semantic_lifecycle(self.session.lifecycle())
     }
 
     pub(crate) fn version(&self) -> u64 {
-        self.version
+        self.session.version()
     }
 
     /// Resets to `Cold` (server re-initialization).
     pub(crate) fn reset(&mut self) {
-        self.lifecycle = SemanticLifecycle::Cold;
-        let _ = self.lifecycle_tx.send(SemanticLifecycle::Cold);
+        self.session.reset();
+        self.publish();
         // Version is intentionally not bumped — all in-flight tasks
         // should have already been invalidated by the re-initialize.
     }
 
     /// `Cold → Indexing` — workspace startup scan begins.
     pub(crate) fn begin_startup(&mut self) {
-        debug_assert_eq!(self.lifecycle, SemanticLifecycle::Cold);
-        self.transition(SemanticLifecycle::Indexing);
+        self.session.begin_startup();
+        self.publish();
     }
 
     /// `Cold/Indexing → Ready` — startup complete (with or without files).
     pub(crate) fn complete_startup(&mut self) -> u64 {
-        debug_assert!(matches!(
-            self.lifecycle,
-            SemanticLifecycle::Cold | SemanticLifecycle::Indexing
-        ));
-        self.transition(SemanticLifecycle::Ready)
+        let version = self.session.complete_startup();
+        self.publish();
+        version
     }
 
     /// `Ready/Reindexing → Reindexing` — a file changed; schedule async relink.
@@ -117,23 +125,15 @@ impl SemanticCoordinator {
     ///
     /// [`commit_relink`]: SemanticCoordinator::commit_relink
     pub(crate) fn schedule_relink(&mut self) -> RelinkToken {
-        debug_assert!(matches!(
-            self.lifecycle,
-            SemanticLifecycle::Ready | SemanticLifecycle::Reindexing
-        ));
-        self.relink_generation = self.relink_generation.wrapping_add(1);
-        let version = self.transition(SemanticLifecycle::Reindexing);
-        RelinkToken {
-            generation: self.relink_generation,
-            snapshot_version: version,
-        }
+        let inner = self.session.schedule_relink();
+        self.publish();
+        RelinkToken { inner }
     }
 
     /// Returns `true` when this token still represents the current
     /// pending relink (not superseded by a newer edit).
     pub(crate) fn is_token_current(&self, token: &RelinkToken) -> bool {
-        self.relink_generation == token.generation
-            && self.version == token.snapshot_version
+        self.session.is_token_current(&token.inner)
     }
 
     /// `Reindexing → Ready` — async relink committed.
@@ -141,23 +141,24 @@ impl SemanticCoordinator {
     /// Returns `true` if committed successfully, `false` if the token
     /// has been superseded by a newer relink.
     pub(crate) fn commit_relink(&mut self, token: &RelinkToken) -> bool {
-        if !self.is_token_current(token) {
-            return false;
+        let committed = self.session.commit_relink(&token.inner);
+        if committed {
+            self.publish();
         }
-        debug_assert_eq!(self.lifecycle, SemanticLifecycle::Reindexing);
-        self.transition(SemanticLifecycle::Ready);
-        true
+        committed
     }
 
     /// `* → Reindexing` — library paths changed; full reindex begins.
     pub(crate) fn begin_library_reindex(&mut self) {
-        self.transition(SemanticLifecycle::Reindexing);
+        self.session.begin_library_reindex();
+        self.publish();
     }
 
     /// `Reindexing → Ready` — library reindex (or configuration reindex) done.
     pub(crate) fn complete_reindex(&mut self) -> u64 {
-        debug_assert_eq!(self.lifecycle, SemanticLifecycle::Reindexing);
-        self.transition(SemanticLifecycle::Ready)
+        let version = self.session.complete_reindex();
+        self.publish();
+        version
     }
 
     /// Bumps the version without a lifecycle change.
@@ -166,25 +167,10 @@ impl SemanticCoordinator {
     /// deleted, or the index is updated during startup ingestion) but
     /// do not affect the lifecycle state.
     pub(crate) fn bump_version(&mut self) -> u64 {
-        self.version = self.version.wrapping_add(1);
-        self.version
+        self.session.bump_version()
     }
 
-    fn transition(&mut self, new: SemanticLifecycle) -> u64 {
-        self.lifecycle = new;
-        self.version = self.version.wrapping_add(1);
-        let _ = self.lifecycle_tx.send(new);
-        self.version
-    }
-}
-
-impl RelinkToken {
-    pub(crate) fn generation(&self) -> u64 {
-        self.generation
-    }
-
-    #[cfg(test)]
-    pub(crate) fn snapshot_version(&self) -> u64 {
-        self.snapshot_version
+    fn publish(&self) {
+        let _ = self.lifecycle_tx.send(self.lifecycle());
     }
 }
