@@ -14,10 +14,12 @@ use crate::semantic::model::{ElementKind, NodeId, SemanticNode};
 mod action;
 mod analysis_case;
 mod attribute_body;
+mod calc_constraint_def;
 mod definition_body;
 pub(crate) mod expressions;
 mod flow_usage;
 mod interface_def;
+mod kerml_library;
 mod metadata_def;
 mod metadata_keyword;
 mod modeled_kerml_name;
@@ -35,6 +37,7 @@ pub(crate) mod unit_metadata;
 pub(crate) mod unit_type_promotion;
 mod use_case;
 mod verification;
+mod view_def;
 
 pub struct MaterializeContext<'a> {
     pub uri: &'a Url,
@@ -192,5 +195,34 @@ pub(super) fn attach_doc_comment(g: &mut SemanticGraph, node_id: &NodeId, text: 
             _ => text.to_string(),
         };
         node.attributes.insert("doc".to_string(), serde_json::json!(combined));
+    }
+}
+
+/// Inserts a `specializes` attribute on a def-kind node's attribute map, if present.
+pub(super) fn insert_def_specialization_attr(
+    attrs: &mut HashMap<String, serde_json::Value>,
+    specializes: Option<&str>,
+) {
+    if let Some(s) = specializes {
+        attrs.insert("specializes".to_string(), serde_json::json!(s));
+    }
+}
+
+/// Wires the `Specializes` edge for a def-kind node, if it declares a `specializes` target.
+pub(super) fn wire_def_specialization_edge(
+    g: &mut SemanticGraph,
+    uri: &Url,
+    qualified: &str,
+    container_prefix: Option<&str>,
+    specializes: Option<&str>,
+) {
+    if let Some(s) = specializes {
+        crate::semantic::relationships::add_specializes_edge_if_exists(
+            g,
+            uri,
+            qualified,
+            s,
+            container_prefix,
+        );
     }
 }

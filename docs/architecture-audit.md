@@ -1,9 +1,11 @@
 # Spec42 Architecture & Technical-Debt Audit
 
 **Date:** 2026-06-25  
-**Last updated:** 2026-06-26  
+**Last updated:** 2026-07-02  
 **Scope:** Full workspace (`crates/*`, ~104.5k LOC, 8 crates).  
 **Cross-referenced against:** `docs/engineering/ROBOT-VACUUM-PERFORMANCE-ANALYSIS.md`
+
+**Crate rename note (2026-07-02):** the crate names used throughout this document are from before a Phase 1 rename. Mapping: `spec42_host` → `workspace`, `semantic_core` → merged into `sysml_model` (under `sysml_model/src/semantic/`), `kernel` → `lsp_server`. The rename was cosmetic only — verified 2026-07-02 that `server` still depends on both `workspace` and `lsp_server`, unwrap/expect counts are essentially unchanged, and the 5-6 manual `std::thread::spawn` sites are still present (now in `lsp_server/src/workspace/services.rs`). **P1-2 (dual pipeline) is still open**, just under new names.
 
 ### Completed since initial audit
 
@@ -17,6 +19,11 @@
 | — | New `SemanticGraph::edges_for_uri()` returning full `SemanticEdge` detail | in-tree |
 | P1-3 | **`Arc<SemanticGraph>`** — `HostWorkspaceSnapshot` and `InMemoryWorkspace` now share one `Arc<SemanticGraph>`; `build_workspace_snapshot` clones the `Arc` instead of the graph; incremental update still does one unavoidable deep clone for mutation but shares the result | in-tree |
 | P2-1 | **Diagnostics engine O(edges_in_uri) optimisation** — added `edges_by_uri` and `connect_edges_by_declaring_uri` indexes to `GraphQueryIndexes`; rewrote five O(all_edges) edge-scan methods; pre-collect `nodes` and `connect_edges` once in `compute_semantic_diagnostics_with_unit_registry` instead of re-querying per pass; fixed stale-cache bug in all three kernel graph-mutation paths (`update_semantic_graph_for_uri`, `rebuild_all_document_links`, staged rebuild) by adding `invalidate_query_indexes()` after relationship linking | in-tree |
+| — | **`workspace` relationship-projection dedup bug fixed** — `project_host_semantic_model`'s sort/dedup only keyed on `(source, target, kind)`, silently dropping one of two `Connection` edges that shared resolved endpoints but had distinct `ConnectStatementDetail`s (the graph itself is a `petgraph` multigraph and legitimately allows this). Sort/dedup now include `connect`'s `source_expression`/`target_expression`/`range`. (`crates/workspace/src/snapshot/facts.rs`) | in-tree |
+| — | **Metadata annotations now captured for all element kinds** — `MetadataAnnotation` AST nodes were silently dropped (matched into no-op arms) for use case defs, constraint defs (top-level and nested), calc defs, and view defs; only parts/actions/states/requirements wired them into real `"metadata usage"` graph nodes. Fixed across `analysis_case.rs`, `verification.rs`, `use_case.rs`, `package_body.rs` (now `calc_constraint_def.rs`/`view_def.rs`), `requirement_body.rs`, `metadata_def.rs`. No parser change needed — the AST already exposed these. | in-tree |
+| — | **Doc comments now captured everywhere** — `doc /* ... */` AST nodes were dropped project-wide by an explicit "intentionally omitted" design decision. Added a shared `attach_doc_comment()` helper (`graph_builder/mod.rs`) writing a `doc` attribute on the enclosing node, wired into ~25 previously-silent `Doc(_)` match arms across the builder, including nested attribute-def bodies (`attribute_body.rs`) which the general builder never recursed into at all. | in-tree |
+| — | **`unit_metadata.rs` refactored off text/regex extraction onto the AST** — `extract_unit_conversion_from_body`/`extract_unit_prefix_from_body`/`extract_interval_scale_from_body` used to serialize the already-structured `AttributeUsage`/`AttributeDef` body back into a string and regex/substring-parse it (`extract_assignment`, hand-rolled division-only `parse_factor_expression`). Replaced with direct AST reads (`find_redefined_usage`, `expr_as_number`/`expr_as_name` walking `Expression` nodes), supporting full `+ - * / ^` arithmetic instead of division-only. Removed ~150 lines of now-dead stringify/reparse machinery. | in-tree |
+| — | **Tier 1 (large-file split) started: `package_body.rs` split 2172 → 1291 lines** — extracted three self-contained clusters into new sibling modules: `view_def.rs` (view/viewpoint/rendering def+usage, filter, 469 lines), `kerml_library.rs` (raw KerML library decls, 262 lines), `calc_constraint_def.rs` (top-level `constraint def`/`calc def`, 290 lines). Moved the widely-shared `insert_def_specialization_attr`/`wire_def_specialization_edge` helpers (~40 call sites) into `graph_builder/mod.rs` alongside `add_node_and_recurse`/`attach_doc_comment`. Case/verification/use-case arms (`CaseDef`, `AnalysisCaseDef`, etc.) were left in place — already thin glue to `analysis_case.rs`/`verification.rs`/`use_case.rs`, lower value to extract further. | in-tree |
 
 ---
 
@@ -295,6 +302,21 @@ Verify whether these are still reachable; retire if not.
 | P3-3 | Typed builder-diagnostic side-channel (not graph nodes) | `engine_impl.rs:54-89` |
 | P3-4 | ~~`PendingRelationship.target_kinds` → `Vec<ElementKind>`~~ **Fixed** | `graph.rs:164` |
 | P3-5 | Hoist `walkdir`/`sha2`/`toml`/`zip` into workspace deps | Multiple `Cargo.toml` |
-| P3-6 | Add incremental-vs-full property test; confirm `insta` wiring | `tests/` |
-| P3-7 | Investigate and retire `legacy_elk_svg.rs` and `mcp/diagnostic_catalog.rs` if dead | `server/src/` |
+| P3-6 | Add incremental-vs-full property test; confirm `insta` wiring | `tests/` — **re-verified 2026-07-02: `insta` still absent from every `Cargo.toml`**, claim still open |
+| ~~P3-7~~ | ~~Investigate and retire `legacy_elk_svg.rs` and `mcp/diagnostic_catalog.rs` if dead~~ **Not dead** — re-verified 2026-07-02: both are referenced (`server/src/diagrams.rs`, `ai_tools.rs`, `api/handlers.rs`, `mcp/mod.rs`). Remove from future cleanup passes. | `server/src/` |
 | P3-8 | Structured `QualifiedName` type to replace `#kind` suffix encoding | `graph_builder/mod.rs:138` |
+
+---
+
+## Technical Debt Reduction Plan (2026-07-02)
+
+Prioritized tiers, agreed with the maintainer. Update this section's status after each tier.
+
+| Tier | Goal | Status |
+|------|------|--------|
+| **1** | Split the largest source files (`evaluation/mod.rs` 4003, `ibd/extract_impl.rs` 2219, `graph_builder/package_body.rs` 2172, `extracted_model.rs` 1590, `explicit_views.rs` 1453, `model_projection.rs` 1442, `lsp_server/workspace/services.rs` 1345, `lsp_server/language/mod.rs` 1226) | **In progress.** `package_body.rs` split 2172 → 1291 lines (see "Completed since initial audit" above). Remaining: `evaluation/mod.rs` (biggest, no submodules yet — needs its own seam analysis), `ibd/extract_impl.rs`, `extracted_model.rs`, `explicit_views.rs`, `model_projection.rs`, `lsp_server/workspace/services.rs`, `lsp_server/language/mod.rs`. |
+| **2** | Eliminate the dual pipeline: `server` depends on both `workspace` and `lsp_server`, which still ship parallel validation/workspace/LSP stacks (P1-2/P2-4/P2-9 above) | Not started. Needs its own scoping pass before any code moves — bigger and riskier than Tier 1. |
+| **3** | Extract visualization/DTO types (`dto.rs`, `render_snapshot.rs`, `visualization/`, `interconnection_*`, `prepared_view/`) out of `sysml_model` into a presentation crate (P2-8) | Not started. Would shrink several Tier-1 files by removing non-graph content rather than just relocating it within `sysml_model`. |
+| **4** | Replace the 5 manual `std::thread::spawn` sites in `lsp_server/src/workspace/services.rs` with `rayon::par_iter` (P2-2/P2-9) | Not started. Zero `rayon` usage anywhere in the workspace currently. |
+| **5** | `thiserror` enums to replace `Result<_, String>` (134 sites) and the `err.code() == "cancelled"` string-match (P2-4) | Not started. Invasive across call sites — do opportunistically alongside other work rather than as a dedicated sweep. |
+| **6** | Triage `unwrap`/`expect` (sysml_model 347, lsp_server 190, server 84, workspace 44 — essentially unchanged since the original audit); fix the `Mutex::lock().expect()` poison risk specifically (P2-7) | Not started. Full sweep low-value; the mutex-poison fix is worth doing standalone regardless of the rest. |
