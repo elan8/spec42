@@ -170,18 +170,7 @@ fn update_semantic_graph_for_uri(
     doc: Option<&RootNamespace>,
     evaluate: bool,
 ) {
-    state.semantic_graph.remove_nodes_for_uri(uri);
-    if let Some(doc) = doc {
-        let new_graph = semantic::build_graph_from_doc(doc, uri);
-        state.semantic_graph.merge(new_graph);
-        semantic::add_cross_document_edges_for_uri(&mut state.semantic_graph, uri);
-        if evaluate {
-            semantic::link_workspace_relationships(&mut state.semantic_graph);
-            semantic::resolve_workspace_pending_relationships(&mut state.semantic_graph);
-            semantic::evaluate_expressions(&mut state.semantic_graph);
-            state.semantic_graph.invalidate_query_indexes();
-        }
-    }
+    semantic::patch_graph_for_document(&mut state.semantic_graph, uri, doc, evaluate);
 }
 
 fn refresh_symbols_for_uri(state: &mut ServerState, uri: &Url) {

@@ -1,17 +1,21 @@
 # Tier 2: Consolidating `workspace` and `lsp_server`'s Incremental Update Machinery
 
-**Status:** Phases 1, 2, 3a landed 2026-07-02. Phase 3b redesigned twice: first around a
-Babel42 performance finding (design parked, not implemented — priority redirected to
-spec42-internal consolidation per maintainer direction 2026-07-02), then around a narrower
-target: a shared single-document graph-patch primitive between `workspace` and
-`lsp_server`, which also surfaced a real, unrelated correctness bug (`workspace` crate never
-calls `evaluate_expressions`). Design:
-`docs/engineering/TIER2-PHASE3B-SHARED-GRAPH-PATCH-DESIGN.md` — **Steps 1-2 landed
-2026-07-02**: the shared primitive exists in `sysml_model` (tested), and `workspace`
-crate's full-build and incremental-update paths now both call it, **fixing the
-`evaluate_expressions` bug** for every `workspace`-based consumer (CLI, MCP, Babel42).
-Steps 3-5 (migrate `try_incremental_update` and `lsp_server` to actually delegate to the
-shared primitive, then the full-rebuild-path follow-up) not started. Phase 4 not started.
+**Status:** Phases 1, 2, 3a landed 2026-07-02. Phase 3b was redesigned twice before landing:
+first around a Babel42 performance finding (design parked — priority redirected to
+spec42-internal consolidation per maintainer direction 2026-07-02), then around the
+narrower target that shipped: a shared single-document graph-patch primitive between
+`workspace` and `lsp_server`. **Phase 3b Steps 1-4 landed 2026-07-02** — see
+`docs/engineering/TIER2-PHASE3B-SHARED-GRAPH-PATCH-DESIGN.md`. The shared primitive lives
+in `sysml_model` (`patch_graph_for_document`/`finalize_and_evaluate`), re-exported through
+`workspace` then `lsp_server` following the existing "protocol-neutral logic lives in
+`workspace`" convention; both `workspace::try_incremental_update` and
+`lsp_server::update_semantic_graph_for_uri` now delegate to it instead of maintaining their
+own sequences. Along the way this fixed a real correctness bug: `workspace` crate's graph
+pipeline never called `evaluate_expressions`, so every snapshot built via CLI, MCP, or
+Babel42 had unevaluated attribute values — fixed as a byproduct of the consolidation,
+confirmed by new regression tests. Step 5 (the larger, separate full-rebuild-path
+duplication) and Phase 4 (delete now-dead code — worth revisiting now that Step 4 has
+landed, since `services.rs` may have more dead weight to remove) not started.
 **Date:** 2026-07-02
 **Related:** `docs/architecture-audit.md` (P1-2, P2-3, P2-4, P2-9), Technical Debt Reduction Plan Tier 2.
 
@@ -75,23 +79,27 @@ Direction changed 2026-07-02: priority is consolidating spec42's own codebase fi
 Babel42 is explicitly left as-is for now. The doc remains the starting point if/when
 Babel42 work resumes.
 
-**Second pass (active):** with Babel42 out of scope, the actual duplication worth fixing is
-narrower — one specific computation (patch the semantic graph for a single changed
-document) written twice, in `workspace::snapshot::update.rs::try_incremental_update` and
+**Second pass (Steps 1-4 done, Step 5 not started):** with Babel42 out of scope, the actual
+duplication worth fixing turned out narrower — one specific computation (patch the semantic
+graph for a single changed document) written twice, in
+`workspace::snapshot::update.rs::try_incremental_update` and
 `lsp_server::workspace::services.rs::update_semantic_graph_for_uri`, not the whole
 bundle/laziness question. Comparing the two surfaced a real, unrelated correctness bug:
-**`workspace` crate's graph pipeline (`finalize_workspace_graph`) never calls
+**`workspace` crate's graph pipeline (`finalize_workspace_graph`) never called
 `evaluate_expressions`, in either the full-build or incremental path** — confirmed by
 grepping `workspace` crate and Babel42's entire backend for the call (zero hits outside
 `lsp_server`) and `workspace`'s own test suite for any assertion on `evaluatedValue`/
 `evaluationStatus` (also zero). Practical effect: every snapshot built through
-`workspace::Spec42Engine` — CLI, MCP, and Babel42 — never gets computed attribute values
-(`mass = 1 + 2` stays `"1 + 2"`, never becomes `3`). Active design, including the fix:
-**`docs/engineering/TIER2-PHASE3B-SHARED-GRAPH-PATCH-DESIGN.md`** — a shared
-`patch_graph_for_document`/`finalize_and_evaluate` pair added to `sysml_model` crate
-(neither `workspace` nor `lsp_server` needs a new dependency), a 5-step migration plan, and
-the evaluation-bug fix riding along as a byproduct of the consolidation rather than a
-separate effort. Not implemented yet.
+`workspace::Spec42Engine` — CLI, MCP, and Babel42 — never got computed attribute values
+(`mass = 1 + 2` stayed `"1 + 2"`, never became `3`).
+
+Design and full implementation log: **`docs/engineering/TIER2-PHASE3B-SHARED-GRAPH-PATCH-DESIGN.md`**
+— `patch_graph_for_document`/`finalize_and_evaluate` added to `sysml_model` crate (Step 1),
+`workspace`'s full-build and incremental paths switched to them (Steps 2-3, fixing the bug),
+`lsp_server::update_semantic_graph_for_uri` collapsed to a one-line delegation (Step 4). The
+5th step (the larger, separate full-rebuild-path duplication —
+`rebuild_all_document_links`/`rebuild_semantic_graph_staged` vs. `build_and_link_graph`) is
+not started.
 
 ## Phase 2 status (done, 2026-07-02)
 

@@ -5,8 +5,8 @@ use std::time::Instant;
 
 use language_service::InMemoryWorkspace;
 use sysml_model::{
-    add_cross_document_edges_for_uri, build_graph_from_doc, build_render_snapshot,
-    finalize_and_evaluate, SemanticGraph, SysmlDocument, WorkspaceParsedDocument,
+    build_render_snapshot, patch_graph_for_document, SemanticGraph, SysmlDocument,
+    WorkspaceParsedDocument,
 };
 
 use crate::error::{map_language_service_error, map_render_snapshot_error, WorkspaceResult};
@@ -105,16 +105,11 @@ fn try_incremental_update(
     context.check_continue(HostPipelinePhase::BuildingGraph)?;
     // One unavoidable deep clone: we need an owned graph to mutate.
     let mut graph = (*previous.semantic_graph()).clone();
-    graph.remove_nodes_for_uri(&uri);
 
     let parsed_documents = patch_parsed_documents(previous.parsed_documents(), changed)?;
-    if let Ok(parsed) = sysml_v2_parser::parse(&changed.content) {
-        let doc_graph = build_graph_from_doc(&parsed, &uri);
-        graph.merge(doc_graph);
-        add_cross_document_edges_for_uri(&mut graph, &uri);
-    }
+    let parsed = sysml_v2_parser::parse(&changed.content).ok();
+    patch_graph_for_document(&mut graph, &uri, parsed.as_ref(), true);
 
-    finalize_and_evaluate(&mut graph);
     context.enforce_graph_limits(
         graph.node_ids_by_qualified_name.len(),
         graph.graph.edge_count(),

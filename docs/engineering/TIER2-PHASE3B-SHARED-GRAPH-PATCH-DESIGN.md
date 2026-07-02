@@ -1,6 +1,8 @@
 # Tier 2 Phase 3b (redirected): Shared Single-Document Graph-Patch Primitive
 
-**Status:** Steps 1-2 landed 2026-07-02 (the evaluation bug is now fixed). Steps 3-5 not started.
+**Status:** Steps 1-4 landed 2026-07-02 — `workspace` and `lsp_server` both now delegate to
+the shared primitive; the duplication this doc set out to fix is resolved. Step 5
+(full-rebuild-path follow-up) not started.
 **Date:** 2026-07-02
 **Related:** `docs/engineering/TIER2-LSP-WORKSPACE-CONSOLIDATION.md` (Phase 3b),
 `docs/engineering/TIER2-PHASE3B-LAZY-SNAPSHOT-DESIGN.md` (parked — see "Relationship to
@@ -216,13 +218,40 @@ goes through it, not just `workspace`) and in `workspace::snapshot::update.rs::t
 clippy -p workspace -p sysml_model` all clean, zero regressions in existing tests (nothing
 depended on the buggy no-evaluation behavior).
 
-**Step 3** — Migrate `try_incremental_update` to call `patch_graph_for_document` instead of
-its manual sequence (mechanical, should be behavior-neutral given Step 2 already landed).
+**Step 3 — ✅ Done 2026-07-02.** Migrated `try_incremental_update`
+(`crates/workspace/src/snapshot/update.rs`) to call `patch_graph_for_document` instead of
+its manual `remove_nodes_for_uri`/`build_graph_from_doc`/`merge`/
+`add_cross_document_edges_for_uri`/`finalize_and_evaluate` sequence — behavior-neutral as
+expected, confirmed mechanical: compiled clean on the first attempt, and all 4
+`incremental_parity.rs` tests (including the two evaluated-value regression tests added in
+Step 2) pass unchanged through the new code path. `build_graph_from_doc`,
+`add_cross_document_edges_for_uri`, and `finalize_and_evaluate` are no longer imported
+directly in `update.rs` — only `patch_graph_for_document` is. Full `cargo test -p
+workspace`, `cargo test --workspace`, `cargo check --workspace`, `cargo clippy -p
+workspace` all clean.
 
-**Step 4** — Migrate `lsp_server::update_semantic_graph_for_uri` to delegate to
-`patch_graph_for_document`. Run `lsp_server`'s full test suite (278 tests per the Phase 3a
-count), paying particular attention to the evaluated-attribute tests and the
-`prepare_analysis_evaluation_context` question flagged above.
+**Step 4 — ✅ Done 2026-07-02.** Migrated `lsp_server::update_semantic_graph_for_uri`
+(`crates/lsp_server/src/workspace/services.rs`) to a one-line delegation:
+`semantic::patch_graph_for_document(&mut state.semantic_graph, uri, doc, evaluate)`,
+collapsing what was ~19 lines of duplicated sequence. Wiring: `patch_graph_for_document`/
+`finalize_and_evaluate` added to `workspace::semantic`'s re-export list (a thin
+`pub use sysml_model::{...}` shim, matching the existing pattern every other
+`workspace::semantic` re-export already uses) and then to `lsp_server`'s own
+`crate::semantic` re-export list (`pub use workspace::semantic::{...}`) — no new crate
+dependency needed anywhere, following the crate's existing "protocol-neutral logic lives in
+`workspace`, `lsp_server` re-exports it" convention rather than reaching around it to
+`sysml_model` directly.
+
+**Resolved the open question**: `lsp_server`'s old explicit sequence skipped
+`prepare_analysis_evaluation_context` (which `finalize_and_evaluate` includes via
+`finalize_workspace_graph`). Full `lsp_server` test suite — 278 tests
+(122+5+148+3, unchanged counts) — passes with zero failures through the new code path,
+confirming that extra call is harmless for every scenario the test suite covers.
+
+Full `cargo check --workspace`, `cargo test --workspace`, `cargo clippy -p lsp_server` all
+clean. `services.rs` 1225 → 1214 lines — a small further reduction on top of Phase 3a, but
+the more important outcome is that the actual duplicated *computation* (not just line
+count) now has exactly one implementation, shared by both crates.
 
 **Step 5 (follow-up, not this doc)** — Same treatment for the full-rebuild-from-many-documents
 duplication (`rebuild_all_document_links`/`rebuild_semantic_graph_staged` vs.

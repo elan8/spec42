@@ -23,4 +23,5 @@ pub use relationships::{
 };
 pub use sysml_model::declared_packages_in_content;
 pub use sysml_model::semantic::graph_builder::build_graph_from_doc;
+pub use sysml_model::{finalize_and_evaluate, patch_graph_for_document};
 pub use workspace_uri::uri_under_any_library;
