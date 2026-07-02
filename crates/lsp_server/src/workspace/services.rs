@@ -3,6 +3,7 @@ use crate::semantic;
 use crate::workspace::library_search;
 use crate::workspace::parse_cache;
 use crate::workspace::state::{IndexEntry, ParseMetadata, ServerState};
+use rayon::prelude::*;
 use std::path::Path;
 use std::time::Instant;
 use sysml_v2_parser::RootNamespace;
@@ -22,7 +23,6 @@ pub(crate) fn indexed_text_or_empty(state: &ServerState, uri_norm: &Url) -> Stri
 
 #[derive(Debug)]
 pub(crate) struct ParsedScanEntry {
-    pub(crate) ordinal: usize,
     pub(crate) uri: Url,
     pub(crate) content: String,
     pub(crate) parsed: Option<RootNamespace>,
@@ -64,19 +64,13 @@ fn warning_from_parse_errors(
     }
 }
 
-fn parse_scanned_entry(
-    ordinal: usize,
-    uri: Url,
-    content: String,
-    cache_dir: Option<&Path>,
-) -> ParsedScanEntry {
+fn parse_scanned_entry(uri: Url, content: String, cache_dir: Option<&Path>) -> ParsedScanEntry {
     // Try cache before parsing.
     if let Some(dir) = cache_dir {
         let hash = parse_cache::content_hash(content.as_bytes());
         if let Some(root) = parse_cache::load(dir, &hash) {
             tracing::debug!(uri = %uri, "parse cache hit");
             return ParsedScanEntry {
-                ordinal,
                 uri,
                 content,
                 parsed: Some(root),
@@ -86,16 +80,16 @@ fn parse_scanned_entry(
         }
         tracing::debug!(uri = %uri, "parse cache miss — parsing and storing");
         // Cache miss: parse normally then store.
-        let entry = parse_scanned_entry_cold(ordinal, uri, content);
+        let entry = parse_scanned_entry_cold(uri, content);
         if let Some(root) = &entry.parsed {
             parse_cache::store(dir, &hash, root);
         }
         return entry;
     }
-    parse_scanned_entry_cold(ordinal, uri, content)
+    parse_scanned_entry_cold(uri, content)
 }
 
-fn parse_scanned_entry_cold(ordinal: usize, uri: Url, content: String) -> ParsedScanEntry {
+fn parse_scanned_entry_cold(uri: Url, content: String) -> ParsedScanEntry {
     let parse_start = Instant::now();
     let parsed_result = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         util::parse_for_editor(&content)
@@ -124,7 +118,6 @@ fn parse_scanned_entry_cold(ordinal: usize, uri: Url, content: String) -> Parsed
         parse_errors.push("parser panicked while parsing scanned workspace file".to_string());
     }
     ParsedScanEntry {
-        ordinal,
         uri,
         content,
         parsed,
@@ -148,45 +141,16 @@ pub(crate) fn parse_scanned_entries(
     if !parallel_enabled || entries.len() < 2 {
         return entries
             .into_iter()
-            .enumerate()
-            .map(|(ordinal, (uri, content))| {
-                parse_scanned_entry(ordinal, uri, content, cache_dir.as_deref())
-            })
+            .map(|(uri, content)| parse_scanned_entry(uri, content, cache_dir.as_deref()))
             .collect();
     }
 
-    let worker_count = std::thread::available_parallelism()
-        .map(|count| count.get())
-        .unwrap_or(1)
-        .min(entries.len())
-        .max(1);
-
-    let mut buckets: Vec<Vec<(usize, Url, String)>> =
-        (0..worker_count).map(|_| Vec::new()).collect();
-    for (ordinal, (uri, content)) in entries.into_iter().enumerate() {
-        buckets[ordinal % worker_count].push((ordinal, uri, content));
-    }
-
-    let mut handles = Vec::with_capacity(worker_count);
-    for bucket in buckets {
-        let cache_dir = cache_dir.clone();
-        handles.push(std::thread::spawn(move || {
-            bucket
-                .into_iter()
-                .map(|(ordinal, uri, content)| {
-                    parse_scanned_entry(ordinal, uri, content, cache_dir.as_deref())
-                })
-                .collect::<Vec<ParsedScanEntry>>()
-        }));
-    }
-
-    let mut parsed_entries = Vec::new();
-    for handle in handles {
-        let mut batch = handle.join().unwrap_or_default();
-        parsed_entries.append(&mut batch);
-    }
-    parsed_entries.sort_by_key(|entry| entry.ordinal);
-    parsed_entries
+    // `into_par_iter` on a `Vec` is an indexed parallel iterator, so `collect()` preserves
+    // the original order regardless of which worker finishes first.
+    entries
+        .into_par_iter()
+        .map(|(uri, content)| parse_scanned_entry(uri, content, cache_dir.as_deref()))
+        .collect()
 }
 
 fn update_symbol_table_for_uri(
@@ -577,69 +541,25 @@ pub(crate) fn rebuild_all_document_links(
     let remove_nodes_ms = elapsed_ms(remove_nodes_start);
 
     let rebuild_graphs_start = Instant::now();
-    let worker_count = std::thread::available_parallelism()
-        .map(|count| count.get())
-        .unwrap_or(1)
-        .min(parsed_docs.len())
-        .max(1);
-
-    let mut buckets: Vec<Vec<(Url, RootNamespace)>> =
-        (0..worker_count).map(|_| Vec::new()).collect();
-    for (i, item) in parsed_docs.into_iter().enumerate() {
-        buckets[i % worker_count].push(item);
-    }
-
-    let mut handles = Vec::with_capacity(worker_count);
-    for bucket in buckets {
-        handles.push(std::thread::spawn(move || {
-            bucket
-                .into_iter()
-                .map(|(uri, parsed)| (uri.clone(), semantic::build_graph_from_doc(&parsed, &uri)))
-                .collect::<Vec<_>>()
-        }));
-    }
-
-    for handle in handles {
-        let batch = handle.join().unwrap_or_default();
-        for (_uri, g) in batch {
-            graph.merge(g);
-        }
+    let built_graphs: Vec<semantic::SemanticGraph> = parsed_docs
+        .par_iter()
+        .map(|(uri, parsed)| semantic::build_graph_from_doc(parsed, uri))
+        .collect();
+    for g in built_graphs {
+        graph.merge(g);
     }
     let rebuild_graphs_ms = elapsed_ms(rebuild_graphs_start);
 
     let cross_document_edges_start = Instant::now();
     let cross_edge_resolution_start = Instant::now();
-    let worker_count = std::thread::available_parallelism()
-        .map(|count| count.get())
-        .unwrap_or(1)
-        .min(uris.len())
-        .max(1);
-
-    let mut uri_buckets: Vec<Vec<Url>> = (0..worker_count).map(|_| Vec::new()).collect();
-    for (i, uri) in uris.iter().enumerate() {
-        uri_buckets[i % worker_count].push(uri.clone());
-    }
-
-    // Share the graph across parallel workers — cheap Arc clone via SemanticGraph::clone.
-    let mut cross_handles = Vec::with_capacity(worker_count);
-    for bucket in uri_buckets {
-        let graph_ref = graph.clone();
-        cross_handles.push(std::thread::spawn(move || {
-            let mut edges = Vec::new();
-            for uri in bucket {
-                edges.extend(semantic::resolve_cross_document_edges_for_uri(
-                    &graph_ref, &uri,
-                ));
-            }
-            edges
-        }));
-    }
-
-    let mut resolved_edges = Vec::new();
-    for handle in cross_handles {
-        resolved_edges.extend(handle.join().unwrap_or_default());
-    }
-    // All worker clones are dropped; DerefMut below is copy-on-write only if needed.
+    // `graph` is an `Arc`-backed handle (`SemanticGraph::clone` is O(1)), so rayon can
+    // share `&graph` across workers directly — no per-worker clone or manual bucketing
+    // needed, unlike the old `std::thread::spawn` version (which needed an owned,
+    // `'static` value per thread).
+    let resolved_edges: Vec<_> = uris
+        .par_iter()
+        .flat_map(|uri| semantic::resolve_cross_document_edges_for_uri(&graph, uri))
+        .collect();
 
     for (src_id, tgt_id, kind) in resolved_edges {
         if let (Some(&src_idx), Some(&tgt_idx)) = (
@@ -727,33 +647,15 @@ fn merge_document_graphs_into(
                 .map(|parsed| (uri.clone(), parsed))
         })
         .collect();
-    let worker_count = std::thread::available_parallelism()
-        .map(|count| count.get())
-        .unwrap_or(1)
-        .min(parsed_docs.len())
-        .max(1);
-    let mut buckets: Vec<Vec<(Url, RootNamespace)>> =
-        (0..worker_count).map(|_| Vec::new()).collect();
-    for (i, item) in parsed_docs.into_iter().enumerate() {
-        buckets[i % worker_count].push(item);
-    }
-    let mut handles = Vec::with_capacity(worker_count);
-    for bucket in buckets {
-        handles.push(std::thread::spawn(move || {
-            bucket
-                .into_iter()
-                .map(|(uri, parsed)| (uri.clone(), semantic::build_graph_from_doc(&parsed, &uri)))
-                .collect::<Vec<_>>()
-        }));
-    }
-    for handle in handles {
-        let batch = handle.join().unwrap_or_default();
-        for (_uri, graph) in batch {
-            if let Some(shadowed) = shadowed_packages {
-                semantic_graph.merge_skip_existing_qualified_names(graph, shadowed);
-            } else {
-                semantic_graph.merge(graph);
-            }
+    let built_graphs: Vec<semantic::SemanticGraph> = parsed_docs
+        .par_iter()
+        .map(|(uri, parsed)| semantic::build_graph_from_doc(parsed, uri))
+        .collect();
+    for graph in built_graphs {
+        if let Some(shadowed) = shadowed_packages {
+            semantic_graph.merge_skip_existing_qualified_names(graph, shadowed);
+        } else {
+            semantic_graph.merge(graph);
         }
     }
 }
@@ -807,34 +709,12 @@ pub(crate) fn rebuild_semantic_graph_staged(
 
     let cross_document_edges_start = Instant::now();
     let cross_edge_resolution_start = Instant::now();
-    let worker_count = std::thread::available_parallelism()
-        .map(|count| count.get())
-        .unwrap_or(1)
-        .min(uris.len())
-        .max(1);
-    let mut uri_buckets: Vec<Vec<Url>> = (0..worker_count).map(|_| Vec::new()).collect();
-    for (i, uri) in uris.iter().enumerate() {
-        uri_buckets[i % worker_count].push(uri.clone());
-    }
-
-    let mut cross_handles = Vec::with_capacity(worker_count);
-    for bucket in uri_buckets {
-        let graph_ref = semantic_graph.clone();
-        cross_handles.push(std::thread::spawn(move || {
-            let mut edges = Vec::new();
-            for uri in bucket {
-                edges.extend(semantic::resolve_cross_document_edges_for_uri(
-                    &graph_ref, &uri,
-                ));
-            }
-            edges
-        }));
-    }
-
-    let mut resolved_edges = Vec::new();
-    for handle in cross_handles {
-        resolved_edges.extend(handle.join().unwrap_or_default());
-    }
+    // See the equivalent step in `rebuild_all_document_links` — `SemanticGraph` is
+    // `Arc`-backed, so rayon can share `&semantic_graph` across workers directly.
+    let resolved_edges: Vec<_> = uris
+        .par_iter()
+        .flat_map(|uri| semantic::resolve_cross_document_edges_for_uri(&semantic_graph, uri))
+        .collect();
 
     for (src_id, tgt_id, kind) in resolved_edges {
         if let (Some(&src_idx), Some(&tgt_idx)) = (

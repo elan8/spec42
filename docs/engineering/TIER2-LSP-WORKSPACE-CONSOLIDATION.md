@@ -1,8 +1,67 @@
 # Tier 2: Consolidating `workspace` and `lsp_server`'s Incremental Update Machinery
 
-**Status:** Phases 1-2 landed 2026-07-02 (see below). Phases 3-4 not started.
+**Status:** Phases 1, 2, 3a landed 2026-07-02 (see below). Phase 3 was split into 3a
+(rayon migration, done) and 3b (fold duplicated graph-update logic into `workspace`,
+rescoped — see below, needs its own design pass). Phase 4 not started.
 **Date:** 2026-07-02
 **Related:** `docs/architecture-audit.md` (P1-2, P2-3, P2-4, P2-9), Technical Debt Reduction Plan Tier 2.
+
+## Phase 3 status: split into 3a (done) and 3b (rescoped)
+
+Reading `lsp_server/src/workspace/services.rs` in full before touching it surfaced that
+"fold the ~1200 lines into `workspace`'s incremental path" is a bigger merge than
+originally estimated: `lsp_server`'s indexing model has concepts `workspace` crate doesn't
+— `IndexEntry.include_in_semantic_graph` (files indexed for `sysml/librarySearch` only, not
+merged into the graph), a live symbol table rebuilt alongside the graph, and
+`rebuild_semantic_graph_staged` returning `(graph, symbols, metrics)` specifically so
+`ServerState` can be updated without holding a write lock during the heavy work. Porting
+this into `workspace::update_workspace_snapshot` means introducing LSP-specific indexing
+concepts into a crate whose whole design point is staying protocol-neutral (the same
+guardrail that blocked `tokio` in Phase 1). Confirmed with the maintainer to split:
+
+### Phase 3a — replace the 5 manual `std::thread::spawn` sites with `rayon`. ✅ Done 2026-07-02.
+
+All 5 sites in `services.rs` followed the same pattern: round-robin bucket by
+`available_parallelism()`, spawn N threads, `.join().unwrap_or_default()`. Every one of
+those `.join().unwrap_or_default()` calls silently swallowed a worker-thread panic and
+proceeded with a partial/empty result — a real (if narrow) correctness bug, fixed as a
+side effect of this migration since rayon propagates panics through `.collect()`/`.map()`
+instead of eating them.
+
+Converted:
+- `parse_scanned_entries` — `entries.into_par_iter().map(...).collect()`. Dropped the
+  `ordinal`-based manual bucketing and post-hoc sort entirely: `into_par_iter()` on a `Vec`
+  is an indexed parallel iterator, so `collect()` already preserves input order regardless
+  of which worker finishes first. Also removed the now-fully-unused `ordinal` field from
+  `ParsedScanEntry` (it was flagged by the compiler as dead code once the sort was gone —
+  `#[derive(Debug)]` does *not* suppress "field never read" lints, contrary to what I
+  assumed initially).
+- `rebuild_all_document_links`'s graph-build step — `parsed_docs.par_iter().map(build_graph_from_doc).collect()`.
+- `rebuild_all_document_links`'s cross-document edge resolution — `uris.par_iter().flat_map(resolve_cross_document_edges_for_uri).collect()`,
+  reading `&graph` directly instead of `graph.clone()`-per-worker. The original clone
+  wasn't there because `SemanticGraph` needed it for thread-safety (it's `Arc`-backed —
+  `SemanticGraph(Arc<SemanticGraphData>)` — so `.clone()` is O(1) and the type is already
+  `Sync`); it was there because `std::thread::spawn` requires `'static` closures, so an
+  owned clone was the easiest way to get data into the thread. Rayon's scoped parallelism
+  has no such requirement, so this version borrows the graph directly — one fewer clone per
+  call than the original, not just equivalent.
+- `merge_document_graphs_into` — same pattern as the graph-build step above.
+- `rebuild_semantic_graph_staged`'s cross-document edge resolution — same pattern as
+  `rebuild_all_document_links`'s equivalent step.
+
+`services.rs` shrank 1345 → 1225 lines. `cargo test -p lsp_server` (122+5+148+3 = 278
+tests) and full `cargo test --workspace` (114 test binaries, all `ok`) pass unchanged —
+same pass counts as before the migration. `cargo clippy -p lsp_server` clean.
+
+### Phase 3b — fold the duplicated graph-update logic into `workspace`. Not started, rescoped.
+
+This needs its own design doc (same treatment as the original Tier 2 doc) before any code
+moves, covering: whether `workspace` crate should grow an `include_in_semantic_graph`-style
+concept (and whether that still counts as "protocol-neutral"), how the symbol-table
+rebuild should be exposed to a crate that currently has no notion of "symbols for LSP
+completion," and whether `rebuild_semantic_graph_staged`'s lock-free-commit return shape
+belongs in `workspace` or should stay `lsp_server`-side wrapping a lower-level
+`workspace` primitive. Left for a future session.
 
 ## Phase 2 status (done, 2026-07-02)
 
@@ -196,14 +255,16 @@ subscription channel as-is (the last one stays local since `workspace` can't dep
 `tokio` — see Phase 1). Removed the duplicated generation/version transition logic itself;
 see "Phase 2 status" above.
 
-**Phase 3 — Fold the remaining duplicated graph-update logic** (`services.rs`'s
+**Phase 3a — Replace the manual `std::thread::spawn` pools with `rayon` (Tier 4). ✅ Done
+2026-07-02.** See "Phase 3 status" above.
+
+**Phase 3b — Fold the remaining duplicated graph-update logic** (`services.rs`'s
 `update_semantic_graph_for_uri`/`rebuild_semantic_graph_staged`, ~1200 lines) into
 `workspace` crate's incremental path, extending `try_incremental_update` to cover the
 multi-document / library-change cases it currently bails out of (this is also audit item
-P2-3). Replace the manual `std::thread::spawn` pools with `rayon` at the same time (Tier 4)
-since both are being touched. This phase should extend the existing
-`tests/incremental_parity.rs` property tests in `workspace` crate to cover the async/
-cancellation paths before merging.
+P2-3). **Rescoped — needs its own design doc first** (see "Phase 3 status" above); this
+phase should extend the existing `tests/incremental_parity.rs` property tests in
+`workspace` crate to cover the async/cancellation paths before merging.
 
 **Phase 4 — Delete dead code** in `lsp_server/src/workspace/services.rs`/`parse_cache.rs`/
 `library_graph_cache.rs` once Phase 3 has parity, and re-measure. Expected outcome: `lsp_server`'s

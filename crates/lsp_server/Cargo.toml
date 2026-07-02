@@ -34,6 +34,7 @@ glob = "0.3"
 bincode = { version = "2", features = ["serde"] }
 sha2 = "0.10"
 dirs = "5"
+rayon = "1.12"
 
 [dev-dependencies]
 # Used by LSP integration tests when constructing `file://` URIs.
