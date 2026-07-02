@@ -2120,6 +2120,7 @@ name = "sysml_model"
 version = "0.34.0"
 dependencies = [
  "petgraph",
+ "rayon",
  "serde",
  "serde_json",
  "sysml-v2-parser",

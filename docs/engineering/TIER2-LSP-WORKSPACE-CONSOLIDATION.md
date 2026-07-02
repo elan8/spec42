@@ -96,10 +96,23 @@ grepping `workspace` crate and Babel42's entire backend for the call (zero hits 
 Design and full implementation log: **`docs/engineering/TIER2-PHASE3B-SHARED-GRAPH-PATCH-DESIGN.md`**
 — `patch_graph_for_document`/`finalize_and_evaluate` added to `sysml_model` crate (Step 1),
 `workspace`'s full-build and incremental paths switched to them (Steps 2-3, fixing the bug),
-`lsp_server::update_semantic_graph_for_uri` collapsed to a one-line delegation (Step 4). The
-5th step (the larger, separate full-rebuild-path duplication —
-`rebuild_all_document_links`/`rebuild_semantic_graph_staged` vs. `build_and_link_graph`) is
-not started.
+`lsp_server::update_semantic_graph_for_uri` collapsed to a one-line delegation (Step 4).
+
+**Step 5 (the larger, separate full-rebuild-path duplication) has its own design**:
+`docs/engineering/TIER2-PHASE3B-STEP5-FULL-REBUILD-DESIGN.md`. Turns out to be more than
+duplication: `sysml_model`'s own doc comments (on `link_workspace_derivations`) already
+document the parallel-linking technique `lsp_server` uses for full rebuilds, but
+`workspace`'s own full-build path (`build_and_link_graph`) never adopted it —
+single-threaded parsing/building, slower sequential linking. Same shape as the Step 2 bug: a
+real `workspace`-crate perf gap that `lsp_server` already solved, documented, never ported
+back. **Step 5a landed 2026-07-02**: `build_and_link_graph_parallel` added to `sysml_model`
+(unused by production call sites yet), with an equivalence test proving it produces
+identical nodes and edges to the old sequential path on a fixture exercising cross-document
+typing and subject edges — passed on the first run, resolving the tension between two
+contradictory doc comments in `sysml_model` (one self-described as "legacy") in favor of the
+newer one. The fixture now also covers derivation-connection edges (closed 2026-07-02, see
+the Step 5 doc). Steps 5b-5c (swap `workspace`'s and `lsp_server`'s production call sites to
+the new function) not started.
 
 ## Phase 2 status (done, 2026-07-02)
 

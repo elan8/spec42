@@ -165,7 +165,9 @@ itself shrinks.
 - The full-rebuild-from-many-documents paths (`rebuild_all_document_links`,
   `rebuild_semantic_graph_staged`, `merge_document_graphs_into` in `lsp_server`, vs.
   `build_and_link_graph` in `sysml_model`) — same kind of duplication, larger, used for
-  startup/library-reindex rather than per-edit. Real follow-up, not designed here.
+  startup/library-reindex rather than per-edit. Designed separately:
+  `docs/engineering/TIER2-PHASE3B-STEP5-FULL-REBUILD-DESIGN.md` (turns out to also be a
+  real perf gap in `workspace`'s full-build path, not just duplication — see that doc).
 - `lsp_server`'s parse caching, library-graph caching, `ServerState`/`SemanticCoordinator`
   machinery — unrelated to this specific duplicated computation, stays as-is.
 - Babel42 — explicitly deprioritized per current direction. This fix benefits Babel42
