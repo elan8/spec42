@@ -3,9 +3,10 @@
 use std::collections::HashMap;
 
 use serde_json::{json, Value};
-use sysml_v2_parser::ast::{AttributeBody, AttributeBodyElement, AttributeDef, AttributeUsage};
-
-use crate::semantic::graph_builder::expressions;
+use sysml_v2_parser::ast::{
+    AttributeBody, AttributeBodyElement, AttributeDef, AttributeUsage, BinaryOperator, Expression,
+    Node, UnaryOperator,
+};
 
 /// Keys stored on unit-related `attribute def` graph nodes.
 pub const SHORT_NAME_KEY: &str = "shortName";
@@ -28,7 +29,7 @@ pub fn project_attribute_def_unit_metadata(attrs: &mut HashMap<String, Value>, d
         attrs.insert(SHORT_NAME_KEY.to_string(), json!(short));
     }
     if let Some(expr) = &def.value {
-        let rendered = expressions::expression_to_debug_string(expr);
+        let rendered = super::expressions::expression_to_debug_string(expr);
         attrs.insert(UNIT_VALUE_EXPR_KEY.to_string(), json!(rendered));
     }
     project_unit_body_metadata(attrs, def.typing.as_deref(), &def.body);
@@ -87,301 +88,269 @@ struct UnitPrefixMeta {
     conversion_factor: f64,
 }
 
-fn extract_unit_prefix_from_body(body: &AttributeBody) -> Option<UnitPrefixMeta> {
-    let block_text = attribute_body_as_text(body)?;
-    let factor = extract_assignment(&block_text, "conversionFactor")
-        .and_then(|raw| parse_factor_expression(&raw))?;
-    Some(UnitPrefixMeta {
-        symbol: extract_assignment(&block_text, "symbol"),
-        conversion_factor: factor,
+/// Finds the direct-child `attribute` usage that redefines `key` (`:>> key = ...;`).
+fn find_redefined_usage<'a>(
+    elements: &'a [Node<AttributeBodyElement>],
+    key: &str,
+) -> Option<&'a AttributeUsage> {
+    elements.iter().find_map(|element| match &element.value {
+        AttributeBodyElement::AttributeUsage(usage)
+            if usage.value.redefines.as_deref() == Some(key) =>
+        {
+            Some(&usage.value)
+        }
+        _ => None,
     })
 }
 
-fn attribute_body_as_text(body: &AttributeBody) -> Option<String> {
+/// Finds the direct-child `attribute` usage whose own name contains `needle`, e.g. the
+/// `zeroDegree*InKelvin` member of an `IntervalScale` catalog definition (not a redefinition,
+/// just a plain nested attribute usage with a conventionally-named identifier).
+/// Finds the direct-child attribute member whose own name contains `needle` and returns its
+/// value expression. Matches both `AttributeUsage` and `AttributeDef` shapes: a nested
+/// `attribute name : Type = expr;` member can parse as either depending on its modifiers
+/// (e.g. a leading `private` routes it through the definition grammar).
+fn find_value_by_name_contains<'a>(
+    elements: &'a [Node<AttributeBodyElement>],
+    needle: &str,
+) -> Option<&'a Node<Expression>> {
+    elements.iter().find_map(|element| match &element.value {
+        AttributeBodyElement::AttributeUsage(usage) if usage.value.name.contains(needle) => {
+            usage.value.value.as_ref()
+        }
+        AttributeBodyElement::AttributeDef(def) if def.value.name.contains(needle) => {
+            def.value.value.as_ref()
+        }
+        _ => None,
+    })
+}
+
+fn usage_value_number(usage: &AttributeUsage) -> Option<f64> {
+    usage.value.as_ref().and_then(|node| expr_as_number(&node.value))
+}
+
+fn usage_value_name(usage: &AttributeUsage) -> Option<String> {
+    usage.value.as_ref().and_then(|node| expr_as_name(&node.value))
+}
+
+/// Evaluates a numeric literal expression (integers, reals, unit-suffixed quantities like
+/// `229835/900 [K]`, and `+ - * /` arithmetic over literals) directly from the AST.
+fn expr_as_number(expr: &Expression) -> Option<f64> {
+    match expr {
+        Expression::LiteralInteger(n) => Some(*n as f64),
+        Expression::LiteralReal(raw) => raw.parse().ok(),
+        Expression::LiteralWithUnit { value, .. } => expr_as_number(&value.value),
+        Expression::UnaryOp { op, operand } => {
+            let value = expr_as_number(&operand.value)?;
+            match op {
+                UnaryOperator::Plus => Some(value),
+                UnaryOperator::Minus => Some(-value),
+                _ => None,
+            }
+        }
+        Expression::BinaryOp { op, left, right } => {
+            let left = expr_as_number(&left.value)?;
+            let right = expr_as_number(&right.value)?;
+            match op {
+                BinaryOperator::Add => Some(left + right),
+                BinaryOperator::Sub => Some(left - right),
+                BinaryOperator::Mul => Some(left * right),
+                BinaryOperator::Div if right != 0.0 => Some(left / right),
+                BinaryOperator::Pow | BinaryOperator::Exp => Some(left.powf(right)),
+                _ => None,
+            }
+        }
+        _ => None,
+    }
+}
+
+/// Reads an identifier/string-valued expression, e.g. `prefix = kilo;` (a `FeatureRef` naming
+/// another catalog entry) or `symbol = "k";` (a `LiteralString`).
+fn expr_as_name(expr: &Expression) -> Option<String> {
+    match expr {
+        Expression::FeatureRef(name) => Some(name.clone()),
+        Expression::LiteralString(s) => Some(s.clone()),
+        _ => None,
+    }
+}
+
+fn extract_unit_prefix_from_body(body: &AttributeBody) -> Option<UnitPrefixMeta> {
     let AttributeBody::Brace { elements } = body else {
         return None;
     };
-    let mut block_text = String::new();
-    for element in elements {
-        append_body_element_text(&mut block_text, &element.value);
-    }
-    if block_text.is_empty() {
-        None
-    } else {
-        Some(block_text)
-    }
-}
-
-fn append_body_element_text(out: &mut String, element: &AttributeBodyElement) {
-    match element {
-        AttributeBodyElement::Other(text) => {
-            if !out.is_empty() {
-                out.push(' ');
-            }
-            out.push_str(text.trim());
-        }
-        AttributeBodyElement::AttributeDef(nested) => {
-            if !out.is_empty() {
-                out.push(' ');
-            }
-            out.push_str(&attribute_def_as_text(&nested.value));
-        }
-        AttributeBodyElement::AttributeUsage(nested) => {
-            if !out.is_empty() {
-                out.push(' ');
-            }
-            out.push_str(&attribute_usage_as_text(&nested.value));
-        }
-        AttributeBodyElement::Doc(_) | AttributeBodyElement::Error(_) => {
-            if let AttributeBodyElement::Error(err) = element {
-                if let Some(found) = &err.value.found {
-                    if !out.is_empty() {
-                        out.push(' ');
-                    }
-                    out.push_str(found);
-                }
-            }
-        }
-    }
-}
-
-fn attribute_usage_as_text(usage: &AttributeUsage) -> String {
-    let mut out = String::new();
-    let redefines = usage.redefines.as_deref();
-    if let Some(r) = redefines {
-        out.push_str(":>> ");
-        out.push_str(r);
-        out.push(' ');
-    } else if let Some(s) = &usage.subsets {
-        out.push_str(":> ");
-        out.push_str(s);
-        out.push(' ');
-    }
-    if redefines != Some(usage.name.as_str()) && !usage.name.is_empty() {
-        out.push_str(&usage.name);
-        out.push(' ');
-    }
-    if let Some(typing) = &usage.typing {
-        out.push_str(": ");
-        out.push_str(typing);
-        out.push(' ');
-    }
-    if let AttributeBody::Brace { elements } = &usage.body {
-        out.push_str("{ ");
-        for element in elements {
-            append_body_element_text(&mut out, &element.value);
-            out.push(' ');
-        }
-        out.push_str("} ");
-    }
-    if let Some(expr) = &usage.value {
-        out.push_str("= ");
-        out.push_str(&expressions::expression_to_debug_string(expr));
-        out.push_str("; ");
-    }
-    out
-}
-
-fn extract_unit_conversion_from_body(body: &AttributeBody) -> Option<UnitConversionMeta> {
-    let block_text = attribute_body_as_text(body)?;
-    extract_unit_conversion_from_text(&block_text)
+    let conversion_factor = find_redefined_usage(elements, "conversionFactor")
+        .and_then(usage_value_number)?;
+    let symbol = find_redefined_usage(elements, "symbol").and_then(usage_value_name);
+    Some(UnitPrefixMeta {
+        symbol,
+        conversion_factor,
+    })
 }
 
 fn extract_interval_scale_from_body(body: &AttributeBody) -> Option<UnitConversionMeta> {
-    let block_text = attribute_body_as_text(body)?;
-    let unit = extract_assignment(&block_text, "unit");
-    let zero = block_text
-        .find("zeroDegree")
-        .and_then(|idx| parse_zero_point_kelvin(&block_text[idx..]));
-    Some(UnitConversionMeta {
+    let AttributeBody::Brace { elements } = body else {
+        return None;
+    };
+    Some(interval_scale_meta(elements))
+}
+
+fn interval_scale_meta(elements: &[Node<AttributeBodyElement>]) -> UnitConversionMeta {
+    let interval_unit = find_redefined_usage(elements, "unit").and_then(usage_value_name);
+    let zero_offset_kelvin = find_value_by_name_contains(elements, "zeroDegree")
+        .and_then(|node| expr_as_number(&node.value));
+    UnitConversionMeta {
         kind: "IntervalScale".to_string(),
         reference_unit: Some("K".to_string()),
         conversion_factor: Some(1.0),
         prefix: None,
-        interval_unit: unit,
-        zero_offset_kelvin: zero,
-    })
+        interval_unit,
+        zero_offset_kelvin,
+    }
 }
 
-fn attribute_def_as_text(def: &AttributeDef) -> String {
-    let mut out = String::from("attribute ");
-    if let Some(short) = &def.short_name {
-        out.push('<');
-        out.push_str(short);
-        out.push_str("> ");
-    }
-    out.push_str(&def.name);
-    if let Some(typing) = &def.typing {
-        out.push_str(" : ");
-        out.push_str(typing);
-    }
-    if let AttributeBody::Brace { elements } = &def.body {
-        out.push_str(" { ");
-        for element in elements {
-            append_body_element_text(&mut out, &element.value);
-            out.push(' ');
-        }
-        out.push_str("} ");
-    }
-    if let Some(expr) = &def.value {
-        out.push_str("= ");
-        out.push_str(&expressions::expression_to_debug_string(expr));
-        out.push_str("; ");
-    }
-    out
-}
-
-pub fn extract_unit_conversion_from_text(text: &str) -> Option<UnitConversionMeta> {
-    if text.contains(": IntervalScale") || text.contains("IntervalScale {") {
-        let unit = extract_assignment(text, "unit");
-        let zero = text
-            .find("zeroDegree")
-            .and_then(|idx| parse_zero_point_kelvin(&text[idx..]));
-        return Some(UnitConversionMeta {
-            kind: "IntervalScale".to_string(),
-            reference_unit: Some("K".to_string()),
-            conversion_factor: Some(1.0),
-            prefix: None,
-            interval_unit: unit,
-            zero_offset_kelvin: zero,
-        });
-    }
-    if text.contains("ConversionByPrefix") {
-        return Some(UnitConversionMeta {
+/// Reads the `:>> unitConversion: <Kind> { ... }` catalog shape directly from the AST: the
+/// outer attribute's body has one redefined `unitConversion` usage whose `typing` names the
+/// conversion kind and whose own nested body carries the kind-specific parameters.
+fn extract_unit_conversion_from_body(body: &AttributeBody) -> Option<UnitConversionMeta> {
+    let AttributeBody::Brace { elements } = body else {
+        return None;
+    };
+    let conversion_usage = find_redefined_usage(elements, "unitConversion")?;
+    let AttributeBody::Brace {
+        elements: inner_elements,
+    } = &conversion_usage.body
+    else {
+        return None;
+    };
+    let kind = conversion_usage.typing.as_deref().map(base_type_name);
+    match kind {
+        Some("IntervalScale") => Some(interval_scale_meta(inner_elements)),
+        Some("ConversionByPrefix") => Some(UnitConversionMeta {
             kind: "ConversionByPrefix".to_string(),
-            reference_unit: extract_assignment(text, "referenceUnit"),
+            reference_unit: find_redefined_usage(inner_elements, "referenceUnit")
+                .and_then(usage_value_name),
             conversion_factor: None,
-            prefix: extract_assignment(text, "prefix"),
+            prefix: find_redefined_usage(inner_elements, "prefix").and_then(usage_value_name),
             interval_unit: None,
             zero_offset_kelvin: None,
-        });
-    }
-    if text.contains("ConversionByConvention") || text.contains("referenceUnit") {
-        return Some(UnitConversionMeta {
-            kind: "ConversionByConvention".to_string(),
-            reference_unit: extract_assignment(text, "referenceUnit"),
-            conversion_factor: extract_assignment(text, "conversionFactor")
-                .and_then(|raw| parse_factor_expression(&raw)),
-            prefix: None,
-            interval_unit: None,
-            zero_offset_kelvin: None,
-        });
-    }
-    None
-}
-
-fn extract_assignment(line: &str, key: &str) -> Option<String> {
-    let needle = format!("{key} =");
-    let idx = line.find(&needle)?;
-    let value_start = idx + needle.len();
-    let rest = line[value_start..].trim_start();
-    let end = rest.find(';').unwrap_or(rest.len());
-    let value = rest[..end].trim();
-    if value.is_empty() {
-        None
-    } else {
-        Some(strip_quotes(value))
-    }
-}
-
-fn parse_zero_point_kelvin(line: &str) -> Option<f64> {
-    let tail = line.rsplit('=').next()?.trim().trim_end_matches(';').trim();
-    let numeric = tail.split('[').next()?.trim();
-    parse_factor_expression(numeric)
-}
-
-fn parse_factor_expression(raw: &str) -> Option<f64> {
-    let mut trimmed = raw.trim();
-    if trimmed.starts_with('(') && !trimmed.ends_with(')') {
-        trimmed = trimmed[1..].trim();
-    }
-    while trimmed.starts_with('(') && trimmed.ends_with(')') {
-        trimmed = trimmed[1..trimmed.len() - 1].trim();
-    }
-    let compact: String = trimmed.chars().filter(|c| !c.is_whitespace()).collect();
-    if let Some(div) = compact.find('/') {
-        let left = compact[..div].parse::<f64>().ok()?;
-        let right = compact[div + 1..].parse::<f64>().ok()?;
-        if right == 0.0 {
-            return None;
+        }),
+        _ => {
+            let reference_unit = find_redefined_usage(inner_elements, "referenceUnit")
+                .and_then(usage_value_name);
+            // `ConversionByConvention` is the catalog's default/fallback shape: accept it
+            // whether or not the nested body is explicitly typed, as long as it carries a
+            // `referenceUnit` redefinition.
+            if kind == Some("ConversionByConvention") || reference_unit.is_some() {
+                Some(UnitConversionMeta {
+                    kind: "ConversionByConvention".to_string(),
+                    reference_unit,
+                    conversion_factor: find_redefined_usage(inner_elements, "conversionFactor")
+                        .and_then(usage_value_number),
+                    prefix: None,
+                    interval_unit: None,
+                    zero_offset_kelvin: None,
+                })
+            } else {
+                None
+            }
         }
-        return Some(left / right);
     }
-    compact.parse::<f64>().ok()
-}
-
-fn strip_quotes(value: &str) -> String {
-    let mut out = value.trim().to_string();
-    if out.len() > 1
-        && ((out.starts_with('\'') && out.ends_with('\''))
-            || (out.starts_with('"') && out.ends_with('"')))
-    {
-        out = out[1..out.len() - 1].to_string();
-    }
-    out
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
 
-    #[test]
-    fn km_body_text_includes_reference_unit() {
-        use sysml_v2_parser::ast::RootElement;
+    fn attribute_def_body(content: &str) -> AttributeBody {
+        use sysml_v2_parser::ast::{PackageBody, PackageBodyElement, RootElement};
         use sysml_v2_parser::parse;
 
-        let parsed = parse(
-            "package P { attribute <km> kilometre : LengthUnit { :>> unitConversion: ConversionByPrefix { :>> prefix = kilo; :>> referenceUnit = m; } } }",
-        )
-        .expect("parse");
-        let attr = parsed
+        let parsed = parse(content).expect("parse");
+        parsed
             .elements
             .iter()
             .find_map(|el| match &el.value {
                 RootElement::Package(pkg) => match &pkg.value.body {
-                    sysml_v2_parser::ast::PackageBody::Brace { elements } => {
-                        elements.first().map(|node| &node.value)
+                    PackageBody::Brace { elements } => {
+                        match elements.first().map(|node| &node.value) {
+                            Some(PackageBodyElement::AttributeDef(def)) => {
+                                Some(def.value.body.clone())
+                            }
+                            other => panic!("expected attribute def, got {other:?}"),
+                        }
                     }
                     _ => None,
                 },
                 _ => None,
             })
-            .expect("attr");
-        let body = match attr {
-            sysml_v2_parser::ast::PackageBodyElement::AttributeDef(def) => &def.body,
-            _ => panic!("expected attribute def"),
-        };
-        if let sysml_v2_parser::ast::AttributeBody::Brace { elements } = body {
-            let kinds: Vec<_> = elements
-                .iter()
-                .map(|el| match &el.value {
-                    AttributeBodyElement::Error(err) => {
-                        format!("Error({:?})", err.value.found)
-                    }
-                    other => format!("{other:?}"),
-                })
-                .collect();
-            assert!(
-                kinds.iter().any(|k| k.contains("referenceUnit")),
-                "body elements: {kinds:?}"
-            );
-        }
-        let text = attribute_body_as_text(body).expect("body text");
-        assert!(
-            text.contains("referenceUnit"),
-            "body text missing referenceUnit: {text}"
-        );
-        let meta = extract_unit_conversion_from_text(&text).expect("meta");
-        assert_eq!(meta.reference_unit.as_deref(), Some("m"));
+            .expect("attribute def body")
     }
 
     #[test]
-    fn extracts_conversion_by_convention() {
-        let text = ":>> unitConversion: ConversionByConvention { :>> referenceUnit = m; :>> conversionFactor = 3.048E-01; }";
-        let meta = extract_unit_conversion_from_text(text).expect("meta");
+    fn extracts_conversion_by_convention_from_ast() {
+        let body = attribute_def_body(
+            "package P { attribute foo : LengthUnit { :>> unitConversion: ConversionByConvention { :>> referenceUnit = m; :>> conversionFactor = 3.048E-01; } } }",
+        );
+        let meta = extract_unit_conversion_from_body(&body).expect("meta");
         assert_eq!(meta.kind, "ConversionByConvention");
         assert_eq!(meta.reference_unit.as_deref(), Some("m"));
         assert!((meta.conversion_factor.unwrap() - 0.3048).abs() < 1e-6);
+    }
+
+    #[test]
+    fn extracts_conversion_by_prefix_from_ast() {
+        let body = attribute_def_body(
+            "package P { attribute <km> kilometre : LengthUnit { :>> unitConversion: ConversionByPrefix { :>> prefix = kilo; :>> referenceUnit = m; } } }",
+        );
+        let meta = extract_unit_conversion_from_body(&body).expect("meta");
+        assert_eq!(meta.kind, "ConversionByPrefix");
+        assert_eq!(meta.reference_unit.as_deref(), Some("m"));
+        assert_eq!(meta.prefix.as_deref(), Some("kilo"));
+    }
+
+    #[test]
+    fn evaluates_division_addition_and_negation() {
+        use sysml_v2_parser::Span;
+
+        let lit = |n: i64| Box::new(Node::new(Span::dummy(), Expression::LiteralInteger(n)));
+        assert_eq!(
+            expr_as_number(&Expression::BinaryOp {
+                op: BinaryOperator::Div,
+                left: lit(229835),
+                right: lit(900),
+            }),
+            Some(229835.0 / 900.0)
+        );
+        assert_eq!(
+            expr_as_number(&Expression::UnaryOp {
+                op: UnaryOperator::Minus,
+                operand: lit(5),
+            }),
+            Some(-5.0)
+        );
+        assert_eq!(
+            expr_as_number(&Expression::BinaryOp {
+                op: BinaryOperator::Add,
+                left: lit(2),
+                right: lit(3),
+            }),
+            Some(5.0)
+        );
+    }
+
+    #[test]
+    fn fahrenheit_interval_body_zero_offset_from_ast() {
+        let body = attribute_def_body(
+            r#"package Units {
+                attribute <'°F_abs'> 'degree fahrenheit absolute' : IntervalScale {
+                    :>> unit = '°F';
+                    private attribute zeroDegreeFahrenheitInKelvin: ThermodynamicTemperatureValue = 229835/900 [K];
+                }
+            }"#,
+        );
+        let conversion = extract_interval_scale_from_body(&body).expect("conversion");
+        assert_eq!(conversion.interval_unit.as_deref(), Some("°F"));
+        assert_eq!(conversion.zero_offset_kelvin, Some(229835.0 / 900.0));
     }
 
     #[test]
@@ -430,53 +399,6 @@ mod tests {
             Some("m"),
             "km conv json: {km_conv}"
         );
-    }
-
-    #[test]
-    fn fahrenheit_interval_body_text_includes_zero_offset() {
-        use sysml_v2_parser::ast::{PackageBody, PackageBodyElement, RootElement};
-        use sysml_v2_parser::parse;
-
-        let content = r#"package Units {
-            attribute <'°F_abs'> 'degree fahrenheit absolute' : IntervalScale {
-                :>> unit = '°F';
-                private attribute zeroDegreeFahrenheitInKelvin: ThermodynamicTemperatureValue = 229835/900 [K];
-            }
-        }"#;
-        let parsed = parse(content).expect("parse");
-        let def = parsed
-            .elements
-            .iter()
-            .find_map(|el| match &el.value {
-                RootElement::Package(pkg) => match &pkg.value.body {
-                    PackageBody::Brace { elements } => {
-                        match elements.first().map(|node| &node.value) {
-                            Some(PackageBodyElement::AttributeDef(def)) => Some(&def.value),
-                            other => panic!("expected attribute def, got {other:?}"),
-                        }
-                    }
-                    _ => None,
-                },
-                _ => None,
-            })
-            .expect("def");
-        let block_text = attribute_body_as_text(&def.body).expect("body text");
-        assert!(
-            block_text.contains("zeroDegree"),
-            "block_text={block_text:?}"
-        );
-        let conversion = extract_interval_scale_from_body(&def.body).expect("conversion");
-        assert_eq!(
-            conversion.zero_offset_kelvin,
-            Some(229835.0 / 900.0),
-            "block_text={block_text:?}"
-        );
-    }
-
-    #[test]
-    fn parses_fractional_zero_offset_kelvin() {
-        let line = "zeroDegreeFahrenheitInKelvin: ThermodynamicTemperatureValue = 229835/900 [K]";
-        assert_eq!(parse_zero_point_kelvin(line), Some(229835.0 / 900.0));
     }
 
     #[test]

@@ -12,6 +12,21 @@ use crate::semantic::kinds::METADATA_RESTRICTION_FEATURE_NAMES;
 use crate::semantic::model::{ElementKind, NodeId};
 use crate::semantic::relationships::add_typing_edge_if_exists;
 
+/// Attaches any `doc` comments written inside a nested attribute def/usage's own
+/// braces (e.g. a unit-catalog definition's `symbol`/`conversionFactor` block) to
+/// that attribute's node. `build_from_attribute_body` only walks sibling elements,
+/// so this body is otherwise never visited for graph materialization.
+fn attach_nested_doc_comments(g: &mut SemanticGraph, node_id: &NodeId, body: &AttributeBody) {
+    let AttributeBody::Brace { elements } = body else {
+        return;
+    };
+    for node in elements {
+        if let AttributeBodyElement::Doc(doc) = &node.value {
+            super::attach_doc_comment(g, node_id, &doc.value.text);
+        }
+    }
+}
+
 pub(super) fn build_from_attribute_body(
     body: &AttributeBody,
     uri: &Url,
@@ -52,6 +67,7 @@ pub(super) fn build_from_attribute_body(
                 if let Some(ref typing) = value.typing {
                     add_typing_edge_if_exists(g, uri, &qualified, typing, container_prefix);
                 }
+                attach_nested_doc_comments(g, &NodeId::new(uri, &qualified), &value.body);
             }
             AttributeBodyElement::AttributeUsage(attribute) => {
                 let value = &attribute.value;
@@ -93,6 +109,7 @@ pub(super) fn build_from_attribute_body(
                 if let Some(ref typing) = value.typing {
                     add_typing_edge_if_exists(g, uri, &qualified, typing, container_prefix);
                 }
+                attach_nested_doc_comments(g, &NodeId::new(uri, &qualified), &value.body);
             }
             AttributeBodyElement::Doc(doc) => {
                 super::attach_doc_comment(g, parent_id, &doc.value.text);
