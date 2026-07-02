@@ -23,9 +23,10 @@ pub(super) fn build_from_definition_body(
             DefinitionBodyElement::OccurrenceMember(member) => {
                 build_from_occurrence_body_element(member, uri, container_prefix, parent_id, g);
             }
-            DefinitionBodyElement::Doc(_)
-            | DefinitionBodyElement::Error(_)
-            | DefinitionBodyElement::Other(_) => {}
+            DefinitionBodyElement::Doc(doc) => {
+                super::attach_doc_comment(g, parent_id, &doc.value.text);
+            }
+            DefinitionBodyElement::Error(_) | DefinitionBodyElement::Other(_) => {}
         }
     }
 }

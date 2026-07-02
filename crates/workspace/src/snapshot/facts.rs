@@ -111,14 +111,25 @@ pub(crate) fn project_host_semantic_model(
             });
         }
     }
+    fn connect_sort_key(c: &HostSemanticModelRelationship) -> Option<(&str, &str, u32, u32)> {
+        c.connect.as_ref().map(|detail| {
+            (
+                detail.source_expression.as_str(),
+                detail.target_expression.as_str(),
+                detail.range.start.line,
+                detail.range.start.character,
+            )
+        })
+    }
     relationships.sort_by(|a, b| {
         a.source
             .cmp(&b.source)
             .then_with(|| a.target.cmp(&b.target))
             .then_with(|| a.kind.as_str().cmp(b.kind.as_str()))
+            .then_with(|| connect_sort_key(a).cmp(&connect_sort_key(b)))
     });
     relationships.dedup_by(|a, b| {
-        a.source == b.source && a.target == b.target && a.kind == b.kind
+        a.source == b.source && a.target == b.target && a.kind == b.kind && a.connect == b.connect
     });
 
     Ok(HostSemanticProjection {

@@ -565,9 +565,10 @@ pub(super) fn build_from_action_def_body(
                     &mk_node.span,
                 );
             }
-            ActionDefBodyElement::Doc(_)
-            | ActionDefBodyElement::Error(_)
-            | ActionDefBodyElement::Annotation(_) => {}
+            ActionDefBodyElement::Doc(doc) => {
+                super::attach_doc_comment(g, parent_id, &doc.value.text);
+            }
+            ActionDefBodyElement::Error(_) | ActionDefBodyElement::Annotation(_) => {}
         }
     }
 }
@@ -731,9 +732,10 @@ pub(super) fn build_from_action_usage_body(
                     &mk_node.span,
                 );
             }
-            ActionUsageBodyElement::Doc(_)
-            | ActionUsageBodyElement::Error(_)
-            | ActionUsageBodyElement::Annotation(_) => {}
+            ActionUsageBodyElement::Doc(doc) => {
+                super::attach_doc_comment(g, parent_id, &doc.value.text);
+            }
+            ActionUsageBodyElement::Error(_) | ActionUsageBodyElement::Annotation(_) => {}
         }
     }
 }

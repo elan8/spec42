@@ -548,7 +548,20 @@ pub(super) fn build_from_use_case_body(
                     &mk_node.span,
                 );
             }
-            UCBE::Error(_) | UCBE::Doc(_) | UCBE::Other(_) | UCBE::Annotation(_) => {}
+            UCBE::Doc(doc) => {
+                super::attach_doc_comment(g, parent_id, &doc.value.text);
+            }
+            UCBE::MetadataAnnotation(meta) => {
+                super::metadata_def::add_metadata_annotation_node(
+                    g,
+                    uri,
+                    container_prefix,
+                    parent_id,
+                    &meta.value,
+                    &meta.span,
+                );
+            }
+            UCBE::Error(_) | UCBE::Other(_) | UCBE::Annotation(_) => {}
             _ => {}
         }
     }

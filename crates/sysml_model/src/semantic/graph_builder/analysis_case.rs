@@ -268,15 +268,26 @@ pub(super) fn build_from_analysis_body(
             | UseCaseDefBodyElement::ThenUseCaseUsage(_)
             | UseCaseDefBodyElement::RefRedefinition(_)
             | UseCaseDefBodyElement::SubjectRef(_) => {}
+            UseCaseDefBodyElement::Doc(doc) => {
+                super::attach_doc_comment(g, parent_id, &doc.value.text);
+            }
+            UseCaseDefBodyElement::MetadataAnnotation(meta) => {
+                super::metadata_def::add_metadata_annotation_node(
+                    g,
+                    uri,
+                    container_prefix,
+                    parent_id,
+                    &meta.value,
+                    &meta.span,
+                );
+            }
             UseCaseDefBodyElement::Error(_)
-            | UseCaseDefBodyElement::Doc(_)
             | UseCaseDefBodyElement::ThenDone(_)
             | UseCaseDefBodyElement::ThenIncludeUseCase(_)
             | UseCaseDefBodyElement::IncludeUseCase(_)
             | UseCaseDefBodyElement::ForLoop(_)
             | UseCaseDefBodyElement::ThenAction(_)
             | UseCaseDefBodyElement::Annotation(_)
-            | UseCaseDefBodyElement::MetadataAnnotation(_)
             | UseCaseDefBodyElement::CaseReturnDecl(_) => {}
             UseCaseDefBodyElement::FlowUsage(flow) => {
                 super::flow_usage::materialize_flow_usage(

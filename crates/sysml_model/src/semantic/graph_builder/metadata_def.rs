@@ -143,15 +143,21 @@ fn wire_constraint_body_metadata_elements(
     elements: &[Node<ConstraintDefBodyElement>],
 ) {
     for element in elements {
-        if let ConstraintDefBodyElement::MetadataAnnotation(meta) = &element.value {
-            add_metadata_annotation_node(
-                g,
-                uri,
-                container_prefix,
-                parent_id,
-                &meta.value,
-                &meta.span,
-            );
+        match &element.value {
+            ConstraintDefBodyElement::MetadataAnnotation(meta) => {
+                add_metadata_annotation_node(
+                    g,
+                    uri,
+                    container_prefix,
+                    parent_id,
+                    &meta.value,
+                    &meta.span,
+                );
+            }
+            ConstraintDefBodyElement::Doc(doc) => {
+                super::attach_doc_comment(g, parent_id, &doc.value.text);
+            }
+            _ => {}
         }
     }
 }

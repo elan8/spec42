@@ -178,3 +178,19 @@ pub(super) fn add_node_and_recurse(
     }
     g.invalidate_query_indexes();
 }
+
+/// Attaches a `doc /* ... */` comment's text to the `doc` attribute of the node it
+/// annotates. Multiple doc blocks on the same node are joined with a blank line.
+pub(super) fn attach_doc_comment(g: &mut SemanticGraph, node_id: &NodeId, text: &str) {
+    let text = text.trim();
+    if text.is_empty() {
+        return;
+    }
+    if let Some(node) = g.get_node_mut(node_id) {
+        let combined = match node.attributes.get("doc").and_then(|v| v.as_str()) {
+            Some(existing) if !existing.is_empty() => format!("{existing}\n\n{text}"),
+            _ => text.to_string(),
+        };
+        node.attributes.insert("doc".to_string(), serde_json::json!(combined));
+    }
+}

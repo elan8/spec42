@@ -439,7 +439,10 @@ pub(super) fn build_from_state_body(
                     &meta.span,
                 );
             }
-            SDBE::Error(_) | SDBE::Doc(_) | SDBE::Annotation(_) | SDBE::Other(_) => {}
+            SDBE::Doc(doc) => {
+                super::attach_doc_comment(g, parent_id, &doc.value.text);
+            }
+            SDBE::Error(_) | SDBE::Annotation(_) | SDBE::Other(_) => {}
         }
     }
 }

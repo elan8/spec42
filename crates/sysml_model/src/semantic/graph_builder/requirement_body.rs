@@ -150,6 +150,8 @@ fn require_constraint_structured(
     };
     let mut params = Vec::new();
     let mut expression_fragments: Vec<String> = Vec::new();
+    let mut doc_fragments: Vec<String> = Vec::new();
+    let mut metadata_names: Vec<String> = Vec::new();
     for element in elements {
         match &element.value {
             ConstraintDefBodyElement::InOutDecl(param) => {
@@ -171,21 +173,30 @@ fn require_constraint_structured(
                     expression_fragments.push(rendered);
                 }
             }
-            ConstraintDefBodyElement::Doc(_)
-            | ConstraintDefBodyElement::Error(_)
-            | ConstraintDefBodyElement::MetadataAnnotation(_)
-            | ConstraintDefBodyElement::Other(_) => {}
+            ConstraintDefBodyElement::Doc(doc) => {
+                let text = compact_whitespace(&doc.value.text);
+                if !text.is_empty() {
+                    doc_fragments.push(text);
+                }
+            }
+            ConstraintDefBodyElement::MetadataAnnotation(meta) => {
+                metadata_names.push(meta.value.name.clone());
+            }
+            ConstraintDefBodyElement::Error(_) | ConstraintDefBodyElement::Other(_) => {}
         }
     }
     let expression = compact_whitespace(&expression_fragments.join(" "));
     if expression.is_empty() {
         return None;
     }
+    let doc = doc_fragments.join("\n\n");
     Some({
         serde_json::json!({
             "kind": "require_constraint",
             "params": params,
             "expression": expression,
+            "doc": doc,
+            "metadata": metadata_names,
         })
     })
 }
@@ -699,8 +710,10 @@ pub(super) fn walk_requirement_def_body(
                     &meta.span,
                 );
             }
-            RequirementDefBodyElement::Doc(_)
-            | RequirementDefBodyElement::Annotation(_)
+            RequirementDefBodyElement::Doc(doc) => {
+                super::attach_doc_comment(g, parent_id, &doc.value.text);
+            }
+            RequirementDefBodyElement::Annotation(_)
             | RequirementDefBodyElement::Error(_)
             | RequirementDefBodyElement::Other(_) => {}
         }

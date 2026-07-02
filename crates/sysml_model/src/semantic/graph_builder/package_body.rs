@@ -307,9 +307,10 @@ fn annotate_rendering_def_body(
             RenderingDefBodyElement::ViewRendering(rendering) => {
                 add_view_rendering_node(g, uri, rendering_def_id, rendering);
             }
-            RenderingDefBodyElement::Error(_)
-            | RenderingDefBodyElement::Other(_)
-            | RenderingDefBodyElement::Doc(_) => {}
+            RenderingDefBodyElement::Doc(doc) => {
+                super::attach_doc_comment(g, rendering_def_id, &doc.value.text);
+            }
+            RenderingDefBodyElement::Error(_) | RenderingDefBodyElement::Other(_) => {}
         }
     }
 }
@@ -342,10 +343,10 @@ fn annotate_view_usage_body(g: &mut SemanticGraph, view_id: &NodeId, body: &View
             ViewBodyElement::Filter(filter) => {
                 add_view_filter_node(g, uri, view_id, filter, "view");
             }
-            ViewBodyElement::Error(_)
-            | ViewBodyElement::Other(_)
-            | ViewBodyElement::Doc(_)
-            | ViewBodyElement::Satisfy(_) => {}
+            ViewBodyElement::Doc(doc) => {
+                super::attach_doc_comment(g, view_id, &doc.value.text);
+            }
+            ViewBodyElement::Error(_) | ViewBodyElement::Other(_) | ViewBodyElement::Satisfy(_) => {}
         }
     }
     if has_expose {
@@ -1539,11 +1540,22 @@ pub(super) fn build_from_package_body_element(
                                     container_prefix,
                                 );
                             }
+                            CalcDefBodyElement::Doc(doc) => {
+                                super::attach_doc_comment(g, &calc_id, &doc.value.text);
+                            }
+                            CalcDefBodyElement::MetadataAnnotation(meta) => {
+                                super::metadata_def::add_metadata_annotation_node(
+                                    g,
+                                    uri,
+                                    container_prefix,
+                                    &calc_id,
+                                    &meta.value,
+                                    &meta.span,
+                                );
+                            }
                             CalcDefBodyElement::Expression(_)
                             | CalcDefBodyElement::Other(_)
-                            | CalcDefBodyElement::Error(_)
-                            | CalcDefBodyElement::Doc(_)
-                            | CalcDefBodyElement::MetadataAnnotation(_) => {}
+                            | CalcDefBodyElement::Error(_) => {}
                         }
                     }
                 }
@@ -1809,10 +1821,20 @@ pub(super) fn build_from_package_body_element(
                         ViewDefBodyElement::ViewRendering(rendering) => {
                             add_view_rendering_node(g, uri, &view_def_id, rendering);
                         }
-                        ViewDefBodyElement::Error(_)
-                        | ViewDefBodyElement::Other(_)
-                        | ViewDefBodyElement::Doc(_)
-                        | ViewDefBodyElement::MetadataAnnotation(_) => {}
+                        ViewDefBodyElement::Doc(doc) => {
+                            super::attach_doc_comment(g, &view_def_id, &doc.value.text);
+                        }
+                        ViewDefBodyElement::MetadataAnnotation(meta) => {
+                            super::metadata_def::add_metadata_annotation_node(
+                                g,
+                                uri,
+                                container_prefix,
+                                &view_def_id,
+                                &meta.value,
+                                &meta.span,
+                            );
+                        }
+                        ViewDefBodyElement::Error(_) | ViewDefBodyElement::Other(_) => {}
                     }
                 }
             }
@@ -1997,7 +2019,12 @@ pub(super) fn build_from_package_body_element(
             }
         }
         // Intentionally omitted from the graph: parse placeholders and documentation-only members.
-        PBE::Error(_) | PBE::Doc(_) | PBE::Comment(_) => {}
+        PBE::Doc(doc) => {
+            if let Some(pid) = parent_id {
+                super::attach_doc_comment(g, pid, &doc.value.text);
+            }
+        }
+        PBE::Error(_) | PBE::Comment(_) => {}
         PBE::TextualRep(t) => {
             if let Some(pid) = parent_id {
                 let tr = &t.value;

@@ -131,7 +131,9 @@ pub(super) fn build_from_port_def_body_element(
 ) {
     use PortDefBodyElement as PDBE;
     match &node.value {
-        PDBE::Doc(_) => {}
+        PDBE::Doc(doc) => {
+            super::attach_doc_comment(g, parent_id, &doc.value.text);
+        }
         PDBE::InOutDecl(w) => build_in_out_decl(w, uri, container_prefix, parent_id, g),
         PDBE::AttributeDef(n) => {
             let name = &n.name;

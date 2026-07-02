@@ -169,7 +169,9 @@ pub(super) fn build_from_interface_def_body_element(
 ) {
     use sysml_v2_parser::ast::InterfaceDefBodyElement as E;
     match &node.value {
-        E::Doc(_) => {}
+        E::Doc(doc) => {
+            super::attach_doc_comment(g, parent_id, &doc.value.text);
+        }
         E::EndDecl(w) => add_end_decl(g, uri, container_prefix, parent_id, w),
         E::RefDecl(w) => add_ref_decl(g, uri, container_prefix, parent_id, w),
         E::ConnectStmt(w) => add_connect_stmt(g, uri, container_prefix, w),

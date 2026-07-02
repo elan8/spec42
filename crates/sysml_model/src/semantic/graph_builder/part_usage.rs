@@ -329,7 +329,10 @@ pub(super) fn build_from_part_usage_body_element(
                 Some(parent_id),
             );
         }
-        PUBE::EnumerationUsage(_) | PUBE::Annotation(_) | PUBE::Error(_) | PUBE::Doc(_) => {}
+        PUBE::Doc(doc) => {
+            super::attach_doc_comment(g, parent_id, &doc.value.text);
+        }
+        PUBE::EnumerationUsage(_) | PUBE::Annotation(_) | PUBE::Error(_) => {}
     }
 }
 

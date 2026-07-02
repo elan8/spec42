@@ -94,9 +94,10 @@ pub(super) fn build_from_attribute_body(
                     add_typing_edge_if_exists(g, uri, &qualified, typing, container_prefix);
                 }
             }
-            AttributeBodyElement::Doc(_)
-            | AttributeBodyElement::Error(_)
-            | AttributeBodyElement::Other(_) => {}
+            AttributeBodyElement::Doc(doc) => {
+                super::attach_doc_comment(g, parent_id, &doc.value.text);
+            }
+            AttributeBodyElement::Error(_) | AttributeBodyElement::Other(_) => {}
         }
     }
 }

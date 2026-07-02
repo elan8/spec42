@@ -517,11 +517,22 @@ pub(super) fn build_from_part_def_body_element(
                                 container_prefix,
                             );
                         }
+                        CalcDefBodyElement::Doc(doc) => {
+                            super::attach_doc_comment(g, &calc_node_id, &doc.value.text);
+                        }
+                        CalcDefBodyElement::MetadataAnnotation(meta) => {
+                            super::metadata_def::add_metadata_annotation_node(
+                                g,
+                                uri,
+                                container_prefix,
+                                &calc_node_id,
+                                &meta.value,
+                                &meta.span,
+                            );
+                        }
                         CalcDefBodyElement::Expression(_)
                         | CalcDefBodyElement::Other(_)
-                        | CalcDefBodyElement::Error(_)
-                        | CalcDefBodyElement::Doc(_)
-                        | CalcDefBodyElement::MetadataAnnotation(_) => {}
+                        | CalcDefBodyElement::Error(_) => {}
                     }
                 }
             }
@@ -678,7 +689,9 @@ pub(super) fn build_from_part_def_body_element(
                 &meta.span,
             );
         }
-        PDBE::Annotation(_) | PDBE::Error(_) | PDBE::Doc(_) | PDBE::Comment(_) | PDBE::Other(_) => {
+        PDBE::Doc(doc) => {
+            super::attach_doc_comment(g, parent_id, &doc.value.text);
         }
+        PDBE::Annotation(_) | PDBE::Error(_) | PDBE::Comment(_) | PDBE::Other(_) => {}
     }
 }
