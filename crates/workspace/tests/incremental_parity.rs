@@ -125,3 +125,77 @@ fn multi_file_workspace_single_doc_edit_matches_full_rebuild() {
 
     assert_snapshot_parity("multi-file", baseline.as_ref(), updated.as_ref());
 }
+
+/// Regression test for a real bug found while designing Tier 2 Phase 3b (see
+/// `docs/engineering/TIER2-PHASE3B-SHARED-GRAPH-PATCH-DESIGN.md`): `workspace` crate's
+/// graph pipeline never called `evaluate_expressions`, in either the full-build or
+/// incremental-update path, so every attribute's `evaluatedValue`/`evaluationStatus` was
+/// silently absent. Fixed by routing both paths through `sysml_model::finalize_and_evaluate`
+/// instead of `finalize_workspace_graph`.
+#[test]
+fn full_build_populates_evaluated_attributes() {
+    let cache = tempdir().expect("tempdir");
+    let engine = incremental_engine(&cache);
+    let content = r#"
+package Demo {
+    part def Rocket {
+        attribute mass = 1 + 2;
+    }
+}
+"#;
+    let snapshot = load_snapshot(&engine, &cache, "Demo.sysml", content);
+    let uri = snapshot.documents()[0].uri.clone();
+    let mass = snapshot
+        .semantic_graph()
+        .nodes_for_uri(&uri)
+        .into_iter()
+        .find(|node| node.name == "mass")
+        .expect("mass attribute node");
+    assert_eq!(
+        mass.attributes.get("evaluatedValue"),
+        Some(&serde_json::json!(3)),
+        "full build should evaluate expressions; attrs: {:?}",
+        mass.attributes
+    );
+}
+
+#[test]
+fn incremental_update_populates_evaluated_attributes() {
+    let cache = tempdir().expect("tempdir");
+    let engine = incremental_engine(&cache);
+    let model_path = cache.path().join("Demo.sysml");
+
+    let previous = load_snapshot(
+        &engine,
+        &cache,
+        "Demo.sysml",
+        "package Demo { part def Rocket { attribute mass = 1; } }",
+    );
+
+    let updated_content = "package Demo { part def Rocket { attribute mass = 1 + 2; } }";
+    let changed_doc = memory_document(&model_path, updated_content);
+    let changes = DocumentChanges::new().replace(changed_doc);
+
+    let updated = engine
+        .update_snapshot(
+            previous.as_ref(),
+            changes,
+            WorkspaceLoadRequest::single_target(model_path),
+            HostContext::default(),
+        )
+        .expect("incremental update");
+
+    let uri = updated.documents()[0].uri.clone();
+    let mass = updated
+        .semantic_graph()
+        .nodes_for_uri(&uri)
+        .into_iter()
+        .find(|node| node.name == "mass")
+        .expect("mass attribute node");
+    assert_eq!(
+        mass.attributes.get("evaluatedValue"),
+        Some(&serde_json::json!(3)),
+        "incremental update should evaluate expressions; attrs: {:?}",
+        mass.attributes
+    );
+}

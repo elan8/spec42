@@ -6,7 +6,7 @@ use std::time::Instant;
 use language_service::InMemoryWorkspace;
 use sysml_model::{
     add_cross_document_edges_for_uri, build_graph_from_doc, build_render_snapshot,
-    finalize_workspace_graph, SemanticGraph, SysmlDocument, WorkspaceParsedDocument,
+    finalize_and_evaluate, SemanticGraph, SysmlDocument, WorkspaceParsedDocument,
 };
 
 use crate::error::{map_language_service_error, map_render_snapshot_error, WorkspaceResult};
@@ -114,7 +114,7 @@ fn try_incremental_update(
         add_cross_document_edges_for_uri(&mut graph, &uri);
     }
 
-    finalize_workspace_graph(&mut graph);
+    finalize_and_evaluate(&mut graph);
     context.enforce_graph_limits(
         graph.node_ids_by_qualified_name.len(),
         graph.graph.edge_count(),

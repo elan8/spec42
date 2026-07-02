@@ -1,8 +1,17 @@
 # Tier 2: Consolidating `workspace` and `lsp_server`'s Incremental Update Machinery
 
-**Status:** Phases 1, 2, 3a landed 2026-07-02 (see below). Phase 3 was split into 3a
-(rayon migration, done) and 3b (fold duplicated graph-update logic into `workspace`,
-rescoped — see below, needs its own design pass). Phase 4 not started.
+**Status:** Phases 1, 2, 3a landed 2026-07-02. Phase 3b redesigned twice: first around a
+Babel42 performance finding (design parked, not implemented — priority redirected to
+spec42-internal consolidation per maintainer direction 2026-07-02), then around a narrower
+target: a shared single-document graph-patch primitive between `workspace` and
+`lsp_server`, which also surfaced a real, unrelated correctness bug (`workspace` crate never
+calls `evaluate_expressions`). Design:
+`docs/engineering/TIER2-PHASE3B-SHARED-GRAPH-PATCH-DESIGN.md` — **Steps 1-2 landed
+2026-07-02**: the shared primitive exists in `sysml_model` (tested), and `workspace`
+crate's full-build and incremental-update paths now both call it, **fixing the
+`evaluate_expressions` bug** for every `workspace`-based consumer (CLI, MCP, Babel42).
+Steps 3-5 (migrate `try_incremental_update` and `lsp_server` to actually delegate to the
+shared primitive, then the full-rebuild-path follow-up) not started. Phase 4 not started.
 **Date:** 2026-07-02
 **Related:** `docs/architecture-audit.md` (P1-2, P2-3, P2-4, P2-9), Technical Debt Reduction Plan Tier 2.
 
@@ -53,15 +62,36 @@ Converted:
 tests) and full `cargo test --workspace` (114 test binaries, all `ok`) pass unchanged —
 same pass counts as before the migration. `cargo clippy -p lsp_server` clean.
 
-### Phase 3b — fold the duplicated graph-update logic into `workspace`. Not started, rescoped.
+### Phase 3b — fold the duplicated graph-update logic into `workspace`.
 
-This needs its own design doc (same treatment as the original Tier 2 doc) before any code
-moves, covering: whether `workspace` crate should grow an `include_in_semantic_graph`-style
-concept (and whether that still counts as "protocol-neutral"), how the symbol-table
-rebuild should be exposed to a crate that currently has no notion of "symbols for LSP
-completion," and whether `rebuild_semantic_graph_staged`'s lock-free-commit return shape
-belongs in `workspace` or should stay `lsp_server`-side wrapping a lower-level
-`workspace` primitive. Left for a future session.
+**First pass (parked):** investigating this surfaced that a third live-editing consumer
+exists — Babel42 (`C:\Git\babel42-v2`, `backend/crates/babel42-spec42/src/session.rs`) —
+built directly on `workspace` crate (bypassing `lsp_server`/LSP entirely), and that
+`update_snapshot()`'s incremental path only patches the semantic graph incrementally;
+`language_workspace`/`render_snapshot`/`semantic_projection` are unconditionally rebuilt
+from scratch on every edit Babel42 sends. Design for fixing that:
+`docs/engineering/TIER2-PHASE3B-LAZY-SNAPSHOT-DESIGN.md` — **parked, not implemented.**
+Direction changed 2026-07-02: priority is consolidating spec42's own codebase first;
+Babel42 is explicitly left as-is for now. The doc remains the starting point if/when
+Babel42 work resumes.
+
+**Second pass (active):** with Babel42 out of scope, the actual duplication worth fixing is
+narrower — one specific computation (patch the semantic graph for a single changed
+document) written twice, in `workspace::snapshot::update.rs::try_incremental_update` and
+`lsp_server::workspace::services.rs::update_semantic_graph_for_uri`, not the whole
+bundle/laziness question. Comparing the two surfaced a real, unrelated correctness bug:
+**`workspace` crate's graph pipeline (`finalize_workspace_graph`) never calls
+`evaluate_expressions`, in either the full-build or incremental path** — confirmed by
+grepping `workspace` crate and Babel42's entire backend for the call (zero hits outside
+`lsp_server`) and `workspace`'s own test suite for any assertion on `evaluatedValue`/
+`evaluationStatus` (also zero). Practical effect: every snapshot built through
+`workspace::Spec42Engine` — CLI, MCP, and Babel42 — never gets computed attribute values
+(`mass = 1 + 2` stays `"1 + 2"`, never becomes `3`). Active design, including the fix:
+**`docs/engineering/TIER2-PHASE3B-SHARED-GRAPH-PATCH-DESIGN.md`** — a shared
+`patch_graph_for_document`/`finalize_and_evaluate` pair added to `sysml_model` crate
+(neither `workspace` nor `lsp_server` needs a new dependency), a 5-step migration plan, and
+the evaluation-bug fix riding along as a byproduct of the consolidation rather than a
+separate effort. Not implemented yet.
 
 ## Phase 2 status (done, 2026-07-02)
 
