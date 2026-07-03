@@ -4,12 +4,11 @@ use std::collections::HashMap;
 use std::time::Instant;
 
 use sysml_model::{
-    build_render_snapshot, build_sysml_visualization_from_render_snapshot_with_meta,
-    empty_merged_ibd, full_ibd_for_render_snapshot, materialize_model_explorer_bundle,
-    IbdArtifactMode, ModelExplorerBundle, VisualizationBuildMeta, VisualizationBuildOptions,
+    materialize_model_explorer_bundle, ModelExplorerBundle, VisualizationBuildMeta,
     WorkspaceParsedDocument,
 };
 use tower_lsp::lsp_types::Url;
+use workspace::{build_view_catalog, render_view};
 
 use crate::common::util;
 use crate::workspace::state::{IndexEntry, ServerState};
@@ -106,7 +105,7 @@ pub(crate) fn ensure_render_snapshot(
         &workspace_root_uri,
     );
     let viz_docs = workspace_parsed_documents_for_visualization(&state.index, &workspace_uris);
-    let snapshot = build_render_snapshot(
+    let snapshot = build_view_catalog(
         &state.semantic_graph,
         &viz_docs,
         &state.library_paths,
@@ -156,7 +155,6 @@ pub(crate) fn build_visualization_with_cache(
     view: &str,
     selected_view: Option<&str>,
     build_start: Instant,
-    options: VisualizationBuildOptions,
 ) -> Result<VisualizationBuildOutcome, String> {
     let workspace_root_uri = util::normalize_file_uri(workspace_root_uri);
     let cache_key = VisualizationCacheKey {
@@ -185,34 +183,19 @@ pub(crate) fn build_visualization_with_cache(
     let workspace_uris = snapshot.workspace_uris.clone();
     let viz_docs = workspace_parsed_documents_for_visualization(&state.index, &workspace_uris);
 
-    let ibd_artifact_mode = if options.ibd_build_scope == sysml_model::IbdBuildScope::ViewExposedPackages
-        && ((options.slim_interconnection_payload && view == "interconnection-view")
-            || view == "general-view")
-    {
-        IbdArtifactMode::Deferred
-    } else {
-        IbdArtifactMode::FullWorkspace
-    };
-
-    let full_ibd = if ibd_artifact_mode == IbdArtifactMode::FullWorkspace {
-        let cached = cache
-            .entry
-            .as_ref()
-            .and_then(|entry| entry.model_explorer.as_ref())
-            .map(|bundle| &bundle.full_ibd);
-        full_ibd_for_render_snapshot(&state.semantic_graph, &snapshot, cached)
-    } else {
-        empty_merged_ibd()
-    };
-    let (response, mut meta) = build_sysml_visualization_from_render_snapshot_with_meta(
+    let cached_full_ibd = cache
+        .entry
+        .as_ref()
+        .and_then(|entry| entry.model_explorer.as_ref())
+        .map(|bundle| &bundle.full_ibd);
+    let (response, mut meta, _resolved_full_ibd) = render_view(
         &state.semantic_graph,
         &viz_docs,
         &snapshot,
         view,
         selected_view,
         build_start,
-        full_ibd,
-        options,
+        cached_full_ibd,
     )?;
     meta.cache_hit = false;
 
@@ -292,7 +275,6 @@ mod cache_tests {
     fn warm_interconnection_visualization_hits_response_cache() {
         let (state, root) = drone_workspace_state();
         let mut cache = WorkspaceRenderCache::default();
-        let options = sysml_model::interconnection_build_options("interconnection-view");
         let cold = build_visualization_with_cache(
             &state,
             &mut cache,
@@ -300,7 +282,6 @@ mod cache_tests {
             "interconnection-view",
             Some("connections"),
             Instant::now(),
-            options.clone(),
         )
         .expect("cold visualization");
         assert!(
@@ -319,7 +300,6 @@ mod cache_tests {
             "interconnection-view",
             Some("connections"),
             Instant::now(),
-            options,
         )
         .expect("warm visualization");
         assert!(

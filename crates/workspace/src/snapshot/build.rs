@@ -7,9 +7,7 @@ use std::time::Instant;
 
 use language_service::InMemoryWorkspace;
 use sysml_model::{
-    build_render_snapshot, build_sysml_visualization_from_render_snapshot, empty_merged_ibd,
-    full_ibd_for_render_snapshot, visualization_build_options, IbdBuildScope, IbdDataDto,
-    SemanticGraph, SysmlDocument, SysmlDocumentProvider, SysmlVisualizationResultDto,
+    IbdDataDto, SemanticGraph, SysmlDocument, SysmlDocumentProvider, SysmlVisualizationResultDto,
     WorkspaceParsedDocument, WorkspaceRenderSnapshot,
 };
 use sha2::{Digest, Sha256};
@@ -156,34 +154,21 @@ impl HostWorkspaceSnapshot {
         view: &str,
         selected_view: Option<&str>,
     ) -> Result<SysmlVisualizationResultDto, WorkspaceError> {
-        let options = visualization_build_options(view);
-        let full_ibd = if options.ibd_build_scope == IbdBuildScope::ViewExposedPackages
-            && (view == "general-view"
-                || (view == "interconnection-view" && options.slim_interconnection_payload))
-        {
-            empty_merged_ibd()
-        } else {
-            self.full_ibd_cache
-                .get_or_init(|| {
-                    full_ibd_for_render_snapshot(
-                        &self.semantic_graph,
-                        &self.render_snapshot,
-                        None,
-                    )
-                })
-                .clone()
-        };
-        build_sysml_visualization_from_render_snapshot(
+        let cached_full_ibd = self.full_ibd_cache.get();
+        let (response, _meta, resolved_full_ibd) = crate::render_view(
             &self.semantic_graph,
             &self.parsed_documents,
             &self.render_snapshot,
             view,
             selected_view,
             self.build_instant,
-            full_ibd,
-            options,
+            cached_full_ibd,
         )
-        .map_err(|message| map_view_error(view, message))
+        .map_err(|message| map_view_error(view, message))?;
+        if let Some(resolved_full_ibd) = resolved_full_ibd {
+            let _ = self.full_ibd_cache.set(resolved_full_ibd);
+        }
+        Ok(response)
     }
 }
 
@@ -248,7 +233,7 @@ pub(crate) fn build_workspace_snapshot(
     context.check_continue(HostPipelinePhase::BuildingLanguageWorkspace)?;
 
     context.check_continue(HostPipelinePhase::BuildingViewCatalog)?;
-    let render_snapshot = build_render_snapshot(
+    let render_snapshot = crate::build_view_catalog(
         &semantic_graph,
         &parsed_documents,
         &library_urls,
@@ -365,7 +350,12 @@ pub(crate) fn assemble_host_workspace_snapshot(
     }
 }
 
-pub(crate) fn enrich_document_hashes(documents: &mut [SysmlDocument]) {
+/// Normalizes each document's URI (Windows drive-letter case) and populates `sha256`/
+/// `byte_size`. Public so embedders computing [`HostArtifactMetadata`] directly off an
+/// [`crate::IncrementalWorkspace`] (bypassing this snapshot pipeline) reuse the same
+/// normalization instead of hashing un-normalized URIs — see `path_to_file_url`'s doc comment
+/// for what silently diverging normalization once broke.
+pub fn enrich_document_hashes(documents: &mut [SysmlDocument]) {
     for document in documents {
         // Normalize here so the graph and the canonicalized `target_urls` computed via
         // `path_to_file_url` (which also lowercases the Windows drive letter) key on the

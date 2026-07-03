@@ -12,7 +12,7 @@ mod request;
 mod update;
 mod validation;
 
-pub use build::{load_workspace_snapshot, HostWorkspaceSnapshot};
+pub use build::{enrich_document_hashes, load_workspace_snapshot, HostWorkspaceSnapshot};
 pub use output::Spec42ProjectionOutput;
 pub use changes::{apply_document_changes, DocumentChanges};
 pub use context::{

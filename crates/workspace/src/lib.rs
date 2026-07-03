@@ -26,7 +26,10 @@ pub use comparison::{
 };
 pub use engine::{EngineBuilder, HostEngineMetadata, Spec42Engine};
 pub use error::{WorkspaceResult, WorkspaceError};
-pub use incremental::{validate_workspace, IncrementalWorkspace, WorkspaceUpdateMetrics};
+pub use incremental::{
+    build_view_catalog, project_semantic_model, render_view, validate_workspace,
+    IncrementalWorkspace, WorkspaceUpdateMetrics,
+};
 pub use library::{
     bundle::LibraryBundleConfig,
     domain::{
@@ -46,10 +49,11 @@ pub use provider::{
 };
 pub use session::{RelinkToken, SessionLifecycle, WorkspaceSession};
 pub use snapshot::{
-    apply_document_changes, CancellationToken, DocumentChanges, HostContext, HostPipelinePhase,
-    HostResourceLimits, HostSemanticModelNode, HostSemanticModelRelationship,
-    HostSemanticProjection, HostValidatedDocument, HostValidationReport, HostValidationSummary,
-    HostWorkspaceSnapshot, Spec42ProjectionOutput, ValidationTiming, WorkspaceLoadRequest,
+    apply_document_changes, enrich_document_hashes, CancellationToken, DocumentChanges,
+    HostContext, HostPipelinePhase, HostResourceLimits, HostSemanticModelNode,
+    HostSemanticModelRelationship, HostSemanticProjection, HostValidatedDocument,
+    HostValidationReport, HostValidationSummary, HostWorkspaceSnapshot, Spec42ProjectionOutput,
+    ValidationTiming, WorkspaceLoadRequest,
 };
 pub use snapshot::discovery::{discover_target_files, path_to_file_url, resolve_workspace_root};
 pub use version::{HostArtifactMetadata, HostSchemaVersions};

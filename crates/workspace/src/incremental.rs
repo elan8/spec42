@@ -17,13 +17,15 @@ use std::time::Instant;
 use rayon::prelude::*;
 use url::Url;
 
+use sysml_model::{IbdDataDto, SysmlVisualizationResultDto, VisualizationBuildMeta, WorkspaceRenderSnapshot};
+
 use crate::error::WorkspaceResult;
 use crate::parse_cache;
 use crate::semantic::{
     build_and_link_graph_parallel, link_parsed_documents_parallel_from, patch_graph_for_document,
     SemanticGraph, WorkspaceParsedDocument,
 };
-use crate::snapshot::HostValidationReport;
+use crate::snapshot::{HostSemanticProjection, HostValidationReport};
 use crate::{SysmlDocument, SysmlDocumentSourceKind};
 
 /// Timing and size metrics for one [`IncrementalWorkspace`] operation.
@@ -340,6 +342,97 @@ pub fn validate_workspace(
         library_paths_display,
         strict_diagnostics,
     )
+}
+
+/// Compute the [`HostSemanticProjection`] for a graph's current state, without building a
+/// [`crate::snapshot::HostWorkspaceSnapshot`].
+///
+/// A thin, same-crate call into `snapshot::facts::project_host_semantic_model` — the same
+/// pattern as [`validate_workspace`]/`collect_host_validation_report`.
+///
+/// # Errors
+///
+/// Returns an error when target file URLs cannot be resolved.
+pub fn project_semantic_model(
+    graph: &SemanticGraph,
+    target_files: &[PathBuf],
+) -> WorkspaceResult<HostSemanticProjection> {
+    crate::snapshot::facts::project_host_semantic_model(graph, target_files)
+}
+
+/// Build the view catalog for a graph's current state — the render-snapshot half of what
+/// [`crate::snapshot::HostWorkspaceSnapshot::view_catalog`] builds, without requiring a
+/// snapshot.
+///
+/// # Errors
+///
+/// Returns an error when the render snapshot cannot be built.
+pub fn build_view_catalog(
+    graph: &SemanticGraph,
+    documents: &[WorkspaceParsedDocument],
+    library_urls: &[Url],
+    workspace_root_uri: &Url,
+    schema_version: u64,
+) -> Result<WorkspaceRenderSnapshot, String> {
+    sysml_model::build_render_snapshot(
+        graph,
+        documents,
+        library_urls,
+        workspace_root_uri,
+        schema_version,
+    )
+}
+
+/// Render one view against a graph's current state and its [`WorkspaceRenderSnapshot`] view
+/// catalog (from [`build_view_catalog`]).
+///
+/// `cached_full_ibd` lets callers reuse a previously computed merged IBD (see
+/// [`sysml_model::full_ibd_for_render_snapshot`]); pass `None` to always recompute. The third
+/// element of the returned tuple is `Some(ibd)` exactly when a real merged IBD was computed or
+/// reused (i.e. the `general-view`/`interconnection-view` empty-shortcut below was *not* taken)
+/// — callers that memoize the merged IBD across calls (`HostWorkspaceSnapshot::prepare_view`'s
+/// `full_ibd_cache`) should only store this when it is `Some`, never the empty placeholder,
+/// or a later view needing the real merged IBD would incorrectly reuse an empty one.
+///
+/// This is the single place the `general-view`/`interconnection-view` IBD-scope decision
+/// lives — `HostWorkspaceSnapshot::prepare_view` and `lsp_server`'s
+/// `build_visualization_with_cache` each independently re-derived this condition before; both
+/// now call this instead.
+///
+/// # Errors
+///
+/// Returns an error when the visualization cannot be built for the requested view.
+pub fn render_view(
+    graph: &SemanticGraph,
+    documents: &[WorkspaceParsedDocument],
+    view_catalog: &WorkspaceRenderSnapshot,
+    view: &str,
+    selected_view: Option<&str>,
+    build_start: Instant,
+    cached_full_ibd: Option<&IbdDataDto>,
+) -> Result<(SysmlVisualizationResultDto, VisualizationBuildMeta, Option<IbdDataDto>), String> {
+    let options = sysml_model::visualization_build_options(view);
+    let uses_empty_shortcut = options.ibd_build_scope
+        == sysml_model::IbdBuildScope::ViewExposedPackages
+        && (view == "general-view"
+            || (view == "interconnection-view" && options.slim_interconnection_payload));
+    let (full_ibd, resolved_full_ibd) = if uses_empty_shortcut {
+        (sysml_model::empty_merged_ibd(), None)
+    } else {
+        let resolved = sysml_model::full_ibd_for_render_snapshot(graph, view_catalog, cached_full_ibd);
+        (resolved.clone(), Some(resolved))
+    };
+    let (response, meta) = sysml_model::build_sysml_visualization_from_render_snapshot_with_meta(
+        graph,
+        documents,
+        view_catalog,
+        view,
+        selected_view,
+        build_start,
+        full_ibd,
+        options,
+    )?;
+    Ok((response, meta, resolved_full_ibd))
 }
 
 #[cfg(test)]
@@ -757,6 +850,116 @@ package AnalysisCases {
         assert_eq!(
             via_wrapper.resolved_library_paths,
             via_direct_call.resolved_library_paths
+        );
+    }
+
+    #[test]
+    fn build_view_catalog_matches_build_render_snapshot_directly() {
+        let mut engine = IncrementalWorkspace::new();
+        let documents = fixture_documents();
+        engine.load(&documents);
+
+        let library_urls: Vec<Url> = Vec::new();
+        let workspace_root_uri = Url::parse("file:///workspace/").expect("valid url");
+
+        let via_wrapper = build_view_catalog(
+            &engine.graph(),
+            &engine.documents(),
+            &library_urls,
+            &workspace_root_uri,
+            1,
+        )
+        .expect("build_view_catalog succeeds");
+
+        let via_direct_call = sysml_model::build_render_snapshot(
+            &engine.graph(),
+            &engine.documents(),
+            &library_urls,
+            &workspace_root_uri,
+            1,
+        )
+        .expect("build_render_snapshot succeeds");
+
+        assert_eq!(via_wrapper.version, via_direct_call.version);
+        assert_eq!(
+            via_wrapper.workspace_uris.len(),
+            via_direct_call.workspace_uris.len()
+        );
+        assert_eq!(
+            via_wrapper.view_index.view_candidates.len(),
+            via_direct_call.view_index.view_candidates.len()
+        );
+    }
+
+    #[test]
+    fn render_view_matches_build_sysml_visualization_from_render_snapshot_with_meta_directly() {
+        let mut engine = IncrementalWorkspace::new();
+        let documents = fixture_documents();
+        engine.load(&documents);
+
+        let library_urls: Vec<Url> = Vec::new();
+        let workspace_root_uri = Url::parse("file:///workspace/").expect("valid url");
+        let view_catalog = build_view_catalog(
+            &engine.graph(),
+            &engine.documents(),
+            &library_urls,
+            &workspace_root_uri,
+            1,
+        )
+        .expect("build_view_catalog succeeds");
+
+        let (via_wrapper, _meta, resolved_full_ibd) = render_view(
+            &engine.graph(),
+            &engine.documents(),
+            &view_catalog,
+            "general-view",
+            None,
+            Instant::now(),
+            None,
+        )
+        .expect("render_view succeeds");
+
+        // "general-view" takes the empty-IBD shortcut, so nothing should be cached.
+        assert!(resolved_full_ibd.is_none());
+
+        let options = sysml_model::visualization_build_options("general-view");
+        let (via_direct_call, _meta) = sysml_model::build_sysml_visualization_from_render_snapshot_with_meta(
+            &engine.graph(),
+            &engine.documents(),
+            &view_catalog,
+            "general-view",
+            None,
+            Instant::now(),
+            sysml_model::empty_merged_ibd(),
+            options,
+        )
+        .expect("build_sysml_visualization_from_render_snapshot_with_meta succeeds");
+
+        assert_eq!(via_wrapper.view, via_direct_call.view);
+        assert_eq!(via_wrapper.model_ready, via_direct_call.model_ready);
+        assert_eq!(
+            via_wrapper.view_candidates.len(),
+            via_direct_call.view_candidates.len()
+        );
+    }
+
+    #[test]
+    fn project_semantic_model_matches_project_host_semantic_model_directly() {
+        let mut engine = IncrementalWorkspace::new();
+        let documents = fixture_documents();
+        engine.load(&documents);
+        let target_files: Vec<PathBuf> = Vec::new();
+
+        let via_wrapper = project_semantic_model(&engine.graph(), &target_files)
+            .expect("project_semantic_model succeeds");
+        let via_direct_call =
+            crate::snapshot::facts::project_host_semantic_model(&engine.graph(), &target_files)
+                .expect("project_host_semantic_model succeeds");
+
+        assert_eq!(via_wrapper.nodes.len(), via_direct_call.nodes.len());
+        assert_eq!(
+            via_wrapper.relationships.len(),
+            via_direct_call.relationships.len()
         );
     }
 }
