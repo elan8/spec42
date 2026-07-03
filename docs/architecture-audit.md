@@ -7,6 +7,8 @@
 
 **Crate rename note (2026-07-02):** the crate names used throughout this document are from before a Phase 1 rename. Mapping: `spec42_host` → `workspace`, `semantic_core` → merged into `sysml_model` (under `sysml_model/src/semantic/`), `kernel` → `lsp_server`. The rename was cosmetic only — verified 2026-07-02 that `server` still depends on both `workspace` and `lsp_server`, unwrap/expect counts are essentially unchanged, and the 5-6 manual `std::thread::spawn` sites are still present (now in `lsp_server/src/workspace/services.rs`). **P1-2 (dual pipeline) is still open**, just under new names.
 
+**2026-07-03:** `sysml_model`'s `graph_builder` (AST→`SemanticGraph` lowering) got a focused consistency pass — see `docs/graph-builder-consistency-audit.md`. Found and fixed 4 confirmed node/edge drift bugs (usages silently dropping attributes or entire subtrees depending on which containing body they're nested in) plus a spec violation in effective-name resolution (§7.6.5); split `package_body.rs`'s 1150-line dispatcher into 34 named functions. Surfaces two new open items relevant to #5/#12 below: anonymous SysML definitions are currently dropped from the graph entirely (spec-legal per `Identification`'s optional `declaredName`), and there is no `elementId`-equivalent stable node identity (`NodeId` is name-derived, so renames/reorders change it) — see that doc's O1/O3 for details before starting either.
+
 ### Completed since initial audit
 
 | Item | Description | Commit / PR |
