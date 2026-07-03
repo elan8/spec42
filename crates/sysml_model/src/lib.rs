@@ -1,6 +1,7 @@
 pub mod semantic;
 
 pub use semantic::activity_graph::enrich_activity_diagrams_from_graph;
+pub use semantic::analysis_typing::prepare_analysis_evaluation_context;
 pub use semantic::component_view::{
     expand_part_definition, expand_part_usage, has_materialized_shape, inherited_ports,
     ExpandedPart, ExpandedPort,

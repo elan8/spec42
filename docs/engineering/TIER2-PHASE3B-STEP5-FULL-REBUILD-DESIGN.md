@@ -1,10 +1,14 @@
 # Tier 2 Phase 3b Step 5: Shared Full-Workspace Graph Build
 
-**Status:** Step 5a landed 2026-07-02 — new function added and equivalence-tested, derivation
-coverage gap closed. Step 5b landed 2026-07-03 — `workspace`'s full-build path
-(`build_semantic_graph_from_documents`) now calls `build_and_link_graph_parallel`; a real
-duplicate-edge bug was found and fixed along the way. Step 5c (migrate `lsp_server`'s
-full-rebuild call sites) not started.
+**Status:** Steps 5a, 5b, and 5c all landed. 5a (2026-07-02): new function added and
+equivalence-tested, derivation coverage gap closed. 5b (2026-07-03): `workspace`'s full-build
+path (`build_semantic_graph_from_documents`) now calls `build_and_link_graph_parallel`,
+which surfaced and fixed a real duplicate-edge bug. 5c (2026-07-03): full delegation didn't
+fit `lsp_server`'s cached-parse full-rebuild functions (would force re-parsing), so scoped
+down to fixing the same duplicate-edge bug plus a second, previously-undiscovered missing
+`prepare_analysis_evaluation_context` call in both `rebuild_all_document_links` and
+`rebuild_semantic_graph_staged`. Remaining: Phase 4 (delete resulting dead code), and a
+before/after perf comparison on a realistic fixture (not yet captured — see Step 5b).
 **Date:** 2026-07-02
 **Related:** `docs/engineering/TIER2-PHASE3B-SHARED-GRAPH-PATCH-DESIGN.md` (Steps 1-4,
 landed — this doc is that design's Step 5, split out into its own file given its size and
@@ -268,21 +272,57 @@ workspace has been captured yet**. The swap is verified correct (equivalence tes
 test suite), not yet verified faster in practice. Worth doing as a explicit follow-up before
 claiming a perf win in the audit doc.
 
-**Step 5c** — Migrate `lsp_server::rebuild_all_document_links` and the
-`merge_document_graphs_into`/`rebuild_semantic_graph_staged` pair to delegate to
-`build_and_link_graph_parallel` for the core graph-build-and-link computation, keeping
-everything `sysml_model` doesn't have a concept of as `lsp_server`-local wrapping:
-- `include_in_semantic_graph`-split (search-only library indexing)
-- Symbol table rebuild (`refresh_symbols_start` section)
-- The staged/lock-free-commit shape (`rebuild_semantic_graph_staged` returning
-  `(graph, symbols, metrics)` for `ServerState` to commit without holding a write lock
-  during the heavy work)
-- `RebuildAllDocumentLinksMetrics`'s detailed per-phase timings — either kept as
-  `lsp_server`-local instrumentation wrapping calls into the shared function, or (bigger,
-  optional, not designed here) `build_and_link_graph_parallel` could return its own timing
-  breakdown if that's valuable to more than one caller.
+**Step 5c — ✅ Done 2026-07-03, scoped down from full delegation to a targeted bugfix.**
 
-Run `lsp_server`'s full test suite (278 tests) after this step, same rigor as Step 4.
+Full delegation to `build_and_link_graph_parallel` turned out not to fit: that function
+takes `&[SysmlDocument]` and re-parses from raw content, whereas `rebuild_all_document_links`
+and `rebuild_semantic_graph_staged` operate on `IndexEntry`s that already hold cached,
+parsed `RootNamespace` values (the whole point of Phase 3a's caching) — routing through
+`build_and_link_graph_parallel` would mean re-parsing every document on every full rebuild,
+a real regression, not a refactor. `RebuildAllDocumentLinksMetrics`'s detailed per-phase
+timings are also consumed downstream as real production log fields (`lsp_runtime/documents.rs`
+logs `crossEdgeResolutionMs`, `workspaceRelationshipLinkingMs`, etc.), so collapsing the
+per-phase structure into one opaque call would have lost operationally-useful data for no
+benefit.
+
+What *was* true duplication, though: both `lsp_server` functions already call the same
+underlying `sysml_model` primitives Step 3a wired up (`resolve_cross_document_edges_for_uri`,
+`link_workspace_derivations`, `resolve_workspace_pending_relationships`,
+`evaluate_expressions`) — the "core computation" was already shared at the primitive-function
+level. The actual gap was that both functions had **the same two bugs Step 5b just found and
+fixed in `build_and_link_graph_parallel`**, because the sequencing was copy-pasted rather
+than calling a shared tail function:
+
+1. **Same duplicate-edge bug as Step 5b.** Both `rebuild_all_document_links` and
+   `rebuild_semantic_graph_staged` inserted `resolve_cross_document_edges_for_uri`'s results
+   via a raw `graph.graph.add_edge(...)`, not the deduping `add_semantic_edge_once`. Fixed
+   identically to the Step 5b fix.
+2. **A second, previously-undiscovered bug**: neither function ever called
+   `prepare_analysis_evaluation_context` (which copies inherited analysis/verification/
+   assert-constraint context onto usages before expression evaluation) — confirmed by
+   `grep`, zero call sites anywhere in `lsp_server`. Only the single-document
+   `patch_graph_for_document` path (via `finalize_workspace_graph`, since Step 4) calls it.
+   Same shape as the earlier `workspace`-crate `evaluate_expressions` bug found during Steps
+   1-4: a full-rebuild path silently skipping a step the incremental path does correctly.
+   Practical effect: right after a full workspace load or library reload — before any
+   incremental edit triggers a `patch_graph_for_document(evaluate: true)` call and
+   self-heals it — analysis-def/verification-def expressions relying on inherited typed case
+   context could evaluate against stale or missing context. Fixed by adding the call after
+   `link_workspace_derivations` in both functions, timed inside the existing
+   `workspace_relationship_linking_ms` bucket (semantically the right home — it's part of
+   "relationship linking" work — and avoids changing the metrics struct's shape).
+
+Both fixes required threading two more primitives through the `sysml_model` → `workspace` →
+`lsp_server` re-export shim chain: `add_semantic_edge_once` and
+`prepare_analysis_evaluation_context` are now exported at `sysml_model`'s crate root
+(`lib.rs`), re-exported from `workspace::semantic`, and re-exported from `lsp_server::semantic`
+— matching the existing pattern for every other shared primitive.
+
+**Verification**: `cargo check --workspace` (only the pre-existing unrelated
+`SemanticLifecycle` warning), `cargo test -p lsp_server` (all green — the 122- and
+148-test suites plus the smaller ones, no failures), `cargo test --workspace` (all green),
+`cargo clippy -p lsp_server --no-deps`, `cargo clippy -p sysml_model --no-deps`, and
+`cargo clippy -p workspace --no-deps` (all clean).
 
 ## What stays `lsp_server`-specific (unchanged from the Steps 1-4 doc's framing)
 

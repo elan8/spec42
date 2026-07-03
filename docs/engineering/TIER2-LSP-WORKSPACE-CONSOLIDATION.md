@@ -118,7 +118,18 @@ twice — once during per-document graph build, once during parallel cross-docum
 resolution, because the resolved-edge insertion used a raw `add_edge` instead of the
 deduping `add_semantic_edge_once`); fixed, full `sysml_model` and `workspace` suites pass.
 No before/after timing comparison on a realistic fixture has been captured yet (see the Step
-5 doc for why). Step 5c (`lsp_server`'s full-rebuild call sites) not started.
+5 doc for why). **Step 5c landed 2026-07-03**: full delegation of `lsp_server`'s full-rebuild
+functions to `build_and_link_graph_parallel` didn't fit — they operate on already-parsed,
+cached `RootNamespace`s, so routing through a function that re-parses from raw content would
+be a regression, not a refactor. Scoped down to fixing the same duplicate-edge bug found in
+5b, plus a second bug this step turned up: neither `rebuild_all_document_links` nor
+`rebuild_semantic_graph_staged` ever called `prepare_analysis_evaluation_context` (zero call
+sites anywhere in `lsp_server`, confirmed by grep) — same shape as the earlier
+`evaluate_expressions` gap, meaning analysis/verification expressions relying on inherited
+typed case context could evaluate against stale context right after a full workspace load,
+until the next incremental edit self-healed it. Both fixed; `lsp_server`'s full test suite
+and the workspace-wide suite pass clean. Only Phase 4 (delete resulting dead code) remains
+in Tier 2 Phase 3b.
 
 ## Phase 2 status (done, 2026-07-02)
 

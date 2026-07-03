@@ -551,16 +551,15 @@ pub(crate) fn rebuild_all_document_links(
         .collect();
 
     for (src_id, tgt_id, kind) in resolved_edges {
-        if let (Some(&src_idx), Some(&tgt_idx)) = (
-            graph.node_index_by_id.get(&src_id),
-            graph.node_index_by_id.get(&tgt_id),
-        ) {
-            graph.graph.add_edge(
-                src_idx,
-                tgt_idx,
-                sysml_model::SemanticEdge::plain(kind),
-            );
-        }
+        // Use the deduping insert (not a raw `add_edge`) — `resolve_cross_document_edges_for_uri`
+        // resolves refs for every node in a URI, including same-document ones that
+        // `build_graph_from_doc` may already have wired, so a raw insert would double them.
+        semantic::add_semantic_edge_once(
+            &mut graph,
+            &src_id,
+            &tgt_id,
+            sysml_model::SemanticEdge::plain(kind),
+        );
     }
     graph.invalidate_query_indexes();
     let cross_edge_resolution_ms = elapsed_ms(cross_edge_resolution_start);
@@ -569,6 +568,12 @@ pub(crate) fn rebuild_all_document_links(
     // Typing/specializes/subject edges were already resolved by the parallel phase above
     // for every URI. Only derivation-connection wiring remains.
     semantic::link_workspace_derivations(&mut graph);
+    // Copies inherited analysis/verification/assert-constraint context onto usages before
+    // expression evaluation runs below — previously missing from this full-rebuild path
+    // (only the single-document `patch_graph_for_document` path called it), so analysis
+    // expressions relying on inherited typed case context could evaluate incorrectly right
+    // after a full workspace load/reload.
+    semantic::prepare_analysis_evaluation_context(&mut graph);
     let workspace_relationship_linking_ms = elapsed_ms(workspace_relationship_linking_start);
 
     let pending_relationship_resolution_start = Instant::now();
@@ -706,18 +711,17 @@ pub(crate) fn rebuild_semantic_graph_staged(
         .collect();
 
     for (src_id, tgt_id, kind) in resolved_edges {
-        if let (Some(&src_idx), Some(&tgt_idx)) = (
-            semantic_graph.node_index_by_id.get(&src_id),
-            semantic_graph.node_index_by_id.get(&tgt_id),
-        ) {
-            semantic_graph.graph.add_edge(
-                src_idx,
-                tgt_idx,
-                sysml_model::SemanticEdge::plain(kind),
-            );
-        }
+        // See the equivalent step in `rebuild_all_document_links` — use the deduping
+        // insert, not a raw `add_edge`, to avoid double-wiring same-document refs that
+        // `build_graph_from_doc` already resolved.
+        semantic::add_semantic_edge_once(
+            &mut semantic_graph,
+            &src_id,
+            &tgt_id,
+            sysml_model::SemanticEdge::plain(kind),
+        );
     }
-    // Direct graph.add_edge() calls above bypass insert_workspace_edge; invalidate so the
+    // Edge insertion above bypasses insert_workspace_edge; invalidate so the
     // subsequent link/resolve steps don't see a stale edge index.
     semantic_graph.invalidate_query_indexes();
     let cross_edge_resolution_ms = elapsed_ms(cross_edge_resolution_start);
@@ -726,6 +730,9 @@ pub(crate) fn rebuild_semantic_graph_staged(
     // Typing/specializes/subject edges were already resolved by the parallel phase above
     // for every URI. Only derivation-connection wiring remains.
     semantic::link_workspace_derivations(&mut semantic_graph);
+    // See the equivalent step in `rebuild_all_document_links` for why this was missing and
+    // why it matters.
+    semantic::prepare_analysis_evaluation_context(&mut semantic_graph);
     let workspace_relationship_linking_ms = elapsed_ms(workspace_relationship_linking_start);
 
     let pending_relationship_resolution_start = Instant::now();
