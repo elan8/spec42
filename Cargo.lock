@@ -1160,9 +1160,7 @@ dependencies = [
 name = "lsp_server"
 version = "0.34.0"
 dependencies = [
- "bincode",
  "clap",
- "dirs",
  "glob",
  "language_service",
  "petgraph",
@@ -1170,7 +1168,6 @@ dependencies = [
  "serde",
  "serde_json",
  "server",
- "sha2",
  "sysml-v2-parser",
  "sysml_model",
  "sysml_tokens",
@@ -3249,7 +3246,9 @@ dependencies = [
 name = "workspace"
 version = "0.34.0"
 dependencies = [
+ "bincode",
  "directories",
+ "dirs",
  "kpar",
  "language_service",
  "petgraph",

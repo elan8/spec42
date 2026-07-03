@@ -31,7 +31,7 @@ use std::time::SystemTime;
 
 use serde::{Deserialize, Serialize};
 use sha2::{Digest, Sha256};
-use tower_lsp::lsp_types::Url;
+use url::Url;
 
 use crate::semantic::SemanticGraph;
 

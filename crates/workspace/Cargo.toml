@@ -30,11 +30,13 @@ sha2 = "0.10"
 toml = "0.8"
 zip = { version = "2", default-features = false, features = ["deflate"] }
 directories = "5"
+dirs = "5"
 url = "2"
 walkdir = "2"
 sysml-v2-parser = { workspace = true }
 petgraph = { workspace = true }
 tracing = "0.1"
+bincode = { version = "2", features = ["serde"] }
 
 [dev-dependencies]
 tempfile = "3"

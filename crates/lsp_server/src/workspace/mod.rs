@@ -1,7 +1,5 @@
 pub(crate) mod coordinator;
 pub(crate) mod import_graph;
-pub(crate) mod library_graph_cache;
-pub(crate) mod parse_cache;
 pub(crate) mod library_closure;
 pub(crate) mod library_search;
 pub(crate) mod scan;
@@ -12,6 +10,10 @@ pub(crate) mod viz_cache;
 
 pub(crate) use coordinator::RelinkToken;
 pub(crate) use scan::scan_sysml_files;
+// Relocated to `workspace` crate (Tier 2 unified-incremental-engine Phase 1): the disk
+// caches are portable, protocol-neutral logic — see
+// docs/engineering/TIER2-UNIFIED-INCREMENTAL-ENGINE-DESIGN.md.
+pub(crate) use workspace::{library_graph_cache, parse_cache};
 pub(crate) use services::{
     apply_document_changes_fast, clear_documents_under_roots, indexed_text_or_empty,
     ingest_parsed_scan_entries, ingest_parsed_scan_entries_batch, parse_scanned_entries,

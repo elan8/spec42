@@ -6,6 +6,8 @@ pub mod comparison;
 pub mod engine;
 pub mod error;
 pub mod library;
+pub mod library_graph_cache;
+pub mod parse_cache;
 pub mod provider;
 pub mod robot_vacuum_perf;
 pub mod session;

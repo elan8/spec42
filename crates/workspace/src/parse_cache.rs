@@ -15,8 +15,9 @@
 //! ```
 //!
 //! The 20-byte header allows fast staleness detection without decoding the tree.
-//! The version field is taken from `lsp_server`'s own Cargo version, so every
-//! release automatically invalidates the cache without any manual bump.
+//! The version field is taken from this crate's Cargo version (shared across the
+//! whole workspace via `version.workspace = true`), so every release automatically
+//! invalidates the cache without any manual bump.
 
 use std::io::{Read, Write};
 use std::path::{Path, PathBuf};
@@ -169,7 +170,7 @@ mod tests {
     use tempfile::tempdir;
 
     fn parse(src: &str) -> RootNamespace {
-        crate::common::util::parse_for_editor(src).root
+        sysml_v2_parser::parse(src).expect("parse")
     }
 
     #[test]

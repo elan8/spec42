@@ -1,6 +1,6 @@
 # Tier 2: Unified Incremental Engine — Move `lsp_server`'s Incremental Machinery Into `workspace`, Layer Snapshot On Top
 
-**Status:** Design — not implemented. Not yet started.
+**Status:** Phase 1 landed 2026-07-03 — see "Phase 1 status" below. Phases 2-5 not started.
 **Date:** 2026-07-03
 **Related:** `docs/engineering/TIER2-LSP-WORKSPACE-CONSOLIDATION.md` (Phases 1-3a, Phase 3b
 Steps 1-4, Step 5a-5c, Phase 4 all landed — this doc addresses the split those phases
@@ -181,11 +181,45 @@ crate (CLI/MCP/HTTP) callers — only what they delegate to underneath changes.
 Same discipline as Tier 2's earlier steps: each phase independently shippable, verified with
 the full relevant test suites before moving on, higher-risk phases behind a flag if needed.
 
-1. **Relocate the two caches into `workspace`, unused.** Pure move —
-   `parse_cache.rs`/`library_graph_cache.rs` into `workspace`, `lsp_server` updated to import
-   from the new location. Zero type-shimming (confirmed above), zero behavior change. Same
-   risk profile as Phase 1's `WorkspaceSession` addition (additive, unused by anything until
-   wired up).
+1. **Relocate the two caches into `workspace`, unused. ✅ Done 2026-07-03.** Pure move —
+   `parse_cache.rs`/`library_graph_cache.rs` into `workspace` (`crates/workspace/src/`),
+   declared `pub mod` in `lib.rs` but not wired into any of `workspace`'s own code yet (kept
+   the same low-risk shape as Phase 1's `WorkspaceSession` addition in the earlier
+   consolidation effort — additive, unused by anything until a later phase wires it up).
+   `lsp_server`'s copies deleted; `crates/lsp_server/src/workspace/mod.rs` now re-exports
+   `pub(crate) use workspace::{library_graph_cache, parse_cache};` in place of the old
+   `pub(crate) mod` declarations, so every existing `crate::workspace::parse_cache::...` /
+   `crate::workspace::library_graph_cache::...` call site in `lsp_server` kept working
+   unchanged — zero call-site churn beyond the two-line module re-export.
+
+   Type-portability check from the design held exactly as predicted: `tower_lsp::lsp_types::Url`
+   is a direct `pub use url::Url` re-export, so `library_graph_cache.rs` needed only an
+   import-path change (`tower_lsp::lsp_types::Url` → `url::Url`, same type). Added `dirs = "5"`
+   and `bincode = { version = "2", features = ["serde"] }` to `workspace/Cargo.toml`
+   (`sha2`/`serde_json`/`walkdir`/`url`/`tracing`/`tempfile` were already present); removed
+   the now-unused `bincode`/`sha2`/`dirs` entries from `lsp_server/Cargo.toml` (nothing else
+   in `lsp_server` used them directly). `env!("CARGO_PKG_VERSION")` in the on-disk cache
+   header resolves to the same value regardless of which crate it's compiled in (workspace
+   uses `version.workspace = true` everywhere), so existing on-disk caches on a developer's
+   machine remain valid across the move — not required for correctness (caching is
+   best-effort/silently-falls-back-on-miss by design) but a nice bonus.
+
+   One test helper needed adapting: `parse_cache.rs`'s test module used
+   `crate::common::util::parse_for_editor(src).root` (an `lsp_server`-local helper); replaced
+   with `sysml_v2_parser::parse(src).expect("parse")` directly, matching the pattern used
+   elsewhere in `sysml_model`/`workspace` tests.
+
+   **Verification**: `cargo check -p workspace`, `cargo check -p lsp_server`,
+   `cargo check --workspace --all-targets` (zero errors, zero unused-import warnings),
+   `cargo test -p workspace` (all 9 relocated tests pass, plus the rest of the suite; total
+   green), `cargo test -p workspace --test dependency_guardrails` (still passes —
+   the caches don't pull in anything the guardrail forbids), `cargo test -p lsp_server`
+   (green; lib-test count dropped from 122 to 113, exactly the 9 tests that moved, no other
+   change), `cargo test --workspace` (all green), `cargo clippy -p workspace --no-deps
+   --all-targets` and `cargo clippy -p lsp_server --no-deps --all-targets` (both clean —
+   the only warnings present are two pre-existing, unrelated items in
+   `snapshot/facts.rs`/`tests/support/comparison_fixtures.rs`, confirmed via `git status` to
+   be untouched by this move).
 2. **Build `IncrementalWorkspace` in `workspace`, standalone, not wired anywhere.**
    Equivalence-test it against both `build_and_link_graph_parallel` (full-load case) and
    `lsp_server`'s current incremental behavior (patch case) — same rigor as Step 5a's
