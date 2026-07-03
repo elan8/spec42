@@ -3252,6 +3252,7 @@ dependencies = [
  "kpar",
  "language_service",
  "petgraph",
+ "rayon",
  "serde",
  "serde_json",
  "sha2",

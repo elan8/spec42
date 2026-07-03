@@ -1,11 +1,14 @@
 # Tier 2: Unified Incremental Engine — Move `lsp_server`'s Incremental Machinery Into `workspace`, Layer Snapshot On Top
 
-**Status:** Phases 1-3 landed 2026-07-03 — see the phase write-ups below. Phases 4-5 not
-started. Phase 4 (the highest-risk one — migrating `lsp_server`'s production hot path) has
-not been de-risked by Phases 1-3 beyond "the engine it will delegate to is now proven correct
-at both the standalone level and wired into `Spec42Engine`'s real full-load and
-incremental-update paths, exercised by `server` crate's full test suite" — the concurrency
-and staged-commit design work for Phase 4 itself hasn't started.
+**Status:** Phases 1-4 landed 2026-07-03 — see the phase write-ups below. Phase 4 shipped in
+a narrower shape than originally planned: `lsp_server`'s two full-rebuild functions now
+delegate their graph computation to `IncrementalWorkspace`, but `ServerState` still holds a
+plain `SemanticGraph` field (not the engine itself) — see "Phase 4" below for why that's the
+right call, not a shortfall. Along the way, `sysml_model` gained
+`link_parsed_documents_parallel`/`_from` (the merge/link half of
+`build_and_link_graph_parallel`, usable with already-parsed documents and an optional base
+graph), closing the Phase 2 parse-cache gap for real. Phase 5 (lazy derived snapshot views —
+the piece that actually fixes Babel42's per-edit cost) not started.
 **Date:** 2026-07-03
 **Related:** `docs/engineering/TIER2-LSP-WORKSPACE-CONSOLIDATION.md` (Phases 1-3a, Phase 3b
 Steps 1-4, Step 5a-5c, Phase 4 all landed — this doc addresses the split those phases
@@ -359,12 +362,100 @@ the full relevant test suites before moving on, higher-risk phases behind a flag
    suite, the real production consumer of `Spec42Engine`/`HostWorkspaceSnapshot`), `cargo
    clippy -p workspace --no-deps --all-targets` and `cargo clippy -p server --no-deps` (both
    clean, zero warnings in any file touched by this phase).
-4. **Migrate `lsp_server`'s `ServerState` to hold and delegate to it**, keeping only the
-   `tokio` wrapper and protocol-specific state local. Highest-risk phase — this is the
-   production LSP hot path, every file edit in every connected editor goes through it.
-   Recommend staging behind a flag (`experimental_incremental_updates` already exists and
-   could be reused, or a new one) with a rollback lever, full 270+-test `lsp_server` suite,
-   and manual editor-integration verification before it's load-bearing.
+4. **Migrate `lsp_server`'s full-rebuild functions to delegate to it. ✅ Done 2026-07-03, in
+   a narrower shape than "ServerState holds it."**
+
+   **What changed shape from the original plan, and why.** The original wording was
+   "`ServerState` to hold and delegate to it" — literally storing `IncrementalWorkspace` as a
+   `ServerState` field. Investigating turned up two reasons not to:
+   - `ServerState.semantic_graph: SemanticGraph` is read directly at 40+ call sites across 10
+     files outside `services.rs`/`state.rs` (hover, completion, diagnostics, views, symbol
+     search, etc.) — all of them just want a `&SemanticGraph`, none care how it was computed.
+     Changing the field's type would force a mechanical rewrite of all 40+ call sites for
+     zero behavioral benefit (`SemanticGraph`'s `Arc` backing already makes
+     `IncrementalWorkspace::graph()` a cheap clone, so there's no perf reason to route reads
+     through the engine either). `ServerState.semantic_graph` stays exactly as it was —
+     unchanged type, unchanged call sites.
+   - `IncrementalWorkspace` doesn't track `include_in_semantic_graph` (files indexed for
+     `sysml/librarySearch` only) — deliberately, per the design's own "what does not move"
+     section. `lsp_server`'s `IndexEntry`/`index` (the richer, authoritative document
+     registry) stays exactly as it was too.
+
+   So "delegate to it" became: `rebuild_all_document_links` and `rebuild_semantic_graph_staged`
+   construct a **scratch `IncrementalWorkspace`** each call (`IncrementalWorkspace::new()`),
+   feed it the currently-relevant documents, pull `.graph()` back out, and discard the
+   engine instance — `ServerState` still just holds a plain `SemanticGraph` field, written
+   via a single assignment (`state.semantic_graph = graph;`), same shape as before. This is
+   a real, meaningful reduction in duplicated *logic* (the actual goal) without an
+   unjustified reduction in duplicated *state* (which wasn't duplicated to begin with — the
+   40+ read call sites were already sharing one field).
+
+   **A real architectural mismatch this surfaced, and how it was resolved.** Comparing the
+   two `lsp_server` functions against `link_parsed_documents_parallel` line by line found:
+   - `rebuild_all_document_links` merges *every* included document with a plain
+     `SemanticGraph::merge` — it has never distinguished "workspace" from "library" content
+     the way `sysml_model`'s pipeline does (`IndexEntry` has no `SysmlDocumentSourceKind`
+     field, only `include_in_semantic_graph: bool`). Tagging every document `Workspace` when
+     calling `IncrementalWorkspace::load_parsed` reproduces this exactly — `link_parsed_documents_parallel`'s
+     partition only special-cases `Library`, so an all-`Workspace` input takes the plain
+     `.merge()` path for everything, matching the prior behavior with zero semantic change.
+     Documented inline at the call site, not just here, since it's easy to miss.
+   - `rebuild_semantic_graph_staged` *does* have a real workspace/library distinction
+     (`workspace_uris`/`library_uris`, feeding `merge`/`merge_skip_existing_qualified_names`
+     respectively) **and** a `base_graph` reuse path (library-graph-cache hit — skip
+     rebuilding library nodes that are already merged into a cached graph). Neither was
+     supported by `IncrementalWorkspace`/`link_parsed_documents_parallel` as they stood after
+     Phase 2. Rather than drop the base-graph optimization (a real, meaningful perf feature,
+     not an implementation detail) or duplicate the merge/link sequence a third time to
+     preserve it, extended `sysml_model` itself: `link_parsed_documents_parallel_from(base_graph, documents)`
+     — the same function, generalized to seed `graph`/`uris` from an existing `SemanticGraph`
+     (via its `all_uris()`) instead of always starting empty. `link_parsed_documents_parallel`
+     becomes a thin `link_parsed_documents_parallel_from(SemanticGraph::new(), documents)`
+     wrapper. `IncrementalWorkspace` gained the matching `load_parsed_from`. Both new
+     equivalence-tested (sysml_model: `link_parsed_documents_parallel_from_matches_building_everything_together`;
+     workspace: `load_parsed_from_matches_load_when_base_graph_holds_one_document`) before
+     being wired into `lsp_server`.
+
+   **Metrics — open question 2, resolved.** `RebuildAllDocumentLinksMetrics`'s 7-phase
+   breakdown (remove-nodes, rebuild-graphs, cross-edge-resolution,
+   workspace-relationship-linking, pending-relationship-resolution, expression-evaluation,
+   refresh-symbols) can't be preserved once the graph computation is one delegated call into
+   `IncrementalWorkspace` — those phases live inside `link_parsed_documents_parallel`, and
+   re-instrumenting them from the `lsp_server` side would mean re-implementing that function's
+   internal sequencing a third time just to get timing points, exactly the duplication this
+   whole design exists to eliminate. Decision made explicitly rather than deferred again: the
+   struct's field *names* stay (avoiding churn in `lsp_runtime/documents.rs`'s structured log
+   fields), but the five now-unmeasurable phases report `0`, and the combined delegated-call
+   time is reported through the pre-existing `cross_document_edges_ms` field (which already
+   played the role of "whole graph computation umbrella timer" before this change — the
+   closest existing field to keep the number meaningful for anyone reading the logs).
+   `refresh_symbols_ms` and `total_ms` are still measured for real, since symbol-table refresh
+   and the outer wrapping stayed `lsp_server`-local.
+
+   **`merge_document_graphs_into` deleted** — its logic is now `link_parsed_documents_parallel_from`'s.
+
+   **Verification** (this is the production LSP hot path — full rigor, no shortcuts):
+   `cargo check -p lsp_server --all-targets` (clean, zero warnings), `cargo test -p lsp_server`
+   (all green: 113 lib tests including the 5 tests specifically targeting
+   `rebuild_all_document_links` — library-relinking, public-re-export-chain-relinking,
+   evaluated-attribute/referenced-attribute/unit-conversion recomputation — plus the 148-test
+   integration suite exercising real fixtures — drone, webshop, powersystems, kitchen-timer —
+   through full startup/scan/hover/diagnostics/rename flows that go through both migrated
+   functions), `cargo test --workspace` (green throughout — `sysml_model` 201 tests,
+   `workspace` 41 lib tests, up from 199/38 with the new equivalence tests), `cargo clippy -p
+   lsp_server --no-deps --all-targets`, `cargo clippy -p sysml_model --no-deps`, `cargo
+   clippy -p workspace --no-deps --all-targets` (all clean — one `type_complexity` lint from
+   this phase's own code fixed via a `SourceTaggedDocument` type alias in `sysml_model`).
+
+   **A residual, honestly-flagged risk not fully closed by tests**: `rebuild_all_document_links`'s
+   prior implementation removed nodes only for currently-included URIs before rebuilding them
+   in place (`std::mem::take` + per-URI `remove_nodes_for_uri`), rather than unconditionally
+   replacing the whole graph. In every reachable state this repo's invariants allow, that's
+   equivalent to a full rebuild (the graph should only ever contain nodes for URIs currently
+   in `index`) — but that equivalence rests on an invariant, not a type-level guarantee, and
+   `IncrementalWorkspace::load_parsed`'s unconditional `self.graph = graph` would silently
+   drop anything violating it. The full test suite (including the two functions' own
+   dedicated tests) found no such case, which is meaningful evidence, not proof.
 5. **(Follow-on, separate from this migration's core risk)** Make the derived snapshot views
    lazy per generation (Part D of the lazy-snapshot design, reactivated per above) — the
    piece that actually resolves Babel42's per-edit recompute cost.
@@ -394,30 +485,34 @@ the full relevant test suites before moving on, higher-risk phases behind a flag
 ## Open questions
 
 1. Does `WorkspaceSession`'s existing lifecycle state machine become `IncrementalWorkspace`'s
-   internal bookkeeping, or stay a separately composed type? Affects Phase 2's design but not
-   its risk profile. **Still open** — Phase 2 shipped `IncrementalWorkspace` without any
-   lifecycle/generation tracking at all (just graph + documents); this needs revisiting
-   before Phase 4 (`lsp_server` has real lifecycle state — `SemanticCoordinator`'s
-   Cold/Indexing/Ready/Reindexing — that has to live somewhere).
+   internal bookkeeping, or stay a separately composed type? **Resolved by how Phase 4
+   actually shipped, not by picking one of the two options**: `IncrementalWorkspace` never
+   ended up holding any lifecycle state, because it never ended up living inside `ServerState`
+   at all — Phase 4 uses it as a scratch, per-call computation helper, constructed fresh each
+   time. `SemanticCoordinator`'s Cold/Indexing/Ready/Reindexing lifecycle stays exactly where
+   it already was (`WorkspaceSession`, delegated to since Phase 2 of the original
+   consolidation), completely untouched by this design. The question only becomes live again
+   if a future phase gives `IncrementalWorkspace` a persistent home.
 2. Should the per-phase timing metrics `RebuildAllDocumentLinksMetrics` currently produces
-   move into the engine as built-in instrumentation (useful to `workspace`'s other
-   consumers too), or stay `lsp_server`-local wrapping? **Partially answered by Phase 2**:
-   `WorkspaceUpdateMetrics` gives `parse_ms`/`graph_update_ms`/`total_ms` — real but coarser
-   than the 7-phase breakdown, deliberately, to avoid `workspace` re-implementing
-   `sysml_model`'s internal sequencing just to get timing points. Whether `lsp_server` can
-   live with that coarser granularity (dropping the 7-phase log fields) or `sysml_model`'s
-   pipeline functions should grow their own returned phase breakdown to preserve it is a
-   Phase 4 decision.
+   move into the engine as built-in instrumentation, or stay `lsp_server`-local wrapping?
+   **Resolved by Phase 4**: neither, cleanly — the 7-phase breakdown is gone, collapsed into
+   the pre-existing `cross_document_edges_ms` field as one combined number. Field names
+   (and therefore `lsp_runtime/documents.rs`'s structured log fields) kept as-is; five fields
+   now always report `0`. See Phase 4's write-up for the reasoning.
 3. Does Babel42's `EditorSession` need its own concurrency wrapper analogous to
-   `lsp_server`'s staged-commit shape, or is blocking-per-edit acceptable there? Needs
-   checking against Babel42's actual code before Phase 4 assumes `lsp_server`'s shape is the
-   only one needed.
+   `lsp_server`'s staged-commit shape, or is blocking-per-edit acceptable there? **Still
+   open** — not investigated in this design; needs checking against Babel42's actual code
+   before any future phase assumes `lsp_server`'s shape is the only one needed.
 4. Should `IncrementalWorkspace::load` gain a variant that accepts already-parsed documents
-   (to actually benefit from this engine's own parse cache on a full load, not just on
-   `apply_document`)? Flagged as a concrete gap by Phase 2 — `load` currently re-parses
-   everything every time via `build_and_link_graph_parallel`. Should be resolved before Phase
-   3 wires `load` into `Spec42Engine`'s full-load path, since that's the path most likely to
-   have a warm cache to exploit (CLI/MCP/HTTP restarts, Babel42 reconnects).
+   (to actually benefit from this engine's own parse cache on a full load)? **Resolved,
+   fully**: `load_parsed`/`load_parsed_from` (pre-parsed input, no cache lookup) and
+   `load_with_cache` (parses through the cache in parallel) both added in Phase 4, backed by
+   a new `sysml_model` primitive (`link_parsed_documents_parallel`/`_from`) rather than a
+   `workspace`-side reimplementation. Not yet wired into `Spec42Engine`'s full-load path
+   (Phase 3 used plain `load()`, since `server` crate's document providers hand back raw
+   `SysmlDocument`s, not pre-parsed ones) — `lsp_server` is the first real consumer. Wiring
+   `Spec42Engine` up to a warm cache on CLI/MCP/HTTP restarts is a small, available follow-up,
+   not done here.
 
 ## Effort estimate
 

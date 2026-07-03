@@ -53,7 +53,8 @@ pub use semantic::model::{
 };
 pub use semantic::pipeline::{
     build_and_link_graph, build_and_link_graph_parallel, finalize_and_evaluate,
-    finalize_workspace_graph, patch_graph_for_document,
+    finalize_workspace_graph, link_parsed_documents_parallel, link_parsed_documents_parallel_from,
+    patch_graph_for_document,
 };
 pub use semantic::prepared_view::{
     prepare_interconnection_prepared_view, prepare_view_from_visualization, PreparedEdgeDto,

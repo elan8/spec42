@@ -14,14 +14,15 @@ use std::collections::HashMap;
 use std::path::Path;
 use std::time::Instant;
 
+use rayon::prelude::*;
 use url::Url;
 
 use crate::parse_cache;
 use crate::semantic::{
-    build_and_link_graph_parallel, patch_graph_for_document, SemanticGraph,
-    WorkspaceParsedDocument,
+    build_and_link_graph_parallel, link_parsed_documents_parallel_from, patch_graph_for_document,
+    SemanticGraph, WorkspaceParsedDocument,
 };
-use crate::SysmlDocument;
+use crate::{SysmlDocument, SysmlDocumentSourceKind};
 
 /// Timing and size metrics for one [`IncrementalWorkspace`] operation.
 ///
@@ -109,14 +110,10 @@ impl IncrementalWorkspace {
     /// Full load: discard current state and build fresh from `documents`.
     ///
     /// Delegates to [`build_and_link_graph_parallel`] — the single place this sequence is
-    /// implemented (Tier 2 Phase 3b Step 5). Does not yet route through this engine's own
-    /// parse cache: `build_and_link_graph_parallel` parses from raw document content
-    /// internally, so a document already in the cache is re-parsed anyway on a full load.
-    /// Reusing the cache here would need either a new `sysml_model` entry point that accepts
-    /// already-parsed documents, or looping this engine's own `apply_document` per document
-    /// (losing `build_and_link_graph_parallel`'s parallel merge/link) — left as an open
-    /// question rather than picked here, since neither is needed for Phase 2's scope
-    /// (standalone, equivalence-tested, unused by anything yet).
+    /// implemented (Tier 2 Phase 3b Step 5). Always re-parses every document from raw
+    /// content, even if it's already in this engine's own parse cache. Callers that already
+    /// hold parsed documents (or want to use the cache on a full load) should use
+    /// [`Self::load_parsed`] or [`Self::load_with_cache`] instead.
     pub fn load(&mut self, documents: &[SysmlDocument]) -> WorkspaceUpdateMetrics {
         let total_start = Instant::now();
         let build_start = Instant::now();
@@ -137,6 +134,90 @@ impl IncrementalWorkspace {
             node_count: self.graph.graph.node_count(),
             edge_count: self.graph.graph.edge_count(),
         }
+    }
+
+    /// Full load from documents this engine has already parsed — e.g. a caller with its own
+    /// pre-parsed document index (`lsp_server`'s `IndexEntry.parsed`) that would otherwise
+    /// have to throw that work away to call [`Self::load`]. Delegates to
+    /// [`link_parsed_documents_parallel`] — the merge/link half of
+    /// [`build_and_link_graph_parallel`] with the parse step already done by the caller.
+    pub fn load_parsed(
+        &mut self,
+        documents: Vec<(SysmlDocumentSourceKind, WorkspaceParsedDocument)>,
+    ) -> WorkspaceUpdateMetrics {
+        self.load_parsed_from(SemanticGraph::new(), documents)
+    }
+
+    /// [`Self::load_parsed`], but merging `documents` onto `base_graph` instead of starting
+    /// from an empty graph — for a caller that already has part of the graph built (e.g. a
+    /// cached library subgraph) and only wants to merge/link the rest. Delegates to
+    /// [`link_parsed_documents_parallel_from`], which resolves cross-document edges against
+    /// `base_graph`'s existing URIs too, not just `documents`'.
+    pub fn load_parsed_from(
+        &mut self,
+        base_graph: SemanticGraph,
+        documents: Vec<(SysmlDocumentSourceKind, WorkspaceParsedDocument)>,
+    ) -> WorkspaceUpdateMetrics {
+        let total_start = Instant::now();
+        let document_count = documents.len();
+
+        let build_start = Instant::now();
+        let (graph, parsed_docs) = link_parsed_documents_parallel_from(base_graph, documents);
+        let graph_update_ms = elapsed_ms(build_start);
+
+        self.graph = graph;
+        self.documents = parsed_docs
+            .into_iter()
+            .map(|doc| (doc.uri.clone(), doc))
+            .collect();
+
+        WorkspaceUpdateMetrics {
+            document_count,
+            parse_ms: 0,
+            graph_update_ms,
+            total_ms: elapsed_ms(total_start),
+            node_count: self.graph.graph.node_count(),
+            edge_count: self.graph.graph.edge_count(),
+        }
+    }
+
+    /// Full load that parses `documents` in parallel through this engine's own
+    /// [`crate::parse_cache`] (when `cache_dir` is `Some`) before merging/linking — the
+    /// combination [`Self::load`] can't give a caller that wants both a full rebuild and
+    /// cache reuse. Falls back to a fresh parse per document on a cache miss or when
+    /// `cache_dir` is `None`, same as [`Self::apply_document`].
+    pub fn load_with_cache(
+        &mut self,
+        documents: &[SysmlDocument],
+        cache_dir: Option<&Path>,
+    ) -> WorkspaceUpdateMetrics {
+        let total_start = Instant::now();
+
+        let parse_start = Instant::now();
+        let entries: Vec<(SysmlDocumentSourceKind, WorkspaceParsedDocument)> = documents
+            .par_iter()
+            .filter_map(|document| {
+                let (parsed, parse_cached) = self.parse_with_cache(document, cache_dir);
+                parsed.map(|root| {
+                    (
+                        document.source_kind,
+                        WorkspaceParsedDocument {
+                            uri: document.uri.clone(),
+                            content: document.content.clone(),
+                            parsed: root,
+                            parse_time_ms: 1,
+                            parse_cached,
+                        },
+                    )
+                })
+            })
+            .collect();
+        let parse_ms = elapsed_ms(parse_start);
+
+        let mut metrics = self.load_parsed(entries);
+        metrics.parse_ms = parse_ms;
+        metrics.total_ms = elapsed_ms(total_start);
+        metrics
     }
 
     /// Incremental patch: re-parse and re-link a single document, leaving every other
@@ -228,7 +309,6 @@ impl IncrementalWorkspace {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::SysmlDocumentSourceKind;
 
     fn doc(scope: &str, path: &str, content: &str) -> SysmlDocument {
         SysmlDocument::from_memory_path(
@@ -322,6 +402,122 @@ package AnalysisCases {
         assert!(metrics.node_count > 0);
         assert!(metrics.edge_count > 0);
         assert!(metrics.total_ms >= metrics.graph_update_ms);
+    }
+
+    /// Equivalence for `load_parsed` (Phase 4): pre-parsing the fixture and feeding it
+    /// through `load_parsed` should produce the same graph as `load`, which parses
+    /// internally — this is what lets a caller with its own pre-parsed document index (e.g.
+    /// `lsp_server`'s `IndexEntry`) skip re-parsing on a full rebuild.
+    #[test]
+    fn load_parsed_matches_load() {
+        let documents = fixture_documents();
+
+        let mut loaded = IncrementalWorkspace::new();
+        loaded.load(&documents);
+
+        let entries: Vec<(SysmlDocumentSourceKind, WorkspaceParsedDocument)> = documents
+            .iter()
+            .map(|document| {
+                let parsed = sysml_v2_parser::parse(&document.content).expect("parse");
+                (
+                    document.source_kind,
+                    WorkspaceParsedDocument {
+                        uri: document.uri.clone(),
+                        content: document.content.clone(),
+                        parsed,
+                        parse_time_ms: 1,
+                        parse_cached: true,
+                    },
+                )
+            })
+            .collect();
+        let mut from_parsed = IncrementalWorkspace::new();
+        let metrics = from_parsed.load_parsed(entries);
+
+        assert_eq!(
+            node_qualified_names(&from_parsed.graph()),
+            node_qualified_names(&loaded.graph())
+        );
+        assert_eq!(edge_triples(&from_parsed.graph()), edge_triples(&loaded.graph()));
+        assert_eq!(metrics.document_count, documents.len());
+        assert_eq!(metrics.parse_ms, 0, "load_parsed does no parsing of its own");
+    }
+
+    /// Equivalence for `load_parsed_from` (Phase 4): merging the remaining documents onto a
+    /// base graph that already contains one of them (mirroring `lsp_server`'s
+    /// `rebuild_semantic_graph_staged` reusing a cached library subgraph) should produce the
+    /// same graph as loading everything together.
+    #[test]
+    fn load_parsed_from_matches_load_when_base_graph_holds_one_document() {
+        let documents = fixture_documents();
+
+        let mut loaded = IncrementalWorkspace::new();
+        loaded.load(&documents);
+
+        fn parsed_entry(document: &SysmlDocument) -> (SysmlDocumentSourceKind, WorkspaceParsedDocument) {
+            let parsed = sysml_v2_parser::parse(&document.content).expect("parse");
+            (
+                document.source_kind,
+                WorkspaceParsedDocument {
+                    uri: document.uri.clone(),
+                    content: document.content.clone(),
+                    parsed,
+                    parse_time_ms: 1,
+                    parse_cached: true,
+                },
+            )
+        }
+
+        let mut base = IncrementalWorkspace::new();
+        base.load_parsed(vec![parsed_entry(&documents[0])]);
+
+        let remaining: Vec<(SysmlDocumentSourceKind, WorkspaceParsedDocument)> = documents[1..]
+            .iter()
+            .map(parsed_entry)
+            .collect();
+        let mut merged = IncrementalWorkspace::new();
+        merged.load_parsed_from(base.graph(), remaining);
+
+        assert_eq!(
+            node_qualified_names(&merged.graph()),
+            node_qualified_names(&loaded.graph())
+        );
+        assert_eq!(edge_triples(&merged.graph()), edge_triples(&loaded.graph()));
+    }
+
+    /// Equivalence + cache-reuse check for `load_with_cache` (Phase 4, closing the Phase 2
+    /// open question): a second `load_with_cache` call against the same cache directory
+    /// should produce the same graph as the first, and every document should come back
+    /// marked as a cache hit.
+    #[test]
+    fn load_with_cache_matches_load_and_reuses_cache_on_second_call() {
+        let documents = fixture_documents();
+        let cache_dir = tempfile::tempdir().expect("tempdir");
+
+        let mut first = IncrementalWorkspace::new();
+        let first_metrics = first.load_with_cache(&documents, Some(cache_dir.path()));
+        assert!(
+            first
+                .documents()
+                .iter()
+                .all(|doc| !doc.parse_cached),
+            "first load_with_cache call should be all cache misses"
+        );
+
+        let mut second = IncrementalWorkspace::new();
+        let second_metrics = second.load_with_cache(&documents, Some(cache_dir.path()));
+        assert!(
+            second.documents().iter().all(|doc| doc.parse_cached),
+            "second load_with_cache call should be all cache hits"
+        );
+
+        assert_eq!(node_qualified_names(&first.graph()), node_qualified_names(&second.graph()));
+        assert_eq!(edge_triples(&first.graph()), edge_triples(&second.graph()));
+        assert_eq!(first_metrics.document_count, second_metrics.document_count);
+
+        let mut loaded = IncrementalWorkspace::new();
+        loaded.load(&documents);
+        assert_eq!(node_qualified_names(&loaded.graph()), node_qualified_names(&second.graph()));
     }
 
     /// Equivalence: incrementally patching one document via `apply_document` should produce

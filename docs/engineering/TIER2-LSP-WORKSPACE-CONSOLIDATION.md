@@ -18,13 +18,17 @@ confirmed by new regression tests. **Step 5 (the full-rebuild-path duplication, 
 5 status" and "Phase 4" sections below. Phase 4 turned out to be a small cleanup (two
 unused-import removals), not the large `services.rs` shrink originally envisioned, since
 the wholesale duplicated-logic merge that would have produced dead code was rescoped away.
-**A new, larger design picks up where that rescoping left off**:
-`docs/engineering/TIER2-UNIFIED-INCREMENTAL-ENGINE-DESIGN.md` (2026-07-03, not started)
-proposes moving `lsp_server`'s incremental engine (parse cache, library graph cache, update
-sequencing) into `workspace` as the primary path, with the eager snapshot API redefined as a
-thin view over it instead of an independent pipeline — the merge Phase 3b's original scope
-envisioned before it was rescoped down for size/risk, now designed with the benefit of
-everything Steps 1-5c/Phase 4 learned.
+**A new, larger design picks up where that rescoping left off, and has now landed**:
+`docs/engineering/TIER2-UNIFIED-INCREMENTAL-ENGINE-DESIGN.md` moved `lsp_server`'s parse
+cache and library-graph cache into `workspace`, built a standalone `IncrementalWorkspace`
+engine there, wired `Spec42Engine`'s full-load and incremental-update paths onto it, and
+finally had `lsp_server`'s two full-rebuild functions (`rebuild_all_document_links`,
+`rebuild_semantic_graph_staged`) delegate their graph computation to it too (Phases 1-4, all
+done 2026-07-03) — the merge Phase 3b's original scope envisioned before it was rescoped down
+for size/risk, now shipped incrementally with equivalence tests at every step. `ServerState`
+itself still holds a plain `SemanticGraph` field rather than the engine (see that design's
+Phase 4 write-up for why that's a deliberate, not a shortfall). Phase 5 (lazy derived
+snapshot views, the piece that actually fixes Babel42's per-edit recompute cost) not started.
 **Date:** 2026-07-02
 **Related:** `docs/architecture-audit.md` (P1-2, P2-3, P2-4, P2-9), Technical Debt Reduction Plan Tier 2.
 

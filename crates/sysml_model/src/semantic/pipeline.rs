@@ -20,6 +20,10 @@ use crate::semantic::relationships::{
 use crate::semantic::source::{SysmlDocument, SysmlDocumentSourceKind};
 use crate::semantic::workspace_graph::WorkspaceParsedDocument;
 
+/// A parsed document paired with the source kind (workspace/library/external) needed to
+/// decide how it merges — see [`link_parsed_documents_parallel`].
+type SourceTaggedDocument = (SysmlDocumentSourceKind, WorkspaceParsedDocument);
+
 /// Build, merge, link, and resolve pending relationships for pre-loaded documents.
 pub fn build_and_link_graph(
     documents: &[SysmlDocument],
@@ -80,71 +84,112 @@ pub fn build_and_link_graph(
     Ok((graph, parsed_docs))
 }
 
-fn parse_and_build(document: &SysmlDocument) -> Option<(SemanticGraph, WorkspaceParsedDocument)> {
+fn parse_document(document: &SysmlDocument) -> Option<WorkspaceParsedDocument> {
     let parse_start = Instant::now();
     let parsed = sysml_v2_parser::parse(&document.content).ok()?;
     let parse_time_ms = parse_start.elapsed().as_millis().max(1) as u32;
-    let doc_graph = build_graph_from_doc(&parsed, &document.uri);
-    let entry = WorkspaceParsedDocument {
+    Some(WorkspaceParsedDocument {
         uri: document.uri.clone(),
         content: document.content.clone(),
         parsed,
         parse_time_ms,
         parse_cached: false,
-    };
-    Some((doc_graph, entry))
+    })
 }
 
 /// Parses, builds, and links a semantic graph from many documents in parallel — the
 /// full-workspace equivalent of [`patch_graph_for_document`]. Same end result as
-/// [`build_and_link_graph`] (same nodes, same edges), computed differently: parsing and
-/// per-document graph building run in parallel (two phases — workspace documents first,
-/// since library merging needs the complete set of workspace-declared package names to
-/// avoid shadowing — each phase internally parallel), and cross-document edges are
-/// resolved via parallel per-URI resolution (see [`link_workspace_derivations`]'s doc
-/// comment) instead of the sequential whole-graph scan inside
-/// [`link_workspace_relationships`].
+/// [`build_and_link_graph`] (same nodes, same edges), computed differently: parsing runs in
+/// parallel, then [`link_parsed_documents_parallel`] does the rest — see its doc comment for
+/// the merge/link phases.
 ///
 /// See `docs/engineering/TIER2-PHASE3B-STEP5-FULL-REBUILD-DESIGN.md` for why this exists
 /// and the equivalence testing this function's own test module is expected to carry.
 pub fn build_and_link_graph_parallel(
     documents: &[SysmlDocument],
 ) -> (SemanticGraph, Vec<WorkspaceParsedDocument>) {
-    let (workspace_docs, library_docs): (Vec<&SysmlDocument>, Vec<&SysmlDocument>) = documents
-        .iter()
-        .partition(|document| !matches!(document.source_kind, SysmlDocumentSourceKind::Library));
+    let entries: Vec<SourceTaggedDocument> = documents
+        .par_iter()
+        .filter_map(|document| parse_document(document).map(|entry| (document.source_kind, entry)))
+        .collect();
+    link_parsed_documents_parallel(entries)
+}
 
-    let mut graph = SemanticGraph::new();
+/// Merges and links already-parsed documents in parallel — the merge/link half of
+/// [`build_and_link_graph_parallel`], factored out so a caller that already has parsed
+/// documents (e.g. served from a disk parse cache, or an editor's live in-memory index) can
+/// skip the parse step `build_and_link_graph_parallel` otherwise always does internally.
+///
+/// Phases: workspace documents' graphs are built and merged first (parallel), since library
+/// merging needs the complete set of workspace-declared package names to avoid shadowing;
+/// library documents are merged second, skipping anything the workspace already declared.
+/// Cross-document edges are then resolved via parallel per-URI resolution (see
+/// [`link_workspace_derivations`]'s doc comment) instead of the sequential whole-graph scan
+/// inside [`link_workspace_relationships`].
+///
+/// Starts from an empty graph. Use [`link_parsed_documents_parallel_from`] to merge onto an
+/// existing graph instead (e.g. a cached library subgraph).
+pub fn link_parsed_documents_parallel(
+    documents: Vec<SourceTaggedDocument>,
+) -> (SemanticGraph, Vec<WorkspaceParsedDocument>) {
+    link_parsed_documents_parallel_from(SemanticGraph::new(), documents)
+}
+
+/// [`link_parsed_documents_parallel`], but merging `documents` onto `base_graph` instead of
+/// starting from an empty graph — for callers that already have part of the graph built
+/// (typically a cached library subgraph) and only want to merge/link the rest. Cross-document
+/// edge resolution covers `base_graph`'s existing URIs as well as `documents`', so a document
+/// being merged can still resolve references into whatever was already in `base_graph`.
+pub fn link_parsed_documents_parallel_from(
+    base_graph: SemanticGraph,
+    documents: Vec<SourceTaggedDocument>,
+) -> (SemanticGraph, Vec<WorkspaceParsedDocument>) {
+    let (workspace_entries, library_entries): (
+        Vec<SourceTaggedDocument>,
+        Vec<SourceTaggedDocument>,
+    ) = documents
+        .into_iter()
+        .partition(|(kind, _)| !matches!(kind, SysmlDocumentSourceKind::Library));
+
+    let mut uris: Vec<Url> = base_graph.all_uris();
+    let mut graph = base_graph;
     let mut parsed_docs = Vec::new();
 
     // Phase 1: workspace documents. Must finish (and its declared-package set must be
     // complete) before phase 2 starts.
-    let workspace_parsed: Vec<(SemanticGraph, WorkspaceParsedDocument)> = workspace_docs
-        .par_iter()
-        .filter_map(|document| parse_and_build(document))
+    let workspace_built: Vec<(SemanticGraph, WorkspaceParsedDocument)> = workspace_entries
+        .into_par_iter()
+        .map(|(_, entry)| {
+            let doc_graph = build_graph_from_doc(&entry.parsed, &entry.uri);
+            (doc_graph, entry)
+        })
         .collect();
-    let workspace_packages: HashSet<String> = workspace_parsed
+    let workspace_packages: HashSet<String> = workspace_built
         .iter()
         .flat_map(|(_, entry)| declared_packages_from_parsed(&entry.parsed))
         .collect();
-    for (doc_graph, entry) in workspace_parsed {
+    for (doc_graph, entry) in workspace_built {
+        uris.push(entry.uri.clone());
         graph.merge(doc_graph);
         parsed_docs.push(entry);
     }
 
     // Phase 2: library documents, merged skipping anything the workspace already declared.
-    let library_parsed: Vec<(SemanticGraph, WorkspaceParsedDocument)> = library_docs
-        .par_iter()
-        .filter_map(|document| parse_and_build(document))
+    let library_built: Vec<(SemanticGraph, WorkspaceParsedDocument)> = library_entries
+        .into_par_iter()
+        .map(|(_, entry)| {
+            let doc_graph = build_graph_from_doc(&entry.parsed, &entry.uri);
+            (doc_graph, entry)
+        })
         .collect();
-    for (doc_graph, entry) in library_parsed {
+    for (doc_graph, entry) in library_built {
+        uris.push(entry.uri.clone());
         graph.merge_skip_existing_qualified_names(doc_graph, &workspace_packages);
         parsed_docs.push(entry);
     }
 
     // Parallel cross-document edge resolution, replacing the sequential typing/
     // specializes/subject scan inside `link_workspace_relationships`.
-    let uris: Vec<Url> = documents.iter().map(|document| document.uri.clone()).collect();
     let resolved_edges: Vec<_> = uris
         .par_iter()
         .flat_map(|uri| resolve_cross_document_edges_for_uri(&graph, uri))
@@ -511,5 +556,86 @@ package SystemRequirements {
         let parallel_value = find_drive_power(&parallel_graph);
         assert_eq!(sequential_value, parallel_value);
         assert_eq!(sequential_value, Some(serde_json::json!(28)));
+    }
+
+    /// Equivalence for the Tier 2 unified-incremental-engine Phase 4 extraction:
+    /// `link_parsed_documents_parallel` (fed pre-parsed documents, skipping the parse step)
+    /// must produce the same graph as `build_and_link_graph_parallel` (which parses
+    /// internally) for the same inputs. This is what lets `workspace::IncrementalWorkspace`
+    /// build from already-parsed documents (e.g. served by a parse cache) without
+    /// duplicating the merge/link sequence a second time.
+    #[test]
+    fn link_parsed_documents_parallel_matches_build_and_link_graph_parallel() {
+        let documents = equivalence_fixture_documents();
+        let (expected_graph, expected_parsed) = build_and_link_graph_parallel(&documents);
+
+        let pre_parsed: Vec<SourceTaggedDocument> = documents
+            .iter()
+            .filter_map(|document| {
+                let parsed = sysml_v2_parser::parse(&document.content).ok()?;
+                Some((
+                    document.source_kind,
+                    WorkspaceParsedDocument {
+                        uri: document.uri.clone(),
+                        content: document.content.clone(),
+                        parsed,
+                        parse_time_ms: 1,
+                        parse_cached: true,
+                    },
+                ))
+            })
+            .collect();
+        let (actual_graph, actual_parsed) = link_parsed_documents_parallel(pre_parsed);
+
+        assert_eq!(
+            node_qualified_names(&actual_graph),
+            node_qualified_names(&expected_graph)
+        );
+        assert_eq!(edge_triples(&actual_graph), edge_triples(&expected_graph));
+        assert_eq!(actual_parsed.len(), expected_parsed.len());
+    }
+
+    /// Equivalence for `link_parsed_documents_parallel_from` (Phase 4): merging the
+    /// remaining documents onto a base graph that already contains one of them (mirroring
+    /// `lsp_server`'s cached-library-subgraph reuse) should produce the same graph as
+    /// building everything together in one call — cross-document edge resolution must see
+    /// the base graph's URIs too, not just the newly-merged ones.
+    #[test]
+    fn link_parsed_documents_parallel_from_matches_building_everything_together() {
+        let documents = equivalence_fixture_documents();
+        let (expected_graph, _) = build_and_link_graph_parallel(&documents);
+
+        fn parsed_entry(document: &SysmlDocument) -> (SysmlDocumentSourceKind, WorkspaceParsedDocument) {
+            let parsed = sysml_v2_parser::parse(&document.content).expect("parse");
+            (
+                document.source_kind,
+                WorkspaceParsedDocument {
+                    uri: document.uri.clone(),
+                    content: document.content.clone(),
+                    parsed,
+                    parse_time_ms: 1,
+                    parse_cached: true,
+                },
+            )
+        }
+
+        let units_doc = documents
+            .iter()
+            .find(|doc| doc.source_kind == SysmlDocumentSourceKind::Library)
+            .expect("fixture has a library document");
+        let (base_graph, _) = link_parsed_documents_parallel(vec![parsed_entry(units_doc)]);
+
+        let remaining: Vec<SourceTaggedDocument> = documents
+            .iter()
+            .filter(|doc| doc.uri != units_doc.uri)
+            .map(parsed_entry)
+            .collect();
+        let (actual_graph, _) = link_parsed_documents_parallel_from(base_graph, remaining);
+
+        assert_eq!(
+            node_qualified_names(&actual_graph),
+            node_qualified_names(&expected_graph)
+        );
+        assert_eq!(edge_triples(&actual_graph), edge_triples(&expected_graph));
     }
 }

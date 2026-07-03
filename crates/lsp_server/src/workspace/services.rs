@@ -8,6 +8,8 @@ use std::path::Path;
 use std::time::Instant;
 use sysml_v2_parser::RootNamespace;
 use tower_lsp::lsp_types::{MessageType, TextDocumentContentChangeEvent, Url};
+use workspace::semantic::WorkspaceParsedDocument;
+use workspace::{IncrementalWorkspace, SysmlDocumentSourceKind};
 
 fn elapsed_ms(start: Instant) -> u32 {
     start.elapsed().as_millis().max(1) as u32
@@ -503,88 +505,55 @@ pub(crate) fn index_library_paths_for_search(
     indexed
 }
 
+/// Build `(source_kind, WorkspaceParsedDocument)` entries for `uris` from `index`, for
+/// feeding into `IncrementalWorkspace::load_parsed`/`load_parsed_from`. URIs with no parsed
+/// content (or missing from `index`) are silently skipped, matching this module's prior
+/// behavior of only merging documents that parsed successfully.
+fn parsed_entries_for_uris(
+    index: &std::collections::HashMap<Url, IndexEntry>,
+    uris: &[Url],
+    kind: SysmlDocumentSourceKind,
+) -> Vec<(SysmlDocumentSourceKind, WorkspaceParsedDocument)> {
+    uris.iter()
+        .filter_map(|uri| {
+            let entry = index.get(uri)?;
+            let parsed = entry.parsed.clone()?;
+            Some((
+                kind,
+                WorkspaceParsedDocument {
+                    uri: uri.clone(),
+                    content: entry.content.clone(),
+                    parsed,
+                    parse_time_ms: entry.parse_metadata.parse_time_ms,
+                    parse_cached: entry.parse_metadata.parse_cached,
+                },
+            ))
+        })
+        .collect()
+}
+
 /// Load import-closure library files for the current workspace index (semantic graph merge).
+///
+/// Delegates the merge/link computation to `workspace::IncrementalWorkspace` (Tier 2
+/// unified-incremental-engine Phase 4) instead of hand-rolling it — the same primitives
+/// `sysml_model::build_and_link_graph_parallel` and `workspace::Spec42Engine`'s full-load
+/// path already use, closing the last hand-copied sequence of this shape. `IndexEntry` has
+/// no workspace/library distinction (only `include_in_semantic_graph`), and this function
+/// has never applied qualified-name shadowing between "workspace" and "library" files — every
+/// included URI is tagged `Workspace` here, so `load_parsed` merges all of them uniformly via
+/// plain `SemanticGraph::merge`, exactly matching this function's prior behavior.
 pub(crate) fn rebuild_all_document_links(
     state: &mut ServerState,
 ) -> RebuildAllDocumentLinksMetrics {
     let total_start = Instant::now();
     let uris: Vec<Url> = semantic_graph_uris(&state.index);
-    let parsed_docs: Vec<(Url, RootNamespace)> = uris
-        .iter()
-        .filter_map(|uri| {
-            state
-                .index
-                .get(uri)
-                .and_then(|entry| entry.parsed.as_ref())
-                .cloned()
-                .map(|parsed| (uri.clone(), parsed))
-        })
-        .collect();
+    let entries = parsed_entries_for_uris(&state.index, &uris, SysmlDocumentSourceKind::Workspace);
 
-    let mut graph = std::mem::take(&mut state.semantic_graph);
-
-    let remove_nodes_start = Instant::now();
-    for uri in &uris {
-        graph.remove_nodes_for_uri(uri);
-    }
-    let remove_nodes_ms = elapsed_ms(remove_nodes_start);
-
-    let rebuild_graphs_start = Instant::now();
-    let built_graphs: Vec<semantic::SemanticGraph> = parsed_docs
-        .par_iter()
-        .map(|(uri, parsed)| semantic::build_graph_from_doc(parsed, uri))
-        .collect();
-    for g in built_graphs {
-        graph.merge(g);
-    }
-    let rebuild_graphs_ms = elapsed_ms(rebuild_graphs_start);
-
-    let cross_document_edges_start = Instant::now();
-    let cross_edge_resolution_start = Instant::now();
-    // `graph` is an `Arc`-backed handle (`SemanticGraph::clone` is O(1)), so rayon can
-    // share `&graph` across workers directly — no per-worker clone or manual bucketing
-    // needed, unlike the old `std::thread::spawn` version (which needed an owned,
-    // `'static` value per thread).
-    let resolved_edges: Vec<_> = uris
-        .par_iter()
-        .flat_map(|uri| semantic::resolve_cross_document_edges_for_uri(&graph, uri))
-        .collect();
-
-    for (src_id, tgt_id, kind) in resolved_edges {
-        // Use the deduping insert (not a raw `add_edge`) — `resolve_cross_document_edges_for_uri`
-        // resolves refs for every node in a URI, including same-document ones that
-        // `build_graph_from_doc` may already have wired, so a raw insert would double them.
-        semantic::add_semantic_edge_once(
-            &mut graph,
-            &src_id,
-            &tgt_id,
-            sysml_model::SemanticEdge::plain(kind),
-        );
-    }
-    graph.invalidate_query_indexes();
-    let cross_edge_resolution_ms = elapsed_ms(cross_edge_resolution_start);
-
-    let workspace_relationship_linking_start = Instant::now();
-    // Typing/specializes/subject edges were already resolved by the parallel phase above
-    // for every URI. Only derivation-connection wiring remains.
-    semantic::link_workspace_derivations(&mut graph);
-    // Copies inherited analysis/verification/assert-constraint context onto usages before
-    // expression evaluation runs below — previously missing from this full-rebuild path
-    // (only the single-document `patch_graph_for_document` path called it), so analysis
-    // expressions relying on inherited typed case context could evaluate incorrectly right
-    // after a full workspace load/reload.
-    semantic::prepare_analysis_evaluation_context(&mut graph);
-    let workspace_relationship_linking_ms = elapsed_ms(workspace_relationship_linking_start);
-
-    let pending_relationship_resolution_start = Instant::now();
-    semantic::resolve_workspace_pending_relationships(&mut graph);
-    let pending_relationship_resolution_ms = elapsed_ms(pending_relationship_resolution_start);
-
-    let expression_evaluation_start = Instant::now();
-    semantic::evaluate_expressions(&mut graph);
-    let expression_evaluation_ms = elapsed_ms(expression_evaluation_start);
-    graph.invalidate_query_indexes();
-    let cross_document_edges_ms = elapsed_ms(cross_document_edges_start);
+    let rebuild_start = Instant::now();
+    let mut engine = IncrementalWorkspace::new();
+    engine.load_parsed(entries);
+    let graph = engine.graph();
+    let rebuild_ms = elapsed_ms(rebuild_start);
 
     let refresh_symbols_start = Instant::now();
     let mut all_symbols = Vec::new();
@@ -607,56 +576,40 @@ pub(crate) fn rebuild_all_document_links(
     state.semantic_graph = graph;
     let refresh_symbols_ms = elapsed_ms(refresh_symbols_start);
 
+    // The 7-phase breakdown this metrics struct used to carry (remove-nodes, rebuild-graphs,
+    // cross-edge-resolution, workspace-relationship-linking, pending-relationship-resolution,
+    // expression-evaluation) lived inside this function's own hand-written sequence. Now
+    // that the graph computation is one delegated call into `IncrementalWorkspace`, those
+    // phases aren't separately timed here anymore — deliberate, to avoid re-implementing
+    // `link_parsed_documents_parallel`'s internals a second time just to get timing points
+    // (see the Tier 2 unified-incremental-engine design doc's Phase 4 write-up). The combined
+    // time is reported as `cross_document_edges_ms`, matching its pre-existing role as this
+    // function's "whole graph computation" umbrella field, so downstream log consumers keep
+    // a meaningful (if coarser) number instead of a silent `0`.
     RebuildAllDocumentLinksMetrics {
         uri_count: state.index.len(),
         parsed_doc_count: uris.len(),
-        remove_nodes_ms,
-        rebuild_graphs_ms,
-        cross_edge_resolution_ms,
-        workspace_relationship_linking_ms,
-        pending_relationship_resolution_ms,
-        expression_evaluation_ms,
-        cross_document_edges_ms,
+        remove_nodes_ms: 0,
+        rebuild_graphs_ms: 0,
+        cross_edge_resolution_ms: 0,
+        workspace_relationship_linking_ms: 0,
+        pending_relationship_resolution_ms: 0,
+        expression_evaluation_ms: 0,
+        cross_document_edges_ms: rebuild_ms,
         refresh_symbols_ms,
         total_ms: elapsed_ms(total_start),
-    }
-}
-
-fn merge_document_graphs_into(
-    semantic_graph: &mut semantic::SemanticGraph,
-    index: &std::collections::HashMap<Url, IndexEntry>,
-    uris: &[Url],
-    shadowed_packages: Option<&std::collections::HashSet<String>>,
-) {
-    if uris.is_empty() {
-        return;
-    }
-    let parsed_docs: Vec<(Url, RootNamespace)> = uris
-        .iter()
-        .filter_map(|uri| {
-            index
-                .get(uri)
-                .and_then(|entry| entry.parsed.as_ref())
-                .cloned()
-                .map(|parsed| (uri.clone(), parsed))
-        })
-        .collect();
-    let built_graphs: Vec<semantic::SemanticGraph> = parsed_docs
-        .par_iter()
-        .map(|(uri, parsed)| semantic::build_graph_from_doc(parsed, uri))
-        .collect();
-    for graph in built_graphs {
-        if let Some(shadowed) = shadowed_packages {
-            semantic_graph.merge_skip_existing_qualified_names(graph, shadowed);
-        } else {
-            semantic_graph.merge(graph);
-        }
     }
 }
 
 /// A staged version of rebuild_all_document_links that operates on a consistent snapshot
 /// and returns the results to be committed. This allows the heavy lifting (parsing,
 /// graph building, relinking) to happen WITHOUT holding a write lock on ServerState.
+///
+/// See `rebuild_all_document_links`'s doc comment for why this delegates to
+/// `IncrementalWorkspace` now. Unlike that function, this one does have a real
+/// workspace/library distinction (`workspace_uris`/`library_uris`) and a `base_graph` reuse
+/// path (library-graph-cache hit) — both preserved via `SysmlDocumentSourceKind` tagging and
+/// `IncrementalWorkspace::load_parsed_from`.
 pub(crate) fn rebuild_semantic_graph_staged(
     index: &std::collections::HashMap<Url, IndexEntry>,
     library_paths: &[Url],
@@ -682,69 +635,21 @@ pub(crate) fn rebuild_semantic_graph_staged(
         .cloned()
         .collect();
 
-    let rebuild_graphs_start = Instant::now();
-    // If a base graph was provided (library graph cache hit), start from it so
-    // library nodes are already present for cross-document resolution.
-    let mut semantic_graph = base_graph.unwrap_or_default();
-    let workspace_packages: std::collections::HashSet<String> = workspace_uris
-        .iter()
-        .filter_map(|uri| index.get(uri))
-        .flat_map(|entry| semantic::declared_packages_in_content(&entry.content))
-        .collect();
-    merge_document_graphs_into(&mut semantic_graph, index, &workspace_uris, None);
-    // library_uris is empty on cache hit — the base graph already has library nodes.
-    merge_document_graphs_into(
-        &mut semantic_graph,
+    let rebuild_start = Instant::now();
+    let mut entries =
+        parsed_entries_for_uris(index, &workspace_uris, SysmlDocumentSourceKind::Workspace);
+    entries.extend(parsed_entries_for_uris(
         index,
         &library_uris,
-        Some(&workspace_packages),
-    );
-    let rebuild_graphs_ms = elapsed_ms(rebuild_graphs_start);
-
-    let cross_document_edges_start = Instant::now();
-    let cross_edge_resolution_start = Instant::now();
-    // See the equivalent step in `rebuild_all_document_links` — `SemanticGraph` is
-    // `Arc`-backed, so rayon can share `&semantic_graph` across workers directly.
-    let resolved_edges: Vec<_> = uris
-        .par_iter()
-        .flat_map(|uri| semantic::resolve_cross_document_edges_for_uri(&semantic_graph, uri))
-        .collect();
-
-    for (src_id, tgt_id, kind) in resolved_edges {
-        // See the equivalent step in `rebuild_all_document_links` — use the deduping
-        // insert, not a raw `add_edge`, to avoid double-wiring same-document refs that
-        // `build_graph_from_doc` already resolved.
-        semantic::add_semantic_edge_once(
-            &mut semantic_graph,
-            &src_id,
-            &tgt_id,
-            sysml_model::SemanticEdge::plain(kind),
-        );
-    }
-    // Edge insertion above bypasses insert_workspace_edge; invalidate so the
-    // subsequent link/resolve steps don't see a stale edge index.
-    semantic_graph.invalidate_query_indexes();
-    let cross_edge_resolution_ms = elapsed_ms(cross_edge_resolution_start);
-
-    let workspace_relationship_linking_start = Instant::now();
-    // Typing/specializes/subject edges were already resolved by the parallel phase above
-    // for every URI. Only derivation-connection wiring remains.
-    semantic::link_workspace_derivations(&mut semantic_graph);
-    // See the equivalent step in `rebuild_all_document_links` for why this was missing and
-    // why it matters.
-    semantic::prepare_analysis_evaluation_context(&mut semantic_graph);
-    let workspace_relationship_linking_ms = elapsed_ms(workspace_relationship_linking_start);
-
-    let pending_relationship_resolution_start = Instant::now();
-    semantic::resolve_workspace_pending_relationships(&mut semantic_graph);
-    let pending_relationship_resolution_ms = elapsed_ms(pending_relationship_resolution_start);
-
-    let expression_evaluation_start = Instant::now();
-    semantic::evaluate_expressions(&mut semantic_graph);
-    let expression_evaluation_ms = elapsed_ms(expression_evaluation_start);
-    // Ensure the edge index is fresh after all relationship mutations above.
-    semantic_graph.invalidate_query_indexes();
-    let cross_document_edges_ms = elapsed_ms(cross_document_edges_start);
+        SysmlDocumentSourceKind::Library,
+    ));
+    // If a base graph was provided (library graph cache hit), start from it so library nodes
+    // are already present for cross-document resolution — `load_parsed_from` resolves
+    // cross-document edges against the base graph's existing URIs too, not just `entries`'.
+    let mut engine = IncrementalWorkspace::new();
+    engine.load_parsed_from(base_graph.unwrap_or_default(), entries);
+    let semantic_graph = engine.graph();
+    let rebuild_ms = elapsed_ms(rebuild_start);
 
     let refresh_symbols_start = Instant::now();
     let mut all_symbols = Vec::new();
@@ -765,16 +670,18 @@ pub(crate) fn rebuild_semantic_graph_staged(
     }
     let refresh_symbols_ms = elapsed_ms(refresh_symbols_start);
 
+    // See `rebuild_all_document_links` for why the 7-phase breakdown collapses to
+    // `cross_document_edges_ms` now.
     let metrics = RebuildAllDocumentLinksMetrics {
         uri_count: index.len(),
         parsed_doc_count: uris.len(),
-        remove_nodes_ms: 0, // No nodes to remove in a fresh graph
-        rebuild_graphs_ms,
-        cross_edge_resolution_ms,
-        workspace_relationship_linking_ms,
-        pending_relationship_resolution_ms,
-        expression_evaluation_ms,
-        cross_document_edges_ms,
+        remove_nodes_ms: 0,
+        rebuild_graphs_ms: 0,
+        cross_edge_resolution_ms: 0,
+        workspace_relationship_linking_ms: 0,
+        pending_relationship_resolution_ms: 0,
+        expression_evaluation_ms: 0,
+        cross_document_edges_ms: rebuild_ms,
         refresh_symbols_ms,
         total_ms: elapsed_ms(total_start),
     };

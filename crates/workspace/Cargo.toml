@@ -37,6 +37,7 @@ sysml-v2-parser = { workspace = true }
 petgraph = { workspace = true }
 tracing = "0.1"
 bincode = { version = "2", features = ["serde"] }
+rayon = "1.12"
 
 [dev-dependencies]
 tempfile = "3"
