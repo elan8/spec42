@@ -11,7 +11,7 @@ use super::{
     add_node_and_recurse, insert_def_specialization_attr, qualified_name_for_node,
     wire_def_specialization_edge,
 };
-use crate::semantic::ast_util::{identification_name, span_to_range};
+use crate::semantic::ast_util::{attach_short_name_attribute, identification_name, span_to_range};
 use crate::semantic::graph::SemanticGraph;
 use crate::semantic::graph_builder::expressions;
 use crate::semantic::model::NodeId;
@@ -167,6 +167,7 @@ pub(super) fn build_constraint_def(
         attrs.insert("analysisExpression".to_string(), serde_json::json!(expr));
     }
     insert_def_specialization_attr(&mut attrs, c_node.value.specializes.as_deref());
+    attach_short_name_attribute(&mut attrs, &c_node.value.identification);
     add_node_and_recurse(
         g,
         uri,
@@ -218,6 +219,7 @@ pub(super) fn build_calc_def(
     if let Some(expr) = expression {
         attrs.insert("analysisExpression".to_string(), serde_json::json!(expr));
     }
+    attach_short_name_attribute(&mut attrs, &c_node.value.identification);
     add_node_and_recurse(
         g,
         uri,

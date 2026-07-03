@@ -8,7 +8,9 @@ use sysml_v2_parser::RootNamespace;
 use url::Url;
 
 use super::requirement_body::{import_member_label, walk_requirement_def_body};
-use crate::semantic::ast_util::{identification_name, span_to_range, text_range_to_json};
+use crate::semantic::ast_util::{
+    attach_short_name_attribute, identification_name, span_to_range, text_range_to_json,
+};
 use crate::semantic::graph::SemanticGraph;
 use crate::semantic::model::{ElementKind, NodeId, RelationshipKind};
 use crate::semantic::relationships::{add_typing_edge_if_exists, try_wire_derivation_connection};
@@ -69,6 +71,7 @@ pub(super) fn build_from_package_body_element(
             let qualified = qualified_name_for_node(g, uri, container_prefix, &name, "part def");
             let range = span_to_range(&pd_node.span);
             let mut attrs = HashMap::new();
+            attach_short_name_attribute(&mut attrs, &pd_node.identification);
             if let Some(ref p) = pd_node.definition_prefix {
                 attrs.insert(
                     "definitionPrefix".to_string(),
@@ -243,6 +246,7 @@ pub(super) fn build_from_package_body_element(
             let qualified = qualified_name_for_node(g, uri, container_prefix, &name, "port def");
             let range = span_to_range(&pd_node.span);
             let mut attrs = HashMap::new();
+            attach_short_name_attribute(&mut attrs, &pd_node.identification);
             insert_def_specialization_attr(&mut attrs, pd_node.specializes.as_deref());
             add_node_and_recurse(
                 g,
@@ -280,6 +284,7 @@ pub(super) fn build_from_package_body_element(
                 qualified_name_for_node(g, uri, container_prefix, &name, "interface def");
             let range = span_to_range(&id_node.span);
             let mut attrs = HashMap::new();
+            attach_short_name_attribute(&mut attrs, &id_node.identification);
             insert_def_specialization_attr(&mut attrs, id_node.specializes.as_deref());
             add_node_and_recurse(
                 g,
@@ -370,6 +375,7 @@ pub(super) fn build_from_package_body_element(
             let qualified = qualified_name_for_node(g, uri, container_prefix, &name, "alias");
             let range = span_to_range(&alias_node.span);
             let mut attrs = HashMap::new();
+            attach_short_name_attribute(&mut attrs, &alias_node.identification);
             attrs.insert(
                 "target".to_string(),
                 serde_json::json!(alias_node.target.clone()),
@@ -382,6 +388,7 @@ pub(super) fn build_from_package_body_element(
                 qualified_name_for_node(g, uri, container_prefix, &name, "requirement def");
             let range = span_to_range(&rd_node.span);
             let mut attrs = HashMap::new();
+            attach_short_name_attribute(&mut attrs, &rd_node.identification);
             insert_def_specialization_attr(&mut attrs, rd_node.specializes.as_deref());
             add_node_and_recurse(
                 g,
@@ -540,6 +547,7 @@ pub(super) fn build_from_package_body_element(
                 qualified_name_for_node(g, uri, container_prefix, &name, "use case def");
             let range = span_to_range(&ucd_node.span);
             let mut attrs = HashMap::new();
+            attach_short_name_attribute(&mut attrs, &ucd_node.identification);
             insert_def_specialization_attr(&mut attrs, ucd_node.specializes.as_deref());
             add_node_and_recurse(
                 g,
@@ -595,6 +603,7 @@ pub(super) fn build_from_package_body_element(
                 let qualified =
                     qualified_name_for_node(g, uri, container_prefix, &name, "item def");
                 let mut attrs = HashMap::new();
+                attach_short_name_attribute(&mut attrs, &item_node.identification);
                 insert_def_specialization_attr(&mut attrs, item_node.specializes.as_deref());
                 add_node_and_recurse(
                     g,
@@ -629,6 +638,7 @@ pub(super) fn build_from_package_body_element(
                 let qualified =
                     qualified_name_for_node(g, uri, container_prefix, &name, "individual def");
                 let mut attrs = HashMap::new();
+                attach_short_name_attribute(&mut attrs, &ind_node.identification);
                 insert_def_specialization_attr(&mut attrs, ind_node.specializes.as_deref());
                 add_node_and_recurse(
                     g,
@@ -663,6 +673,7 @@ pub(super) fn build_from_package_body_element(
                 let qualified =
                     qualified_name_for_node(g, uri, container_prefix, &name, "metadata def");
                 let mut attrs = HashMap::new();
+                attach_short_name_attribute(&mut attrs, &md_node.identification);
                 insert_def_specialization_attr(&mut attrs, md_node.specializes.as_deref());
                 add_node_and_recurse(
                     g,
@@ -709,6 +720,7 @@ pub(super) fn build_from_package_body_element(
                 let qualified =
                     qualified_name_for_node(g, uri, container_prefix, &name, "enum def");
                 let mut attrs = HashMap::new();
+                attach_short_name_attribute(&mut attrs, &enum_node.identification);
                 insert_def_specialization_attr(&mut attrs, enum_node.specializes.as_deref());
                 add_node_and_recurse(
                     g,
@@ -735,6 +747,7 @@ pub(super) fn build_from_package_body_element(
                 let qualified =
                     qualified_name_for_node(g, uri, container_prefix, &name, "occurrence def");
                 let mut attrs = HashMap::new();
+                attach_short_name_attribute(&mut attrs, &occ_node.identification);
                 insert_def_specialization_attr(&mut attrs, occ_node.specializes.as_deref());
                 add_node_and_recurse(
                     g,
@@ -809,6 +822,7 @@ pub(super) fn build_from_package_body_element(
                 name.as_str()
             };
             let mut attrs = HashMap::new();
+            attach_short_name_attribute(&mut attrs, &conn_node.identification);
             if let Some(annotation) = annotation {
                 attrs.insert(
                     "connectionAnnotation".to_string(),
@@ -859,6 +873,7 @@ pub(super) fn build_from_package_body_element(
                 let qualified =
                     qualified_name_for_node(g, uri, container_prefix, &name, "flow def");
                 let mut attrs = HashMap::new();
+                attach_short_name_attribute(&mut attrs, &flow_node.identification);
                 insert_def_specialization_attr(&mut attrs, flow_node.specializes.as_deref());
                 add_node_and_recurse(
                     g,
@@ -904,6 +919,7 @@ pub(super) fn build_from_package_body_element(
                 let qualified =
                     qualified_name_for_node(g, uri, container_prefix, &name, "allocation def");
                 let mut attrs = HashMap::new();
+                attach_short_name_attribute(&mut attrs, &alloc_node.identification);
                 insert_def_specialization_attr(&mut attrs, alloc_node.specializes.as_deref());
                 add_node_and_recurse(
                     g,
@@ -940,6 +956,10 @@ pub(super) fn build_from_package_body_element(
                 .filter(|n| !n.is_empty())
                 .unwrap_or_else(|| "dependency".to_string());
             let qualified = qualified_name_for_node(g, uri, container_prefix, &name, "dependency");
+            let mut attrs = HashMap::new();
+            if let Some(ref ident) = dep_node.identification {
+                attach_short_name_attribute(&mut attrs, ident);
+            }
             add_node_and_recurse(
                 g,
                 uri,
@@ -947,7 +967,7 @@ pub(super) fn build_from_package_body_element(
                 "dependency",
                 name,
                 span_to_range(&dep_node.span),
-                HashMap::new(),
+                attrs,
                 parent_id,
             );
         }
@@ -963,6 +983,7 @@ pub(super) fn build_from_package_body_element(
                 let qualified =
                     qualified_name_for_node(g, uri, container_prefix, &name, "case def");
                 let mut attrs = HashMap::new();
+                attach_short_name_attribute(&mut attrs, &c_node.identification);
                 insert_def_specialization_attr(&mut attrs, c_node.specializes.as_deref());
                 add_node_and_recurse(
                     g,
@@ -1002,6 +1023,7 @@ pub(super) fn build_from_package_body_element(
                 let qualified =
                     qualified_name_for_node(g, uri, container_prefix, &name, "analysis def");
                 let mut attrs = HashMap::new();
+                attach_short_name_attribute(&mut attrs, &c_node.identification);
                 insert_def_specialization_attr(&mut attrs, c_node.specializes.as_deref());
                 add_node_and_recurse(
                     g,
@@ -1065,6 +1087,7 @@ pub(super) fn build_from_package_body_element(
                 let qualified =
                     qualified_name_for_node(g, uri, container_prefix, &name, "verification def");
                 let mut attrs = HashMap::new();
+                attach_short_name_attribute(&mut attrs, &c_node.identification);
                 insert_def_specialization_attr(&mut attrs, c_node.specializes.as_deref());
                 add_node_and_recurse(
                     g,
@@ -1126,6 +1149,8 @@ pub(super) fn build_from_package_body_element(
             let name = identification_name(&actor_node.identification);
             let qualified = qualified_name_for_node(g, uri, container_prefix, &name, "actor");
             let range = span_to_range(&actor_node.span);
+            let mut attrs = HashMap::new();
+            attach_short_name_attribute(&mut attrs, &actor_node.identification);
             add_node_and_recurse(
                 g,
                 uri,
@@ -1133,7 +1158,7 @@ pub(super) fn build_from_package_body_element(
                 "actor",
                 name,
                 range,
-                HashMap::new(),
+                attrs,
                 parent_id,
             );
         }
@@ -1142,6 +1167,7 @@ pub(super) fn build_from_package_body_element(
             let qualified = qualified_name_for_node(g, uri, container_prefix, &name, "state def");
             let range = span_to_range(&sd_node.span);
             let mut attrs = HashMap::new();
+            attach_short_name_attribute(&mut attrs, &sd_node.identification);
             insert_def_specialization_attr(&mut attrs, sd_node.specializes.as_deref());
             add_node_and_recurse(
                 g,
@@ -1255,6 +1281,9 @@ pub(super) fn build_from_package_body_element(
                 let qualified =
                     qualified_name_for_node(g, uri, container_prefix, &name, "textualRep");
                 let mut attrs = HashMap::new();
+                if let Some(ref rep_identification) = tr.rep_identification {
+                    attach_short_name_attribute(&mut attrs, rep_identification);
+                }
                 attrs.insert("language".to_string(), serde_json::json!(&tr.language));
                 attrs.insert("text".to_string(), serde_json::json!(&tr.text));
                 if let Some(ref language_span) = tr.language_span {

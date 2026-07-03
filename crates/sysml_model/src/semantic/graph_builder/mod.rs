@@ -111,7 +111,7 @@ pub fn build_graph_from_doc(root: &RootNamespace, uri: &Url) -> SemanticGraph {
     g
 }
 
-pub(super) fn qualified_name(container_prefix: Option<&str>, name: &str) -> String {
+pub(crate) fn qualified_name(container_prefix: Option<&str>, name: &str) -> String {
     match container_prefix {
         Some(p) if !p.is_empty() => format!("{}::{}", p, name),
         _ => name.to_string(),
@@ -166,6 +166,13 @@ pub(super) fn add_node_and_recurse(
         attributes: attrs,
         parent_id: parent_id.cloned(),
     };
+    // Also index the node under its short-name-qualified variant (if any), so
+    // typing/specializes references by short name (e.g. `part x : CB;` when the def is
+    // `part def <'CB'> ControlBoard;`) resolve to the same node. A real element that happens
+    // to share a name with this alias collides naturally via the existing Vec<NodeId>-per-key
+    // + ambiguity-detection mechanism (see resolve_name's `len() > 1 => Ambiguous`) — no extra
+    // handling needed here. Must run before `node` moves into `add_node` below.
+    g.register_short_name_alias(&node_id, &node);
     let idx = g.graph.add_node(node);
     g.node_index_by_id.insert(node_id.clone(), idx);
     g.nodes_by_uri.entry(uri.clone()).or_default().push(node_id.clone());
@@ -223,6 +230,92 @@ pub(super) fn wire_def_specialization_edge(
             qualified,
             s,
             container_prefix,
+        );
+    }
+}
+
+#[cfg(test)]
+mod short_name_tests {
+    use url::Url;
+
+    use crate::semantic::graph::SemanticGraph;
+    use crate::semantic::pipeline::patch_graph_for_document;
+
+    fn build(content: &str) -> (SemanticGraph, Url) {
+        let uri = Url::parse("file:///demo.sysml").expect("uri");
+        let parsed = sysml_v2_parser::parse(content).expect("parse");
+        let mut graph = SemanticGraph::new();
+        patch_graph_for_document(&mut graph, &uri, Some(&parsed), true);
+        (graph, uri)
+    }
+
+    #[test]
+    fn typing_resolves_by_short_name_when_declared_alongside_a_name() {
+        let (graph, uri) = build(
+            "package Demo { part def <'CB'> ControlBoard; part x : CB; }",
+        );
+        let usage = graph
+            .nodes_for_uri(&uri)
+            .into_iter()
+            .find(|node| node.name == "x")
+            .expect("usage node present");
+        let targets = graph.outgoing_typing_or_specializes_targets(usage);
+        assert!(
+            targets.iter().any(|target| target.name == "ControlBoard"),
+            "expected `x` to resolve its type through short name `CB`, got {targets:#?}"
+        );
+    }
+
+    #[test]
+    fn nested_member_resolves_by_short_name() {
+        let (graph, uri) = build(
+            "package Demo { part def Robot { part def <'CB'> ControlBoard; } }",
+        );
+        let robot = graph
+            .nodes_for_uri(&uri)
+            .into_iter()
+            .find(|node| node.name == "Robot")
+            .expect("Robot node present");
+        let matches = graph.child_named(&robot.id, "CB");
+        assert!(
+            matches.iter().any(|node| node.name == "ControlBoard"),
+            "expected child_named(\"CB\") to find ControlBoard, got {matches:#?}"
+        );
+    }
+
+    #[test]
+    fn short_name_alias_does_not_shadow_a_real_element_of_the_same_name() {
+        let (graph, uri) = build(
+            "package Demo { part def <'CB'> ControlBoard; part def CB; }",
+        );
+        let matching_ids = graph
+            .node_ids_by_qualified_name
+            .get("Demo::CB")
+            .cloned()
+            .unwrap_or_default();
+        assert_eq!(
+            matching_ids.len(),
+            2,
+            "expected both the real `CB` element and the `ControlBoard` alias under \
+             \"Demo::CB\", got {matching_ids:#?}"
+        );
+        let _ = uri;
+    }
+
+    #[test]
+    fn removing_a_document_deregisters_its_short_name_alias() {
+        let (mut graph, uri) = build(
+            "package Demo { part def <'CB'> ControlBoard; part x : CB; }",
+        );
+        assert!(graph.node_ids_by_qualified_name.contains_key("Demo::CB"));
+
+        patch_graph_for_document(&mut graph, &uri, None, true);
+
+        assert!(
+            !graph.node_ids_by_qualified_name.contains_key("Demo::CB"),
+            "expected the short-name alias to be cleaned up once ControlBoard's document is \
+             removed, got {:#?}",
+            graph.node_ids_by_qualified_name.get("Demo::CB")
         );
     }
 }

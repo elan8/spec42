@@ -2,7 +2,7 @@ use std::collections::HashSet;
 
 use crate::semantic::graph::SemanticGraph;
 use crate::semantic::kinds::{self, element_kind_allowed, is_namespace};
-use crate::semantic::model::{ElementKind, NodeId, SemanticNode};
+use crate::semantic::model::{node_matches_simple_name, ElementKind, NodeId, SemanticNode};
 use crate::semantic::resolution::naming::{
     normalize_declared_type_ref, normalize_for_lookup, type_ref_candidates_with_kind,
 };
@@ -74,7 +74,8 @@ fn unique_graph_wide_named_members(
         .flatten()
         .filter_map(|id| {
             let node = graph.get_node(id)?;
-            (node.name == simple_name && element_kind_allowed(&node.element_kind, allowed_kinds))
+            (node_matches_simple_name(node, simple_name)
+                && element_kind_allowed(&node.element_kind, allowed_kinds))
                 .then(|| id.clone())
         })
         .collect();
@@ -229,7 +230,9 @@ fn exported_members_named_from_namespace(
     };
 
     for child in graph.children_of(namespace) {
-        if child.element_kind != ElementKind::Import && child.name == simple_name {
+        if child.element_kind != ElementKind::Import
+            && node_matches_simple_name(child, simple_name)
+        {
             out.push(child.id.clone());
         }
     }

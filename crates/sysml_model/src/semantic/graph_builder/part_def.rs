@@ -6,7 +6,7 @@ use sysml_v2_parser::ast::{
 };
 use url::Url;
 
-use crate::semantic::ast_util::{identification_name, span_to_range};
+use crate::semantic::ast_util::{attach_short_name_attribute, identification_name, span_to_range};
 use crate::semantic::graph::SemanticGraph;
 use crate::semantic::model::{NodeId, RelationshipKind};
 use crate::semantic::relationships::{
@@ -136,6 +136,7 @@ pub(super) fn build_from_part_def_body_element(
             let qualified = qualified_name_for_node(g, uri, container_prefix, &name, "part def");
             let range = span_to_range(&pd_node.span);
             let mut attrs = HashMap::new();
+            attach_short_name_attribute(&mut attrs, &pd_node.identification);
             if let Some(ref p) = pd_node.definition_prefix {
                 attrs.insert(
                     "definitionPrefix".to_string(),
@@ -261,6 +262,7 @@ pub(super) fn build_from_part_def_body_element(
                 let qualified =
                     qualified_name_for_node(g, uri, container_prefix, &name, "item def");
                 let mut attrs = HashMap::new();
+                attach_short_name_attribute(&mut attrs, &item_node.identification);
                 if let Some(ref s) = item_node.specializes {
                     attrs.insert("specializes".to_string(), serde_json::json!(s));
                 }
@@ -388,6 +390,8 @@ pub(super) fn build_from_part_def_body_element(
             let qualified =
                 qualified_name_for_node(g, uri, container_prefix, &name, "interface def");
             let range = span_to_range(&id_node.span);
+            let mut attrs = HashMap::new();
+            attach_short_name_attribute(&mut attrs, &id_node.identification);
             add_node_and_recurse(
                 g,
                 uri,
@@ -395,7 +399,7 @@ pub(super) fn build_from_part_def_body_element(
                 "interface def",
                 name.clone(),
                 range,
-                HashMap::new(),
+                attrs,
                 Some(parent_id),
             );
             let iface_id = NodeId::new(uri, &qualified);
@@ -453,6 +457,7 @@ pub(super) fn build_from_part_def_body_element(
             let qualified = qualified_name_for_node(g, uri, container_prefix, &name, "calc");
             let range = span_to_range(&calc_node.span);
             let mut attrs = HashMap::new();
+            attach_short_name_attribute(&mut attrs, &calc_node.value.identification);
             if let Some(ref t) = calc_node.value.type_name {
                 attrs.insert("calcType".to_string(), serde_json::json!(t));
             }

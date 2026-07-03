@@ -12,6 +12,7 @@ use crate::semantic::import_resolution::resolve_imported_node_ids_for_simple_nam
 use crate::semantic::kinds::{
     is_metadata_restriction_attribute, is_namespace, RULE6_ALLOWED_KINDS,
 };
+use crate::semantic::model::node_matches_simple_name;
 use crate::semantic::relationships::SPECIALIZES_TARGET_KINDS;
 use crate::{resolve_type_reference_targets, SemanticDiagnostic, SemanticGraph, SemanticNode};
 
@@ -102,7 +103,7 @@ fn is_ambiguous_simple_name(graph: &SemanticGraph, node: &SemanticNode, name: &s
         .flatten()
         .filter_map(|id| graph.get_node(id))
         .filter(|candidate| {
-            candidate.name == name
+            node_matches_simple_name(candidate, name)
                 && candidate.id.uri == node.id.uri
                 && is_def_or_usage_kind(&candidate.element_kind)
         })

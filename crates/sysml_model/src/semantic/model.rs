@@ -518,3 +518,17 @@ pub struct SemanticNode {
     pub attributes: HashMap<String, serde_json::Value>,
     pub parent_id: Option<NodeId>,
 }
+
+/// True if `node`'s declared name or short name (see `ast_util::attach_short_name_attribute`)
+/// equals `target`. Use this instead of `node.name == target` anywhere a simple-name match is
+/// used for reference resolution, so short names declared alongside a regular name
+/// (`part def <'CB'> ControlBoard;`) resolve as real alternate identifiers, matching SysML v2/
+/// KerML semantics, instead of only being findable in the raw source text.
+pub fn node_matches_simple_name(node: &SemanticNode, target: &str) -> bool {
+    node.name == target
+        || node
+            .attributes
+            .get("shortName")
+            .and_then(serde_json::Value::as_str)
+            == Some(target)
+}

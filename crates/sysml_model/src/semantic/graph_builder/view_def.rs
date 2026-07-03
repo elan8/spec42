@@ -15,7 +15,7 @@ use super::{
     add_node_and_recurse, insert_def_specialization_attr, qualified_name_for_node,
     wire_def_specialization_edge,
 };
-use crate::semantic::ast_util::{identification_name, span_to_range};
+use crate::semantic::ast_util::{attach_short_name_attribute, identification_name, span_to_range};
 use crate::semantic::graph::SemanticGraph;
 use crate::semantic::graph_builder::expressions;
 use crate::semantic::model::NodeId;
@@ -199,6 +199,7 @@ pub(super) fn build_view_def(
     let qualified = qualified_name_for_node(g, uri, container_prefix, &name, "view def");
     let range = span_to_range(&vd_node.span);
     let mut attrs = HashMap::new();
+    attach_short_name_attribute(&mut attrs, &vd_node.value.identification);
     insert_def_specialization_attr(&mut attrs, vd_node.value.specializes.as_deref());
     add_node_and_recurse(
         g,
@@ -257,6 +258,7 @@ pub(super) fn build_viewpoint_def(
     let qualified = qualified_name_for_node(g, uri, container_prefix, &name, "viewpoint def");
     let range = span_to_range(&vpd_node.span);
     let mut attrs = HashMap::new();
+    attach_short_name_attribute(&mut attrs, &vpd_node.value.identification);
     insert_def_specialization_attr(&mut attrs, vpd_node.value.specializes.as_deref());
     add_node_and_recurse(
         g,
@@ -299,6 +301,7 @@ pub(super) fn build_rendering_def(
     let qualified = qualified_name_for_node(g, uri, container_prefix, &name, "rendering def");
     let range = span_to_range(&rd_node.span);
     let mut attrs = HashMap::new();
+    attach_short_name_attribute(&mut attrs, &rd_node.value.identification);
     insert_def_specialization_attr(&mut attrs, rd_node.value.specializes.as_deref());
     add_node_and_recurse(
         g,

@@ -12,7 +12,8 @@ use serde::{Deserialize, Deserializer, Serialize, Serializer};
 use url::Url;
 
 use crate::semantic::model::{
-    ConnectStatementDetail, ElementKind, NodeId, RelationshipKind, SemanticEdge, SemanticNode,
+    node_matches_simple_name, ConnectStatementDetail, ElementKind, NodeId, RelationshipKind,
+    SemanticEdge, SemanticNode,
 };
 
 fn serialize_url<S: Serializer>(url: &Url, s: S) -> Result<S::Ok, S::Error> {
@@ -287,26 +288,78 @@ impl SemanticGraphData {
         }
     }
 
+    /// The short-name-qualified alias for `node` (see
+    /// `graph_builder::attach_short_name_attribute`) — the same qualified name a sibling
+    /// declared under the short name directly would get. `None` if `node` has no short name.
+    pub(crate) fn short_name_alias_qualified(node: &SemanticNode) -> Option<String> {
+        let short_name = node.attributes.get("shortName").and_then(|v| v.as_str())?;
+        let container_prefix = node
+            .parent_id
+            .as_ref()
+            .map(|parent_id| parent_id.qualified_name.as_str());
+        Some(crate::semantic::graph_builder::qualified_name(
+            container_prefix,
+            short_name,
+        ))
+    }
+
+    /// Registers `node`'s short-name-qualified alias in `node_ids_by_qualified_name`,
+    /// pointing at `id`, so qualified-name lookups (typing, specializes, ...) resolve short
+    /// names the same way as the node's own declared name. No-op if `node` has no short name.
+    /// Called from every place a node is inserted into a graph (`add_node_and_recurse`,
+    /// `merge_inner`, `insert_workspace_node`) — see `remove_nodes_for_uri`'s matching cleanup.
+    pub(crate) fn register_short_name_alias(&mut self, id: &NodeId, node: &SemanticNode) {
+        let Some(short_qualified) = Self::short_name_alias_qualified(node) else {
+            return;
+        };
+        if short_qualified != id.qualified_name {
+            self.node_ids_by_qualified_name
+                .entry(short_qualified)
+                .or_default()
+                .push(id.clone());
+        }
+    }
+
+    /// Removes `id` from its short-name-qualified alias entry (the reverse of
+    /// `register_short_name_alias`), so a removed node's alias doesn't dangle. No-op if `node`
+    /// has no short name.
+    fn deregister_short_name_alias(&mut self, id: &NodeId, node: &SemanticNode) {
+        let Some(short_qualified) = Self::short_name_alias_qualified(node) else {
+            return;
+        };
+        let mut remove_entry = false;
+        if let Some(ids) = self.node_ids_by_qualified_name.get_mut(&short_qualified) {
+            ids.retain(|existing| existing != id);
+            remove_entry = ids.is_empty();
+        }
+        if remove_entry {
+            self.node_ids_by_qualified_name.remove(&short_qualified);
+        }
+    }
+
     /// Removes all nodes (and their incident edges) for the given URI.
     pub fn remove_nodes_for_uri(&mut self, uri: &Url) {
         let Some(node_ids) = self.nodes_by_uri.remove(uri) else {
             self.clear_import_lookup_cache();
             return;
         };
-        // Collect parent_ids before removal so we can update the children index.
-        let parent_ids: Vec<(NodeId, Option<NodeId>)> = node_ids
+        // Clone each node's current weight before removal — needed both for the parent's
+        // children-index update and to deregister any short-name alias (both read fields off
+        // the node itself, which won't be reachable once `node_index_by_id`/the graph node are
+        // removed below).
+        let removals: Vec<(NodeId, SemanticNode)> = node_ids
             .iter()
-            .map(|id| {
-                let parent = self
+            .filter_map(|id| {
+                let node = self
                     .node_index_by_id
                     .get(id)
-                    .and_then(|&idx| self.graph.node_weight(idx))
-                    .and_then(|n| n.parent_id.clone());
-                (id.clone(), parent)
+                    .and_then(|&idx| self.graph.node_weight(idx))?
+                    .clone();
+                Some((id.clone(), node))
             })
             .collect();
 
-        for id in &node_ids {
+        for (id, node) in &removals {
             let mut remove_lookup_entry = false;
             if let Some(ids) = self.node_ids_by_qualified_name.get_mut(&id.qualified_name) {
                 ids.retain(|existing| existing != id);
@@ -315,14 +368,15 @@ impl SemanticGraphData {
             if remove_lookup_entry {
                 self.node_ids_by_qualified_name.remove(&id.qualified_name);
             }
+            self.deregister_short_name_alias(id, node);
             if let Some(idx) = self.node_index_by_id.remove(id) {
                 self.graph.remove_node(idx);
             }
             self.children_by_parent_id.remove(id);
         }
         // Remove each node from its parent's children list.
-        for (id, parent_id) in parent_ids {
-            if let Some(pid) = parent_id {
+        for (id, node) in removals {
+            if let Some(pid) = node.parent_id {
                 if let Some(children) = self.children_by_parent_id.get_mut(&pid) {
                     children.retain(|c| c != &id);
                 }
@@ -378,6 +432,11 @@ impl SemanticGraphData {
                 .entry(id.qualified_name.clone())
                 .or_default()
                 .push(id.clone());
+            // Re-derive the short-name-qualified alias too — merging rebuilds
+            // `node_ids_by_qualified_name` from each node's own canonical qualified name only,
+            // so the alias registered when the node was first built would otherwise be
+            // silently dropped here.
+            self.register_short_name_alias(&id, node);
             if let Some(parent_id) = &node.parent_id {
                 self.children_by_parent_id
                     .entry(parent_id.clone())
@@ -474,7 +533,7 @@ impl SemanticGraphData {
                     .get(id)
                     .and_then(|&idx| self.graph.node_weight(idx))
             })
-            .filter(|node| node.name == name)
+            .filter(|node| node_matches_simple_name(node, name))
             .collect()
     }
 
@@ -563,7 +622,7 @@ impl SemanticGraphData {
         };
         self.children_of(parent)
             .into_iter()
-            .filter(|child| child.name == name)
+            .filter(|child| node_matches_simple_name(child, name))
             .collect()
     }
 
@@ -913,6 +972,7 @@ impl SemanticGraphData {
             .entry(node.id.qualified_name.clone())
             .or_default()
             .push(node.id.clone());
+        self.register_short_name_alias(&node.id, &node);
         if let Some(parent_id) = &node.parent_id {
             self.children_by_parent_id
                 .entry(parent_id.clone())
