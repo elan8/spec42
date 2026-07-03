@@ -1,6 +1,7 @@
 # Tier 2: Unified Incremental Engine — Move `lsp_server`'s Incremental Machinery Into `workspace`, Layer Snapshot On Top
 
-**Status:** Phase 1 landed 2026-07-03 — see "Phase 1 status" below. Phases 2-5 not started.
+**Status:** Phases 1-2 landed 2026-07-03 — see "Phase 1 status"/"Phase 2 status" below.
+Phases 3-5 not started.
 **Date:** 2026-07-03
 **Related:** `docs/engineering/TIER2-LSP-WORKSPACE-CONSOLIDATION.md` (Phases 1-3a, Phase 3b
 Steps 1-4, Step 5a-5c, Phase 4 all landed — this doc addresses the split those phases
@@ -220,10 +221,86 @@ the full relevant test suites before moving on, higher-risk phases behind a flag
    the only warnings present are two pre-existing, unrelated items in
    `snapshot/facts.rs`/`tests/support/comparison_fixtures.rs`, confirmed via `git status` to
    be untouched by this move).
-2. **Build `IncrementalWorkspace` in `workspace`, standalone, not wired anywhere.**
-   Equivalence-test it against both `build_and_link_graph_parallel` (full-load case) and
-   `lsp_server`'s current incremental behavior (patch case) — same rigor as Step 5a's
-   sequential-vs-parallel equivalence tests.
+2. **Build `IncrementalWorkspace` in `workspace`, standalone, not wired anywhere. ✅ Done
+   2026-07-03.** New module `crates/workspace/src/incremental.rs`, re-exported at the crate
+   root (`workspace::{IncrementalWorkspace, WorkspaceUpdateMetrics}`), not called from
+   `Spec42Engine`/`HostWorkspaceSnapshot`/`lsp_server` yet.
+
+   **Shape**: wraps a `SemanticGraph` plus a `HashMap<Url, WorkspaceParsedDocument>` (the
+   same `WorkspaceParsedDocument` type `sysml_model`'s pipeline already returns — reused
+   rather than inventing a parallel "document index" type). Three operations:
+   - `load(&[SysmlDocument]) -> WorkspaceUpdateMetrics` — full rebuild, a thin wrapper around
+     `build_and_link_graph_parallel`.
+   - `apply_document(&SysmlDocument, cache_dir: Option<&Path>) -> WorkspaceUpdateMetrics` —
+     incremental patch, wrapping `patch_graph_for_document`. When `cache_dir` is given, the
+     parse is served through this engine's own relocated `parse_cache` (Phase 1) before
+     falling back to a fresh parse — the first real use of that relocation.
+   - `remove_document(&Url) -> WorkspaceUpdateMetrics` — deletes one document's nodes.
+
+   Both `load` and `apply_document` delegate to `sysml_model`'s existing pipeline functions
+   as a single opaque call rather than re-implementing their internal sequencing — the
+   deliberate choice to avoid recreating the "two places implement the same sequence, and
+   they drift" bug shape Step 5b/5c already found and fixed twice. This is also why two new
+   exports needed adding: `build_and_link_graph_parallel` existed in `sysml_model` but wasn't
+   re-exported at its crate root (fixed — `sysml_model/src/lib.rs`) or reachable through
+   `workspace::semantic` (fixed — `workspace/src/semantic/mod.rs`, alongside
+   `WorkspaceParsedDocument`).
+
+   **Metrics — the timing piece requested alongside this phase.** Added
+   `WorkspaceUpdateMetrics { document_count, parse_ms, graph_update_ms, total_ms, node_count,
+   edge_count }`, returned by every operation. This is coarser than `lsp_server`'s current
+   `RebuildAllDocumentLinksMetrics`, which splits the graph-update step into 7 sub-phases
+   (remove-nodes, rebuild-graphs, cross-edge-resolution, workspace-relationship-linking,
+   pending-relationship-resolution, expression-evaluation, refresh-symbols) — deliberately:
+   those finer phases live *inside* `build_and_link_graph_parallel`/`patch_graph_for_document`,
+   and breaking them out here would mean either (a) those `sysml_model` functions growing
+   their own returned timing breakdown (a real option, not built here — see the updated open
+   questions below), or (b) `workspace` re-implementing the phase sequencing itself just to
+   get the timing points, which is exactly the duplication this whole design exists to avoid.
+   So for now: `parse_ms` is real and separately measured for `apply_document` (this engine
+   does its own parse-cache-or-fresh-parse step before calling into `sysml_model`), but
+   always `0` for `load` (which parses internally inside `build_and_link_graph_parallel` —
+   that time is folded into `graph_update_ms` instead, documented on the field).
+   `lsp_server`'s three full-rebuild functions still produce their own 7-phase metrics for
+   now; whether/how those get replaced by this coarser shape (accepting less granularity) or
+   a future finer `sysml_model`-side breakdown is a Phase 4 decision, not resolved here.
+
+   **A known gap surfaced along the way**: `load`'s doc comment flags that it does *not* yet
+   benefit from the engine's own parse cache — `build_and_link_graph_parallel` always parses
+   from raw document content, so a full load re-parses everything even if every document is
+   already cached. Fixing that needs either a new `sysml_model` entry point that accepts
+   pre-parsed documents (skipping its internal parse step), or looping `apply_document` once
+   per document for a "load" (losing the parallel merge/link `build_and_link_graph_parallel`
+   does). Left open — not needed for Phase 2's standalone scope, but should be resolved
+   before Phase 3 wires `load` into `Spec42Engine`'s hot full-load path, since that's exactly
+   where the parse cache is supposed to pay off.
+
+   **Equivalence tests** (inline `#[cfg(test)] mod tests`, matching `sysml_model::pipeline`'s
+   own convention for this kind of orchestration module):
+   - `load_matches_build_and_link_graph_parallel_directly` — confirms `load` produces
+     identical node/edge sets to calling `build_and_link_graph_parallel` directly, not just
+     "produces a graph" (the Step 5a lesson about set-based comparisons silently tolerating
+     duplicate-insertion bugs — this test compares the same underlying data two independent
+     ways, not two derived summaries of it).
+   - `apply_document_matches_full_reload_after_edit` — the engine-layer version of the parity
+     check `workspace/tests/incremental_parity.rs` already does at the `HostWorkspaceSnapshot`
+     layer: patch one document via `apply_document`, then confirm the result matches a fresh
+     `load` of the post-edit document set.
+   - `apply_document_evaluates_expressions` — the same `evaluate_expressions`-regression
+     shape Steps 1-4 fixed, re-checked at this new layer.
+   - `remove_document_clears_its_nodes`, `apply_document_uses_parse_cache_when_provided` —
+     the two operations not otherwise covered by the parity tests above.
+
+   **Verification**: `cargo check -p workspace` (clean, first try), `cargo test -p workspace
+   --lib incremental` (5/5 pass, first run), `cargo test -p workspace --test
+   dependency_guardrails` (still passes — nothing new here pulls in a forbidden dependency),
+   `cargo test -p workspace` (full suite green, 37 lib tests now vs. 32 before Phase 2),
+   `cargo test --workspace` (green), `cargo test -p lsp_server` (green, unaffected — nothing
+   wired up yet), `cargo clippy -p workspace --no-deps --all-targets` and `cargo clippy -p
+   sysml_model --no-deps` (both clean after fixing one `cloned_ref_to_slice_refs` lint in a
+   test; the handful of other warnings present are the same pre-existing, unrelated dead-code
+   items in `snapshot/facts.rs`/`tests/support/comparison_fixtures.rs` noted in the Phase 1
+   write-up).
 3. **Migrate `Spec42Engine`/`snapshot` module to build on it.** This is where the eager and
    incremental pipelines actually merge into one. Full `workspace` + `server` crate test
    suites must pass unchanged (same parity bar as Steps 1-4).
@@ -263,20 +340,29 @@ the full relevant test suites before moving on, higher-risk phases behind a flag
 
 1. Does `WorkspaceSession`'s existing lifecycle state machine become `IncrementalWorkspace`'s
    internal bookkeeping, or stay a separately composed type? Affects Phase 2's design but not
-   its risk profile.
+   its risk profile. **Still open** — Phase 2 shipped `IncrementalWorkspace` without any
+   lifecycle/generation tracking at all (just graph + documents); this needs revisiting
+   before Phase 4 (`lsp_server` has real lifecycle state — `SemanticCoordinator`'s
+   Cold/Indexing/Ready/Reindexing — that has to live somewhere).
 2. Should the per-phase timing metrics `RebuildAllDocumentLinksMetrics` currently produces
    move into the engine as built-in instrumentation (useful to `workspace`'s other
-   consumers too), or stay `lsp_server`-local wrapping? Same open question Step 5c's design
-   left unresolved for the smaller scope; revisit here for the full engine.
+   consumers too), or stay `lsp_server`-local wrapping? **Partially answered by Phase 2**:
+   `WorkspaceUpdateMetrics` gives `parse_ms`/`graph_update_ms`/`total_ms` — real but coarser
+   than the 7-phase breakdown, deliberately, to avoid `workspace` re-implementing
+   `sysml_model`'s internal sequencing just to get timing points. Whether `lsp_server` can
+   live with that coarser granularity (dropping the 7-phase log fields) or `sysml_model`'s
+   pipeline functions should grow their own returned phase breakdown to preserve it is a
+   Phase 4 decision.
 3. Does Babel42's `EditorSession` need its own concurrency wrapper analogous to
    `lsp_server`'s staged-commit shape, or is blocking-per-edit acceptable there? Needs
    checking against Babel42's actual code before Phase 4 assumes `lsp_server`'s shape is the
    only one needed.
-4. Should `IncrementalWorkspace::apply_changes` reuse `patch_graph_for_document` per document
-   for small changesets and switch to `build_and_link_graph_parallel`'s batch strategy above
-   some size threshold (mirroring what `lsp_server`'s `rebuild_semantic_graph_staged` already
-   does informally), or always go through one uniform path? Affects Phase 2's implementation,
-   not the overall design.
+4. Should `IncrementalWorkspace::load` gain a variant that accepts already-parsed documents
+   (to actually benefit from this engine's own parse cache on a full load, not just on
+   `apply_document`)? Flagged as a concrete gap by Phase 2 — `load` currently re-parses
+   everything every time via `build_and_link_graph_parallel`. Should be resolved before Phase
+   3 wires `load` into `Spec42Engine`'s full-load path, since that's the path most likely to
+   have a warm cache to exploit (CLI/MCP/HTTP restarts, Babel42 reconnects).
 
 ## Effort estimate
 

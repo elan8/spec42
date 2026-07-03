@@ -5,6 +5,7 @@ pub mod semantic;
 pub mod comparison;
 pub mod engine;
 pub mod error;
+pub mod incremental;
 pub mod library;
 pub mod library_graph_cache;
 pub mod parse_cache;
@@ -25,6 +26,7 @@ pub use comparison::{
 };
 pub use engine::{EngineBuilder, HostEngineMetadata, Spec42Engine};
 pub use error::{WorkspaceResult, WorkspaceError};
+pub use incremental::{IncrementalWorkspace, WorkspaceUpdateMetrics};
 pub use library::{
     bundle::LibraryBundleConfig,
     domain::{
