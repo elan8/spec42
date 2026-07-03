@@ -20,7 +20,7 @@ use super::expressions;
 use super::occurrence_body;
 use super::part_usage;
 use super::requirement_body::walk_requirement_def_body;
-use super::{add_node_and_recurse, qualified_name_for_node};
+use super::{add_node_and_recurse, effective_usage_name, qualified_name_for_node};
 
 /// Builds the `part`-usage node (and recurses into its body), wiring the typing edge. Used by
 /// the top-level package body, `part def` bodies, and `part` usage bodies alike.
@@ -31,7 +31,7 @@ pub(super) fn materialize_part_usage(
     parent_id: Option<&NodeId>,
     g: &mut SemanticGraph,
 ) -> NodeId {
-    let name = &n.name;
+    let name = effective_usage_name(&n.name, n.redefines.as_deref());
     let qualified = qualified_name_for_node(g, uri, container_prefix, name, "part");
     let range = span_to_range(&n.span);
     let mut attrs = HashMap::new();
@@ -72,7 +72,7 @@ pub(super) fn materialize_part_usage(
         uri,
         &qualified,
         "part",
-        name.clone(),
+        name.to_string(),
         range,
         attrs,
         parent_id,
@@ -99,7 +99,7 @@ pub(super) fn materialize_attribute_usage(
     parent_id: &NodeId,
     g: &mut SemanticGraph,
 ) -> NodeId {
-    let name = &n.name;
+    let name = effective_usage_name(&n.name, n.redefines.as_deref());
     let kind = infer_attribute_usage_kind(g, parent_id, n.redefines.as_deref());
     let qualified = qualified_name_for_node(g, uri, container_prefix, name, kind);
     let range = span_to_range(&n.span);
@@ -130,7 +130,7 @@ pub(super) fn materialize_attribute_usage(
         uri,
         &qualified,
         kind,
-        name.clone(),
+        name.to_string(),
         range,
         attrs,
         Some(parent_id),

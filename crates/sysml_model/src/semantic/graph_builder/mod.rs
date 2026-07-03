@@ -118,6 +118,20 @@ pub(crate) fn qualified_name(container_prefix: Option<&str>, name: &str) -> Stri
     }
 }
 
+/// Resolves a usage's *effective name* per SysML v2 §7.6.5 "Effective Names": if a name is
+/// declared, use it; otherwise, for a usage with an owned redefinition (`redefines`), fall back
+/// to the (simple, last-segment) name of the feature it redefines. Spec example: `part redefines
+/// cylinders[4];` has no declared name, but its effective name is `"cylinders"`.
+pub(super) fn effective_usage_name<'a>(declared: &'a str, redefines: Option<&'a str>) -> &'a str {
+    if !declared.is_empty() {
+        return declared;
+    }
+    match redefines.map(str::trim).filter(|r| !r.is_empty()) {
+        Some(r) => r.rsplit("::").next().unwrap_or(r),
+        None => declared,
+    }
+}
+
 /// Returns a qualified name that is unique among siblings. When a node with the same
 /// base qualified name already exists (e.g. package and part def with same name), appends
 /// #kind to disambiguate.

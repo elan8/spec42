@@ -547,7 +547,10 @@ pub(super) fn walk_requirement_def_body(
                 }
             }
             RequirementDefBodyElement::AttributeUsage(attr_usage) => {
-                let name = &attr_usage.value.name;
+                let name = super::effective_usage_name(
+                    &attr_usage.value.name,
+                    attr_usage.value.redefines.as_deref(),
+                );
                 let qualified = qualified_name_for_node(
                     g,
                     uri,
@@ -570,7 +573,7 @@ pub(super) fn walk_requirement_def_body(
                     uri,
                     &qualified,
                     "attribute",
-                    name.clone(),
+                    name.to_string(),
                     span_to_range(&attr_usage.span),
                     attrs,
                     Some(parent_id),

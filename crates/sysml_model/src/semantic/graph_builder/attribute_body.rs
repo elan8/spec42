@@ -71,8 +71,8 @@ pub(super) fn build_from_attribute_body(
             }
             AttributeBodyElement::AttributeUsage(attribute) => {
                 let value = &attribute.value;
-                let qualified =
-                    qualified_name_for_node(g, uri, container_prefix, &value.name, "attribute");
+                let name = super::effective_usage_name(&value.name, value.redefines.as_deref());
+                let qualified = qualified_name_for_node(g, uri, container_prefix, name, "attribute");
                 let mut attrs = HashMap::new();
                 if let Some(ref typing) = value.typing {
                     attrs.insert("attributeType".to_string(), serde_json::json!(typing));
@@ -101,7 +101,7 @@ pub(super) fn build_from_attribute_body(
                     uri,
                     &qualified,
                     "attribute",
-                    value.name.clone(),
+                    name.to_string(),
                     span_to_range(&attribute.span),
                     attrs,
                     Some(parent_id),

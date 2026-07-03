@@ -151,6 +151,35 @@ fn attribute_redefining_a_port_is_classified_as_port_in_every_containing_context
 }
 
 #[test]
+fn unnamed_redefining_usage_gets_effective_name_per_spec_7_6_5() {
+    // SysML v2 §7.6.5 "Effective Names": a usage with an owned redefinition but no declared
+    // name takes its effective name from the feature it redefines. Spec's own example:
+    // `part redefines cylinders[4];` (no declared name) has effective name "cylinders". Before
+    // this fix, such a usage was created with an empty name and a malformed qualified path
+    // (e.g. "P::SixCylinderEngine::" with a trailing "::") instead of being addressable as
+    // "P::SixCylinderEngine::cylinders".
+    let src = r#"package P {
+  part def Engine {
+    part cylinders[8];
+  }
+  part def SixCylinderEngine :> Engine {
+    part redefines cylinders[6];
+  }
+}"#;
+    let doc = workspace_doc("effective_name.sysml", src);
+    let (graph, _parsed) = build_semantic_graph_from_documents(&[doc]).expect("graph");
+    let redefining = graph
+        .nodes_named("cylinders")
+        .into_iter()
+        .find(|node| node.id.qualified_name == "P::SixCylinderEngine::cylinders")
+        .expect("expected the redefining `cylinders` usage to be addressable by its effective name");
+    assert_eq!(
+        redefining.attributes.get("redefines").and_then(|v| v.as_str()),
+        Some("cylinders")
+    );
+}
+
+#[test]
 fn occurrence_usage_body_recurses_into_children_in_every_containing_context() {
     let contexts = [
         (
