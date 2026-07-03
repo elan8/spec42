@@ -1,10 +1,14 @@
 //! `part` and `attribute` usages can legally appear in three different containing bodies:
 //! directly in a package body, inside a `part def { ... }` body, and inside a `part <usage>
 //! { ... }` body. All three previously had independently hand-written graph-builder logic in
-//! `package_body.rs`, `part_def.rs`, and `part_usage.rs`; they drifted apart (`part_def.rs`'s
-//! copy silently dropped the `usagePrefix` attribute the other two set). These tests pin the
-//! contract that the same usage syntax produces the same node attributes regardless of which
-//! body it is nested in, so a future regression in one context/copy is caught immediately.
+//! `package_body.rs`, `part_def.rs`, and `part_usage.rs`; they drifted apart in two ways:
+//! (1) `part_def.rs`'s copy of `PartUsage` silently dropped the `usagePrefix` attribute the
+//! other two set, and (2) def-kind match arms across the graph builder inconsistently wired
+//! the `Specializes` edge either before or after recursing into the def's body, which broke
+//! inherited-member resolution (e.g. `attribute redefines <inheritedPort>`) for whichever arms
+//! wired it last. These tests pin the contract that the same syntax produces the same node
+//! attributes/classification regardless of which body it is nested in, so a future regression
+//! in one context/copy is caught immediately.
 
 use sysml_model::{build_semantic_graph_from_documents, SysmlDocument, SysmlDocumentSourceKind};
 
@@ -69,13 +73,14 @@ fn abstract_part_usage_prefix_is_preserved_in_every_containing_context() {
 }
 
 #[test]
-fn attribute_redefining_a_port_is_classified_as_port_in_every_part_usage_containing_context() {
+fn attribute_redefining_a_port_is_classified_as_port_in_every_containing_context() {
     // `materialize_attribute_usage` classifies `attribute redefines <port>` as a port by
-    // resolving the redefined member through the immediately containing usage's type. That
-    // container's typing edge must already be wired before its body is walked — true for
-    // `part` usages (top-level or nested) which this test covers. `part def` bodies wire their
-    // specializes edge *after* walking the body, so the same inference does not (yet) resolve
-    // there; that is a separate, pre-existing edge-ordering gap outside this refactor's scope.
+    // resolving the redefined member through the immediately containing usage's/def's type.
+    // This requires the container's typing/specializes edge to already be wired before its
+    // body is walked, which is why `wire_def_specialization_edge`/`add_specializes_edge_if_exists`
+    // must run *before* the body-element recursion loop in every def-kind match arm (previously
+    // several arms wired it after, so this inference silently failed to resolve members declared
+    // via inheritance inside those bodies).
     let contexts = [
         (
             "top_level_part_usage.sysml",
@@ -101,6 +106,18 @@ fn attribute_redefining_a_port_is_classified_as_port_in_every_part_usage_contain
     part y : Base {
       attribute redefines p;
     }
+  }
+}"#,
+        ),
+        (
+            "inside_part_def.sysml",
+            r#"package P {
+  port def PD;
+  part def Base {
+    port p : PD;
+  }
+  part def Foo :> Base {
+    attribute redefines p;
   }
 }"#,
         ),

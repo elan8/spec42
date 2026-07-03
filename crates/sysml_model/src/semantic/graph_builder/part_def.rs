@@ -122,13 +122,13 @@ pub(super) fn build_from_part_def_body_element(
                 Some(parent_id),
             );
             let node_id = NodeId::new(uri, &qualified);
+            if let Some(ref s) = pd_node.specializes {
+                add_specializes_edge_if_exists(g, uri, &qualified, s, container_prefix);
+            }
             if let PartDefBody::Brace { elements } = &pd_node.body {
                 for child in elements {
                     build_from_part_def_body_element(child, uri, Some(&qualified), &node_id, g);
                 }
-            }
-            if let Some(ref s) = pd_node.specializes {
-                add_specializes_edge_if_exists(g, uri, &qualified, s, container_prefix);
             }
         }
         PDBE::PartUsage(n) => {

@@ -212,6 +212,13 @@ pub(super) fn build_view_def(
         parent_id,
     );
     let view_def_id = NodeId::new(uri, &qualified);
+    wire_def_specialization_edge(
+        g,
+        uri,
+        &qualified,
+        container_prefix,
+        vd_node.value.specializes.as_deref(),
+    );
     if let ViewDefBody::Brace { elements } = &vd_node.value.body {
         for element in elements {
             match &element.value {
@@ -238,13 +245,6 @@ pub(super) fn build_view_def(
             }
         }
     }
-    wire_def_specialization_edge(
-        g,
-        uri,
-        &qualified,
-        container_prefix,
-        vd_node.value.specializes.as_deref(),
-    );
 }
 
 pub(super) fn build_viewpoint_def(
@@ -271,6 +271,13 @@ pub(super) fn build_viewpoint_def(
         parent_id,
     );
     let viewpoint_def_id = NodeId::new(uri, &qualified);
+    wire_def_specialization_edge(
+        g,
+        uri,
+        &qualified,
+        container_prefix,
+        vpd_node.value.specializes.as_deref(),
+    );
     if let RequirementDefBody::Brace { .. } = &vpd_node.value.body {
         walk_requirement_def_body(
             g,
@@ -281,13 +288,6 @@ pub(super) fn build_viewpoint_def(
             &vpd_node.value.body,
         );
     }
-    wire_def_specialization_edge(
-        g,
-        uri,
-        &qualified,
-        container_prefix,
-        vpd_node.value.specializes.as_deref(),
-    );
 }
 
 pub(super) fn build_rendering_def(

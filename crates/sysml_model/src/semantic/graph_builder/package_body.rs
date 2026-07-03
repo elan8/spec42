@@ -93,6 +93,13 @@ pub(super) fn build_from_package_body_element(
                 parent_id,
             );
             let node_id = NodeId::new(uri, &qualified);
+            wire_def_specialization_edge(
+                g,
+                uri,
+                &qualified,
+                container_prefix,
+                pd_node.specializes.as_deref(),
+            );
             if let PartDefBody::Brace { elements } = &pd_node.body {
                 for child in elements {
                     part_def::build_from_part_def_body_element(
@@ -104,13 +111,6 @@ pub(super) fn build_from_package_body_element(
                     );
                 }
             }
-            wire_def_specialization_edge(
-                g,
-                uri,
-                &qualified,
-                container_prefix,
-                pd_node.specializes.as_deref(),
-            );
         }
         PBE::PartUsage(pu_node) => {
             usage_builders::materialize_part_usage(pu_node, uri, container_prefix, parent_id, g);
@@ -197,6 +197,13 @@ pub(super) fn build_from_package_body_element(
                 parent_id,
             );
             let node_id = NodeId::new(uri, &qualified);
+            wire_def_specialization_edge(
+                g,
+                uri,
+                &qualified,
+                container_prefix,
+                pd_node.specializes.as_deref(),
+            );
             if let PortDefBody::Brace { elements } = &pd_node.body {
                 for child in elements {
                     port_def::build_from_port_def_body_element(
@@ -208,13 +215,6 @@ pub(super) fn build_from_package_body_element(
                     );
                 }
             }
-            wire_def_specialization_edge(
-                g,
-                uri,
-                &qualified,
-                container_prefix,
-                pd_node.specializes.as_deref(),
-            );
         }
         PBE::InterfaceDef(id_node) => {
             let name = identification_name(&id_node.identification);
@@ -235,6 +235,13 @@ pub(super) fn build_from_package_body_element(
                 parent_id,
             );
             let node_id = NodeId::new(uri, &qualified);
+            wire_def_specialization_edge(
+                g,
+                uri,
+                &qualified,
+                container_prefix,
+                id_node.specializes.as_deref(),
+            );
             if let InterfaceDefBody::Brace { elements } = &id_node.body {
                 interface_def::build_from_interface_def_body(
                     elements,
@@ -244,13 +251,6 @@ pub(super) fn build_from_package_body_element(
                     g,
                 );
             }
-            wire_def_specialization_edge(
-                g,
-                uri,
-                &qualified,
-                container_prefix,
-                id_node.specializes.as_deref(),
-            );
         }
         PBE::AttributeDef(ad_node) => {
             let value = &ad_node.value;
@@ -339,6 +339,13 @@ pub(super) fn build_from_package_body_element(
                 parent_id,
             );
             let node_id = NodeId::new(uri, &qualified);
+            wire_def_specialization_edge(
+                g,
+                uri,
+                &qualified,
+                container_prefix,
+                rd_node.specializes.as_deref(),
+            );
             walk_requirement_def_body(
                 g,
                 uri,
@@ -346,13 +353,6 @@ pub(super) fn build_from_package_body_element(
                 &qualified,
                 &node_id,
                 &rd_node.body,
-            );
-            wire_def_specialization_edge(
-                g,
-                uri,
-                &qualified,
-                container_prefix,
-                rd_node.specializes.as_deref(),
             );
         }
         PBE::RequirementUsage(ru_node) => {
@@ -498,9 +498,6 @@ pub(super) fn build_from_package_body_element(
                 parent_id,
             );
             let node_id = NodeId::new(uri, &qualified);
-            if let UseCaseDefBody::Brace { elements } = &ucd_node.body {
-                use_case::build_from_use_case_body(elements, uri, Some(&qualified), &node_id, g);
-            }
             wire_def_specialization_edge(
                 g,
                 uri,
@@ -508,6 +505,9 @@ pub(super) fn build_from_package_body_element(
                 container_prefix,
                 ucd_node.specializes.as_deref(),
             );
+            if let UseCaseDefBody::Brace { elements } = &ucd_node.body {
+                use_case::build_from_use_case_body(elements, uri, Some(&qualified), &node_id, g);
+            }
         }
         PBE::UseCaseUsage(ucu_node) => {
             let name = &ucu_node.name;
@@ -624,19 +624,19 @@ pub(super) fn build_from_package_body_element(
                     parent_id,
                 );
                 let node_id = NodeId::new(uri, &qualified);
-                super::metadata_def::build_from_metadata_attribute_body(
-                    &md_node.body,
-                    uri,
-                    Some(&qualified),
-                    &node_id,
-                    g,
-                );
                 wire_def_specialization_edge(
                     g,
                     uri,
                     &qualified,
                     container_prefix,
                     md_node.specializes.as_deref(),
+                );
+                super::metadata_def::build_from_metadata_attribute_body(
+                    &md_node.body,
+                    uri,
+                    Some(&qualified),
+                    &node_id,
+                    g,
                 );
             }
         }
@@ -785,6 +785,13 @@ pub(super) fn build_from_package_body_element(
                 parent_id,
             );
             let node_id = NodeId::new(uri, &qualified);
+            wire_def_specialization_edge(
+                g,
+                uri,
+                &qualified,
+                container_prefix,
+                conn_node.specializes.as_deref(),
+            );
             if let ConnectionDefBody::Brace { elements } = &conn_node.body {
                 interface_def::build_from_connection_def_body(
                     elements,
@@ -797,13 +804,6 @@ pub(super) fn build_from_package_body_element(
                     try_wire_derivation_connection(g, uri, &node_id);
                 }
             }
-            wire_def_specialization_edge(
-                g,
-                uri,
-                &qualified,
-                container_prefix,
-                conn_node.specializes.as_deref(),
-            );
         }
         PBE::FlowDef(flow_node) => {
             let name = identification_name(&flow_node.identification);
@@ -974,19 +974,19 @@ pub(super) fn build_from_package_body_element(
                     parent_id,
                 );
                 let node_id = NodeId::new(uri, &qualified);
-                analysis_case::build_from_analysis_body(
-                    &c_node.body,
-                    uri,
-                    Some(&qualified),
-                    &node_id,
-                    g,
-                );
                 wire_def_specialization_edge(
                     g,
                     uri,
                     &qualified,
                     container_prefix,
                     c_node.specializes.as_deref(),
+                );
+                analysis_case::build_from_analysis_body(
+                    &c_node.body,
+                    uri,
+                    Some(&qualified),
+                    &node_id,
+                    g,
                 );
             }
         }
@@ -1038,19 +1038,19 @@ pub(super) fn build_from_package_body_element(
                     parent_id,
                 );
                 let node_id = NodeId::new(uri, &qualified);
-                verification::build_from_verification_body(
-                    &c_node.body,
-                    uri,
-                    Some(&qualified),
-                    &node_id,
-                    g,
-                );
                 wire_def_specialization_edge(
                     g,
                     uri,
                     &qualified,
                     container_prefix,
                     c_node.specializes.as_deref(),
+                );
+                verification::build_from_verification_body(
+                    &c_node.body,
+                    uri,
+                    Some(&qualified),
+                    &node_id,
+                    g,
                 );
             }
         }
@@ -1118,9 +1118,6 @@ pub(super) fn build_from_package_body_element(
                 parent_id,
             );
             let node_id = NodeId::new(uri, &qualified);
-            if let StateDefBody::Brace { elements } = &sd_node.body {
-                state::build_from_state_body(elements, uri, Some(&qualified), &node_id, g);
-            }
             wire_def_specialization_edge(
                 g,
                 uri,
@@ -1128,6 +1125,9 @@ pub(super) fn build_from_package_body_element(
                 container_prefix,
                 sd_node.specializes.as_deref(),
             );
+            if let StateDefBody::Brace { elements } = &sd_node.body {
+                state::build_from_state_body(elements, uri, Some(&qualified), &node_id, g);
+            }
         }
         PBE::StateUsage(su_node) => {
             let name = &su_node.name;
