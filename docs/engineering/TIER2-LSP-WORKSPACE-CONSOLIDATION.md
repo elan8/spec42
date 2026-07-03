@@ -28,7 +28,10 @@ done 2026-07-03) — the merge Phase 3b's original scope envisioned before it wa
 for size/risk, now shipped incrementally with equivalence tests at every step. `ServerState`
 itself still holds a plain `SemanticGraph` field rather than the engine (see that design's
 Phase 4 write-up for why that's a deliberate, not a shortfall). Phase 5 (lazy derived
-snapshot views, the piece that actually fixes Babel42's per-edit recompute cost) not started.
+snapshot views) was **dropped 2026-07-03**: it assumed Babel42 would keep going through the
+snapshot pipeline on every edit, but the maintainer's actual plan has Babel42 calling
+`IncrementalWorkspace` directly (keeping `snapshot` for CLI/MCP only), which sidesteps the
+cost Phase 5 was going to optimize rather than needing it optimized.
 **Date:** 2026-07-02
 **Related:** `docs/architecture-audit.md` (P1-2, P2-3, P2-4, P2-9), Technical Debt Reduction Plan Tier 2.
 

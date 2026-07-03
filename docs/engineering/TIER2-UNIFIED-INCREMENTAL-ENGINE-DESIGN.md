@@ -7,14 +7,14 @@ plain `SemanticGraph` field (not the engine itself) — see "Phase 4" below for 
 right call, not a shortfall. Along the way, `sysml_model` gained
 `link_parsed_documents_parallel`/`_from` (the merge/link half of
 `build_and_link_graph_parallel`, usable with already-parsed documents and an optional base
-graph), closing the Phase 2 parse-cache gap for real. Phase 5 (lazy derived snapshot views —
-the piece that actually fixes Babel42's per-edit cost) not started.
+graph), closing the Phase 2 parse-cache gap for real. **Phase 5 dropped 2026-07-03 — see
+"Phase 5" below.**
 **Date:** 2026-07-03
 **Related:** `docs/engineering/TIER2-LSP-WORKSPACE-CONSOLIDATION.md` (Phases 1-3a, Phase 3b
 Steps 1-4, Step 5a-5c, Phase 4 all landed — this doc addresses the split those phases
 deliberately left alone), `docs/engineering/TIER2-PHASE3B-LAZY-SNAPSHOT-DESIGN.md` (parked;
-Part D of this doc explains how it becomes relevant again once this ships),
-`docs/architecture-audit.md` Tier 2.
+its Part D was the basis for the now-dropped Phase 5 — see "Phase 5" below for why it stays
+parked), `docs/architecture-audit.md` Tier 2.
 
 ## Problem: two independently-implemented "keep the graph up to date" pipelines
 
@@ -148,14 +148,16 @@ independently computed thing. `load_workspace_snapshot` (today: a from-scratch b
 changeset to the engine (a full changeset for the "load" case, a small one for "update"),
 then call `.snapshot()`.
 
-This is also where **Part D of the parked `TIER2-PHASE3B-LAZY-SNAPSHOT-DESIGN.md` becomes
-relevant again**, rather than a separate initiative: once the graph itself is incrementally
+This is also where **Part D of the parked `TIER2-PHASE3B-LAZY-SNAPSHOT-DESIGN.md`** was
+originally expected to become relevant again: once the graph itself is incrementally
 maintained instead of freshly rebuilt on every snapshot, it stops making sense to eagerly
-recompute `language_workspace` / `render_snapshot` / `semantic_projection` on every call.
-Making those `OnceLock`-per-generation (computed only when a caller actually asks) is the
-natural next step here, and is what actually fixes Babel42's per-edit full-recompute cost —
-as a side effect of this unification, not a dedicated project. Not designing that piece in
-detail here; flagged as a likely Step 5 of the migration plan below.
+recompute `language_workspace` / `render_snapshot` / `semantic_projection` on every call, so
+making those `OnceLock`-per-generation looked like the natural next step. **Superseded —
+dropped along with Phase 5, see "Phase 5" below.** The premise (Babel42 stays on the
+snapshot pipeline, so laziness there fixes its per-edit cost) stopped holding once the
+maintainer decided Babel42 will call `IncrementalWorkspace` directly instead of going through
+`snapshot` at all — see Phase 5's write-up for the reasoning. `HostWorkspaceSnapshot`'s
+derived fields stay eagerly computed, as they already were before this whole design.
 
 ### Layer 3 — `comparison`
 
@@ -456,9 +458,39 @@ the full relevant test suites before moving on, higher-risk phases behind a flag
    `IncrementalWorkspace::load_parsed`'s unconditional `self.graph = graph` would silently
    drop anything violating it. The full test suite (including the two functions' own
    dedicated tests) found no such case, which is meaningful evidence, not proof.
-5. **(Follow-on, separate from this migration's core risk)** Make the derived snapshot views
-   lazy per generation (Part D of the lazy-snapshot design, reactivated per above) — the
-   piece that actually resolves Babel42's per-edit recompute cost.
+5. **Dropped 2026-07-03 — decided against, not deferred.** Originally: make the derived
+   snapshot fields (`language_workspace`/`render_snapshot`/`semantic_projection`) lazy per
+   generation via `OnceLock` (Part D of the parked lazy-snapshot design), on the premise that
+   this is what fixes Babel42's per-edit recompute cost.
+
+   **That premise stopped holding.** The maintainer's actual plan is for Babel42 to call
+   `IncrementalWorkspace` directly (mirroring how `lsp_server` already uses it) instead of
+   going through `Spec42Engine::update_snapshot()`/`HostWorkspaceSnapshot` at all — keeping
+   `snapshot` for CLI/MCP only. Once Babel42 stops calling the snapshot pipeline on every
+   edit, laziness *inside that pipeline* stops being relevant to Babel42's cost at all — it
+   isn't optimizing the code path Babel42 will actually run, it's optimizing a code path
+   Babel42 will simply no longer be on.
+
+   What's left of the original motivation, assessed and rejected as not worth pursuing
+   separately:
+   - **CLI**: one-shot (load, use, exit) — nothing else reads a snapshot's unused accessor
+     methods after the process exits, so eager computation of a field the caller never reads
+     costs real work but no *correctness* risk, and the win from skipping it is bounded by
+     "one process lifetime." Not worth the `OnceLock`-per-field complexity for that.
+   - **MCP**: a longer-lived process could in principle benefit (a tool call that only wants
+     diagnostics shouldn't pay for `render_snapshot`), but this was never the case that
+     motivated the design — it was reasoned about from Babel42's edit-per-keystroke cost,
+     which no longer applies here. No usage data suggests this is actually a bottleneck for
+     MCP today. **Decision: current eager behavior is fine as-is for both.**
+
+   The real remaining need for Babel42 — cheap, on-demand derivation of a specific view from
+   whatever graph state it currently holds — is already satisfied by the pattern
+   `lsp_server`'s own `views/`/`analysis/` modules already use (call straight into
+   `sysml_model`/`language_service` against a `&SemanticGraph`, no snapshot involved). That's
+   not a gap this design needs to close; it's a gap in what's *callable outside `lsp_server`*
+   — see the follow-up discussion on generalizing `workspace/library_search.rs` and the
+   feature-inspector-style query orchestration, which is a separate, smaller piece of work
+   from what Phase 5 was originally scoped as.
 
 ## Risks
 
