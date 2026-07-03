@@ -260,6 +260,7 @@ fn has_semantic_code(diagnostics: &[SemanticDiagnostic], code: &str) -> bool {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::snapshot::discovery::path_to_file_url;
     use sysml_model::{build_semantic_graph_with_provider, InMemoryDocumentProvider};
 
     fn make_provider(uri: &str, content: &str) -> InMemoryDocumentProvider {
@@ -319,11 +320,15 @@ package Demo {
     }
 }
 "#;
-        let uri = "file:///c:/workspace/pkg.sysml";
-        let provider = make_provider(uri, content);
+        let target = std::path::PathBuf::from(if cfg!(windows) {
+            "c:/workspace/pkg.sysml"
+        } else {
+            "/workspace/pkg.sysml"
+        });
+        let uri = path_to_file_url(target.as_path()).expect("workspace pkg uri");
+        let provider = make_provider(uri.as_str(), content);
         let (graph, _docs) = build_semantic_graph_with_provider(&provider).expect("graph");
 
-        let target = std::path::PathBuf::from("c:/workspace/pkg.sysml");
         let projection = project_host_semantic_model(&graph, &[target]).expect("projection");
 
         let usage = projection
