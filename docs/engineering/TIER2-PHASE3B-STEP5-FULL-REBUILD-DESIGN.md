@@ -1,7 +1,10 @@
 # Tier 2 Phase 3b Step 5: Shared Full-Workspace Graph Build
 
-**Status:** Step 5a landed 2026-07-02 — new function added and equivalence-tested. Steps
-5b-5c (swap the production call sites) not started.
+**Status:** Step 5a landed 2026-07-02 — new function added and equivalence-tested, derivation
+coverage gap closed. Step 5b landed 2026-07-03 — `workspace`'s full-build path
+(`build_semantic_graph_from_documents`) now calls `build_and_link_graph_parallel`; a real
+duplicate-edge bug was found and fixed along the way. Step 5c (migrate `lsp_server`'s
+full-rebuild call sites) not started.
 **Date:** 2026-07-02
 **Related:** `docs/engineering/TIER2-PHASE3B-SHARED-GRAPH-PATCH-DESIGN.md` (Steps 1-4,
 landed — this doc is that design's Step 5, split out into its own file given its size and
@@ -213,12 +216,57 @@ the small hand-written fixture misses at the scale the "1,681+ nodes" comment re
 Full `cargo test -p sysml_model` (49 test binaries), `cargo check --workspace`, `cargo test
 --workspace`, and `cargo clippy -p sysml_model` all clean.
 
-**Step 5b** — If 5a passes cleanly, swap `build_semantic_graph_from_documents` (in
+**Step 5b — ✅ Done 2026-07-03.** Swapped `build_semantic_graph_from_documents` (in
 `sysml_model::semantic::workspace_graph`) to call `build_and_link_graph_parallel` instead of
-`build_and_link_graph`. This is `workspace`'s full-build path — the actual perf win lands
-here. Run full `workspace` test suite, including a before/after timing comparison on
-`incremental_benchmark.rs`/`robot_vacuum_performance.rs` if feasible, to confirm this is
-actually faster in practice and not just differently-shaped.
+`build_and_link_graph`, wrapped in `Ok(...)` since the parallel function is infallible where
+the sequential one returned `Result`. This is `workspace`'s full-build path (also used by
+CLI, MCP, Babel42) — the actual perf win lands here.
+
+**Found and fixed a real duplicate-edge bug during the swap.** `cargo test -p sysml_model`
+caught a regression immediately:
+`attribute_def_quantities::attribute_def_quantity_specialization_resolves_in_workspace`
+failed — a single-document `attribute def Voltage :> ElectricPotentialDifferenceValue`
+specializes edge came out doubled (2 typing edges instead of 1). Root cause:
+`resolve_cross_document_edges_for_uri` resolves typing/specializes/subject refs for *every*
+node in a URI, not only refs whose target lives in another document — for a same-document
+reference, `build_graph_from_doc` had already wired the identical edge during per-document
+graph building. `build_and_link_graph_parallel` was adding the resolved edges via a raw
+`graph.graph.add_edge(...)`, which doesn't dedupe, whereas the sequential path's
+`link_workspace_relationships` calls `add_typing_edge_for_node`/`add_specializes_edges_for_node`,
+both of which go through `add_semantic_edge_once` (`relationships.rs:556`) and skip re-adding
+an edge that already exists. **This is why the Step 5a equivalence test didn't catch it**:
+`edge_triples()` returns a `BTreeSet`, so a duplicated edge with an identical
+(source, target, kind) triple collapses to one set entry — the set-equality assertions were
+blind to edge *count*, only edge *identity*. Fixed by routing
+`build_and_link_graph_parallel`'s resolved-edge insertion through `add_semantic_edge_once`
+instead of a raw `add_edge` (`pipeline.rs`, in the parallel cross-document edge resolution
+block). Re-ran the full `sysml_model` suite after the fix — all 199+ tests pass, including
+the previously-failing one.
+
+*Note for future equivalence-style tests in this codebase*: comparing edge sets via a
+`BTreeSet` of triples verifies edge *identity*, not edge *count* — a duplicate-insertion bug
+where the duplicate has the same (source, target, kind) as an already-correct edge will not
+show up as a set difference. A multiset/count comparison (or an explicit assertion on
+`graph.graph.edge_count()`) would have caught this at Step 5a instead of at the production
+swap.
+
+**Verification**: `cargo check -p sysml_model`, `cargo test -p sysml_model` (all green,
+including the fixed regression), `cargo check --workspace` (only the pre-existing unrelated
+`SemanticLifecycle` unused-import warning in `lsp_server`), `cargo test --workspace` (all
+green), `cargo clippy -p sysml_model --no-deps` and `cargo clippy -p workspace --no-deps`
+(both clean).
+
+**Perf measurement — honest limitation, not measured against a realistic fixture.**
+`workspace/tests/incremental_benchmark.rs`'s
+`benchmark_single_document_incremental_vs_full_rebuild` (an 8-file in-memory fixture, no
+external download needed) ran clean post-swap (`full=17ms incremental=13ms`, debug build),
+but that fixture is too small and the run is debug-mode, so it isn't a meaningful signal for
+the parallel build's actual win. `robot_vacuum_performance.rs`'s benchmarks require fetching
+an external fixture via `scripts/fetch-robot-vacuum-cleaner.sh` (network access), which
+wasn't run as part of this step — so **no before/after timing comparison on a realistic
+workspace has been captured yet**. The swap is verified correct (equivalence test + full
+test suite), not yet verified faster in practice. Worth doing as a explicit follow-up before
+claiming a perf win in the audit doc.
 
 **Step 5c** — Migrate `lsp_server::rebuild_all_document_links` and the
 `merge_document_graphs_into`/`rebuild_semantic_graph_staged` pair to delegate to

@@ -2,7 +2,7 @@ use sysml_v2_parser::RootNamespace;
 use url::Url;
 
 use crate::semantic::graph::SemanticGraph;
-use crate::semantic::pipeline::build_and_link_graph;
+use crate::semantic::pipeline::build_and_link_graph_parallel;
 use crate::semantic::source::{SysmlDocument, SysmlDocumentProvider};
 
 #[derive(Debug, Clone)]
@@ -20,7 +20,7 @@ pub struct WorkspaceParsedDocument {
 pub fn build_semantic_graph_from_documents(
     documents: &[SysmlDocument],
 ) -> Result<(SemanticGraph, Vec<WorkspaceParsedDocument>), String> {
-    build_and_link_graph(documents)
+    Ok(build_and_link_graph_parallel(documents))
 }
 
 /// Build semantic graph from a pluggable document provider.

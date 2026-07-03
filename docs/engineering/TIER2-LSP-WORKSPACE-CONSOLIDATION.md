@@ -111,8 +111,14 @@ identical nodes and edges to the old sequential path on a fixture exercising cro
 typing and subject edges — passed on the first run, resolving the tension between two
 contradictory doc comments in `sysml_model` (one self-described as "legacy") in favor of the
 newer one. The fixture now also covers derivation-connection edges (closed 2026-07-02, see
-the Step 5 doc). Steps 5b-5c (swap `workspace`'s and `lsp_server`'s production call sites to
-the new function) not started.
+the Step 5 doc). **Step 5b landed 2026-07-03**: `workspace`'s full-build path
+(`build_semantic_graph_from_documents`) now calls `build_and_link_graph_parallel`. The swap
+surfaced a real duplicate-edge bug (same-document typing/specializes edges were being added
+twice — once during per-document graph build, once during parallel cross-document
+resolution, because the resolved-edge insertion used a raw `add_edge` instead of the
+deduping `add_semantic_edge_once`); fixed, full `sysml_model` and `workspace` suites pass.
+No before/after timing comparison on a realistic fixture has been captured yet (see the Step
+5 doc for why). Step 5c (`lsp_server`'s full-rebuild call sites) not started.
 
 ## Phase 2 status (done, 2026-07-02)
 

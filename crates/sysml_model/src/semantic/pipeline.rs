@@ -13,8 +13,9 @@ use crate::semantic::graph_builder::build_graph_from_doc;
 use crate::semantic::library_loader::declared_packages_from_parsed;
 use crate::semantic::model::SemanticEdge;
 use crate::semantic::relationships::{
-    add_cross_document_edges_for_uri, link_workspace_derivations, link_workspace_relationships,
-    resolve_cross_document_edges_for_uri, resolve_workspace_pending_relationships,
+    add_cross_document_edges_for_uri, add_semantic_edge_once, link_workspace_derivations,
+    link_workspace_relationships, resolve_cross_document_edges_for_uri,
+    resolve_workspace_pending_relationships,
 };
 use crate::semantic::source::{SysmlDocument, SysmlDocumentSourceKind};
 use crate::semantic::workspace_graph::WorkspaceParsedDocument;
@@ -149,12 +150,12 @@ pub fn build_and_link_graph_parallel(
         .flat_map(|uri| resolve_cross_document_edges_for_uri(&graph, uri))
         .collect();
     for (src_id, tgt_id, kind) in resolved_edges {
-        if let (Some(&src_idx), Some(&tgt_idx)) = (
-            graph.node_index_by_id.get(&src_id),
-            graph.node_index_by_id.get(&tgt_id),
-        ) {
-            graph.graph.add_edge(src_idx, tgt_idx, SemanticEdge::plain(kind));
-        }
+        // `resolve_cross_document_edges_for_uri` resolves typing/specializes/subject refs
+        // for every node in the URI, not just ones whose target lives in another document —
+        // for a same-document reference, `build_graph_from_doc` may already have wired the
+        // identical edge. Use `add_semantic_edge_once` (not a raw `add_edge`) so this phase
+        // dedupes the same way `link_workspace_relationships`'s per-node loop does.
+        add_semantic_edge_once(&mut graph, &src_id, &tgt_id, SemanticEdge::plain(kind));
     }
     graph.invalidate_query_indexes();
 
