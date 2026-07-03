@@ -18,6 +18,13 @@ confirmed by new regression tests. **Step 5 (the full-rebuild-path duplication, 
 5 status" and "Phase 4" sections below. Phase 4 turned out to be a small cleanup (two
 unused-import removals), not the large `services.rs` shrink originally envisioned, since
 the wholesale duplicated-logic merge that would have produced dead code was rescoped away.
+**A new, larger design picks up where that rescoping left off**:
+`docs/engineering/TIER2-UNIFIED-INCREMENTAL-ENGINE-DESIGN.md` (2026-07-03, not started)
+proposes moving `lsp_server`'s incremental engine (parse cache, library graph cache, update
+sequencing) into `workspace` as the primary path, with the eager snapshot API redefined as a
+thin view over it instead of an independent pipeline — the merge Phase 3b's original scope
+envisioned before it was rescoped down for size/risk, now designed with the benefit of
+everything Steps 1-5c/Phase 4 learned.
 **Date:** 2026-07-02
 **Related:** `docs/architecture-audit.md` (P1-2, P2-3, P2-4, P2-9), Technical Debt Reduction Plan Tier 2.
 
