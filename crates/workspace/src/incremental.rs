@@ -11,17 +11,19 @@
 //! primitive and the incremental-patch primitive before anything depends on it.
 
 use std::collections::HashMap;
-use std::path::Path;
+use std::path::{Path, PathBuf};
 use std::time::Instant;
 
 use rayon::prelude::*;
 use url::Url;
 
+use crate::error::WorkspaceResult;
 use crate::parse_cache;
 use crate::semantic::{
     build_and_link_graph_parallel, link_parsed_documents_parallel_from, patch_graph_for_document,
     SemanticGraph, WorkspaceParsedDocument,
 };
+use crate::snapshot::HostValidationReport;
 use crate::{SysmlDocument, SysmlDocumentSourceKind};
 
 /// Timing and size metrics for one [`IncrementalWorkspace`] operation.
@@ -304,6 +306,40 @@ impl IncrementalWorkspace {
         }
         (sysml_v2_parser::parse(&document.content).ok(), false)
     }
+}
+
+/// Compute a [`HostValidationReport`] directly from an [`IncrementalWorkspace`]'s current
+/// graph/documents, without building a [`crate::snapshot::HostWorkspaceSnapshot`].
+///
+/// A thin, same-crate call into `snapshot::facts::collect_host_validation_report` — the exact
+/// function [`crate::snapshot::build::build_workspace_snapshot`] already uses internally.
+/// Exists so embedders that hold an [`IncrementalWorkspace`] directly (rather than going
+/// through the `snapshot` pipeline) can still get diagnostics, without paying for the rest of
+/// a snapshot's eager derived fields (`language_workspace`/`render_snapshot`/
+/// `semantic_projection`) they don't need. See
+/// `docs/engineering/TIER2-UNIFIED-INCREMENTAL-ENGINE-DESIGN.md`'s "Phase 5" write-up.
+///
+/// # Errors
+///
+/// Returns an error when target file URLs cannot be resolved.
+pub fn validate_workspace(
+    graph: &SemanticGraph,
+    documents: &[SysmlDocument],
+    library_urls: &[Url],
+    target_files: &[PathBuf],
+    workspace_root: Option<&Path>,
+    library_paths_display: &[PathBuf],
+    strict_diagnostics: bool,
+) -> WorkspaceResult<HostValidationReport> {
+    crate::snapshot::facts::collect_host_validation_report(
+        graph,
+        documents,
+        library_urls,
+        target_files,
+        workspace_root,
+        library_paths_display,
+        strict_diagnostics,
+    )
 }
 
 #[cfg(test)]
@@ -674,6 +710,53 @@ package AnalysisCases {
                 .expect("document indexed")
                 .parse_cached,
             "second apply_document with the same content should hit the parse cache"
+        );
+    }
+
+    #[test]
+    fn validate_workspace_matches_collect_host_validation_report_directly() {
+        let mut engine = IncrementalWorkspace::new();
+        let documents = fixture_documents();
+        engine.load(&documents);
+
+        let library_urls: Vec<Url> = Vec::new();
+        let target_files: Vec<PathBuf> = Vec::new();
+        let library_paths_display: Vec<PathBuf> = Vec::new();
+
+        let via_wrapper = validate_workspace(
+            &engine.graph(),
+            &documents,
+            &library_urls,
+            &target_files,
+            None,
+            &library_paths_display,
+            false,
+        )
+        .expect("validate_workspace succeeds");
+
+        let via_direct_call = crate::snapshot::facts::collect_host_validation_report(
+            &engine.graph(),
+            &documents,
+            &library_urls,
+            &target_files,
+            None,
+            &library_paths_display,
+            false,
+        )
+        .expect("collect_host_validation_report succeeds");
+
+        assert_eq!(
+            via_wrapper.summary.document_count,
+            via_direct_call.summary.document_count
+        );
+        assert_eq!(
+            via_wrapper.summary.error_count,
+            via_direct_call.summary.error_count
+        );
+        assert_eq!(via_wrapper.workspace_root, via_direct_call.workspace_root);
+        assert_eq!(
+            via_wrapper.resolved_library_paths,
+            via_direct_call.resolved_library_paths
         );
     }
 }

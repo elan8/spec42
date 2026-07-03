@@ -4,7 +4,7 @@ mod build;
 mod changes;
 mod context;
 pub mod discovery;
-mod facts;
+pub(crate) mod facts;
 mod metadata;
 mod output;
 mod projection;

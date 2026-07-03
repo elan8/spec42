@@ -26,7 +26,7 @@ pub use comparison::{
 };
 pub use engine::{EngineBuilder, HostEngineMetadata, Spec42Engine};
 pub use error::{WorkspaceResult, WorkspaceError};
-pub use incremental::{IncrementalWorkspace, WorkspaceUpdateMetrics};
+pub use incremental::{validate_workspace, IncrementalWorkspace, WorkspaceUpdateMetrics};
 pub use library::{
     bundle::LibraryBundleConfig,
     domain::{
@@ -51,6 +51,7 @@ pub use snapshot::{
     HostSemanticProjection, HostValidatedDocument, HostValidationReport, HostValidationSummary,
     HostWorkspaceSnapshot, Spec42ProjectionOutput, ValidationTiming, WorkspaceLoadRequest,
 };
+pub use snapshot::discovery::{discover_target_files, path_to_file_url, resolve_workspace_root};
 pub use version::{HostArtifactMetadata, HostSchemaVersions};
 pub use semantic::{
     add_cross_document_edges_for_uri, build_graph_from_doc, evaluate_expressions,
