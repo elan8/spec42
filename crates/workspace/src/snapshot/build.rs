@@ -7,11 +7,10 @@ use std::time::Instant;
 
 use language_service::InMemoryWorkspace;
 use sysml_model::{
-    build_render_snapshot, build_semantic_graph_from_documents,
-    build_sysml_visualization_from_render_snapshot, empty_merged_ibd, full_ibd_for_render_snapshot,
-    visualization_build_options, IbdBuildScope, IbdDataDto, SemanticGraph, SysmlDocument,
-    SysmlDocumentProvider, SysmlVisualizationResultDto, WorkspaceParsedDocument,
-    WorkspaceRenderSnapshot,
+    build_render_snapshot, build_sysml_visualization_from_render_snapshot, empty_merged_ibd,
+    full_ibd_for_render_snapshot, visualization_build_options, IbdBuildScope, IbdDataDto,
+    SemanticGraph, SysmlDocument, SysmlDocumentProvider, SysmlVisualizationResultDto,
+    WorkspaceParsedDocument, WorkspaceRenderSnapshot,
 };
 use sha2::{Digest, Sha256};
 use url::Url;
@@ -19,8 +18,8 @@ use url::Url;
 use crate::catalog::LibraryCatalog;
 use crate::engine::HostEngineMetadata;
 use crate::error::{
-    map_graph_error, map_language_service_error, map_provider_error, map_render_snapshot_error,
-    map_view_error, WorkspaceResult, WorkspaceError,
+    map_language_service_error, map_provider_error, map_render_snapshot_error, map_view_error,
+    WorkspaceResult, WorkspaceError,
 };
 use crate::snapshot::context::{HostContext, HostPipelinePhase};
 use crate::snapshot::discovery::{discover_target_files, path_to_file_url, resolve_workspace_root};
@@ -30,7 +29,7 @@ use crate::snapshot::output::Spec42ProjectionOutput;
 use crate::snapshot::projection::HostSemanticProjection;
 use crate::snapshot::request::{ValidationTiming, WorkspaceLoadRequest};
 use crate::snapshot::validation::HostValidationReport;
-use crate::Spec42Engine;
+use crate::{IncrementalWorkspace, Spec42Engine};
 
 /// Immutable workspace snapshot built once and queried by hosts and server adapters.
 #[derive(Debug)]
@@ -229,8 +228,10 @@ pub(crate) fn build_workspace_snapshot(
     let workspace_root_uri = path_to_file_url(&workspace_root)?;
 
     context.check_continue(HostPipelinePhase::BuildingGraph)?;
-    let (semantic_graph, parsed_documents) =
-        build_semantic_graph_from_documents(&documents).map_err(map_graph_error)?;
+    let mut incremental_workspace = IncrementalWorkspace::new();
+    incremental_workspace.load(&documents);
+    let semantic_graph = incremental_workspace.graph();
+    let parsed_documents = incremental_workspace.documents();
     context.enforce_graph_limits(
         semantic_graph.node_ids_by_qualified_name.len(),
         semantic_graph.graph.edge_count(),

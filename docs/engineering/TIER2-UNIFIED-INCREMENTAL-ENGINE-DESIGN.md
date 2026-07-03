@@ -1,7 +1,11 @@
 # Tier 2: Unified Incremental Engine — Move `lsp_server`'s Incremental Machinery Into `workspace`, Layer Snapshot On Top
 
-**Status:** Phases 1-2 landed 2026-07-03 — see "Phase 1 status"/"Phase 2 status" below.
-Phases 3-5 not started.
+**Status:** Phases 1-3 landed 2026-07-03 — see the phase write-ups below. Phases 4-5 not
+started. Phase 4 (the highest-risk one — migrating `lsp_server`'s production hot path) has
+not been de-risked by Phases 1-3 beyond "the engine it will delegate to is now proven correct
+at both the standalone level and wired into `Spec42Engine`'s real full-load and
+incremental-update paths, exercised by `server` crate's full test suite" — the concurrency
+and staged-commit design work for Phase 4 itself hasn't started.
 **Date:** 2026-07-03
 **Related:** `docs/engineering/TIER2-LSP-WORKSPACE-CONSOLIDATION.md` (Phases 1-3a, Phase 3b
 Steps 1-4, Step 5a-5c, Phase 4 all landed — this doc addresses the split those phases
@@ -301,9 +305,60 @@ the full relevant test suites before moving on, higher-risk phases behind a flag
    test; the handful of other warnings present are the same pre-existing, unrelated dead-code
    items in `snapshot/facts.rs`/`tests/support/comparison_fixtures.rs` noted in the Phase 1
    write-up).
-3. **Migrate `Spec42Engine`/`snapshot` module to build on it.** This is where the eager and
-   incremental pipelines actually merge into one. Full `workspace` + `server` crate test
-   suites must pass unchanged (same parity bar as Steps 1-4).
+3. **Migrate `Spec42Engine`/`snapshot` module to build on it. ✅ Done 2026-07-03.** This is
+   where the eager and incremental pipelines actually merged into one.
+
+   **Full-build side** (`snapshot/build.rs`'s `build_workspace_snapshot`): the two-line
+   `build_semantic_graph_from_documents(&documents).map_err(map_graph_error)?` call replaced
+   with `IncrementalWorkspace::new().load(&documents)` plus `.graph()`/`.documents()`. Nearly
+   a no-op change in practice — `build_semantic_graph_from_documents` already delegated to
+   `build_and_link_graph_parallel` since Step 5b, the same function `load` wraps, and it was
+   already `Ok(...)`-wrapping an infallible call, so dropping the now-vestigial `Result`
+   changed nothing observable. This is also why `map_graph_error` became genuinely dead code
+   (its only call site) — removed, from `error/map.rs` and its re-export in `error.rs`.
+
+   **Incremental side** (`snapshot/update.rs`'s `try_incremental_update`): this is where the
+   real merge happened. Replaced the hand-written sequence — deep-clone the previous graph,
+   a bespoke `patch_parsed_documents` helper (filter out the changed URI, re-parse, push),
+   and a direct `sysml_v2_parser::parse` + `patch_graph_for_document` call — with
+   `IncrementalWorkspace::from_parts(previous.semantic_graph_arc(), previous.parsed_documents().to_vec())`
+   followed by one `apply_document(changed, None)` call. `from_parts` (new on
+   `IncrementalWorkspace`) reconstructs engine state from a previous snapshot without
+   deep-copying the graph up front — the `Arc` clone stays cheap until `apply_document`
+   actually mutates it, same cost shape as before. `patch_parsed_documents` deleted entirely;
+   `apply_document`'s existing miss/hit handling (drop the document from the index on a
+   parse failure, replace it on success) matches its exact behavior — verified by parity
+   tests, not just read by inspection.
+
+   Deliberately **not** changed as part of this migration: `cache_dir: None` is passed to
+   `apply_document` here, meaning `workspace`'s incremental-update path still doesn't use the
+   parse cache — matching its pre-migration behavior exactly (it never used one). Wiring the
+   cache through `Spec42Engine`'s already-known `cache_dir` is a real, available follow-up,
+   deliberately deferred so this phase stayed a pure behavior-preserving refactor rather than
+   bundling in a feature change (see open question 4, superseded/narrowed by this note).
+
+   **A determinism fix surfaced along the way**: `IncrementalWorkspace::documents()` was
+   returning `HashMap` iteration order (unspecified) from Phase 2; before wiring it into a
+   snapshot path whose output order might matter to a consumer, changed it to sort by URI —
+   checked first that no existing code or test depended on the old insertion-derived order
+   (`HostWorkspaceSnapshot::documents()`, which some tests do index by position, is a
+   separate `Vec<SysmlDocument>` field populated from the raw input list, not derived from
+   `IncrementalWorkspace` — unaffected either way).
+
+   **New engine-level equivalence test**: `from_parts_then_apply_document_matches_load` —
+   confirms `from_parts` + `apply_document` produces the same graph as a fresh `load` of the
+   post-edit document set, the same shape `try_incremental_update` now depends on.
+
+   **Verification**: `cargo check -p workspace --all-targets` (clean — only the same
+   pre-existing, unrelated dead-code warnings from Phase 1/2), `cargo test -p workspace --lib
+   incremental` (6/6, including the new `from_parts` test), `cargo test -p workspace --test
+   incremental_parity` (all 4 pass — this is the exact test file that exercises the migrated
+   `try_incremental_update` path end-to-end, including the two regression tests from Steps
+   1-4 for `evaluate_expressions`), `cargo test -p workspace` (full suite green, 38 lib tests
+   now vs. 32 before Phase 2), `cargo test --workspace` (green — including `server`'s 44-test
+   suite, the real production consumer of `Spec42Engine`/`HostWorkspaceSnapshot`), `cargo
+   clippy -p workspace --no-deps --all-targets` and `cargo clippy -p server --no-deps` (both
+   clean, zero warnings in any file touched by this phase).
 4. **Migrate `lsp_server`'s `ServerState` to hold and delegate to it**, keeping only the
    `tokio` wrapper and protocol-specific state local. Highest-risk phase — this is the
    production LSP hot path, every file edit in every connected editor goes through it.

@@ -6,8 +6,7 @@ use thiserror::Error;
 mod map;
 
 pub(crate) use map::{
-    map_graph_error, map_language_service_error, map_provider_error, map_render_snapshot_error,
-    map_view_error,
+    map_language_service_error, map_provider_error, map_render_snapshot_error, map_view_error,
 };
 
 #[derive(Debug, Error, Serialize)]

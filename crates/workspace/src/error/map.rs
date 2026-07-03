@@ -9,13 +9,6 @@ pub(crate) fn map_provider_error(message: String) -> WorkspaceError {
     WorkspaceError::unresolved_library_environment(message)
 }
 
-pub(crate) fn map_graph_error(message: String) -> WorkspaceError {
-    if looks_like_parse_failure(&message) {
-        return WorkspaceError::parser_failure(None::<String>, message);
-    }
-    WorkspaceError::internal_invariant_failure(message)
-}
-
 pub(crate) fn map_view_error(view: &str, message: String) -> WorkspaceError {
     let lowered = message.to_ascii_lowercase();
     if lowered.contains("unsupported")

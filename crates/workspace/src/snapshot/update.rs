@@ -4,10 +4,7 @@ use std::sync::Arc;
 use std::time::Instant;
 
 use language_service::InMemoryWorkspace;
-use sysml_model::{
-    build_render_snapshot, patch_graph_for_document, SemanticGraph, SysmlDocument,
-    WorkspaceParsedDocument,
-};
+use sysml_model::{build_render_snapshot, SemanticGraph, SysmlDocument, WorkspaceParsedDocument};
 
 use crate::error::{map_language_service_error, map_render_snapshot_error, WorkspaceResult};
 use crate::provider::InMemoryDocumentProvider;
@@ -19,7 +16,7 @@ use crate::snapshot::context::{HostContext, HostPipelinePhase};
 use crate::snapshot::discovery::discover_target_files;
 use crate::snapshot::facts::{collect_host_validation_report, project_host_semantic_model};
 use crate::snapshot::request::{ValidationTiming, WorkspaceLoadRequest};
-use crate::Spec42Engine;
+use crate::{IncrementalWorkspace, Spec42Engine};
 
 pub fn update_workspace_snapshot(
     engine: &Spec42Engine,
@@ -100,23 +97,28 @@ fn try_incremental_update(
     context: &HostContext,
 ) -> WorkspaceResult<HostWorkspaceSnapshot> {
     let changed = &changes.changed[0];
-    let uri = changed.uri.clone();
 
     context.check_continue(HostPipelinePhase::BuildingGraph)?;
-    // One unavoidable deep clone: we need an owned graph to mutate.
-    let mut graph = (*previous.semantic_graph()).clone();
+    // `IncrementalWorkspace` reconstructed from the previous snapshot's state — its `graph`
+    // is `Arc`-backed, so this doesn't deep-copy until `apply_document` actually mutates it.
+    let mut incremental_workspace = IncrementalWorkspace::from_parts(
+        previous.semantic_graph_arc(),
+        previous.parsed_documents().to_vec(),
+    );
+    // `cache_dir: None` — this path has never gone through the parse cache; keep it that way
+    // for now rather than changing behavior as part of this migration (see Tier 2
+    // unified-incremental-engine design, open question 4).
+    incremental_workspace.apply_document(changed, None);
 
-    let parsed_documents = patch_parsed_documents(previous.parsed_documents(), changed)?;
-    let parsed = sysml_v2_parser::parse(&changed.content).ok();
-    patch_graph_for_document(&mut graph, &uri, parsed.as_ref(), true);
+    let semantic_graph = incremental_workspace.graph();
+    let parsed_documents = incremental_workspace.documents();
 
     context.enforce_graph_limits(
-        graph.node_ids_by_qualified_name.len(),
-        graph.graph.edge_count(),
+        semantic_graph.node_ids_by_qualified_name.len(),
+        semantic_graph.graph.edge_count(),
     )?;
     context.check_continue(HostPipelinePhase::BuildingGraph)?;
 
-    let semantic_graph = graph;
     assemble_snapshot_from_state(
         engine,
         previous,
@@ -126,31 +128,6 @@ fn try_incremental_update(
         request,
         context,
     )
-}
-
-fn patch_parsed_documents(
-    previous: &[WorkspaceParsedDocument],
-    changed: &SysmlDocument,
-) -> WorkspaceResult<Vec<WorkspaceParsedDocument>> {
-    let parse_start = Instant::now();
-    let mut parsed_documents: Vec<WorkspaceParsedDocument> = previous
-        .iter()
-        .filter(|doc| doc.uri != changed.uri)
-        .cloned()
-        .collect();
-
-    if let Ok(parsed) = sysml_v2_parser::parse(&changed.content) {
-        let parse_time_ms = parse_start.elapsed().as_millis().max(1) as u32;
-        parsed_documents.push(WorkspaceParsedDocument {
-            uri: changed.uri.clone(),
-            content: changed.content.clone(),
-            parsed,
-            parse_time_ms,
-            parse_cached: false,
-        });
-    }
-
-    Ok(parsed_documents)
 }
 
 fn assemble_snapshot_from_state(

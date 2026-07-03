@@ -72,14 +72,30 @@ impl IncrementalWorkspace {
         Self::default()
     }
 
+    /// Reconstruct an engine from a previously computed graph and document set — e.g. to
+    /// resume patching a `HostWorkspaceSnapshot` that was assembled elsewhere. `graph`'s
+    /// `Arc` backing means this doesn't deep-copy the graph itself.
+    pub fn from_parts(graph: SemanticGraph, documents: Vec<WorkspaceParsedDocument>) -> Self {
+        Self {
+            graph,
+            documents: documents
+                .into_iter()
+                .map(|doc| (doc.uri.clone(), doc))
+                .collect(),
+        }
+    }
+
     /// The current semantic graph. `SemanticGraph` is `Arc`-backed, so this clone is cheap.
     pub fn graph(&self) -> SemanticGraph {
         self.graph.clone()
     }
 
-    /// The parsed documents currently merged into the graph, in unspecified order.
+    /// The parsed documents currently merged into the graph, sorted by URI for a
+    /// deterministic order (internal storage is a `HashMap`, whose iteration order isn't).
     pub fn documents(&self) -> Vec<WorkspaceParsedDocument> {
-        self.documents.values().cloned().collect()
+        let mut docs: Vec<WorkspaceParsedDocument> = self.documents.values().cloned().collect();
+        docs.sort_by(|a, b| a.uri.as_str().cmp(b.uri.as_str()));
+        docs
     }
 
     pub fn document_count(&self) -> usize {
@@ -374,6 +390,47 @@ package Architecture {
             mass.attributes.get("evaluatedValue"),
             Some(&serde_json::json!(3))
         );
+    }
+
+    /// `from_parts` plus `apply_document` should be indistinguishable from building the
+    /// whole thing via `load` in one call — the shape `snapshot::update`'s incremental path
+    /// (Phase 3) relies on: reconstruct engine state from a previous snapshot's graph and
+    /// document set, then patch.
+    #[test]
+    fn from_parts_then_apply_document_matches_load() {
+        let documents = fixture_documents();
+        let mut loaded = IncrementalWorkspace::new();
+        loaded.load(&documents);
+
+        let mut reconstructed = IncrementalWorkspace::from_parts(loaded.graph(), loaded.documents());
+        assert_eq!(node_qualified_names(&reconstructed.graph()), node_qualified_names(&loaded.graph()));
+        assert_eq!(reconstructed.document_count(), loaded.document_count());
+
+        let updated_analysis = doc(
+            "incremental",
+            "AnalysisCases.sysml",
+            r#"
+package AnalysisCases {
+  private import Architecture::*;
+
+  analysis def PowerAnalysis {
+    attribute powerBudgetW : Real = 100;
+    subject robot : Robot;
+    return ref withinBudget {
+      return robot.mobility.drivePowerW <= powerBudgetW;
+    }
+  }
+}
+"#,
+        );
+        reconstructed.apply_document(&updated_analysis, None);
+
+        let mut expected_documents = documents;
+        expected_documents[1] = updated_analysis;
+        let (expected_graph, _) = build_and_link_graph_parallel(&expected_documents);
+
+        assert_eq!(node_qualified_names(&reconstructed.graph()), node_qualified_names(&expected_graph));
+        assert_eq!(edge_triples(&reconstructed.graph()), edge_triples(&expected_graph));
     }
 
     #[test]
