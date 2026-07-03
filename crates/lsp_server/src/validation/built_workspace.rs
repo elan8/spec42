@@ -9,7 +9,7 @@ use tower_lsp::lsp_types::Url;
 
 use crate::host::config::Spec42Config;
 use crate::workspace::coordinator::SemanticCoordinator;
-use crate::workspace::state::{IndexEntry, ParseMetadata, SemanticLifecycle, ServerState};
+use crate::workspace::state::{IndexEntry, ParseMetadata, ServerState};
 
 use super::discovery::{discover_target_files, path_to_file_url, resolve_workspace_root};
 use super::pipeline::{collect_target_documents, project_semantic_model};

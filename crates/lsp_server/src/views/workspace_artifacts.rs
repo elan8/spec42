@@ -244,7 +244,7 @@ pub(crate) fn primary_workspace_root(state: &ServerState) -> Option<Url> {
 mod cache_tests {
     use super::*;
     use crate::workspace::coordinator::SemanticCoordinator;
-    use crate::workspace::state::{IndexEntry, ParseMetadata, SemanticLifecycle, ServerState};
+    use crate::workspace::state::{IndexEntry, ParseMetadata, ServerState};
     use crate::workspace::viz_cache::WorkspaceRenderCache;
     use sysml_model::{build_semantic_graph_with_provider, FileSystemDocumentProvider};
     use std::path::PathBuf;

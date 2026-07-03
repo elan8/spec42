@@ -13,9 +13,11 @@ in `sysml_model` (`patch_graph_for_document`/`finalize_and_evaluate`), re-export
 own sequences. Along the way this fixed a real correctness bug: `workspace` crate's graph
 pipeline never called `evaluate_expressions`, so every snapshot built via CLI, MCP, or
 Babel42 had unevaluated attribute values — fixed as a byproduct of the consolidation,
-confirmed by new regression tests. Step 5 (the larger, separate full-rebuild-path
-duplication) and Phase 4 (delete now-dead code — worth revisiting now that Step 4 has
-landed, since `services.rs` may have more dead weight to remove) not started.
+confirmed by new regression tests. **Step 5 (the full-rebuild-path duplication, Steps
+5a-5c) and Phase 4 (delete now-dead code) are both done as of 2026-07-03** — see the "Step
+5 status" and "Phase 4" sections below. Phase 4 turned out to be a small cleanup (two
+unused-import removals), not the large `services.rs` shrink originally envisioned, since
+the wholesale duplicated-logic merge that would have produced dead code was rescoped away.
 **Date:** 2026-07-02
 **Related:** `docs/architecture-audit.md` (P1-2, P2-3, P2-4, P2-9), Technical Debt Reduction Plan Tier 2.
 
@@ -128,8 +130,32 @@ sites anywhere in `lsp_server`, confirmed by grep) — same shape as the earlier
 `evaluate_expressions` gap, meaning analysis/verification expressions relying on inherited
 typed case context could evaluate against stale context right after a full workspace load,
 until the next incremental edit self-healed it. Both fixed; `lsp_server`'s full test suite
-and the workspace-wide suite pass clean. Only Phase 4 (delete resulting dead code) remains
-in Tier 2 Phase 3b.
+and the workspace-wide suite pass clean.
+
+**Phase 4 — ✅ Done 2026-07-03, but not the outcome originally scoped.** The original plan
+(top of this doc, written before Phase 3b was rescoped) expected `services.rs` to shrink from
+~2988 lines to "primarily LSP-protocol glue" once the ~1200-line duplicated-logic merge into
+`workspace` crate landed. That merge never happened — Phase 3b was rescoped twice (first
+away from Babel42 lazy-snapshot work, then down to the much narrower shared
+graph-patch-primitive design) and shipped as small, in-place delegations/bugfixes rather than
+wholesale removal of duplicated functions. So there was no large block of orphaned code left
+behind to delete. Checked directly: `cargo check -p lsp_server --all-targets` showed exactly
+two `dead_code`-adjacent warnings, both unused `SemanticLifecycle` imports (one in
+`validation/built_workspace.rs`, one in a `#[cfg(test)]` module in
+`views/workspace_artifacts.rs`) — leftovers from the June 2026 `SemanticCoordinator`
+introduction (commit `82e1fcd`), predating this Tier 2 initiative entirely, not "resulting"
+from Steps 1-5c. Removed both. No other dead code in `lsp_server`'s `workspace/` module: the
+compiler finds nothing else unused, because everything Steps 1-4 and 5c touched was either
+collapsed to a delegating one-liner in place (`update_semantic_graph_for_uri`) or fixed
+in place (the two Step 5c bugs) — neither leaves an orphaned function behind.
+`workspace/services.rs` is 1221 lines today (was ~1345 before Phase 3a); the rest of
+`workspace/` is 2850 lines total. Verified: `cargo check --workspace --all-targets` (zero
+warnings in `lsp_server`; the only remaining workspace-wide warnings are pre-existing,
+unrelated dead test-helper functions in `language_service`/`workspace`/`server` test
+fixtures — outside this initiative's scope), `cargo test -p lsp_server` and `cargo test
+--workspace` (all green), `cargo clippy -p lsp_server --no-deps --all-targets` (clean).
+
+Tier 2 Phase 3b is now fully closed out.
 
 ## Phase 2 status (done, 2026-07-02)
 
@@ -335,11 +361,10 @@ phase should extend the existing `tests/incremental_parity.rs` property tests in
 `workspace` crate to cover the async/cancellation paths before merging.
 
 **Phase 4 — Delete dead code** in `lsp_server/src/workspace/services.rs`/`parse_cache.rs`/
-`library_graph_cache.rs` once Phase 3 has parity, and re-measure. Expected outcome: `lsp_server`'s
-`workspace/` module shrinks from ~2988 lines to primarily LSP-protocol glue (document sync,
-capability wiring) — most of `library_search.rs` (336 lines, symbol-table indexing for
-completions) and `import_graph.rs` (189 lines) stay, since they're genuinely LSP-specific
-features with no `workspace`-crate equivalent.
+`library_graph_cache.rs` once Phase 3 has parity, and re-measure. Originally expected to
+shrink `lsp_server`'s `workspace/` module from ~2988 lines to primarily LSP-protocol glue —
+**that expectation assumed the large Phase 3 merge, which was rescoped away (see "Phase 3
+status" above); see the "Phase 4" section below for what actually shipped.**
 
 ## Risks
 
