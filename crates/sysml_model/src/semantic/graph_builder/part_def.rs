@@ -1,7 +1,7 @@
 use std::collections::HashMap;
 
 use sysml_v2_parser::ast::{
-    CalcDefBody, CalcDefBodyElement, InterfaceDefBody, OccurrenceUsageBody, PartDefBody,
+    CalcDefBody, CalcDefBodyElement, InterfaceDefBody, PartDefBody,
     PartDefBodyElement,
 };
 use url::Url;
@@ -16,9 +16,7 @@ use crate::semantic::relationships::{
 use super::attribute_body;
 use super::expressions;
 use super::interface_def;
-use super::occurrence_body;
 use super::port_def::materialize_port_usage;
-use super::requirement_body::walk_requirement_def_body;
 use super::state;
 use super::usage_builders;
 use super::{add_node_and_recurse, qualified_name_for_node};
@@ -141,38 +139,13 @@ pub(super) fn build_from_part_def_body_element(
             );
         }
         PDBE::OccurrenceUsage(occ_node) => {
-            let qualified =
-                qualified_name_for_node(g, uri, container_prefix, &occ_node.name, "occurrence");
-            let range = span_to_range(&occ_node.span);
-            let mut attrs = HashMap::new();
-            if let Some(ref t) = occ_node.type_name {
-                attrs.insert("occurrenceType".to_string(), serde_json::json!(t));
-            }
-            add_node_and_recurse(
-                g,
+            usage_builders::materialize_occurrence_usage(
+                occ_node,
                 uri,
-                &qualified,
-                "occurrence",
-                occ_node.name.clone(),
-                range,
-                attrs,
+                container_prefix,
                 Some(parent_id),
+                g,
             );
-            if let Some(ref t) = occ_node.type_name {
-                add_typing_edge_if_exists(g, uri, &qualified, t, container_prefix);
-            }
-            let node_id = NodeId::new(uri, &qualified);
-            if let OccurrenceUsageBody::Brace { elements } = &occ_node.body {
-                for child in elements {
-                    occurrence_body::build_from_occurrence_body_element(
-                        child,
-                        uri,
-                        Some(&qualified),
-                        &node_id,
-                        g,
-                    );
-                }
-            }
         }
         PDBE::ItemDef(item_node) => {
             let name = identification_name(&item_node.identification);
@@ -241,37 +214,12 @@ pub(super) fn build_from_part_def_body_element(
             );
         }
         PDBE::RequirementUsage(ru_node) => {
-            let name = &ru_node.name;
-            let qualified = qualified_name_for_node(g, uri, container_prefix, name, "requirement");
-            let range = span_to_range(&ru_node.span);
-            let mut attrs = HashMap::new();
-            if let Some(ref t) = ru_node.type_name {
-                attrs.insert("requirementType".to_string(), serde_json::json!(t));
-            }
-            if let Some(ref subsets) = ru_node.subsets {
-                attrs.insert("subsetsFeature".to_string(), serde_json::json!(subsets));
-            }
-            add_node_and_recurse(
-                g,
-                uri,
-                &qualified,
-                "requirement",
-                name.clone(),
-                range,
-                attrs,
-                Some(parent_id),
-            );
-            if let Some(ref t) = ru_node.type_name {
-                add_typing_edge_if_exists(g, uri, &qualified, t, container_prefix);
-            }
-            let node_id = NodeId::new(uri, &qualified);
-            walk_requirement_def_body(
-                g,
+            usage_builders::materialize_requirement_usage(
+                ru_node,
                 uri,
                 container_prefix,
-                &qualified,
-                &node_id,
-                &ru_node.body,
+                Some(parent_id),
+                g,
             );
         }
         PDBE::Connect(c) => {

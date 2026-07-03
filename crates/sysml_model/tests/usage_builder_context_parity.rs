@@ -1,14 +1,23 @@
-//! `part` and `attribute` usages can legally appear in three different containing bodies:
-//! directly in a package body, inside a `part def { ... }` body, and inside a `part <usage>
-//! { ... }` body. All three previously had independently hand-written graph-builder logic in
-//! `package_body.rs`, `part_def.rs`, and `part_usage.rs`; they drifted apart in two ways:
-//! (1) `part_def.rs`'s copy of `PartUsage` silently dropped the `usagePrefix` attribute the
-//! other two set, and (2) def-kind match arms across the graph builder inconsistently wired
-//! the `Specializes` edge either before or after recursing into the def's body, which broke
-//! inherited-member resolution (e.g. `attribute redefines <inheritedPort>`) for whichever arms
-//! wired it last. These tests pin the contract that the same syntax produces the same node
-//! attributes/classification regardless of which body it is nested in, so a future regression
-//! in one context/copy is caught immediately.
+//! Several AST usage constructs (`part`, `attribute`, `occurrence`, `requirement`) can legally
+//! appear in more than one containing body: directly in a package body, inside a
+//! `part def { ... }` body, inside a `part <usage> { ... }` body, and — for `occurrence` and
+//! `requirement` — inside nested occurrence/state bodies too. Each containing body previously
+//! had independently hand-written graph-builder logic that drifted apart in several ways:
+//! - `part_def.rs`'s copy of `PartUsage` silently dropped the `usagePrefix` attribute the
+//!   other two copies set.
+//! - Def-kind match arms across the graph builder inconsistently wired the `Specializes` edge
+//!   either before or after recursing into the def's body, which broke inherited-member
+//!   resolution (e.g. `attribute redefines <inheritedPort>`) for whichever arms wired it last.
+//! - `part_usage.rs`'s copy of `OccurrenceUsage` never recursed into the usage's own body at
+//!   all, silently dropping every nested child of an `occurrence { ... }` declared inside a
+//!   `part` usage.
+//! - `package_body.rs`'s copy of `RequirementUsage` (top-level package body) never read the
+//!   `subsets` field, silently dropping the `subsetsFeature` attribute the `part def`/state-body
+//!   copies set for `requirement ... :> other;`.
+//!
+//! These tests pin the contract that the same syntax produces the same node attributes/children
+//! regardless of which body it is nested in, so a future regression in one context/copy is
+//! caught immediately.
 
 use sysml_model::{build_semantic_graph_from_documents, SysmlDocument, SysmlDocumentSourceKind};
 
@@ -137,6 +146,111 @@ fn attribute_redefining_a_port_is_classified_as_port_in_every_containing_context
             node.element_kind, "port",
             "expected `attribute redefines p` to be classified as a port in context {path}, got {:?}",
             node.element_kind
+        );
+    }
+}
+
+#[test]
+fn occurrence_usage_body_recurses_into_children_in_every_containing_context() {
+    let contexts = [
+        (
+            "top_level.sysml",
+            r#"package P { occurrence x { attribute id : String; } }"#,
+        ),
+        (
+            "inside_part_def.sysml",
+            r#"package P { part def Foo { occurrence x { attribute id : String; } } }"#,
+        ),
+        (
+            "inside_part_usage.sysml",
+            r#"package P {
+  part def Bar;
+  part y : Bar {
+    occurrence x {
+      attribute id : String;
+    }
+  }
+}"#,
+        ),
+        (
+            "inside_occurrence.sysml",
+            r#"package P { occurrence outer { occurrence x { attribute id : String; } } }"#,
+        ),
+    ];
+
+    for (path, src) in contexts {
+        let doc = workspace_doc(path, src);
+        let (graph, _parsed) = build_semantic_graph_from_documents(&[doc]).expect("graph");
+        let node = graph
+            .nodes_named("x")
+            .into_iter()
+            .find(|node| node.element_kind == "occurrence")
+            .unwrap_or_else(|| panic!("expected occurrence usage `x` to exist in context {path}"));
+        let has_child_attribute = graph
+            .children_of(node)
+            .into_iter()
+            .any(|child| child.element_kind == "attribute" && child.name == "id");
+        assert!(
+            has_child_attribute,
+            "expected occurrence `x` to have a nested attribute `id` in context {path}, got children {:?}",
+            graph
+                .children_of(node)
+                .iter()
+                .map(|c| &c.name)
+                .collect::<Vec<_>>()
+        );
+    }
+}
+
+#[test]
+fn requirement_usage_subsets_feature_is_preserved_in_every_containing_context() {
+    let contexts = [
+        (
+            "top_level.sysml",
+            r#"package P {
+  requirement def Req1;
+  requirement def Req2;
+  requirement r1 : Req1;
+  requirement r2 : Req2 :> r1;
+}"#,
+        ),
+        (
+            "inside_part_def.sysml",
+            r#"package P {
+  requirement def Req1;
+  requirement def Req2;
+  requirement r1 : Req1;
+  part def Foo {
+    requirement r2 : Req2 :> r1;
+  }
+}"#,
+        ),
+        (
+            "inside_state.sysml",
+            r#"package P {
+  requirement def Req1;
+  requirement def Req2;
+  requirement r1 : Req1;
+  state def Machine {
+    requirement r2 : Req2 :> r1;
+  }
+}"#,
+        ),
+    ];
+
+    for (path, src) in contexts {
+        let doc = workspace_doc(path, src);
+        let (graph, _parsed) = build_semantic_graph_from_documents(&[doc]).expect("graph");
+        let node = graph
+            .nodes_named("r2")
+            .into_iter()
+            .find(|node| node.element_kind == "requirement")
+            .unwrap_or_else(|| panic!("expected requirement usage `r2` to exist in context {path}"));
+        assert_eq!(
+            node.attributes.get("subsetsFeature").and_then(|v| v.as_str()),
+            Some("r1"),
+            "expected `r2` to keep subsetsFeature=\"r1\" in context {path}, got {:#?}",
+            node.attributes
         );
     }
 }

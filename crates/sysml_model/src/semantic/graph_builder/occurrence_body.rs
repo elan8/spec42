@@ -3,8 +3,7 @@
 use std::collections::HashMap;
 
 use sysml_v2_parser::ast::{
-    AssertConstraintMember, ConstraintDefBody, ConstraintDefBodyElement, OccurrenceBodyElement,
-    OccurrenceUsageBody, PartUsageBody,
+    AssertConstraintMember, ConstraintDefBody, ConstraintDefBodyElement, OccurrenceBodyElement, PartUsageBody,
 };
 use url::Url;
 
@@ -117,32 +116,13 @@ pub(super) fn build_from_occurrence_body_element(
             }
         }
         OBE::OccurrenceUsage(occurrence_usage_node) => {
-            let occurrence = occurrence_usage_node.as_ref();
-            let qualified =
-                qualified_name_for_node(g, uri, container_prefix, &occurrence.name, "occurrence");
-            let mut attrs = HashMap::new();
-            if let Some(ref t) = occurrence.type_name {
-                attrs.insert("occurrenceType".to_string(), serde_json::json!(t));
-            }
-            add_node_and_recurse(
-                g,
+            super::usage_builders::materialize_occurrence_usage(
+                occurrence_usage_node.as_ref(),
                 uri,
-                &qualified,
-                "occurrence",
-                occurrence.name.clone(),
-                span_to_range(&occurrence.span),
-                attrs,
+                container_prefix,
                 Some(parent_id),
+                g,
             );
-            if let Some(ref t) = occurrence.type_name {
-                add_typing_edge_if_exists(g, uri, &qualified, t, container_prefix);
-            }
-            let node_id = NodeId::new(uri, &qualified);
-            if let OccurrenceUsageBody::Brace { elements } = &occurrence.body {
-                for child in elements {
-                    build_from_occurrence_body_element(child, uri, Some(&qualified), &node_id, g);
-                }
-            }
         }
         OBE::FlowUsage(flow) => {
             super::flow_usage::materialize_flow_usage(flow, uri, container_prefix, parent_id, g);

@@ -1,7 +1,7 @@
 use std::collections::HashMap;
 
 use sysml_v2_parser::ast::{
-    ConnectionDefBody, InterfaceDefBody, OccurrenceUsageBody, PackageBodyElement, PartDefBody,
+    ConnectionDefBody, InterfaceDefBody, PackageBodyElement, PartDefBody,
     PortDefBody, StateDefBody, UseCaseDefBody,
 };
 use sysml_v2_parser::RootNamespace;
@@ -23,7 +23,6 @@ use super::definition_body;
 use super::expressions;
 use super::kerml_library;
 use super::modeled_kerml_name::extract_modeled_decl_name;
-use super::occurrence_body;
 use super::package_packages;
 use super::unit_metadata;
 use super::verification;
@@ -356,34 +355,12 @@ pub(super) fn build_from_package_body_element(
             );
         }
         PBE::RequirementUsage(ru_node) => {
-            let name = &ru_node.name;
-            let qualified = qualified_name_for_node(g, uri, container_prefix, name, "requirement");
-            let range = span_to_range(&ru_node.span);
-            let mut attrs = HashMap::new();
-            if let Some(ref t) = ru_node.type_name {
-                attrs.insert("requirementType".to_string(), serde_json::json!(t));
-            }
-            add_node_and_recurse(
-                g,
-                uri,
-                &qualified,
-                "requirement",
-                name.clone(),
-                range,
-                attrs,
-                parent_id,
-            );
-            if let Some(ref t) = ru_node.type_name {
-                add_typing_edge_if_exists(g, uri, &qualified, t, container_prefix);
-            }
-            let node_id = NodeId::new(uri, &qualified);
-            walk_requirement_def_body(
-                g,
+            usage_builders::materialize_requirement_usage(
+                ru_node,
                 uri,
                 container_prefix,
-                &qualified,
-                &node_id,
-                &ru_node.body,
+                parent_id,
+                g,
             );
         }
         PBE::Satisfy(satisfy_node) => {
@@ -715,37 +692,7 @@ pub(super) fn build_from_package_body_element(
             }
         }
         PBE::OccurrenceUsage(occ_node) => {
-            let qualified =
-                qualified_name_for_node(g, uri, container_prefix, &occ_node.name, "occurrence");
-            let mut attrs = HashMap::new();
-            if let Some(ref t) = occ_node.type_name {
-                attrs.insert("occurrenceType".to_string(), serde_json::json!(t.clone()));
-            }
-            add_node_and_recurse(
-                g,
-                uri,
-                &qualified,
-                "occurrence",
-                occ_node.name.clone(),
-                span_to_range(&occ_node.span),
-                attrs,
-                parent_id,
-            );
-            if let Some(ref t) = occ_node.type_name {
-                add_typing_edge_if_exists(g, uri, &qualified, t, container_prefix);
-            }
-            let node_id = NodeId::new(uri, &qualified);
-            if let OccurrenceUsageBody::Brace { elements } = &occ_node.body {
-                for child in elements {
-                    occurrence_body::build_from_occurrence_body_element(
-                        child,
-                        uri,
-                        Some(&qualified),
-                        &node_id,
-                        g,
-                    );
-                }
-            }
+            usage_builders::materialize_occurrence_usage(occ_node, uri, container_prefix, parent_id, g);
         }
         PBE::ConnectionDef(conn_node) => {
             let name = identification_name(&conn_node.identification);
