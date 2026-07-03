@@ -2,7 +2,7 @@ use std::collections::HashMap;
 
 use sysml_v2_parser::ast::{
     ConnectionDefBody, InterfaceDefBody, OccurrenceUsageBody, PackageBodyElement, PartDefBody,
-    PartUsageBody, PortDefBody, StateDefBody, UseCaseDefBody,
+    PortDefBody, StateDefBody, UseCaseDefBody,
 };
 use sysml_v2_parser::RootNamespace;
 use url::Url;
@@ -32,7 +32,7 @@ use super::{
     add_node_and_recurse, insert_def_specialization_attr, qualified_name_for_node,
     wire_def_specialization_edge,
 };
-use super::{interface_def, part_def, part_usage, port_def, state, stubs, use_case};
+use super::{interface_def, part_def, port_def, state, usage_builders, use_case};
 
 pub(super) fn build_from_package_body_element(
     node: &sysml_v2_parser::Node<PackageBodyElement>,
@@ -93,7 +93,6 @@ pub(super) fn build_from_package_body_element(
                 parent_id,
             );
             let node_id = NodeId::new(uri, &qualified);
-            stubs::relationships_from_part_def(pd_node, uri, container_prefix, &qualified, g);
             if let PartDefBody::Brace { elements } = &pd_node.body {
                 for child in elements {
                     part_def::build_from_part_def_body_element(
@@ -114,68 +113,7 @@ pub(super) fn build_from_package_body_element(
             );
         }
         PBE::PartUsage(pu_node) => {
-            let name = &pu_node.name;
-            let qualified = qualified_name_for_node(g, uri, container_prefix, name, "part");
-            let range = span_to_range(&pu_node.span);
-            let mut attrs = HashMap::new();
-            if let Some(ref prefix) = pu_node.usage_prefix {
-                attrs.insert(
-                    "usagePrefix".to_string(),
-                    serde_json::json!(match prefix {
-                        sysml_v2_parser::ast::DefinitionPrefix::Abstract => "abstract",
-                        sysml_v2_parser::ast::DefinitionPrefix::Variation => "variation",
-                    }),
-                );
-            }
-            attrs.insert(
-                "partType".to_string(),
-                serde_json::json!(&pu_node.type_name),
-            );
-            if let Some(ref m) = pu_node.multiplicity {
-                attrs.insert("multiplicity".to_string(), serde_json::json!(m));
-            }
-            attrs.insert("ordered".to_string(), serde_json::json!(pu_node.ordered));
-            if let Some((ref feat, ref val)) = pu_node.subsets {
-                attrs.insert("subsetsFeature".to_string(), serde_json::json!(feat));
-                if let Some(v) = val {
-                    attrs.insert(
-                        "subsetsValue".to_string(),
-                        serde_json::json!(expressions::expression_to_debug_string(v)),
-                    );
-                }
-            }
-            if let Some(ref r) = pu_node.redefines {
-                attrs.insert("redefines".to_string(), serde_json::json!(r));
-            }
-            if let Some(ref v) = pu_node.value.value {
-                attrs.insert(
-                    "value".to_string(),
-                    serde_json::json!(expressions::expression_to_debug_string(v)),
-                );
-            }
-            add_node_and_recurse(
-                g,
-                uri,
-                &qualified,
-                "part",
-                name.clone(),
-                range,
-                attrs,
-                parent_id,
-            );
-            let node_id = NodeId::new(uri, &qualified);
-            add_typing_edge_if_exists(g, uri, &qualified, &pu_node.type_name, container_prefix);
-            if let PartUsageBody::Brace { elements } = &pu_node.body {
-                for child in elements {
-                    part_usage::build_from_part_usage_body_element(
-                        child,
-                        uri,
-                        Some(&qualified),
-                        &node_id,
-                        g,
-                    );
-                }
-            }
+            usage_builders::materialize_part_usage(pu_node, uri, container_prefix, parent_id, g);
         }
         PBE::FeatureDecl(feature_node) => {
             let fv = &feature_node.value;

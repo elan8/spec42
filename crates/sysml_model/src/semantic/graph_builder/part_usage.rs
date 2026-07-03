@@ -1,12 +1,11 @@
 use std::collections::HashMap;
 
-use sysml_v2_parser::ast::{PartUsageBody, StateDefBody};
+use sysml_v2_parser::ast::StateDefBody;
 use url::Url;
 
 use crate::semantic::ast_util::span_to_range;
 use crate::semantic::graph::SemanticGraph;
-use crate::semantic::model::{ElementKind, NodeId, RelationshipKind};
-use crate::semantic::reference_resolution::{resolve_member_via_type, ResolveResult};
+use crate::semantic::model::{NodeId, RelationshipKind};
 use crate::semantic::relationships::{add_edge_if_both_exist, add_typing_edge_if_exists};
 
 use super::expressions;
@@ -23,100 +22,22 @@ pub(super) fn build_from_part_usage_body_element(
     use sysml_v2_parser::ast::PartUsageBodyElement as PUBE;
     match &node.value {
         PUBE::AttributeUsage(n) => {
-            let name = &n.name;
-            let kind = infer_attribute_usage_kind(g, parent_id, n.redefines.as_deref());
-            let qualified = qualified_name_for_node(g, uri, container_prefix, name, kind);
-            let range = span_to_range(&n.span);
-            let mut attrs = HashMap::new();
-            if let Some(ref t) = n.typing {
-                attrs.insert("attributeType".to_string(), serde_json::json!(t));
-            }
-            if let Some(ref s) = n.subsets {
-                attrs.insert("subsetsFeature".to_string(), serde_json::json!(s));
-            }
-            if let Some(ref r) = n.references {
-                attrs.insert("referencesFeature".to_string(), serde_json::json!(r));
-            }
-            if let Some(ref c) = n.crosses {
-                attrs.insert("crossesFeature".to_string(), serde_json::json!(c));
-            }
-            if let Some(ref r) = n.redefines {
-                attrs.insert("redefines".to_string(), serde_json::json!(r));
-            }
-            if let Some(ref v) = n.value.value {
-                attrs.insert(
-                    "value".to_string(),
-                    serde_json::json!(expressions::expression_to_debug_string(v)),
-                );
-            }
-            add_node_and_recurse(
-                g,
+            super::usage_builders::materialize_attribute_usage(
+                n,
                 uri,
-                &qualified,
-                kind,
-                name.clone(),
-                range,
-                attrs,
-                Some(parent_id),
+                container_prefix,
+                parent_id,
+                g,
             );
-            if let Some(ref t) = n.typing {
-                add_typing_edge_if_exists(g, uri, &qualified, t, container_prefix);
-            }
         }
         PUBE::PartUsage(n) => {
-            let name = &n.name;
-            let qualified = qualified_name_for_node(g, uri, container_prefix, name, "part");
-            let range = span_to_range(&n.span);
-            let mut attrs = HashMap::new();
-            if let Some(ref prefix) = n.usage_prefix {
-                attrs.insert(
-                    "usagePrefix".to_string(),
-                    serde_json::json!(match prefix {
-                        sysml_v2_parser::ast::DefinitionPrefix::Abstract => "abstract",
-                        sysml_v2_parser::ast::DefinitionPrefix::Variation => "variation",
-                    }),
-                );
-            }
-            attrs.insert("partType".to_string(), serde_json::json!(&n.type_name));
-            if let Some(ref m) = n.multiplicity {
-                attrs.insert("multiplicity".to_string(), serde_json::json!(m));
-            }
-            attrs.insert("ordered".to_string(), serde_json::json!(n.ordered));
-            if let Some((ref feat, ref val)) = n.subsets {
-                attrs.insert("subsetsFeature".to_string(), serde_json::json!(feat));
-                if let Some(v) = val {
-                    attrs.insert(
-                        "subsetsValue".to_string(),
-                        serde_json::json!(expressions::expression_to_debug_string(v)),
-                    );
-                }
-            }
-            if let Some(ref r) = n.redefines {
-                attrs.insert("redefines".to_string(), serde_json::json!(r));
-            }
-            if let Some(ref v) = n.value.value {
-                attrs.insert(
-                    "value".to_string(),
-                    serde_json::json!(expressions::expression_to_debug_string(v)),
-                );
-            }
-            add_node_and_recurse(
-                g,
+            super::usage_builders::materialize_part_usage(
+                n,
                 uri,
-                &qualified,
-                "part",
-                name.clone(),
-                range,
-                attrs,
+                container_prefix,
                 Some(parent_id),
+                g,
             );
-            let node_id = NodeId::new(uri, &qualified);
-            add_typing_edge_if_exists(g, uri, &qualified, &n.type_name, container_prefix);
-            if let PartUsageBody::Brace { elements } = &n.body {
-                for child in elements {
-                    build_from_part_usage_body_element(child, uri, Some(&qualified), &node_id, g);
-                }
-            }
         }
         PUBE::PortUsage(n) => {
             materialize_port_usage(n, uri, container_prefix, parent_id, g);
@@ -333,34 +254,5 @@ pub(super) fn build_from_part_usage_body_element(
             super::attach_doc_comment(g, parent_id, &doc.value.text);
         }
         PUBE::EnumerationUsage(_) | PUBE::Annotation(_) | PUBE::Error(_) => {}
-    }
-}
-
-fn infer_attribute_usage_kind(
-    g: &SemanticGraph,
-    parent_id: &NodeId,
-    redefines: Option<&str>,
-) -> &'static str {
-    let Some(owner) = g.get_node(parent_id) else {
-        return "attribute";
-    };
-    let Some(redefined_name) = redefines
-        .map(str::trim)
-        .filter(|candidate| !candidate.is_empty())
-    else {
-        return "attribute";
-    };
-    match resolve_member_via_type(g, owner, redefined_name) {
-        ResolveResult::Resolved(target_id) => g
-            .get_node(&target_id)
-            .map(|target| {
-                if target.element_kind == ElementKind::Port {
-                    "port"
-                } else {
-                    "attribute"
-                }
-            })
-            .unwrap_or("attribute"),
-        ResolveResult::Ambiguous | ResolveResult::Unresolved => "attribute",
     }
 }

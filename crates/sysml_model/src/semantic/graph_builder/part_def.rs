@@ -2,7 +2,7 @@ use std::collections::HashMap;
 
 use sysml_v2_parser::ast::{
     CalcDefBody, CalcDefBodyElement, InterfaceDefBody, OccurrenceUsageBody, PartDefBody,
-    PartDefBodyElement, PartUsageBody,
+    PartDefBodyElement,
 };
 use url::Url;
 
@@ -17,11 +17,10 @@ use super::attribute_body;
 use super::expressions;
 use super::interface_def;
 use super::occurrence_body;
-use super::part_usage;
 use super::port_def::materialize_port_usage;
 use super::requirement_body::walk_requirement_def_body;
 use super::state;
-use super::stubs;
+use super::usage_builders;
 use super::{add_node_and_recurse, qualified_name_for_node};
 
 pub(super) fn build_from_part_def_body_element(
@@ -62,44 +61,7 @@ pub(super) fn build_from_part_def_body_element(
             }
         }
         PDBE::AttributeUsage(n) => {
-            let name = &n.name;
-            let qualified = qualified_name_for_node(g, uri, container_prefix, name, "attribute");
-            let range = span_to_range(&n.span);
-            let mut attrs = HashMap::new();
-            if let Some(ref t) = n.typing {
-                attrs.insert("attributeType".to_string(), serde_json::json!(t));
-            }
-            if let Some(ref s) = n.subsets {
-                attrs.insert("subsetsFeature".to_string(), serde_json::json!(s));
-            }
-            if let Some(ref r) = n.references {
-                attrs.insert("referencesFeature".to_string(), serde_json::json!(r));
-            }
-            if let Some(ref c) = n.crosses {
-                attrs.insert("crossesFeature".to_string(), serde_json::json!(c));
-            }
-            if let Some(ref r) = n.redefines {
-                attrs.insert("redefines".to_string(), serde_json::json!(r));
-            }
-            if let Some(ref v) = n.value.value {
-                attrs.insert(
-                    "value".to_string(),
-                    serde_json::json!(expressions::expression_to_debug_string(v)),
-                );
-            }
-            add_node_and_recurse(
-                g,
-                uri,
-                &qualified,
-                "attribute",
-                name.clone(),
-                range,
-                attrs,
-                Some(parent_id),
-            );
-            if let Some(ref t) = n.typing {
-                add_typing_edge_if_exists(g, uri, &qualified, t, container_prefix);
-            }
+            usage_builders::materialize_attribute_usage(n, uri, container_prefix, parent_id, g);
         }
         PDBE::ExhibitState(es_node) => {
             let es = &es_node.value;
@@ -160,7 +122,6 @@ pub(super) fn build_from_part_def_body_element(
                 Some(parent_id),
             );
             let node_id = NodeId::new(uri, &qualified);
-            stubs::relationships_from_part_def(pd_node, uri, container_prefix, &qualified, g);
             if let PartDefBody::Brace { elements } = &pd_node.body {
                 for child in elements {
                     build_from_part_def_body_element(child, uri, Some(&qualified), &node_id, g);
@@ -171,56 +132,13 @@ pub(super) fn build_from_part_def_body_element(
             }
         }
         PDBE::PartUsage(n) => {
-            let name = &n.name;
-            let qualified = qualified_name_for_node(g, uri, container_prefix, name, "part");
-            let range = span_to_range(&n.span);
-            let mut attrs = HashMap::new();
-            attrs.insert("partType".to_string(), serde_json::json!(&n.type_name));
-            if let Some(ref m) = n.multiplicity {
-                attrs.insert("multiplicity".to_string(), serde_json::json!(m));
-            }
-            attrs.insert("ordered".to_string(), serde_json::json!(n.ordered));
-            if let Some((ref feat, ref val)) = n.subsets {
-                attrs.insert("subsetsFeature".to_string(), serde_json::json!(feat));
-                if let Some(v) = val {
-                    attrs.insert(
-                        "subsetsValue".to_string(),
-                        serde_json::json!(expressions::expression_to_debug_string(v)),
-                    );
-                }
-            }
-            if let Some(ref r) = n.redefines {
-                attrs.insert("redefines".to_string(), serde_json::json!(r));
-            }
-            if let Some(ref v) = n.value.value {
-                attrs.insert(
-                    "value".to_string(),
-                    serde_json::json!(expressions::expression_to_debug_string(v)),
-                );
-            }
-            add_node_and_recurse(
-                g,
+            usage_builders::materialize_part_usage(
+                n,
                 uri,
-                &qualified,
-                "part",
-                name.clone(),
-                range,
-                attrs,
+                container_prefix,
                 Some(parent_id),
+                g,
             );
-            let node_id = NodeId::new(uri, &qualified);
-            add_typing_edge_if_exists(g, uri, &qualified, &n.type_name, container_prefix);
-            if let PartUsageBody::Brace { elements } = &n.body {
-                for child in elements {
-                    part_usage::build_from_part_usage_body_element(
-                        child,
-                        uri,
-                        Some(&qualified),
-                        &node_id,
-                        g,
-                    );
-                }
-            }
         }
         PDBE::OccurrenceUsage(occ_node) => {
             let qualified =
