@@ -8,8 +8,9 @@ pub(crate) fn resolved_references_at_position(
     uri_norm: &Url,
     pos: Position,
     include_declaration: bool,
+    perf_logging_enabled: bool,
 ) -> Option<Vec<Location>> {
-    let snapshot = ServerStateSnapshot::new(state);
+    let snapshot = ServerStateSnapshot::new(state, perf_logging_enabled);
     let path = snapshot.path_for_uri(uri_norm);
     let result = language_service::find_references(
         &snapshot,

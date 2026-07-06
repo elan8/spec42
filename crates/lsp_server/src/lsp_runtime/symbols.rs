@@ -9,7 +9,11 @@ use tracing::info;
 
 const MAX_INHERITED_ATTRIBUTE_LENSES: usize = 5;
 
-pub(crate) fn build_code_lens(state: &ServerState, uri_norm: &Url) -> Vec<CodeLens> {
+pub(crate) fn build_code_lens(
+    state: &ServerState,
+    uri_norm: &Url,
+    perf_logging_enabled: bool,
+) -> Vec<CodeLens> {
     let started_at = Instant::now();
     let indexed_symbols = state
         .symbol_table
@@ -17,7 +21,7 @@ pub(crate) fn build_code_lens(state: &ServerState, uri_norm: &Url) -> Vec<CodeLe
         .filter(|s| s.uri == *uri_norm)
         .count();
     let elapsed_ms = started_at.elapsed().as_millis();
-    if state.perf_logging_enabled && elapsed_ms >= 10 {
+    if perf_logging_enabled && elapsed_ms >= 10 {
         info!(
             target: "lsp_server::lsp_runtime::symbols",
             event = "symbols:buildCodeLens",

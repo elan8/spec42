@@ -73,7 +73,7 @@ impl RelinkToken {
 /// Reindexing → Ready          complete_reindex()
 /// * → Cold                    reset()
 /// ```
-#[derive(Debug, Default)]
+#[derive(Debug, Clone, Default)]
 pub struct WorkspaceSession {
     lifecycle: SessionLifecycle,
     /// Bumped on every transition and on bare `bump_version` calls. Used as a

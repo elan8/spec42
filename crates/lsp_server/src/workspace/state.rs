@@ -3,6 +3,7 @@ use crate::semantic;
 use crate::workspace::coordinator::SemanticCoordinator;
 use sysml_v2_parser::RootNamespace;
 use tower_lsp::lsp_types::Url;
+use workspace_session::{RelinkToken, TracksRelink};
 
 #[derive(Debug, Clone, Copy, Default)]
 pub(crate) struct ParseMetadata {
@@ -19,13 +20,17 @@ pub(crate) struct IndexEntry {
     pub(crate) include_in_semantic_graph: bool,
 }
 
+#[derive(Debug, Clone, Default)]
+pub(crate) struct RuntimeConfig {
+    pub(crate) startup_trace_id: Option<String>,
+    pub(crate) code_lens_enabled: bool,
+    pub(crate) perf_logging_enabled: bool,
+}
+
 #[derive(Default)]
 pub(crate) struct ServerState {
     pub(crate) workspace_roots: Vec<Url>,
     pub(crate) library_paths: Vec<Url>,
-    pub(crate) startup_trace_id: Option<String>,
-    pub(crate) code_lens_enabled: bool,
-    pub(crate) perf_logging_enabled: bool,
     pub(crate) coordinator: SemanticCoordinator,
     pub(crate) index: std::collections::HashMap<Url, IndexEntry>,
     pub(crate) symbol_table: Vec<SymbolEntry>,
@@ -37,6 +42,33 @@ pub(crate) struct ServerState {
     /// to `rebuild_semantic_graph_staged` during async relinking so that library types
     /// remain available even though they are not stored in the `index`.
     pub(crate) library_graph_snapshot: Option<semantic::SemanticGraph>,
+}
+
+#[derive(Clone, Default)]
+pub(crate) struct WorkspaceState {
+    pub(crate) workspace_roots: Vec<Url>,
+    pub(crate) library_paths: Vec<Url>,
+    pub(crate) session: workspace::WorkspaceSession,
+    pub(crate) index: std::collections::HashMap<Url, IndexEntry>,
+    pub(crate) symbol_table: Vec<SymbolEntry>,
+    pub(crate) semantic_graph: semantic::SemanticGraph,
+    pub(crate) library_graph_snapshot: Option<semantic::SemanticGraph>,
+}
+
+impl TracksRelink for WorkspaceState {
+    fn is_token_current(&self, token: &RelinkToken) -> bool {
+        self.session.is_token_current(token)
+    }
+}
+
+pub(crate) fn supports_semantic_queries(lifecycle: workspace::SessionLifecycle) -> bool {
+    matches!(lifecycle, workspace::SessionLifecycle::Ready)
+}
+
+pub(crate) fn suppresses_transient_semantic_diagnostics(
+    lifecycle: workspace::SessionLifecycle,
+) -> bool {
+    !matches!(lifecycle, workspace::SessionLifecycle::Ready)
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
@@ -66,4 +98,38 @@ pub(crate) struct ScanSummary {
     pub(crate) files_loaded: usize,
     pub(crate) read_failures: usize,
     pub(crate) uri_failures: usize,
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn workspace_state_is_clone() {
+        fn assert_clone<T: Clone>() {}
+        assert_clone::<WorkspaceState>();
+    }
+
+    #[test]
+    fn tracks_relink_delegates_to_session() {
+        let mut state = WorkspaceState::default();
+        state.session.begin_startup();
+        state.session.complete_startup();
+
+        let first_token = state.session.schedule_relink();
+        assert!(
+            state.is_token_current(&first_token),
+            "freshly scheduled token must be current"
+        );
+
+        let second_token = state.session.schedule_relink();
+        assert!(
+            !state.is_token_current(&first_token),
+            "superseded token must no longer be current"
+        );
+        assert!(
+            state.is_token_current(&second_token),
+            "the newly scheduled token must be current"
+        );
+    }
 }

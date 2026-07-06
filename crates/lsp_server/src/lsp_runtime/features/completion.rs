@@ -117,9 +117,10 @@ pub(crate) fn completion(
     state: &ServerState,
     uri: Url,
     pos: Position,
+    perf_logging_enabled: bool,
 ) -> Result<Option<CompletionResponse>> {
     let uri_norm = util::normalize_file_uri(&uri);
-    let snapshot = ServerStateSnapshot::new(state);
+    let snapshot = ServerStateSnapshot::new(state, perf_logging_enabled);
     let path = snapshot.path_for_uri(&uri_norm);
     let position = to_core_position(pos);
     let Some(result) = ls_complete(&snapshot, &path, position) else {

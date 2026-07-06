@@ -1181,6 +1181,7 @@ dependencies = [
  "url",
  "walkdir",
  "workspace",
+ "workspace_session",
 ]
 
 [[package]]

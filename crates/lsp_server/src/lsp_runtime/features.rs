@@ -30,16 +30,21 @@ static CODE_LENS_REQUEST_COUNT: AtomicU64 = AtomicU64::new(0);
 static SEMANTIC_TOKENS_FULL_REQUEST_COUNT: AtomicU64 = AtomicU64::new(0);
 static SEMANTIC_TOKENS_RANGE_REQUEST_COUNT: AtomicU64 = AtomicU64::new(0);
 
-pub(crate) fn code_lens(state: &ServerState, uri: Url) -> Result<Option<Vec<CodeLens>>> {
-    if !state.code_lens_enabled {
+pub(crate) fn code_lens(
+    state: &ServerState,
+    uri: Url,
+    code_lens_enabled: bool,
+    perf_logging_enabled: bool,
+) -> Result<Option<Vec<CodeLens>>> {
+    if !code_lens_enabled {
         return Ok(None);
     }
     let started_at = Instant::now();
     let uri_norm = util::normalize_file_uri(&uri);
-    let lenses = symbols::build_code_lens(state, &uri_norm);
+    let lenses = symbols::build_code_lens(state, &uri_norm, perf_logging_enabled);
     let elapsed_ms = started_at.elapsed().as_millis();
     let request_count = CODE_LENS_REQUEST_COUNT.fetch_add(1, Ordering::Relaxed) + 1;
-    if state.perf_logging_enabled {
+    if perf_logging_enabled {
         info!(
             target: "lsp_server::lsp_runtime::features",
             event = "feature:codeLens",
@@ -65,6 +70,7 @@ pub(crate) fn inlay_hint(
 pub(crate) fn semantic_tokens_full_request(
     state: &ServerState,
     uri: Url,
+    perf_logging_enabled: bool,
 ) -> Result<Option<(SemanticTokens, Vec<String>)>> {
     let started_at = Instant::now();
     let uri_norm = util::normalize_file_uri(&uri);
@@ -82,7 +88,7 @@ pub(crate) fn semantic_tokens_full_request(
     let (tokens, logs) = semantic_tokens_full(&text, ast_ranges.as_deref());
     let elapsed_ms = started_at.elapsed().as_millis();
     let request_count = SEMANTIC_TOKENS_FULL_REQUEST_COUNT.fetch_add(1, Ordering::Relaxed) + 1;
-    if state.perf_logging_enabled {
+    if perf_logging_enabled {
         info!(
             target: "lsp_server::lsp_runtime::features",
             event = "feature:semanticTokensFull",
@@ -101,6 +107,7 @@ pub(crate) fn semantic_tokens_range_request(
     state: &ServerState,
     uri: Url,
     range: Range,
+    perf_logging_enabled: bool,
 ) -> Result<Option<(SemanticTokens, Vec<String>)>> {
     let started_at = Instant::now();
     let uri_norm = util::normalize_file_uri(&uri);
@@ -125,7 +132,7 @@ pub(crate) fn semantic_tokens_range_request(
     );
     let elapsed_ms = started_at.elapsed().as_millis();
     let request_count = SEMANTIC_TOKENS_RANGE_REQUEST_COUNT.fetch_add(1, Ordering::Relaxed) + 1;
-    if state.perf_logging_enabled {
+    if perf_logging_enabled {
         info!(
             target: "lsp_server::lsp_runtime::features",
             event = "feature:semanticTokensRange",

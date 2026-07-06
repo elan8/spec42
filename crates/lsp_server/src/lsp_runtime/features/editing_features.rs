@@ -91,12 +91,13 @@ pub(crate) fn prepare_rename(
     state: &ServerState,
     uri: Url,
     pos: Position,
+    perf_logging_enabled: bool,
 ) -> Result<Option<PrepareRenameResponse>> {
     let uri_norm = util::normalize_file_uri(&uri);
     if util::uri_under_any_library(&uri_norm, &state.library_paths) {
         return Ok(None);
     }
-    let snapshot = ServerStateSnapshot::new(state);
+    let snapshot = ServerStateSnapshot::new(state, perf_logging_enabled);
     let path = snapshot.path_for_uri(&uri_norm);
     let Some(target) = language_service::rename_target(&snapshot, &path, to_core_position(pos)) else {
         return Ok(None);
@@ -118,12 +119,13 @@ pub(crate) fn rename(
     uri: Url,
     pos: Position,
     new_name: String,
+    perf_logging_enabled: bool,
 ) -> Result<Option<WorkspaceEdit>> {
     let uri_norm = util::normalize_file_uri(&uri);
     if util::uri_under_any_library(&uri_norm, &state.library_paths) {
         return Ok(None);
     }
-    let snapshot = ServerStateSnapshot::new(state);
+    let snapshot = ServerStateSnapshot::new(state, perf_logging_enabled);
     let path = snapshot.path_for_uri(&uri_norm);
     if language_service::prepare_rename(&snapshot, &path, to_core_position(pos)).is_none() {
         return Ok(None);
@@ -204,8 +206,9 @@ pub(crate) fn folding_range(state: &ServerState, uri: Url) -> Result<Option<Vec<
 pub(crate) fn workspace_symbol(
     state: &ServerState,
     query: String,
+    perf_logging_enabled: bool,
 ) -> Result<Option<Vec<SymbolInformation>>> {
-    let snapshot = ServerStateSnapshot::new(state);
+    let snapshot = ServerStateSnapshot::new(state, perf_logging_enabled);
     let out = language_service::search_workspace_symbols(&snapshot, &query)
         .into_iter()
         .filter_map(|entry| {

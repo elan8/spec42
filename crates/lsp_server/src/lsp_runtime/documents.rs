@@ -14,7 +14,7 @@ use crate::workspace::{
     clear_documents_under_roots, ingest_parsed_scan_entries, ingest_parsed_scan_entries_batch,
     parse_scanned_entries, rebuild_all_document_links, rebuild_semantic_graph_staged,
     refresh_document, remove_document, scan_sysml_files, store_document_text_fast, RelinkToken,
-    SemanticLifecycle, ServerState,
+    RuntimeConfig, SemanticLifecycle, ServerState,
 };
 
 use super::capabilities::server_capabilities;
@@ -29,11 +29,13 @@ fn schedule_workspace_diagnostics_republish(
     client: &Client,
     state: &Arc<RwLock<ServerState>>,
     config: &Arc<Spec42Config>,
+    runtime_config: &Arc<std::sync::OnceLock<RuntimeConfig>>,
 ) {
     let generation = WORKSPACE_DIAGNOSTICS_DEBOUNCE_GEN.fetch_add(1, Ordering::SeqCst) + 1;
     let client = client.clone();
     let state = Arc::clone(state);
     let config = Arc::clone(config);
+    let runtime_config = Arc::clone(runtime_config);
     tokio::spawn(async move {
         tokio::time::sleep(Duration::from_millis(WORKSPACE_DIAGNOSTICS_DEBOUNCE_MS)).await;
         if WORKSPACE_DIAGNOSTICS_DEBOUNCE_GEN.load(Ordering::SeqCst) != generation {
@@ -46,7 +48,7 @@ fn schedule_workspace_diagnostics_republish(
         if !lifecycle.supports_semantic_queries() {
             return;
         }
-        publish_workspace_diagnostics(&client, &state, &config, None).await;
+        publish_workspace_diagnostics(&client, &state, &config, &runtime_config, None).await;
     });
 }
 
@@ -61,12 +63,14 @@ fn schedule_semantic_relink_after_change(
     client: &Client,
     state: &Arc<RwLock<ServerState>>,
     config: &Arc<Spec42Config>,
+    runtime_config: &Arc<std::sync::OnceLock<RuntimeConfig>>,
     changed_uri: Url,
     token: RelinkToken,
 ) {
     let client = client.clone();
     let state = Arc::clone(state);
     let config = Arc::clone(config);
+    let runtime_config = Arc::clone(runtime_config);
     tokio::spawn(async move {
         tokio::time::sleep(Duration::from_millis(SEMANTIC_RELINK_DEBOUNCE_MS)).await;
 
@@ -78,7 +82,6 @@ fn schedule_semantic_relink_after_change(
             (
                 locked.index.clone(),
                 locked.library_paths.clone(),
-                locked.perf_logging_enabled,
                 // Library files are not stored in the index when loaded from the
                 // graph cache (cache hit path). Pass the library graph snapshot so
                 // library types survive the workspace rebuild regardless of whether
@@ -86,7 +89,11 @@ fn schedule_semantic_relink_after_change(
                 locked.library_graph_snapshot.clone(),
             )
         };
-        let (index, library_paths, perf_logging_enabled, base_graph) = snapshot;
+        let (index, library_paths, base_graph) = snapshot;
+        let perf_logging_enabled = runtime_config
+            .get()
+            .expect("initialize precedes all other LSP requests")
+            .perf_logging_enabled;
         let library_snapshot_uris = base_graph.as_ref().map(|g| g.all_uris().len()).unwrap_or(0);
         let relink_start = Instant::now();
         let staged = tokio::task::spawn_blocking(move || {
@@ -125,7 +132,8 @@ fn schedule_semantic_relink_after_change(
             uris
         };
 
-        publish_workspace_diagnostics(&client, &state, &config, Some(&diag_uris)).await;
+        publish_workspace_diagnostics(&client, &state, &config, &runtime_config, Some(&diag_uris))
+            .await;
 
         log_perf(
             &client,
@@ -229,6 +237,7 @@ pub(crate) async fn initialize(
     state: &Arc<RwLock<ServerState>>,
     config: &Arc<Spec42Config>,
     server_name: &str,
+    runtime_config: &Arc<std::sync::OnceLock<RuntimeConfig>>,
     params: InitializeParams,
 ) -> tower_lsp::jsonrpc::Result<InitializeResult> {
     let initialize_start = Instant::now();
@@ -256,13 +265,17 @@ pub(crate) async fn initialize(
             "startup:initialize:end"
         );
     }
+    runtime_config
+        .set(RuntimeConfig {
+            startup_trace_id: startup_trace_id.clone(),
+            code_lens_enabled,
+            perf_logging_enabled,
+        })
+        .expect("initialize called twice");
     {
         let mut state = state.write().await;
         state.workspace_roots = roots;
         state.library_paths = library_paths;
-        state.startup_trace_id = startup_trace_id;
-        state.code_lens_enabled = code_lens_enabled;
-        state.perf_logging_enabled = perf_logging_enabled;
         state.coordinator.reset();
     }
     Ok(InitializeResult {
@@ -279,16 +292,17 @@ pub(crate) async fn initialized(
     state: &Arc<RwLock<ServerState>>,
     config: &Arc<Spec42Config>,
     server_name: &str,
+    runtime_config: &Arc<std::sync::OnceLock<RuntimeConfig>>,
 ) {
-    let (workspace_roots, library_paths, startup_trace_id, perf_logging_enabled) = {
+    let (workspace_roots, library_paths) = {
         let st = state.read().await;
-        (
-            st.workspace_roots.clone(),
-            st.library_paths.clone(),
-            st.startup_trace_id.clone(),
-            st.perf_logging_enabled,
-        )
+        (st.workspace_roots.clone(), st.library_paths.clone())
     };
+    let cfg = runtime_config
+        .get()
+        .expect("initialize precedes all other LSP requests");
+    let startup_trace_id = cfg.startup_trace_id.clone();
+    let perf_logging_enabled = cfg.perf_logging_enabled;
     if perf_logging_enabled {
         client
             .log_message(MessageType::INFO, format!("{} initialized", server_name))
@@ -325,6 +339,7 @@ pub(crate) async fn initialized(
 
     let state = Arc::clone(state);
     let config = Arc::clone(config);
+    let runtime_config = Arc::clone(runtime_config);
     let client = client.clone();
     tokio::spawn(async move {
         let scan_total_start = Instant::now();
@@ -633,7 +648,7 @@ pub(crate) async fn initialized(
         let diagnostics_start = Instant::now();
         state.write().await.coordinator.complete_startup();
         send_semantic_ready_notification(&client, &state).await;
-        publish_workspace_diagnostics(&client, &state, &config, None).await;
+        publish_workspace_diagnostics(&client, &state, &config, &runtime_config, None).await;
         let diagnostics_ms = diagnostics_start.elapsed().as_millis() as u64;
         log_perf(
             &client,
@@ -703,12 +718,17 @@ pub(crate) async fn did_open(
     client: &Client,
     state: &Arc<RwLock<ServerState>>,
     config: &Arc<Spec42Config>,
+    runtime_config: &Arc<std::sync::OnceLock<RuntimeConfig>>,
     params: DidOpenTextDocumentParams,
 ) {
     let uri = params.text_document.uri.clone();
     let uri_norm = util::normalize_file_uri(&uri);
     let text = params.text_document.text;
     let did_open_start = Instant::now();
+    let perf_logging_enabled = runtime_config
+        .get()
+        .expect("initialize precedes all other LSP requests")
+        .perf_logging_enabled;
 
     // Check whether the file is already indexed with identical content before
     // taking the write lock. If so, the startup scan already built the semantic
@@ -723,15 +743,14 @@ pub(crate) async fn did_open(
     };
     let already_indexed = open_status == "alreadyIndexed";
 
-    let (warning, lock_wait_ms, perf_logging_enabled, scheduled_relink) = if already_indexed {
+    let (warning, lock_wait_ms, scheduled_relink) = if already_indexed {
         // Fast path: content unchanged — skip re-parse and re-evaluation entirely.
         // The write lock is taken only to bump the coordinator version.
         let lock_start = Instant::now();
         let mut st = state.write().await;
         let lock_wait_ms = lock_start.elapsed().as_millis();
-        let perf_logging_enabled = st.perf_logging_enabled;
         st.coordinator.bump_version();
-        (None, lock_wait_ms, perf_logging_enabled, false)
+        (None, lock_wait_ms, false)
     } else {
         // New or changed file: parse without the expensive cross-document
         // evaluation pass, then schedule an async relink so that cross-document
@@ -740,7 +759,6 @@ pub(crate) async fn did_open(
         let mut st = state.write().await;
         let lock_wait_ms = lock_start.elapsed().as_millis();
         let warning = store_document_text_fast(&mut st, &uri_norm, text.clone());
-        let perf_logging_enabled = st.perf_logging_enabled;
         // Only schedule a relink when the graph is in a queryable state.
         // If startup is still running (Indexing/Cold), the startup scan will
         // build the full graph itself — no separate relink needed.
@@ -751,14 +769,16 @@ pub(crate) async fn did_open(
         let token = scheduled_relink.then(|| st.coordinator.schedule_relink());
         drop(st);
         if let Some(token) = token {
-            schedule_semantic_relink_after_change(client, state, config, uri_norm.clone(), token);
+            schedule_semantic_relink_after_change(
+                client,
+                state,
+                config,
+                runtime_config,
+                uri_norm.clone(),
+                token,
+            );
         }
-        (
-            warning,
-            lock_wait_ms,
-            perf_logging_enabled,
-            scheduled_relink,
-        )
+        (warning, lock_wait_ms, scheduled_relink)
     };
 
     if perf_logging_enabled {
@@ -782,10 +802,12 @@ pub(crate) async fn did_open(
         let client = client.clone();
         let state = Arc::clone(state);
         let config = Arc::clone(config);
+        let runtime_config = Arc::clone(runtime_config);
         let uri_norm_log = uri_norm.clone();
         tokio::spawn(async move {
             let diag_start = Instant::now();
-            publish_document_diagnostics(&client, &state, &config, uri, &text).await;
+            publish_document_diagnostics(&client, &state, &config, &runtime_config, uri, &text)
+                .await;
             if perf_logging_enabled {
                 client
                     .log_message(
@@ -811,6 +833,7 @@ pub(crate) async fn did_change(
     client: &Client,
     state: &Arc<RwLock<ServerState>>,
     config: &Arc<Spec42Config>,
+    runtime_config: &Arc<std::sync::OnceLock<RuntimeConfig>>,
     params: DidChangeTextDocumentParams,
 ) {
     let uri = params.text_document.uri.clone();
@@ -873,18 +896,20 @@ pub(crate) async fn did_change(
 
     // Phase 3: decide whether to schedule a relink now that the document's
     // own parse/graph patch is committed.
-    let (perf_logging_enabled, token) = {
+    let perf_logging_enabled = runtime_config
+        .get()
+        .expect("initialize precedes all other LSP requests")
+        .perf_logging_enabled;
+    let token = {
         let mut st = state.write().await;
-        let perf_logging_enabled = st.perf_logging_enabled;
         // Only schedule a relink when the graph is in a queryable state.
         // If startup is still running (Indexing/Cold), skip — startup will
         // build the full graph itself.
-        let token = matches!(
+        matches!(
             st.coordinator.lifecycle(),
             SemanticLifecycle::Ready | SemanticLifecycle::Reindexing
         )
-        .then(|| st.coordinator.schedule_relink());
-        (perf_logging_enabled, token)
+        .then(|| st.coordinator.schedule_relink())
     };
     let apply_ms = apply_start.elapsed().as_millis() as u64;
     for (ty, message) in warnings {
@@ -897,7 +922,14 @@ pub(crate) async fn did_change(
     // evaluation haven't run yet; the relink task publishes diagnostics after
     // committing the fully-resolved graph.
     if let Some(token) = token {
-        schedule_semantic_relink_after_change(client, state, config, uri_norm.clone(), token);
+        schedule_semantic_relink_after_change(
+            client,
+            state,
+            config,
+            runtime_config,
+            uri_norm.clone(),
+            token,
+        );
     }
     log_perf(
         client,
@@ -910,7 +942,7 @@ pub(crate) async fn did_change(
         ],
     )
     .await;
-    schedule_workspace_diagnostics_republish(client, state, config);
+    schedule_workspace_diagnostics_republish(client, state, config, runtime_config);
 }
 
 pub(crate) async fn did_close(client: &Client, params: DidCloseTextDocumentParams) {
@@ -923,15 +955,16 @@ pub(crate) async fn did_change_watched_files(
     client: &Client,
     state: &Arc<RwLock<ServerState>>,
     config: &Arc<Spec42Config>,
+    runtime_config: &Arc<std::sync::OnceLock<RuntimeConfig>>,
     params: DidChangeWatchedFilesParams,
 ) {
     use tower_lsp::lsp_types::FileChangeType;
 
     let total_start = Instant::now();
-    let perf_logging_enabled = {
-        let state = state.read().await;
-        state.perf_logging_enabled
-    };
+    let perf_logging_enabled = runtime_config
+        .get()
+        .expect("initialize precedes all other LSP requests")
+        .perf_logging_enabled;
     let mut runtime_warnings = Vec::new();
     let mut changed_or_created_uris = Vec::new();
     let mut deleted_uris = Vec::new();
@@ -977,7 +1010,14 @@ pub(crate) async fn did_change_watched_files(
     }
     let diagnostics_start = Instant::now();
     if !changed_or_created_uris.is_empty() {
-        publish_workspace_diagnostics(client, state, config, Some(&changed_or_created_uris)).await;
+        publish_workspace_diagnostics(
+            client,
+            state,
+            config,
+            runtime_config,
+            Some(&changed_or_created_uris),
+        )
+        .await;
     }
     let diagnostics_ms = diagnostics_start.elapsed().as_millis() as u64;
     let deleted_uri_count = deleted_uris.len();
@@ -1006,6 +1046,7 @@ pub(crate) async fn did_change_configuration(
     client: &Client,
     state: &Arc<RwLock<ServerState>>,
     config: &Arc<Spec42Config>,
+    runtime_config: &Arc<std::sync::OnceLock<RuntimeConfig>>,
     params: DidChangeConfigurationParams,
 ) {
     let client_library_paths = params
@@ -1036,12 +1077,13 @@ pub(crate) async fn did_change_configuration(
 
     let state = Arc::clone(state);
     let config = Arc::clone(config);
+    let runtime_config = Arc::clone(runtime_config);
     let client = client.clone();
     tokio::spawn(async move {
-        let perf_logging_enabled = {
-            let st = state.read().await;
-            st.perf_logging_enabled
-        };
+        let perf_logging_enabled = runtime_config
+            .get()
+            .expect("initialize precedes all other LSP requests")
+            .perf_logging_enabled;
         let total_start = Instant::now();
         let discover_read_start = Instant::now();
         let (entries, summary) =
@@ -1092,7 +1134,7 @@ pub(crate) async fn did_change_configuration(
         }
         send_semantic_ready_notification(&client, &state).await;
         let diagnostics_start = Instant::now();
-        publish_workspace_diagnostics(&client, &state, &config, None).await;
+        publish_workspace_diagnostics(&client, &state, &config, &runtime_config, None).await;
         log_perf(
             &client,
             perf_logging_enabled,

@@ -19,10 +19,13 @@ pub trait TracksRelink {
 #[error("mutate closure panicked; session state left unchanged")]
 pub struct MutatePanicked;
 
+type BoxedAny = Box<dyn std::any::Any + Send>;
+type BoxedApply<M> = Box<dyn FnOnce(&mut M) -> BoxedAny + Send>;
+
 enum Command<M> {
     Mutate {
-        apply: Box<dyn FnOnce(&mut M) + Send>,
-        reply: oneshot::Sender<Result<(), MutatePanicked>>,
+        apply: BoxedApply<M>,
+        reply: oneshot::Sender<Result<BoxedAny, MutatePanicked>>,
     },
     JobResult {
         token: RelinkToken,
@@ -56,12 +59,12 @@ impl<M: Clone + Send + Sync + TracksRelink + 'static> SessionActor<M> {
                 match cmd {
                     Command::Mutate { apply, reply } => {
                         let outcome = std::panic::catch_unwind(AssertUnwindSafe(|| {
-                            apply(Arc::make_mut(&mut state));
+                            apply(Arc::make_mut(&mut state))
                         }));
                         match outcome {
-                            Ok(()) => {
+                            Ok(boxed) => {
                                 let _ = watch_tx.send(state.clone());
-                                let _ = reply.send(Ok(()));
+                                let _ = reply.send(Ok(boxed));
                             }
                             Err(payload) => {
                                 tracing::error!(
@@ -106,19 +109,26 @@ impl<M: Clone + Send + Sync + TracksRelink + 'static> SessionActor<M> {
     }
 
     /// Applies a cheap, synchronous mutation inline on the actor and publishes the result
-    /// before resolving. Use this for the fast path (e.g. patching one document's text) —
-    /// never for anything that itself does slow work, since that would delay every other
-    /// queued command behind it.
-    pub async fn mutate(
+    /// before resolving, returning whatever `apply` returns. Use this for the fast path
+    /// (e.g. patching one document's text) — never for anything that itself does slow work,
+    /// since that would delay every other queued command behind it.
+    pub async fn mutate<R: Send + 'static>(
         &self,
-        apply: impl FnOnce(&mut M) + Send + 'static,
-    ) -> Result<(), MutatePanicked> {
+        apply: impl FnOnce(&mut M) -> R + Send + 'static,
+    ) -> Result<R, MutatePanicked> {
         let (reply_tx, reply_rx) = oneshot::channel();
+        let boxed_apply: BoxedApply<M> =
+            Box::new(move |state: &mut M| Box::new(apply(state)) as BoxedAny);
         let _ = self.tx.send(Command::Mutate {
-            apply: Box::new(apply),
+            apply: boxed_apply,
             reply: reply_tx,
         });
-        reply_rx.await.unwrap_or(Err(MutatePanicked))
+        match reply_rx.await.unwrap_or(Err(MutatePanicked)) {
+            Ok(boxed) => Ok(*boxed
+                .downcast::<R>()
+                .expect("R matches the closure's own return type by construction")),
+            Err(MutatePanicked) => Err(MutatePanicked),
+        }
     }
 
     /// Fire-and-forget: hands back the result of a rebuild computed off the actor (typically
@@ -221,5 +231,19 @@ mod tests {
         // Actor is still alive: a subsequent good mutate still works.
         actor.mutate(|s| s.value = 9).await.unwrap();
         assert_eq!(snapshot.current().value, 9);
+    }
+
+    #[tokio::test]
+    async fn mutate_returns_value_produced_by_apply_closure() {
+        let (actor, snapshot) = SessionActor::spawn(TestState::default());
+        let result = actor
+            .mutate(|s| {
+                s.value = 5;
+                s.value
+            })
+            .await
+            .unwrap();
+        assert_eq!(result, 5);
+        assert_eq!(snapshot.current().value, 5);
     }
 }

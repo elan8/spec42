@@ -9,7 +9,7 @@ use tracing::info;
 use crate::analysis::diagnostics_core;
 use crate::common::util;
 use crate::host::config::Spec42Config;
-use crate::workspace::ServerState;
+use crate::workspace::{RuntimeConfig, ServerState};
 
 const TRANSIENT_STARTUP_SEMANTIC_DIAGNOSTIC_CODES: &[&str] = &[
     "unresolved_type_reference",
@@ -18,9 +18,11 @@ const TRANSIENT_STARTUP_SEMANTIC_DIAGNOSTIC_CODES: &[&str] = &[
     "missing_library_context",
 ];
 
-async fn perf_logging_enabled(state: &Arc<RwLock<ServerState>>) -> bool {
-    let locked = state.read().await;
-    locked.perf_logging_enabled
+fn perf_logging_enabled(runtime_config: &Arc<std::sync::OnceLock<RuntimeConfig>>) -> bool {
+    runtime_config
+        .get()
+        .expect("initialize precedes all other LSP requests")
+        .perf_logging_enabled
 }
 
 async fn diagnostics_publication_ready(state: &Arc<RwLock<ServerState>>) -> bool {
@@ -62,6 +64,7 @@ pub(crate) async fn publish_document_diagnostics(
     client: &Client,
     state: &Arc<RwLock<ServerState>>,
     config: &Arc<Spec42Config>,
+    runtime_config: &Arc<std::sync::OnceLock<RuntimeConfig>>,
     uri: Url,
     text: &str,
 ) {
@@ -77,7 +80,7 @@ pub(crate) async fn publish_document_diagnostics(
         return;
     }
     if !ready {
-        if perf_logging_enabled(state).await {
+        if perf_logging_enabled(runtime_config) {
             info!(
                 event = "diagnostics:document:deferred",
                 uri = %uri,
@@ -87,7 +90,7 @@ pub(crate) async fn publish_document_diagnostics(
         return;
     }
     let diagnostics = collect_diagnostics_for_document(state, config, &uri, text).await;
-    if perf_logging_enabled(state).await {
+    if perf_logging_enabled(runtime_config) {
         info!(
             event = "diagnostics:document",
             uri = %uri,
@@ -102,11 +105,12 @@ pub(crate) async fn publish_workspace_diagnostics(
     client: &Client,
     state: &Arc<RwLock<ServerState>>,
     config: &Arc<Spec42Config>,
+    runtime_config: &Arc<std::sync::OnceLock<RuntimeConfig>>,
     target_uris: Option<&[Url]>,
 ) {
     let started_at = Instant::now();
     if !diagnostics_publication_ready(state).await {
-        if perf_logging_enabled(state).await {
+        if perf_logging_enabled(runtime_config) {
             info!(
                 event = "diagnostics:workspace:deferred",
                 target_uris = target_uris.map(|uris| uris.len()).unwrap_or(0),
@@ -158,7 +162,7 @@ pub(crate) async fn publish_workspace_diagnostics(
             published_count += 1;
         }
     }
-    if perf_logging_enabled(state).await {
+    if perf_logging_enabled(runtime_config) {
         info!(
             event = "diagnostics:workspace",
             target_uris = target_uris.map(|uris| uris.len()).unwrap_or(0),

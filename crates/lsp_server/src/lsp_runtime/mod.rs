@@ -22,7 +22,7 @@ use crate::host::config::Spec42Config;
 use crate::views::dto;
 use crate::workspace::viz_cache::WorkspaceRenderCache;
 use crate::workspace::state::SemanticLifecycle;
-use crate::workspace::ServerState;
+use crate::workspace::{RuntimeConfig, ServerState};
 use tokio::sync::watch;
 use custom::{
     mark_sysml_model_parse_cached, sysml_clear_cache_result, sysml_feature_inspector_result,
@@ -41,16 +41,34 @@ struct Backend {
     /// Lifecycle watch receiver kept outside the `RwLock` so query handlers
     /// can wait for `Reindexing → Ready` without acquiring any lock.
     lifecycle_rx: watch::Receiver<SemanticLifecycle>,
+    /// Write-once startup configuration, set during `initialize` and read
+    /// everywhere else without acquiring the `ServerState` lock. LSP
+    /// guarantees `initialize` precedes every other request.
+    runtime_config: Arc<std::sync::OnceLock<RuntimeConfig>>,
 }
 
 #[tower_lsp::async_trait]
 impl LanguageServer for Backend {
     async fn initialize(&self, params: InitializeParams) -> Result<InitializeResult> {
-        documents::initialize(&self.state, &self.config, &self.server_name, params).await
+        documents::initialize(
+            &self.state,
+            &self.config,
+            &self.server_name,
+            &self.runtime_config,
+            params,
+        )
+        .await
     }
 
     async fn initialized(&self, _: InitializedParams) {
-        documents::initialized(&self.client, &self.state, &self.config, &self.server_name).await;
+        documents::initialized(
+            &self.client,
+            &self.state,
+            &self.config,
+            &self.server_name,
+            &self.runtime_config,
+        )
+        .await;
     }
 
     async fn shutdown(&self) -> Result<()> {
@@ -58,11 +76,25 @@ impl LanguageServer for Backend {
     }
 
     async fn did_open(&self, params: DidOpenTextDocumentParams) {
-        documents::did_open(&self.client, &self.state, &self.config, params).await;
+        documents::did_open(
+            &self.client,
+            &self.state,
+            &self.config,
+            &self.runtime_config,
+            params,
+        )
+        .await;
     }
 
     async fn did_change(&self, params: DidChangeTextDocumentParams) {
-        documents::did_change(&self.client, &self.state, &self.config, params).await;
+        documents::did_change(
+            &self.client,
+            &self.state,
+            &self.config,
+            &self.runtime_config,
+            params,
+        )
+        .await;
     }
 
     async fn did_close(&self, params: DidCloseTextDocumentParams) {
@@ -70,11 +102,25 @@ impl LanguageServer for Backend {
     }
 
     async fn did_change_watched_files(&self, params: DidChangeWatchedFilesParams) {
-        documents::did_change_watched_files(&self.client, &self.state, &self.config, params).await;
+        documents::did_change_watched_files(
+            &self.client,
+            &self.state,
+            &self.config,
+            &self.runtime_config,
+            params,
+        )
+        .await;
     }
 
     async fn did_change_configuration(&self, params: DidChangeConfigurationParams) {
-        documents::did_change_configuration(&self.client, &self.state, &self.config, params).await;
+        documents::did_change_configuration(
+            &self.client,
+            &self.state,
+            &self.config,
+            &self.runtime_config,
+            params,
+        )
+        .await;
     }
 
     async fn hover(&self, params: HoverParams) -> Result<Option<Hover>> {
@@ -84,19 +130,31 @@ impl LanguageServer for Backend {
             .uri
             .clone();
         let state = self.state.read().await;
+        let perf_logging_enabled = self
+            .runtime_config
+            .get()
+            .expect("initialize precedes all other LSP requests")
+            .perf_logging_enabled;
         features::hover(
             &state,
             hover_uri,
             params.text_document_position_params.position,
+            perf_logging_enabled,
         )
     }
 
     async fn completion(&self, params: CompletionParams) -> Result<Option<CompletionResponse>> {
         let state = self.state.read().await;
+        let perf_logging_enabled = self
+            .runtime_config
+            .get()
+            .expect("initialize precedes all other LSP requests")
+            .perf_logging_enabled;
         features::completion(
             &state,
             params.text_document_position.text_document.uri,
             params.text_document_position.position,
+            perf_logging_enabled,
         )
     }
 
@@ -119,20 +177,32 @@ impl LanguageServer for Backend {
         params: GotoDefinitionParams,
     ) -> Result<Option<GotoDefinitionResponse>> {
         let state = self.state.read().await;
+        let perf_logging_enabled = self
+            .runtime_config
+            .get()
+            .expect("initialize precedes all other LSP requests")
+            .perf_logging_enabled;
         features::goto_definition(
             &state,
             params.text_document_position_params.text_document.uri,
             params.text_document_position_params.position,
+            perf_logging_enabled,
         )
     }
 
     async fn references(&self, params: ReferenceParams) -> Result<Option<Vec<Location>>> {
         let state = self.state.read().await;
+        let perf_logging_enabled = self
+            .runtime_config
+            .get()
+            .expect("initialize precedes all other LSP requests")
+            .perf_logging_enabled;
         features::references(
             &state,
             params.text_document_position.text_document.uri,
             params.text_document_position.position,
             params.context.include_declaration,
+            perf_logging_enabled,
         )
     }
 
@@ -146,10 +216,16 @@ impl LanguageServer for Backend {
         params: DocumentHighlightParams,
     ) -> Result<Option<Vec<DocumentHighlight>>> {
         let state = self.state.read().await;
+        let perf_logging_enabled = self
+            .runtime_config
+            .get()
+            .expect("initialize precedes all other LSP requests")
+            .perf_logging_enabled;
         features::document_highlight(
             &state,
             params.text_document_position_params.text_document.uri,
             params.text_document_position_params.position,
+            perf_logging_enabled,
         )
     }
 
@@ -166,16 +242,32 @@ impl LanguageServer for Backend {
         params: TextDocumentPositionParams,
     ) -> Result<Option<PrepareRenameResponse>> {
         let state = self.state.read().await;
-        features::prepare_rename(&state, params.text_document.uri, params.position)
+        let perf_logging_enabled = self
+            .runtime_config
+            .get()
+            .expect("initialize precedes all other LSP requests")
+            .perf_logging_enabled;
+        features::prepare_rename(
+            &state,
+            params.text_document.uri,
+            params.position,
+            perf_logging_enabled,
+        )
     }
 
     async fn rename(&self, params: RenameParams) -> Result<Option<WorkspaceEdit>> {
         let state = self.state.read().await;
+        let perf_logging_enabled = self
+            .runtime_config
+            .get()
+            .expect("initialize precedes all other LSP requests")
+            .perf_logging_enabled;
         features::rename(
             &state,
             params.text_document_position.text_document.uri,
             params.text_document_position.position,
             params.new_name,
+            perf_logging_enabled,
         )
     }
 
@@ -198,7 +290,12 @@ impl LanguageServer for Backend {
         params: WorkspaceSymbolParams,
     ) -> Result<Option<Vec<SymbolInformation>>> {
         let state = self.state.read().await;
-        features::workspace_symbol(&state, params.query)
+        let perf_logging_enabled = self
+            .runtime_config
+            .get()
+            .expect("initialize precedes all other LSP requests")
+            .perf_logging_enabled;
+        features::workspace_symbol(&state, params.query, perf_logging_enabled)
     }
 
     async fn code_action(&self, params: CodeActionParams) -> Result<Option<CodeActionResponse>> {
@@ -212,7 +309,16 @@ impl LanguageServer for Backend {
 
     async fn code_lens(&self, params: CodeLensParams) -> Result<Option<Vec<CodeLens>>> {
         let state = self.state.read().await;
-        features::code_lens(&state, params.text_document.uri)
+        let runtime_config = self
+            .runtime_config
+            .get()
+            .expect("initialize precedes all other LSP requests");
+        features::code_lens(
+            &state,
+            params.text_document.uri,
+            runtime_config.code_lens_enabled,
+            runtime_config.perf_logging_enabled,
+        )
     }
 
     async fn inlay_hint(&self, params: InlayHintParams) -> Result<Option<Vec<InlayHint>>> {
@@ -230,12 +336,19 @@ impl LanguageServer for Backend {
         params: SemanticTokensParams,
     ) -> Result<Option<SemanticTokensResult>> {
         let state = self.state.read().await;
-        let Some((tokens, log_lines)) =
-            features::semantic_tokens_full_request(&state, params.text_document.uri)?
+        let perf_logging_enabled = self
+            .runtime_config
+            .get()
+            .expect("initialize precedes all other LSP requests")
+            .perf_logging_enabled;
+        let Some((tokens, log_lines)) = features::semantic_tokens_full_request(
+            &state,
+            params.text_document.uri,
+            perf_logging_enabled,
+        )?
         else {
             return Ok(None);
         };
-        let perf_logging_enabled = state.perf_logging_enabled;
         drop(state);
         if perf_logging_enabled {
             for line in &log_lines {
@@ -250,15 +363,20 @@ impl LanguageServer for Backend {
         params: SemanticTokensRangeParams,
     ) -> Result<Option<SemanticTokensRangeResult>> {
         let state = self.state.read().await;
+        let perf_logging_enabled = self
+            .runtime_config
+            .get()
+            .expect("initialize precedes all other LSP requests")
+            .perf_logging_enabled;
         let Some((tokens, log_lines)) = features::semantic_tokens_range_request(
             &state,
             params.text_document.uri,
             params.range,
+            perf_logging_enabled,
         )?
         else {
             return Ok(None);
         };
-        let perf_logging_enabled = state.perf_logging_enabled;
         drop(state);
         if perf_logging_enabled {
             for line in &log_lines {
@@ -353,7 +471,11 @@ impl Backend {
         // against the frontend's getModelRequestStart timestamp and see how long
         // the request sat in the transport/queue before reaching this handler.
         {
-            let is_perf = self.state.try_read().map(|s| s.perf_logging_enabled).unwrap_or(false);
+            let is_perf = self
+                .runtime_config
+                .get()
+                .map(|c| c.perf_logging_enabled)
+                .unwrap_or(false);
             if is_perf {
                 self.client
                     .log_message(
@@ -376,8 +498,20 @@ impl Backend {
         let state = self.state.read().await;
         let mut render_cache = self.render_cache.lock().await;
         let read_lock_wait_ms = read_lock_wait_start.elapsed().as_millis().max(1);
-        let (response, parse_cached_uri) =
-            sysml_model_result(&self.client, &state, &mut render_cache, &self.config, params).await?;
+        let perf_logging_enabled = self
+            .runtime_config
+            .get()
+            .expect("initialize precedes all other LSP requests")
+            .perf_logging_enabled;
+        let (response, parse_cached_uri) = sysml_model_result(
+            &self.client,
+            &state,
+            &mut render_cache,
+            &self.config,
+            params,
+            perf_logging_enabled,
+        )
+        .await?;
         drop(render_cache);
         drop(state);
 
@@ -408,10 +542,6 @@ impl Backend {
             .as_ref()
             .map(|graph| graph.edges.len())
             .unwrap_or(0);
-        let perf_logging_enabled = {
-            let state = self.state.read().await;
-            state.perf_logging_enabled
-        };
         let client = self.client.clone();
         tokio::spawn(async move {
             if !perf_logging_enabled {
@@ -444,7 +574,11 @@ impl Backend {
         let request_start = Instant::now();
         let state = self.state.read().await;
         let mut render_cache = self.render_cache.lock().await;
-        let perf_logging_enabled = state.perf_logging_enabled;
+        let perf_logging_enabled = self
+            .runtime_config
+            .get()
+            .expect("initialize precedes all other LSP requests")
+            .perf_logging_enabled;
         let (response, build_meta) = sysml_visualization_result(&state, &mut render_cache, params)?;
         drop(render_cache);
         drop(state);
@@ -566,7 +700,8 @@ pub async fn run(config: Arc<Spec42Config>, server_name: &str) {
     let start_time = Instant::now();
     let server_name = server_name.to_string();
     let custom_rpc_methods = config.custom_rpc_method_names();
-    let runtime_config = Arc::clone(&config);
+    let service_config = Arc::clone(&config);
+    let runtime_config = Arc::new(std::sync::OnceLock::<RuntimeConfig>::new());
     // Subscribe to lifecycle changes before handing state to LspService.
     // The receiver lives outside the RwLock so sysml/model can wait for
     // Reindexing→Ready without acquiring any lock.
@@ -576,10 +711,11 @@ pub async fn run(config: Arc<Spec42Config>, server_name: &str) {
         client,
         state: Arc::clone(&state),
         render_cache: Arc::clone(&render_cache),
-        config: Arc::clone(&runtime_config),
+        config: Arc::clone(&service_config),
         start_time,
         server_name: server_name.clone(),
         lifecycle_rx: lifecycle_rx.clone(),
+        runtime_config: Arc::clone(&runtime_config),
     })
     .custom_method("sysml/model", Backend::sysml_model)
     .custom_method("sysml/visualization", Backend::sysml_visualization)

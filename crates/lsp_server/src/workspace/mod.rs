@@ -19,5 +19,5 @@ pub(crate) use services::{
     parse_scanned_entries, rebuild_all_document_links, rebuild_semantic_graph_staged,
     refresh_document, remove_document, store_document_text_fast,
 };
-pub(crate) use state::{IndexEntry, SemanticLifecycle, ServerState};
+pub(crate) use state::{IndexEntry, RuntimeConfig, SemanticLifecycle, ServerState};
 pub(crate) use workspace::{library_graph_cache, parse_cache};

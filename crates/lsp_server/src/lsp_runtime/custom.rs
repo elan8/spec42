@@ -1,4 +1,4 @@
-﻿use crate::host::config::Spec42Config;
+use crate::host::config::Spec42Config;
 use crate::views::dto;
 use crate::workspace::state::SemanticLifecycle;
 use crate::workspace::viz_cache::WorkspaceRenderCache;
@@ -26,12 +26,14 @@ async fn log_perf(client: &Client, enabled: bool, event: &str, fields: Vec<(&str
         .await;
 }
 
+#[allow(clippy::too_many_arguments)]
 pub(crate) async fn sysml_model_result(
     client: &Client,
     state: &ServerState,
     cache: &mut WorkspaceRenderCache,
     _config: &Spec42Config,
     params: serde_json::Value,
+    perf_logging_enabled: bool,
 ) -> Result<(dto::SysmlModelResultDto, Option<Url>)> {
     let request_start = Instant::now();
     let params_start = Instant::now();
@@ -75,7 +77,7 @@ pub(crate) async fn sysml_model_result(
                     .map(|entry| (fallback_uri, entry))
             }) {
                 Some((fallback_uri, entry)) => {
-                    if state.perf_logging_enabled {
+                    if perf_logging_enabled {
                         client
                             .log_message(
                                 MessageType::INFO,
@@ -93,7 +95,7 @@ pub(crate) async fn sysml_model_result(
                     let index_lookup_ms = index_lookup_start.elapsed().as_millis().max(1);
                     log_perf(
                         client,
-                        state.perf_logging_enabled,
+                        perf_logging_enabled,
                         "backend:sysmlModelLookupMiss",
                         vec![
                             ("uri", format!("{:?}", uri.as_str())),
@@ -116,7 +118,7 @@ pub(crate) async fn sysml_model_result(
             let index_lookup_ms = index_lookup_start.elapsed().as_millis().max(1);
             log_perf(
                 client,
-                state.perf_logging_enabled,
+                perf_logging_enabled,
                 "backend:sysmlModelLookupMiss",
                 vec![
                     ("uri", format!("{:?}", uri.as_str())),
@@ -164,7 +166,7 @@ pub(crate) async fn sysml_model_result(
         &state.library_paths,
         &scope,
         build_start,
-        state.perf_logging_enabled,
+        perf_logging_enabled,
         client,
         model_explorer_bundle.as_ref(),
     )
@@ -189,7 +191,7 @@ pub(crate) async fn sysml_model_result(
     let total_ms = request_start.elapsed().as_millis().max(1);
     log_perf(
         client,
-        state.perf_logging_enabled,
+        perf_logging_enabled,
         "backend:sysmlModelResult",
         vec![
             ("uri", format!("{:?}", uri.as_str())),

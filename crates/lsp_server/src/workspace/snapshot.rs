@@ -10,10 +10,11 @@ use crate::workspace::ServerState;
 pub(crate) struct ServerStateSnapshot<'a> {
     state: &'a ServerState,
     symbol_table: Vec<LsSymbolEntry>,
+    perf_logging_enabled: bool,
 }
 
 impl<'a> ServerStateSnapshot<'a> {
-    pub(crate) fn new(state: &'a ServerState) -> Self {
+    pub(crate) fn new(state: &'a ServerState, perf_logging_enabled: bool) -> Self {
         let symbol_table = state
             .symbol_table
             .iter()
@@ -22,6 +23,7 @@ impl<'a> ServerStateSnapshot<'a> {
         Self {
             state,
             symbol_table,
+            perf_logging_enabled,
         }
     }
 }
@@ -81,7 +83,7 @@ impl WorkspaceSnapshot for ServerStateSnapshot<'_> {
     }
 
     fn perf_logging_enabled(&self) -> bool {
-        self.state.perf_logging_enabled
+        self.perf_logging_enabled
     }
 
     fn library_paths(&self) -> &[Url] {

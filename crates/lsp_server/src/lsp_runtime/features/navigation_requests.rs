@@ -10,9 +10,14 @@ use crate::workspace::{snapshot::ServerStateSnapshot, ServerState};
 use crate::lsp_runtime::navigation;
 use crate::lsp_runtime::references_resolver;
 
-pub(crate) fn hover(state: &ServerState, uri: Url, pos: Position) -> Result<Option<Hover>> {
+pub(crate) fn hover(
+    state: &ServerState,
+    uri: Url,
+    pos: Position,
+    perf_logging_enabled: bool,
+) -> Result<Option<Hover>> {
     let uri_norm = util::normalize_file_uri(&uri);
-    let snapshot = ServerStateSnapshot::new(state);
+    let snapshot = ServerStateSnapshot::new(state, perf_logging_enabled);
     let path = snapshot.path_for_uri(&uri_norm);
     let result = language_service::hover(&snapshot, &path, to_core_position(pos));
     Ok(result.map(map_hover_to_lsp))
@@ -22,9 +27,10 @@ pub(crate) fn goto_definition(
     state: &ServerState,
     uri: Url,
     pos: Position,
+    perf_logging_enabled: bool,
 ) -> Result<Option<GotoDefinitionResponse>> {
     let uri_norm = util::normalize_file_uri(&uri);
-    let snapshot = ServerStateSnapshot::new(state);
+    let snapshot = ServerStateSnapshot::new(state, perf_logging_enabled);
     let path = snapshot.path_for_uri(&uri_norm);
     let result = language_service::goto_definition(&snapshot, &path, to_core_position(pos));
     Ok(map_definition_to_lsp(&snapshot, result))
@@ -35,9 +41,10 @@ pub(crate) fn references(
     uri: Url,
     pos: Position,
     include_declaration: bool,
+    perf_logging_enabled: bool,
 ) -> Result<Option<Vec<Location>>> {
     let uri_norm = util::normalize_file_uri(&uri);
-    let snapshot = ServerStateSnapshot::new(state);
+    let snapshot = ServerStateSnapshot::new(state, perf_logging_enabled);
     let path = snapshot.path_for_uri(&uri_norm);
     let result = language_service::find_references(
         &snapshot,
@@ -72,9 +79,16 @@ pub(crate) fn document_highlight(
     state: &ServerState,
     uri: Url,
     pos: Position,
+    perf_logging_enabled: bool,
 ) -> Result<Option<Vec<DocumentHighlight>>> {
     let uri_norm = util::normalize_file_uri(&uri);
-    let locations = references_resolver::resolved_references_at_position(state, &uri_norm, pos, true);
+    let locations = references_resolver::resolved_references_at_position(
+        state,
+        &uri_norm,
+        pos,
+        true,
+        perf_logging_enabled,
+    );
     let locations = match locations {
         Some(locations) if !locations.is_empty() => locations,
         _ => return Ok(None),
