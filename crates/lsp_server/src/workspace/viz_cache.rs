@@ -3,7 +3,7 @@
 use std::collections::HashMap;
 
 use sysml_model::{
-    ModelExplorerBundle, PreparedViewDto, SysmlVisualizationResultDto, WorkspaceRenderSnapshot,
+    ModelExplorerBundle, SysmlVisualizationResultDto, WorkspaceRenderSnapshot,
 };
 use tower_lsp::lsp_types::Url;
 
@@ -19,7 +19,6 @@ pub(crate) struct WorkspaceRenderCacheEntry {
     pub workspace_root_uri: Url,
     pub snapshot: WorkspaceRenderSnapshot,
     pub model_explorer: Option<ModelExplorerBundle>,
-    pub prepared_views: HashMap<VisualizationCacheKey, PreparedViewDto>,
     pub visualization_responses: HashMap<VisualizationCacheKey, SysmlVisualizationResultDto>,
 }
 

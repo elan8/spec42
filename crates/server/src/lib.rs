@@ -27,8 +27,8 @@ pub use environment::DoctorReport;
 use environment::{build_doctor_report, resolve_environment};
 use host_snapshot::{load_snapshot_for_check, semantic_report_from_snapshot};
 use lsp_server::{
-    validate_paths, SemanticModelNode, SemanticModelProjection, SemanticModelRelationship,
-    SemanticValidationReport, ValidationReport, ValidationRequest, ValidationSummary,
+    SemanticModelNode, SemanticModelProjection, SemanticModelRelationship, SemanticValidationReport,
+    ValidationReport, ValidationRequest, ValidationSummary,
 };
 use mcp::schemas::Spec42GlobalParams;
 use reports::{apply_baseline, emit_validation_report};
@@ -40,9 +40,10 @@ use stdlib::{managed_status, remove_standard_library};
 pub fn perform_check(cli: &Cli, args: &CheckArgs) -> Result<ValidationReport, String> {
     let references_stdlib = environment::workspace_references_standard_library(&args.path);
     let environment = resolve_environment(cli)?;
-    let config = Arc::new(lsp_server::default_server_config());
-    let mut report = validate_paths(
-        &config,
+    let snapshot = load_snapshot_for_check(cli, args)?;
+    let mut report = semantic_report_from_snapshot(
+        &snapshot,
+        &environment,
         ValidationRequest {
             targets: vec![args.path.clone()],
             workspace_root: args.workspace_root.clone(),
@@ -55,16 +56,17 @@ pub fn perform_check(cli: &Cli, args: &CheckArgs) -> Result<ValidationReport, St
         && environment.stdlib_path.is_none()
         && !cli.no_stdlib
         && !report
+            .validation
             .advice
             .iter()
             .any(|line| line.contains("standard library"))
     {
-        report.advice.push(
+        report.validation.advice.push(
             "This workspace references standard-library packages (for example ScalarValues or ISQ); run with the embedded/bundled standard library available or pass `--stdlib-path`."
                 .to_string(),
         );
     }
-    Ok(report)
+    Ok(report.validation)
 }
 
 /// Build a CLI value from MCP global parameters.

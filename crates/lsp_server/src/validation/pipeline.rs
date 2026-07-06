@@ -100,8 +100,10 @@ fn collect_entries(
     workspace_root_url: Option<Url>,
     library_root_urls: &[Url],
     target_files: &[std::path::PathBuf],
-    _parallel_enabled: bool,
+    parallel_enabled: bool,
 ) -> Result<Vec<(Url, String)>, String> {
+    // Parallelism is currently applied in `parse_scanned_entries`, not during filesystem scan.
+    let _ = parallel_enabled;
     let scan_roots: Vec<Url> = if crate::workspace::library_closure::library_full_scan_enabled() {
         workspace_root_url
             .iter()

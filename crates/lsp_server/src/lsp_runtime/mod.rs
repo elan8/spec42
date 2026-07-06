@@ -460,6 +460,20 @@ impl LanguageServer for Backend {
 }
 
 impl Backend {
+    async fn wait_for_stable_snapshot(&self) {
+        // Wait for any in-flight async relink to complete so downstream responses
+        // reflect a fully-resolved semantic graph (satisfy/perform/subject edges etc).
+        // The snapshot handle wakes when the actor publishes a new state (no polling).
+        let mut snapshot_rx = self.handle.snapshot_handle();
+        let _ = tokio::time::timeout(
+            std::time::Duration::from_secs(30),
+            snapshot_rx.wait_for(|s| {
+                !matches!(s.session.lifecycle(), workspace::SessionLifecycle::Reindexing)
+            }),
+        )
+        .await;
+    }
+
     async fn sysml_model(&self, params: serde_json::Value) -> Result<dto::SysmlModelResultDto> {
         let request_start = Instant::now();
         // Log handler dispatch time BEFORE the (former) lock acquisition so we can compare
@@ -480,18 +494,7 @@ impl Backend {
                     .await;
             }
         }
-        // Wait for any in-flight async relink to complete so the response
-        // reflects a fully-resolved semantic graph (satisfy/perform/subject edges etc).
-        // The snapshot handle wakes instantly when the actor publishes a new state — no
-        // polling, and (unlike the old `RwLock`) no lock ever held while waiting.
-        let mut snapshot_rx = self.handle.snapshot_handle();
-        let _ = tokio::time::timeout(
-            std::time::Duration::from_secs(30),
-            snapshot_rx.wait_for(|s| {
-                !matches!(s.session.lifecycle(), workspace::SessionLifecycle::Reindexing)
-            }),
-        )
-        .await;
+        self.wait_for_stable_snapshot().await;
         let read_lock_wait_start = Instant::now();
         let state = self.handle.snapshot();
         let mut render_cache = self.render_cache.lock().await;
@@ -569,6 +572,7 @@ impl Backend {
         params: serde_json::Value,
     ) -> Result<SysmlVisualizationResultDto> {
         let request_start = Instant::now();
+        self.wait_for_stable_snapshot().await;
         let state = self.handle.snapshot();
         let mut render_cache = self.render_cache.lock().await;
         let perf_logging_enabled = self

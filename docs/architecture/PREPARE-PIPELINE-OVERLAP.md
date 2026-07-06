@@ -6,7 +6,7 @@ Documents how visualization payloads reach ELK layout and SVG rendering after Pa
 
 ```mermaid
 flowchart LR
-    Snap["WorkspaceRenderSnapshot\nViewIndex eager"] --> Rust["semantic_core\nbuild_sysml_visualization_from_artifacts"]
+    Snap["WorkspaceRenderSnapshot\nViewIndex eager"] --> Rust["sysml_model\nbuild_sysml_visualization_from_artifacts"]
     Rust --> PV["PreparedViewDto\nRust preparers"]
     PV --> LSP["LSP response.preparedView"]
     LSP --> Webview["sharedRendererAdapter\nlayoutPrepared when present"]
@@ -28,7 +28,8 @@ flowchart LR
 
 ## Notes
 
-- **One snapshot** per `(semantic_state_version, workspace_root_uri)` replaces separate artifact/response caches. ViewIndex is eager; `PreparedView` bundles and Model Explorer IBD are lazy.
+- **One snapshot** per `(semantic_state_version, workspace_root_uri)` replaces separate artifact/response caches. ViewIndex is eager; Model Explorer IBD is lazy.
+- **LSP response cache** stores full per-view payloads in one `visualization_responses` map (including `preparedView`), keyed by `(view, selectedView)`.
 - **LSP path** attaches `preparedView` on every successful diagram response. The webview uses it directly and skips TS `prepareViewData` when present.
 - **Fallback** — CLI/headless paths without `preparedView` still call TS `prepareViewData` until fully migrated.
 - **IBD** — interconnection uses scoped URI merge inside projection; Model Explorer owns full-workspace IBD via `materialize_model_explorer`.
@@ -38,7 +39,7 @@ flowchart LR
 
 | Concern | Location |
 |---------|----------|
-| PreparedView DTO + preparers | `semantic_core/src/semantic/prepared_view/` |
-| Render snapshot + ViewIndex | `semantic_core/src/semantic/render_snapshot.rs` |
-| Kernel cache | `kernel/src/workspace/viz_cache.rs`, `kernel/src/views/workspace_artifacts.rs` |
-| Semantic finalization (behavior) | `semantic_core/src/semantic/visualization/payload.rs` |
+| PreparedView DTO + preparers | `crates/sysml_model/src/semantic/prepared_view/` |
+| Render snapshot + ViewIndex | `crates/sysml_model/src/semantic/render_snapshot.rs` |
+| LSP render cache | `crates/lsp_server/src/workspace/viz_cache.rs`, `crates/lsp_server/src/views/workspace_artifacts.rs` |
+| Semantic finalization (behavior) | `crates/sysml_model/src/semantic/visualization/payload.rs` |

@@ -45,22 +45,16 @@ pub(crate) async fn sysml_model_result(
     if workspace_visualization_requested && !crate::workspace::state::supports_semantic_queries(state.session.lifecycle()) {
         return Ok((crate::views::empty_model_response(build_start), None));
     }
-    if workspace_visualization_requested {
-        if let Some(root) = crate::views::workspace_artifacts::primary_workspace_root(state) {
-            let _ = crate::views::workspace_artifacts::ensure_render_snapshot(state, cache, &root);
-            if crate::views::ibd_requested(&scope) {
-                let _ = crate::views::workspace_artifacts::materialize_model_explorer(state, cache, &root);
-            }
-        }
-    }
-    let model_explorer_bundle =
-        if workspace_visualization_requested {
-            crate::views::workspace_artifacts::primary_workspace_root(state).and_then(|root| {
-                crate::views::workspace_artifacts::materialize_model_explorer(state, cache, &root).ok()
-            })
-        } else {
-            None
-        };
+    let workspace_visualization_root = if workspace_visualization_requested {
+        crate::views::workspace_artifacts::workspace_root_for_uri(&uri, &state.workspace_roots)
+            .or_else(|| crate::views::workspace_artifacts::primary_workspace_root(state))
+    } else {
+        None
+    };
+    let model_explorer_bundle = workspace_visualization_root.as_ref().and_then(|root| {
+        let _ = crate::views::workspace_artifacts::ensure_render_snapshot(state, cache, root);
+        crate::views::workspace_artifacts::materialize_model_explorer(state, cache, root).ok()
+    });
     let index_lookup_start = Instant::now();
     let (effective_uri, entry) = match state.index.get(&uri) {
         Some(e) => (uri.clone(), e),

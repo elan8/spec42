@@ -45,7 +45,7 @@ mod position {
 pub use position::{source_position_to_range, source_range_to_range, SourcePosition, SourceRange};
 pub use symbols::{collect_document_symbols, collect_folding_ranges, find_reference_ranges, SymbolEntry};
 #[cfg(test)]
-pub use symbols::{collect_named_elements, collect_symbol_entries};
+pub use symbols::collect_named_elements;
 
 use tower_lsp::lsp_types::{
     CodeAction, CodeActionKind, Command, Diagnostic, FormattingOptions, OneOf,
@@ -566,34 +566,6 @@ mod tests {
     }
 
     #[test]
-    fn test_collect_symbol_entries_empty() {
-        let root = sysml_v2_parser::RootNamespace { elements: vec![] };
-        let uri = Url::parse("file:///test.sysml").unwrap();
-        let entries = collect_symbol_entries(&root, &uri);
-        assert!(entries.is_empty());
-    }
-
-    #[test]
-    fn test_collect_symbol_entries_package() {
-        let text = "package P { }";
-        let root = sysml_v2_parser::parse(text).expect("parse");
-        let uri = Url::parse("file:///test.sysml").unwrap();
-        let entries = collect_symbol_entries(&root, &uri);
-        // collect_symbol_entries is currently stubbed (returns empty)
-        assert!(entries.is_empty());
-    }
-
-    #[test]
-    fn test_collect_symbol_entries_nested() {
-        let text = "package P { part def Engine { } }";
-        let root = sysml_v2_parser::parse(text).expect("parse");
-        let uri = Url::parse("file:///test.sysml").unwrap();
-        let entries = collect_symbol_entries(&root, &uri);
-        // collect_symbol_entries is currently stubbed (returns empty)
-        assert!(entries.is_empty());
-    }
-
-    #[test]
     fn test_suggest_wrap_in_package_empty() {
         let uri = Url::parse("file:///test.sysml").unwrap();
         let action = suggest_wrap_in_package("", &uri);
@@ -1089,9 +1061,6 @@ mod tests {
         }
         let content = std::fs::read_to_string(&path).expect("read VehicleDefinitions.sysml");
         let root = sysml_v2_parser::parse(&content).expect("parse");
-        let uri = Url::from_file_path(&path)
-            .unwrap_or_else(|_| Url::parse("file:///VehicleDefinitions.sysml").unwrap());
-
         // Semantic tokens (using server's ast_semantic_ranges)
         let ranges = crate::semantic_tokens::ast_semantic_ranges(&root, &content);
         let target_dir = std::env::var_os("CARGO_TARGET_DIR")
@@ -1106,10 +1075,6 @@ mod tests {
         let tokens_path = target_dir.join("semantic_tokens_vehicle_definitions.txt");
         write_semantic_ranges_for_review(&content, &ranges, &tokens_path);
 
-        // Symbol table (stubbed collect_symbol_entries returns empty)
-        let entries = collect_symbol_entries(&root, &uri);
-        let table_path = target_dir.join("symbol_table_vehicle_definitions.txt");
-        write_symbol_table_for_review(&entries, &table_path);
     }
 
     #[cfg(test)]
@@ -1157,31 +1122,4 @@ mod tests {
         }
     }
 
-    #[cfg(test)]
-    fn write_symbol_table_for_review(entries: &[SymbolEntry], out_path: &std::path::Path) {
-        use std::io::Write;
-        if let Ok(mut f) = std::fs::File::create(out_path) {
-            let _ = writeln!(
-                f,
-                "# Symbol table (name | kind | container | range | signature)\n"
-            );
-            for e in entries {
-                let range_str = format!(
-                    "{}:{}..{}:{}",
-                    e.range.start.line,
-                    e.range.start.character,
-                    e.range.end.line,
-                    e.range.end.character
-                );
-                let kind_str = format!("{:?}", e.kind);
-                let container = e.container_name.as_deref().unwrap_or("-");
-                let sig = e.signature.as_deref().unwrap_or("-");
-                let _ = writeln!(
-                    f,
-                    "{} | {} | {} | {} | {}",
-                    e.name, kind_str, container, range_str, sig
-                );
-            }
-        }
-    }
 }

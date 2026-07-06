@@ -142,12 +142,6 @@ pub struct SymbolEntry {
     pub signature: Option<String>,
 }
 
-/// Collects a flat list of symbol entries from a parsed document for the symbol table.
-#[cfg(test)]
-pub fn collect_symbol_entries(_root: &RootNamespace, _uri: &Url) -> Vec<SymbolEntry> {
-    vec![]
-}
-
 
 /// Collects all named elements from the document for hover/completion: (name, short_description).
 #[cfg(test)]

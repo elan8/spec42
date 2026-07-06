@@ -2,7 +2,7 @@
 //!
 //! Optional grid drill-down (requires `SYSML_POWERSYSTEMS_DIR`):
 //! ```text
-//! cargo test -p kernel --test lsp_integration integration::powersystems_performance::powersystems_system_context_performance_report -- --ignored --nocapture
+//! cargo test -p lsp_server --test lsp_integration integration::powersystems_performance::powersystems_system_context_performance_report -- --ignored --nocapture
 //! ```
 
 use std::collections::HashMap;

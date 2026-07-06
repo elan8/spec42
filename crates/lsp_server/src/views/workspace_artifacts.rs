@@ -117,7 +117,6 @@ pub(crate) fn ensure_render_snapshot(
         workspace_root_uri: workspace_root_uri.clone(),
         snapshot,
         model_explorer: None,
-        prepared_views: HashMap::new(),
         visualization_responses: HashMap::new(),
     });
     Ok(())
@@ -200,14 +199,6 @@ pub(crate) fn build_visualization_with_cache(
     meta.cache_hit = false;
 
     if visualization_response_is_cacheable(&response) {
-        if let Some(prepared) = response.prepared_view.clone() {
-            cache
-                .entry
-                .as_mut()
-                .expect("render cache initialized")
-                .prepared_views
-                .insert(cache_key.clone(), prepared);
-        }
         cache
             .entry
             .as_mut()
@@ -221,6 +212,15 @@ pub(crate) fn build_visualization_with_cache(
 
 pub(crate) fn primary_workspace_root(state: &ServerState) -> Option<Url> {
     state.workspace_roots.first().map(util::normalize_file_uri)
+}
+
+pub(crate) fn workspace_root_for_uri(uri: &Url, roots: &[Url]) -> Option<Url> {
+    let normalized_uri = util::normalize_file_uri(uri);
+    roots
+        .iter()
+        .map(util::normalize_file_uri)
+        .filter(|root| normalized_uri.path().starts_with(root.path()))
+        .max_by_key(|root| root.path().len())
 }
 
 #[cfg(test)]
@@ -305,5 +305,16 @@ mod cache_tests {
             warm.meta.cache_hit,
             "second visualization build should hit response cache"
         );
+    }
+
+    #[test]
+    fn workspace_root_for_uri_prefers_longest_matching_root() {
+        let uri = Url::parse("file:///c:/work/a/b/model.sysml").expect("uri");
+        let roots = vec![
+            Url::parse("file:///c:/work/a/").expect("root a"),
+            Url::parse("file:///c:/work/a/b/").expect("root b"),
+        ];
+        let resolved = workspace_root_for_uri(&uri, &roots).expect("matching root");
+        assert_eq!(resolved.as_str(), "file:///c:/work/a/b/");
     }
 }
