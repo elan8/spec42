@@ -43,10 +43,7 @@ mod position {
 }
 #[cfg(test)]
 pub use position::{source_position_to_range, source_range_to_range, SourcePosition, SourceRange};
-pub use symbols::{
-    collect_definition_ranges, collect_document_symbols, collect_folding_ranges,
-    find_reference_ranges, SymbolEntry,
-};
+pub use symbols::{collect_document_symbols, collect_folding_ranges, find_reference_ranges, SymbolEntry};
 #[cfg(test)]
 pub use symbols::{collect_named_elements, collect_symbol_entries};
 
@@ -486,43 +483,6 @@ mod tests {
         assert_eq!(range.start.character, 2);
         assert_eq!(range.end.line, 0);
         assert_eq!(range.end.character, 7);
-    }
-
-    #[test]
-    fn test_collect_definition_ranges_empty() {
-        let root = sysml_v2_parser::RootNamespace { elements: vec![] };
-        let ranges = collect_definition_ranges(&root);
-        assert!(ranges.is_empty());
-    }
-
-    #[test]
-    fn test_collect_definition_ranges_package() {
-        let text = "package P { }";
-        let root = sysml_v2_parser::parse(text).expect("parse");
-        let ranges = collect_definition_ranges(&root);
-        assert_eq!(ranges.len(), 1);
-        assert_eq!(ranges[0].0, "P");
-    }
-
-    #[test]
-    fn test_collect_definition_ranges_part_def() {
-        // sysml-v2-parser requires package/namespace at root; part def must be nested
-        let text = "package P { part def Engine { } }";
-        let root = sysml_v2_parser::parse(text).expect("parse");
-        let ranges = collect_definition_ranges(&root);
-        assert_eq!(ranges.len(), 2); // package P + part Engine
-        assert_eq!(ranges[0].0, "P");
-        assert_eq!(ranges[1].0, "Engine");
-    }
-
-    #[test]
-    fn test_collect_definition_ranges_feature_and_classifier_decls() {
-        let text = "package P { feature myFeature : BaseFeature; class VehicleClass; }";
-        let root = sysml_v2_parser::parse(text).expect("parse");
-        let ranges = collect_definition_ranges(&root);
-        let names: Vec<_> = ranges.iter().map(|(name, _)| name.as_str()).collect();
-        assert!(names.contains(&"myFeature"));
-        assert!(names.contains(&"VehicleClass"));
     }
 
     #[test]

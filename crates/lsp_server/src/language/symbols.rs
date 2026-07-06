@@ -2,209 +2,22 @@
 #![allow(deprecated)] // DocumentSymbol/SymbolInformation.deprecated; use tags in future
 
 use crate::common::text_span::to_lsp_range;
-use crate::syntax::ast_util::{identification_name, span_to_range};
+#[cfg(test)]
+use crate::syntax::ast_util::identification_name;
 use language_service::{
     document_symbols as ls_document_symbols, folding_ranges as ls_folding_ranges, OutlineSymbol,
 };
+#[cfg(test)]
 use sysml_v2_parser::ast::{
     PackageBody, PackageBodyElement, PartDefBody, PartDefBodyElement, PartUsageBody,
-    PartUsageBodyElement, PortDefBody, PortDefBodyElement, RootElement,
+    PartUsageBodyElement, RootElement,
 };
 use sysml_v2_parser::RootNamespace;
 use tower_lsp::lsp_types::{
     DocumentSymbol, FoldingRange, FoldingRangeKind, Range, SymbolKind, Url,
 };
 
-/// Collects for each defined name in the document the LSP range of its definition.
-pub fn collect_definition_ranges(root: &RootNamespace) -> Vec<(String, Range)> {
-    let mut out = Vec::new();
-    for node in &root.elements {
-        let (name, range, elements) = match &node.value {
-            RootElement::Package(p) => {
-                let name = identification_name(&p.identification);
-                let range = span_to_range(&p.span);
-                let elements = match &p.body {
-                    PackageBody::Brace { elements } => elements,
-                    _ => continue,
-                };
-                (name, range, elements)
-            }
-            RootElement::Namespace(n) => {
-                let name = identification_name(&n.identification);
-                let range = span_to_range(&n.span);
-                let elements = match &n.body {
-                    PackageBody::Brace { elements } => elements,
-                    _ => continue,
-                };
-                (name, range, elements)
-            }
-            RootElement::LibraryPackage(lp) => {
-                let name = identification_name(&lp.identification);
-                let range = span_to_range(&lp.span);
-                let elements = match &lp.body {
-                    PackageBody::Brace { elements } => elements,
-                    _ => continue,
-                };
-                (name, range, elements)
-            }
-            RootElement::Import(_) => continue,
-        };
-        if !name.is_empty() {
-            out.push((name, range));
-        }
-        for el in elements {
-            collect_definition_ranges_from_element(el, &mut out);
-        }
-    }
-    out
-}
-
-fn collect_definition_ranges_from_element(
-    node: &sysml_v2_parser::Node<PackageBodyElement>,
-    out: &mut Vec<(String, Range)>,
-) {
-    use sysml_v2_parser::ast::PackageBodyElement as PBE;
-    match &node.value {
-        PBE::Package(p) => {
-            let name = identification_name(&p.identification);
-            if !name.is_empty() {
-                out.push((name.clone(), span_to_range(&p.span)));
-            }
-            if let PackageBody::Brace { elements } = &p.body {
-                for child in elements {
-                    collect_definition_ranges_from_element(child, out);
-                }
-            }
-        }
-        PBE::PartDef(p) => {
-            let name = identification_name(&p.identification);
-            if !name.is_empty() {
-                out.push((name, span_to_range(&p.span)));
-            }
-            if let PartDefBody::Brace { elements } = &p.body {
-                for child in elements {
-                    collect_definition_range_part_def_body(child, out);
-                }
-            }
-        }
-        PBE::PartUsage(p) => {
-            out.push((p.name.clone(), span_to_range(&p.span)));
-            if let PartUsageBody::Brace { elements } = &p.body {
-                for child in elements {
-                    collect_definition_range_part_usage_body(child, out);
-                }
-            }
-        }
-        PBE::PortDef(p) => {
-            let name = identification_name(&p.identification);
-            if !name.is_empty() {
-                out.push((name, span_to_range(&p.span)));
-            }
-            if let PortDefBody::Brace { elements } = &p.body {
-                for child in elements {
-                    collect_definition_range_port_def_body(child, out);
-                }
-            }
-        }
-        PBE::InterfaceDef(p) => {
-            let name = identification_name(&p.identification);
-            if !name.is_empty() {
-                out.push((name, span_to_range(&p.span)));
-            }
-        }
-        PBE::AttributeDef(p) => {
-            out.push((p.name.clone(), span_to_range(&p.span)));
-        }
-        PBE::FeatureDecl(p) => {
-            let name = modeled_decl_name(&p.keyword, &p.text, "_feature");
-            if !name.is_empty() {
-                out.push((name, span_to_range(&p.span)));
-            }
-        }
-        PBE::ClassifierDecl(p) => {
-            let name = modeled_decl_name(&p.keyword, &p.text, "_classifier");
-            if !name.is_empty() {
-                out.push((name, span_to_range(&p.span)));
-            }
-        }
-        PBE::ActionDef(p) => {
-            let name = identification_name(&p.identification);
-            if !name.is_empty() {
-                out.push((name, span_to_range(&p.span)));
-            }
-        }
-        PBE::ActionUsage(p) => {
-            out.push((p.name.clone(), span_to_range(&p.span)));
-        }
-        PBE::ViewDef(p) => {
-            let name = identification_name(&p.identification);
-            if !name.is_empty() {
-                out.push((name, span_to_range(&p.span)));
-            }
-        }
-        PBE::ViewpointDef(p) => {
-            let name = identification_name(&p.identification);
-            if !name.is_empty() {
-                out.push((name, span_to_range(&p.span)));
-            }
-        }
-        PBE::RenderingDef(p) => {
-            let name = identification_name(&p.identification);
-            if !name.is_empty() {
-                out.push((name, span_to_range(&p.span)));
-            }
-        }
-        PBE::ViewUsage(p) => out.push((p.name.clone(), span_to_range(&p.span))),
-        PBE::ViewpointUsage(p) => out.push((p.name.clone(), span_to_range(&p.span))),
-        PBE::RenderingUsage(p) => out.push((p.name.clone(), span_to_range(&p.span))),
-        PBE::Import(_) | PBE::AliasDef(_) => {}
-        _ => {}
-    }
-}
-
-fn collect_definition_range_part_def_body(
-    node: &sysml_v2_parser::Node<PartDefBodyElement>,
-    out: &mut Vec<(String, Range)>,
-) {
-    use sysml_v2_parser::ast::PartDefBodyElement as PDBE;
-    match &node.value {
-        PDBE::AttributeDef(n) => out.push((n.name.clone(), span_to_range(&n.span))),
-        PDBE::PortUsage(n) => out.push((n.name.clone(), span_to_range(&n.span))),
-        _ => {}
-    }
-}
-
-fn collect_definition_range_part_usage_body(
-    node: &sysml_v2_parser::Node<PartUsageBodyElement>,
-    out: &mut Vec<(String, Range)>,
-) {
-    use sysml_v2_parser::ast::PartUsageBodyElement as PUBE;
-    match &node.value {
-        PUBE::AttributeUsage(n) => out.push((n.name.clone(), span_to_range(&n.span))),
-        PUBE::PartUsage(n) => {
-            out.push((n.name.clone(), span_to_range(&n.span)));
-            if let PartUsageBody::Brace { elements } = &n.body {
-                for child in elements {
-                    collect_definition_range_part_usage_body(child, out);
-                }
-            }
-        }
-        PUBE::PortUsage(n) => out.push((n.name.clone(), span_to_range(&n.span))),
-        PUBE::Ref(n) => out.push((n.value.name.clone(), span_to_range(&n.span))),
-        _ => {}
-    }
-}
-
-fn collect_definition_range_port_def_body(
-    node: &sysml_v2_parser::Node<PortDefBodyElement>,
-    out: &mut Vec<(String, Range)>,
-) {
-    use sysml_v2_parser::ast::PortDefBodyElement as PDBE;
-    if let PDBE::PortUsage(n) = &node.value {
-        out.push((n.name.clone(), span_to_range(&n.span)));
-    }
-}
-
+#[cfg(test)]
 fn modeled_decl_name(keyword: &str, text: &str, fallback: &str) -> String {
     let t = text.trim().trim_end_matches(';').trim();
     let tokens: Vec<String> = t
@@ -235,6 +48,7 @@ fn modeled_decl_name(keyword: &str, text: &str, fallback: &str) -> String {
     fallback.to_string()
 }
 
+#[cfg(test)]
 fn sanitize_identifier(s: &str) -> String {
     s.chars()
         .filter(|c| c.is_alphanumeric() || *c == '_')
