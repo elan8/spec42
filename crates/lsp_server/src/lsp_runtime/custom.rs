@@ -1,7 +1,7 @@
 use crate::host::config::Spec42Config;
 use crate::views::dto;
+use crate::workspace::handle::WorkspaceHandle;
 use crate::workspace::state::DocumentStore;
-use crate::workspace::viz_cache::WorkspaceRenderCache;
 use crate::workspace::ServerState;
 use sysml_model::{visualization_model_not_ready, SysmlVisualizationResultDto};
 use std::time::Instant;
@@ -29,8 +29,8 @@ async fn log_perf(client: &Client, enabled: bool, event: &str, fields: Vec<(&str
 #[allow(clippy::too_many_arguments)]
 pub(crate) async fn sysml_model_result(
     client: &Client,
+    handle: &WorkspaceHandle,
     state: &ServerState,
-    cache: &mut WorkspaceRenderCache,
     _config: &Spec42Config,
     params: serde_json::Value,
     perf_logging_enabled: bool,
@@ -51,10 +51,14 @@ pub(crate) async fn sysml_model_result(
     } else {
         None
     };
-    let model_explorer_bundle = workspace_visualization_root.as_ref().and_then(|root| {
-        let _ = crate::views::workspace_artifacts::ensure_render_snapshot(state, cache, root);
-        crate::views::workspace_artifacts::materialize_model_explorer(state, cache, root).ok()
-    });
+    let model_explorer_bundle = match workspace_visualization_root.as_ref() {
+        Some(root) => crate::views::workspace_artifacts::materialize_model_explorer_with_cache(
+            handle, state, root,
+        )
+        .await
+        .ok(),
+        None => None,
+    };
     let index_lookup_start = Instant::now();
     let (effective_uri, entry) = match state.index.get(&uri) {
         Some(e) => (uri.clone(), e),
@@ -241,9 +245,9 @@ pub(crate) fn sysml_feature_inspector_result(
     ))
 }
 
-pub(crate) fn sysml_visualization_result(
+pub(crate) async fn sysml_visualization_result(
+    handle: &WorkspaceHandle,
     state: &ServerState,
-    cache: &mut WorkspaceRenderCache,
     params: serde_json::Value,
 ) -> Result<(
     SysmlVisualizationResultDto,
@@ -271,13 +275,14 @@ pub(crate) fn sysml_visualization_result(
     }
     let build_start = Instant::now();
     let outcome = crate::views::workspace_artifacts::build_visualization_with_cache(
+        handle,
         state,
-        cache,
         &workspace_root_uri,
         &view,
         selected_view.as_deref(),
         build_start,
     )
+    .await
     .map_err(|error| tower_lsp::jsonrpc::Error {
         code: tower_lsp::jsonrpc::ErrorCode::InternalError,
         message: error.into(),
@@ -388,10 +393,9 @@ pub(crate) fn sysml_server_stats_result(
     }
 }
 
-/// Clears the document-store side of the cache (index/symbol table/semantic graph),
+/// Clears the document-store side of the cache (index/symbol table/semantic graph/render cache),
 /// returning the pre-clear document and symbol counts. Called via
-/// `WorkspaceHandle::clear_cache_state` inside an actor `mutate` closure; the separate
-/// `WorkspaceRenderCache` clearing stays outside, on `Backend` (see `sysml_clear_cache`).
+/// `WorkspaceHandle::clear_cache_state` inside an actor `mutate` closure.
 pub(crate) fn clear_document_store_state(state: &mut impl DocumentStore) -> (usize, usize) {
     let docs = state.index().len();
     let syms = state.symbol_table_mut().len();
@@ -399,4 +403,10 @@ pub(crate) fn clear_document_store_state(state: &mut impl DocumentStore) -> (usi
     state.symbol_table_mut().clear();
     *state.semantic_graph_mut() = crate::semantic::SemanticGraph::default();
     (docs, syms)
+}
+
+pub(crate) fn clear_document_store_state_full(state: &mut ServerState) -> (usize, usize) {
+    let counts = clear_document_store_state(state);
+    state.render_cache.clear();
+    counts
 }

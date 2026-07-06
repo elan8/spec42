@@ -318,12 +318,27 @@ impl WorkspaceHandle {
             .await
     }
 
-    /// Clears only the `ServerState`-side cache (index/symbol table/semantic graph). The
-    /// separate `Arc<Mutex<WorkspaceRenderCache>>` clearing stays on `Backend`, outside this
-    /// facade, exactly as today.
+    /// Clears index, symbol table, semantic graph, and the actor-owned render cache.
     pub(crate) async fn clear_cache_state(&self) -> Result<(usize, usize), MutatePanicked> {
         self.actor
-            .mutate(crate::lsp_runtime::custom::clear_document_store_state)
+            .mutate(crate::lsp_runtime::custom::clear_document_store_state_full)
+            .await
+    }
+
+    /// Commits a render-cache mutation only when `expected_version` still matches the live
+    /// session. Returns `None` when a concurrent edit superseded the build.
+    pub(crate) async fn update_render_cache<R: Send + 'static>(
+        &self,
+        expected_version: u64,
+        apply: impl FnOnce(&mut workspace::ViewRenderCache) -> R + Send + 'static,
+    ) -> Result<Option<R>, MutatePanicked> {
+        self.actor
+            .mutate(move |s| {
+                if s.session.version() != expected_version {
+                    return None;
+                }
+                Some(apply(&mut s.render_cache))
+            })
             .await
     }
 }

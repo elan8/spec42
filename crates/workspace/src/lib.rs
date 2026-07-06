@@ -14,6 +14,7 @@ pub mod robot_vacuum_perf;
 pub mod session;
 pub mod snapshot;
 pub mod version;
+pub mod view_cache;
 
 pub use catalog::{HostConfigFile, HostLibraryRequest, LibraryCatalog};
 pub use comparison::{
@@ -48,6 +49,10 @@ pub use provider::{
     InMemoryDocumentProvider, SysmlDocument, SysmlDocumentProvider, SysmlDocumentSourceKind,
 };
 pub use session::{RelinkToken, SessionLifecycle, WorkspaceSession};
+pub use view_cache::{
+    visualization_response_is_cacheable, workspace_root_for_uri, ViewCacheKey,
+    ViewRenderCache, VisualizationBuildOutcome,
+};
 pub use snapshot::{
     apply_document_changes, enrich_document_hashes, CancellationToken, DocumentChanges,
     HostContext, HostPipelinePhase, HostResourceLimits, HostSemanticModelNode,

@@ -13,7 +13,6 @@ use std::sync::Arc;
 use std::time::Instant;
 use std::{future::Future, pin::Pin};
 
-use tokio::sync::Mutex;
 use tower_lsp::jsonrpc::Result;
 use tower_lsp::lsp_types::*;
 use tower_lsp::{Client, LanguageServer, LspService, Server};
@@ -21,7 +20,6 @@ use tower_lsp::{Client, LanguageServer, LspService, Server};
 use crate::host::config::Spec42Config;
 use crate::views::dto;
 use crate::workspace::state::ServerState;
-use crate::workspace::viz_cache::WorkspaceRenderCache;
 use crate::workspace::{RuntimeConfig, WorkspaceHandle};
 use custom::{
     sysml_feature_inspector_result, sysml_library_search_result, sysml_model_result,
@@ -32,7 +30,6 @@ use sysml_model::SysmlVisualizationResultDto;
 struct Backend {
     client: Client,
     handle: WorkspaceHandle,
-    render_cache: Arc<Mutex<WorkspaceRenderCache>>,
     config: Arc<Spec42Config>,
     start_time: Instant,
     server_name: String,
@@ -497,7 +494,6 @@ impl Backend {
         self.wait_for_stable_snapshot().await;
         let read_lock_wait_start = Instant::now();
         let state = self.handle.snapshot();
-        let mut render_cache = self.render_cache.lock().await;
         let read_lock_wait_ms = read_lock_wait_start.elapsed().as_millis().max(1);
         let perf_logging_enabled = self
             .runtime_config
@@ -506,14 +502,13 @@ impl Backend {
             .perf_logging_enabled;
         let (response, parse_cached_uri) = sysml_model_result(
             &self.client,
+            &self.handle,
             &state,
-            &mut render_cache,
             &self.config,
             params,
             perf_logging_enabled,
         )
         .await?;
-        drop(render_cache);
         drop(state);
 
         let cache_mark_lock_wait_start = Instant::now();
@@ -574,14 +569,13 @@ impl Backend {
         let request_start = Instant::now();
         self.wait_for_stable_snapshot().await;
         let state = self.handle.snapshot();
-        let mut render_cache = self.render_cache.lock().await;
         let perf_logging_enabled = self
             .runtime_config
             .get()
             .expect("initialize precedes all other LSP requests")
             .perf_logging_enabled;
-        let (response, build_meta) = sysml_visualization_result(&state, &mut render_cache, params)?;
-        drop(render_cache);
+        let (response, build_meta) =
+            sysml_visualization_result(&self.handle, &state, params).await?;
         drop(state);
         if perf_logging_enabled {
             let graph_nodes = response
@@ -648,9 +642,6 @@ impl Backend {
     }
 
     async fn sysml_clear_cache(&self) -> Result<dto::SysmlClearCacheResultDto> {
-        let mut render_cache = self.render_cache.lock().await;
-        crate::views::workspace_artifacts::clear_workspace_viz_caches(&mut render_cache);
-        drop(render_cache);
         let (documents, symbol_tables) = self.handle.clear_cache_state().await.unwrap_or((0, 0));
         Ok(dto::SysmlClearCacheResultDto {
             documents,
@@ -703,7 +694,6 @@ pub async fn run(config: Arc<Spec42Config>, server_name: &str) {
     crate::host::logging::init_tracing();
     let (stdin, stdout) = (tokio::io::stdin(), tokio::io::stdout());
     let handle = WorkspaceHandle::spawn(ServerState::default());
-    let render_cache = Arc::new(Mutex::new(WorkspaceRenderCache::default()));
     let start_time = Instant::now();
     let server_name = server_name.to_string();
     let custom_rpc_methods = config.custom_rpc_method_names();
@@ -713,7 +703,6 @@ pub async fn run(config: Arc<Spec42Config>, server_name: &str) {
     let mut builder = LspService::build(move |client| Backend {
         client,
         handle: handle.clone(),
-        render_cache: Arc::clone(&render_cache),
         config: Arc::clone(&service_config),
         start_time,
         server_name: server_name.clone(),

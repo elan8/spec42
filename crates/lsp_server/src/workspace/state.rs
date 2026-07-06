@@ -45,6 +45,7 @@ pub(crate) struct ServerState {
     /// to `rebuild_semantic_graph_staged` during async relinking so that library types
     /// remain available even though they are not stored in the `index`.
     pub(crate) library_graph_snapshot: Option<semantic::SemanticGraph>,
+    pub(crate) render_cache: workspace::ViewRenderCache,
 }
 
 impl TracksRelink for ServerState {
