@@ -39,13 +39,6 @@ pub fn hover_at_position(
         },
     });
 
-    if let Some(md) = keyword_hover_markdown(&lookup_name.to_lowercase()) {
-        return Some(HoverResult {
-            contents: md,
-            range,
-        });
-    }
-
     if let Some(md) = unit_literal_hover_markdown(workspace, &text, position) {
         return Some(HoverResult {
             contents: md,
@@ -75,14 +68,14 @@ pub fn hover_at_position(
                 Some(target) => {
                     hover_markdown_for_node(graph, target, target.id.uri != uri_norm)
                 }
-                None => unit_literal_hover_markdown(workspace, &text, position).unwrap_or_else(
-                    || {
+                None => unit_literal_hover_markdown(workspace, &text, position)
+                    .or_else(|| keyword_hover_markdown(&lookup_name.to_lowercase()))
+                    .unwrap_or_else(|| {
                         format!(
                             "**Unresolved reference** `{}`\n\nSpec42 could not resolve this name in the current scope, imports, or indexed workspace symbols.",
                             lookup_name
                         )
-                    },
-                ),
+                    }),
             }
         } else {
             markdown
@@ -136,6 +129,17 @@ pub fn hover_at_position(
     }
 
     if let Some(md) = unit_literal_hover_markdown(workspace, &text, position) {
+        return Some(HoverResult {
+            contents: md,
+            range,
+        });
+    }
+
+    // Last resort: if nothing resolved the word as a declared symbol, reference, or literal,
+    // check whether it's a reserved keyword. Deliberately not tried earlier — checking by text
+    // alone (with no position/grammar context) would otherwise hijack hover for any identifier
+    // that happens to share spelling with a keyword (e.g. a part usage literally named `frame`).
+    if let Some(md) = keyword_hover_markdown(&lookup_name.to_lowercase()) {
         return Some(HoverResult {
             contents: md,
             range,
