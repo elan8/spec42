@@ -486,7 +486,7 @@ pub(crate) async fn initialized(
                 );
             }
         }
-        let ingest_results = ingest_parsed_scan_entries_batch(&mut st, parsed_entries);
+        let ingest_results = ingest_parsed_scan_entries_batch(&mut *st, parsed_entries);
         st.coordinator.bump_version();
         let ingest_ms = merge_index_start.elapsed().as_millis() as u64;
         drop(st);
@@ -539,7 +539,7 @@ pub(crate) async fn initialized(
                     drop(st);
                     continue;
                 }
-                let fallback_metrics = rebuild_all_document_links(&mut st);
+                let fallback_metrics = rebuild_all_document_links(&mut *st);
                 st.coordinator.bump_version();
                 relink_metrics = fallback_metrics;
                 relink_used_fallback = true;
@@ -573,7 +573,7 @@ pub(crate) async fn initialized(
             {
                 let library_paths_for_search = st.library_paths.clone();
                 let search_indexed = crate::workspace::services::index_library_paths_for_search(
-                    &mut st,
+                    &mut *st,
                     &library_paths_for_search,
                 );
                 if search_indexed > 0 && perf_logging_enabled {
@@ -758,7 +758,7 @@ pub(crate) async fn did_open(
         let lock_start = Instant::now();
         let mut st = state.write().await;
         let lock_wait_ms = lock_start.elapsed().as_millis();
-        let warning = store_document_text_fast(&mut st, &uri_norm, text.clone());
+        let warning = store_document_text_fast(&mut *st, &uri_norm, text.clone());
         // Only schedule a relink when the graph is in a queryable state.
         // If startup is still running (Indexing/Cold), the startup scan will
         // build the full graph itself — no separate relink needed.
@@ -846,7 +846,7 @@ pub(crate) async fn did_change(
     let (content_changed, mut warnings) = {
         let mut st = state.write().await;
         crate::workspace::apply_document_content_edit(
-            &mut st,
+            &mut *st,
             &uri_norm,
             version,
             params.content_changes,
@@ -873,7 +873,7 @@ pub(crate) async fn did_change(
                 Ok(parsed_result) => {
                     let mut st = state.write().await;
                     warnings.extend(crate::workspace::apply_parsed_document_update(
-                        &mut st,
+                        &mut *st,
                         &uri_norm,
                         version,
                         parsed_result,
@@ -978,7 +978,7 @@ pub(crate) async fn did_change_watched_files(
                         let refresh_start = Instant::now();
                         let warning = {
                             let mut state = state.write().await;
-                            let warning = refresh_document(&mut state, &uri_norm, content);
+                            let warning = refresh_document(&mut *state, &uri_norm, content);
                             state.coordinator.bump_version();
                             warning
                         };
@@ -1000,7 +1000,7 @@ pub(crate) async fn did_change_watched_files(
             }
         } else if event.typ == FileChangeType::DELETED {
             let mut state = state.write().await;
-            remove_document(&mut state, &uri_norm);
+            remove_document(&mut *state, &uri_norm);
             state.coordinator.bump_version();
             deleted_uris.push(uri_norm);
         }
@@ -1065,7 +1065,7 @@ pub(crate) async fn did_change_configuration(
             state.library_paths = old_library_paths;
             false
         } else {
-            let _ = clear_documents_under_roots(&mut state, &old_library_paths);
+            let _ = clear_documents_under_roots(&mut *state, &old_library_paths);
             state.library_paths = new_library_paths.clone();
             state.coordinator.begin_library_reindex();
             true
@@ -1106,13 +1106,13 @@ pub(crate) async fn did_change_configuration(
         let ingest_start = Instant::now();
         let mut st = state.write().await;
         let mut warnings = Vec::new();
-        for (_uri_norm, warning) in ingest_parsed_scan_entries(&mut st, parsed_entries) {
+        for (_uri_norm, warning) in ingest_parsed_scan_entries(&mut *st, parsed_entries) {
             if let Some(message) = warning {
                 warnings.push(format!("didChangeConfiguration: {}", message));
             }
         }
         let ingest_ms = ingest_start.elapsed().as_millis() as u64;
-        let relink_metrics = rebuild_all_document_links(&mut st);
+        let relink_metrics = rebuild_all_document_links(&mut *st);
         st.coordinator.complete_reindex();
         drop(st);
         if summary.roots_skipped_non_file > 0

@@ -2,7 +2,9 @@ use crate::common::util;
 use crate::semantic;
 use crate::workspace::library_search;
 use crate::workspace::parse_cache;
-use crate::workspace::state::{IndexEntry, ParseMetadata, ServerState};
+use crate::workspace::state::{DocumentStore, IndexEntry, ParseMetadata};
+#[cfg(test)]
+use crate::workspace::state::ServerState;
 use rayon::prelude::*;
 use std::path::Path;
 use std::time::Instant;
@@ -15,11 +17,11 @@ fn elapsed_ms(start: Instant) -> u32 {
     start.elapsed().as_millis().max(1) as u32
 }
 
-pub(crate) fn indexed_text(state: &ServerState, uri_norm: &Url) -> Option<String> {
-    state.index.get(uri_norm).map(|entry| entry.content.clone())
+pub(crate) fn indexed_text(state: &impl DocumentStore, uri_norm: &Url) -> Option<String> {
+    state.index().get(uri_norm).map(|entry| entry.content.clone())
 }
 
-pub(crate) fn indexed_text_or_empty(state: &ServerState, uri_norm: &Url) -> String {
+pub(crate) fn indexed_text_or_empty(state: &impl DocumentStore, uri_norm: &Url) -> String {
     indexed_text(state, uri_norm).unwrap_or_default()
 }
 
@@ -159,28 +161,28 @@ pub(crate) fn parse_scanned_entries(
 }
 
 fn update_symbol_table_for_uri(
-    state: &mut ServerState,
+    state: &mut impl DocumentStore,
     uri: &Url,
     new_entries: Option<&[crate::language::SymbolEntry]>,
 ) {
-    state.symbol_table.retain(|entry| entry.uri != *uri);
+    state.symbol_table_mut().retain(|entry| entry.uri != *uri);
     if let Some(entries) = new_entries {
-        state.symbol_table.extend(entries.iter().cloned());
+        state.symbol_table_mut().extend(entries.iter().cloned());
     }
 }
 
 fn update_semantic_graph_for_uri(
-    state: &mut ServerState,
+    state: &mut impl DocumentStore,
     uri: &Url,
     doc: Option<&RootNamespace>,
     evaluate: bool,
 ) {
-    semantic::patch_graph_for_document(&mut state.semantic_graph, uri, doc, evaluate);
+    semantic::patch_graph_for_document(state.semantic_graph_mut(), uri, doc, evaluate);
 }
 
-fn refresh_symbols_for_uri(state: &mut ServerState, uri: &Url) {
-    let mut new_entries = semantic::symbol_entries_for_uri(&state.semantic_graph, uri);
-    if let Some(index_entry) = state.index.get(uri) {
+fn refresh_symbols_for_uri(state: &mut impl DocumentStore, uri: &Url) {
+    let mut new_entries = semantic::symbol_entries_for_uri(state.semantic_graph(), uri);
+    if let Some(index_entry) = state.index().get(uri) {
         library_search::add_short_name_symbol_entries(&mut new_entries, &index_entry.content, uri);
     }
     update_symbol_table_for_uri(state, uri, Some(&new_entries));
@@ -188,7 +190,7 @@ fn refresh_symbols_for_uri(state: &mut ServerState, uri: &Url) {
 
 #[allow(clippy::too_many_arguments)]
 pub(crate) fn store_parsed_document_text(
-    state: &mut ServerState,
+    state: &mut impl DocumentStore,
     uri_norm: &Url,
     text: String,
     parsed: Option<RootNamespace>,
@@ -199,7 +201,7 @@ pub(crate) fn store_parsed_document_text(
     evaluate: bool,
 ) -> Option<String> {
     update_semantic_graph_for_uri(state, uri_norm, parsed.as_ref(), evaluate);
-    state.index.insert(
+    state.index_mut().insert(
         uri_norm.clone(),
         IndexEntry {
             content: text,
@@ -213,7 +215,7 @@ pub(crate) fn store_parsed_document_text(
 }
 
 pub(crate) fn store_document_text(
-    state: &mut ServerState,
+    state: &mut impl DocumentStore,
     uri_norm: &Url,
     text: String,
 ) -> Option<String> {
@@ -246,7 +248,7 @@ pub(crate) fn store_document_text(
 /// pass (`evaluate: false`). The caller is responsible for scheduling an async
 /// relink to rebuild cross-document edges and expression evaluation.
 pub(crate) fn store_document_text_fast(
-    state: &mut ServerState,
+    state: &mut impl DocumentStore,
     uri_norm: &Url,
     text: String,
 ) -> Option<String> {
@@ -276,7 +278,7 @@ pub(crate) fn store_document_text_fast(
 }
 
 pub(crate) fn refresh_document(
-    state: &mut ServerState,
+    state: &mut impl DocumentStore,
     uri_norm: &Url,
     content: String,
 ) -> Option<String> {
@@ -284,7 +286,7 @@ pub(crate) fn refresh_document(
 }
 
 pub(crate) fn ingest_parsed_scan_entries(
-    state: &mut ServerState,
+    state: &mut impl DocumentStore,
     entries: Vec<ParsedScanEntry>,
 ) -> Vec<(Url, Option<String>)> {
     let mut loaded = Vec::with_capacity(entries.len());
@@ -303,20 +305,20 @@ pub(crate) fn ingest_parsed_scan_entries(
         );
         loaded.push((uri_norm, warning));
     }
-    semantic::evaluate_expressions(&mut state.semantic_graph);
+    semantic::evaluate_expressions(state.semantic_graph_mut());
     loaded
 }
 
 /// A faster version of ingest_parsed_scan_entries that avoids per-document relinking/evaluation.
 /// Intended for use during startup when a full relink is performed immediately after.
 pub(crate) fn ingest_parsed_scan_entries_batch(
-    state: &mut ServerState,
+    state: &mut impl DocumentStore,
     entries: Vec<ParsedScanEntry>,
 ) -> Vec<(Url, Option<String>)> {
     let mut loaded = Vec::with_capacity(entries.len());
     for entry in entries {
         let uri_norm = util::normalize_file_uri(&entry.uri);
-        state.index.insert(
+        state.index_mut().insert(
             uri_norm.clone(),
             IndexEntry {
                 content: entry.content,
@@ -341,13 +343,13 @@ pub(crate) fn ingest_parsed_scan_entries_batch(
 /// write lock. Returns whether the content actually changed, so the caller
 /// can decide whether a (potentially slow) parse is needed.
 pub(crate) fn apply_document_content_edit(
-    state: &mut ServerState,
+    state: &mut impl DocumentStore,
     uri_norm: &Url,
     version: i32,
     content_changes: Vec<TextDocumentContentChangeEvent>,
 ) -> (bool, Vec<(MessageType, String)>) {
     let mut runtime_warnings = Vec::new();
-    let content_changed = if let Some(entry) = state.index.get_mut(uri_norm) {
+    let content_changed = if let Some(entry) = state.index_mut().get_mut(uri_norm) {
         let mut content_changed = false;
         for change in content_changes {
             if let Some(range) = change.range {
@@ -398,7 +400,7 @@ pub(crate) fn apply_document_content_edit(
 /// holding the server's write lock so a slow parse of malformed/incomplete
 /// syntax can't stall every other request.
 pub(crate) fn apply_parsed_document_update(
-    state: &mut ServerState,
+    state: &mut impl DocumentStore,
     uri_norm: &Url,
     version: i32,
     parsed_result: sysml_v2_parser::ParseResult,
@@ -406,7 +408,7 @@ pub(crate) fn apply_parsed_document_update(
     evaluate: bool,
 ) -> Vec<(MessageType, String)> {
     let mut runtime_warnings = Vec::new();
-    let Some(entry) = state.index.get_mut(uri_norm) else {
+    let Some(entry) = state.index_mut().get_mut(uri_norm) else {
         return runtime_warnings;
     };
     entry.parsed = Some(parsed_result.root);
@@ -427,7 +429,7 @@ pub(crate) fn apply_parsed_document_update(
     }
 
     let parsed = state
-        .index
+        .index()
         .get(uri_norm)
         .and_then(|entry| entry.parsed.as_ref())
         .cloned();
@@ -490,10 +492,10 @@ pub(crate) fn apply_document_changes_fast(
     apply_document_changes_impl(state, uri_norm, version, content_changes, false)
 }
 
-pub(crate) fn remove_document(state: &mut ServerState, uri_norm: &Url) {
-    state.index.remove(uri_norm);
-    state.symbol_table.retain(|entry| entry.uri != *uri_norm);
-    state.semantic_graph.remove_nodes_for_uri(uri_norm);
+pub(crate) fn remove_document(state: &mut impl DocumentStore, uri_norm: &Url) {
+    state.index_mut().remove(uri_norm);
+    state.symbol_table_mut().retain(|entry| entry.uri != *uri_norm);
+    state.semantic_graph_mut().remove_nodes_for_uri(uri_norm);
 }
 
 fn semantic_graph_uris(index: &std::collections::HashMap<Url, IndexEntry>) -> Vec<Url> {
@@ -526,7 +528,7 @@ fn semantic_graph_uris_split(
 
 /// Scan configured library roots for `sysml/librarySearch` without merging the full tree into the semantic graph.
 pub(crate) fn index_library_paths_for_search(
-    state: &mut ServerState,
+    state: &mut impl DocumentStore,
     library_paths: &[Url],
 ) -> usize {
     if library_paths.is_empty() {
@@ -540,10 +542,10 @@ pub(crate) fn index_library_paths_for_search(
     let mut indexed = 0usize;
     for entry in parsed_entries {
         let uri_norm = crate::common::util::normalize_file_uri(&entry.uri);
-        if state.index.contains_key(&uri_norm) {
+        if state.index().contains_key(&uri_norm) {
             continue;
         }
-        state.index.insert(
+        state.index_mut().insert(
             uri_norm.clone(),
             IndexEntry {
                 content: entry.content.clone(),
@@ -554,7 +556,7 @@ pub(crate) fn index_library_paths_for_search(
         );
         let mut symbols = Vec::new();
         library_search::add_short_name_symbol_entries(&mut symbols, &entry.content, &uri_norm);
-        state.symbol_table.extend(symbols);
+        state.symbol_table_mut().extend(symbols);
         indexed += 1;
     }
     indexed
@@ -598,11 +600,11 @@ fn parsed_entries_for_uris(
 /// included URI is tagged `Workspace` here, so `load_parsed` merges all of them uniformly via
 /// plain `SemanticGraph::merge`, exactly matching this function's prior behavior.
 pub(crate) fn rebuild_all_document_links(
-    state: &mut ServerState,
+    state: &mut impl DocumentStore,
 ) -> RebuildAllDocumentLinksMetrics {
     let total_start = Instant::now();
-    let uris: Vec<Url> = semantic_graph_uris(&state.index);
-    let entries = parsed_entries_for_uris(&state.index, &uris, SysmlDocumentSourceKind::Workspace);
+    let uris: Vec<Url> = semantic_graph_uris(state.index());
+    let entries = parsed_entries_for_uris(state.index(), &uris, SysmlDocumentSourceKind::Workspace);
 
     let rebuild_start = Instant::now();
     let mut engine = IncrementalWorkspace::new();
@@ -612,7 +614,7 @@ pub(crate) fn rebuild_all_document_links(
 
     let refresh_symbols_start = Instant::now();
     let mut all_symbols = Vec::new();
-    for (uri, index_entry) in &state.index {
+    for (uri, index_entry) in state.index() {
         if !index_entry.include_in_semantic_graph {
             let mut search_symbols = Vec::new();
             library_search::add_short_name_symbol_entries(
@@ -627,8 +629,9 @@ pub(crate) fn rebuild_all_document_links(
         library_search::add_short_name_symbol_entries(&mut new_entries, &index_entry.content, uri);
         all_symbols.extend(new_entries);
     }
-    state.symbol_table = all_symbols;
-    state.semantic_graph = graph;
+    let uri_count = state.index().len();
+    *state.symbol_table_mut() = all_symbols;
+    *state.semantic_graph_mut() = graph;
     let refresh_symbols_ms = elapsed_ms(refresh_symbols_start);
 
     // The 7-phase breakdown this metrics struct used to carry (remove-nodes, rebuild-graphs,
@@ -642,7 +645,7 @@ pub(crate) fn rebuild_all_document_links(
     // function's "whole graph computation" umbrella field, so downstream log consumers keep
     // a meaningful (if coarser) number instead of a silent `0`.
     RebuildAllDocumentLinksMetrics {
-        uri_count: state.index.len(),
+        uri_count,
         parsed_doc_count: uris.len(),
         remove_nodes_ms: 0,
         rebuild_graphs_ms: 0,
@@ -744,9 +747,12 @@ pub(crate) fn rebuild_semantic_graph_staged(
     (semantic_graph, all_symbols, metrics)
 }
 
-pub(crate) fn clear_documents_under_roots(state: &mut ServerState, roots: &[Url]) -> Vec<Url> {
+pub(crate) fn clear_documents_under_roots(
+    state: &mut impl DocumentStore,
+    roots: &[Url],
+) -> Vec<Url> {
     let uris_to_remove: Vec<Url> = state
-        .index
+        .index()
         .keys()
         .filter(|uri| util::uri_under_any_library(uri, roots))
         .cloned()

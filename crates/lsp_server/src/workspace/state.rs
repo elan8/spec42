@@ -61,6 +61,53 @@ impl TracksRelink for WorkspaceState {
     }
 }
 
+/// Shared accessors letting `workspace/services.rs`'s free functions operate on either
+/// `ServerState` (the live `RwLock`-guarded state, until it's fully retired) or
+/// `WorkspaceState` (the new `SessionActor`-managed state) without duplicating their logic.
+pub(crate) trait DocumentStore {
+    fn index(&self) -> &std::collections::HashMap<Url, IndexEntry>;
+    fn index_mut(&mut self) -> &mut std::collections::HashMap<Url, IndexEntry>;
+    fn symbol_table_mut(&mut self) -> &mut Vec<SymbolEntry>;
+    fn semantic_graph(&self) -> &semantic::SemanticGraph;
+    fn semantic_graph_mut(&mut self) -> &mut semantic::SemanticGraph;
+}
+
+impl DocumentStore for ServerState {
+    fn index(&self) -> &std::collections::HashMap<Url, IndexEntry> {
+        &self.index
+    }
+    fn index_mut(&mut self) -> &mut std::collections::HashMap<Url, IndexEntry> {
+        &mut self.index
+    }
+    fn symbol_table_mut(&mut self) -> &mut Vec<SymbolEntry> {
+        &mut self.symbol_table
+    }
+    fn semantic_graph(&self) -> &semantic::SemanticGraph {
+        &self.semantic_graph
+    }
+    fn semantic_graph_mut(&mut self) -> &mut semantic::SemanticGraph {
+        &mut self.semantic_graph
+    }
+}
+
+impl DocumentStore for WorkspaceState {
+    fn index(&self) -> &std::collections::HashMap<Url, IndexEntry> {
+        &self.index
+    }
+    fn index_mut(&mut self) -> &mut std::collections::HashMap<Url, IndexEntry> {
+        &mut self.index
+    }
+    fn symbol_table_mut(&mut self) -> &mut Vec<SymbolEntry> {
+        &mut self.symbol_table
+    }
+    fn semantic_graph(&self) -> &semantic::SemanticGraph {
+        &self.semantic_graph
+    }
+    fn semantic_graph_mut(&mut self) -> &mut semantic::SemanticGraph {
+        &mut self.semantic_graph
+    }
+}
+
 pub(crate) fn supports_semantic_queries(lifecycle: workspace::SessionLifecycle) -> bool {
     matches!(lifecycle, workspace::SessionLifecycle::Ready)
 }

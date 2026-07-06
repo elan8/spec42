@@ -1,5 +1,5 @@
 ﻿mod capabilities;
-mod custom;
+pub(crate) mod custom;
 mod diagnostics;
 mod documents;
 mod features;
@@ -518,7 +518,7 @@ impl Backend {
         let cache_mark_lock_wait_start = Instant::now();
         if let Some(uri) = parse_cached_uri {
             let mut state = self.state.write().await;
-            mark_sysml_model_parse_cached(&mut state, &uri);
+            mark_sysml_model_parse_cached(&mut *state, &uri);
         }
         let cache_mark_lock_wait_ms = cache_mark_lock_wait_start.elapsed().as_millis().max(1);
         let total_ms = request_start.elapsed().as_millis().max(1);

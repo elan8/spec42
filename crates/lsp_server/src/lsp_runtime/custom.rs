@@ -1,6 +1,6 @@
 use crate::host::config::Spec42Config;
 use crate::views::dto;
-use crate::workspace::state::SemanticLifecycle;
+use crate::workspace::state::{DocumentStore, SemanticLifecycle};
 use crate::workspace::viz_cache::WorkspaceRenderCache;
 use crate::workspace::ServerState;
 use sysml_model::{visualization_model_not_ready, SysmlVisualizationResultDto};
@@ -219,8 +219,8 @@ pub(crate) async fn sysml_model_result(
     ))
 }
 
-pub(crate) fn mark_sysml_model_parse_cached(state: &mut ServerState, uri: &Url) {
-    if let Some(entry) = state.index.get_mut(uri) {
+pub(crate) fn mark_sysml_model_parse_cached(state: &mut impl DocumentStore, uri: &Url) {
+    if let Some(entry) = state.index_mut().get_mut(uri) {
         entry.parse_metadata.parse_cached = true;
     }
 }
@@ -394,16 +394,25 @@ pub(crate) fn sysml_server_stats_result(
     }
 }
 
+/// Clears the document-store side of the cache (index/symbol table/semantic graph),
+/// returning the pre-clear document and symbol counts. Shared by `sysml_clear_cache_result`
+/// (still `ServerState`-based) and `WorkspaceHandle::clear_cache_state` (the
+/// `SessionActor`-managed equivalent) so the clearing logic isn't duplicated between them.
+pub(crate) fn clear_document_store_state(state: &mut impl DocumentStore) -> (usize, usize) {
+    let docs = state.index().len();
+    let syms = state.symbol_table_mut().len();
+    state.index_mut().clear();
+    state.symbol_table_mut().clear();
+    *state.semantic_graph_mut() = crate::semantic::SemanticGraph::default();
+    (docs, syms)
+}
+
 pub(crate) fn sysml_clear_cache_result(
     state: &mut ServerState,
     cache: &mut WorkspaceRenderCache,
 ) -> dto::SysmlClearCacheResultDto {
-    let docs = state.index.len();
-    let syms = state.symbol_table.len();
     crate::views::workspace_artifacts::clear_workspace_viz_caches(cache);
-    state.index.clear();
-    state.symbol_table.clear();
-    state.semantic_graph = crate::semantic::SemanticGraph::default();
+    let (docs, syms) = clear_document_store_state(state);
     dto::SysmlClearCacheResultDto {
         documents: docs,
         symbol_tables: syms,
