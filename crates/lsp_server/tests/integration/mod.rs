@@ -8,6 +8,7 @@
 
 mod built_workspace_parity;
 mod completion;
+mod concurrency_regressions;
 mod definition;
 mod diagnostics;
 mod diagnostics_postprocess;
