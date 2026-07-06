@@ -1,6 +1,6 @@
 use crate::host::config::Spec42Config;
 use crate::views::dto;
-use crate::workspace::state::{DocumentStore, SemanticLifecycle};
+use crate::workspace::state::DocumentStore;
 use crate::workspace::viz_cache::WorkspaceRenderCache;
 use crate::workspace::ServerState;
 use sysml_model::{visualization_model_not_ready, SysmlVisualizationResultDto};
@@ -42,7 +42,7 @@ pub(crate) async fn sysml_model_result(
         scope.iter().any(|entry| entry == "workspaceVisualization");
     let params_ms = params_start.elapsed().as_millis().max(1);
     let build_start = Instant::now();
-    if workspace_visualization_requested && !state.coordinator.lifecycle().supports_semantic_queries() {
+    if workspace_visualization_requested && !crate::workspace::state::supports_semantic_queries(state.session.lifecycle()) {
         return Ok((crate::views::empty_model_response(build_start), None));
     }
     if workspace_visualization_requested {
@@ -257,18 +257,18 @@ pub(crate) fn sysml_visualization_result(
 )> {
     let (workspace_root_uri, view, selected_view) =
         crate::views::parse_sysml_visualization_params(&params)?;
-    if !state.coordinator.lifecycle().supports_semantic_queries() {
-        let message = match state.coordinator.lifecycle() {
-            SemanticLifecycle::Indexing => {
+    if !crate::workspace::state::supports_semantic_queries(state.session.lifecycle()) {
+        let message = match state.session.lifecycle() {
+            workspace::SessionLifecycle::Indexing => {
                 "SysML workspace is still indexing. The diagram will appear when indexing completes."
             }
-            SemanticLifecycle::Reindexing => {
+            workspace::SessionLifecycle::Reindexing => {
                 "SysML model is being refreshed. The diagram will update when processing completes."
             }
-            SemanticLifecycle::Cold => {
+            workspace::SessionLifecycle::Cold => {
                 "SysML language server is starting. The diagram will appear when the server is ready."
             }
-            SemanticLifecycle::Ready => "SysML model is not ready.",
+            workspace::SessionLifecycle::Ready => "SysML model is not ready.",
         };
         return Ok((
             visualization_model_not_ready(workspace_root_uri.as_str(), &view, message),
@@ -395,9 +395,9 @@ pub(crate) fn sysml_server_stats_result(
 }
 
 /// Clears the document-store side of the cache (index/symbol table/semantic graph),
-/// returning the pre-clear document and symbol counts. Shared by `sysml_clear_cache_result`
-/// (still `ServerState`-based) and `WorkspaceHandle::clear_cache_state` (the
-/// `SessionActor`-managed equivalent) so the clearing logic isn't duplicated between them.
+/// returning the pre-clear document and symbol counts. Called via
+/// `WorkspaceHandle::clear_cache_state` inside an actor `mutate` closure; the separate
+/// `WorkspaceRenderCache` clearing stays outside, on `Backend` (see `sysml_clear_cache`).
 pub(crate) fn clear_document_store_state(state: &mut impl DocumentStore) -> (usize, usize) {
     let docs = state.index().len();
     let syms = state.symbol_table_mut().len();
@@ -405,17 +405,4 @@ pub(crate) fn clear_document_store_state(state: &mut impl DocumentStore) -> (usi
     state.symbol_table_mut().clear();
     *state.semantic_graph_mut() = crate::semantic::SemanticGraph::default();
     (docs, syms)
-}
-
-pub(crate) fn sysml_clear_cache_result(
-    state: &mut ServerState,
-    cache: &mut WorkspaceRenderCache,
-) -> dto::SysmlClearCacheResultDto {
-    crate::views::workspace_artifacts::clear_workspace_viz_caches(cache);
-    let (docs, syms) = clear_document_store_state(state);
-    dto::SysmlClearCacheResultDto {
-        documents: docs,
-        symbol_tables: syms,
-        semantic_tokens: 0,
-    }
 }

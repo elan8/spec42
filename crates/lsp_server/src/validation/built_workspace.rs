@@ -8,7 +8,6 @@ use sysml_model::{SemanticGraph, WorkspaceParsedDocument};
 use tower_lsp::lsp_types::Url;
 
 use crate::host::config::Spec42Config;
-use crate::workspace::coordinator::SemanticCoordinator;
 use crate::workspace::state::{IndexEntry, ParseMetadata, ServerState};
 
 use super::discovery::{discover_target_files, path_to_file_url, resolve_workspace_root};
@@ -100,15 +99,15 @@ fn server_state_from_built(
         );
     }
 
-    let mut coordinator = SemanticCoordinator::default();
-    coordinator.begin_startup();
-    coordinator.complete_startup();
+    let mut session = workspace::WorkspaceSession::new();
+    session.begin_startup();
+    session.complete_startup();
     ServerState {
         workspace_roots: workspace_root_url.iter().cloned().collect(),
         library_paths: built.library_urls.clone(),
         semantic_graph: built.semantic_graph.clone(),
         index,
-        coordinator,
+        session,
         ..ServerState::default()
     }
 }

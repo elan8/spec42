@@ -91,9 +91,6 @@ impl WorkspaceSnapshot for ServerStateSnapshot<'_> {
     }
 
     fn supports_semantic_queries(&self) -> bool {
-        self.state
-            .coordinator
-            .lifecycle()
-            .supports_semantic_queries()
+        crate::workspace::state::supports_semantic_queries(self.state.session.lifecycle())
     }
 }

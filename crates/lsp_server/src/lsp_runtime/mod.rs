@@ -1,4 +1,4 @@
-﻿mod capabilities;
+mod capabilities;
 pub(crate) mod custom;
 mod diagnostics;
 mod documents;
@@ -13,37 +13,32 @@ use std::sync::Arc;
 use std::time::Instant;
 use std::{future::Future, pin::Pin};
 
-use tokio::sync::{Mutex, RwLock};
+use tokio::sync::Mutex;
 use tower_lsp::jsonrpc::Result;
 use tower_lsp::lsp_types::*;
 use tower_lsp::{Client, LanguageServer, LspService, Server};
 
 use crate::host::config::Spec42Config;
 use crate::views::dto;
+use crate::workspace::state::ServerState;
 use crate::workspace::viz_cache::WorkspaceRenderCache;
-use crate::workspace::state::SemanticLifecycle;
-use crate::workspace::{RuntimeConfig, ServerState};
-use tokio::sync::watch;
+use crate::workspace::{RuntimeConfig, WorkspaceHandle};
 use custom::{
-    mark_sysml_model_parse_cached, sysml_clear_cache_result, sysml_feature_inspector_result,
-    sysml_library_search_result, sysml_model_result, sysml_server_stats_result,
-    sysml_visualization_result,
+    sysml_feature_inspector_result, sysml_library_search_result, sysml_model_result,
+    sysml_server_stats_result, sysml_visualization_result,
 };
 use sysml_model::SysmlVisualizationResultDto;
 
 struct Backend {
     client: Client,
-    state: Arc<RwLock<ServerState>>,
+    handle: WorkspaceHandle,
     render_cache: Arc<Mutex<WorkspaceRenderCache>>,
     config: Arc<Spec42Config>,
     start_time: Instant,
     server_name: String,
-    /// Lifecycle watch receiver kept outside the `RwLock` so query handlers
-    /// can wait for `Reindexing → Ready` without acquiring any lock.
-    lifecycle_rx: watch::Receiver<SemanticLifecycle>,
     /// Write-once startup configuration, set during `initialize` and read
-    /// everywhere else without acquiring the `ServerState` lock. LSP
-    /// guarantees `initialize` precedes every other request.
+    /// everywhere else without touching the actor. LSP guarantees
+    /// `initialize` precedes every other request.
     runtime_config: Arc<std::sync::OnceLock<RuntimeConfig>>,
 }
 
@@ -51,7 +46,7 @@ struct Backend {
 impl LanguageServer for Backend {
     async fn initialize(&self, params: InitializeParams) -> Result<InitializeResult> {
         documents::initialize(
-            &self.state,
+            &self.handle,
             &self.config,
             &self.server_name,
             &self.runtime_config,
@@ -63,7 +58,7 @@ impl LanguageServer for Backend {
     async fn initialized(&self, _: InitializedParams) {
         documents::initialized(
             &self.client,
-            &self.state,
+            &self.handle,
             &self.config,
             &self.server_name,
             &self.runtime_config,
@@ -78,7 +73,7 @@ impl LanguageServer for Backend {
     async fn did_open(&self, params: DidOpenTextDocumentParams) {
         documents::did_open(
             &self.client,
-            &self.state,
+            &self.handle,
             &self.config,
             &self.runtime_config,
             params,
@@ -89,7 +84,7 @@ impl LanguageServer for Backend {
     async fn did_change(&self, params: DidChangeTextDocumentParams) {
         documents::did_change(
             &self.client,
-            &self.state,
+            &self.handle,
             &self.config,
             &self.runtime_config,
             params,
@@ -104,7 +99,7 @@ impl LanguageServer for Backend {
     async fn did_change_watched_files(&self, params: DidChangeWatchedFilesParams) {
         documents::did_change_watched_files(
             &self.client,
-            &self.state,
+            &self.handle,
             &self.config,
             &self.runtime_config,
             params,
@@ -115,7 +110,7 @@ impl LanguageServer for Backend {
     async fn did_change_configuration(&self, params: DidChangeConfigurationParams) {
         documents::did_change_configuration(
             &self.client,
-            &self.state,
+            &self.handle,
             &self.config,
             &self.runtime_config,
             params,
@@ -129,7 +124,7 @@ impl LanguageServer for Backend {
             .text_document
             .uri
             .clone();
-        let state = self.state.read().await;
+        let state = self.handle.snapshot();
         let perf_logging_enabled = self
             .runtime_config
             .get()
@@ -144,7 +139,7 @@ impl LanguageServer for Backend {
     }
 
     async fn completion(&self, params: CompletionParams) -> Result<Option<CompletionResponse>> {
-        let state = self.state.read().await;
+        let state = self.handle.snapshot();
         let perf_logging_enabled = self
             .runtime_config
             .get()
@@ -159,12 +154,12 @@ impl LanguageServer for Backend {
     }
 
     async fn completion_resolve(&self, params: CompletionItem) -> Result<CompletionItem> {
-        let state = self.state.read().await;
+        let state = self.handle.snapshot();
         features::completion_resolve(&state, params)
     }
 
     async fn signature_help(&self, params: SignatureHelpParams) -> Result<Option<SignatureHelp>> {
-        let state = self.state.read().await;
+        let state = self.handle.snapshot();
         features::signature_help(
             &state,
             params.text_document_position_params.text_document.uri,
@@ -176,7 +171,7 @@ impl LanguageServer for Backend {
         &self,
         params: GotoDefinitionParams,
     ) -> Result<Option<GotoDefinitionResponse>> {
-        let state = self.state.read().await;
+        let state = self.handle.snapshot();
         let perf_logging_enabled = self
             .runtime_config
             .get()
@@ -191,7 +186,7 @@ impl LanguageServer for Backend {
     }
 
     async fn references(&self, params: ReferenceParams) -> Result<Option<Vec<Location>>> {
-        let state = self.state.read().await;
+        let state = self.handle.snapshot();
         let perf_logging_enabled = self
             .runtime_config
             .get()
@@ -207,7 +202,7 @@ impl LanguageServer for Backend {
     }
 
     async fn document_link(&self, params: DocumentLinkParams) -> Result<Option<Vec<DocumentLink>>> {
-        let state = self.state.read().await;
+        let state = self.handle.snapshot();
         features::document_link(&state, params.text_document.uri)
     }
 
@@ -215,7 +210,7 @@ impl LanguageServer for Backend {
         &self,
         params: DocumentHighlightParams,
     ) -> Result<Option<Vec<DocumentHighlight>>> {
-        let state = self.state.read().await;
+        let state = self.handle.snapshot();
         let perf_logging_enabled = self
             .runtime_config
             .get()
@@ -233,7 +228,7 @@ impl LanguageServer for Backend {
         &self,
         params: SelectionRangeParams,
     ) -> Result<Option<Vec<SelectionRange>>> {
-        let state = self.state.read().await;
+        let state = self.handle.snapshot();
         features::selection_range(&state, params.text_document.uri, params.positions)
     }
 
@@ -241,7 +236,7 @@ impl LanguageServer for Backend {
         &self,
         params: TextDocumentPositionParams,
     ) -> Result<Option<PrepareRenameResponse>> {
-        let state = self.state.read().await;
+        let state = self.handle.snapshot();
         let perf_logging_enabled = self
             .runtime_config
             .get()
@@ -256,7 +251,7 @@ impl LanguageServer for Backend {
     }
 
     async fn rename(&self, params: RenameParams) -> Result<Option<WorkspaceEdit>> {
-        let state = self.state.read().await;
+        let state = self.handle.snapshot();
         let perf_logging_enabled = self
             .runtime_config
             .get()
@@ -275,12 +270,12 @@ impl LanguageServer for Backend {
         &self,
         params: DocumentSymbolParams,
     ) -> Result<Option<DocumentSymbolResponse>> {
-        let state = self.state.read().await;
+        let state = self.handle.snapshot();
         features::document_symbol(&state, params.text_document.uri)
     }
 
     async fn folding_range(&self, params: FoldingRangeParams) -> Result<Option<Vec<FoldingRange>>> {
-        let state = self.state.read().await;
+        let state = self.handle.snapshot();
         features::folding_range(&state, params.text_document.uri)
     }
 
@@ -289,7 +284,7 @@ impl LanguageServer for Backend {
         &self,
         params: WorkspaceSymbolParams,
     ) -> Result<Option<Vec<SymbolInformation>>> {
-        let state = self.state.read().await;
+        let state = self.handle.snapshot();
         let perf_logging_enabled = self
             .runtime_config
             .get()
@@ -299,7 +294,7 @@ impl LanguageServer for Backend {
     }
 
     async fn code_action(&self, params: CodeActionParams) -> Result<Option<CodeActionResponse>> {
-        let state = self.state.read().await;
+        let state = self.handle.snapshot();
         features::code_action(
             &state,
             params.text_document.uri,
@@ -308,7 +303,7 @@ impl LanguageServer for Backend {
     }
 
     async fn code_lens(&self, params: CodeLensParams) -> Result<Option<Vec<CodeLens>>> {
-        let state = self.state.read().await;
+        let state = self.handle.snapshot();
         let runtime_config = self
             .runtime_config
             .get()
@@ -322,12 +317,12 @@ impl LanguageServer for Backend {
     }
 
     async fn inlay_hint(&self, params: InlayHintParams) -> Result<Option<Vec<InlayHint>>> {
-        let state = self.state.read().await;
+        let state = self.handle.snapshot();
         features::inlay_hint(&state, params.text_document.uri, params.range)
     }
 
     async fn formatting(&self, params: DocumentFormattingParams) -> Result<Option<Vec<TextEdit>>> {
-        let state = self.state.read().await;
+        let state = self.handle.snapshot();
         features::formatting(&state, params.text_document.uri, params.options)
     }
 
@@ -335,7 +330,7 @@ impl LanguageServer for Backend {
         &self,
         params: SemanticTokensParams,
     ) -> Result<Option<SemanticTokensResult>> {
-        let state = self.state.read().await;
+        let state = self.handle.snapshot();
         let perf_logging_enabled = self
             .runtime_config
             .get()
@@ -362,7 +357,7 @@ impl LanguageServer for Backend {
         &self,
         params: SemanticTokensRangeParams,
     ) -> Result<Option<SemanticTokensRangeResult>> {
-        let state = self.state.read().await;
+        let state = self.handle.snapshot();
         let perf_logging_enabled = self
             .runtime_config
             .get()
@@ -390,7 +385,7 @@ impl LanguageServer for Backend {
         &self,
         params: LinkedEditingRangeParams,
     ) -> Result<Option<LinkedEditingRanges>> {
-        let state = self.state.read().await;
+        let state = self.handle.snapshot();
         features::linked_editing_range(
             &state,
             params.text_document_position_params.text_document.uri,
@@ -399,7 +394,7 @@ impl LanguageServer for Backend {
     }
 
     async fn moniker(&self, params: MonikerParams) -> Result<Option<Vec<Moniker>>> {
-        let state = self.state.read().await;
+        let state = self.handle.snapshot();
         features::moniker(
             &state,
             params.text_document_position_params.text_document.uri,
@@ -411,7 +406,7 @@ impl LanguageServer for Backend {
         &self,
         params: TypeHierarchyPrepareParams,
     ) -> Result<Option<Vec<TypeHierarchyItem>>> {
-        let state = self.state.read().await;
+        let state = self.handle.snapshot();
         features::prepare_type_hierarchy(
             &state,
             params.text_document_position_params.text_document.uri,
@@ -423,7 +418,7 @@ impl LanguageServer for Backend {
         &self,
         params: TypeHierarchySupertypesParams,
     ) -> Result<Option<Vec<TypeHierarchyItem>>> {
-        let state = self.state.read().await;
+        let state = self.handle.snapshot();
         features::supertypes(&state, params.item.uri.clone(), params.item.selection_range)
     }
 
@@ -431,7 +426,7 @@ impl LanguageServer for Backend {
         &self,
         params: TypeHierarchySubtypesParams,
     ) -> Result<Option<Vec<TypeHierarchyItem>>> {
-        let state = self.state.read().await;
+        let state = self.handle.snapshot();
         features::subtypes(&state, params.item.uri.clone(), params.item.selection_range)
     }
 
@@ -439,7 +434,7 @@ impl LanguageServer for Backend {
         &self,
         params: CallHierarchyPrepareParams,
     ) -> Result<Option<Vec<CallHierarchyItem>>> {
-        let state = self.state.read().await;
+        let state = self.handle.snapshot();
         features::prepare_call_hierarchy(
             &state,
             params.text_document_position_params.text_document.uri,
@@ -451,7 +446,7 @@ impl LanguageServer for Backend {
         &self,
         params: CallHierarchyIncomingCallsParams,
     ) -> Result<Option<Vec<CallHierarchyIncomingCall>>> {
-        let state = self.state.read().await;
+        let state = self.handle.snapshot();
         features::incoming_calls(&state, params.item.uri.clone(), params.item.selection_range)
     }
 
@@ -459,7 +454,7 @@ impl LanguageServer for Backend {
         &self,
         params: CallHierarchyOutgoingCallsParams,
     ) -> Result<Option<Vec<CallHierarchyOutgoingCall>>> {
-        let state = self.state.read().await;
+        let state = self.handle.snapshot();
         features::outgoing_calls(&state, params.item.uri.clone(), params.item.selection_range)
     }
 }
@@ -467,7 +462,7 @@ impl LanguageServer for Backend {
 impl Backend {
     async fn sysml_model(&self, params: serde_json::Value) -> Result<dto::SysmlModelResultDto> {
         let request_start = Instant::now();
-        // Log handler dispatch time BEFORE acquiring the lock so we can compare
+        // Log handler dispatch time BEFORE the (former) lock acquisition so we can compare
         // against the frontend's getModelRequestStart timestamp and see how long
         // the request sat in the transport/queue before reaching this handler.
         {
@@ -487,15 +482,18 @@ impl Backend {
         }
         // Wait for any in-flight async relink to complete so the response
         // reflects a fully-resolved semantic graph (satisfy/perform/subject edges etc).
-        // The watch receiver wakes instantly when commit_relink fires — no polling needed.
-        let mut lifecycle_rx = self.lifecycle_rx.clone();
+        // The snapshot handle wakes instantly when the actor publishes a new state — no
+        // polling, and (unlike the old `RwLock`) no lock ever held while waiting.
+        let mut snapshot_rx = self.handle.snapshot_handle();
         let _ = tokio::time::timeout(
             std::time::Duration::from_secs(30),
-            lifecycle_rx.wait_for(|&l| l != SemanticLifecycle::Reindexing),
+            snapshot_rx.wait_for(|s| {
+                !matches!(s.session.lifecycle(), workspace::SessionLifecycle::Reindexing)
+            }),
         )
         .await;
         let read_lock_wait_start = Instant::now();
-        let state = self.state.read().await;
+        let state = self.handle.snapshot();
         let mut render_cache = self.render_cache.lock().await;
         let read_lock_wait_ms = read_lock_wait_start.elapsed().as_millis().max(1);
         let perf_logging_enabled = self
@@ -517,8 +515,7 @@ impl Backend {
 
         let cache_mark_lock_wait_start = Instant::now();
         if let Some(uri) = parse_cached_uri {
-            let mut state = self.state.write().await;
-            mark_sysml_model_parse_cached(&mut *state, &uri);
+            self.handle.mark_parse_cached(uri).await.ok();
         }
         let cache_mark_lock_wait_ms = cache_mark_lock_wait_start.elapsed().as_millis().max(1);
         let total_ms = request_start.elapsed().as_millis().max(1);
@@ -572,7 +569,7 @@ impl Backend {
         params: serde_json::Value,
     ) -> Result<SysmlVisualizationResultDto> {
         let request_start = Instant::now();
-        let state = self.state.read().await;
+        let state = self.handle.snapshot();
         let mut render_cache = self.render_cache.lock().await;
         let perf_logging_enabled = self
             .runtime_config
@@ -637,26 +634,32 @@ impl Backend {
         &self,
         params: serde_json::Value,
     ) -> Result<dto::SysmlFeatureInspectorResultDto> {
-        let state = self.state.read().await;
+        let state = self.handle.snapshot();
         sysml_feature_inspector_result(&state, params)
     }
 
     async fn sysml_server_stats(&self) -> Result<dto::SysmlServerStatsDto> {
-        let state = self.state.read().await;
+        let state = self.handle.snapshot();
         Ok(sysml_server_stats_result(&state, self.start_time))
     }
 
     async fn sysml_clear_cache(&self) -> Result<dto::SysmlClearCacheResultDto> {
-        let mut state = self.state.write().await;
         let mut render_cache = self.render_cache.lock().await;
-        Ok(sysml_clear_cache_result(&mut state, &mut render_cache))
+        crate::views::workspace_artifacts::clear_workspace_viz_caches(&mut render_cache);
+        drop(render_cache);
+        let (documents, symbol_tables) = self.handle.clear_cache_state().await.unwrap_or((0, 0));
+        Ok(dto::SysmlClearCacheResultDto {
+            documents,
+            symbol_tables,
+            semantic_tokens: 0,
+        })
     }
 
     async fn sysml_library_search(
         &self,
         params: serde_json::Value,
     ) -> Result<dto::SysmlLibrarySearchResultDto> {
-        let state = self.state.read().await;
+        let state = self.handle.snapshot();
         sysml_library_search_result(&state, params)
     }
 
@@ -695,26 +698,21 @@ fn make_custom_rpc_handler(
 pub async fn run(config: Arc<Spec42Config>, server_name: &str) {
     crate::host::logging::init_tracing();
     let (stdin, stdout) = (tokio::io::stdin(), tokio::io::stdout());
-    let state = Arc::new(RwLock::new(ServerState::default()));
+    let handle = WorkspaceHandle::spawn(ServerState::default());
     let render_cache = Arc::new(Mutex::new(WorkspaceRenderCache::default()));
     let start_time = Instant::now();
     let server_name = server_name.to_string();
     let custom_rpc_methods = config.custom_rpc_method_names();
     let service_config = Arc::clone(&config);
     let runtime_config = Arc::new(std::sync::OnceLock::<RuntimeConfig>::new());
-    // Subscribe to lifecycle changes before handing state to LspService.
-    // The receiver lives outside the RwLock so sysml/model can wait for
-    // Reindexing→Ready without acquiring any lock.
-    let lifecycle_rx = state.try_read().unwrap().coordinator.subscribe();
 
     let mut builder = LspService::build(move |client| Backend {
         client,
-        state: Arc::clone(&state),
+        handle: handle.clone(),
         render_cache: Arc::clone(&render_cache),
         config: Arc::clone(&service_config),
         start_time,
         server_name: server_name.clone(),
-        lifecycle_rx: lifecycle_rx.clone(),
         runtime_config: Arc::clone(&runtime_config),
     })
     .custom_method("sysml/model", Backend::sysml_model)
@@ -731,5 +729,22 @@ pub async fn run(config: Arc<Spec42Config>, server_name: &str) {
 
     let (service, socket) = builder.finish();
 
-    Server::new(stdin, stdout, socket).serve(service).await;
+    // Serialize top-level LSP message handling (one message's handler body runs to
+    // completion before the next starts). This restores the ordering guarantee the
+    // integration test suite's `lsp_barrier` helper relies on (a request right after a
+    // notification observes that notification's effects) — the old `RwLock`-based code
+    // provided this "by accident" since its mutations never yielded across a task
+    // boundary, so tower-lsp's default 4-way concurrent dispatch never got a chance to
+    // interleave them. The actor-based `WorkspaceHandle` legitimately yields at its
+    // mailbox round trip, exposing that tower-lsp does not otherwise guarantee ordering
+    // between concurrently-dispatched messages (`buffer_unordered`, see
+    // `tower_lsp::Server::concurrency_level`'s default of 4). This does NOT reintroduce
+    // the original blocking-on-slow-work bug: the actual heavy lifting (async relink,
+    // render rebuild) already runs in a detached `tokio::spawn` task outside of any
+    // handler's own body, so it is not counted against this concurrency limit — only the
+    // fast, actor-mediated handler bodies themselves are serialized.
+    Server::new(stdin, stdout, socket)
+        .concurrency_level(1)
+        .serve(service)
+        .await;
 }

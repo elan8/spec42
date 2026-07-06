@@ -94,7 +94,7 @@ pub(crate) fn ensure_render_snapshot(
     let cache_hit = cache
         .entry
         .as_ref()
-        .is_some_and(|entry| render_cache_valid(entry, state.coordinator.version(), &workspace_root_uri));
+        .is_some_and(|entry| render_cache_valid(entry, state.session.version(), &workspace_root_uri));
     if cache_hit {
         return Ok(());
     }
@@ -110,10 +110,10 @@ pub(crate) fn ensure_render_snapshot(
         &viz_docs,
         &state.library_paths,
         &workspace_root_uri,
-        state.coordinator.version(),
+        state.session.version(),
     )?;
     cache.entry = Some(WorkspaceRenderCacheEntry {
-        semantic_state_version: state.coordinator.version(),
+        semantic_state_version: state.session.version(),
         workspace_root_uri: workspace_root_uri.clone(),
         snapshot,
         model_explorer: None,
@@ -162,7 +162,7 @@ pub(crate) fn build_visualization_with_cache(
         selected_view: selected_view.map(str::to_string),
     };
 
-    if let Some(cached) = cached_visualization_response(cache, state.coordinator.version(), &workspace_root_uri, &cache_key) {
+    if let Some(cached) = cached_visualization_response(cache, state.session.version(), &workspace_root_uri, &cache_key) {
         return Ok(VisualizationBuildOutcome {
             response: cached,
             meta: VisualizationBuildMeta {
@@ -226,7 +226,6 @@ pub(crate) fn primary_workspace_root(state: &ServerState) -> Option<Url> {
 #[cfg(test)]
 mod cache_tests {
     use super::*;
-    use crate::workspace::coordinator::SemanticCoordinator;
     use crate::workspace::state::{IndexEntry, ParseMetadata, ServerState};
     use crate::workspace::viz_cache::WorkspaceRenderCache;
     use sysml_model::{build_semantic_graph_with_provider, FileSystemDocumentProvider};
@@ -257,12 +256,12 @@ mod cache_tests {
                 )
             })
             .collect();
-        let mut coordinator = SemanticCoordinator::default();
-        coordinator.begin_startup();
-        coordinator.complete_startup();
+        let mut session = workspace::WorkspaceSession::new();
+        session.begin_startup();
+        session.complete_startup();
         let state = ServerState {
             workspace_roots: vec![workspace_root_uri.clone()],
-            coordinator,
+            session,
             index,
             symbol_table: Vec::new(),
             semantic_graph,

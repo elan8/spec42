@@ -1,15 +1,15 @@
 use std::sync::Arc;
 use std::time::Instant;
 
-use tokio::sync::RwLock;
 use tower_lsp::lsp_types::{Diagnostic, NumberOrString, Url};
 use tower_lsp::Client;
 use tracing::info;
 
 use crate::analysis::diagnostics_core;
-use crate::common::util;
 use crate::host::config::Spec42Config;
-use crate::workspace::{RuntimeConfig, ServerState};
+use crate::workspace::state::{supports_semantic_queries, suppresses_transient_semantic_diagnostics};
+use crate::workspace::{RuntimeConfig, WorkspaceHandle};
+use crate::common::util;
 
 const TRANSIENT_STARTUP_SEMANTIC_DIAGNOSTIC_CODES: &[&str] = &[
     "unresolved_type_reference",
@@ -25,9 +25,9 @@ fn perf_logging_enabled(runtime_config: &Arc<std::sync::OnceLock<RuntimeConfig>>
         .perf_logging_enabled
 }
 
-async fn diagnostics_publication_ready(state: &Arc<RwLock<ServerState>>) -> bool {
-    let locked = state.read().await;
-    locked.coordinator.lifecycle().supports_semantic_queries()
+/// Non-blocking: reads the actor's latest published snapshot, no lock/await needed.
+fn diagnostics_publication_ready(handle: &WorkspaceHandle) -> bool {
+    supports_semantic_queries(handle.snapshot().session.lifecycle())
 }
 
 fn semantic_diagnostic_code(diagnostic: &Diagnostic) -> Option<&str> {
@@ -62,7 +62,7 @@ fn filter_transient_startup_semantic_diagnostics(
 
 pub(crate) async fn publish_document_diagnostics(
     client: &Client,
-    state: &Arc<RwLock<ServerState>>,
+    handle: &WorkspaceHandle,
     config: &Arc<Spec42Config>,
     runtime_config: &Arc<std::sync::OnceLock<RuntimeConfig>>,
     uri: Url,
@@ -70,10 +70,10 @@ pub(crate) async fn publish_document_diagnostics(
 ) {
     let started_at = Instant::now();
     let (ready, is_library) = {
-        let locked = state.read().await;
+        let snap = handle.snapshot();
         (
-            locked.coordinator.lifecycle().supports_semantic_queries(),
-            util::uri_under_any_library(&uri, &locked.library_paths),
+            supports_semantic_queries(snap.session.lifecycle()),
+            util::uri_under_any_library(&uri, &snap.library_paths),
         )
     };
     if is_library {
@@ -89,7 +89,7 @@ pub(crate) async fn publish_document_diagnostics(
         }
         return;
     }
-    let diagnostics = collect_diagnostics_for_document(state, config, &uri, text).await;
+    let diagnostics = collect_diagnostics_for_document(handle, config, &uri, text).await;
     if perf_logging_enabled(runtime_config) {
         info!(
             event = "diagnostics:document",
@@ -103,13 +103,13 @@ pub(crate) async fn publish_document_diagnostics(
 
 pub(crate) async fn publish_workspace_diagnostics(
     client: &Client,
-    state: &Arc<RwLock<ServerState>>,
+    handle: &WorkspaceHandle,
     config: &Arc<Spec42Config>,
     runtime_config: &Arc<std::sync::OnceLock<RuntimeConfig>>,
     target_uris: Option<&[Url]>,
 ) {
     let started_at = Instant::now();
-    if !diagnostics_publication_ready(state).await {
+    if !diagnostics_publication_ready(handle) {
         if perf_logging_enabled(runtime_config) {
             info!(
                 event = "diagnostics:workspace:deferred",
@@ -120,20 +120,20 @@ pub(crate) async fn publish_workspace_diagnostics(
         return;
     }
     let docs: Vec<(Url, String)> = {
-        let st = state.read().await;
+        let snap = handle.snapshot();
         if let Some(targets) = target_uris {
             targets
                 .iter()
                 .filter_map(|uri| {
-                    st.index
+                    snap.index
                         .get(uri)
                         .map(|entry| (uri.clone(), entry.content.clone()))
                 })
                 .collect()
         } else {
-            st.index
+            snap.index
                 .iter()
-                .filter(|(uri, _)| !util::uri_under_any_library(uri, &st.library_paths))
+                .filter(|(uri, _)| !util::uri_under_any_library(uri, &snap.library_paths))
                 .map(|(uri, entry)| (uri.clone(), entry.content.clone()))
                 .collect()
         }
@@ -145,11 +145,11 @@ pub(crate) async fn publish_workspace_diagnostics(
 
     let mut join_set = tokio::task::JoinSet::new();
     for (uri, text) in docs {
-        let state = Arc::clone(state);
+        let handle = handle.clone();
         let config = Arc::clone(config);
         let client = client.clone();
         join_set.spawn(async move {
-            let diagnostics = collect_diagnostics_for_document(&state, &config, &uri, &text).await;
+            let diagnostics = collect_diagnostics_for_document(&handle, &config, &uri, &text).await;
             let count = diagnostics.len();
             client.publish_diagnostics(uri, diagnostics, None).await;
             count
@@ -175,18 +175,18 @@ pub(crate) async fn publish_workspace_diagnostics(
 }
 
 async fn collect_diagnostics_for_document(
-    state: &Arc<RwLock<ServerState>>,
+    handle: &WorkspaceHandle,
     config: &Arc<Spec42Config>,
     uri: &Url,
     text: &str,
 ) -> Vec<Diagnostic> {
     let uri_norm = util::normalize_file_uri(uri);
     let (graph, library_paths, suppress_transient, check_providers) = {
-        let locked = state.read().await;
+        let snap = handle.snapshot();
         (
-            locked.semantic_graph.clone(),
-            locked.library_paths.clone(),
-            locked.coordinator.lifecycle().suppresses_transient_semantic_diagnostics(),
+            snap.semantic_graph.clone(),
+            snap.library_paths.clone(),
+            suppresses_transient_semantic_diagnostics(snap.session.lifecycle()),
             config.check_providers.clone(),
         )
     };

@@ -8,14 +8,19 @@ use tower_lsp::lsp_types::Url;
 
 use crate::common::util;
 use crate::syntax::ast_util::identification_name;
-use crate::workspace::state::ServerState;
+use crate::workspace::state::IndexEntry;
 
-/// Workspace documents (excluding `provider_uri`) that import a top-level package from `provider_uri`.
+/// Workspace documents (excluding `provider_uri`) that import a top-level package from
+/// `provider_uri`. Takes `index`/`library_paths` directly (rather than a `ServerState`) since
+/// this only ever reads raw source/parsed data, never the semantic graph — callers already
+/// have these values on hand (e.g. from a relink snapshot) without needing to read back
+/// post-commit state.
 pub(crate) fn workspace_uris_importing_declarations_from(
-    state: &ServerState,
+    index: &std::collections::HashMap<Url, IndexEntry>,
+    library_paths: &[Url],
     provider_uri: &Url,
 ) -> Vec<Url> {
-    let Some(provider) = state.index.get(provider_uri) else {
+    let Some(provider) = index.get(provider_uri) else {
         return Vec::new();
     };
     let exported = top_level_package_names(provider.parsed.as_ref(), &provider.content);
@@ -23,11 +28,10 @@ pub(crate) fn workspace_uris_importing_declarations_from(
         return Vec::new();
     }
 
-    state
-        .index
+    index
         .iter()
         .filter(|(uri, _)| *uri != provider_uri)
-        .filter(|(uri, _)| !util::uri_under_any_library(uri, &state.library_paths))
+        .filter(|(uri, _)| !util::uri_under_any_library(uri, library_paths))
         .filter(|(_, entry)| {
             document_imports_any_package(entry.parsed.as_ref(), &entry.content, &exported)
         })
@@ -138,7 +142,7 @@ fn import_references_package(import_target: &str, package: &str) -> bool {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::workspace::state::{IndexEntry, ParseMetadata, ServerState};
+    use crate::workspace::state::ParseMetadata;
     use std::collections::HashMap;
 
     fn entry(content: &str) -> IndexEntry {
@@ -161,11 +165,7 @@ mod tests {
             importer.clone(),
             entry("package B { import A::*; part def P { attribute n : Name; } }"),
         );
-        let state = ServerState {
-            index,
-            ..ServerState::default()
-        };
-        let peers = workspace_uris_importing_declarations_from(&state, &provider);
+        let peers = workspace_uris_importing_declarations_from(&index, &[], &provider);
         assert_eq!(peers, vec![importer]);
     }
 
@@ -179,11 +179,7 @@ mod tests {
             other.clone(),
             entry("package C { import Other::*; part def P; }"),
         );
-        let state = ServerState {
-            index,
-            ..ServerState::default()
-        };
-        let peers = workspace_uris_importing_declarations_from(&state, &provider);
+        let peers = workspace_uris_importing_declarations_from(&index, &[], &provider);
         assert!(peers.is_empty());
     }
 }

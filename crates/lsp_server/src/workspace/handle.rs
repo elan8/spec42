@@ -1,5 +1,5 @@
-//! `WorkspaceHandle` — a readability facade over `SessionActor<WorkspaceState>` +
-//! `SnapshotHandle<WorkspaceState>`, giving `lsp_server`'s call sites one named method per
+//! `WorkspaceHandle` — a readability facade over `SessionActor<ServerState>` +
+//! `SnapshotHandle<ServerState>`, giving `lsp_server`'s call sites one named method per
 //! mutation-pipeline step instead of scattering raw `.mutate(|s| ...)` closures across
 //! `documents.rs`/`mod.rs`. This is deliberately *not* a trait/interface for swappability —
 //! `workspace_session` is already the right-sized abstraction, and with only one real consumer
@@ -18,7 +18,7 @@ use workspace_session::{MutatePanicked, SessionActor, SnapshotHandle};
 use crate::language::SymbolEntry;
 use crate::semantic::SemanticGraph;
 use crate::workspace::services::{ParsedScanEntry, RebuildAllDocumentLinksMetrics};
-use crate::workspace::state::{IndexEntry, WorkspaceState};
+use crate::workspace::state::{IndexEntry, ServerState};
 
 /// Outcome of `commit_startup_relink_or_stale`: whether the staged relink was committed, or
 /// whether it was superseded by a newer edit while it was being built (caller should retry).
@@ -29,24 +29,24 @@ pub(crate) enum StartupRelinkOutcome {
 
 #[derive(Clone)]
 pub(crate) struct WorkspaceHandle {
-    actor: SessionActor<WorkspaceState>,
-    snapshot: SnapshotHandle<WorkspaceState>,
+    actor: SessionActor<ServerState>,
+    snapshot: SnapshotHandle<ServerState>,
 }
 
 impl WorkspaceHandle {
-    pub(crate) fn spawn(initial: WorkspaceState) -> Self {
+    pub(crate) fn spawn(initial: ServerState) -> Self {
         let (actor, snapshot) = SessionActor::spawn(initial);
         Self { actor, snapshot }
     }
 
     /// Latest published snapshot. Non-blocking, never awaits — the whole point.
-    pub(crate) fn snapshot(&self) -> Arc<WorkspaceState> {
+    pub(crate) fn snapshot(&self) -> Arc<ServerState> {
         self.snapshot.current()
     }
 
     /// A cloned handle for callers that want their own `wait_for` subscription (e.g. the
     /// `sysml/model` handler waiting for `Reindexing → Ready`).
-    pub(crate) fn snapshot_handle(&self) -> SnapshotHandle<WorkspaceState> {
+    pub(crate) fn snapshot_handle(&self) -> SnapshotHandle<ServerState> {
         self.snapshot.clone()
     }
 
@@ -144,6 +144,17 @@ impl WorkspaceHandle {
             .await
     }
 
+    pub(crate) async fn index_library_paths_for_search(
+        &self,
+        library_paths: Vec<Url>,
+    ) -> Result<usize, MutatePanicked> {
+        self.actor
+            .mutate(move |s| {
+                crate::workspace::services::index_library_paths_for_search(s, &library_paths)
+            })
+            .await
+    }
+
     pub(crate) async fn bump_version(&self) -> Result<u64, MutatePanicked> {
         self.actor.mutate(|s| s.session.bump_version()).await
     }
@@ -218,7 +229,11 @@ impl WorkspaceHandle {
     }
 
     /// Fire-and-forget: hands back an async relink's result. Merged in only if `token` is
-    /// still current; otherwise dropped silently by the actor.
+    /// still current; otherwise dropped silently by the actor. Calls `session.commit_relink`
+    /// to perform the actual `Reindexing -> Ready` lifecycle transition — without this, the
+    /// session would stay stuck in `Reindexing` forever after any edit (the actor's own
+    /// pre-merge `is_token_current` check only decides *whether* to merge, it doesn't
+    /// transition the lifecycle by itself).
     pub(crate) fn report_relink_result(
         &self,
         token: workspace_session::RelinkToken,
@@ -226,8 +241,10 @@ impl WorkspaceHandle {
         new_symbols: Vec<SymbolEntry>,
     ) {
         self.actor.report_job_result(token, move |s| {
-            s.semantic_graph = new_graph;
-            s.symbol_table = new_symbols;
+            if s.session.commit_relink(&token) {
+                s.semantic_graph = new_graph;
+                s.symbol_table = new_symbols;
+            }
         });
     }
 
@@ -301,7 +318,7 @@ impl WorkspaceHandle {
             .await
     }
 
-    /// Clears only the `WorkspaceState`-side cache (index/symbol table/semantic graph). The
+    /// Clears only the `ServerState`-side cache (index/symbol table/semantic graph). The
     /// separate `Arc<Mutex<WorkspaceRenderCache>>` clearing stays on `Backend`, outside this
     /// facade, exactly as today.
     pub(crate) async fn clear_cache_state(&self) -> Result<(usize, usize), MutatePanicked> {

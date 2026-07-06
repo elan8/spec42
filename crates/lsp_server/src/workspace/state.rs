@@ -1,6 +1,5 @@
 use crate::language::SymbolEntry;
 use crate::semantic;
-use crate::workspace::coordinator::SemanticCoordinator;
 use sysml_v2_parser::RootNamespace;
 use tower_lsp::lsp_types::Url;
 use workspace_session::{RelinkToken, TracksRelink};
@@ -27,11 +26,15 @@ pub(crate) struct RuntimeConfig {
     pub(crate) perf_logging_enabled: bool,
 }
 
-#[derive(Default)]
+/// The server's live workspace state — managed exclusively by a single
+/// `workspace_session::SessionActor<ServerState>` (see `crate::workspace::WorkspaceHandle`).
+/// `Clone` is required by the actor's `Arc::make_mut` clone-on-write mutation strategy; readers
+/// only ever see an `Arc<ServerState>` snapshot, never a lock guard.
+#[derive(Clone, Default)]
 pub(crate) struct ServerState {
     pub(crate) workspace_roots: Vec<Url>,
     pub(crate) library_paths: Vec<Url>,
-    pub(crate) coordinator: SemanticCoordinator,
+    pub(crate) session: workspace::WorkspaceSession,
     pub(crate) index: std::collections::HashMap<Url, IndexEntry>,
     pub(crate) symbol_table: Vec<SymbolEntry>,
     pub(crate) semantic_graph: semantic::SemanticGraph,
@@ -44,26 +47,15 @@ pub(crate) struct ServerState {
     pub(crate) library_graph_snapshot: Option<semantic::SemanticGraph>,
 }
 
-#[derive(Clone, Default)]
-pub(crate) struct WorkspaceState {
-    pub(crate) workspace_roots: Vec<Url>,
-    pub(crate) library_paths: Vec<Url>,
-    pub(crate) session: workspace::WorkspaceSession,
-    pub(crate) index: std::collections::HashMap<Url, IndexEntry>,
-    pub(crate) symbol_table: Vec<SymbolEntry>,
-    pub(crate) semantic_graph: semantic::SemanticGraph,
-    pub(crate) library_graph_snapshot: Option<semantic::SemanticGraph>,
-}
-
-impl TracksRelink for WorkspaceState {
+impl TracksRelink for ServerState {
     fn is_token_current(&self, token: &RelinkToken) -> bool {
         self.session.is_token_current(token)
     }
 }
 
-/// Shared accessors letting `workspace/services.rs`'s free functions operate on either
-/// `ServerState` (the live `RwLock`-guarded state, until it's fully retired) or
-/// `WorkspaceState` (the new `SessionActor`-managed state) without duplicating their logic.
+/// Shared accessors letting `workspace/services.rs`'s free functions stay agnostic of the
+/// concrete state type (kept as a trait rather than inlined directly against `ServerState`
+/// since several of those functions are also exercised in isolation by their own unit tests).
 pub(crate) trait DocumentStore {
     fn index(&self) -> &std::collections::HashMap<Url, IndexEntry>;
     fn index_mut(&mut self) -> &mut std::collections::HashMap<Url, IndexEntry>;
@@ -73,24 +65,6 @@ pub(crate) trait DocumentStore {
 }
 
 impl DocumentStore for ServerState {
-    fn index(&self) -> &std::collections::HashMap<Url, IndexEntry> {
-        &self.index
-    }
-    fn index_mut(&mut self) -> &mut std::collections::HashMap<Url, IndexEntry> {
-        &mut self.index
-    }
-    fn symbol_table_mut(&mut self) -> &mut Vec<SymbolEntry> {
-        &mut self.symbol_table
-    }
-    fn semantic_graph(&self) -> &semantic::SemanticGraph {
-        &self.semantic_graph
-    }
-    fn semantic_graph_mut(&mut self) -> &mut semantic::SemanticGraph {
-        &mut self.semantic_graph
-    }
-}
-
-impl DocumentStore for WorkspaceState {
     fn index(&self) -> &std::collections::HashMap<Url, IndexEntry> {
         &self.index
     }
@@ -118,25 +92,6 @@ pub(crate) fn suppresses_transient_semantic_diagnostics(
     !matches!(lifecycle, workspace::SessionLifecycle::Ready)
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
-pub(crate) enum SemanticLifecycle {
-    #[default]
-    Cold,
-    Indexing,
-    Ready,
-    Reindexing,
-}
-
-impl SemanticLifecycle {
-    pub(crate) fn supports_semantic_queries(self) -> bool {
-        matches!(self, Self::Ready)
-    }
-
-    pub(crate) fn suppresses_transient_semantic_diagnostics(self) -> bool {
-        !matches!(self, Self::Ready)
-    }
-}
-
 #[derive(Debug, Default)]
 pub(crate) struct ScanSummary {
     pub(crate) roots_scanned: usize,
@@ -152,14 +107,14 @@ mod tests {
     use super::*;
 
     #[test]
-    fn workspace_state_is_clone() {
+    fn server_state_is_clone() {
         fn assert_clone<T: Clone>() {}
-        assert_clone::<WorkspaceState>();
+        assert_clone::<ServerState>();
     }
 
     #[test]
     fn tracks_relink_delegates_to_session() {
-        let mut state = WorkspaceState::default();
+        let mut state = ServerState::default();
         state.session.begin_startup();
         state.session.complete_startup();
 

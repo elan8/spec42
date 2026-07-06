@@ -2,7 +2,6 @@ use std::sync::atomic::{AtomicU64, Ordering};
 use std::sync::Arc;
 use std::time::{Duration, Instant};
 
-use tokio::sync::RwLock;
 use tower_lsp::lsp_types::{notification::Notification, *};
 use tower_lsp::Client;
 use tracing::{info, warn};
@@ -10,12 +9,9 @@ use tracing::{info, warn};
 use crate::common::util;
 use crate::host::config::Spec42Config;
 use crate::views::dto::SemanticIndexReadyNotificationDto;
-use crate::workspace::{
-    clear_documents_under_roots, ingest_parsed_scan_entries, ingest_parsed_scan_entries_batch,
-    parse_scanned_entries, rebuild_all_document_links, rebuild_semantic_graph_staged,
-    refresh_document, remove_document, scan_sysml_files, store_document_text_fast, RelinkToken,
-    RuntimeConfig, SemanticLifecycle, ServerState,
-};
+use crate::workspace::state::ServerState;
+use crate::workspace::{parse_scanned_entries, scan_sysml_files, RuntimeConfig, WorkspaceHandle};
+use workspace_session::{RelinkToken, TracksRelink};
 
 use super::capabilities::server_capabilities;
 use super::diagnostics::{publish_document_diagnostics, publish_workspace_diagnostics};
@@ -27,13 +23,13 @@ const SEMANTIC_RELINK_DEBOUNCE_MS: u64 = 90;
 
 fn schedule_workspace_diagnostics_republish(
     client: &Client,
-    state: &Arc<RwLock<ServerState>>,
+    handle: &WorkspaceHandle,
     config: &Arc<Spec42Config>,
     runtime_config: &Arc<std::sync::OnceLock<RuntimeConfig>>,
 ) {
     let generation = WORKSPACE_DIAGNOSTICS_DEBOUNCE_GEN.fetch_add(1, Ordering::SeqCst) + 1;
     let client = client.clone();
-    let state = Arc::clone(state);
+    let handle = handle.clone();
     let config = Arc::clone(config);
     let runtime_config = Arc::clone(runtime_config);
     tokio::spawn(async move {
@@ -41,52 +37,49 @@ fn schedule_workspace_diagnostics_republish(
         if WORKSPACE_DIAGNOSTICS_DEBOUNCE_GEN.load(Ordering::SeqCst) != generation {
             return;
         }
-        let lifecycle = {
-            let locked = state.read().await;
-            locked.coordinator.lifecycle()
-        };
-        if !lifecycle.supports_semantic_queries() {
+        let lifecycle = handle.snapshot().session.lifecycle();
+        if !crate::workspace::state::supports_semantic_queries(lifecycle) {
             return;
         }
-        publish_workspace_diagnostics(&client, &state, &config, &runtime_config, None).await;
+        publish_workspace_diagnostics(&client, &handle, &config, &runtime_config, None).await;
     });
 }
 
 /// Schedules an async semantic relink with a 90 ms debounce.
 ///
-/// `token` is issued by [`SemanticCoordinator::schedule_relink`] and
+/// `token` is issued by [`workspace::WorkspaceSession::schedule_relink`] and
 /// encapsulates the current relink generation and snapshot version.
 /// Only the relink task whose token is still current when the debounce
 /// fires will run; all earlier tasks self-cancel via
-/// [`SemanticCoordinator::is_token_current`].
+/// [`workspace_session::TracksRelink::is_token_current`].
 fn schedule_semantic_relink_after_change(
     client: &Client,
-    state: &Arc<RwLock<ServerState>>,
+    handle: &WorkspaceHandle,
     config: &Arc<Spec42Config>,
     runtime_config: &Arc<std::sync::OnceLock<RuntimeConfig>>,
     changed_uri: Url,
     token: RelinkToken,
 ) {
     let client = client.clone();
-    let state = Arc::clone(state);
+    let handle = handle.clone();
     let config = Arc::clone(config);
     let runtime_config = Arc::clone(runtime_config);
     tokio::spawn(async move {
         tokio::time::sleep(Duration::from_millis(SEMANTIC_RELINK_DEBOUNCE_MS)).await;
 
         let snapshot = {
-            let locked = state.read().await;
-            if !locked.coordinator.is_token_current(&token) {
+            let snap = handle.snapshot();
+            if !snap.is_token_current(&token) {
                 return;
             }
             (
-                locked.index.clone(),
-                locked.library_paths.clone(),
+                snap.index.clone(),
+                snap.library_paths.clone(),
                 // Library files are not stored in the index when loaded from the
                 // graph cache (cache hit path). Pass the library graph snapshot so
                 // library types survive the workspace rebuild regardless of whether
                 // library_paths is empty or not.
-                locked.library_graph_snapshot.clone(),
+                snap.library_graph_snapshot.clone(),
             )
         };
         let (index, library_paths, base_graph) = snapshot;
@@ -97,7 +90,7 @@ fn schedule_semantic_relink_after_change(
         let library_snapshot_uris = base_graph.as_ref().map(|g| g.all_uris().len()).unwrap_or(0);
         let relink_start = Instant::now();
         let staged = tokio::task::spawn_blocking(move || {
-            rebuild_semantic_graph_staged(&index, &library_paths, base_graph)
+            crate::workspace::rebuild_semantic_graph_staged(&index, &library_paths, base_graph)
         })
         .await;
         let Ok((new_graph, new_symbols, relink_metrics)) = staged else {
@@ -110,29 +103,27 @@ fn schedule_semantic_relink_after_change(
             return;
         };
 
-        // Commit under write lock — validate the token before writing anything.
-        let diag_uris = {
-            let mut locked = state.write().await;
-            if !locked.coordinator.commit_relink(&token) {
-                // A newer relink superseded us while we were building the graph.
-                return;
-            }
-            locked.semantic_graph = new_graph;
-            locked.symbol_table = new_symbols;
-            let mut uris =
-                crate::workspace::import_graph::workspace_uris_importing_declarations_from(
-                    &locked,
-                    &changed_uri,
-                );
-            // Always include the changed file — it was skipped during the fast
-            // graph update and needs diagnostics from the fully-resolved graph.
-            if !uris.contains(&changed_uri) {
-                uris.push(changed_uri.clone());
-            }
-            uris
-        };
+        // Compute diagnostics URIs from the locally-known (pre-commit) index/library_paths —
+        // `report_relink_result` is fire-and-forget under the actor model, so there's no
+        // synchronous confirmation of when (or whether) it applies. This function only ever
+        // reads raw source/parsed data, never the semantic graph, so the pre-relink snapshot's
+        // index is exactly as good as a post-commit read would be.
+        let snap_for_diag = handle.snapshot();
+        let mut diag_uris = crate::workspace::import_graph::workspace_uris_importing_declarations_from(
+            &snap_for_diag.index,
+            &snap_for_diag.library_paths,
+            &changed_uri,
+        );
+        drop(snap_for_diag);
+        // Always include the changed file — it was skipped during the fast
+        // graph update and needs diagnostics from the fully-resolved graph.
+        if !diag_uris.contains(&changed_uri) {
+            diag_uris.push(changed_uri.clone());
+        }
 
-        publish_workspace_diagnostics(&client, &state, &config, &runtime_config, Some(&diag_uris))
+        handle.report_relink_result(token, new_graph, new_symbols);
+
+        publish_workspace_diagnostics(&client, &handle, &config, &runtime_config, Some(&diag_uris))
             .await;
 
         log_perf(
@@ -218,23 +209,20 @@ pub(crate) fn semantic_index_ready_notification(
 ) -> SemanticIndexReadyNotificationDto {
     SemanticIndexReadyNotificationDto {
         lifecycle: "ready".to_string(),
-        semantic_state_version: state.coordinator.version(),
+        semantic_state_version: state.session.version(),
         workspace_file_count: workspace_file_count(state),
     }
 }
 
 /// Sends the `spec42/semanticIndexReady` LSP notification to the client.
-/// The coordinator must already be in `Ready` state before calling this.
-async fn send_semantic_ready_notification(client: &Client, state: &Arc<RwLock<ServerState>>) {
-    let params = {
-        let st = state.read().await;
-        semantic_index_ready_notification(&st)
-    };
+/// The session must already be in `Ready` state before calling this.
+async fn send_semantic_ready_notification(client: &Client, handle: &WorkspaceHandle) {
+    let params = semantic_index_ready_notification(&handle.snapshot());
     client.send_notification::<SemanticIndexReady>(params).await;
 }
 
 pub(crate) async fn initialize(
-    state: &Arc<RwLock<ServerState>>,
+    handle: &WorkspaceHandle,
     config: &Arc<Spec42Config>,
     server_name: &str,
     runtime_config: &Arc<std::sync::OnceLock<RuntimeConfig>>,
@@ -272,12 +260,10 @@ pub(crate) async fn initialize(
             perf_logging_enabled,
         })
         .expect("initialize called twice");
-    {
-        let mut state = state.write().await;
-        state.workspace_roots = roots;
-        state.library_paths = library_paths;
-        state.coordinator.reset();
-    }
+    handle
+        .set_startup_config(roots, library_paths)
+        .await
+        .ok();
     Ok(InitializeResult {
         server_info: Some(ServerInfo {
             name: server_name.to_string(),
@@ -289,14 +275,14 @@ pub(crate) async fn initialize(
 
 pub(crate) async fn initialized(
     client: &Client,
-    state: &Arc<RwLock<ServerState>>,
+    handle: &WorkspaceHandle,
     config: &Arc<Spec42Config>,
     server_name: &str,
     runtime_config: &Arc<std::sync::OnceLock<RuntimeConfig>>,
 ) {
     let (workspace_roots, library_paths) = {
-        let st = state.read().await;
-        (st.workspace_roots.clone(), st.library_paths.clone())
+        let snap = handle.snapshot();
+        (snap.workspace_roots.clone(), snap.library_paths.clone())
     };
     let cfg = runtime_config
         .get()
@@ -314,11 +300,11 @@ pub(crate) async fn initialized(
         workspace_roots.clone()
     };
     if scan_roots.is_empty() && library_paths.is_empty() {
-        state.write().await.coordinator.complete_startup();
-        send_semantic_ready_notification(client, state).await;
+        handle.complete_startup().await.ok();
+        send_semantic_ready_notification(client, handle).await;
         return;
     }
-    state.write().await.coordinator.begin_startup();
+    handle.begin_startup().await.ok();
     if perf_logging_enabled {
         info!(
             trace_id = %startup_trace_id.as_deref().unwrap_or("-"),
@@ -337,7 +323,7 @@ pub(crate) async fn initialized(
             .await;
     }
 
-    let state = Arc::clone(state);
+    let handle = handle.clone();
     let config = Arc::clone(config);
     let runtime_config = Arc::clone(runtime_config);
     let client = client.clone();
@@ -401,12 +387,10 @@ pub(crate) async fn initialized(
             if let Some(cached_graph) = library_graph_cache_hit.as_ref() {
                 // Cache hit: inject the pre-built library graph into state now so the
                 // relink loop can merge workspace documents on top of it.
-                {
-                    let mut st = state.write().await;
-                    st.semantic_graph = cached_graph.clone();
-                    st.library_graph_snapshot = Some(cached_graph.clone());
-                    st.coordinator.bump_version();
-                }
+                handle
+                    .inject_cached_library_graph(cached_graph.clone())
+                    .await
+                    .ok();
                 if perf_logging_enabled {
                     info!(
                         trace_id = %startup_trace_id.as_deref().unwrap_or("-"),
@@ -474,7 +458,6 @@ pub(crate) async fn initialized(
             };
         let library_graph_cache_was_hit = library_graph_cache_hit.is_some();
         let merge_index_start = Instant::now();
-        let mut st = state.write().await;
         for parsed_entry in &parsed_entries {
             let uri_norm = util::normalize_file_uri(&parsed_entry.uri);
             if parsed_entry.parsed.is_none() {
@@ -486,10 +469,11 @@ pub(crate) async fn initialized(
                 );
             }
         }
-        let ingest_results = ingest_parsed_scan_entries_batch(&mut *st, parsed_entries);
-        st.coordinator.bump_version();
+        let ingest_results = handle
+            .ingest_startup_scan(parsed_entries)
+            .await
+            .unwrap_or_default();
         let ingest_ms = merge_index_start.elapsed().as_millis() as u64;
-        drop(st);
 
         let relink_start = Instant::now();
         let relink_metrics;
@@ -498,26 +482,16 @@ pub(crate) async fn initialized(
         let mut uris_loaded = Vec::new();
         let mut low_coverage_library_files = Vec::new();
         loop {
-            // Snapshot index and library_paths under a short read lock, then release it
-            // before running the expensive rebuild so semantic-token and hover requests
-            // can proceed concurrently instead of queueing behind this read borrow.
-            let (snapshot_version, index_snapshot, library_paths_snapshot) = {
-                let st_read = state.read().await;
-                (
-                    st_read.coordinator.version(),
-                    st_read.index.clone(),
-                    st_read.library_paths.clone(),
-                )
-            };
+            // Snapshot index/library_paths (a plain `Arc` read, no lock) before running the
+            // expensive rebuild off the actor so semantic-token and hover requests can proceed
+            // concurrently instead of queueing behind anything.
+            let (snapshot_version, index_snapshot, library_paths_snapshot) =
+                handle.relink_snapshot();
             let base_graph_for_rebuild = library_graph_cache_was_hit
-                .then(|| {
-                    let st_read = state.try_read().ok();
-                    st_read.map(|st| st.semantic_graph.clone())
-                })
-                .flatten();
+                .then(|| handle.snapshot().semantic_graph.clone());
             let (new_graph, new_symbols, staged_relink_metrics) =
                 tokio::task::spawn_blocking(move || {
-                    rebuild_semantic_graph_staged(
+                    crate::workspace::rebuild_semantic_graph_staged(
                         &index_snapshot,
                         &library_paths_snapshot,
                         base_graph_for_rebuild,
@@ -525,57 +499,54 @@ pub(crate) async fn initialized(
                 })
                 .await
                 .unwrap_or_else(|e| panic!("startup relink task panicked: {e:?}"));
-            let (snapshot_version, new_graph, new_symbols, staged_relink_metrics) = (
-                snapshot_version,
-                new_graph,
-                new_symbols,
-                staged_relink_metrics,
-            );
 
-            let mut st = state.write().await;
-            if st.coordinator.version() != snapshot_version {
-                stale_retries += 1;
-                if stale_retries < 3 {
-                    drop(st);
-                    continue;
+            let outcome = handle
+                .commit_startup_relink_or_stale(snapshot_version, new_graph, new_symbols)
+                .await;
+            match outcome {
+                Ok(crate::workspace::handle::StartupRelinkOutcome::Committed) => {
+                    let mut metrics = staged_relink_metrics;
+                    metrics.total_ms = relink_start.elapsed().as_millis() as u32;
+                    relink_metrics = metrics;
                 }
-                let fallback_metrics = rebuild_all_document_links(&mut *st);
-                st.coordinator.bump_version();
-                relink_metrics = fallback_metrics;
-                relink_used_fallback = true;
-            } else {
-                let mut metrics = staged_relink_metrics;
-                metrics.total_ms = relink_start.elapsed().as_millis() as u32;
-                st.semantic_graph = new_graph;
-                st.symbol_table = new_symbols;
-                st.coordinator.bump_version();
-                relink_metrics = metrics;
-
-                // On cache miss, persist the newly-built library graph so future startups
-                // can skip the ~10s disk I/O + ~2.4s graph construction.
-                if !library_graph_cache_was_hit
-                    && !library_paths_for_store.is_empty()
-                    && !crate::workspace::library_closure::library_full_scan_enabled()
-                {
-                    let graph_to_cache = st
-                        .semantic_graph
-                        .extract_library_subgraph(&st.library_paths);
-                    st.library_graph_snapshot = Some(graph_to_cache.clone());
-                    let lp = library_paths_for_store;
-                    tokio::task::spawn_blocking(move || {
-                        crate::workspace::library_graph_cache::store(&lp, &graph_to_cache);
-                    });
+                Ok(crate::workspace::handle::StartupRelinkOutcome::Stale) | Err(_) => {
+                    stale_retries += 1;
+                    if stale_retries < 3 {
+                        continue;
+                    }
+                    let fallback_metrics = handle.fallback_full_rebuild().await.unwrap_or_default();
+                    relink_metrics = fallback_metrics;
+                    relink_used_fallback = true;
                 }
             }
 
-            if !crate::workspace::library_closure::library_full_scan_enabled()
-                && !st.library_paths.is_empty()
+            // On cache miss, persist the newly-built library graph so future startups
+            // can skip the ~10s disk I/O + ~2.4s graph construction.
+            if !library_graph_cache_was_hit
+                && !relink_used_fallback
+                && !library_paths_for_store.is_empty()
+                && !crate::workspace::library_closure::library_full_scan_enabled()
             {
-                let library_paths_for_search = st.library_paths.clone();
-                let search_indexed = crate::workspace::services::index_library_paths_for_search(
-                    &mut *st,
-                    &library_paths_for_search,
-                );
+                let snap = handle.snapshot();
+                let graph_to_cache = snap
+                    .semantic_graph
+                    .extract_library_subgraph(&snap.library_paths);
+                let lp = library_paths_for_store.clone();
+                tokio::task::spawn_blocking(move || {
+                    crate::workspace::library_graph_cache::store(&lp, &graph_to_cache);
+                });
+            }
+
+            let snap = handle.snapshot();
+            if !crate::workspace::library_closure::library_full_scan_enabled()
+                && !snap.library_paths.is_empty()
+            {
+                let library_paths_for_search = snap.library_paths.clone();
+                drop(snap);
+                let search_indexed = handle
+                    .index_library_paths_for_search(library_paths_for_search)
+                    .await
+                    .unwrap_or(0);
                 if search_indexed > 0 && perf_logging_enabled {
                     info!(
                         trace_id = %startup_trace_id.as_deref().unwrap_or("-"),
@@ -585,20 +556,21 @@ pub(crate) async fn initialized(
                 }
             }
 
+            let snap = handle.snapshot();
             for (uri_norm, warning) in &ingest_results {
                 if let Some(message) = warning {
                     warn!("workspace scan ingest warning: {}", message);
                 }
                 uris_loaded.push(uri_norm.clone());
-                if util::uri_under_any_library(uri_norm, &st.library_paths) {
-                    let graph_nodes_for_uri = st.semantic_graph.nodes_for_uri(uri_norm).len();
-                    let symbol_entries_count = st
+                if util::uri_under_any_library(uri_norm, &snap.library_paths) {
+                    let graph_nodes_for_uri = snap.semantic_graph.nodes_for_uri(uri_norm).len();
+                    let symbol_entries_count = snap
                         .symbol_table
                         .iter()
                         .filter(|entry| entry.uri == *uri_norm)
                         .count();
 
-                    if st
+                    if snap
                         .index
                         .get(uri_norm)
                         .and_then(|entry| entry.parsed.as_ref())
@@ -646,9 +618,9 @@ pub(crate) async fn initialized(
             );
         }
         let diagnostics_start = Instant::now();
-        state.write().await.coordinator.complete_startup();
-        send_semantic_ready_notification(&client, &state).await;
-        publish_workspace_diagnostics(&client, &state, &config, &runtime_config, None).await;
+        handle.complete_startup().await.ok();
+        send_semantic_ready_notification(&client, &handle).await;
+        publish_workspace_diagnostics(&client, &handle, &config, &runtime_config, None).await;
         let diagnostics_ms = diagnostics_start.elapsed().as_millis() as u64;
         log_perf(
             &client,
@@ -716,7 +688,7 @@ pub(crate) async fn initialized(
 
 pub(crate) async fn did_open(
     client: &Client,
-    state: &Arc<RwLock<ServerState>>,
+    handle: &WorkspaceHandle,
     config: &Arc<Spec42Config>,
     runtime_config: &Arc<std::sync::OnceLock<RuntimeConfig>>,
     params: DidOpenTextDocumentParams,
@@ -731,11 +703,11 @@ pub(crate) async fn did_open(
         .perf_logging_enabled;
 
     // Check whether the file is already indexed with identical content before
-    // taking the write lock. If so, the startup scan already built the semantic
-    // graph for this URI and no expensive re-evaluation is needed.
+    // mutating. If so, the startup scan already built the semantic graph for
+    // this URI and no expensive re-evaluation is needed.
     let open_status = {
-        let st = state.read().await;
-        match st.index.get(&uri_norm) {
+        let snap = handle.snapshot();
+        match snap.index.get(&uri_norm) {
             None => "newFile",
             Some(entry) if entry.content != text => "contentChanged",
             _ => "alreadyIndexed",
@@ -745,33 +717,25 @@ pub(crate) async fn did_open(
 
     let (warning, lock_wait_ms, scheduled_relink) = if already_indexed {
         // Fast path: content unchanged — skip re-parse and re-evaluation entirely.
-        // The write lock is taken only to bump the coordinator version.
         let lock_start = Instant::now();
-        let mut st = state.write().await;
+        handle.bump_version().await.ok();
         let lock_wait_ms = lock_start.elapsed().as_millis();
-        st.coordinator.bump_version();
         (None, lock_wait_ms, false)
     } else {
         // New or changed file: parse without the expensive cross-document
         // evaluation pass, then schedule an async relink so that cross-document
         // edges and expression evaluation happen outside the lock.
         let lock_start = Instant::now();
-        let mut st = state.write().await;
+        let (warning, token) = handle
+            .store_document_text_fast(uri_norm.clone(), text.clone())
+            .await
+            .unwrap_or_default();
         let lock_wait_ms = lock_start.elapsed().as_millis();
-        let warning = store_document_text_fast(&mut *st, &uri_norm, text.clone());
-        // Only schedule a relink when the graph is in a queryable state.
-        // If startup is still running (Indexing/Cold), the startup scan will
-        // build the full graph itself — no separate relink needed.
-        let scheduled_relink = matches!(
-            st.coordinator.lifecycle(),
-            SemanticLifecycle::Ready | SemanticLifecycle::Reindexing
-        );
-        let token = scheduled_relink.then(|| st.coordinator.schedule_relink());
-        drop(st);
+        let scheduled_relink = token.is_some();
         if let Some(token) = token {
             schedule_semantic_relink_after_change(
                 client,
-                state,
+                handle,
                 config,
                 runtime_config,
                 uri_norm.clone(),
@@ -800,13 +764,13 @@ pub(crate) async fn did_open(
     // owns diagnostic publication after the fully-resolved graph is committed.
     if already_indexed {
         let client = client.clone();
-        let state = Arc::clone(state);
+        let handle = handle.clone();
         let config = Arc::clone(config);
         let runtime_config = Arc::clone(runtime_config);
         let uri_norm_log = uri_norm.clone();
         tokio::spawn(async move {
             let diag_start = Instant::now();
-            publish_document_diagnostics(&client, &state, &config, &runtime_config, uri, &text)
+            publish_document_diagnostics(&client, &handle, &config, &runtime_config, uri, &text)
                 .await;
             if perf_logging_enabled {
                 client
@@ -831,7 +795,7 @@ pub(crate) async fn did_open(
 
 pub(crate) async fn did_change(
     client: &Client,
-    state: &Arc<RwLock<ServerState>>,
+    handle: &WorkspaceHandle,
     config: &Arc<Spec42Config>,
     runtime_config: &Arc<std::sync::OnceLock<RuntimeConfig>>,
     params: DidChangeTextDocumentParams,
@@ -841,29 +805,25 @@ pub(crate) async fn did_change(
     let version = params.text_document.version;
     let apply_start = Instant::now();
 
-    // Phase 1: apply the incoming text edit under the write lock. This is
-    // cheap in-memory string surgery, never CPU-bound parsing.
-    let (content_changed, mut warnings) = {
-        let mut st = state.write().await;
-        crate::workspace::apply_document_content_edit(
-            &mut *st,
-            &uri_norm,
-            version,
-            params.content_changes,
-        )
-    };
+    // Phase 1: apply the incoming text edit. This is cheap in-memory string
+    // surgery, applied inline on the actor — never CPU-bound parsing.
+    let (content_changed, mut warnings) = handle
+        .apply_document_content_edit(uri_norm.clone(), version, params.content_changes)
+        .await
+        .unwrap_or_default();
 
-    // Phase 2: parse the new content WITHOUT holding the lock. Malformed or
+    // Phase 2: parse the new content WITHOUT holding up the actor. Malformed or
     // incomplete syntax (e.g. an unterminated view/viewpoint) can make error
     // recovery in the parser noticeably slower than the happy path; running
-    // it under the lock would stall every other in-flight request (hover,
-    // completion, further edits) until it finishes. `spawn_blocking` also
+    // it as a `mutate` closure would stall every other in-flight request
+    // (hover, completion, further edits) behind it. `spawn_blocking` also
     // keeps this off the async executor thread.
     if content_changed {
-        let content = {
-            let st = state.read().await;
-            st.index.get(&uri_norm).map(|entry| entry.content.clone())
-        };
+        let content = handle
+            .snapshot()
+            .index
+            .get(&uri_norm)
+            .map(|entry| entry.content.clone());
         if let Some(content) = content {
             let parse_start = Instant::now();
             let parse_outcome =
@@ -871,15 +831,17 @@ pub(crate) async fn did_change(
             let parse_time_ms = (parse_start.elapsed().as_millis().max(1)) as u32;
             match parse_outcome {
                 Ok(parsed_result) => {
-                    let mut st = state.write().await;
-                    warnings.extend(crate::workspace::apply_parsed_document_update(
-                        &mut *st,
-                        &uri_norm,
-                        version,
-                        parsed_result,
-                        parse_time_ms,
-                        false,
-                    ));
+                    warnings.extend(
+                        handle
+                            .apply_parsed_document_update(
+                                uri_norm.clone(),
+                                version,
+                                parsed_result,
+                                parse_time_ms,
+                            )
+                            .await
+                            .unwrap_or_default(),
+                    );
                 }
                 Err(_) => {
                     warnings.push((
@@ -900,17 +862,7 @@ pub(crate) async fn did_change(
         .get()
         .expect("initialize precedes all other LSP requests")
         .perf_logging_enabled;
-    let token = {
-        let mut st = state.write().await;
-        // Only schedule a relink when the graph is in a queryable state.
-        // If startup is still running (Indexing/Cold), skip — startup will
-        // build the full graph itself.
-        matches!(
-            st.coordinator.lifecycle(),
-            SemanticLifecycle::Ready | SemanticLifecycle::Reindexing
-        )
-        .then(|| st.coordinator.schedule_relink())
-    };
+    let token = handle.schedule_relink_if_ready().await.unwrap_or_default();
     let apply_ms = apply_start.elapsed().as_millis() as u64;
     for (ty, message) in warnings {
         if ty == MessageType::LOG && !perf_logging_enabled {
@@ -924,7 +876,7 @@ pub(crate) async fn did_change(
     if let Some(token) = token {
         schedule_semantic_relink_after_change(
             client,
-            state,
+            handle,
             config,
             runtime_config,
             uri_norm.clone(),
@@ -942,7 +894,7 @@ pub(crate) async fn did_change(
         ],
     )
     .await;
-    schedule_workspace_diagnostics_republish(client, state, config, runtime_config);
+    schedule_workspace_diagnostics_republish(client, handle, config, runtime_config);
 }
 
 pub(crate) async fn did_close(client: &Client, params: DidCloseTextDocumentParams) {
@@ -953,7 +905,7 @@ pub(crate) async fn did_close(client: &Client, params: DidCloseTextDocumentParam
 
 pub(crate) async fn did_change_watched_files(
     client: &Client,
-    state: &Arc<RwLock<ServerState>>,
+    handle: &WorkspaceHandle,
     config: &Arc<Spec42Config>,
     runtime_config: &Arc<std::sync::OnceLock<RuntimeConfig>>,
     params: DidChangeWatchedFilesParams,
@@ -976,12 +928,10 @@ pub(crate) async fn did_change_watched_files(
                 Ok(path) => match tokio::fs::read_to_string(&path).await {
                     Ok(content) => {
                         let refresh_start = Instant::now();
-                        let warning = {
-                            let mut state = state.write().await;
-                            let warning = refresh_document(&mut *state, &uri_norm, content);
-                            state.coordinator.bump_version();
-                            warning
-                        };
+                        let warning = handle
+                            .refresh_document(uri_norm.clone(), content)
+                            .await
+                            .unwrap_or_default();
                         refresh_document_ms += refresh_start.elapsed().as_millis() as u64;
                         if let Some(message) = warning {
                             runtime_warnings.push(format!("didChangeWatchedFiles: {}", message));
@@ -999,9 +949,7 @@ pub(crate) async fn did_change_watched_files(
                 )),
             }
         } else if event.typ == FileChangeType::DELETED {
-            let mut state = state.write().await;
-            remove_document(&mut *state, &uri_norm);
-            state.coordinator.bump_version();
+            handle.remove_document(uri_norm.clone()).await.ok();
             deleted_uris.push(uri_norm);
         }
     }
@@ -1012,7 +960,7 @@ pub(crate) async fn did_change_watched_files(
     if !changed_or_created_uris.is_empty() {
         publish_workspace_diagnostics(
             client,
-            state,
+            handle,
             config,
             runtime_config,
             Some(&changed_or_created_uris),
@@ -1044,7 +992,7 @@ pub(crate) async fn did_change_watched_files(
 
 pub(crate) async fn did_change_configuration(
     client: &Client,
-    state: &Arc<RwLock<ServerState>>,
+    handle: &WorkspaceHandle,
     config: &Arc<Spec42Config>,
     runtime_config: &Arc<std::sync::OnceLock<RuntimeConfig>>,
     params: DidChangeConfigurationParams,
@@ -1058,24 +1006,15 @@ pub(crate) async fn did_change_configuration(
         &config.default_library_paths,
         client_library_paths,
     );
-    let changed = {
-        let mut state = state.write().await;
-        let old_library_paths = std::mem::take(&mut state.library_paths);
-        if new_library_paths == old_library_paths {
-            state.library_paths = old_library_paths;
-            false
-        } else {
-            let _ = clear_documents_under_roots(&mut *state, &old_library_paths);
-            state.library_paths = new_library_paths.clone();
-            state.coordinator.begin_library_reindex();
-            true
-        }
-    };
+    let changed = handle
+        .begin_library_reindex_if_changed(new_library_paths.clone())
+        .await
+        .unwrap_or(false);
     if !changed {
         return;
     }
 
-    let state = Arc::clone(state);
+    let handle = handle.clone();
     let config = Arc::clone(config);
     let runtime_config = Arc::clone(runtime_config);
     let client = client.clone();
@@ -1104,17 +1043,17 @@ pub(crate) async fn did_change_configuration(
         .unwrap_or_default();
         let parse_worker_ms = parse_worker_start.elapsed().as_millis() as u64;
         let ingest_start = Instant::now();
-        let mut st = state.write().await;
+        let (ingest_results, relink_metrics) = handle
+            .complete_library_reindex(parsed_entries)
+            .await
+            .unwrap_or_default();
         let mut warnings = Vec::new();
-        for (_uri_norm, warning) in ingest_parsed_scan_entries(&mut *st, parsed_entries) {
+        for (_uri_norm, warning) in ingest_results {
             if let Some(message) = warning {
                 warnings.push(format!("didChangeConfiguration: {}", message));
             }
         }
         let ingest_ms = ingest_start.elapsed().as_millis() as u64;
-        let relink_metrics = rebuild_all_document_links(&mut *st);
-        st.coordinator.complete_reindex();
-        drop(st);
         if summary.roots_skipped_non_file > 0
             || summary.read_failures > 0
             || summary.uri_failures > 0
@@ -1132,9 +1071,9 @@ pub(crate) async fn did_change_configuration(
         for warning in warnings {
             client.log_message(MessageType::WARNING, warning).await;
         }
-        send_semantic_ready_notification(&client, &state).await;
+        send_semantic_ready_notification(&client, &handle).await;
         let diagnostics_start = Instant::now();
-        publish_workspace_diagnostics(&client, &state, &config, &runtime_config, None).await;
+        publish_workspace_diagnostics(&client, &handle, &config, &runtime_config, None).await;
         log_perf(
             &client,
             perf_logging_enabled,
@@ -1181,21 +1120,16 @@ pub(crate) async fn did_change_configuration(
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::workspace::coordinator::SemanticCoordinator;
 
     #[test]
     fn semantic_index_ready_notification_includes_version_and_file_count() {
-        let mut coordinator = SemanticCoordinator::default();
-        coordinator.begin_startup();
+        let mut state = ServerState::default();
+        state.session.begin_startup();
         // Simulate 6 bumps so the version reaching Ready is 7.
         for _ in 0..6 {
-            coordinator.bump_version();
+            state.session.bump_version();
         }
-        coordinator.complete_startup();
-        let state = ServerState {
-            coordinator,
-            ..ServerState::default()
-        };
+        state.session.complete_startup();
         let params = semantic_index_ready_notification(&state);
         assert_eq!(params.lifecycle, "ready");
         assert_eq!(params.semantic_state_version, 8); // begin(1) + 6 bumps + complete(1) = 8
