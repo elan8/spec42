@@ -55,7 +55,7 @@ pub(super) fn materialize_port_usage(
     container_prefix: Option<&str>,
     parent_id: &NodeId,
     g: &mut SemanticGraph,
-) {
+) -> NodeId {
     let name = super::effective_usage_name(&n.name, n.redefines.as_deref());
     let qualified = qualified_name_for_node(g, uri, container_prefix, name, "port");
     let range = span_to_range(&n.span);
@@ -103,6 +103,7 @@ pub(super) fn materialize_port_usage(
             build_from_port_body_element(child, uri, Some(&qualified), &node_id, g);
         }
     }
+    node_id
 }
 
 pub(super) fn build_from_port_body_element(

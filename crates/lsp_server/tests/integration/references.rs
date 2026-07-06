@@ -376,9 +376,13 @@ fn lsp_same_short_name_in_library_is_not_counted_without_semantic_match() {
     send_message(&mut stdin, &did_open_library.to_string());
     lsp_barrier(&mut stdin, &mut stdout);
 
-    // In slower CI environments, index updates can lag; retry until workspace declaration appears.
+    // In slower CI environments, index updates can lag; retry until workspace declaration
+    // appears. This test additionally opens a document outside the workspace root
+    // (`file:///stdlib/...` vs. `rootUri` `file:///refs`), which has been observed to need more
+    // wall-clock time to settle under CI contention than same-root cross-file cases — so this
+    // budget is intentionally larger than the sibling reference tests' 20 * 50ms.
     let mut collected_locs: Vec<serde_json::Value> = Vec::new();
-    for _ in 0..20 {
+    for _ in 0..40 {
         let ref_id = next_id();
         let ref_req = serde_json::json!({
             "jsonrpc": "2.0",
@@ -407,7 +411,7 @@ fn lsp_same_short_name_in_library_is_not_counted_without_semantic_match() {
         collected_locs = locs.clone();
         // See definition::lsp_cross_file_goto_definition: give background indexing real
         // wall-clock time between retries, not just a message-queue round trip.
-        std::thread::sleep(std::time::Duration::from_millis(50));
+        std::thread::sleep(std::time::Duration::from_millis(100));
         lsp_barrier(&mut stdin, &mut stdout);
     }
 

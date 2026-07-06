@@ -95,7 +95,13 @@ jobs:
 
       - name: cargo test (core workspace)
         run: |
-          cargo test --workspace --exclude server
+          cargo test --workspace --exclude server --exclude lsp_server
+          cargo test -p lsp_server --lib --test debt_guardrails --test parse_validation
+          # lsp_integration spawns a real server subprocess per test and waits on background
+          # async indexing with a wall-clock retry budget; under default parallelism on shared
+          # CI runners, contention from many concurrent subprocesses can starve that budget and
+          # produce flaky failures that don't reproduce locally. Run it serially here instead.
+          cargo test -p lsp_server --test lsp_integration -- --test-threads=1
           cargo test -p server --lib
 
       - name: cargo clippy

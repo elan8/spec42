@@ -209,6 +209,7 @@ pub(super) fn materialize_requirement_usage(
     if let Some(ref subsets) = n.subsets {
         attrs.insert("subsetsFeature".to_string(), serde_json::json!(subsets));
     }
+    attrs.insert("isAbstract".to_string(), serde_json::json!(n.is_abstract));
     add_node_and_recurse(
         g,
         uri,
@@ -224,6 +225,97 @@ pub(super) fn materialize_requirement_usage(
     }
     let node_id = NodeId::new(uri, &qualified);
     walk_requirement_def_body(g, uri, container_prefix, &qualified, &node_id, &n.body);
+    node_id
+}
+
+/// Builds an `item`-usage node, wiring the typing edge and recursing into its (attribute) body.
+/// Currently only used by [`materialize_variant_usage`] for the typed `variant item ...;` form —
+/// the pre-existing `item` usage handling inside a `part def` body remains its own inline copy
+/// in `part_def.rs`.
+pub(super) fn materialize_item_usage(
+    n: &Node<sysml_v2_parser::ast::ItemUsage>,
+    uri: &Url,
+    container_prefix: Option<&str>,
+    parent_id: &NodeId,
+    g: &mut SemanticGraph,
+) -> NodeId {
+    let name = &n.name;
+    let qualified = qualified_name_for_node(g, uri, container_prefix, name, "item");
+    let range = span_to_range(&n.span);
+    let mut attrs = HashMap::new();
+    if let Some(ref t) = n.type_name {
+        attrs.insert("itemType".to_string(), serde_json::json!(t));
+    }
+    if let Some(ref m) = n.multiplicity {
+        attrs.insert("multiplicity".to_string(), serde_json::json!(m));
+    }
+    add_node_and_recurse(
+        g,
+        uri,
+        &qualified,
+        "item",
+        name.clone(),
+        range,
+        attrs,
+        Some(parent_id),
+    );
+    if let Some(ref t) = n.type_name {
+        add_typing_edge_if_exists(g, uri, &qualified, t, container_prefix);
+    }
+    let node_id = NodeId::new(uri, &qualified);
+    super::attribute_body::build_from_attribute_body(&n.body, uri, Some(&qualified), &node_id, g);
+    node_id
+}
+
+/// Builds the node for a `variant` member inside a variation part def/usage body: an untyped
+/// reference (`variant name;`) materializes as a bare `variant` node, while a typed usage
+/// (`variant part manual : ManualTransmission;`, `variant attribute ...`, `variant item ...`,
+/// `variant port ...`) delegates to that usage kind's own materializer, so it gets the same
+/// node shape (attributes, typing edge, body recursion) as an ordinary usage of that kind
+/// would — then tags the result with `isVariant: true` so callers can still distinguish it as
+/// one of the variation's owned variants.
+pub(super) fn materialize_variant_usage(
+    n: &Node<sysml_v2_parser::ast::VariantUsage>,
+    uri: &Url,
+    container_prefix: Option<&str>,
+    parent_id: &NodeId,
+    g: &mut SemanticGraph,
+) -> NodeId {
+    use sysml_v2_parser::ast::VariantTypedUsage;
+    let variant = &n.value;
+    let node_id = match &variant.typed {
+        Some(VariantTypedUsage::Part(part_node)) => {
+            materialize_part_usage(part_node, uri, container_prefix, Some(parent_id), g)
+        }
+        Some(VariantTypedUsage::Attribute(attr_node)) => {
+            materialize_attribute_usage(attr_node, uri, container_prefix, parent_id, g)
+        }
+        Some(VariantTypedUsage::Item(item_node)) => {
+            materialize_item_usage(item_node, uri, container_prefix, parent_id, g)
+        }
+        Some(VariantTypedUsage::Port(port_node)) => {
+            super::port_def::materialize_port_usage(port_node, uri, container_prefix, parent_id, g)
+        }
+        None => {
+            let qualified =
+                qualified_name_for_node(g, uri, container_prefix, &variant.name, "variant");
+            add_node_and_recurse(
+                g,
+                uri,
+                &qualified,
+                "variant",
+                variant.name.clone(),
+                span_to_range(&n.span),
+                HashMap::new(),
+                Some(parent_id),
+            );
+            NodeId::new(uri, &qualified)
+        }
+    };
+    if let Some(node) = g.get_node_mut(&node_id) {
+        node.attributes
+            .insert("isVariant".to_string(), serde_json::json!(true));
+    }
     node_id
 }
 

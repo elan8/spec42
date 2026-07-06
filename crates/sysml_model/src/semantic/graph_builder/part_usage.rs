@@ -223,18 +223,12 @@ pub(super) fn build_from_part_usage_body_element(
             );
         }
         PUBE::VariantUsage(variant) => {
-            let qualified =
-                qualified_name_for_node(g, uri, container_prefix, &variant.name, "variant");
-            let range = span_to_range(&variant.span);
-            add_node_and_recurse(
-                g,
+            super::usage_builders::materialize_variant_usage(
+                variant,
                 uri,
-                &qualified,
-                "variant",
-                variant.name.clone(),
-                range,
-                HashMap::new(),
-                Some(parent_id),
+                container_prefix,
+                parent_id,
+                g,
             );
         }
         PUBE::Doc(doc) => {

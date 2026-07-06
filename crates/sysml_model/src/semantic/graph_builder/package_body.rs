@@ -527,6 +527,7 @@ fn materialize_requirement_def(
     let mut attrs = HashMap::new();
     attach_short_name_attribute(&mut attrs, &rd_node.identification);
     insert_def_specialization_attr(&mut attrs, rd_node.specializes.as_deref());
+    attrs.insert("isAbstract".to_string(), serde_json::json!(rd_node.is_abstract));
     add_node_and_recurse(
         g,
         uri,
@@ -667,6 +668,7 @@ fn materialize_use_case_def(
     let mut attrs = HashMap::new();
     attach_short_name_attribute(&mut attrs, &ucd_node.identification);
     insert_def_specialization_attr(&mut attrs, ucd_node.specializes.as_deref());
+    attrs.insert("isAbstract".to_string(), serde_json::json!(ucd_node.is_abstract));
     add_node_and_recurse(
         g,
         uri,
@@ -704,6 +706,7 @@ fn materialize_use_case_usage(
     if let Some(ref t) = ucu_node.type_name {
         attrs.insert("useCaseType".to_string(), serde_json::json!(t));
     }
+    attrs.insert("isAbstract".to_string(), serde_json::json!(ucu_node.is_abstract));
     add_node_and_recurse(
         g,
         uri,
@@ -1088,6 +1091,7 @@ fn materialize_case_def(
     let mut attrs = HashMap::new();
     attach_short_name_attribute(&mut attrs, &c_node.identification);
     insert_def_specialization_attr(&mut attrs, c_node.specializes.as_deref());
+    attrs.insert("isAbstract".to_string(), serde_json::json!(c_node.is_abstract));
     add_node_and_recurse(
         g,
         uri,
@@ -1115,6 +1119,8 @@ fn materialize_case_usage(
     c_node: &Node<CaseUsage>,
 ) {
     let qualified = qualified_name_for_node(g, uri, container_prefix, &c_node.name, "case");
+    let mut attrs = HashMap::new();
+    attrs.insert("isAbstract".to_string(), serde_json::json!(c_node.is_abstract));
     add_node_and_recurse(
         g,
         uri,
@@ -1122,7 +1128,7 @@ fn materialize_case_usage(
         "case",
         c_node.name.clone(),
         span_to_range(&c_node.span),
-        HashMap::new(),
+        attrs,
         parent_id,
     );
 }
@@ -1142,6 +1148,7 @@ fn materialize_analysis_case_def(
     let mut attrs = HashMap::new();
     attach_short_name_attribute(&mut attrs, &c_node.identification);
     insert_def_specialization_attr(&mut attrs, c_node.specializes.as_deref());
+    attrs.insert("isAbstract".to_string(), serde_json::json!(c_node.is_abstract));
     add_node_and_recurse(
         g,
         uri,
@@ -1175,6 +1182,7 @@ fn materialize_analysis_case_usage(
     if let Some(ref t) = c_node.type_name {
         attrs.insert("analysisType".to_string(), serde_json::json!(t));
     }
+    attrs.insert("isAbstract".to_string(), serde_json::json!(c_node.is_abstract));
     add_node_and_recurse(
         g,
         uri,
@@ -1207,6 +1215,7 @@ fn materialize_verification_case_def(
     let mut attrs = HashMap::new();
     attach_short_name_attribute(&mut attrs, &c_node.identification);
     insert_def_specialization_attr(&mut attrs, c_node.specializes.as_deref());
+    attrs.insert("isAbstract".to_string(), serde_json::json!(c_node.is_abstract));
     add_node_and_recurse(
         g,
         uri,
@@ -1240,6 +1249,7 @@ fn materialize_verification_case_usage(
     if let Some(ref t) = c_node.type_name {
         attrs.insert("verificationType".to_string(), serde_json::json!(t));
     }
+    attrs.insert("isAbstract".to_string(), serde_json::json!(c_node.is_abstract));
     add_node_and_recurse(
         g,
         uri,

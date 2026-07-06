@@ -534,14 +534,22 @@ pub fn compute_semantic_diagnostics_with_unit_registry(
         // templates intentionally waiting for a concrete subject binding — unlike the template
         // defs above, a real constraint violation on one should still surface (definitions can
         // carry inline `require constraint` analysis), so only the "incomplete" (unassigned
-        // value) status is suppressed for them, not "failed_constraint".
+        // value) status is suppressed for them, not "failed_constraint". An explicitly
+        // `abstract` *usage* of any of these kinds is the spec's precise signal for the same
+        // "intentionally waiting for a concrete binding" intent (isVariation implies isAbstract,
+        // and abstract is a first-class modifier on usages too — SysML v2 spec 8.3.6.4/8.3.6.5),
+        // so it's treated the same way even though it isn't itself a definition.
         let is_parametric_definition = matches!(
             node.element_kind,
             crate::ElementKind::RequirementDef
                 | crate::ElementKind::AnalysisDef
                 | crate::ElementKind::VerificationDef
                 | crate::ElementKind::UseCaseDef
-        );
+        ) || node
+            .attributes
+            .get("isAbstract")
+            .and_then(|value| value.as_bool())
+            == Some(true);
         if let Some(status) = node
             .attributes
             .get("analysisEvaluationStatus")

@@ -64,3 +64,66 @@ fn variation_part_def_variant_members_produce_no_recovery_diagnostics() {
         );
     }
 }
+
+/// Spec §7.6.7's own first example uses the typed form (`variant part name : Type;`), not the
+/// bare reference form — both must be supported.
+#[test]
+fn variation_part_def_typed_part_variant_materializes_as_part_node() {
+    let doc = workspace_doc(
+        "typed_variants.sysml",
+        r#"package P {
+  part def Transmission;
+  part def ManualTransmission :> Transmission;
+  part def AutomaticTransmission :> Transmission;
+
+  variation part def TransmissionChoices :> Transmission {
+    variant part manual : ManualTransmission;
+    variant part automatic : AutomaticTransmission;
+  }
+}"#,
+    );
+    let uri = doc.uri.clone();
+    let (graph, _parsed) = build_semantic_graph_from_documents(&[doc]).expect("semantic graph");
+
+    let diagnostics = collect_diagnostics_from_graph(&graph, &uri, DiagnosticsOptions::default());
+    let recovery_errors: Vec<_> = diagnostics
+        .iter()
+        .filter(|d| d.code == "recovered_part_def_body_element")
+        .collect();
+    assert!(
+        recovery_errors.is_empty(),
+        "typed variant body should not produce parser recovery diagnostics: {recovery_errors:#?}"
+    );
+
+    let variation = graph
+        .nodes_named("TransmissionChoices")
+        .into_iter()
+        .find(|node| node.element_kind == "part def")
+        .expect("variation part def node");
+
+    for (name, type_name) in [
+        ("manual", "ManualTransmission"),
+        ("automatic", "AutomaticTransmission"),
+    ] {
+        let variant = graph
+            .nodes_named(name)
+            .into_iter()
+            .find(|node| node.element_kind == "part")
+            .unwrap_or_else(|| panic!("expected '{name}' to materialize as a part node"));
+        assert_eq!(
+            variant.parent_id.as_ref(),
+            Some(&variation.id),
+            "typed variant '{name}' should be owned by the variation part def"
+        );
+        assert_eq!(
+            variant.attributes.get("isVariant").and_then(|v| v.as_bool()),
+            Some(true),
+            "typed variant '{name}' should be tagged isVariant"
+        );
+        assert_eq!(
+            variant.attributes.get("partType").and_then(|v| v.as_str()),
+            Some(type_name),
+            "typed variant '{name}' should carry its declared type"
+        );
+    }
+}

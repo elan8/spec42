@@ -567,19 +567,7 @@ pub(super) fn build_from_part_def_body_element(
         // Not yet modeled in the semantic graph.
         PDBE::AssertConstraint(_) | PDBE::Satisfy(_) => {}
         PDBE::VariantUsage(n) => {
-            let variant = &n.value;
-            let qualified =
-                qualified_name_for_node(g, uri, container_prefix, &variant.name, "variant");
-            add_node_and_recurse(
-                g,
-                uri,
-                &qualified,
-                "variant",
-                variant.name.clone(),
-                span_to_range(&n.span),
-                HashMap::new(),
-                Some(parent_id),
-            );
+            usage_builders::materialize_variant_usage(n, uri, container_prefix, parent_id, g);
         }
     }
 }
