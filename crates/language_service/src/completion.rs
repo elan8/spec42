@@ -1,13 +1,13 @@
-﻿use std::collections::HashSet;
+use std::collections::HashSet;
 
 use sysml_model::{ElementKind, TextPosition, TextRange};
 use url::Url;
 
 use crate::dto::{
-    CompletionEditShape, CompletionItemDto, CompletionItemKindDto,
-    CompletionItemLabelDetailsDto, CompletionResult, CompletionTextEditDto,
+    CompletionEditShape, CompletionItemDto, CompletionItemKindDto, CompletionItemLabelDetailsDto,
+    CompletionResult, CompletionTextEditDto,
 };
-use crate::keywords::keyword_doc;
+use crate::keywords::{keyword_doc, sysml_keywords};
 use crate::presentation_hover::hover_markdown_for_node;
 use crate::references::TYPE_LOOKUP_KINDS;
 use crate::text::{completion_prefix, line_prefix_at_position};
@@ -21,16 +21,6 @@ pub const ATTRIBUTE_TYPE_LOOKUP_KINDS: &[&str] = &[
     "enum def",
     "occurrence def",
     "kermlDecl",
-];
-const BODY_CONTEXT_KEYWORDS: &[&str] = &[
-    "package",
-    "part",
-    "port",
-    "attribute",
-    "action",
-    "requirement",
-    "interface",
-    "item",
 ];
 const DECLARATION_MODIFIER_KEYWORDS: &[&str] = &["def"];
 
@@ -115,7 +105,12 @@ pub fn complete(
     let uri = workspace.resolve_uri_for_path(document_path)?;
     let text = workspace.document_text(&uri)?;
     let line_prefix = line_prefix_at_position(text, position.line, position.character);
-    let context = refine_completion_context(workspace, &uri, position, detect_completion_context(&line_prefix));
+    let context = refine_completion_context(
+        workspace,
+        &uri,
+        position,
+        detect_completion_context(&line_prefix),
+    );
     let hints = completion_semantic_hints(workspace, &uri, position, &context);
     let edit_shape = completion_edit_shape(position, context.prefix());
     let items = rank_completion_candidates(collect_completion_candidates(
@@ -446,6 +441,46 @@ fn collect_snippet_candidates(
                 CompletionItemKindDto::Snippet,
                 edit_shape,
             ));
+            out.push(snippet_candidate(
+                "requirement def",
+                "requirement definition",
+                "Declare a reusable requirement definition",
+                "requirement def ${1:Name} {\n\tdoc /* $2 */\n\t$0\n}",
+                CompletionItemKindDto::Snippet,
+                edit_shape,
+            ));
+            out.push(snippet_candidate(
+                "interface def",
+                "interface definition",
+                "Declare a reusable interface definition",
+                "interface def ${1:Name} {\n\t$0\n}",
+                CompletionItemKindDto::Snippet,
+                edit_shape,
+            ));
+            out.push(snippet_candidate(
+                "action def",
+                "action definition",
+                "Declare a reusable action definition",
+                "action def ${1:Name} {\n\t$0\n}",
+                CompletionItemKindDto::Snippet,
+                edit_shape,
+            ));
+            out.push(snippet_candidate(
+                "connect",
+                "connection usage",
+                "Connect two ports or parts",
+                "connect ${1:source} to ${2:target}",
+                CompletionItemKindDto::Snippet,
+                edit_shape,
+            ));
+            out.push(snippet_candidate(
+                "import",
+                "import statement",
+                "Import a package or its members",
+                "import ${1:Package::*}",
+                CompletionItemKindDto::Snippet,
+                edit_shape,
+            ));
         }
         _ => {}
     }
@@ -493,9 +528,10 @@ fn collect_keyword_candidates(
     out: &mut Vec<CompletionCandidate>,
 ) {
     let keywords: &[&str] = match context {
-        CompletionContext::TopLevelKeyword { .. } => BODY_CONTEXT_KEYWORDS,
+        CompletionContext::TopLevelKeyword { .. } | CompletionContext::BodyStatement { .. } => {
+            sysml_keywords()
+        }
         CompletionContext::DeclarationModifier { .. } => DECLARATION_MODIFIER_KEYWORDS,
-        CompletionContext::BodyStatement { .. } => BODY_CONTEXT_KEYWORDS,
         _ => &[],
     };
 
@@ -535,7 +571,35 @@ fn collect_symbol_candidates(
     edit_shape: &CompletionEditShape,
     out: &mut Vec<CompletionCandidate>,
 ) {
+    // Declaring a new name (or right after `def`) is not a symbol-reference position.
+    if matches!(
+        context,
+        CompletionContext::DeclarationName { .. } | CompletionContext::DeclarationModifier { .. }
+    ) {
+        return;
+    }
+
     let prefix = context.prefix().to_lowercase();
+
+    // Without a typed prefix, positions that also offer keyword/snippet completions
+    // would otherwise dump the entire workspace symbol table.
+    if prefix.is_empty()
+        && matches!(
+            context,
+            CompletionContext::TopLevelKeyword { .. }
+                | CompletionContext::BodyStatement { .. }
+                | CompletionContext::General { .. }
+        )
+    {
+        return;
+    }
+
+    let qualifier = match context {
+        CompletionContext::QualifiedReference { qualifier, .. } => Some(qualifier.as_str()),
+        CompletionContext::MemberReference { receiver, .. } => Some(receiver.as_str()),
+        _ => None,
+    };
+
     let graph = workspace.semantic_graph();
 
     for entry in workspace.symbol_table() {
@@ -552,19 +616,18 @@ fn collect_symbol_candidates(
         let documentation = node
             .map(|node| hover_markdown_for_node(graph, node, false))
             .or_else(|| entry.description.clone());
-        let label_details = entry.container_name.as_ref().map(|container| {
-            CompletionItemLabelDetailsDto {
-                detail: Some(format!(
-                    " - {}",
-                    entry.detail.as_deref().unwrap_or("symbol")
-                )),
-                description: Some(container.clone()),
-            }
-        });
-        let kind = entry
-            .detail
-            .as_deref()
-            .map(element_kind_to_completion_kind);
+        let label_details =
+            entry
+                .container_name
+                .as_ref()
+                .map(|container| CompletionItemLabelDetailsDto {
+                    detail: Some(format!(
+                        " - {}",
+                        entry.detail.as_deref().unwrap_or("symbol")
+                    )),
+                    description: Some(container.clone()),
+                });
+        let kind = entry.detail.as_deref().map(element_kind_to_completion_kind);
         out.push(CompletionCandidate {
             label: entry.name.clone(),
             item: CompletionItemDto {
@@ -588,7 +651,11 @@ fn collect_symbol_candidates(
                 resolve_detail: detail,
                 resolve_documentation: documentation,
             },
-            tier: if hints.same_file_uri.as_ref() == Some(&entry.uri) {
+            tier: if qualifier.is_some_and(|qualifier| {
+                container_matches_qualifier(entry.container_name.as_deref(), qualifier)
+            }) {
+                TIER_CONTEXT_COMPATIBLE_SAME_SCOPE
+            } else if hints.same_file_uri.as_ref() == Some(&entry.uri) {
                 TIER_SAME_FILE_COMPATIBLE
             } else {
                 TIER_GENERIC_SYMBOL
@@ -695,6 +762,14 @@ fn entry_kind_matches(detail: Option<&str>, expected_kinds: &[&str]) -> bool {
     detail
         .map(|detail| expected_kinds.contains(&detail))
         .unwrap_or(false)
+}
+
+fn container_matches_qualifier(container_name: Option<&str>, qualifier: &str) -> bool {
+    let qualifier_lc = qualifier.to_ascii_lowercase();
+    container_name.is_some_and(|container| {
+        let container_lc = container.to_ascii_lowercase();
+        container_lc == qualifier_lc || container_lc.ends_with(&format!("::{qualifier_lc}"))
+    })
 }
 
 fn dedupe_completion_candidates(candidates: Vec<CompletionCandidate>) -> Vec<CompletionCandidate> {

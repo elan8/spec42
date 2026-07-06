@@ -9,6 +9,7 @@ members = [
   "crates/sysml_model",
   "crates/workspace",
   "crates/sysml_tokens",
+  "crates/workspace_session",
 ]
 
 [workspace.package]

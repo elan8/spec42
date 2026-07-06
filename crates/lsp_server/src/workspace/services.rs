@@ -1,4 +1,4 @@
-﻿use crate::common::util;
+use crate::common::util;
 use crate::semantic;
 use crate::workspace::library_search;
 use crate::workspace::parse_cache;
@@ -77,7 +77,10 @@ fn parse_scanned_entry(uri: Url, content: String, cache_dir: Option<&Path>) -> P
                 content,
                 parsed: Some(root),
                 parse_errors: vec![],
-                parse_metadata: ParseMetadata { parse_time_ms: 0, parse_cached: true },
+                parse_metadata: ParseMetadata {
+                    parse_time_ms: 0,
+                    parse_cached: true,
+                },
             };
         }
         tracing::debug!(uri = %uri, "parse cache miss — parsing and storing");
@@ -333,15 +336,18 @@ pub(crate) fn ingest_parsed_scan_entries_batch(
     loaded
 }
 
-fn apply_document_changes_impl(
+/// Applies incoming text edits to the in-memory document only (no parsing, no
+/// semantic graph work). Cheap and safe to run while holding the server's
+/// write lock. Returns whether the content actually changed, so the caller
+/// can decide whether a (potentially slow) parse is needed.
+pub(crate) fn apply_document_content_edit(
     state: &mut ServerState,
     uri_norm: &Url,
     version: i32,
     content_changes: Vec<TextDocumentContentChangeEvent>,
-    evaluate: bool,
-) -> Vec<(MessageType, String)> {
+) -> (bool, Vec<(MessageType, String)>) {
     let mut runtime_warnings = Vec::new();
-    let should_update = if let Some(entry) = state.index.get_mut(uri_norm) {
+    let content_changed = if let Some(entry) = state.index.get_mut(uri_norm) {
         let mut content_changed = false;
         for change in content_changes {
             if let Some(range) = change.range {
@@ -371,26 +377,6 @@ fn apply_document_changes_impl(
                 content_changed = true;
             }
         }
-        if content_changed {
-            let parse_start = Instant::now();
-            let parsed_result = util::parse_for_editor(&entry.content);
-            entry.parsed = Some(parsed_result.root);
-            entry.parse_metadata = ParseMetadata {
-                parse_time_ms: elapsed_ms(parse_start),
-                parse_cached: false,
-            };
-            if !parsed_result.errors.is_empty() {
-                runtime_warnings.push((
-                    MessageType::LOG,
-                    format!(
-                        "sysml parse_for_editor produced {} diagnostic(s) after didChange for {} (version {}).",
-                        parsed_result.errors.len(),
-                        uri_norm,
-                        version
-                    ),
-                ));
-            }
-        }
         content_changed
     } else {
         runtime_warnings.push((
@@ -402,15 +388,83 @@ fn apply_document_changes_impl(
         ));
         false
     };
+    (content_changed, runtime_warnings)
+}
 
-    if should_update {
-        let parsed = state
+/// Applies an already-computed parse result (produced off the write lock, e.g.
+/// via `spawn_blocking`) to the document and incrementally patches the
+/// semantic graph/symbol table for that URI. This is the potentially-slow
+/// half of a document update — callers should compute `parsed_result` without
+/// holding the server's write lock so a slow parse of malformed/incomplete
+/// syntax can't stall every other request.
+pub(crate) fn apply_parsed_document_update(
+    state: &mut ServerState,
+    uri_norm: &Url,
+    version: i32,
+    parsed_result: sysml_v2_parser::ParseResult,
+    parse_time_ms: u32,
+    evaluate: bool,
+) -> Vec<(MessageType, String)> {
+    let mut runtime_warnings = Vec::new();
+    let Some(entry) = state.index.get_mut(uri_norm) else {
+        return runtime_warnings;
+    };
+    entry.parsed = Some(parsed_result.root);
+    entry.parse_metadata = ParseMetadata {
+        parse_time_ms,
+        parse_cached: false,
+    };
+    if !parsed_result.errors.is_empty() {
+        runtime_warnings.push((
+            MessageType::LOG,
+            format!(
+                "sysml parse_for_editor produced {} diagnostic(s) after didChange for {} (version {}).",
+                parsed_result.errors.len(),
+                uri_norm,
+                version
+            ),
+        ));
+    }
+
+    let parsed = state
+        .index
+        .get(uri_norm)
+        .and_then(|entry| entry.parsed.as_ref())
+        .cloned();
+    update_semantic_graph_for_uri(state, uri_norm, parsed.as_ref(), evaluate);
+    refresh_symbols_for_uri(state, uri_norm);
+
+    runtime_warnings
+}
+
+#[cfg(test)]
+fn apply_document_changes_impl(
+    state: &mut ServerState,
+    uri_norm: &Url,
+    version: i32,
+    content_changes: Vec<TextDocumentContentChangeEvent>,
+    evaluate: bool,
+) -> Vec<(MessageType, String)> {
+    let (content_changed, mut runtime_warnings) =
+        apply_document_content_edit(state, uri_norm, version, content_changes);
+
+    if content_changed {
+        let content = state
             .index
             .get(uri_norm)
-            .and_then(|entry| entry.parsed.as_ref())
-            .cloned();
-        update_semantic_graph_for_uri(state, uri_norm, parsed.as_ref(), evaluate);
-        refresh_symbols_for_uri(state, uri_norm);
+            .map(|entry| entry.content.clone())
+            .unwrap_or_default();
+        let parse_start = Instant::now();
+        let parsed_result = util::parse_for_editor(&content);
+        let parse_time_ms = elapsed_ms(parse_start);
+        runtime_warnings.extend(apply_parsed_document_update(
+            state,
+            uri_norm,
+            version,
+            parsed_result,
+            parse_time_ms,
+            evaluate,
+        ));
     }
 
     runtime_warnings
@@ -426,6 +480,7 @@ pub(crate) fn apply_document_changes(
     apply_document_changes_impl(state, uri_norm, version, content_changes, true)
 }
 
+#[cfg(test)]
 pub(crate) fn apply_document_changes_fast(
     state: &mut ServerState,
     uri_norm: &Url,

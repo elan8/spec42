@@ -43,10 +43,7 @@ impl WorkspaceSnapshot for ServerStateSnapshot<'_> {
         let normalized = path.trim_start_matches('/').replace('\\', "/");
         self.state.index.keys().find_map(|uri| {
             let uri_norm = util::normalize_file_uri(uri);
-            let uri_path = uri_norm
-                .path()
-                .trim_start_matches('/')
-                .replace('\\', "/");
+            let uri_path = uri_norm.path().trim_start_matches('/').replace('\\', "/");
             if uri_path == normalized || uri_path.ends_with(&format!("/{normalized}")) {
                 Some(uri_norm)
             } else {
@@ -57,10 +54,7 @@ impl WorkspaceSnapshot for ServerStateSnapshot<'_> {
 
     fn path_for_uri(&self, uri: &Url) -> String {
         let normalized = util::normalize_file_uri(uri);
-        normalized
-            .path()
-            .trim_start_matches('/')
-            .replace('\\', "/")
+        normalized.path().trim_start_matches('/').replace('\\', "/")
     }
 
     fn document_text(&self, uri: &Url) -> Option<&str> {
@@ -95,6 +89,9 @@ impl WorkspaceSnapshot for ServerStateSnapshot<'_> {
     }
 
     fn supports_semantic_queries(&self) -> bool {
-        self.state.coordinator.lifecycle().supports_semantic_queries()
+        self.state
+            .coordinator
+            .lifecycle()
+            .supports_semantic_queries()
     }
 }

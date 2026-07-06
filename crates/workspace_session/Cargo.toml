@@ -1,0 +1,27 @@
+[package]
+name = "workspace_session"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
+description = "Tokio-actor concurrency wrapper giving lock-free reads and superseding background rebuilds for any embedder-owned session state; protocol-neutral, usable by LSP and HTTP hosts alike"
+
+[features]
+default = []
+
+[dependencies]
+workspace = { path = "../workspace", default-features = false }
+tokio = { version = "1", features = ["rt", "rt-multi-thread", "sync", "macros", "time"] }
+thiserror = { workspace = true }
+tracing = "0.1"
+
+[dev-dependencies]
+tokio = { version = "1", features = ["rt", "rt-multi-thread", "sync", "macros", "time", "test-util"] }
+
+[[test]]
+name = "dependency_guardrails"
+path = "tests/dependency_guardrails.rs"
+
+[[test]]
+name = "concurrent_reads"
+path = "tests/concurrent_reads.rs"

@@ -532,9 +532,20 @@ the full relevant test suites before moving on, higher-risk phases behind a flag
    (and therefore `lsp_runtime/documents.rs`'s structured log fields) kept as-is; five fields
    now always report `0`. See Phase 4's write-up for the reasoning.
 3. Does Babel42's `EditorSession` need its own concurrency wrapper analogous to
-   `lsp_server`'s staged-commit shape, or is blocking-per-edit acceptable there? **Still
-   open** — not investigated in this design; needs checking against Babel42's actual code
-   before any future phase assumes `lsp_server`'s shape is the only one needed.
+   `lsp_server`'s staged-commit shape, or is blocking-per-edit acceptable there? **Partially
+   resolved 2026-07-06**: checked against Babel42's actual code
+   (`babel42-v2/backend/crates/babel42-spec42/src/session.rs`,
+   `babel42-v2/backend/crates/babel42-app/src/editor.rs`). Babel42 does need one — every
+   hover/completion request calls `EditorSession::update_document` (which internally re-parses
+   and patches the graph) while holding a per-session `std::sync::Mutex<CachedEditorSession>`
+   for the whole call, so concurrent reads against the *same* editing session already
+   serialize today, independent of any slow rebuild — the same architectural shape as the
+   `lsp_server` render-path bug this design's sibling investigation found and fixed (see
+   `crates/workspace_session`, added 2026-07-06: a Tokio-actor concurrency wrapper — lock-free
+   snapshot reads plus generation-token-superseded background rebuilds — built standalone and
+   not yet wired into either `lsp_server` or Babel42). Whether Babel42 adopts
+   `workspace_session`'s `SessionActor<M>` as-is, or some lighter variant, is still open; see
+   item 5 below for a related, more urgent gap found during the same investigation.
 4. Should `IncrementalWorkspace::load` gain a variant that accepts already-parsed documents
    (to actually benefit from this engine's own parse cache on a full load)? **Resolved,
    fully**: `load_parsed`/`load_parsed_from` (pre-parsed input, no cache lookup) and
@@ -545,6 +556,27 @@ the full relevant test suites before moving on, higher-risk phases behind a flag
    `SysmlDocument`s, not pre-parsed ones) — `lsp_server` is the first real consumer. Wiring
    `Spec42Engine` up to a warm cache on CLI/MCP/HTTP restarts is a small, available follow-up,
    not done here.
+5. **New, found 2026-07-06 — Babel42's `EditorSession` never re-resolves cross-document
+   references after an edit.** `EditorSession::update_document`
+   (`babel42-v2/backend/crates/babel42-spec42/src/session.rs`) calls only
+   `self.workspace.apply_document(...)` — the single-document incremental patch. There is no
+   Babel42 equivalent of `lsp_server`'s async full relink (`rebuild_semantic_graph_staged`,
+   the cross-document-edge-resolution pass — expensive, ~2.3s in a captured `lsp_server` log
+   on a real workspace, which is precisely why `lsp_server` runs it asynchronously rather than
+   inline). Concretely: if editing file A changes something file B's cross-file reference
+   depends on, Babel42's hover/completion/diagnostics for B will not reflect it until B itself
+   is next edited (which forces its own `apply_document` patch) — there is currently no path
+   that ever re-links B against A's change otherwise.
+   **This should be fixed** — not investigated further here, flagged for a future phase to
+   scope. Two independent decisions needed: (a) does Babel42's actual feature set need
+   full cross-file accuracy at all (it currently exposes no diagram/visualization endpoint,
+   unlike `lsp_server` — the answer may be "yes, for correctness of hover/goto-definition
+   across files" even without a diagram feature); (b) if yes, should the relink run inline
+   (blocking that one request — Babel42's per-request model may tolerate this, unlike
+   `lsp_server`'s shared long-lived state) or asynchronously via the same
+   `workspace_session::SessionActor`/`report_job_result` pattern `lsp_server` will eventually
+   adopt (see item 3) — in which case this gap and item 3's concurrency-wrapper question
+   should likely be resolved together, not separately.
 
 ## Effort estimate
 
