@@ -211,9 +211,10 @@ pub(super) fn build_from_verification_body(
                     "lhs".to_string(),
                     serde_json::json!(expressions::expression_to_debug_string(&value.lhs)),
                 );
-                attrs.insert("rhs".to_string(), serde_json::json!(value.rhs.as_str()));
+                let rhs_text = expressions::expression_to_debug_string(&value.rhs);
+                attrs.insert("rhs".to_string(), serde_json::json!(rhs_text));
                 attrs.insert("isThen".to_string(), serde_json::json!(value.is_then));
-                let rhs_trimmed = value.rhs.trim();
+                let rhs_trimmed = rhs_text.trim();
                 attrs.insert(
                     "rhsIsBoolean".to_string(),
                     serde_json::json!(matches!(rhs_trimmed, "true" | "false")),

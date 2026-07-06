@@ -134,6 +134,8 @@ pub(super) fn build_from_occurrence_body_element(
             super::attach_doc_comment(g, parent_id, &doc.value.text);
         }
         OBE::Error(_) | OBE::Annotation(_) | OBE::Other(_) => {}
+        // Not yet modeled in the semantic graph.
+        OBE::SuccessionUsage(_) | OBE::Satisfy(_) => {}
     }
 }
 

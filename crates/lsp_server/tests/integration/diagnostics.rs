@@ -1331,7 +1331,11 @@ fn typed_requirement_local_attributes_resolve_in_arithmetic_constraint() {
 }
 
 #[test]
-fn requirement_placeholder_attribute_emits_incomplete_analysis_info() {
+fn requirement_def_placeholder_attribute_does_not_emit_incomplete_analysis_info() {
+    // `requirement def` is a reusable, parametric template intentionally left without a
+    // concrete binding (S42-LIM-012) — it must not emit `analysis_evaluation_incomplete`.
+    // `requirement_usage_placeholder_attribute_emits_incomplete_analysis_info` below covers
+    // the corresponding usage, where the diagnostic still applies.
     let content = r#"
         package P {
             requirement def PlaceholderEvaluation {
@@ -1342,6 +1346,28 @@ fn requirement_placeholder_attribute_emits_incomplete_analysis_info() {
         }
     "#;
     let diagnostics = validate_inline_sysml("analysis_requirement_placeholder.sysml", content);
+    assert!(
+        !has_diag_code(&diagnostics, "semantic", "analysis_evaluation_incomplete"),
+        "requirement def templates should not emit analysis_evaluation_incomplete: {diagnostics:#?}"
+    );
+    assert!(
+        !has_diag_code(&diagnostics, "semantic", "analysis_evaluation_unresolved"),
+        "placeholder should not be reported as unresolved: {diagnostics:#?}"
+    );
+}
+
+#[test]
+fn requirement_usage_placeholder_attribute_emits_incomplete_analysis_info() {
+    let content = r#"
+        package P {
+            requirement placeholderEvaluation {
+                attribute actual;
+                attribute limit = 1.0;
+                require constraint { actual <= limit }
+            }
+        }
+    "#;
+    let diagnostics = validate_inline_sysml("analysis_requirement_usage_placeholder.sysml", content);
     let incomplete: Vec<_> = diagnostics
         .iter()
         .filter(|diagnostic| {

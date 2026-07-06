@@ -936,7 +936,7 @@ fn extract_activity_from_action(
                             flows.push(ControlFlowDto {
                                 from: previous,
                                 to: step_name.clone(),
-                                condition: Some(value.rhs.clone()),
+                                condition: Some(expr_to_string(&value.rhs)),
                                 guard: Some("flow".to_string()),
                                 range: span_to_range_dto(&assign.span),
                             });

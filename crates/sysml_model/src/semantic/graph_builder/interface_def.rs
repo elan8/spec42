@@ -193,6 +193,8 @@ pub(super) fn build_from_connection_def_body_element(
         }
         E::RefDecl(w) => add_ref_decl(g, uri, container_prefix, parent_id, w),
         E::ConnectStmt(w) => add_connect_stmt(g, uri, container_prefix, w),
+        E::Doc(doc) => super::attach_doc_comment(g, parent_id, &doc.value.text),
+        E::Error(_) => {}
     }
 }
 

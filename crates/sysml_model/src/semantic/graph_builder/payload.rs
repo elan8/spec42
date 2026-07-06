@@ -51,10 +51,10 @@ pub(super) fn insert_transition_accept_attrs(
     accept: &TransitionAccept,
 ) {
     match accept {
-        TransitionAccept::Payload(clause) => {
+        TransitionAccept::Payload(clause, _via) => {
             insert_payload_clause_attrs(attrs, "accept", clause);
         }
-        TransitionAccept::Shorthand(expr) => {
+        TransitionAccept::Shorthand(expr, _via) => {
             attrs.insert(
                 "acceptExpression".to_string(),
                 serde_json::json!(expressions::expression_to_debug_string(expr)),

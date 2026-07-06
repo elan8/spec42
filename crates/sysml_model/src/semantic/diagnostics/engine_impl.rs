@@ -530,6 +530,18 @@ pub fn compute_semantic_diagnostics_with_unit_registry(
             node.element_kind,
             crate::ElementKind::ConstraintDef | crate::ElementKind::CalcDef
         );
+        // Requirement/analysis/verification/use-case *definitions* are reusable, parametric
+        // templates intentionally waiting for a concrete subject binding — unlike the template
+        // defs above, a real constraint violation on one should still surface (definitions can
+        // carry inline `require constraint` analysis), so only the "incomplete" (unassigned
+        // value) status is suppressed for them, not "failed_constraint".
+        let is_parametric_definition = matches!(
+            node.element_kind,
+            crate::ElementKind::RequirementDef
+                | crate::ElementKind::AnalysisDef
+                | crate::ElementKind::VerificationDef
+                | crate::ElementKind::UseCaseDef
+        );
         if let Some(status) = node
             .attributes
             .get("analysisEvaluationStatus")
@@ -557,6 +569,9 @@ pub fn compute_semantic_diagnostics_with_unit_registry(
                     ),
                 ));
             } else if status == "incomplete" {
+                if is_parametric_definition {
+                    continue;
+                }
                 diagnostics.push(diag(uri,
                     diagnostic_range(graph, node, None),
                     DiagnosticSeverity::Information,

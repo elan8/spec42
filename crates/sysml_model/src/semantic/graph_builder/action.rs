@@ -236,7 +236,10 @@ fn add_assign_stmt(
         "lhs".to_string(),
         serde_json::json!(expressions::expression_to_debug_string(&value.lhs)),
     );
-    attrs.insert("rhs".to_string(), serde_json::json!(value.rhs.as_str()));
+    attrs.insert(
+        "rhs".to_string(),
+        serde_json::json!(expressions::expression_to_debug_string(&value.rhs)),
+    );
     attrs.insert("isThen".to_string(), serde_json::json!(value.is_then));
     add_node_and_recurse(
         g,
@@ -569,6 +572,10 @@ pub(super) fn build_from_action_def_body(
                 super::attach_doc_comment(g, parent_id, &doc.value.text);
             }
             ActionDefBodyElement::Error(_) | ActionDefBodyElement::Annotation(_) => {}
+            // Not yet modeled in the semantic graph.
+            ActionDefBodyElement::TerminateStmt(_)
+            | ActionDefBodyElement::WhileStmt(_)
+            | ActionDefBodyElement::IfStmt(_) => {}
         }
     }
 }
@@ -736,6 +743,10 @@ pub(super) fn build_from_action_usage_body(
                 super::attach_doc_comment(g, parent_id, &doc.value.text);
             }
             ActionUsageBodyElement::Error(_) | ActionUsageBodyElement::Annotation(_) => {}
+            // Not yet modeled in the semantic graph.
+            ActionUsageBodyElement::TerminateStmt(_)
+            | ActionUsageBodyElement::WhileStmt(_)
+            | ActionUsageBodyElement::IfStmt(_) => {}
         }
     }
 }

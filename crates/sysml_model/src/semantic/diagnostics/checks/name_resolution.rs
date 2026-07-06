@@ -14,7 +14,9 @@ use crate::semantic::kinds::{
 };
 use crate::semantic::model::node_matches_simple_name;
 use crate::semantic::relationships::SPECIALIZES_TARGET_KINDS;
-use crate::{resolve_type_reference_targets, SemanticDiagnostic, SemanticGraph, SemanticNode};
+use crate::{
+    resolve_type_reference_targets, ElementKind, SemanticDiagnostic, SemanticGraph, SemanticNode,
+};
 
 fn is_def_or_usage_kind(kind: &crate::ElementKind) -> bool {
     matches!(
@@ -253,6 +255,16 @@ pub(in crate::semantic::diagnostics) fn collect_name_resolution_diagnostics(
             || resolved_via_import_scope
             || (allow_graph_name_fallback && resolved_via_graph_name_fallback)
         {
+            continue;
+        }
+
+        // Connection ends redefined via `::>` (BNF-derived syntax) point at a nested feature
+        // path (e.g. `sensorAcquisition.run.lidarScanOut`), not a type name. `flow` statement
+        // endpoints already accept these same dotted feature chains without validating them as
+        // type references (see `add_expression_edge_if_both_exist`'s non-`Connection` branch,
+        // which silently no-ops rather than diagnosing an unresolved flow endpoint); treat
+        // connection ends the same way instead of flagging the path as an unresolved type.
+        if node.element_kind == ElementKind::InterfaceEnd && type_ref.contains('.') {
             continue;
         }
 

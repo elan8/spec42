@@ -856,6 +856,18 @@ fn evaluate_analysis_ast(
             }
         }
         AnalysisExpr::Comparison { lhs, op, rhs } => {
+            if matches!(op, AnalysisComparisonOp::Eq | AnalysisComparisonOp::Ne) {
+                if let (Some(left), Some(right)) = (
+                    try_evaluate_boolean_operand(engine, context_id, lhs),
+                    try_evaluate_boolean_operand(engine, context_id, rhs),
+                ) {
+                    return Ok(match op {
+                        AnalysisComparisonOp::Eq => left == right,
+                        AnalysisComparisonOp::Ne => left != right,
+                        _ => unreachable!("guarded by outer match"),
+                    });
+                }
+            }
             let left = engine
                 .evaluate_quantity_expression(context_id, lhs)
                 .map_err(AnalysisEvalError::from_status)?;
@@ -865,6 +877,30 @@ fn evaluate_analysis_ast(
             compare_quantities(engine, left, *op, right)
         }
     }
+}
+
+/// Evaluates a comparison operand as a boolean, when it plainly is one (a `true`/`false`
+/// literal, or an identifier resolving to a `Value::Bool`) — used so `s.flag == true`-style
+/// Boolean equality checks in `require constraint` bodies don't fall through to the
+/// numeric/quantity comparison path (which cannot parse `true`/`false` as a quantity).
+fn try_evaluate_boolean_operand(
+    engine: &mut EvalEngine<'_>,
+    context_id: &NodeId,
+    operand: &str,
+) -> Option<bool> {
+    let trimmed = operand.trim();
+    if trimmed.eq_ignore_ascii_case("true") {
+        return Some(true);
+    }
+    if trimmed.eq_ignore_ascii_case("false") {
+        return Some(false);
+    }
+    let identifier = parse_standalone_identifier(trimmed)?;
+    let outcome = engine.resolve_identifier_value(context_id, identifier);
+    if outcome.status != EvalStatus::Ok {
+        return None;
+    }
+    outcome.value.as_ref().and_then(Value::as_bool)
 }
 
 fn evaluate_analysis_predicate(

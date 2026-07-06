@@ -611,8 +611,10 @@ fn collect_semantic_ranges_transition_accept(
     out: &mut Vec<(SourceRange, u32)>,
 ) {
     match accept {
-        TransitionAccept::Payload(clause) => collect_semantic_ranges_payload_clause(clause, out),
-        TransitionAccept::Shorthand(expr) => {
+        TransitionAccept::Payload(clause, _via) => {
+            collect_semantic_ranges_payload_clause(clause, out)
+        }
+        TransitionAccept::Shorthand(expr, _via) => {
             out.push((span_to_source_range(&expr.span), TYPE_PROPERTY));
         }
     }
@@ -736,7 +738,9 @@ fn collect_semantic_ranges_occurrence_body_element(
         | OBE::Error(_)
         | OBE::Annotation(_)
         | OBE::AssertConstraint(_)
-        | OBE::Other(_) => {}
+        | OBE::Other(_)
+        | OBE::SuccessionUsage(_)
+        | OBE::Satisfy(_) => {}
     }
 }
 
@@ -755,7 +759,7 @@ fn collect_semantic_ranges_connection_def_body_element(
             }
         }
         CDBE::RefDecl(ref_decl) => collect_semantic_ranges_ref_decl(ref_decl, out),
-        CDBE::ConnectStmt(_) => {}
+        CDBE::ConnectStmt(_) | CDBE::Doc(_) | CDBE::Error(_) => {}
     }
 }
 
@@ -921,7 +925,12 @@ fn collect_semantic_ranges_part_def_body_element(
         | PDBE::Error(_)
         | PDBE::Doc(_)
         | PDBE::Comment(_)
+        | PDBE::AssertConstraint(_)
+        | PDBE::Satisfy(_)
         | PDBE::Other(_) => {}
+        PDBE::VariantUsage(n) => {
+            out.push((span_to_source_range(&n.span), TYPE_PROPERTY));
+        }
     }
 }
 
@@ -998,7 +1007,7 @@ fn collect_semantic_ranges_port_body_element(
         PBE::InOutDecl(w) => {
             out.push((span_to_source_range(&w.span), TYPE_PROPERTY));
         }
-        PBE::Error(_) | PBE::Other(_) => {}
+        PBE::Error(_) | PBE::Other(_) | PBE::Doc(_) => {}
     }
 }
 
@@ -1224,7 +1233,10 @@ fn collect_semantic_ranges_action_def_body_element(
         | ADBE::Decl(_)
         | ADBE::Error(_)
         | ADBE::Doc(_)
-        | ADBE::Annotation(_) => {}
+        | ADBE::Annotation(_)
+        | ADBE::TerminateStmt(_)
+        | ADBE::WhileStmt(_)
+        | ADBE::IfStmt(_) => {}
         ADBE::MetadataAnnotation(meta) => collect_semantic_ranges_metadata_annotation(meta, out),
         ADBE::MetadataKeywordUsage(mk_node) => {
             collect_semantic_ranges_metadata_keyword_usage(mk_node, out);
@@ -1258,7 +1270,10 @@ fn collect_semantic_ranges_action_usage_body_element(
         | AUBE::Error(_)
         | AUBE::Doc(_)
         | AUBE::Annotation(_)
-        | AUBE::Decl(_) => {}
+        | AUBE::Decl(_)
+        | AUBE::TerminateStmt(_)
+        | AUBE::WhileStmt(_)
+        | AUBE::IfStmt(_) => {}
         AUBE::MetadataAnnotation(meta) => collect_semantic_ranges_metadata_annotation(meta, out),
         AUBE::MetadataKeywordUsage(mk_node) => {
             collect_semantic_ranges_metadata_keyword_usage(mk_node, out);

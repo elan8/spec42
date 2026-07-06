@@ -119,6 +119,7 @@ pub(super) fn build_from_port_body_element(
         }
         PBE::InOutDecl(w) => build_in_out_decl(w, uri, container_prefix, parent_id, g),
         PBE::Error(_) | PBE::Other(_) => {}
+        PBE::Doc(doc) => super::attach_doc_comment(g, parent_id, &doc.value.text),
     }
 }
 
