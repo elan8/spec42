@@ -5,6 +5,7 @@ pub mod api;
 pub mod cli;
 pub mod diagrams;
 pub mod domain_libraries;
+#[cfg(test)]
 pub mod elk_layout;
 pub mod environment;
 pub mod headless_renderer;

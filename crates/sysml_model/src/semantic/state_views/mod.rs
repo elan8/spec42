@@ -4,6 +4,7 @@ use std::collections::HashSet;
 
 use url::Url;
 
+use crate::semantic::exposed_ids::filter_by_exposed_ids;
 use crate::semantic::extracted_model::StateMachineDto;
 use crate::SemanticGraph;
 
@@ -20,20 +21,7 @@ pub fn filter_state_machines_by_exposed_ids(
     machines: &[StateMachineDto],
     exposed_ids: &HashSet<String>,
 ) -> Vec<StateMachineDto> {
-    if exposed_ids.is_empty() {
-        return machines.to_vec();
-    }
-
-    machines
-        .iter()
-        .filter(|machine| {
-            exposed_ids.iter().any(|exposed_id| {
-                machine.id == *exposed_id
-                    || machine.id.starts_with(&format!("{exposed_id}::"))
-                    || format!("{}::{}", machine.package_path, machine.name).trim_matches(':')
-                        == exposed_id
-            })
-        })
-        .cloned()
-        .collect()
+    filter_by_exposed_ids(machines, exposed_ids, |machine| {
+        (machine.id.as_str(), machine.package_path.as_str(), machine.name.as_str())
+    })
 }

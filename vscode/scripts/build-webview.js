@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 const esbuild = require('esbuild');
 const path = require('path');
+const { assertElkjsVersionMatchesVendored } = require('./check-elkjs-version');
 
 const rootDir = path.join(__dirname, '..');
 const entryPoint = path.join(rootDir, 'src', 'visualization', 'webview', 'index.ts');
@@ -8,6 +9,10 @@ const outFile = path.join(rootDir, 'media', 'webview', 'visualizer.js');
 
 async function build() {
     try {
+        assertElkjsVersionMatchesVendored(
+            path.join(rootDir, 'node_modules', 'elkjs', 'package.json'),
+            'vscode webview build',
+        );
         await esbuild.build({
             entryPoints: [entryPoint],
             bundle: true,

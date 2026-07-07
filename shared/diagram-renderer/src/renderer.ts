@@ -4,7 +4,7 @@ import type { PreparedView } from "./prepare";
 import { addActionFlowMarkers, renderActionFlowView } from "./views/action-flow";
 import { renderSequenceView, addSequenceMarkers } from "./views/sequence";
 import { addStateTransitionMarkers, renderStateTransitionView } from "./views/state-transition";
-import { renderBrowserView, renderGeometryView, renderGridView } from "./views/standard-views";
+import { renderBrowserView, renderGeometryView, renderGridView } from "./views/standard-views-render";
 import {
   addMarkers,
   applyFit,

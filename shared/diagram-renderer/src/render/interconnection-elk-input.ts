@@ -12,6 +12,7 @@ import {
   splitIbdPortsBySide,
   type PreparedPort,
 } from "./types";
+import { buildElkLayoutOptions } from "./elk-options";
 
 export interface InterconnectionElkEdgeSpec {
   id: string;
@@ -262,23 +263,7 @@ export function buildInterconnectionElkBuild(prepared: InterconnectionPreparedVi
 
   const elkGraphInput = {
     id: "root",
-    layoutOptions: {
-      "elk.algorithm": "layered",
-      "elk.hierarchyHandling": "INCLUDE_CHILDREN",
-      "elk.direction": "RIGHT",
-      "elk.spacing.nodeNode": "150",
-      "elk.layered.spacing.nodeNodeBetweenLayers": "220",
-      "elk.spacing.edgeNode": "110",
-      "elk.spacing.edgeEdge": "90",
-      "elk.edgeRouting": "ORTHOGONAL",
-      "elk.layered.nodePlacement.strategy": "NETWORK_SIMPLEX",
-      "elk.layered.crossingMinimization.strategy": "LAYER_SWEEP",
-      "elk.separateConnectedComponents": "true",
-      "elk.padding": "[top=70,left=70,bottom=70,right=70]",
-      "org.eclipse.elk.portConstraints": "FIXED_ORDER",
-      "org.eclipse.elk.portAlignment.default": "CENTER",
-      "org.eclipse.elk.json.edgeCoords": "ROOT",
-    },
+    layoutOptions: buildElkLayoutOptions("interconnection"),
     children: roots.map((node) => toElkNode(node)),
     edges: elkEdges.map((edge) => ({ id: edge.id, sources: edge.sources, targets: edge.targets })),
   };

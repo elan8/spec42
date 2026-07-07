@@ -14,6 +14,51 @@ Convention: newest entries at the top of each section. Mark an item `Fixed` in p
 
 ## Open
 
+### O-7: `ibd`/`filtered_ibd` computed unconditionally for every view kind despite zero direct TS consumers found
+- **Where:** `crates/sysml_model/src/semantic/visualization/response.rs`
+  (`build_sysml_visualization_from_artifacts`, `ibd_source`/`filtered_ibd` construction).
+- **Symptom:** every non-slim response computes and attaches `ibd: Some(filtered_ibd)` regardless
+  of view kind, but grepping every `shared/diagram-renderer/src/prepare/*.ts` file and the VS Code
+  extension host found **no direct consumer** of `visualization.ibd` for *any* kind — even
+  interconnection-view reads the separately-computed `interconnectionScene` field instead (`ibd` is
+  only an upstream input used to *build* `interconnection_scene`/`package_container_groups`
+  server-side, not something the client re-reads).
+- **Why not fixed in [F-17](#f-17-phase-7-of-the-view-pipeline-refactor-plan--skip-general_view_graph-computation-for-kinds-that-dont-use-it-partial-ibd-skipping-deferred):**
+  `ibd_source` selection has a `resolved_view == "general-view"` special case that triggers a scoped
+  IBD rebuild (`build_merged_workspace_ibd` over `workspace_uris_for_ibd_scope`) whose purpose isn't
+  fully understood — it's suspicious given how tricky
+  [O-1](#o-1-scopedincremental-ibd-build-can-pick-a-different-but-valid-root-than-the-full-workspace-build)'s
+  scoped-vs-full parity gap already proved to be this session. Skipping `ibd` computation for
+  non-interconnection kinds without first understanding why general-view gets its own IBD-scoping
+  branch risks silently breaking whatever that branch exists for.
+- **Suggested next step:** before touching this, find out what (if anything) actually depends on
+  `ibd`/`filtered_ibd` being computed for general-view specifically — check git blame/history on
+  that branch, or instrument it locally to see whether removing it changes any test outcome. If it
+  turns out to be dead (as the TS consumer grep suggests), skipping IBD computation for
+  browser/grid/geometry/sequence/state/action-flow (6 of 8 kinds) would be a meaningful perf win,
+  mirroring [F-17](#f-17-phase-7-of-the-view-pipeline-refactor-plan--skip-general_view_graph-computation-for-kinds-that-dont-use-it-partial-ibd-skipping-deferred)'s
+  `general_view_graph` gating.
+- **Discovered:** 2026-07-07, during Phase 7 investigation (deferred rather than acted on).
+
+### O-6: Interconnection-view and action-flow-view layout is non-deterministic run-to-run
+- **Where:** unroot-caused — likely `HashMap`/`HashSet` iteration order somewhere upstream of ELK graph
+  construction (Rust extraction or TS `prepare`/`layoutPrepared`/`layoutBehaviorGraph`), feeding ELK a
+  differently-ordered node list each run.
+- **Symptom:** running `spec42 diagrams export examples/webshop --selected-view connections --format svg`
+  (interconnection-view) or `--selected-view checkoutPipeline` (action-flow-view) three times back-to-back
+  against the *same unchanged binary* produces three SVGs with different MD5 hashes each time — different
+  layout coordinates, though the same set of node/edge text content (same count, same strings, just
+  different `x`/`y`). `general-view`, `sequence-view`, `state-transition-view`, `browser-view`,
+  `grid-view`, `geometry-view` were all confirmed byte-identical across repeated runs in the same check.
+- **Confirmed pre-existing, not a regression:** discovered incidentally during Phase 1 dead-code-deletion
+  verification of the view-projection refactor plan — reproduced on the unmodified pre-Phase-1 binary, so
+  it predates that work.
+- **Impact:** makes byte-diff-based regression checking unreliable for these 2 of 8 view kinds
+  specifically; future phases must compare structural/text content for interconnection-view and
+  action-flow-view rather than raw SVG bytes. Also a latent risk for any consumer expecting stable output
+  (e.g. golden-file tests, if any exist for these kinds — check before relying on byte comparison there).
+- **Discovered:** 2026-07-07, refactor plan Phase 1 verification.
+
 ### O-5: `general-view` can render completely empty for a valid, filter-less `expose` (pre-existing, not a regression)
 - **Where:** `crates/sysml_model/src/semantic/visualization/response.rs` general-view construction path
   (unclear exactly which stage yet — not root-caused).
@@ -122,6 +167,238 @@ Convention: newest entries at the top of each section. Mark an item `Fixed` in p
 ---
 
 ## Fixed
+
+### F-18: Phase 8 of the view-pipeline refactor plan — fixed the `standard-views.ts` naming collision and split `behavior.ts`
+- **Fixed:** 2026-07-07 · `shared/diagram-renderer/src/views/standard-views.ts` renamed to
+  `standard-views-render.ts`; `shared/diagram-renderer/src/prepare/behavior.ts` split into
+  `prepare/behavior/{common,action-flow,state,sequence,index}.ts`.
+- **Was:** `prepare/standard-views.ts` (prepare-phase: browser/grid/geometry data shaping) and
+  `views/standard-views.ts` (render-phase: SVG drawing for the same 3 kinds) shared an identical
+  filename across different directories/responsibilities — easy to open the wrong one.
+  `prepare/behavior.ts` (487 lines) mixed three largely-independent kind-normalization pipelines
+  (activity/action-flow, state-machine, sequence) in one file, including an 11-way nested ternary
+  for action-kind classification.
+- **Fix:** renamed the render-phase file to `standard-views-render.ts` (1 import site updated in
+  `renderer.ts`, plus a comment in `layout.ts`). Split `behavior.ts` into
+  `prepare/behavior/action-flow.ts` (`prepareActivity`), `state.ts` (`prepareState`),
+  `sequence.ts` (`prepareSequence`), and `common.ts` (the alias-resolution helpers shared by
+  activity and state prep — `buildActivityNodeAliasMap`/`resolveActivityNodeRef`), mirroring the
+  render-side split that already existed (`views/action-flow.ts`/`state-transition.ts`/`sequence.ts`).
+  `prepare/behavior/index.ts` re-exports all three, so `prepare/index.ts`'s existing
+  `from "./behavior"` import kept working unchanged (Node/TS resolves it to the new directory's
+  index automatically) — zero import-path churn at the only call site. Purely mechanical: no
+  logic changed, confirmed by diffing each extracted function's body against the original.
+- **Verified:** `tsc --noEmit` clean, TS `npm test` green. Rebuilt the headless bundle and CLI,
+  re-exported all 8 baseline fixtures: 6 of 8 byte-identical, interconnection-view/action-flow-view
+  showed only the pre-existing [O-6](#o-6-interconnection-view-and-action-flow-view-layout-is-non-deterministic-run-to-run)
+  coordinate non-determinism — confirms the split changed nothing observable. Rust `cargo test`
+  green (unaffected, TS-only change).
+
+### F-17: Phase 7 of the view-pipeline refactor plan — skip `general_view_graph` computation for kinds that don't use it (partial; `ibd` skipping deferred)
+- **Fixed:** 2026-07-07 · `crates/sysml_model/src/semantic/visualization/response.rs`.
+- **Was:** compartment folding (`canonical_general_view_graph`, building `general_view_graph`) and
+  the `package_groups` derived from it ran unconditionally for **every** view kind on every
+  request, even though the plan's original premise ("only general-view needs this") turned out to
+  be only half right on closer inspection.
+- **Investigation before changing anything:** traced every TS consumer of the response payload
+  (`shared/diagram-renderer/src/prepare/*.ts`) directly rather than assuming from the DTO shape.
+  Found `prepare/standard-views.ts`'s `graphNodesForStandardView`/`graphEdgesForStandardView` read
+  `visualization.generalViewGraph ?? visualization.graph` — so **browser-view, grid-view, and
+  geometry-view also need `general_view_graph`**, not just general-view; gating it to general-view
+  alone would have silently dropped compartment folding for those 3 kinds instead of just skipping
+  unused work. interconnection/sequence/state/action-flow confirmed to never read it (they render
+  from their own dedicated `interconnectionScene`/`sequenceDiagrams`/`stateMachines`/
+  `activityDiagrams` payloads instead).
+- **Also investigated, found unused everywhere, but NOT removed:** grepped every TS `prepare/*.ts`
+  file and the VS Code extension host for reads of `visualization.ibd` (as opposed to
+  `interconnectionScene`, which is itself derived server-side from `ibd`) — found **zero** direct
+  consumers for *any* view kind, including interconnection-view. `package_groups` (top-level DTO
+  field, distinct from `prepared.meta.packageContainerGroups` which the renderer actually reads)
+  also appears to have zero consumers anywhere in `shared/diagram-renderer` or `vscode/src`. Did
+  **not** act on either finding this phase: `ibd`-scope selection has a `resolved_view ==
+  "general-view"` special case (`ibd_source` branch) whose purpose isn't fully understood yet and
+  which is adjacent to [O-1](#o-1-scopedincremental-ibd-build-can-pick-a-different-but-valid-root-than-the-full-workspace-build)
+  — a bug area with real behavioral surprises already found this session. Skipping `ibd`
+  computation for non-interconnection kinds is deferred to its own future phase with dedicated
+  investigation, rather than folded into this one under time pressure.
+- **Fix:** added `renderer_uses_general_view_graph(renderer) -> bool` (matches
+  `general-view`/`browser-view`/`grid-view`/`geometry-view`), gating both `general_view_graph` and
+  `package_groups` computation behind it; both fields become the `None` they already were on the
+  `slim` (interconnection) path when the requested kind doesn't need them.
+- **Verified:** full `cargo test` green (no existing test asserted `general_view_graph.is_some()`
+  for interconnection/sequence/state/action-flow, confirming the gate is safe). Rebuilt the CLI and
+  re-exported all 8 baseline fixtures: 6 of 8 byte-identical, interconnection/action-flow showed only
+  the pre-existing [O-6](#o-6-interconnection-view-and-action-flow-view-layout-is-non-deterministic-run-to-run)
+  coordinate non-determinism. Cross-checked `--format json` output directly: `generalViewGraph` is
+  present for general/browser/grid/geometry and correctly absent for
+  interconnection/sequence/state-transition/action-flow. TS `npm test` green.
+- **Not done — flagging honestly:** the plan asked for a manual VS Code webview spot-check for this
+  phase specifically, on top of CLI verification. This session has no running VS Code extension
+  host to click through, so that step wasn't possible here; the TS consumer code was traced
+  line-by-line instead as the best available substitute. Recommend an actual webview click-through
+  (open general-view, browser-view, and interconnection-view on a real workspace) before shipping
+  this change, given the plan's explicit "don't trust CLI/unit tests alone" lesson from earlier this
+  session.
+
+### F-16: Phase 6 of the view-pipeline refactor plan — deduped exposed-id filtering
+- **Fixed:** 2026-07-07 · new `crates/sysml_model/src/semantic/exposed_ids.rs`;
+  `sequence_views/mod.rs`, `state_views/mod.rs`, `visualization/projection.rs`.
+- **Was:** `filter_sequence_diagrams_by_exposed_ids` and `filter_state_machines_by_exposed_ids`
+  were near-verbatim copy-pasted 3-way id-matching logic (exact match / `::`-prefixed descendant /
+  reconstructed `package_path::name` match), differing only in field/type names.
+- **Fix:** extracted the shared logic into `exposed_ids::filter_by_exposed_ids`, generic over any
+  `T` via a `key_of` closure extracting `(id, package_path, name)`; both call sites now delegate to
+  it. Investigated whether `filter_activity_diagrams_by_graph`'s structurally different approach
+  (matches against an already-projected graph's action-like nodes by `(name, top_level_package)`,
+  not against a raw exposed-ids set) was drift or intentional — confirmed **intentional**
+  (action-flow-view filtering needs to agree with whatever `ProjectionStrategy` already scoped into
+  the graph, not re-derive exposure independently) and left it alone, adding a doc comment
+  cross-referencing the new shared helper so a future reader doesn't "fix" the difference away.
+- **Verified:** `cargo build` clean. Full `cargo test` green. Rebuilt the CLI and re-exported all 8
+  baseline fixtures: 6 of 8 byte-identical, interconnection-view/action-flow-view showed only the
+  pre-existing [O-6](#o-6-interconnection-view-and-action-flow-view-layout-is-non-deterministic-run-to-run)
+  coordinate non-determinism (sequence-view and state-transition-view — the two kinds this phase
+  actually touches — were both byte-identical, confirming zero behavior change).
+
+### F-15: Phase 5 of the view-pipeline refactor plan — DTO builder for `SysmlVisualizationResultDto`
+- **Fixed:** 2026-07-07 · `crates/sysml_model/src/semantic/visualization/response.rs`.
+- **Was:** the full ~20-field `SysmlVisualizationResultDto` struct literal was hand-duplicated 4
+  times across `build_sysml_visualization_from_artifacts` — 3 of those 4 (no view candidates,
+  no candidate matched the request, matched candidate unsupported) were **identical field-for-field**
+  except `view_candidates`, `selected_view`, `selected_view_name`, and `empty_state_message`.
+- **Fix:** extracted the 3 identical branches into one `empty_visualization_response(...)` helper
+  taking exactly those 4 varying values as parameters; all 3 call sites reduced from ~35-line
+  literals to a single call each (~90 lines removed net). Also removed the now-dead outer
+  `empty_graph` local (its only uses moved inside the new helper). The 4th (success) branch's
+  literal was left as-is — it's not duplicated anywhere, so there was nothing to consolidate there
+  under this phase's "pure mechanical, no behavior change" scope.
+- **Verified:** `cargo build` clean, no new warnings. Full `cargo test` green, including the ts-rs
+  golden-binding test (`typescript_bindings.rs`) — confirms no field/type shape changed, as
+  expected since only construction-site code moved. Rebuilt the CLI and re-exported all 8 baseline
+  fixtures: 6 of 8 byte-identical, interconnection-view/action-flow-view showed the same
+  pre-existing [O-6](#o-6-interconnection-view-and-action-flow-view-layout-is-non-deterministic-run-to-run)
+  coordinate non-determinism only. Also spot-checked a `--format json` export to confirm the new
+  helper serializes correctly end-to-end via the CLI, not just at the Rust type level. TS `npm test`
+  green (unaffected, Rust-only change).
+
+### F-14: Phase 4 of the view-pipeline refactor plan — unified the 3 ELK option-builders (and killed dead code found along the way)
+- **Fixed:** 2026-07-07 · new `shared/diagram-renderer/src/render/elk-options.ts`;
+  `render/layout.ts`, `render/interconnection-elk-input.ts`, `views/behavior-common.ts`.
+- **Was:** general-view (`render/layout.ts`), interconnection-view
+  (`render/interconnection-elk-input.ts`), and the behavior family (`views/behavior-common.ts`)
+  each hand-rolled their own ELK `layoutOptions` object with independently drifted spacing/padding/
+  aspectRatio values and no shared defaults.
+- **Bigger finding while auditing `layout.ts`:** the "interconnection vs general" ternary branches
+  inside `layoutPrepared`'s root `graph.layoutOptions` (and the `width`/`height`/`packageGroups`
+  ternaries just above them) were **entirely dead code** — `layoutPrepared` returns early via
+  `layoutInterconnectionPrepared(prepared)` whenever `prepared.view === "interconnection-view"`
+  (a few lines above), so by the time execution reached those ternaries, the interconnection branch
+  could never fire. Confirmed by inspecting the actually-live interconnection ELK options in
+  `interconnection-elk-input.ts:263-281`: different key set entirely (`portConstraints: FIXED_ORDER`
+  + `portAlignment.default: CENTER` + `crossingMinimization.strategy: LAYER_SWEEP`, no
+  `aspectRatio`) versus the dead code's `portConstraints: FIXED_SIDE` + `aspectRatio: 1.6`, no
+  `portAlignment`/`crossingMinimization` at all. Not a runtime bug (the dead branch never executed),
+  but genuinely misleading to read.
+- **Fix:** `render/elk-options.ts` exports `buildElkLayoutOptions(kind, overrides?)` with options
+  that were already identical across every *live* call site as shared defaults, and the previously
+  hand-rolled (but never behaviorally wrong) values preserved verbatim as per-kind defaults for
+  `general`/`interconnection`/`behavior-state`/`behavior-action`. All 3 call sites now build their
+  options through it, supplying only real per-invocation deltas (`useHierarchy` for general-view,
+  `horizontal` direction for behavior views) as overrides. The dead `isInterconnectionView`
+  ternaries and the now-unreachable variable itself were deleted from `layout.ts`.
+- **Verified:** TS `npm test` and `tsc --noEmit` clean. Rebuilt the headless bundle and CLI,
+  re-exported all 8 baseline fixtures: general/sequence/state-transition/browser/grid/geometry
+  byte-identical to pre-Phase-4 output (confirms the consolidation preserved every live value
+  exactly); interconnection-view and action-flow-view showed the same pre-existing
+  [O-6](#o-6-interconnection-view-and-action-flow-view-layout-is-non-deterministic-run-to-run)
+  coordinate non-determinism, same text content otherwise. Full Rust `cargo test` green
+  (Phase 4 is TS-only; Rust suite run as a sanity check).
+
+### F-13: Phase 3 of the view-pipeline refactor plan — one canonical element-kind classifier
+- **Fixed:** 2026-07-07 · new `crates/sysml_model/src/semantic/element_kind_classify.rs`;
+  `view_projection.rs`, `model_projection.rs`, `reference_resolution.rs`.
+- **Was:** the same loose "does this `element_type` string look like a part/action/port/attribute"
+  substring check was independently reimplemented in **4** places, not the 3 originally audited:
+  `is_part_like`/`is_action_like` (`view_projection.rs`), `is_port_like`/`is_attribute_like`/
+  `is_parameter_like` (`model_projection.rs`), and a 4th, previously-unflagged instance —
+  `is_part_like_kind` (`reference_resolution.rs`), doing the identical `.to_lowercase().contains("part")`
+  check but typed to take `&ElementKind` instead of `&str`.
+- **Fix:** consolidated all 5 predicates into one `element_kind_classify.rs` module, replacing all 4
+  call sites. Audited for behavioral disagreement first (per the risk this phase was flagged with) —
+  all 4 implementations turned out identical once normalized, so this was a pure move, not a bugfix.
+  `is_definition_element_kind`/`is_reference_element_kind`/`is_part_instance_kind`
+  (`ibd/extract_impl.rs`) were also audited but left as-is: `is_definition_element_kind` already
+  delegates to the canonical `ElementKind::is_definition()` (no duplication), and the other two are
+  IBD-domain-specific concepts (definition/reference/instance distinction for interconnection
+  scoping) not duplicated anywhere else — correctly scoped to stay local to the `ibd` module.
+- **Verified:** full `cargo test` (one test, `interconnection_export_matches_slim_scoped_lsp_contract_for_drone`,
+  failed once under parallel execution then passed reliably across two full reruns — traced to the
+  pre-existing [O-6](#o-6-interconnection-view-and-action-flow-view-layout-is-non-deterministic-run-to-run)
+  layout non-determinism, not this change, since Phase 3 touches only element-kind classification).
+  Rebuilt the CLI and re-exported all 8 baseline fixtures: 6 of 8 byte-identical, the other 2
+  (interconnection-view, action-flow-view) confirmed same text content/counts as baseline (only
+  coordinates differ, consistent with O-6). TS `npm test` green (unaffected, Rust-only change).
+
+### F-12: Phase 2 of the view-pipeline refactor plan — pinned the ELK layout engine version
+- **Fixed:** 2026-07-07 · `vscode/node_modules` (reinstalled), new
+  `crates/server/assets/elkjs/VENDORED_VERSION`, `vscode/scripts/check-elkjs-version.js`,
+  `vscode/scripts/build-webview.js`, `vscode/scripts/build-headless-renderer.js`.
+- **Was:** the CLI/headless SVG export path uses hand-vendored ELK assets
+  (`crates/server/assets/elkjs/{elk-api.js,elk-worker.min.js}`, confirmed byte-identical to
+  `shared/diagram-renderer/node_modules/elkjs@0.11.1`), while the VS Code webview build resolves
+  `elkjs` from `vscode/node_modules` directly. Both `package.json`s pin `elkjs@^0.11.1`, but the
+  actually-installed `vscode/node_modules/elkjs` had drifted to `0.8.2` — meaning a webview build
+  right now would lay out diagrams with a materially older ELK than the CLI, silently, with nothing
+  catching it.
+- **Fix:** reinstalled `vscode/node_modules` from the lockfile (`npm ci`), which now correctly
+  resolves `elkjs@0.11.1`. Added a `VENDORED_VERSION` marker recording which elkjs version
+  `crates/server/assets/elkjs/*` was vendored from, plus a small
+  `assertElkjsVersionMatchesVendored` check wired into both `build-webview.js` (checks
+  `vscode/node_modules/elkjs`, the webview's actual runtime dependency) and
+  `build-headless-renderer.js` (checks `shared/diagram-renderer/node_modules/elkjs`, the source the
+  vendored Rust assets should be re-generated from) — either build now fails loudly with a clear
+  fix-it message if its resolved elkjs version ever diverges from the vendored marker again, instead
+  of silently drifting.
+- **Verified:** confirmed the check fires correctly by deliberately mismatching the marker and
+  re-running `build-webview.js` (failed with the expected error, exit code 1), then restored it and
+  confirmed both builds pass clean. Rebuilt the CLI and re-exported the `general-view` baseline
+  fixture — byte-identical to pre-Phase-2 output, as expected (the CLI's vendored assets were already
+  correct; this fix only addressed the webview's local install drift and added the guard). Full
+  `cargo test` and TS `npm test` green.
+
+### F-11: Phase 1 of the view-pipeline refactor plan — dead-code deletions
+- **Fixed:** 2026-07-07 · `crates/server/src/lib.rs`, `crates/sysml_model/src/semantic/ibd/extract_impl.rs`,
+  `shared/diagram-renderer/src/views/standard-views.ts`.
+- **What:** first phase of a broader consistency/maintainability refactor of the view-projection/rendering
+  pipeline (see the refactor plan for the full 8-phase scope). Pure deletions/consolidation only, no
+  behavior change:
+  - `crates/server/src/lib.rs`: gated `pub mod elk_layout;` behind `#[cfg(test)]` — its only caller,
+    `legacy_elk_svg.rs`, was already test-only, so ~1.6MB of embedded ELK JS assets were shipping in every
+    release binary for zero runtime benefit.
+  - `crates/sysml_model/src/semantic/ibd/extract_impl.rs`: deleted `prune_redundant_top_level_roots`
+    (confirmed zero production call sites — only self-exercised by its own unit test) plus the helpers
+    that became orphaned once it was gone (`typed_by_name`, `attribute_text`, `last_type_segment`) and
+    their test.
+  - `shared/diagram-renderer/src/views/standard-views.ts`: removed a verbatim copy of
+    `asRecord`/`asArray`/`asString`, now imported from `prepare/util.ts` (the two copies were confirmed
+    byte-identical before merging).
+  - Triaged 3 other flagged `#[allow(dead_code)]`/"legacy wrapper" sites
+    (`relationships.rs` `add_cross_document_edges_for_uri`, `lsp_server` `symbols.rs`'s staged code-lens
+    helpers, `sysml_model` `model.rs`'s staged `RelationshipKind` variants) — all 3 confirmed genuinely
+    load-bearing or intentionally staged (not organic drift), left as-is; they already carry adequate
+    doc comments explaining why.
+  - **Not done:** `views/behavior-common.ts`'s `truncateLabel` vs `render/drawing.ts`'s `truncate` were
+    flagged as a likely duplicate in the original audit, but on inspection they have **different
+    behavior** (`truncate` doesn't trim and appends `...`; `truncateLabel` trims first and appends `..`) —
+    merging them would be a real behavior change, not a pure deletion, so left alone as out of scope for
+    this phase.
+- **Verified via CLI:** rebuilt the headless bundle and `spec42` binary, re-exported all 8 view-kind
+  baseline fixtures. 6 of 8 were byte-identical to the pre-change baseline; the other 2
+  (interconnection-view, action-flow-view) differed, but investigation found this is pre-existing
+  layout non-determinism unrelated to this change (see [O-6](#o-6-interconnection-view-and-action-flow-view-layout-is-non-deterministic-run-to-run))
+  — same node/edge text content and counts, only coordinates differ, and the same non-determinism
+  reproduces on the unmodified pre-Phase-1 binary across repeated runs.
+- **Full workspace `cargo test` and TS `npm test`** green throughout.
 
 ### F-10: Deleted the duplicate Rust `prepared_view` preparers for 6 of 7 view kinds (root-causes F-9's bug class)
 - **Fixed:** 2026-07-07 · deleted `crates/sysml_model/src/semantic/prepared_view/preparers/graph.rs`,

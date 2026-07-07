@@ -10,6 +10,7 @@
 use std::collections::{HashMap, HashSet};
 
 use crate::semantic::dto::{GraphEdgeDto, GraphNodeDto, SysmlGraphDto};
+use crate::semantic::element_kind_classify::{is_action_like, is_part_like};
 use crate::semantic::explicit_views::{node_matches_all_filters, EvaluatedView, FilterExpr};
 use crate::semantic::standard_view_defaults::grid_subtype_for_filters;
 
@@ -402,14 +403,6 @@ fn expand_structural_scope(
     }
 
     expanded
-}
-
-fn is_part_like(element_type: &str) -> bool {
-    element_type.to_lowercase().contains("part")
-}
-
-fn is_action_like(element_type: &str) -> bool {
-    element_type.to_lowercase().contains("action")
 }
 
 fn with_ancestors(

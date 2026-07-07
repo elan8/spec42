@@ -1,23 +1,10 @@
 import * as d3 from "d3";
 import type { PreparedNode } from "../prepare";
+import { asArray, asRecord, asString } from "../prepare/util";
 import type { DiagramTheme } from "../theme";
 import { attachBehaviorNodeClick } from "./behavior-interaction";
 import type { BehaviorSceneContext } from "./behavior-common";
 import { truncateLabel } from "./behavior-common";
-
-function asRecord(value: unknown): Record<string, unknown> {
-  return value && typeof value === "object" ? (value as Record<string, unknown>) : {};
-}
-
-function asArray(value: unknown): unknown[] {
-  return Array.isArray(value) ? value : [];
-}
-
-function asString(value: unknown, fallback = ""): string {
-  if (typeof value === "string") return value;
-  if (typeof value === "number" || typeof value === "boolean") return String(value);
-  return fallback;
-}
 
 function drawProvisionalBadge(
   root: d3.Selection<SVGGElement, unknown, null, undefined>,

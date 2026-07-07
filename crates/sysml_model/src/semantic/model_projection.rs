@@ -6,6 +6,7 @@ use serde_json::{json, Value};
 use url::Url;
 
 use crate::semantic::dto::{range_to_dto, GraphEdgeDto, GraphNodeDto, SysmlGraphDto};
+use crate::semantic::element_kind_classify::{is_attribute_like, is_parameter_like, is_port_like};
 use crate::semantic::graph::SemanticGraph;
 
 pub fn canonical_general_view_graph(
@@ -184,19 +185,6 @@ fn is_general_view_inline_detail(node: &GraphNodeDto) -> bool {
         // Anonymous redefinition stubs like `part :>> engines[5] = (...)` should not
         // surface as standalone structure nodes in General View.
         || is_anonymous_redefinition_stub(node)
-}
-
-fn is_port_like(element_type: &str) -> bool {
-    element_type.to_lowercase().contains("port")
-}
-
-fn is_attribute_like(element_type: &str) -> bool {
-    let lower = element_type.to_lowercase();
-    lower.contains("attribute") || lower.contains("property")
-}
-
-fn is_parameter_like(element_type: &str) -> bool {
-    element_type.to_lowercase().contains("parameter")
 }
 
 fn is_anonymous_redefinition_stub(node: &GraphNodeDto) -> bool {

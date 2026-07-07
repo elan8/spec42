@@ -4,6 +4,7 @@ import type { PreparedNode, PreparedView } from "../prepare";
 import type { RenderOptions } from "../renderer";
 import type { DiagramTheme } from "../theme";
 import { collectElkEdgeLabels, edgeLabelPositionFromSections, estimateElkLabelBox, type ElkLabelBox } from "./elk-label-utils";
+import { buildElkLayoutOptions } from "../render/elk-options";
 
 export { edgeLabelPositionFromSections };
 
@@ -180,37 +181,14 @@ export async function layoutBehaviorGraph(
   const graph = {
     id: prepared.title || "behavior",
     layoutOptions: isState
-      ? {
-          "elk.algorithm": "layered",
+      ? buildElkLayoutOptions("behavior-state", {
           "elk.direction": horizontal ? "RIGHT" : "DOWN",
-          "elk.hierarchyHandling": "INCLUDE_CHILDREN",
-          "elk.edgeRouting": "ORTHOGONAL",
-          "elk.layered.nodePlacement.strategy": "NETWORK_SIMPLEX",
-          "elk.layered.crossingMinimization.strategy": "LAYER_SWEEP",
-          "elk.layered.spacing.nodeNodeBetweenLayers": "230",
-          "elk.spacing.nodeNode": "190",
-          "elk.spacing.edgeNode": "130",
-          "elk.spacing.edgeEdge": "110",
-          "elk.spacing.edgeLabel": "12",
-          "elk.padding": "[top=100,left=90,bottom=90,right=90]",
-          "elk.separateConnectedComponents": "true",
-          "elk.json.edgeCoords": "ROOT",
-        }
-      : {
-          "elk.algorithm": "layered",
+        })
+      : buildElkLayoutOptions("behavior-action", {
           "elk.direction": horizontal ? "RIGHT" : "DOWN",
-          "elk.edgeRouting": "ORTHOGONAL",
-          "elk.layered.nodePlacement.strategy": "NETWORK_SIMPLEX",
-          "elk.layered.crossingMinimization.strategy": "LAYER_SWEEP",
           "elk.spacing.nodeNode": horizontal ? "90" : "120",
           "elk.layered.spacing.nodeNodeBetweenLayers": horizontal ? "190" : "170",
-          "elk.spacing.edgeNode": "80",
-          "elk.spacing.edgeEdge": "60",
-          "elk.spacing.edgeLabel": "12",
-          "elk.padding": "[top=80,left=80,bottom=80,right=80]",
-          "elk.separateConnectedComponents": "true",
-          "elk.json.edgeCoords": "ROOT",
-        },
+        }),
     children,
     edges,
   };

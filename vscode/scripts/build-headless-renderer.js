@@ -2,6 +2,7 @@
 const esbuild = require('esbuild');
 const fs = require('fs');
 const path = require('path');
+const { assertElkjsVersionMatchesVendored } = require('./check-elkjs-version');
 
 const rootDir = path.join(__dirname, '..');
 const repoRoot = path.join(rootDir, '..');
@@ -16,6 +17,10 @@ const nodePaths = [
 
 async function build() {
     try {
+        assertElkjsVersionMatchesVendored(
+            path.join(repoRoot, 'shared', 'diagram-renderer', 'node_modules', 'elkjs', 'package.json'),
+            'headless renderer build (source for crates/server/assets/elkjs vendoring)',
+        );
         fs.mkdirSync(path.dirname(outFile), { recursive: true });
         await esbuild.build({
             entryPoints: [entryPoint],

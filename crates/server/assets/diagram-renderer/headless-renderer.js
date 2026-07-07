@@ -301,77 +301,36 @@ var Spec42HeadlessRendererBundle = (() => {
     return { title: asString(diagram.name, fallbackTitle), view, nodes, edges };
   }
 
-  // shared/diagram-renderer/src/prepare/graph.ts
-  function isGeneralViewDiagramNode(node) {
-    if (isSyntheticPackage(node)) {
-      return false;
-    }
-    return isOverviewVisualElementType(elementTypeOf(node));
-  }
-  function buildGeneralPackageContainerGroups(nodes) {
-    const byPackage = /* @__PURE__ */ new Map();
-    for (const node of nodes) {
-      const qn = asString(asRecord(node.attributes).qualifiedName);
-      const sep = qn.indexOf("::");
-      if (sep <= 0) continue;
-      const pkg = qn.slice(0, sep);
-      const members = byPackage.get(pkg) ?? [];
-      members.push(node.id);
-      byPackage.set(pkg, members);
-    }
-    if (byPackage.size < 2) return [];
-    return [...byPackage.entries()].map(([name, memberIds]) => ({
-      id: `package:${name}`,
-      name,
-      memberIds
-    }));
-  }
-  function prepareGraph(graphInput, visualization) {
-    const graph = asRecord(graphInput);
-    const rawNodes = asArray(graph.nodes).map(asRecord);
-    const sourceNodes = rawNodes.filter((node) => isGeneralViewDiagramNode(node));
-    const nodeIds = new Set(sourceNodes.map((node) => asString(node.id)));
-    const nodes = sourceNodes.map((node) => ({
-      id: asString(node.id),
-      label: asString(node.name ?? node.qualifiedName ?? node.id, "Unnamed"),
-      kind: elementTypeOf(node) || "Element",
-      sourcePath: asString(node.sourcePath ?? node.source_path) || null,
-      uri: nodeUri(node),
-      range: node.range ?? null,
-      attributes: {
-        ...asRecord(node.attributes),
-        qualifiedName: asString(node.qualifiedName ?? asRecord(node.attributes).qualifiedName),
-        isPackage: isPackage(node),
-        isDefinition: isDefinitionKind(asString(node.type ?? node.element_type, "")),
-        isReference: isReferenceKind(asString(node.type ?? node.element_type, ""))
-      }
-    }));
-    const edges = asArray(graph.edges).map(asRecord).filter((edge) => nodeIds.has(asString(edge.source)) && nodeIds.has(asString(edge.target))).map((edge, index) => {
-      const relationType = asString(edge.type ?? edge.rel_type ?? edge.relationType ?? edge.name, "");
-      const label = asString(edge.name ?? edge.label ?? edge.type ?? edge.rel_type, "");
-      return {
-        id: asString(edge.id, `edge-${index}`),
-        source: asString(edge.source),
-        target: asString(edge.target),
-        label,
-        edgeKind: normalizeEdgeKind(relationType),
-        attributes: {
-          ...asRecord(edge.attributes),
-          relationType: normalizeEdgeKind(relationType)
-        }
-      };
-    });
-    const packageContainerGroups = buildGeneralPackageContainerGroups(nodes);
-    return {
-      title: visualization?.selectedViewName || "SysML View",
-      view: visualization?.view || "general-view",
-      nodes,
-      edges,
-      meta: packageContainerGroups.length > 0 ? { packageContainerGroups } : void 0
+  // shared/diagram-renderer/src/prepare/behavior/common.ts
+  function buildActivityNodeAliasMap(nodes) {
+    const aliases = /* @__PURE__ */ new Map();
+    const register = (alias, nodeId) => {
+      const key = asString(alias).trim();
+      if (!key) return;
+      if (!aliases.has(key)) aliases.set(key, nodeId);
+      const normalized = key.replace(/::/g, ".");
+      if (!aliases.has(normalized)) aliases.set(normalized, nodeId);
+      const lastSegment = normalized.split(".").filter(Boolean).pop();
+      if (lastSegment && !aliases.has(lastSegment)) aliases.set(lastSegment, nodeId);
     };
+    for (const node of nodes) {
+      register(node.id, node.id);
+      register(node.label, node.id);
+      register(asRecord(node.attributes).qualifiedName, node.id);
+    }
+    return aliases;
+  }
+  function resolveActivityNodeRef(value, aliases) {
+    const key = asString(value).trim();
+    if (!key) return "";
+    const normalized = key.replace(/::/g, ".");
+    const segments = normalized.split(".").filter(Boolean);
+    const last = segments[segments.length - 1] || "";
+    const first = segments[0] || "";
+    return aliases.get(key) ?? aliases.get(normalized) ?? (last ? aliases.get(last) : void 0) ?? (first ? aliases.get(first) : void 0) ?? key;
   }
 
-  // shared/diagram-renderer/src/prepare/behavior.ts
+  // shared/diagram-renderer/src/prepare/behavior/action-flow.ts
   function activityDiagramCatalog(visualization) {
     const normalized = asArray(visualization.diagrams).map(asRecord);
     if (normalized.length > 0) {
@@ -442,33 +401,6 @@ var Spec42HeadlessRendererBundle = (() => {
     });
     return enriched.filter((node) => allowedKinds.has(node.kind));
   }
-  function buildActivityNodeAliasMap(nodes) {
-    const aliases = /* @__PURE__ */ new Map();
-    const register = (alias, nodeId) => {
-      const key = asString(alias).trim();
-      if (!key) return;
-      if (!aliases.has(key)) aliases.set(key, nodeId);
-      const normalized = key.replace(/::/g, ".");
-      if (!aliases.has(normalized)) aliases.set(normalized, nodeId);
-      const lastSegment = normalized.split(".").filter(Boolean).pop();
-      if (lastSegment && !aliases.has(lastSegment)) aliases.set(lastSegment, nodeId);
-    };
-    for (const node of nodes) {
-      register(node.id, node.id);
-      register(node.label, node.id);
-      register(asRecord(node.attributes).qualifiedName, node.id);
-    }
-    return aliases;
-  }
-  function resolveActivityNodeRef(value, aliases) {
-    const key = asString(value).trim();
-    if (!key) return "";
-    const normalized = key.replace(/::/g, ".");
-    const segments = normalized.split(".").filter(Boolean);
-    const last = segments[segments.length - 1] || "";
-    const first = segments[0] || "";
-    return aliases.get(key) ?? aliases.get(normalized) ?? (last ? aliases.get(last) : void 0) ?? (first ? aliases.get(first) : void 0) ?? key;
-  }
   function prepareActivity(visualization) {
     const catalog = activityDiagramCatalog(visualization);
     const selected = selectNamedDiagram(catalog, visualization?.selectedViewName, visualization?.selectedView);
@@ -522,6 +454,8 @@ var Spec42HeadlessRendererBundle = (() => {
       }
     };
   }
+
+  // shared/diagram-renderer/src/prepare/behavior/state.ts
   function stateMachineCatalog(visualization) {
     const normalized = asArray(visualization.stateMachines).map(asRecord);
     if (normalized.length > 0) {
@@ -754,6 +688,78 @@ var Spec42HeadlessRendererBundle = (() => {
       }
     };
   }
+
+  // shared/diagram-renderer/src/prepare/graph.ts
+  function isGeneralViewDiagramNode(node) {
+    if (isSyntheticPackage(node)) {
+      return false;
+    }
+    return isOverviewVisualElementType(elementTypeOf(node));
+  }
+  function buildGeneralPackageContainerGroups(nodes) {
+    const byPackage = /* @__PURE__ */ new Map();
+    for (const node of nodes) {
+      const qn = asString(asRecord(node.attributes).qualifiedName);
+      const sep = qn.indexOf("::");
+      if (sep <= 0) continue;
+      const pkg = qn.slice(0, sep);
+      const members = byPackage.get(pkg) ?? [];
+      members.push(node.id);
+      byPackage.set(pkg, members);
+    }
+    if (byPackage.size < 2) return [];
+    return [...byPackage.entries()].map(([name, memberIds]) => ({
+      id: `package:${name}`,
+      name,
+      memberIds
+    }));
+  }
+  function prepareGraph(graphInput, visualization) {
+    const graph = asRecord(graphInput);
+    const rawNodes = asArray(graph.nodes).map(asRecord);
+    const sourceNodes = rawNodes.filter((node) => isGeneralViewDiagramNode(node));
+    const nodeIds = new Set(sourceNodes.map((node) => asString(node.id)));
+    const nodes = sourceNodes.map((node) => ({
+      id: asString(node.id),
+      label: asString(node.name ?? node.qualifiedName ?? node.id, "Unnamed"),
+      kind: elementTypeOf(node) || "Element",
+      sourcePath: asString(node.sourcePath ?? node.source_path) || null,
+      uri: nodeUri(node),
+      range: node.range ?? null,
+      attributes: {
+        ...asRecord(node.attributes),
+        qualifiedName: asString(node.qualifiedName ?? asRecord(node.attributes).qualifiedName),
+        isPackage: isPackage(node),
+        isDefinition: isDefinitionKind(asString(node.type ?? node.element_type, "")),
+        isReference: isReferenceKind(asString(node.type ?? node.element_type, ""))
+      }
+    }));
+    const edges = asArray(graph.edges).map(asRecord).filter((edge) => nodeIds.has(asString(edge.source)) && nodeIds.has(asString(edge.target))).map((edge, index) => {
+      const relationType = asString(edge.type ?? edge.rel_type ?? edge.relationType ?? edge.name, "");
+      const label = asString(edge.name ?? edge.label ?? edge.type ?? edge.rel_type, "");
+      return {
+        id: asString(edge.id, `edge-${index}`),
+        source: asString(edge.source),
+        target: asString(edge.target),
+        label,
+        edgeKind: normalizeEdgeKind(relationType),
+        attributes: {
+          ...asRecord(edge.attributes),
+          relationType: normalizeEdgeKind(relationType)
+        }
+      };
+    });
+    const packageContainerGroups = buildGeneralPackageContainerGroups(nodes);
+    return {
+      title: visualization?.selectedViewName || "SysML View",
+      view: visualization?.view || "general-view",
+      nodes,
+      edges,
+      meta: packageContainerGroups.length > 0 ? { packageContainerGroups } : void 0
+    };
+  }
+
+  // shared/diagram-renderer/src/prepare/behavior/sequence.ts
   function prepareSequence(visualization) {
     const selected = selectNamedDiagram(
       visualization?.sequenceDiagrams,
@@ -4386,6 +4392,70 @@ var Spec42HeadlessRendererBundle = (() => {
     };
   }
 
+  // shared/diagram-renderer/src/render/elk-options.ts
+  var COMMON_ELK_OPTIONS = {
+    "elk.algorithm": "layered",
+    "elk.edgeRouting": "ORTHOGONAL",
+    "elk.layered.nodePlacement.strategy": "NETWORK_SIMPLEX",
+    "elk.separateConnectedComponents": "true",
+    "elk.json.edgeCoords": "ROOT"
+  };
+  var PER_KIND_DEFAULTS = {
+    general: {
+      "elk.direction": "DOWN",
+      "elk.spacing.nodeNode": "140",
+      "elk.layered.spacing.nodeNodeBetweenLayers": "180",
+      "elk.spacing.edgeNode": "90",
+      "elk.spacing.edgeEdge": "80",
+      "elk.aspectRatio": "1.4",
+      "elk.padding": "[top=100,left=100,bottom=100,right=100]",
+      "org.eclipse.elk.portConstraints": "FIXED_SIDE"
+    },
+    interconnection: {
+      "elk.hierarchyHandling": "INCLUDE_CHILDREN",
+      "elk.direction": "RIGHT",
+      "elk.spacing.nodeNode": "150",
+      "elk.layered.spacing.nodeNodeBetweenLayers": "220",
+      "elk.spacing.edgeNode": "110",
+      "elk.spacing.edgeEdge": "90",
+      "elk.layered.crossingMinimization.strategy": "LAYER_SWEEP",
+      "elk.padding": "[top=70,left=70,bottom=70,right=70]",
+      "org.eclipse.elk.portConstraints": "FIXED_ORDER",
+      "org.eclipse.elk.portAlignment.default": "CENTER"
+    },
+    "behavior-state": {
+      "elk.hierarchyHandling": "INCLUDE_CHILDREN",
+      "elk.layered.crossingMinimization.strategy": "LAYER_SWEEP",
+      "elk.layered.spacing.nodeNodeBetweenLayers": "230",
+      "elk.spacing.nodeNode": "190",
+      "elk.spacing.edgeNode": "130",
+      "elk.spacing.edgeEdge": "110",
+      "elk.spacing.edgeLabel": "12",
+      "elk.padding": "[top=100,left=90,bottom=90,right=90]"
+    },
+    "behavior-action": {
+      "elk.layered.crossingMinimization.strategy": "LAYER_SWEEP",
+      "elk.spacing.edgeNode": "80",
+      "elk.spacing.edgeEdge": "60",
+      "elk.spacing.edgeLabel": "12",
+      "elk.padding": "[top=80,left=80,bottom=80,right=80]"
+    }
+  };
+  function buildElkLayoutOptions(kind, overrides = {}) {
+    const merged = {
+      ...COMMON_ELK_OPTIONS,
+      ...PER_KIND_DEFAULTS[kind]
+    };
+    for (const [key, value] of Object.entries(overrides)) {
+      if (value === void 0) {
+        delete merged[key];
+      } else {
+        merged[key] = value;
+      }
+    }
+    return merged;
+  }
+
   // shared/diagram-renderer/src/views/behavior-common.ts
   var behaviorElk = new HeadlessElk();
   function nodeKind(node) {
@@ -4505,36 +4575,13 @@ var Spec42HeadlessRendererBundle = (() => {
     const isState = options.mode === "state";
     const graph = {
       id: prepared.title || "behavior",
-      layoutOptions: isState ? {
-        "elk.algorithm": "layered",
+      layoutOptions: isState ? buildElkLayoutOptions("behavior-state", {
+        "elk.direction": horizontal ? "RIGHT" : "DOWN"
+      }) : buildElkLayoutOptions("behavior-action", {
         "elk.direction": horizontal ? "RIGHT" : "DOWN",
-        "elk.hierarchyHandling": "INCLUDE_CHILDREN",
-        "elk.edgeRouting": "ORTHOGONAL",
-        "elk.layered.nodePlacement.strategy": "NETWORK_SIMPLEX",
-        "elk.layered.crossingMinimization.strategy": "LAYER_SWEEP",
-        "elk.layered.spacing.nodeNodeBetweenLayers": "230",
-        "elk.spacing.nodeNode": "190",
-        "elk.spacing.edgeNode": "130",
-        "elk.spacing.edgeEdge": "110",
-        "elk.spacing.edgeLabel": "12",
-        "elk.padding": "[top=100,left=90,bottom=90,right=90]",
-        "elk.separateConnectedComponents": "true",
-        "elk.json.edgeCoords": "ROOT"
-      } : {
-        "elk.algorithm": "layered",
-        "elk.direction": horizontal ? "RIGHT" : "DOWN",
-        "elk.edgeRouting": "ORTHOGONAL",
-        "elk.layered.nodePlacement.strategy": "NETWORK_SIMPLEX",
-        "elk.layered.crossingMinimization.strategy": "LAYER_SWEEP",
         "elk.spacing.nodeNode": horizontal ? "90" : "120",
-        "elk.layered.spacing.nodeNodeBetweenLayers": horizontal ? "190" : "170",
-        "elk.spacing.edgeNode": "80",
-        "elk.spacing.edgeEdge": "60",
-        "elk.spacing.edgeLabel": "12",
-        "elk.padding": "[top=80,left=80,bottom=80,right=80]",
-        "elk.separateConnectedComponents": "true",
-        "elk.json.edgeCoords": "ROOT"
-      },
+        "elk.layered.spacing.nodeNodeBetweenLayers": horizontal ? "190" : "170"
+      }),
       children: children2,
       edges
     };
@@ -4963,33 +5010,22 @@ var Spec42HeadlessRendererBundle = (() => {
     defs.append("marker").attr("id", "state-transition-arrow").attr("viewBox", "0 -5 10 10").attr("refX", 8).attr("refY", 0).attr("markerWidth", 6).attr("markerHeight", 6).attr("orient", "auto").append("path").attr("d", "M0,-5L10,0L0,5").style("fill", theme.edge.default);
   }
 
-  // shared/diagram-renderer/src/views/standard-views.ts
-  function asRecord3(value) {
-    return value && typeof value === "object" ? value : {};
-  }
-  function asArray4(value) {
-    return Array.isArray(value) ? value : [];
-  }
-  function asString4(value, fallback = "") {
-    if (typeof value === "string") return value;
-    if (typeof value === "number" || typeof value === "boolean") return String(value);
-    return fallback;
-  }
+  // shared/diagram-renderer/src/views/standard-views-render.ts
   function drawProvisionalBadge(root2, theme, label = "provisional SysML notation") {
     const badge = root2.append("g").attr("class", "provisional-view-badge");
     badge.append("rect").attr("x", 22).attr("y", 42).attr("width", 176).attr("height", 24).attr("rx", 5).style("fill", theme.canvasBackground).style("stroke", theme.edge.default).style("stroke-dasharray", "4,3");
     badge.append("text").attr("x", 34).attr("y", 58).style("font-size", "10px").style("fill", theme.textSecondary).text(label);
   }
   function nodeFromMeta(row, fallback) {
-    const id2 = asString4(row.id);
-    return fallback.find((node) => node.id === id2 || node.label === asString4(row.label ?? row.name));
+    const id2 = asString(row.id);
+    return fallback.find((node) => node.id === id2 || node.label === asString(row.label ?? row.name));
   }
   function shortMatrixLabel(id2) {
     const segments = id2.split("::").filter(Boolean);
     return truncateLabel(segments[segments.length - 1] ?? id2, 10);
   }
   function renderBrowserView(ctx) {
-    const rows = asArray4(ctx.prepared.meta?.rows).map(asRecord3);
+    const rows = asArray(ctx.prepared.meta?.rows).map(asRecord);
     const sourceRows = rows.length > 0 ? rows : ctx.prepared.nodes.map((node) => ({ id: node.id, label: node.label, kind: node.kind }));
     const hierarchyLayout = Boolean(ctx.prepared.meta?.hierarchyLayout);
     const rowHeight = 28;
@@ -5004,11 +5040,11 @@ var Spec42HeadlessRendererBundle = (() => {
     const layer = ctx.root.append("g").attr("class", "browser-view-rows");
     const isRowVisible = (row, index) => {
       if (!hierarchyLayout) return true;
-      const parentId = asString4(row.parentId);
+      const parentId = asString(row.parentId);
       if (!parentId) return true;
       for (let cursor = index - 1; cursor >= 0; cursor -= 1) {
-        const ancestor = asRecord3(sourceRows[cursor]);
-        if (asString4(ancestor.id) !== parentId) continue;
+        const ancestor = asRecord(sourceRows[cursor]);
+        if (asString(ancestor.id) !== parentId) continue;
         if (!isRowVisible(ancestor, cursor) || collapsed.has(parentId)) {
           return false;
         }
@@ -5023,10 +5059,10 @@ var Spec42HeadlessRendererBundle = (() => {
         if (!isRowVisible(row, index)) return;
         const y2 = top + visibleIndex * rowHeight;
         visibleIndex += 1;
-        const depth = hierarchyLayout ? Number(row.depth ?? 0) : Math.max(0, asString4(row.qualifiedName).split("::").filter(Boolean).length - 1);
+        const depth = hierarchyLayout ? Number(row.depth ?? 0) : Math.max(0, asString(row.qualifiedName).split("::").filter(Boolean).length - 1);
         const hasChildren = Boolean(row.hasChildren);
         const preparedNode = nodeFromMeta(row, ctx.prepared.nodes);
-        const rowId = preparedNode?.id ?? asString4(row.id, `browser-row-${index}`);
+        const rowId = preparedNode?.id ?? asString(row.id, `browser-row-${index}`);
         const item = layer.append("g").attr("class", "browser-row").attr("data-node-id", rowId).attr("transform", `translate(${left},${y2})`);
         item.append("rect").attr("class", "node-background").attr("data-original-stroke", ctx.theme.nodeBorder).attr("data-original-width", "1px").attr("width", width).attr("height", rowHeight - 3).attr("rx", 4).style("fill", visibleIndex % 2 === 0 ? ctx.theme.nodeFill : ctx.theme.canvasBackground).style("stroke", ctx.theme.nodeBorder).style("stroke-width", "1px").style("opacity", 0.9);
         if (hasChildren) {
@@ -5041,8 +5077,8 @@ var Spec42HeadlessRendererBundle = (() => {
             redraw();
           });
         }
-        item.append("text").attr("x", 14 + depth * 16 + (hasChildren ? 12 : 0)).attr("y", 18).style("font-size", "11px").style("font-weight", "600").style("fill", ctx.theme.textPrimary).text(truncateLabel(asString4(row.label ?? row.name ?? row.id, "Unnamed"), 48));
-        item.append("text").attr("x", width - 14).attr("y", 18).attr("text-anchor", "end").style("font-size", "10px").style("fill", ctx.theme.textSecondary).text(truncateLabel(asString4(row.kind, "element"), 24));
+        item.append("text").attr("x", 14 + depth * 16 + (hasChildren ? 12 : 0)).attr("y", 18).style("font-size", "11px").style("font-weight", "600").style("fill", ctx.theme.textPrimary).text(truncateLabel(asString(row.label ?? row.name ?? row.id, "Unnamed"), 48));
+        item.append("text").attr("x", width - 14).attr("y", 18).attr("text-anchor", "end").style("font-size", "10px").style("fill", ctx.theme.textSecondary).text(truncateLabel(asString(row.kind, "element"), 24));
         if (preparedNode) {
           attachBehaviorNodeClick(item, preparedNode, ctx.theme, ctx.options ?? {}, ctx.root);
         }
@@ -5057,8 +5093,8 @@ var Spec42HeadlessRendererBundle = (() => {
     if (relationshipMatrix) {
       return renderRelationshipMatrix(ctx);
     }
-    const cells = asArray4(ctx.prepared.meta?.cells).map(asRecord3);
-    const rows = cells.length > 0 ? cells : ctx.prepared.nodes.map((node) => asRecord3(node.attributes));
+    const cells = asArray(ctx.prepared.meta?.cells).map(asRecord);
+    const rows = cells.length > 0 ? cells : ctx.prepared.nodes.map((node) => asRecord(node.attributes));
     const left = 52;
     const top = 92;
     const traceabilityTable = Boolean(ctx.prepared.meta?.traceabilityTable);
@@ -5090,10 +5126,10 @@ var Spec42HeadlessRendererBundle = (() => {
     rows.forEach((row, rowIndex) => {
       x2 = 0;
       const preparedNode = nodeFromMeta(row, ctx.prepared.nodes);
-      const group = table.append("g").attr("class", "grid-row").attr("data-node-id", preparedNode?.id ?? asString4(row.id, `grid-row-${rowIndex}`)).attr("transform", `translate(0,${(rowIndex + 1) * rowHeight})`);
+      const group = table.append("g").attr("class", "grid-row").attr("data-node-id", preparedNode?.id ?? asString(row.id, `grid-row-${rowIndex}`)).attr("transform", `translate(0,${(rowIndex + 1) * rowHeight})`);
       columns.forEach((column) => {
         group.append("rect").attr("class", "grid-cell").attr("x", x2).attr("width", column.width).attr("height", rowHeight).style("fill", rowIndex % 2 === 0 ? ctx.theme.nodeFill : ctx.theme.canvasBackground).style("stroke", ctx.theme.nodeBorder).style("stroke-width", "1px");
-        group.append("text").attr("x", x2 + 10).attr("y", 20).style("font-size", "10px").style("fill", ctx.theme.textPrimary).text(truncateLabel(asString4(row[column.key]), column.width > 100 ? 28 : 8));
+        group.append("text").attr("x", x2 + 10).attr("y", 20).style("font-size", "10px").style("fill", ctx.theme.textPrimary).text(truncateLabel(asString(row[column.key]), column.width > 100 ? 28 : 8));
         x2 += column.width;
       });
       if (preparedNode) {
@@ -5103,9 +5139,9 @@ var Spec42HeadlessRendererBundle = (() => {
     return { minX: 0, minY: 0, maxX: left + tableWidth + 80, maxY: top + (rows.length + 2) * rowHeight + 80 };
   }
   function renderRelationshipMatrix(ctx) {
-    const rowIds = asArray4(ctx.prepared.meta?.matrixRowIds).map((value) => asString4(value)).filter(Boolean);
-    const colIds = asArray4(ctx.prepared.meta?.matrixColIds).map((value) => asString4(value)).filter(Boolean);
-    const matrixCells = asArray4(ctx.prepared.meta?.matrixCells).map(asRecord3);
+    const rowIds = asArray(ctx.prepared.meta?.matrixRowIds).map((value) => asString(value)).filter(Boolean);
+    const colIds = asArray(ctx.prepared.meta?.matrixColIds).map((value) => asString(value)).filter(Boolean);
+    const matrixCells = asArray(ctx.prepared.meta?.matrixCells).map(asRecord);
     const cellSize = 34;
     const headerSize = 120;
     const left = 180;
@@ -5119,7 +5155,7 @@ var Spec42HeadlessRendererBundle = (() => {
       layer.append("text").attr("x", headerSize - 8).attr("y", headerSize + rowIndex * cellSize + cellSize / 2 + 4).attr("text-anchor", "end").style("font-size", "10px").style("fill", ctx.theme.textPrimary).text(shortMatrixLabel(rowId));
       colIds.forEach((colId, colIndex) => {
         const cell = matrixCells.find(
-          (entry) => asString4(entry.source) === rowId && asString4(entry.target) === colId
+          (entry) => asString(entry.source) === rowId && asString(entry.target) === colId
         );
         const present = Boolean(cell?.present);
         const x2 = headerSize + colIndex * cellSize;
@@ -5135,10 +5171,10 @@ var Spec42HeadlessRendererBundle = (() => {
     return { minX: 0, minY: 0, maxX: left + width, maxY: top + height };
   }
   function renderGeometryView(ctx) {
-    const elements = asArray4(ctx.prepared.meta?.elements).map(asRecord3);
+    const elements = asArray(ctx.prepared.meta?.elements).map(asRecord);
     const nodes = elements.length > 0 ? elements : ctx.prepared.nodes.map((node) => ({ id: node.id, label: node.label, kind: node.kind }));
-    const geometryMode = asString4(ctx.prepared.meta?.geometryMode, "2d");
-    const geometryProjection = asString4(ctx.prepared.meta?.geometryProjection, "orthographic");
+    const geometryMode = asString(ctx.prepared.meta?.geometryMode, "2d");
+    const geometryProjection = asString(ctx.prepared.meta?.geometryProjection, "orthographic");
     const left = 64;
     const top = 88;
     const cellWidth = 128;
@@ -5156,10 +5192,10 @@ var Spec42HeadlessRendererBundle = (() => {
       const x2 = col * cellWidth + 12;
       const y2 = row * cellHeight + 12;
       const preparedNode = nodeFromMeta(node, ctx.prepared.nodes);
-      const item = layer.append("g").attr("class", "geometry-object").attr("data-node-id", preparedNode?.id ?? asString4(node.id, `geometry-node-${index}`)).attr("transform", `translate(${x2},${y2})`);
+      const item = layer.append("g").attr("class", "geometry-object").attr("data-node-id", preparedNode?.id ?? asString(node.id, `geometry-node-${index}`)).attr("transform", `translate(${x2},${y2})`);
       item.append("rect").attr("class", "node-background").attr("data-original-stroke", ctx.theme.nodeBorder).attr("data-original-width", "1.5px").attr("width", cellWidth - 20).attr("height", cellHeight - 16).attr("rx", 6).style("fill", ctx.theme.nodeFill).style("stroke", ctx.theme.nodeBorder).style("stroke-width", "1.5px");
-      item.append("text").attr("x", (cellWidth - 20) / 2).attr("y", 24).attr("text-anchor", "middle").style("font-size", "10px").style("font-weight", "700").style("fill", ctx.theme.textPrimary).text(truncateLabel(asString4(node.label ?? node.name ?? node.id), 16));
-      item.append("text").attr("x", (cellWidth - 20) / 2).attr("y", 42).attr("text-anchor", "middle").style("font-size", "8px").style("fill", ctx.theme.textSecondary).text(truncateLabel(asString4(node.kind, "element"), 18));
+      item.append("text").attr("x", (cellWidth - 20) / 2).attr("y", 24).attr("text-anchor", "middle").style("font-size", "10px").style("font-weight", "700").style("fill", ctx.theme.textPrimary).text(truncateLabel(asString(node.label ?? node.name ?? node.id), 16));
+      item.append("text").attr("x", (cellWidth - 20) / 2).attr("y", 42).attr("text-anchor", "middle").style("font-size", "8px").style("fill", ctx.theme.textSecondary).text(truncateLabel(asString(node.kind, "element"), 18));
       if (preparedNode) {
         attachBehaviorNodeClick(item, preparedNode, ctx.theme, ctx.options ?? {}, ctx.root);
       }
@@ -5279,12 +5315,12 @@ var Spec42HeadlessRendererBundle = (() => {
     maxLinesPerCompartment: 8
   };
   var DEFAULT_CONFIG = DEFAULT_SYSML_NODE_CONFIG;
-  function asString5(value, fallback = "") {
+  function asString4(value, fallback = "") {
     if (typeof value === "string") return value;
     if (typeof value === "number" || typeof value === "boolean") return String(value);
     return fallback;
   }
-  function asArray5(value) {
+  function asArray4(value) {
     return Array.isArray(value) ? value : [];
   }
   function normalizeUnitBrackets(text) {
@@ -5301,26 +5337,26 @@ var Spec42HeadlessRendererBundle = (() => {
     }
     if (!item || typeof item !== "object") return null;
     const record = item;
-    const name = asString5(record.name).trim();
-    const displayText = normalizeUnitBrackets(asString5(record.displayText, name).trim());
+    const name = asString4(record.name).trim();
+    const displayText = normalizeUnitBrackets(asString4(record.displayText, name).trim());
     if (!displayText) return null;
     return {
       name: name || displayText,
-      typeName: asString5(record.typeName) || null,
-      valueText: asString5(record.valueText) || null,
-      declaredIn: asString5(record.declaredIn) || null,
+      typeName: asString4(record.typeName) || null,
+      valueText: asString4(record.valueText) || null,
+      declaredIn: asString4(record.declaredIn) || null,
       displayText
     };
   }
   function detailItems(attributes, key) {
-    return asArray5(attributes[key]).map((item) => normalizeDetailItem(item)).filter((item) => Boolean(item));
+    return asArray4(attributes[key]).map((item) => normalizeDetailItem(item)).filter((item) => Boolean(item));
   }
   function fallbackDetailItems(attributes, key) {
-    return asArray5(attributes[key]).map((item) => normalizeDetailItem(item)).filter((item) => Boolean(item));
+    return asArray4(attributes[key]).map((item) => normalizeDetailItem(item)).filter((item) => Boolean(item));
   }
   function collectCompartments(node) {
     const attributes = node.attributes ?? {};
-    const typedByName = asString5(attributes.partType) || asString5(attributes.type) || asString5(attributes.typedBy) || asString5(attributes.typing) || null;
+    const typedByName = asString4(attributes.partType) || asString4(attributes.type) || asString4(attributes.typedBy) || asString4(attributes.typing) || null;
     const directAttributes = detailItems(attributes, "generalViewDirectAttributes");
     const directParts = detailItems(attributes, "generalViewDirectParts");
     const directPorts = detailItems(attributes, "generalViewDirectPorts");
@@ -6281,23 +6317,7 @@ var Spec42HeadlessRendererBundle = (() => {
     }).filter((edge) => edge !== null);
     const elkGraphInput = {
       id: "root",
-      layoutOptions: {
-        "elk.algorithm": "layered",
-        "elk.hierarchyHandling": "INCLUDE_CHILDREN",
-        "elk.direction": "RIGHT",
-        "elk.spacing.nodeNode": "150",
-        "elk.layered.spacing.nodeNodeBetweenLayers": "220",
-        "elk.spacing.edgeNode": "110",
-        "elk.spacing.edgeEdge": "90",
-        "elk.edgeRouting": "ORTHOGONAL",
-        "elk.layered.nodePlacement.strategy": "NETWORK_SIMPLEX",
-        "elk.layered.crossingMinimization.strategy": "LAYER_SWEEP",
-        "elk.separateConnectedComponents": "true",
-        "elk.padding": "[top=70,left=70,bottom=70,right=70]",
-        "org.eclipse.elk.portConstraints": "FIXED_ORDER",
-        "org.eclipse.elk.portAlignment.default": "CENTER",
-        "org.eclipse.elk.json.edgeCoords": "ROOT"
-      },
+      layoutOptions: buildElkLayoutOptions("interconnection"),
       children: roots.map((node) => toElkNode(node)),
       edges: elkEdges.map((edge) => ({ id: edge.id, sources: edge.sources, targets: edge.targets }))
     };
@@ -6313,12 +6333,11 @@ var Spec42HeadlessRendererBundle = (() => {
   var elk = new HeadlessElk();
   async function layoutPrepared(prepared) {
     if (!prepared.nodes.length) return { nodes: [], edges: [] };
-    const isInterconnectionView = prepared.view === "interconnection-view";
+    if (prepared.view === "interconnection-view") {
+      return layoutInterconnectionPrepared(prepared);
+    }
     if (prepared.view === "action-flow-view" || prepared.view === "state-transition-view" || prepared.view === "sequence-view" || prepared.view === "browser-view" || prepared.view === "grid-view" || prepared.view === "geometry-view") {
       return { nodes: [], edges: [] };
-    }
-    if (isInterconnectionView) {
-      return layoutInterconnectionPrepared(prepared);
     }
     const diagramNodes = prepared.nodes.filter((node) => isOverviewVisualElementType(node.kind));
     const visibleIds = new Set(diagramNodes.map((node) => node.id));
@@ -6326,8 +6345,8 @@ var Spec42HeadlessRendererBundle = (() => {
       (edge) => visibleIds.has(edge.source) && visibleIds.has(edge.target)
     );
     if (!diagramNodes.length) return { nodes: [], edges: [] };
-    const width = isInterconnectionView ? ibdNodeWidth : nodeWidth;
-    const height = isInterconnectionView ? ibdNodeHeight : nodeHeight;
+    const width = nodeWidth;
+    const height = nodeHeight;
     const leafElkNode = (node) => {
       const compartments = collectCompartments(node);
       return {
@@ -6336,7 +6355,7 @@ var Spec42HeadlessRendererBundle = (() => {
         height: Math.max(height, computeNodeHeight(compartments, { maxLinesPerCompartment: 8 }))
       };
     };
-    const packageGroups = !isInterconnectionView ? prepared.meta?.packageContainerGroups ?? [] : [];
+    const packageGroups = prepared.meta?.packageContainerGroups ?? [];
     const useHierarchy = packageGroups.length >= 2;
     let children2;
     if (useHierarchy) {
@@ -6371,22 +6390,9 @@ var Spec42HeadlessRendererBundle = (() => {
     }
     const graph = {
       id: "root",
-      layoutOptions: {
-        "elk.algorithm": "layered",
-        ...useHierarchy ? { "elk.hierarchyHandling": "INCLUDE_CHILDREN" } : {},
-        "elk.direction": isInterconnectionView ? "RIGHT" : "DOWN",
-        "elk.spacing.nodeNode": isInterconnectionView ? "80" : "140",
-        "elk.layered.spacing.nodeNodeBetweenLayers": isInterconnectionView ? "110" : "180",
-        "elk.spacing.edgeNode": isInterconnectionView ? "80" : "90",
-        "elk.spacing.edgeEdge": isInterconnectionView ? "60" : "80",
-        "elk.edgeRouting": "ORTHOGONAL",
-        "elk.layered.nodePlacement.strategy": "NETWORK_SIMPLEX",
-        "elk.separateConnectedComponents": "true",
-        "elk.aspectRatio": isInterconnectionView ? "1.6" : "1.4",
-        "elk.padding": isInterconnectionView ? "[top=70,left=70,bottom=70,right=70]" : "[top=100,left=100,bottom=100,right=100]",
-        "org.eclipse.elk.portConstraints": "FIXED_SIDE",
-        "org.eclipse.elk.json.edgeCoords": "ROOT"
-      },
+      layoutOptions: buildElkLayoutOptions("general", {
+        "elk.hierarchyHandling": useHierarchy ? "INCLUDE_CHILDREN" : void 0
+      }),
       children: children2,
       edges: diagramEdges.map((edge) => ({ id: edge.id, sources: [edge.source], targets: [edge.target] }))
     };

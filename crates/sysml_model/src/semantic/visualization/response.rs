@@ -74,6 +74,21 @@ fn renderer_uses_state_machines(renderer: &str) -> bool {
     renderer == "state-transition-view"
 }
 
+/// Whether `general_view_graph` (compartment-folded canonical graph) is needed. Not just
+/// general-view: `shared/diagram-renderer/src/prepare/standard-views.ts`'s
+/// `graphNodesForStandardView`/`graphEdgesForStandardView` read
+/// `visualization.generalViewGraph ?? visualization.graph` for browser/grid/geometry too, so
+/// skipping this computation for those 3 kinds would silently drop compartment folding, not just
+/// an unused field. Interconnection/sequence/state/action-flow render from their own dedicated
+/// payload (`interconnectionScene`/`sequenceDiagrams`/`stateMachines`/`activityDiagrams`) and
+/// never read `generalViewGraph`.
+fn renderer_uses_general_view_graph(renderer: &str) -> bool {
+    matches!(
+        renderer,
+        "general-view" | "browser-view" | "grid-view" | "geometry-view"
+    )
+}
+
 /// Options for visualization response assembly (LSP / webview).
 #[derive(Debug, Clone, Default)]
 pub struct VisualizationBuildOptions {
@@ -276,6 +291,64 @@ fn select_view_candidate<'a>(
         .or_else(|| view_candidates.first())
 }
 
+/// Builds the empty-state `SysmlVisualizationResultDto` shared by the three early-return branches
+/// of [`build_sysml_visualization_from_artifacts`] (no view candidates at all, no candidate
+/// matched the request, or the matched candidate is an unsupported view type) — these previously
+/// each hand-duplicated the full ~20-field struct literal with only `view_candidates`,
+/// `selected_view`, `selected_view_name`, and `empty_state_message` actually differing.
+#[allow(clippy::too_many_arguments)]
+fn empty_visualization_response(
+    view: &str,
+    workspace_root_uri: &str,
+    workspace_uris: &[Url],
+    full_ibd: &IbdDataDto,
+    build_start: Instant,
+    view_candidates: Vec<crate::semantic::dto::SysmlVisualizationViewCandidateDto>,
+    selected_view: Option<String>,
+    selected_view_name: Option<String>,
+    empty_state_message: String,
+) -> SysmlVisualizationResultDto {
+    let empty_graph = SysmlGraphDto {
+        nodes: Vec::new(),
+        edges: Vec::new(),
+    };
+    SysmlVisualizationResultDto {
+        version: 0,
+        model_ready: true,
+        view: view.to_string(),
+        workspace_root_uri: workspace_root_uri.to_string(),
+        view_candidates,
+        selected_view,
+        selected_view_name,
+        empty_state_message: Some(empty_state_message),
+        package_groups: Some(Vec::new()),
+        graph: Some(empty_graph.clone()),
+        general_view_graph: Some(empty_graph.clone()),
+        workspace_model: Some(build_workspace_model_dto_from_graph(
+            &empty_graph,
+            workspace_uris,
+        )),
+        activity_diagrams: Some(Vec::new()),
+        activity_diagram_candidates: None,
+        sequence_diagrams: Some(Vec::new()),
+        sequence_diagram_candidates: None,
+        state_machines: Some(Vec::new()),
+        state_machine_candidates: None,
+        ibd: Some(filter_ibd_by_visible_ids(full_ibd, &HashSet::new())),
+        interconnection_scene: None,
+        stats: Some(SysmlModelStatsDto {
+            total_elements: 0,
+            resolved_elements: 0,
+            unresolved_elements: 0,
+            parse_time_ms: 0,
+            model_build_time_ms: build_start.elapsed().as_millis().max(1) as u32,
+            parse_cached: false,
+        }),
+        projection_hints: None,
+        prepared_view: None,
+    }
+}
+
 /// Build a visualization response from precomputed workspace artifacts (lazy single-view projection).
 pub fn build_sysml_visualization_from_artifacts(
     semantic_graph: &SemanticGraph,
@@ -293,48 +366,20 @@ pub fn build_sysml_visualization_from_artifacts(
     let full_ibd = &artifacts.full_ibd;
     let evaluated_views = &artifacts.evaluated_views;
     let view_candidates = artifacts.view_candidates.clone();
-    let empty_graph = SysmlGraphDto {
-        nodes: Vec::new(),
-        edges: Vec::new(),
-    };
 
     if view_candidates.is_empty() {
         return Ok((
-            SysmlVisualizationResultDto {
-                version: 0,
-                model_ready: true,
-                view: view.to_string(),
-                workspace_root_uri: workspace_root_uri.to_string(),
-                view_candidates: Vec::new(),
-                selected_view: None,
-                selected_view_name: None,
-                empty_state_message: Some(no_defined_views_message()),
-                package_groups: Some(Vec::new()),
-                graph: Some(empty_graph.clone()),
-                general_view_graph: Some(empty_graph.clone()),
-                workspace_model: Some(build_workspace_model_dto_from_graph(
-                    &empty_graph,
-                    workspace_uris,
-                )),
-                activity_diagrams: Some(Vec::new()),
-                activity_diagram_candidates: None,
-                sequence_diagrams: Some(Vec::new()),
-                sequence_diagram_candidates: None,
-                state_machines: Some(Vec::new()),
-                state_machine_candidates: None,
-                ibd: Some(filter_ibd_by_visible_ids(full_ibd, &HashSet::new())),
-                interconnection_scene: None,
-                stats: Some(SysmlModelStatsDto {
-                    total_elements: 0,
-                    resolved_elements: 0,
-                    unresolved_elements: 0,
-                    parse_time_ms: 0,
-                    model_build_time_ms: build_start.elapsed().as_millis().max(1) as u32,
-                    parse_cached: false,
-                }),
-                projection_hints: None,
-                prepared_view: None,
-            },
+            empty_visualization_response(
+                view,
+                workspace_root_uri,
+                workspace_uris,
+                full_ibd,
+                build_start,
+                Vec::new(),
+                None,
+                None,
+                no_defined_views_message(),
+            ),
             meta,
         ));
     }
@@ -343,41 +388,17 @@ pub fn build_sysml_visualization_from_artifacts(
     let Some(selected_candidate) = select_view_candidate(&view_candidates, view, selected_view)
     else {
         return Ok((
-            SysmlVisualizationResultDto {
-                version: 0,
-                model_ready: true,
-                view: view.to_string(),
-                workspace_root_uri: workspace_root_uri.to_string(),
+            empty_visualization_response(
+                view,
+                workspace_root_uri,
+                workspace_uris,
+                full_ibd,
+                build_start,
                 view_candidates,
-                selected_view: None,
-                selected_view_name: None,
-                empty_state_message: Some(renderer_empty_state_message(view)),
-                package_groups: Some(Vec::new()),
-                graph: Some(empty_graph.clone()),
-                general_view_graph: Some(empty_graph.clone()),
-                workspace_model: Some(build_workspace_model_dto_from_graph(
-                    &empty_graph,
-                    workspace_uris,
-                )),
-                activity_diagrams: Some(Vec::new()),
-                activity_diagram_candidates: None,
-                sequence_diagrams: Some(Vec::new()),
-                sequence_diagram_candidates: None,
-                state_machines: Some(Vec::new()),
-                state_machine_candidates: None,
-                ibd: Some(filter_ibd_by_visible_ids(full_ibd, &HashSet::new())),
-                interconnection_scene: None,
-                stats: Some(SysmlModelStatsDto {
-                    total_elements: 0,
-                    resolved_elements: 0,
-                    unresolved_elements: 0,
-                    parse_time_ms: 0,
-                    model_build_time_ms: build_start.elapsed().as_millis().max(1) as u32,
-                    parse_cached: false,
-                }),
-                projection_hints: None,
-                prepared_view: None,
-            },
+                None,
+                None,
+                renderer_empty_state_message(view),
+            ),
             meta,
         ));
     };
@@ -389,43 +410,17 @@ pub fn build_sysml_visualization_from_artifacts(
 
     if !selected_candidate.supported {
         return Ok((
-            SysmlVisualizationResultDto {
-                version: 0,
-                model_ready: true,
-                view: view.to_string(),
-                workspace_root_uri: workspace_root_uri.to_string(),
+            empty_visualization_response(
+                view,
+                workspace_root_uri,
+                workspace_uris,
+                full_ibd,
+                build_start,
                 view_candidates,
-                selected_view: Some(selected_view_id),
+                Some(selected_view_id),
                 selected_view_name,
-                empty_state_message: Some(unsupported_view_type_message(
-                    selected_view_type.as_deref(),
-                )),
-                package_groups: Some(Vec::new()),
-                graph: Some(empty_graph.clone()),
-                general_view_graph: Some(empty_graph.clone()),
-                workspace_model: Some(build_workspace_model_dto_from_graph(
-                    &empty_graph,
-                    workspace_uris,
-                )),
-                activity_diagrams: Some(Vec::new()),
-                activity_diagram_candidates: None,
-                sequence_diagrams: Some(Vec::new()),
-                sequence_diagram_candidates: None,
-                state_machines: Some(Vec::new()),
-                state_machine_candidates: None,
-                ibd: Some(filter_ibd_by_visible_ids(full_ibd, &HashSet::new())),
-                interconnection_scene: None,
-                stats: Some(SysmlModelStatsDto {
-                    total_elements: 0,
-                    resolved_elements: 0,
-                    unresolved_elements: 0,
-                    parse_time_ms: 0,
-                    model_build_time_ms: build_start.elapsed().as_millis().max(1) as u32,
-                    parse_cached: false,
-                }),
-                projection_hints: None,
-                prepared_view: None,
-            },
+                unsupported_view_type_message(selected_view_type.as_deref()),
+            ),
             meta,
         ));
     }
@@ -474,18 +469,27 @@ pub fn build_sysml_visualization_from_artifacts(
             )
         };
     let selected_graph = project_graph_by_ids(graph, &projected_ids);
-    // Compartment folding needs attribute/port children that a kind-narrowing `filter` clause
-    // (e.g. `filter @SysML::PartUsage;`) may have already excluded from `projected_ids` — fold on
-    // the broader pre-filter set, then re-narrow to the actually-visible node set.
-    let fold_source_graph = project_graph_by_ids(graph, &pre_filter_node_ids);
-    let general_view_graph = apply_edge_predicate(
-        &project_graph_by_ids(
-            &canonical_general_view_graph(&fold_source_graph, true),
-            &projected_ids,
-        ),
-        edge_predicate,
-    );
-    let package_groups = Some(build_package_groups_from_graph(&general_view_graph));
+    // Compartment folding (and the package groups derived from it) is only consumed by
+    // general/browser/grid/geometry views client-side — see `renderer_uses_general_view_graph`.
+    // Skipping it for interconnection/sequence/state/action-flow saves real work: folding needs
+    // attribute/port children that a kind-narrowing `filter` clause (e.g. `filter
+    // @SysML::PartUsage;`) may have already excluded from `projected_ids`, so it runs on the
+    // broader pre-filter set, then re-narrows to the actually-visible node set.
+    let (general_view_graph, package_groups) =
+        if renderer_uses_general_view_graph(resolved_view.as_str()) {
+            let fold_source_graph = project_graph_by_ids(graph, &pre_filter_node_ids);
+            let folded = apply_edge_predicate(
+                &project_graph_by_ids(
+                    &canonical_general_view_graph(&fold_source_graph, true),
+                    &projected_ids,
+                ),
+                edge_predicate,
+            );
+            let groups = build_package_groups_from_graph(&folded);
+            (Some(folded), Some(groups))
+        } else {
+            (None, None)
+        };
     let workspace_model = build_workspace_model_dto_from_graph(&selected_graph, workspace_uris);
     let mut package_candidates = Vec::new();
     let mut seen_packages = HashSet::new();
@@ -639,7 +643,7 @@ pub fn build_sysml_visualization_from_artifacts(
             empty_state_message: None,
             package_groups: if slim { None } else { package_groups },
             graph: if slim { None } else { Some(selected_graph.clone()) },
-            general_view_graph: if slim { None } else { Some(general_view_graph) },
+            general_view_graph: if slim { None } else { general_view_graph },
             workspace_model: if slim { None } else { Some(workspace_model) },
             activity_diagrams: if slim || activity_diagrams.is_empty() {
                 None

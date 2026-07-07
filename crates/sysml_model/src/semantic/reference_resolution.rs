@@ -2,6 +2,7 @@ use std::collections::{HashSet, VecDeque};
 
 use url::Url;
 
+use crate::semantic::element_kind_classify::is_part_like;
 use crate::semantic::graph::SemanticGraph;
 use crate::semantic::import_resolution::resolve_imported_node_ids_for_simple_name;
 use crate::semantic::kinds::is_namespace;
@@ -426,10 +427,6 @@ fn resolve_expose_root(
     resolve_expression_endpoint_workspace(g, base)
 }
 
-fn is_part_like_kind(kind: &crate::ElementKind) -> bool {
-    kind.as_str().to_lowercase().contains("part")
-}
-
 fn collect_expose_members(
     g: &SemanticGraph,
     root: &SemanticNode,
@@ -446,7 +443,7 @@ fn collect_expose_members(
                     out.insert(child.id.qualified_name.clone());
                 }
             }
-            if is_part_like_kind(&root.element_kind) {
+            if is_part_like(root.element_kind.as_str()) {
                 for typed in g.outgoing_typing_or_specializes_targets(root) {
                     for child in g.children_of(typed) {
                         if child.element_kind != ElementKind::Import {
@@ -470,7 +467,7 @@ fn collect_expose_members(
                         stack.push(child.id.clone());
                     }
                 }
-                if is_part_like_kind(&current.element_kind) {
+                if is_part_like(current.element_kind.as_str()) {
                     for typed in g.outgoing_typing_or_specializes_targets(current) {
                         stack.push(typed.id.clone());
                     }

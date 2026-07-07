@@ -8,6 +8,7 @@
 
 use url::Url;
 
+use crate::semantic::exposed_ids::filter_by_exposed_ids;
 use crate::semantic::extracted_model::SequenceDiagramDto;
 use crate::SemanticGraph;
 
@@ -24,20 +25,7 @@ pub fn filter_sequence_diagrams_by_exposed_ids(
     diagrams: &[SequenceDiagramDto],
     exposed_ids: &std::collections::HashSet<String>,
 ) -> Vec<SequenceDiagramDto> {
-    if exposed_ids.is_empty() {
-        return diagrams.to_vec();
-    }
-
-    diagrams
-        .iter()
-        .filter(|diagram| {
-            exposed_ids.iter().any(|exposed_id| {
-                diagram.id == *exposed_id
-                    || diagram.id.starts_with(&format!("{exposed_id}::"))
-                    || format!("{}::{}", diagram.package_path, diagram.name).trim_matches(':')
-                        == exposed_id
-            })
-        })
-        .cloned()
-        .collect()
+    filter_by_exposed_ids(diagrams, exposed_ids, |diagram| {
+        (diagram.id.as_str(), diagram.package_path.as_str(), diagram.name.as_str())
+    })
 }

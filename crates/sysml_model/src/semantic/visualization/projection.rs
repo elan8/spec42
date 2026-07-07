@@ -183,6 +183,14 @@ pub fn top_level_package_for_node_id(node_id: &str) -> String {
         .to_string()
 }
 
+/// Filters activity diagrams by cross-referencing an already-projected `graph`'s action-like
+/// nodes, keyed by `(name, top_level_package)` — deliberately **not** the same mechanism as
+/// [`crate::semantic::exposed_ids::filter_by_exposed_ids`] (used by
+/// `filter_sequence_diagrams_by_exposed_ids`/`filter_state_machines_by_exposed_ids`), which
+/// matches diagram ids directly against a raw `exposed_ids` set independent of any graph
+/// projection. Investigated during the view-pipeline refactor and confirmed intentional, not
+/// organic drift: action-flow-view filtering needs to agree with whatever the view's
+/// `ProjectionStrategy` already scoped into `graph`, not re-derive exposure from scratch.
 pub fn filter_activity_diagrams_by_graph(
     diagrams: &[ActivityDiagramDto],
     graph: &SysmlGraphDto,

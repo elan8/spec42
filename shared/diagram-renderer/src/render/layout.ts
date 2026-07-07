@@ -10,6 +10,7 @@ import {
   recordInterconnectionLayoutNode,
 } from "./interconnection-layout-dto";
 import { buildInterconnectionElkBuild } from "./interconnection-elk-input";
+import { buildElkLayoutOptions } from "./elk-options";
 import {
   ibdNodeHeight,
   ibdNodeWidth,
@@ -25,7 +26,9 @@ const elk = new ELK();
 
 export async function layoutPrepared(prepared: PreparedView): Promise<LayoutResult> {
   if (!prepared.nodes.length) return { nodes: [], edges: [] };
-  const isInterconnectionView = prepared.view === "interconnection-view";
+  if (prepared.view === "interconnection-view") {
+    return layoutInterconnectionPrepared(prepared);
+  }
   if (
     prepared.view === "action-flow-view" ||
     prepared.view === "state-transition-view" ||
@@ -36,17 +39,17 @@ export async function layoutPrepared(prepared: PreparedView): Promise<LayoutResu
   ) {
     return { nodes: [], edges: [] };
   }
-  if (isInterconnectionView) {
-    return layoutInterconnectionPrepared(prepared);
-  }
+  // Only general-view reaches here — interconnection-view returned above, and the other 6 kinds
+  // returned `{ nodes: [], edges: [] }` (laid out elsewhere; see views/behavior-common.ts and
+  // views/standard-views-render.ts).
   const diagramNodes = prepared.nodes.filter((node) => isOverviewVisualElementType(node.kind));
   const visibleIds = new Set(diagramNodes.map((node) => node.id));
   const diagramEdges = prepared.edges.filter(
     (edge) => visibleIds.has(edge.source) && visibleIds.has(edge.target),
   );
   if (!diagramNodes.length) return { nodes: [], edges: [] };
-  const width = isInterconnectionView ? ibdNodeWidth : nodeWidth;
-  const height = isInterconnectionView ? ibdNodeHeight : nodeHeight;
+  const width = nodeWidth;
+  const height = nodeHeight;
 
   const leafElkNode = (node: PreparedNode) => {
     const compartments = collectCompartments(node);
@@ -61,11 +64,10 @@ export async function layoutPrepared(prepared: PreparedView): Promise<LayoutResu
   // interconnection-elk-input.ts) so each package lays out as a compact block instead of a flat
   // layered graph scattering package members anywhere, which otherwise produces very wide,
   // tangled diagrams for models with more than a handful of packages.
-  const packageGroups = !isInterconnectionView
-    ? ((prepared.meta?.packageContainerGroups as
-        | Array<{ id: string; name: string; memberIds: string[] }>
-        | undefined) ?? [])
-    : [];
+  const packageGroups =
+    (prepared.meta?.packageContainerGroups as
+      | Array<{ id: string; name: string; memberIds: string[] }>
+      | undefined) ?? [];
   const useHierarchy = packageGroups.length >= 2;
   let children: unknown[];
   if (useHierarchy) {
@@ -103,22 +105,9 @@ export async function layoutPrepared(prepared: PreparedView): Promise<LayoutResu
 
   const graph = {
     id: "root",
-    layoutOptions: {
-      "elk.algorithm": "layered",
-      ...(useHierarchy ? { "elk.hierarchyHandling": "INCLUDE_CHILDREN" } : {}),
-      "elk.direction": isInterconnectionView ? "RIGHT" : "DOWN",
-      "elk.spacing.nodeNode": isInterconnectionView ? "80" : "140",
-      "elk.layered.spacing.nodeNodeBetweenLayers": isInterconnectionView ? "110" : "180",
-      "elk.spacing.edgeNode": isInterconnectionView ? "80" : "90",
-      "elk.spacing.edgeEdge": isInterconnectionView ? "60" : "80",
-      "elk.edgeRouting": "ORTHOGONAL",
-      "elk.layered.nodePlacement.strategy": "NETWORK_SIMPLEX",
-      "elk.separateConnectedComponents": "true",
-      "elk.aspectRatio": isInterconnectionView ? "1.6" : "1.4",
-      "elk.padding": isInterconnectionView ? "[top=70,left=70,bottom=70,right=70]" : "[top=100,left=100,bottom=100,right=100]",
-      "org.eclipse.elk.portConstraints": "FIXED_SIDE",
-      "org.eclipse.elk.json.edgeCoords": "ROOT"
-    },
+    layoutOptions: buildElkLayoutOptions("general", {
+      "elk.hierarchyHandling": useHierarchy ? "INCLUDE_CHILDREN" : undefined,
+    }),
     children,
     edges: diagramEdges.map((edge) => ({ id: edge.id, sources: [edge.source], targets: [edge.target] }))
   };
