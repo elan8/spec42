@@ -596,7 +596,10 @@ fn run_interconnection_lsp_performance_report(config: InterconnectionPerfReportC
         !has_general_view_graph,
         "expected slim LSP payload to omit generalViewGraph when preparedView is present"
     );
-    const MAX_DRONE_SLIM_INTERCONNECTION_BYTES: usize = 52_000;
+    // Budget bumped from 52_000: prepared nodes/ports now carry `uri`/`range` for click-to-source
+    // (previously hardcoded to `None` in `prepare_interconnection_prepared_view` — a real bug, not
+    // a size-budget trade-off), which legitimately grows the slim payload by a few KB.
+    const MAX_DRONE_SLIM_INTERCONNECTION_BYTES: usize = 62_000;
     assert!(
         visualization_capture.raw.len() <= MAX_DRONE_SLIM_INTERCONNECTION_BYTES,
         "expected slim LSP payload under {MAX_DRONE_SLIM_INTERCONNECTION_BYTES} bytes on drone, got {}",

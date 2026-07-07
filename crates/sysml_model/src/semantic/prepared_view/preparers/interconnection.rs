@@ -42,6 +42,8 @@ pub fn prepare_interconnection_scene(
                             "east" => json!("right"),
                             _ => Value::Null,
                         },
+                        "uri": port.uri,
+                        "range": port.range,
                         "attributes": {
                             "parentId": port.owner_node_id,
                             "scenePortId": port.id,
@@ -55,8 +57,8 @@ pub fn prepare_interconnection_scene(
                 label: node.name.clone(),
                 kind: "part".to_string(),
                 source_path: None,
-                uri: None,
-                range: None,
+                uri: node.uri.clone(),
+                range: node.range.clone(),
                 attributes: Some(json!({
                     "containerId": node.parent_id,
                     "qualifiedName": node.qualified_name,
@@ -143,5 +145,134 @@ pub fn prepare_interconnection_scene(
             "schemaVersion": scene.schema_version,
             "selectedRoot": scene.view.root_ids.first(),
         })),
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use std::collections::HashMap;
+
+    use crate::semantic::dto::{PositionDto, RangeDto, SysmlVisualizationResultDto};
+    use crate::semantic::ibd::{IbdDataDto, IbdPartDto, IbdPortDto};
+    use crate::semantic::interconnection_scene::build_interconnection_scene;
+
+    use super::prepare_interconnection_scene;
+
+    fn test_part(name: &str, qn: &str) -> IbdPartDto {
+        IbdPartDto {
+            id: qn.replace('.', "::"),
+            node_id: qn.to_string(),
+            name: name.to_string(),
+            qualified_name: qn.to_string(),
+            uri: Some("file:///model.sysml".to_string()),
+            container_id: None,
+            element_type: "part".to_string(),
+            attributes: HashMap::new(),
+            range: Some(RangeDto {
+                start: PositionDto { line: 4, character: 2 },
+                end: PositionDto { line: 4, character: 10 },
+            }),
+        }
+    }
+
+    fn test_port(id: &str, name: &str, parent: &str) -> IbdPortDto {
+        IbdPortDto {
+            id: id.to_string(),
+            port_id: id.to_string(),
+            name: name.to_string(),
+            parent_id: parent.to_string(),
+            direction: None,
+            port_type: None,
+            port_side: None,
+            uri: Some("file:///model.sysml".to_string()),
+            range: Some(RangeDto {
+                start: PositionDto { line: 4, character: 2 },
+                end: PositionDto { line: 4, character: 10 },
+            }),
+        }
+    }
+
+    /// Regression test for a real bug found against a real workspace (the
+    /// sysml-robot-vacuum-cleaner `firmwareDeployment` view): `IbdPartDto`/`IbdPortDto` and
+    /// `InterconnectionNodeDto`/`InterconnectionPortDto` carried correct `uri`/`range` end to
+    /// end (verified by `scene_nodes_and_ports_carry_source_location_for_click_to_source` in
+    /// `interconnection_scene.rs`), but `prepare_interconnection_prepared_view` — the final step
+    /// that actually produces what the renderer/webview consumes — hardcoded `uri: None,
+    /// range: None` on every `PreparedNodeDto` regardless of what the scene node carried,
+    /// silently breaking click-to-source for every real interconnection-view export despite the
+    /// scene-level test passing. Assert all the way through to `PreparedViewDto` so this can't
+    /// regress at this specific hand-off point again.
+    #[test]
+    fn prepared_view_nodes_and_port_details_carry_source_location_for_click_to_source() {
+        let ibd = IbdDataDto {
+            parts: vec![test_part("mainElectronics", "Grid.mainElectronics")],
+            ports: vec![test_port(
+                "Grid.mainElectronics.leftMotorPhaseOut",
+                "leftMotorPhaseOut",
+                "Grid.mainElectronics",
+            )],
+            connectors: Vec::new(),
+            container_groups: Vec::new(),
+            package_container_groups: Vec::new(),
+            root_candidates: vec!["Grid.mainElectronics".to_string()],
+            default_root: None,
+            root_views: HashMap::new(),
+            def_instance_mappings: Vec::new(),
+        };
+        let scene = build_interconnection_scene(
+            &ibd,
+            "view-1",
+            "mainElectronics",
+            &["Grid.mainElectronics".to_string()],
+            None,
+        );
+        let response = SysmlVisualizationResultDto {
+            version: 0,
+            model_ready: true,
+            view: "interconnection-view".to_string(),
+            workspace_root_uri: "file:///fixture".to_string(),
+            view_candidates: Vec::new(),
+            selected_view: None,
+            selected_view_name: Some("mainElectronics".to_string()),
+            empty_state_message: None,
+            package_groups: None,
+            graph: None,
+            general_view_graph: None,
+            workspace_model: None,
+            activity_diagrams: None,
+            activity_diagram_candidates: None,
+            sequence_diagrams: None,
+            sequence_diagram_candidates: None,
+            state_machines: None,
+            state_machine_candidates: None,
+            ibd: None,
+            interconnection_scene: None,
+            stats: None,
+            projection_hints: None,
+            prepared_view: None,
+        };
+
+        let prepared = prepare_interconnection_scene(&scene, &response);
+
+        let node = prepared
+            .nodes
+            .iter()
+            .find(|n| n.id == scene.nodes[0].id)
+            .expect("expected mainElectronics prepared node");
+        assert_eq!(node.uri.as_deref(), Some("file:///model.sysml"));
+        assert!(node.range.is_some());
+
+        let port_details = node
+            .attributes
+            .as_ref()
+            .and_then(|attrs| attrs.get("portDetails"))
+            .and_then(|value| value.as_array())
+            .expect("expected portDetails array");
+        let port = port_details
+            .iter()
+            .find(|p| p.get("name").and_then(|v| v.as_str()) == Some("leftMotorPhaseOut"))
+            .expect("expected leftMotorPhaseOut port detail");
+        assert_eq!(port.get("uri").and_then(|v| v.as_str()), Some("file:///model.sysml"));
+        assert!(port.get("range").is_some_and(|value| !value.is_null()));
     }
 }

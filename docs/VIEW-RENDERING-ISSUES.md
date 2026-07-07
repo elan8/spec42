@@ -52,6 +52,40 @@ The following were explicitly deferred, not forgotten — keeping them here so t
 
 ## Open
 
+### O-8: A part exposed via its definition-side path renders with no ancestor containers ("empty parent" boxes) in Interconnection View
+- **Where:** `crates/sysml_model/src/semantic/ibd/extract_impl.rs` (`build_container_groups`),
+  and/or wherever definition→instance path normalization runs for exposed ids (the
+  `def_instance_mappings`/typing-edge machinery from
+  [F-4](#f-4-driveModule-interconnection-view-resolved-zero-connectors)/[A4](#a4-new-fix-def-instance-root-mapping-heuristic) —
+  not yet root-caused to a single line, see below).
+- **Symptom:** confirmed on `sysml-robot-vacuum-cleaner`'s `firmwareDeployment` view
+  (`expose PhysicalArchitecture::AutonomousFloorCleaningRobot.mainElectronics.mainControlPcb.mcu;`,
+  one of 3 `expose` statements on that view). `mcu`'s own `IbdPartDto.qualified_name` resolves to
+  `PhysicalArchitecture.MainElectronicsAssembly.mainControlPcb.mcu` — the **definition-side** path
+  (`MainElectronicsAssembly` is `mainElectronics`'s *type*, per a `part mainElectronics :
+  MainElectronicsAssembly;` usage declaration) — while the view's `expose` statement and the
+  workspace's only `container_groups` entry (`AutonomousFloorCleaningRobot`, confirmed via a full
+  CLI JSON export) both use the **instance-side** path
+  (`PhysicalArchitecture.AutonomousFloorCleaningRobot.mainElectronics.mainControlPcb.mcu`). Since
+  these are different strings, `mcu` never matches any container group's `member_part_ids`, so it
+  renders with a `containerId` pointing at `PhysicalArchitecture.MainElectronicsAssembly.mainControlPcb`
+  — a container that was never created as a node — while the workspace's real top-level
+  `PhysicalArchitecture` package container renders with zero children (the "empty parent" visual
+  the ancestor-chain bug produces).
+- **Relationship to prior fixes:** this is the same *class* of def/instance path-mismatch bug as
+  F-4/A4, but a variant not covered by that fix: F-4 handled two *differently-named top-level
+  packages* (`PhysicalArchitecture` defs vs `Architecture` instances); here both paths share the
+  same top package (`PhysicalArchitecture`) and only diverge partway down
+  (`AutonomousFloorCleaningRobot.mainElectronics` vs `MainElectronicsAssembly`), for a member
+  reached via a *third, independently-exposed* root on a multi-`expose` view — a shape not seen
+  in this session's earlier fixes or their regression tests.
+- **Not fixed:** root-caused to the path-mismatch above via real CLI JSON inspection, but the exact
+  point where `mcu`'s occurrence should have been normalized back to the instance-side path (before
+  `build_container_groups` runs) needs focused investigation — didn't want to guess a fix for a
+  path-resolution bug in an area ([O-1](#o-1-scopedincremental-ibd-build-can-pick-a-different-but-valid-root-than-the-full-workspace-build)-adjacent)
+  that already proved subtler than expected once before this session.
+- **Discovered:** 2026-07-07, investigating a user report against `firmwareDeployment`.
+
 ### O-7: `ibd`/`filtered_ibd` computed unconditionally for every view kind despite zero direct TS consumers found
 - **Where:** `crates/sysml_model/src/semantic/visualization/response.rs`
   (`build_sysml_visualization_from_artifacts`, `ibd_source`/`filtered_ibd` construction).
@@ -205,6 +239,41 @@ The following were explicitly deferred, not forgotten — keeping them here so t
 ---
 
 ## Fixed
+
+### F-19: Click-to-source silently broken for every real interconnection-view export — `prepare_interconnection_prepared_view` hardcoded `uri`/`range` to `None`
+- **Fixed:** 2026-07-07 · `crates/sysml_model/src/semantic/prepared_view/preparers/interconnection.rs`.
+- **Was:** [F-5](#f-5-click-to-source-does-nothing-in-interconnection-view) threaded `uri`/`range`
+  correctly through `IbdPartDto`/`IbdPortDto` → `InterconnectionNodeDto`/`InterconnectionPortDto`
+  (verified by a scene-level regression test), but the *final* step —
+  `prepare_interconnection_prepared_view`, which builds the `PreparedNodeDto`/port-detail JSON the
+  renderer/webview actually consumes — **hardcoded `uri: None, range: None`** on every node and
+  never included `uri`/`range` in port-detail JSON at all, regardless of what the scene node
+  carried. F-5's own test never caught this because it stopped at the scene DTO, one step before
+  the actual bug.
+- **Found while investigating a user report** against `sysml-robot-vacuum-cleaner`'s
+  `firmwareDeployment` interconnection view: exporting it via the real CLI and inspecting the JSON
+  showed raw `ibd.parts[].uri`/`.range` populated correctly for every part, but every node in
+  `preparedView.nodes[]` had `uri: undefined, range: undefined` — pinpointing the break to this one
+  preparer.
+- **Fix:** `prepare_interconnection_scene` now copies `node.uri.clone()`/`node.range.clone()` onto
+  each `PreparedNodeDto`, and adds `uri`/`range` fields to each port's detail JSON (matching the
+  field names the TS fallback path — `prepare/interconnection-scene.ts`'s `mapPortDetail` — already
+  expected, so both code paths agree).
+- **Side effect:** the slim interconnection payload legitimately grows by a few KB now that every
+  node/port carries real `uri`/`range` JSON. Bumped 3 hardcoded byte-budget regression guards
+  (`52_000` → `62_000`) that were unknowingly calibrated against the buggy, artificially-smaller
+  payload: `crates/lsp_server/tests/integration/interconnection_visualization.rs`,
+  `crates/lsp_server/tests/integration/powersystems_performance.rs`,
+  `crates/server/src/diagrams.rs`.
+- **Regression test:** `prepared_view_nodes_and_port_details_carry_source_location_for_click_to_source`
+  (`prepared_view/preparers/interconnection.rs`) — goes all the way from a raw `IbdDataDto` through
+  `build_interconnection_scene` to the final `PreparedViewDto`, specifically closing the gap F-5's
+  test left open.
+- **Verified via CLI** against both the bundled `examples/drone` fixture (18/19 nodes now carry
+  `uri`) and the real `sysml-robot-vacuum-cleaner` `firmwareDeployment` view (21/23 nodes now carry
+  `uri`; the 2 without are the synthetic package containers, correctly so). Full `cargo test` green.
+  Re-exported all 8 baseline view kinds: the 6 untouched kinds byte-identical; only
+  interconnection-view's payload changed, exactly as intended.
 
 ### F-18: Phase 8 of the view-pipeline refactor plan — fixed the `standard-views.ts` naming collision and split `behavior.ts`
 - **Fixed:** 2026-07-07 · `shared/diagram-renderer/src/views/standard-views.ts` renamed to
@@ -672,6 +741,40 @@ The following were explicitly deferred, not forgotten — keeping them here so t
 
 ## Improvement suggestions (not bugs)
 
+- **`allocate` relationships are intentionally not drawn as connector lines in Interconnection
+  View — confirmed against the actual SysML v2 spec text, not just Spec42's own docs; not a bug.**
+  Investigated after a user question ("is it a spec gap or a bug that firmwareDeployment shows no
+  allocate edges"), then re-confirmed against the primary source
+  (`C:\Git\elan8\elan8-monorepo\library\SysML_v2.txt`, the OMG SysML v2.0 Part 1 spec text) rather
+  than relying on Spec42's own notation-inventory doc alone:
+  - **§9.2.20.2.6 InterconnectionView**: "ViewDefinition to present exposed features as nodes,
+    nested features as nested nodes, and **connections between features as edges** between (nested)
+    nodes." — connections only, no mention of allocation.
+  - **§8.2.3.11 Parts Graphical Notation** defines the `interconnection-element` grammar
+    production incrementally per relationship kind — `part`/`part-ref` (§8.2.3.11), `port-def`/`port`
+    (§8.2.3.12), `connection-def`/`connection`/`connection-relationship` (§8.2.3.13), `interface`
+    (§8.2.3.14). **§8.2.3.16 Flows Graphical Notation** explicitly extends it again
+    (`interconnection-element =| flow-def | flow`) — showing that when the spec authors *intend* a
+    relationship kind to appear in an interconnection view, they add it to this production.
+    **§8.2.3.15 Allocations Graphical Notation** (the section right before Flows) defines
+    `allocation-def`/`allocation`/`allocate-relationship` but adds them only to `general-relationship`
+    and `usage-edge` — **never to `interconnection-element`**. The omission is structural, not an
+    oversight: allocation is deliberately scoped to `general-view` (`general-view =|
+    interconnection-view`, i.e. GeneralView's grammar is a superset that also carries
+    `general-relationship`-family edges like `allocate-relationship`, `satisfy-edge`,
+    `verify-relationship`, `expose-relationship` — InterconnectionView is the narrower subset).
+  - `crates/sysml_model/src/semantic/ibd/{extract_impl,connectors}.rs` implement exactly this:
+    only `RelationshipKind::Connection` is ever consulted when building IBD connectors —
+    `RelationshipKind::Allocate` is never referenced (confirmed by grep, zero matches) — matching
+    the grammar. `docs/reference/SYSML-NOTATION-INVENTORY.md` independently marks
+    `allocate-relationship.svg`/`allocation.svg`/`allocation-def.svg` as **WONTFIX (not in shipped
+    UI)**, consistent with this reading. **What the same inventory doc says *should* exist but
+    doesn't yet**: `allocations-compartment.svg` is marked "shared (compartment text only)" —
+    allocations are supposed to show up as a text line inside affected node bodies (e.g. "allocated
+    to: X"),
+  which is real, missing functionality, already tracked under
+  [O-2](#o-2-missing-node-body-compartments-for-most-non-structural-diagram-kinds) (confirmed:
+  `model_projection.rs`'s compartment-folding has zero references to "allocation" anywhere).
 - **Qualified/short-name in node header.** Header name is truncated at 26 chars with no fallback to
   show the full qualified name (e.g. on hover/tooltip). Low effort, would help disambiguate nodes with
   long or colliding short names.

@@ -469,7 +469,11 @@ mod tests {
 
         let payload_bytes =
             serde_json::to_string(&payload).map(|raw| raw.len()).unwrap_or(0);
-        const MAX_DRONE_SLIM_INTERCONNECTION_BYTES: usize = 52_000;
+        // Budget bumped from 52_000: prepared nodes/ports now carry `uri`/`range` for
+        // click-to-source (previously hardcoded to `None` in
+        // `prepare_interconnection_prepared_view` — a real bug, not a size-budget trade-off),
+        // which legitimately grows the slim payload by a few KB.
+        const MAX_DRONE_SLIM_INTERCONNECTION_BYTES: usize = 62_000;
         assert!(
             payload_bytes <= MAX_DRONE_SLIM_INTERCONNECTION_BYTES,
             "CLI slim interconnection payload should stay under {MAX_DRONE_SLIM_INTERCONNECTION_BYTES} bytes, got {payload_bytes}"
