@@ -386,6 +386,7 @@ mod tests {
             root_candidates: vec!["Grid.northSouthRing".to_string()],
             default_root: None,
             root_views: HashMap::new(),
+            def_instance_mappings: Vec::new(),
         };
 
         let scene = build_interconnection_scene(

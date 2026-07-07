@@ -4,8 +4,8 @@ use std::collections::HashSet;
 
 use super::connectors::enrich_connector_endpoint_refs;
 use super::dto::{
-    IbdConnectorDto, IbdContainerGroupDto, IbdDataDto, IbdPackageContainerGroupDto, IbdPartDto,
-    IbdPortDto, IbdRootViewDto,
+    DefInstanceMappingDto, IbdConnectorDto, IbdContainerGroupDto, IbdDataDto,
+    IbdPackageContainerGroupDto, IbdPartDto, IbdPortDto, IbdRootViewDto,
 };
 use super::extract_impl::{is_part_instance_kind, prune_interconnection_definition_parts};
 
@@ -53,8 +53,15 @@ fn merge_ibd_payloads_inner(ibds: Vec<IbdDataDto>, enrich_connectors: bool) -> I
         String,
         IbdPackageContainerGroupDto,
     > = std::collections::HashMap::new();
+    let mut def_instance_mappings_by_key: std::collections::HashMap<(String, String), DefInstanceMappingDto> =
+        std::collections::HashMap::new();
 
     for ibd in ibds {
+        for mapping in ibd.def_instance_mappings {
+            def_instance_mappings_by_key
+                .entry((mapping.def_root.clone(), mapping.instance_root.clone()))
+                .or_insert(mapping);
+        }
         for p in ibd.parts {
             parts_by_id.entry(p.id.clone()).or_insert(p);
         }
@@ -198,5 +205,6 @@ fn merge_ibd_payloads_inner(ibds: Vec<IbdDataDto>, enrich_connectors: bool) -> I
         root_candidates: root_candidates.into_iter().collect(),
         default_root,
         root_views,
+        def_instance_mappings: def_instance_mappings_by_key.into_values().collect(),
     }
 }

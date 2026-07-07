@@ -12,7 +12,7 @@ use super::connectors::{
     IbdConnectorSink,
 };
 use super::dto::{
-    IbdConnectorDto, IbdContainerGroupDto, IbdDataDto, IbdPartDto,
+    DefInstanceMappingDto, IbdConnectorDto, IbdContainerGroupDto, IbdDataDto, IbdPartDto,
     IbdPortDto, IbdRootViewDto,
 };
 use crate::{ElementKind, NodeId, RelationshipKind, SemanticGraph, SemanticNode};
@@ -633,20 +633,21 @@ pub(crate) fn qualify_pending_connection_endpoint(container_prefix: Option<&str>
     if trimmed.is_empty() {
         return String::new();
     }
-    if trimmed.contains("::") {
-        return trimmed.replace("::", ".");
-    }
+    // `endpoint` may be a relative feature chain (e.g. `leftMotor::phaseIn`, rendered with
+    // `::` regardless of the `.` used in source text) rather than an already-absolute
+    // qualified name, so a bare `::` cannot be used to decide it's already qualified.
+    let trimmed_dot = trimmed.replace("::", ".");
     let Some(prefix) = container_prefix
         .map(str::trim)
         .filter(|prefix| !prefix.is_empty())
     else {
-        return trimmed.to_string();
+        return trimmed_dot;
     };
     let prefix_dot = prefix.replace("::", ".");
-    if trimmed == prefix_dot || trimmed.starts_with(&format!("{prefix_dot}.")) {
-        trimmed.to_string()
+    if trimmed_dot == prefix_dot || trimmed_dot.starts_with(&format!("{prefix_dot}.")) {
+        trimmed_dot
     } else {
-        format!("{prefix_dot}.{trimmed}")
+        format!("{prefix_dot}.{trimmed_dot}")
     }
 }
 
@@ -655,6 +656,10 @@ pub(crate) fn qualify_occurrence_endpoint(endpoint: &str, def_container_prefixes
     if trimmed.is_empty() {
         return String::new();
     }
+    // Unlike `qualify_pending_connection_endpoint`, this path has no single known enclosing
+    // definition to qualify against — only a guess-list of every part-def in the file — so an
+    // endpoint already containing `::` is left as-is rather than risking a wrong prefix match
+    // against an unrelated definition.
     if trimmed.contains("::") {
         return trimmed.replace("::", ".");
     }
@@ -750,7 +755,14 @@ fn expand_relative_endpoint_with_port_index(
         .unwrap_or_else(|| trimmed.to_string())
 }
 
-fn build_container_groups(parts: &[IbdPartDto]) -> Vec<IbdContainerGroupDto> {
+/// Builds ancestor "container" boxes for the interconnection view by walking each part's
+/// dotted qualified name. `is_non_part_container` lets callers exclude prefixes that resolve
+/// to a package/namespace rather than an actual composing Part Definition/Usage (a package
+/// segment isn't a diagrammable node and would otherwise render as an empty phantom box).
+fn build_container_groups(
+    parts: &[IbdPartDto],
+    is_non_part_container: &dyn Fn(&str) -> bool,
+) -> Vec<IbdContainerGroupDto> {
     let part_qn: std::collections::HashSet<String> = parts
         .iter()
         .map(|part| part.qualified_name.clone())
@@ -770,6 +782,9 @@ fn build_container_groups(parts: &[IbdPartDto]) -> Vec<IbdContainerGroupDto> {
         for depth in 1..segments.len() {
             let prefix = segments[..depth].join(".");
             if part_qn.contains(&prefix) {
+                continue;
+            }
+            if is_non_part_container(&prefix) {
                 continue;
             }
             let parent_qn = if depth > 1 {
@@ -805,9 +820,19 @@ fn build_container_groups(parts: &[IbdPartDto]) -> Vec<IbdContainerGroupDto> {
         }
     }
 
+    let existing_group_ids: std::collections::HashSet<String> =
+        groups_by_qn.values().map(|group| group.id.clone()).collect();
     let mut groups: Vec<IbdContainerGroupDto> = groups_by_qn
         .into_values()
         .filter(|group| !group.member_part_ids.is_empty())
+        .map(|mut group| {
+            if let Some(parent_id) = &group.parent_id {
+                if !existing_group_ids.contains(parent_id) {
+                    group.parent_id = None;
+                }
+            }
+            group
+        })
         .collect();
     groups.sort_by(|left, right| {
         left.depth
@@ -1115,7 +1140,13 @@ pub fn build_ibd_for_uri(graph: &SemanticGraph, uri: &Url) -> IbdDataDto {
     let (parts, ports, connectors) = prune_ibd_payload_to_connected_scope(parts, ports, connectors);
     let mut connectors = connectors;
     enrich_connector_endpoint_refs(&mut connectors, &parts, &ports);
-    let container_groups = build_container_groups(&parts);
+    let container_groups = build_container_groups(&parts, &|prefix| {
+        let colon = prefix.replace('.', "::");
+        graph
+            .get_node(&NodeId::new(uri, &colon))
+            .map(|node| !is_part_like(node.element_kind.as_str()))
+            .unwrap_or(false)
+    });
 
     let top_level_parts: Vec<_> = parts
         .iter()
@@ -1253,6 +1284,14 @@ pub fn build_ibd_for_uri(graph: &SemanticGraph, uri: &Url) -> IbdDataDto {
         );
     }
 
+    let def_instance_mappings = instance_def_mappings
+        .into_iter()
+        .map(|(def_root, instance_root)| DefInstanceMappingDto {
+            def_root,
+            instance_root,
+        })
+        .collect();
+
     IbdDataDto {
         parts,
         ports,
@@ -1262,6 +1301,7 @@ pub fn build_ibd_for_uri(graph: &SemanticGraph, uri: &Url) -> IbdDataDto {
         root_candidates,
         default_root,
         root_views,
+        def_instance_mappings,
     }
 }
 
@@ -1429,7 +1469,7 @@ mod tests {
             test_part("P::Inner::a", "a", "P.Inner.a", None, "part"),
             test_part("P::Inner::b", "b", "P.Inner.b", None, "part"),
         ];
-        let groups = build_container_groups(&parts);
+        let groups = build_container_groups(&parts, &|_| false);
         assert!(groups
             .iter()
             .any(|group| group.qualified_name == "P" && group.member_part_ids.len() == 2));
@@ -1836,6 +1876,7 @@ mod tests {
             root_candidates: Vec::new(),
             default_root: None,
             root_views: std::collections::HashMap::new(),
+            def_instance_mappings: Vec::new(),
         };
 
         normalize_ibd_to_instance_paths(&mut ibd);
@@ -2186,6 +2227,118 @@ mod tests {
                 "scoped IBD must not include definitions: {:?}",
                 view.parts
             );
+        }
+    }
+
+    #[test]
+    fn build_ibd_resolves_connectors_with_bare_own_port_endpoint_and_no_phantom_package_box() {
+        // Regression test for a real-world model (sysml-robot-vacuum-cleaner) where every
+        // connector inside `part def DriveModule` names its own port endpoint bare
+        // (e.g. `phaseLeftIn`) while the other endpoint is a two-segment member chain
+        // (e.g. `leftMotor.phaseIn`). All 5 connectors were previously dropped because the
+        // two-segment endpoint contains `::` internally and was mistaken for an already
+        // fully-qualified path, so it never got prefixed with the enclosing definition. The
+        // enclosing package (`PhysicalArchitecture`) was also incorrectly rendered as an empty
+        // container box alongside the legitimate `AutonomousFloorCleaningRobot` part-def box.
+        let doc = SysmlDocument::from_memory_path(
+            "workspace",
+            "model.sysml",
+            r#"package PhysicalArchitecture {
+  port def ThreePhaseMotorPort;
+  port def QuadratureEncoderPort;
+  port def GpioPort;
+
+  part def BrushlessDriveMotor {
+    port phaseIn : ThreePhaseMotorPort;
+  }
+  part def WheelEncoder {
+    port odometryOut : QuadratureEncoderPort;
+  }
+  part def BumperSwitchArray {
+    port hazardOut : GpioPort;
+  }
+  part def DriveModule {
+    port phaseLeftIn : ThreePhaseMotorPort;
+    port phaseRightIn : ThreePhaseMotorPort;
+    port leftEncoderOut : QuadratureEncoderPort;
+    port rightEncoderOut : QuadratureEncoderPort;
+    port bumperHazardOut : GpioPort;
+    part leftMotor : BrushlessDriveMotor;
+    part rightMotor : BrushlessDriveMotor;
+    part leftEncoder : WheelEncoder;
+    part rightEncoder : WheelEncoder;
+    part bumperSwitches : BumperSwitchArray;
+    connect leftMotor.phaseIn to phaseLeftIn;
+    connect rightMotor.phaseIn to phaseRightIn;
+    connect leftEncoder.odometryOut to leftEncoderOut;
+    connect rightEncoder.odometryOut to rightEncoderOut;
+    connect bumperSwitches.hazardOut to bumperHazardOut;
+  }
+
+  part def AutonomousFloorCleaningRobot {
+    part driveModule : DriveModule;
+  }
+}"#
+            .to_string(),
+            SysmlDocumentSourceKind::Workspace,
+            None,
+            None,
+        )
+        .expect("workspace doc");
+        let (graph, _parsed) = build_semantic_graph_from_documents(&[doc]).expect("graph");
+        let uri = Url::parse("memory://workspace/model.sysml").expect("uri");
+        let ibd = build_ibd_for_uri(&graph, &uri);
+
+        let view = ibd
+            .root_views
+            .get("driveModule")
+            .expect("expected a driveModule root view");
+
+        assert_eq!(
+            view.connectors.len(),
+            5,
+            "expected all 5 connectors to resolve, got {:?}",
+            view.connectors
+        );
+        for (source_suffix, target_suffix) in [
+            ("leftMotor.phaseIn", "phaseLeftIn"),
+            ("rightMotor.phaseIn", "phaseRightIn"),
+            ("leftEncoder.odometryOut", "leftEncoderOut"),
+            ("rightEncoder.odometryOut", "rightEncoderOut"),
+            ("bumperSwitches.hazardOut", "bumperHazardOut"),
+        ] {
+            assert!(
+                view.connectors.iter().any(|connector| {
+                    connector.source_id.ends_with(source_suffix)
+                        && connector.target_id.ends_with(target_suffix)
+                }),
+                "expected connector {source_suffix} -> {target_suffix}, got {:?}",
+                view.connectors
+            );
+        }
+
+        assert!(
+            view.container_groups
+                .iter()
+                .all(|group| group.label != "PhysicalArchitecture"),
+            "package PhysicalArchitecture should not render as a container box, got {:?}",
+            view.container_groups
+        );
+        assert!(
+            view.container_groups
+                .iter()
+                .any(|group| group.label == "AutonomousFloorCleaningRobot"),
+            "expected the enclosing part-def container box to still render, got {:?}",
+            view.container_groups
+        );
+        for group in &view.container_groups {
+            if let Some(parent_id) = &group.parent_id {
+                assert!(
+                    view.container_groups.iter().any(|g| &g.id == parent_id),
+                    "container group {:?} has a dangling parent_id {parent_id}",
+                    group
+                );
+            }
         }
     }
 

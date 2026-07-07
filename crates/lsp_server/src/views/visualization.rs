@@ -256,6 +256,7 @@ mod tests {
             root_candidates: Vec::new(),
             default_root: None,
             root_views: HashMap::new(),
+            def_instance_mappings: Vec::new(),
         };
         let selected_ids: HashSet<String> = HashSet::from([
             "WebShopArchitecture::WebShopSystem::checkoutService".to_string(),
@@ -526,6 +527,7 @@ mod tests {
                     package_container_groups: Vec::new(),
                 },
             )]),
+            def_instance_mappings: Vec::new(),
         };
 
         let attached = attach_ibd_package_container_groups(

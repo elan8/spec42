@@ -42,7 +42,23 @@ fn architecture_package_prefix(qualified_name: &str) -> Option<&str> {
 }
 
 pub(crate) fn infer_def_instance_scope_mappings_for_ibd(ibd: &IbdDataDto) -> Vec<(String, String)> {
-    infer_def_instance_scope_mappings(&ibd.parts)
+    // Prefer real, typing-edge-derived mappings (accurate for any package naming convention)
+    // recorded during extraction. Fall back to (and supplement with) the name-pattern heuristic
+    // below, which only recognizes an "architecture"/"Architecture" package-segment convention
+    // and misses workspaces that use two independently-named definition/instance packages.
+    let mut mappings: Vec<(String, String)> = ibd
+        .def_instance_mappings
+        .iter()
+        .map(|mapping| (mapping.def_root.clone(), mapping.instance_root.clone()))
+        .collect();
+    let mut seen: std::collections::HashSet<(String, String)> = mappings.iter().cloned().collect();
+    for mapping in infer_def_instance_scope_mappings(&ibd.parts) {
+        if seen.insert(mapping.clone()) {
+            mappings.push(mapping);
+        }
+    }
+    mappings.sort_by_key(|mapping| std::cmp::Reverse(mapping.0.len()));
+    mappings
 }
 
 fn infer_def_instance_scope_mappings(parts: &[IbdPartDto]) -> Vec<(String, String)> {

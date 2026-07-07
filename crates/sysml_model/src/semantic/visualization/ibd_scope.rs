@@ -174,6 +174,7 @@ pub fn filter_ibd_by_visible_ids(ibd: &IbdDataDto, visible_ids: &HashSet<String>
         root_candidates,
         root_views,
         default_root,
+        def_instance_mappings: ibd.def_instance_mappings.clone(),
     }
 }
 
@@ -425,6 +426,7 @@ pub(crate) fn filter_ibd_by_root_prefixes(ibd: &IbdDataDto, root_prefixes: &Hash
         root_candidates,
         root_views,
         default_root,
+        def_instance_mappings: ibd.def_instance_mappings.clone(),
     }
 }
 
@@ -492,6 +494,7 @@ pub fn select_interconnection_ibd_scope_with_trace(
             root_candidates: Vec::new(),
             default_root: None,
             root_views: HashMap::new(),
+            def_instance_mappings: Vec::new(),
         };
         let trace_result = trace(label, &visible_scope_ibd, &empty);
         let chosen = if label == "full_visible_empty" {
@@ -587,6 +590,7 @@ mod interconnection_scope_tests {
             root_candidates: Vec::new(),
             default_root: None,
             root_views: HashMap::new(),
+            def_instance_mappings: Vec::new(),
         }
     }
 

@@ -52,6 +52,30 @@ pub enum IbdBuildScope {
     ViewExposedPackages,
 }
 
+/// Follows containment (children) and typing/specializes edges transitively from `node`,
+/// collecting every document URI touched. An exposed usage's nested structure and connectors
+/// are frequently declared on its *type definition* (possibly in another document) rather than
+/// on the usage itself, so the exposed-id qualified-name prefix alone isn't enough to find every
+/// document needed to reconstruct the interconnection view (e.g. connectors mirrored from a
+/// part def in a sibling file would otherwise be silently excluded from the scoped build).
+fn collect_definition_uris_for_subtree(
+    semantic_graph: &SemanticGraph,
+    node: &crate::SemanticNode,
+    uris: &mut HashSet<Url>,
+    visited: &mut HashSet<String>,
+) {
+    if !visited.insert(node.id.qualified_name.clone()) {
+        return;
+    }
+    uris.insert(node.id.uri.clone());
+    for def_node in semantic_graph.outgoing_typing_or_specializes_targets(node) {
+        collect_definition_uris_for_subtree(semantic_graph, def_node, uris, visited);
+    }
+    for child in semantic_graph.children_of(node) {
+        collect_definition_uris_for_subtree(semantic_graph, child, uris, visited);
+    }
+}
+
 /// Collect workspace URIs whose semantic nodes fall under `exposed_ids`.
 pub fn ibd_uri_closure_for_exposed_ids(
     semantic_graph: &SemanticGraph,
@@ -62,10 +86,19 @@ pub fn ibd_uri_closure_for_exposed_ids(
     }
 
     let mut uris = HashSet::new();
+    let mut visited = HashSet::new();
     for exposed_id in exposed_ids {
         if let Some(node_ids) = semantic_graph.node_ids_by_qualified_name.get(exposed_id) {
             for node_id in node_ids {
                 uris.insert(node_id.uri.clone());
+                if let Some(node) = semantic_graph.get_node(node_id) {
+                    collect_definition_uris_for_subtree(
+                        semantic_graph,
+                        node,
+                        &mut uris,
+                        &mut visited,
+                    );
+                }
             }
         }
         let dot_prefix = format!("{}.", exposed_id.replace("::", "."));

@@ -93,13 +93,27 @@ pub struct IbdPackageContainerGroupDto {
     pub member_part_ids: Vec<String>,
 }
 
+/// A definition-to-instance root mapping derived from real typing edges (not name heuristics),
+/// e.g. `("PhysicalArchitecture.AutonomousFloorCleaningRobot", "Architecture.CleaningRobotSystemOfInterest.physical")`.
+/// Lets an exposed view id that names a definition-nested member be translated to the concrete
+/// instance path(s) actually carrying mirrored connectors.
 #[derive(Debug, Clone, Serialize, TS)]
+#[serde(rename_all = "camelCase")]
+#[ts(rename = "IbdDefInstanceMappingDTO")]
+pub struct DefInstanceMappingDto {
+    pub def_root: String,
+    pub instance_root: String,
+}
+
+#[derive(Debug, Clone, Default, Serialize, TS)]
 #[serde(rename_all = "camelCase")]
 #[ts(rename = "IbdDataDTO")]
 pub struct IbdDataDto {
     pub parts: Vec<IbdPartDto>,
     pub ports: Vec<IbdPortDto>,
     pub connectors: Vec<IbdConnectorDto>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub def_instance_mappings: Vec<DefInstanceMappingDto>,
     pub container_groups: Vec<IbdContainerGroupDto>,
     pub package_container_groups: Vec<IbdPackageContainerGroupDto>,
     pub root_candidates: Vec<String>,

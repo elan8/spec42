@@ -118,6 +118,7 @@ pub fn build_merged_workspace_ibd(
             root_candidates: Vec::new(),
             default_root: None,
             root_views: HashMap::new(),
+            def_instance_mappings: Vec::new(),
         };
     }
     let worker_count = std::thread::available_parallelism()
@@ -159,6 +160,7 @@ pub fn empty_merged_ibd() -> IbdDataDto {
         root_candidates: Vec::new(),
         default_root: None,
         root_views: HashMap::new(),
+        def_instance_mappings: Vec::new(),
     }
 }
 
