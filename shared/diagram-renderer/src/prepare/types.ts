@@ -41,6 +41,8 @@ export interface InterconnectionSceneNodeDto {
   kind: string;
   typeName?: string;
   parentId?: string;
+  uri?: string;
+  range?: { start: { line: number; character: number }; end: { line: number; character: number } };
 }
 
 export interface InterconnectionScenePortDto {
@@ -52,6 +54,8 @@ export interface InterconnectionScenePortDto {
   typeName?: string;
   direction?: string;
   sideHint: string;
+  uri?: string;
+  range?: { start: { line: number; character: number }; end: { line: number; character: number } };
 }
 
 export interface InterconnectionSceneEdgeDto {

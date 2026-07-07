@@ -555,11 +555,13 @@ function drawIbdPorts(
 }
 
 function formatIbdPortLabel(name: string, detail?: PreparedPort): string {
+  const direction = String(detail?.direction || "").trim();
+  const directionPrefix = direction ? `${direction} ` : "";
   const type = String(detail?.portType || detail?.attributes?.portType || "").trim();
-  if (!type) return name;
+  if (!type) return `${directionPrefix}${name}`;
   const conjugated = type.startsWith("~");
   const cleanType = type.replace(/^~/, "").split(/::|\./).pop() || type.replace(/^~/, "");
-  return `${name}: ${conjugated ? "~" : ""}${cleanType}`;
+  return `${directionPrefix}${name}: ${conjugated ? "~" : ""}${cleanType}`;
 }
 
 function formatCompartmentSummary(attributes: Record<string, unknown> | undefined): string {

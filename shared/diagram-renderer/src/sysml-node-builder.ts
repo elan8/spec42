@@ -239,16 +239,22 @@ export function collectCompartmentsFromPart(part: unknown, ports: unknown[]): Sy
     if (!name) continue;
     const portAttrs = pr.attributes;
     let portType: string | null = null;
+    let direction: string | null = null;
     if (portAttrs && typeof portAttrs === "object" && "get" in portAttrs) {
-      portType = asString((portAttrs as { get: (k: string) => unknown }).get("portType")) || null;
+      const bag = portAttrs as { get: (k: string) => unknown };
+      portType = asString(bag.get("portType")) || null;
+      direction = asString(bag.get("direction")) || null;
     } else if (portAttrs && typeof portAttrs === "object") {
-      portType = asString((portAttrs as Record<string, unknown>).portType) || null;
+      const bag = portAttrs as Record<string, unknown>;
+      portType = asString(bag.portType) || null;
+      direction = asString(bag.direction) || null;
     }
     const normalizedPortType = portType ? normalizeUnitBrackets(portType) : null;
+    const directionPrefix = direction ? `${direction} ` : "";
     result.ports.push({
       name,
       typeName: normalizedPortType,
-      displayText: (name + (normalizedPortType ? ` : ${normalizedPortType}` : "")).trim(),
+      displayText: (directionPrefix + name + (normalizedPortType ? ` : ${normalizedPortType}` : "")).trim(),
     });
   }
 
@@ -263,16 +269,22 @@ export function collectCompartmentsFromPart(part: unknown, ports: unknown[]): Sy
     } else if (childType === "port") {
       const childAttrs = c.attributes;
       let portType: string | null = null;
+      let direction: string | null = null;
       if (childAttrs && typeof childAttrs === "object" && "get" in childAttrs) {
-        portType = asString((childAttrs as { get: (k: string) => unknown }).get("portType")) || null;
+        const bag = childAttrs as { get: (k: string) => unknown };
+        portType = asString(bag.get("portType")) || null;
+        direction = asString(bag.get("direction")) || null;
       } else if (childAttrs && typeof childAttrs === "object") {
-        portType = asString((childAttrs as Record<string, unknown>).portType) || null;
+        const bag = childAttrs as Record<string, unknown>;
+        portType = asString(bag.portType) || null;
+        direction = asString(bag.direction) || null;
       }
       const normalizedPortType = portType ? normalizeUnitBrackets(portType) : null;
+      const directionPrefix = direction ? `${direction} ` : "";
       result.ports.push({
         name: childName,
         typeName: normalizedPortType,
-        displayText: (childName + (normalizedPortType ? ` : ${normalizedPortType}` : "")).trim(),
+        displayText: (directionPrefix + childName + (normalizedPortType ? ` : ${normalizedPortType}` : "")).trim(),
       });
     }
   }

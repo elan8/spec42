@@ -215,6 +215,7 @@ mod tests {
                 container_id: Some("WebShopArchitecture.WebShopSystem".to_string()),
                 element_type: "part".to_string(),
                 attributes: HashMap::new(),
+                range: None,
             }],
             ports: vec![
                 sysml_model::semantic::ibd::IbdPortDto {
@@ -225,6 +226,8 @@ mod tests {
                     direction: None,
                     port_type: None,
                     port_side: None,
+                    uri: None,
+                    range: None,
                 },
                 sysml_model::semantic::ibd::IbdPortDto {
                     id: "WebShopArchitecture::WebShopSystem::apiGateway::checkoutApiOut"
@@ -236,6 +239,8 @@ mod tests {
                     direction: None,
                     port_type: None,
                     port_side: None,
+                    uri: None,
+                    range: None,
                 },
             ],
             connectors: vec![sysml_model::semantic::ibd::IbdConnectorDto {
@@ -452,6 +457,7 @@ mod tests {
                 container_id: None,
                 element_type: "part def".to_string(),
                 attributes: HashMap::new(),
+                range: None,
             },
             IbdPartDto {
                 id: "Timer::TimerSystem".to_string(),
@@ -462,6 +468,7 @@ mod tests {
                 container_id: None,
                 element_type: "part def".to_string(),
                 attributes: HashMap::new(),
+                range: None,
             },
         ];
         let groups = build_ibd_package_container_groups(
@@ -501,6 +508,7 @@ mod tests {
                 container_id: None,
                 element_type: "part def".to_string(),
                 attributes: HashMap::new(),
+                range: None,
             }],
             ports: Vec::new(),
             connectors: Vec::new(),
@@ -520,6 +528,7 @@ mod tests {
                         container_id: None,
                         element_type: "part def".to_string(),
                         attributes: HashMap::new(),
+                        range: None,
                     }],
                     ports: Vec::new(),
                     connectors: Vec::new(),

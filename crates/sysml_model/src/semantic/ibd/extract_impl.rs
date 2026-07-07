@@ -430,6 +430,7 @@ fn ensure_endpoint_parts_present(
             container_id,
             element_type,
             attributes,
+            range: Some(crate::semantic::dto::range_to_dto(node.range)),
         });
     }
 }
@@ -842,8 +843,12 @@ fn build_container_groups(
     groups
 }
 
-fn expanded_port_to_ibd_dto(port: &crate::semantic::component_view::ExpandedPort) -> IbdPortDto {
+fn expanded_port_to_ibd_dto(
+    graph: &SemanticGraph,
+    port: &crate::semantic::component_view::ExpandedPort,
+) -> IbdPortDto {
     let port_side = infer_port_side(&port.name, port.direction.as_deref(), port.port_type.as_deref());
+    let declaring_node = graph.get_node(&port.node_id);
     IbdPortDto {
         id: canonical_port_id(&port.parent_path, &port.name),
         port_id: canonical_port_id(&port.parent_path, &port.name),
@@ -852,6 +857,8 @@ fn expanded_port_to_ibd_dto(port: &crate::semantic::component_view::ExpandedPort
         direction: port.direction.clone(),
         port_type: port.port_type.clone(),
         port_side,
+        uri: Some(port.node_id.uri.as_str().to_string()),
+        range: declaring_node.map(|node| crate::semantic::dto::range_to_dto(node.range)),
     }
 }
 
@@ -885,6 +892,7 @@ pub fn build_ibd_for_uri(graph: &SemanticGraph, uri: &Url) -> IbdDataDto {
                 container_id: container_id.map(|s| qualified_name_to_dot(&s)),
                 element_type: node.element_kind.as_str().to_string(),
                 attributes: node.attributes.clone(),
+                range: Some(crate::semantic::dto::range_to_dto(node.range)),
             });
         } else if is_port_like(node.element_kind.as_str()) {
             let parent_id = parent_qualified
@@ -910,6 +918,8 @@ pub fn build_ibd_for_uri(graph: &SemanticGraph, uri: &Url) -> IbdDataDto {
                 direction,
                 port_type,
                 port_side,
+                uri: Some(node.id.uri.as_str().to_string()),
+                range: Some(crate::semantic::dto::range_to_dto(node.range)),
             });
         }
     }
@@ -951,11 +961,14 @@ pub fn build_ibd_for_uri(graph: &SemanticGraph, uri: &Url) -> IbdDataDto {
                 container_id: ep.parent_path.clone(),
                 element_type: ep.element_kind.clone(),
                 attributes: ep.attributes.clone(),
+                range: graph
+                    .get_node(&ep.node_id)
+                    .map(|node| crate::semantic::dto::range_to_dto(node.range)),
             });
             for port in &ep.ports {
                 let key = (port.parent_path.clone(), port.name.clone());
                 if existing_ports.insert(key) {
-                    ports.push(expanded_port_to_ibd_dto(port));
+                    ports.push(expanded_port_to_ibd_dto(graph, port));
                 }
             }
         }
@@ -963,7 +976,7 @@ pub fn build_ibd_for_uri(graph: &SemanticGraph, uri: &Url) -> IbdDataDto {
         for port in crate::semantic::component_view::inherited_ports(graph, def_node, parent_dot) {
             let key = (port.parent_path.clone(), port.name.clone());
             if existing_ports.insert(key) {
-                ports.push(expanded_port_to_ibd_dto(&port));
+                ports.push(expanded_port_to_ibd_dto(graph, &port));
             }
         }
     }
@@ -1345,6 +1358,7 @@ mod tests {
             container_id: container_id.map(String::from),
             element_type: element_type.to_string(),
             attributes: HashMap::new(),
+            range: None,
         }
     }
 
@@ -1357,6 +1371,8 @@ mod tests {
             direction: None,
             port_type: None,
             port_side: None,
+            uri: None,
+            range: None,
         }
     }
 
@@ -1555,6 +1571,7 @@ mod tests {
                 container_id: None,
                 element_type: "part def".to_string(),
                 attributes: HashMap::new(),
+                range: None,
             },
             IbdPartDto {
                 id: "Pkg::Vehicle::controller".to_string(),
@@ -1568,6 +1585,7 @@ mod tests {
                     "partType".to_string(),
                     serde_json::Value::String("Controller".to_string()),
                 )]),
+                range: None,
             },
             IbdPartDto {
                 id: "Pkg::Controller".to_string(),
@@ -1578,6 +1596,7 @@ mod tests {
                 container_id: None,
                 element_type: "part def".to_string(),
                 attributes: HashMap::new(),
+                range: None,
             },
             IbdPartDto {
                 id: "Pkg::Controller::sensor".to_string(),
@@ -1588,6 +1607,7 @@ mod tests {
                 container_id: Some("Pkg.Controller".to_string()),
                 element_type: "part".to_string(),
                 attributes: HashMap::new(),
+                range: None,
             },
             IbdPartDto {
                 id: "Pkg::Vehicle::controller::sensor".to_string(),
@@ -1598,6 +1618,7 @@ mod tests {
                 container_id: Some("Pkg.Vehicle.controller".to_string()),
                 element_type: "part".to_string(),
                 attributes: HashMap::new(),
+                range: None,
             },
             IbdPartDto {
                 id: "Pkg::VehicleInst".to_string(),
@@ -1611,6 +1632,7 @@ mod tests {
                     "partType".to_string(),
                     serde_json::Value::String("Vehicle".to_string()),
                 )]),
+                range: None,
             },
         ];
         let ports = vec![
@@ -1622,6 +1644,8 @@ mod tests {
                 direction: None,
                 port_type: None,
                 port_side: None,
+                uri: None,
+                range: None,
             },
             IbdPortDto {
                 id: "Pkg.Vehicle.controller.sensor.in".to_string(),
@@ -1631,6 +1655,8 @@ mod tests {
                 direction: None,
                 port_type: None,
                 port_side: None,
+                uri: None,
+                range: None,
             },
             IbdPortDto {
                 id: "Pkg.Controller.sensor.in".to_string(),
@@ -1640,6 +1666,8 @@ mod tests {
                 direction: None,
                 port_type: None,
                 port_side: None,
+                uri: None,
+                range: None,
             },
             IbdPortDto {
                 id: "Pkg.vehicleInst.out".to_string(),
@@ -1649,6 +1677,8 @@ mod tests {
                 direction: None,
                 port_type: None,
                 port_side: None,
+                uri: None,
+                range: None,
             },
         ];
         let connectors = vec![
@@ -2353,6 +2383,7 @@ mod tests {
             container_id: Some("PartsTree.tree".to_string()),
             element_type: "ref".to_string(),
             attributes: HashMap::new(),
+            range: None,
         }];
         let (parts, ports, connectors) =
             prune_interconnection_definition_parts(parts, Vec::new(), Vec::new());

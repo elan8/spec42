@@ -1,6 +1,7 @@
 use serde::{Deserialize, Serialize};
 use ts_rs::TS;
 
+use crate::semantic::dto::RangeDto;
 use crate::semantic::ibd::{qualified_name_to_dot, IbdContainerGroupDto, IbdDataDto, IbdPortDto};
 use crate::semantic::interconnection_projection::{
     build_interconnection_projection, occurrence_id_for_qualified_name, ProjectedFeature,
@@ -37,6 +38,14 @@ pub struct InterconnectionNodeDto {
     #[serde(skip_serializing_if = "Option::is_none")]
     #[ts(optional)]
     pub parent_id: Option<String>,
+    /// Source document URI, for click-to-source navigation.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    #[ts(optional)]
+    pub uri: Option<String>,
+    /// Source location of the declaring element, for click-to-source navigation.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    #[ts(optional)]
+    pub range: Option<RangeDto>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, TS)]
@@ -57,6 +66,14 @@ pub struct InterconnectionPortDto {
     #[ts(optional)]
     pub direction: Option<String>,
     pub side_hint: String,
+    /// Source document URI, for click-to-source navigation.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    #[ts(optional)]
+    pub uri: Option<String>,
+    /// Source location of the declaring port, for click-to-source navigation.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    #[ts(optional)]
+    pub range: Option<RangeDto>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, TS)]
@@ -238,19 +255,35 @@ pub fn build_interconnection_scene(
         .collect();
     push_scope_trace_diagnostics(&mut diagnostics, scope_trace);
 
+    let parts_by_qn: std::collections::HashMap<&str, &crate::semantic::ibd::IbdPartDto> = ibd
+        .parts
+        .iter()
+        .map(|part| (part.qualified_name.as_str(), part))
+        .collect();
+    let ports_by_occurrence_id: std::collections::HashMap<String, &IbdPortDto> = ibd
+        .ports
+        .iter()
+        .map(|port| (occurrence_id_for_qualified_name(&port.port_id), port))
+        .collect();
+
     let nodes = projection
         .features
         .iter()
         .filter(|feature| !feature.is_boundary)
-        .map(|feature| InterconnectionNodeDto {
-            id: feature.occurrence_id.clone(),
-            semantic_id: feature.semantic_id.clone(),
-            definition_id: feature.definition_id.clone(),
-            qualified_name: feature.qualified_name.clone(),
-            name: feature.name.clone(),
-            kind: feature.kind.clone(),
-            type_name: feature.definition_id.clone(),
-            parent_id: feature.owner_occurrence_id.clone(),
+        .map(|feature| {
+            let source_part = parts_by_qn.get(feature.qualified_name.as_str()).copied();
+            InterconnectionNodeDto {
+                id: feature.occurrence_id.clone(),
+                semantic_id: feature.semantic_id.clone(),
+                definition_id: feature.definition_id.clone(),
+                qualified_name: feature.qualified_name.clone(),
+                name: feature.name.clone(),
+                kind: feature.kind.clone(),
+                type_name: feature.definition_id.clone(),
+                parent_id: feature.owner_occurrence_id.clone(),
+                uri: source_part.and_then(|part| part.uri.clone()),
+                range: source_part.and_then(|part| part.range.clone()),
+            }
         })
         .collect::<Vec<_>>();
 
@@ -258,21 +291,20 @@ pub fn build_interconnection_scene(
         .features
         .iter()
         .filter(|feature| feature.is_boundary)
-        .map(|feature| InterconnectionPortDto {
-            id: feature.occurrence_id.clone(),
-            semantic_id: feature.semantic_id.clone(),
-            definition_id: feature.definition_id.clone(),
-            owner_node_id: feature.owner_occurrence_id.clone().unwrap_or_default(),
-            name: feature.name.clone(),
-            type_name: feature.definition_id.clone(),
-            direction: ibd
-                .ports
-                .iter()
-                .find(|port| {
-                    occurrence_id_for_qualified_name(&port.port_id) == feature.occurrence_id
-                })
-                .and_then(|port| port.direction.clone()),
-            side_hint: side_hint_for_projected_port(feature, &ibd.ports),
+        .map(|feature| {
+            let source_port = ports_by_occurrence_id.get(&feature.occurrence_id).copied();
+            InterconnectionPortDto {
+                id: feature.occurrence_id.clone(),
+                semantic_id: feature.semantic_id.clone(),
+                definition_id: feature.definition_id.clone(),
+                owner_node_id: feature.owner_occurrence_id.clone().unwrap_or_default(),
+                name: feature.name.clone(),
+                type_name: feature.definition_id.clone(),
+                direction: source_port.and_then(|port| port.direction.clone()),
+                side_hint: side_hint_for_projected_port(feature, &ibd.ports),
+                uri: source_port.and_then(|port| port.uri.clone()),
+                range: source_port.and_then(|port| port.range.clone()),
+            }
         })
         .collect::<Vec<_>>();
 
@@ -331,6 +363,7 @@ mod tests {
             container_id: container.map(str::to_string),
             element_type: "part".to_string(),
             attributes: HashMap::new(),
+            range: None,
         }
     }
 
@@ -343,6 +376,8 @@ mod tests {
             direction: None,
             port_type: None,
             port_side: None,
+            uri: None,
+            range: None,
         }
     }
 
@@ -406,5 +441,59 @@ mod tests {
             .diagnostics
             .iter()
             .any(|diag| diag.code == "connector_owner_mismatch"));
+    }
+
+    #[test]
+    fn scene_nodes_and_ports_carry_source_location_for_click_to_source() {
+        let range = RangeDto {
+            start: crate::semantic::dto::PositionDto { line: 4, character: 2 },
+            end: crate::semantic::dto::PositionDto { line: 4, character: 10 },
+        };
+        let mut part = test_part("mainElectronics", "Grid.mainElectronics", None);
+        part.uri = Some("file:///model.sysml".to_string());
+        part.range = Some(range.clone());
+        let mut port = test_port(
+            "Grid.mainElectronics.leftMotorPhaseOut",
+            "leftMotorPhaseOut",
+            "Grid.mainElectronics",
+        );
+        port.uri = Some("file:///model.sysml".to_string());
+        port.range = Some(range.clone());
+
+        let ibd = IbdDataDto {
+            parts: vec![part],
+            ports: vec![port],
+            connectors: Vec::new(),
+            container_groups: Vec::new(),
+            package_container_groups: Vec::new(),
+            root_candidates: vec!["Grid.mainElectronics".to_string()],
+            default_root: None,
+            root_views: HashMap::new(),
+            def_instance_mappings: Vec::new(),
+        };
+
+        let scene = build_interconnection_scene(
+            &ibd,
+            "view-1",
+            "mainElectronics",
+            &["Grid.mainElectronics".to_string()],
+            None,
+        );
+
+        let node = scene
+            .nodes
+            .iter()
+            .find(|n| n.qualified_name == "Grid.mainElectronics")
+            .expect("expected mainElectronics node");
+        assert_eq!(node.uri.as_deref(), Some("file:///model.sysml"));
+        assert_eq!(node.range, Some(range.clone()));
+
+        let port = scene
+            .ports
+            .iter()
+            .find(|p| p.name == "leftMotorPhaseOut")
+            .expect("expected leftMotorPhaseOut port");
+        assert_eq!(port.uri.as_deref(), Some("file:///model.sysml"));
+        assert_eq!(port.range, Some(range));
     }
 }

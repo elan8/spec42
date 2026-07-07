@@ -24,6 +24,8 @@ function mapPortDetail(port: InterconnectionScenePortDto) {
     direction: port.direction,
     portType: port.typeName,
     portSide: port.sideHint === "west" ? "left" : port.sideHint === "east" ? "right" : undefined,
+    uri: port.uri,
+    range: port.range,
     attributes: {
       parentId: port.ownerNodeId,
       scenePortId: port.id,
@@ -44,6 +46,8 @@ export function prepareInterconnectionScene(
       id: node.id,
       label: node.name,
       kind: node.kind === "ref" ? "part" : "part",
+      uri: node.uri,
+      range: node.range,
       attributes: {
         containerId: node.parentId ?? null,
         qualifiedName: node.qualifiedName,

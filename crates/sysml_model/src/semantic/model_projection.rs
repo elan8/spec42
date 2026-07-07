@@ -368,8 +368,19 @@ fn build_general_view_detail_item(
     let name = general_view_detail_name(detail)?;
     let type_name = detail_type_name(detail, node_by_id, typing_targets);
     let value_text = detail_value_text(detail);
-    let display_text =
-        format_general_view_detail_display_text(&name, type_name.as_deref(), value_text.as_deref());
+    let multiplicity = detail_multiplicity(detail);
+    let direction = detail_direction(detail);
+    let redefines = detail_redefines_short_name(detail);
+    let subsets = detail_subsets_short_name(detail);
+    let display_text = format_general_view_detail_display_text(
+        &name,
+        type_name.as_deref(),
+        value_text.as_deref(),
+        multiplicity.as_deref(),
+        direction.as_deref(),
+        redefines.as_deref(),
+        subsets.as_deref(),
+    );
 
     Some(json!({
         "name": name,
@@ -378,6 +389,55 @@ fn build_general_view_detail_item(
         "declaredIn": declared_in,
         "displayText": display_text,
     }))
+}
+
+fn detail_multiplicity(detail: &GraphNodeDto) -> Option<String> {
+    detail
+        .attributes
+        .get("multiplicity")
+        .and_then(|value| value.as_str())
+        .map(str::trim)
+        .filter(|value| !value.is_empty())
+        .map(str::to_string)
+}
+
+fn detail_direction(detail: &GraphNodeDto) -> Option<String> {
+    if !is_port_like(&detail.element_type) {
+        return None;
+    }
+    detail
+        .attributes
+        .get("direction")
+        .and_then(|value| value.as_str())
+        .map(str::trim)
+        .filter(|value| !value.is_empty())
+        .map(str::to_string)
+}
+
+fn short_name_of_qualified_attribute(detail: &GraphNodeDto, key: &str) -> Option<String> {
+    detail
+        .attributes
+        .get(key)
+        .and_then(|value| value.as_str())
+        .map(|value| value.split("::").last().unwrap_or(value).to_string())
+        .filter(|value| !value.trim().is_empty())
+}
+
+fn detail_redefines_short_name(detail: &GraphNodeDto) -> Option<String> {
+    // Anonymous stub nodes (no name of their own) already use `redefines` as their display
+    // name via `general_view_detail_name`'s fallback — appending it again here would be
+    // redundant (e.g. "engine redefines engine"). Only annotate named features.
+    if detail.name.trim().is_empty() {
+        return None;
+    }
+    short_name_of_qualified_attribute(detail, "redefines")
+}
+
+fn detail_subsets_short_name(detail: &GraphNodeDto) -> Option<String> {
+    if detail.name.trim().is_empty() {
+        return None;
+    }
+    short_name_of_qualified_attribute(detail, "subsetsFeature")
 }
 
 fn general_view_detail_name(detail: &GraphNodeDto) -> Option<String> {
@@ -482,15 +542,48 @@ fn format_general_view_detail_display_text(
     name: &str,
     type_name: Option<&str>,
     value_text: Option<&str>,
+    multiplicity: Option<&str>,
+    direction: Option<&str>,
+    redefines: Option<&str>,
+    subsets: Option<&str>,
 ) -> String {
+    let mut text = String::new();
+    if let Some(direction) = direction.filter(|d| !d.is_empty()) {
+        text.push_str(direction);
+        text.push(' ');
+    }
+    text.push_str(name);
+    if let Some(multiplicity) = multiplicity.filter(|m| !m.is_empty()) {
+        text.push_str(" [");
+        text.push_str(multiplicity);
+        text.push(']');
+    }
     match (type_name, value_text) {
         (Some(type_name), Some(value_text)) if !type_name.is_empty() && !value_text.is_empty() => {
-            format!("{name} : {type_name} = {value_text}")
+            text.push_str(" : ");
+            text.push_str(type_name);
+            text.push_str(" = ");
+            text.push_str(value_text);
         }
-        (Some(type_name), _) if !type_name.is_empty() => format!("{name} : {type_name}"),
-        (_, Some(value_text)) if !value_text.is_empty() => format!("{name} = {value_text}"),
-        _ => name.to_string(),
+        (Some(type_name), _) if !type_name.is_empty() => {
+            text.push_str(" : ");
+            text.push_str(type_name);
+        }
+        (_, Some(value_text)) if !value_text.is_empty() => {
+            text.push_str(" = ");
+            text.push_str(value_text);
+        }
+        _ => {}
     }
+    if let Some(redefines) = redefines.filter(|r| !r.is_empty()) {
+        text.push_str(" redefines ");
+        text.push_str(redefines);
+    }
+    if let Some(subsets) = subsets.filter(|s| !s.is_empty()) {
+        text.push_str(" subsets ");
+        text.push_str(subsets);
+    }
+    text
 }
 
 fn insert_detail_items(attributes: &mut HashMap<String, Value>, key: &str, items: Vec<Value>) {
@@ -879,6 +972,102 @@ mod tests {
         assert!(
             canonical.edges.is_empty(),
             "contains edges to inlined details should be removed from General View"
+        );
+    }
+
+    #[test]
+    fn canonical_general_view_graph_display_text_includes_multiplicity_direction_and_redefines() {
+        let graph = SysmlGraphDto {
+            nodes: vec![
+                GraphNodeDto {
+                    id: "Pkg::DriveModule".to_string(),
+                    element_type: "part def".to_string(),
+                    name: "DriveModule".to_string(),
+                    uri: None,
+                    parent_id: None,
+                    range: range(),
+                    attributes: Default::default(),
+                },
+                GraphNodeDto {
+                    id: "Pkg::DriveModule::phaseLeftIn".to_string(),
+                    element_type: "port".to_string(),
+                    name: "phaseLeftIn".to_string(),
+                    uri: None,
+                    parent_id: Some("Pkg::DriveModule".to_string()),
+                    range: range(),
+                    attributes: serde_json::json!({
+                        "portType": "ThreePhaseMotorPort",
+                        "direction": "in",
+                        "multiplicity": "1",
+                    })
+                    .as_object()
+                    .unwrap()
+                    .iter()
+                    .map(|(k, v)| (k.clone(), v.clone()))
+                    .collect(),
+                },
+                GraphNodeDto {
+                    id: "Pkg::DriveModule::cylinders".to_string(),
+                    element_type: "part".to_string(),
+                    name: "cylinders".to_string(),
+                    uri: None,
+                    parent_id: Some("Pkg::DriveModule".to_string()),
+                    range: range(),
+                    attributes: serde_json::json!({
+                        "partType": "Cylinder",
+                        "multiplicity": "4",
+                        "redefines": "Engine::cylinders",
+                    })
+                    .as_object()
+                    .unwrap()
+                    .iter()
+                    .map(|(k, v)| (k.clone(), v.clone()))
+                    .collect(),
+                },
+            ],
+            edges: vec![
+                GraphEdgeDto {
+                    source: "Pkg::DriveModule".to_string(),
+                    target: "Pkg::DriveModule::phaseLeftIn".to_string(),
+                    rel_type: "contains".to_string(),
+                    name: None,
+                },
+                GraphEdgeDto {
+                    source: "Pkg::DriveModule".to_string(),
+                    target: "Pkg::DriveModule::cylinders".to_string(),
+                    rel_type: "contains".to_string(),
+                    name: None,
+                },
+            ],
+        };
+
+        let canonical = canonical_general_view_graph(&graph, false);
+        let owner = canonical
+            .nodes
+            .iter()
+            .find(|node| node.id == "Pkg::DriveModule")
+            .expect("owner node");
+        assert_eq!(
+            owner.attributes.get("generalViewDirectPorts"),
+            Some(&serde_json::json!([{
+                "name": "phaseLeftIn",
+                "typeName": "ThreePhaseMotorPort",
+                "valueText": null,
+                "declaredIn": null,
+                "displayText": "in phaseLeftIn [1] : ThreePhaseMotorPort"
+            }])),
+            "port row should show direction prefix and multiplicity bracket"
+        );
+        assert_eq!(
+            owner.attributes.get("generalViewDirectParts"),
+            Some(&serde_json::json!([{
+                "name": "cylinders",
+                "typeName": "Cylinder",
+                "valueText": null,
+                "declaredIn": null,
+                "displayText": "cylinders [4] : Cylinder redefines cylinders"
+            }])),
+            "part row should show multiplicity bracket and redefines annotation"
         );
     }
 

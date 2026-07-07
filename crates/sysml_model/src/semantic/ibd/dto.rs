@@ -4,6 +4,8 @@ use serde::Serialize;
 use std::collections::HashMap;
 use ts_rs::TS;
 
+use crate::semantic::dto::RangeDto;
+
 #[derive(Debug, Clone, Serialize, TS)]
 #[serde(rename_all = "camelCase")]
 #[ts(rename = "IbdPartDTO")]
@@ -21,6 +23,11 @@ pub struct IbdPartDto {
     #[serde(rename = "type")]
     pub element_type: String,
     pub attributes: HashMap<String, serde_json::Value>,
+    /// Source location of the declaring element, for click-to-source navigation. Absent for
+    /// synthetic/expanded nodes with no single declaring occurrence.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    #[ts(optional)]
+    pub range: Option<RangeDto>,
 }
 
 #[derive(Debug, Clone, Serialize, TS)]
@@ -40,6 +47,13 @@ pub struct IbdPortDto {
     #[serde(skip_serializing_if = "Option::is_none")]
     #[ts(optional)]
     pub port_side: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    #[ts(optional)]
+    pub uri: Option<String>,
+    /// Source location of the declaring port, for click-to-source navigation.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    #[ts(optional)]
+    pub range: Option<RangeDto>,
 }
 
 #[derive(Debug, Clone, Serialize, TS)]

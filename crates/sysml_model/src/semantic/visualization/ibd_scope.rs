@@ -572,6 +572,7 @@ mod interconnection_scope_tests {
                 container_id: None,
                 element_type: "part".to_string(),
                 attributes: HashMap::new(),
+                range: None,
             }],
             ports: Vec::new(),
             connectors: vec![IbdConnectorDto {
