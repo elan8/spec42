@@ -3,96 +3,18 @@
 use super::connectors::enrich_connector_endpoint_refs;
 use super::dto::{IbdDataDto, IbdPartDto, IbdPortDto};
 
-fn split_architecture_scope_root(qualified_name: &str) -> Option<(&str, &str)> {
-    if let Some(pos) = qualified_name.find(".architecture.") {
-        return Some((
-            &qualified_name[..pos + ".architecture".len()],
-            &qualified_name[pos + ".architecture.".len()..],
-        ));
-    }
-    if let Some(pos) = qualified_name.find(".Architecture.") {
-        let start = pos + ".Architecture.".len();
-        let tail = &qualified_name[start..];
-        let def_len = tail.find('.').unwrap_or(tail.len());
-        if def_len > 0 {
-            let end = start + def_len;
-            let remainder = qualified_name[end..].strip_prefix('.').unwrap_or_default();
-            return Some((&qualified_name[..end], remainder));
-        }
-    }
-    if let Some(pos) = qualified_name.rfind(".RegionalGridArchitecture") {
-        let end = pos + ".RegionalGridArchitecture".len();
-        let tail = qualified_name[end..].strip_prefix('.').unwrap_or_default();
-        return Some((&qualified_name[..end], tail));
-    }
-    None
-}
-
-fn architecture_package_prefix(qualified_name: &str) -> Option<&str> {
-    if let Some(pos) = qualified_name.find(".architecture") {
-        return qualified_name[..pos]
-            .rsplit_once('.')
-            .map(|(prefix, _)| prefix)
-            .or(Some(&qualified_name[..pos]));
-    }
-    if let Some(pos) = qualified_name.find(".Architecture.") {
-        return Some(&qualified_name[..pos]);
-    }
-    None
-}
-
+/// Definition-to-instance root mappings, sourced from real typing-edge-derived data recorded
+/// during extraction (`build_instance_def_mappings`, `ibd/connectors.rs`) — accurate for any
+/// package naming convention, not just a specific "architecture"/"Architecture" segment pattern.
+/// `build_ibd_for_uri` always populates `ibd.def_instance_mappings` in production; only hand-built
+/// test fixtures ever leave it empty.
 pub(crate) fn infer_def_instance_scope_mappings_for_ibd(ibd: &IbdDataDto) -> Vec<(String, String)> {
-    // Prefer real, typing-edge-derived mappings (accurate for any package naming convention)
-    // recorded during extraction. Fall back to (and supplement with) the name-pattern heuristic
-    // below, which only recognizes an "architecture"/"Architecture" package-segment convention
-    // and misses workspaces that use two independently-named definition/instance packages.
     let mut mappings: Vec<(String, String)> = ibd
         .def_instance_mappings
         .iter()
         .map(|mapping| (mapping.def_root.clone(), mapping.instance_root.clone()))
         .collect();
-    let mut seen: std::collections::HashSet<(String, String)> = mappings.iter().cloned().collect();
-    for mapping in infer_def_instance_scope_mappings(&ibd.parts) {
-        if seen.insert(mapping.clone()) {
-            mappings.push(mapping);
-        }
-    }
     mappings.sort_by_key(|mapping| std::cmp::Reverse(mapping.0.len()));
-    mappings
-}
-
-fn infer_def_instance_scope_mappings(parts: &[IbdPartDto]) -> Vec<(String, String)> {
-    let mut definition_roots: std::collections::HashSet<String> = std::collections::HashSet::new();
-    let mut instance_roots: std::collections::HashSet<String> = std::collections::HashSet::new();
-
-    for part in parts {
-        let Some((root, _)) = split_architecture_scope_root(&part.qualified_name) else {
-            continue;
-        };
-        if root.ends_with(".architecture") {
-            instance_roots.insert(root.to_string());
-        } else if root.contains(".Architecture.") {
-            definition_roots.insert(root.to_string());
-        }
-    }
-
-    let mut mappings: Vec<(String, String)> = Vec::new();
-    for def_root in definition_roots {
-        let Some(def_package) = architecture_package_prefix(&def_root) else {
-            continue;
-        };
-        for instance_root in &instance_roots {
-            let Some(instance_package) = architecture_package_prefix(instance_root) else {
-                continue;
-            };
-            if def_package != instance_package {
-                continue;
-            }
-            mappings.push((def_root.clone(), instance_root.clone()));
-        }
-    }
-    mappings.sort_by_key(|mapping| std::cmp::Reverse(mapping.0.len()));
-    mappings.dedup_by(|left, right| left.0 == right.0 && left.1 == right.1);
     mappings
 }
 

@@ -14,6 +14,26 @@ Convention: newest entries at the top of each section. Mark an item `Fixed` in p
 
 ## Open
 
+### O-5: `general-view` can render completely empty for a valid, filter-less `expose` (pre-existing, not a regression)
+- **Where:** `crates/sysml_model/src/semantic/visualization/response.rs` general-view construction path
+  (unclear exactly which stage yet — not root-caused).
+- **Symptom:** `examples/webshop`'s `view structure : GeneralView { expose WebShopExample::webshopSystem; }`
+  (no `filter` clause) exports an SVG with zero nodes (`<g class="viz-nodes"></g>` empty, 0 `<text>`
+  elements, ~2KB total) via `spec42 diagrams export examples/webshop --selected-view structure --format
+  svg`. The *same* exposed root works correctly for `InterconnectionView` (`view connections`, 77 text
+  elements rendered) declared right next to it in the same `Views.sysml`, so `webshopSystem` itself is not
+  empty — this is specific to the general-view path.
+- **Confirmed pre-existing:** reproduced identically on a clean `git stash` baseline (pre-dating all of
+  today's O-1/§2/§3 changes), so this is **not** a regression introduced by today's work — logged here as
+  newly discovered, not yet fixed.
+- **Suggested next step:** since this view has no kind-narrowing `filter` (unlike `productStructure`,
+  which triggered [F-7](#f-7-general-view-node-bodies-render-completely-empty-when-the-view-has-a-kind-narrowing-filter)),
+  the F-7 `pre_filter_node_ids` fix should not be involved (`pre_filter_node_ids == projected_ids` with no
+  filter) — needs fresh root-causing starting from `ProjectedView`/`project_view` for this specific
+  exposed id, not assumed to share F-7's cause.
+- **Discovered:** 2026-07-07, during §3 CLI verification (see
+  [F-10](#f-10-deleted-the-duplicate-rust-prepared_view-preparers-for-6-of-7-view-kinds-root-causes-f-9s-bug-class)).
+
 ### O-4: Sprawling layout for a single package with many same-depth siblings
 - **Where:** `shared/diagram-renderer/src/render/layout.ts` (`layoutPrepared`, general-view branch).
 - **Symptom:** Even after [F-8](#f-8-sprawling-tangled-general-view-layout-partially-fixed-package-hierarchy)
@@ -57,6 +77,19 @@ Convention: newest entries at the top of each section. Mark an item `Fixed` in p
   target files, or fall back to full-workspace build whenever the scoped result's root disagrees with
   the full-workspace root for the same exposed id (cheap correctness check, sacrifices some of the
   perf win only on mismatch).
+- **Partial fix landed, real repo gap NOT closed:** 2026-07-07 · `collect_definition_uris_for_subtree`
+  now also resolves and recurses into `redefines`/`subsets` attribute targets (via a direct
+  `node_ids_by_qualified_name` lookup, falling back to `resolve_inherited_member_via_type` for cross-type
+  subsets), verified correct with a new synthetic regression test
+  (`ibd_uri_closure_follows_subsets_target_into_a_sibling_document`, `scope.rs`). **However**, re-running
+  the exact repro above against the real `sysml-robot-vacuum-cleaner` checkout shows the identical failure
+  (`left: 48 right: 38`, unchanged) — targeted debug tracing found the actual missing files for this
+  specific repo are pulled in via SysML **variation/variant-selection** (`variation part def
+  NavigationSensorSuiteChoice :> SensorAssembly { variant ...; }`, resolved through
+  `ConfigurationDefinition.selectedModelElementPaths` in `model/variants/ProductVariants.sysml`) — a
+  different mechanism entirely, not yet covered by `collect_definition_uris_for_subtree`. Keeping this
+  item **Open**: the redefines/subsets fix is real and worth keeping, but a second fix (following variant
+  selection paths) is needed to actually close the `productStructure` parity gap.
 
 ### O-2: Missing node-body compartments for most non-structural diagram kinds
 - **Where:** `shared/diagram-renderer/src/sysml-node-builder.ts` (`renderSysMLNode`), general-view
@@ -89,6 +122,82 @@ Convention: newest entries at the top of each section. Mark an item `Fixed` in p
 ---
 
 ## Fixed
+
+### F-10: Deleted the duplicate Rust `prepared_view` preparers for 6 of 7 view kinds (root-causes F-9's bug class)
+- **Fixed:** 2026-07-07 · deleted `crates/sysml_model/src/semantic/prepared_view/preparers/graph.rs`,
+  `standard.rs`, `behavior.rs`; kept only `interconnection.rs`.
+- **Was:** [F-9](#f-9-a-second-independent-rust-prepared-view-builder-silently-dropped-all-compartment-data--the-actual-reason-f-7-didnt-show-up-in-real-output)
+  fixed one instance of a whole class of bug: Rust independently reimplemented the TS `prepare/*.ts`
+  compartment/layout logic for **all 7** view kinds (`graph.rs` for general-view, `standard.rs` for
+  browser/grid/geometry, `behavior.rs` for activity/state/sequence), each a hand-maintained port that
+  could (and, for general-view, did) silently drift out of parity with its TS counterpart. `behavior.rs`'s
+  `collect_state_machine_nodes` had a second, still-live parity bug of the same kind: it doesn't compute
+  composite-state region-nesting the way TS's `attachExplicitRegions`/`attachCompositeRegions` do.
+- **Why deletion was safe for 6 of 7 kinds, but not `interconnection-view`:** every consumer of
+  `response.prepared_view` (VS Code webview, headless SVG exporter) already falls back to recomputing the
+  prepared view from raw graph/IBD/diagram data client-side in TS
+  (`preparedViewFromPayload(payload) ?? prepareViewData(payload)`) whenever `prepared_view` is absent. That
+  raw data is *always* sent alongside `prepared_view` for every view kind **except**
+  `interconnection-view`, where `slim_interconnection_payload` nulls out `graph`/`general_view_graph`/
+  `ibd`/`workspace_model` and `prepared_view` becomes the *only* payload — so `interconnection.rs` must
+  stay.
+- **Fix:** `prepare_view_from_visualization` now only dispatches to
+  `prepare_interconnection_prepared_view` for `"interconnection-view"`; every other view kind returns
+  `Err(..)`, which `finalize_visualization_response`'s `.ok()` turns into `prepared_view: None`, letting the
+  existing TS fallback recompute it exactly as it already does today for any payload where Rust's
+  computation is simply missing.
+- **Trade-off (accepted, not blocking):** `--format json` CLI export no longer includes a ready-made
+  `prepared_view` for the 6 non-interconnection view kinds — JSON consumers now get the same raw
+  `graph`/`ibd`/diagram shape the TS fallback consumes. `--format svg` is unaffected (the headless
+  renderer's own TS fallback handles it internally).
+- **Verified via the actual CLI** (per the F-9 lesson): rebuilt the headless bundle and `spec42` binary,
+  re-exported `general-view`, `interconnection-view`, `sequence-view`, `state-transition-view`,
+  `action-flow-view`, and `browser-view` from real fixtures (`examples/webshop` and a scratch model) —
+  all produced real, non-empty SVG content (dozens of `<text>` elements each) except the
+  pre-existing/baseline [O-5](#o-5-general-view-can-render-completely-empty-for-a-valid-filter-less-expose-pre-existing-not-a-regression)
+  case, confirmed unrelated to this change by reproducing it identically on a pre-change `git stash`
+  baseline. `grid-view`/`geometry-view` aren't exercised by any bundled example or working synthetic
+  fixture; verified indirectly via `browser-view`'s successful real-content export, since all three kinds
+  shared the exact same deleted source file (`standard.rs`) and identical TS-fallback mechanics.
+- **Full workspace test suite** (`cargo test -p sysml_model -p lsp_server -p workspace -p server`) green
+  throughout, zero regressions.
+
+### F-9: A second, independent Rust "prepared view" builder silently dropped all compartment data — the actual reason F-7 didn't show up in real output
+- **Fixed:** 2026-07-07 · `crates/sysml_model/src/semantic/prepared_view/preparers/graph.rs`
+  (`prepare_graph_from_dto`).
+- **Was:** [F-7](#f-7-general-view-node-bodies-render-completely-empty-when-the-view-has-a-kind-narrowing-filter)
+  fixed compartment computation in `canonical_general_view_graph`/`response.rs`, and this was verified
+  correct via direct Rust-level checks. But the CLI (`spec42 diagrams export`) and the bundled headless
+  SVG renderer don't consume `general_view_graph` directly — they consume `response.prepared_view`, built
+  by a **second, independent Rust reimplementation** of the TS `prepareGraph` (`shared/diagram-renderer/src/prepare/graph.ts`)
+  living in `prepared_view/preparers/graph.rs`. That Rust version hand-picked only 4 attribute keys
+  (`qualifiedName`/`isPackage`/`isDefinition`/`isReference`) instead of spreading through *all* of
+  `node.attributes` the way the TS version does — silently dropping `generalViewDirectAttributes/Parts/Ports`
+  (and their `Inherited` counterparts) before they ever reached the renderer. So even with F-7 and F-8
+  landed, a user re-exporting via the CLI still saw the exact same broken, header-only-node output —
+  **this is why "make you validate the actual rendered diagram using the CLI before you claim you are
+  done" caught something the Rust-level unit tests and TS-level layout tests both missed.**
+- **Root lesson:** there are *two* independent "prepare" implementations (TS for the VS Code
+  webview/live editing path, Rust for the CLI/headless-export path) that must be kept in parity by hand —
+  neither is generated from the other. Any future change to what a compartment/attribute needs to reach
+  the renderer must be made in **both** `shared/diagram-renderer/src/prepare/graph.ts` and
+  `crates/sysml_model/src/semantic/prepared_view/preparers/graph.rs`, and validated via the CLI
+  (`cargo build -p server --bin spec42` after `node vscode/scripts/build-headless-renderer.js`, then
+  `spec42 diagrams export <path> --selected-view <name> --format svg --output <file>`), not just unit
+  tests of either half in isolation.
+- **Fix:** `prepare_graph_from_dto` now spreads every entry of `node.attributes` into the prepared node's
+  `attributes` JSON (matching the TS `{ ...node.attributes, ... }` pattern) before overlaying the 4
+  computed keys.
+- **Verified via the actual CLI** (per the instruction that caught this): rebuilt
+  `crates/server/assets/diagram-renderer/headless-renderer.js` from source, rebuilt the `spec42` binary,
+  ran `spec42 diagrams export .../sysml-robot-vacuum-cleaner/model --selected-view productStructure
+  --format svg --output ...` against the real repo, and inspected the resulting SVG directly: node
+  heights now vary (58-1792px, previously uniformly 44/70px for all 91 nodes), `CleaningRobotSystemOfInterest`
+  grew from `height=70` to `height=96` and its SVG now contains the text `physical :
+  AutonomousFloorCleaningRobot`, and the [F-8](#f-8-sprawling-tangled-general-view-layout-partially-fixed-package-hierarchy)
+  layout width improvement (10155px vs ~15200px flat) is also confirmed intact in this same real export.
+- **Regression test:** `prepare_graph_from_dto_carries_general_view_compartment_attributes_through`
+  (`prepared_view/preparers/graph.rs`).
 
 ### F-8: Sprawling, tangled general-view layout — partially fixed (package hierarchy)
 - **Fixed:** 2026-07-07 · `shared/diagram-renderer/src/render/layout.ts` (`layoutPrepared`).

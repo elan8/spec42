@@ -4,7 +4,42 @@ use std::collections::HashSet;
 
 use url::Url;
 
+use crate::semantic::reference_resolution::{resolve_inherited_member_via_type, ResolveResult};
 use crate::SemanticGraph;
+
+/// Resolve a `redefines`/`subsetsFeature` attribute value to the target node(s) it
+/// redefines/subsets. The value is a name that's either:
+/// - A qualified path to an *unrelated* feature (`subsets` doesn't require any typing/specializes
+///   relationship between the two owners) — resolved via a direct qualified-name lookup.
+/// - A bare name resolved relative to `owner`'s own typing/specialization chain (the common
+///   `redefines` case, matching a member inherited from a supertype) — mirroring how the
+///   `unresolved_redefines_target`/`incompatible_subset_redefine_kind` diagnostics already resolve
+///   the same attribute (`diagnostics/checks/kind_compatibility.rs`).
+/// Both are tried since either shape is legal SysML and the attribute alone doesn't say which.
+fn resolve_redefines_or_subsets_targets<'a>(
+    semantic_graph: &'a SemanticGraph,
+    owner: &crate::SemanticNode,
+    attribute_value: &str,
+) -> Vec<&'a crate::SemanticNode> {
+    let qualified = attribute_value.replace('.', "::");
+    if let Some(node_ids) = semantic_graph.node_ids_by_qualified_name.get(&qualified) {
+        let targets: Vec<&crate::SemanticNode> = node_ids
+            .iter()
+            .filter_map(|id| semantic_graph.get_node(id))
+            .collect();
+        if !targets.is_empty() {
+            return targets;
+        }
+    }
+    let member = attribute_value.split("::").last().unwrap_or(attribute_value);
+    match resolve_inherited_member_via_type(semantic_graph, owner, member) {
+        ResolveResult::Resolved(target_id) => semantic_graph
+            .get_node(&target_id)
+            .into_iter()
+            .collect(),
+        _ => Vec::new(),
+    }
+}
 
 /// Whether a document URI lies under the workspace root URI.
 pub fn uri_under_root(uri: &Url, workspace_root_uri: &Url) -> bool {
@@ -52,12 +87,15 @@ pub enum IbdBuildScope {
     ViewExposedPackages,
 }
 
-/// Follows containment (children) and typing/specializes edges transitively from `node`,
-/// collecting every document URI touched. An exposed usage's nested structure and connectors
-/// are frequently declared on its *type definition* (possibly in another document) rather than
-/// on the usage itself, so the exposed-id qualified-name prefix alone isn't enough to find every
-/// document needed to reconstruct the interconnection view (e.g. connectors mirrored from a
-/// part def in a sibling file would otherwise be silently excluded from the scoped build).
+/// Follows containment (children), typing/specializes edges, and `redefines`/`subsets` targets
+/// transitively from `node`, collecting every document URI touched. An exposed usage's nested
+/// structure and connectors are frequently declared on its *type definition* (possibly in another
+/// document) rather than on the usage itself, so the exposed-id qualified-name prefix alone isn't
+/// enough to find every document needed to reconstruct the interconnection view (e.g. connectors
+/// mirrored from a part def in a sibling file would otherwise be silently excluded from the scoped
+/// build). Likewise, a `redefines`/`subsets` target can live in yet another file whose connectors
+/// are needed for correct mirroring — without following it, the scoped build can end up resolving
+/// against a different (but individually valid) root than the full-workspace build would.
 fn collect_definition_uris_for_subtree(
     semantic_graph: &SemanticGraph,
     node: &crate::SemanticNode,
@@ -70,6 +108,24 @@ fn collect_definition_uris_for_subtree(
     uris.insert(node.id.uri.clone());
     for def_node in semantic_graph.outgoing_typing_or_specializes_targets(node) {
         collect_definition_uris_for_subtree(semantic_graph, def_node, uris, visited);
+    }
+    if let Some(owner_id) = node.parent_id.as_ref() {
+        if let Some(owner) = semantic_graph.get_node(owner_id) {
+            for attribute_key in ["redefines", "subsetsFeature"] {
+                let Some(attribute_value) = node
+                    .attributes
+                    .get(attribute_key)
+                    .and_then(|value| value.as_str())
+                else {
+                    continue;
+                };
+                for target in
+                    resolve_redefines_or_subsets_targets(semantic_graph, owner, attribute_value)
+                {
+                    collect_definition_uris_for_subtree(semantic_graph, target, uris, visited);
+                }
+            }
+        }
     }
     for child in semantic_graph.children_of(node) {
         collect_definition_uris_for_subtree(semantic_graph, child, uris, visited);
@@ -174,5 +230,40 @@ mod tests {
         exposed.insert("P".to_string());
         let closure = ibd_uri_closure_for_exposed_ids(&graph, &exposed);
         assert!(closure.iter().any(|candidate| candidate == &uri));
+    }
+
+    #[test]
+    fn ibd_uri_closure_follows_subsets_target_into_a_sibling_document() {
+        // Regression test for O-1: a `subsets` target can reference a completely unrelated part
+        // (not necessarily a supertype/base-type member reachable via typing/specializes), so the
+        // closure walk must resolve it explicitly rather than relying on the typing-chain walk to
+        // happen to pass through the same file.
+        let base_doc = doc(
+            "Base.sysml",
+            r#"package Base {
+    part def Rig {
+        part sensor;
+    }
+}"#,
+        );
+        let base_uri = base_doc.uri.clone();
+        let exposed_doc = doc(
+            "Exposed.sysml",
+            r#"package Exposed {
+    part def Vehicle {
+        part sensorSubset subsets Base::Rig::sensor;
+    }
+}"#,
+        );
+        let (graph, _) =
+            build_semantic_graph_from_documents(&[base_doc, exposed_doc]).expect("graph");
+        let mut exposed = HashSet::new();
+        exposed.insert("Exposed::Vehicle".to_string());
+        let closure = ibd_uri_closure_for_exposed_ids(&graph, &exposed);
+        assert!(
+            closure.iter().any(|candidate| candidate == &base_uri),
+            "expected the subsets target's document to be included in the closure, got {:?}",
+            closure
+        );
     }
 }

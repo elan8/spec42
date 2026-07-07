@@ -18,13 +18,13 @@ var Spec42HeadlessRendererBundle = (() => {
   };
   var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod);
 
-  // ../shared/diagram-renderer/src/headless-export.ts
+  // shared/diagram-renderer/src/headless-export.ts
   var headless_export_exports = {};
   __export(headless_export_exports, {
     exportHeadlessSvg: () => exportHeadlessSvg
   });
 
-  // ../shared/diagram-renderer/src/node-notation.ts
+  // shared/diagram-renderer/src/node-notation.ts
   function isDefinitionKind(kind) {
     const normalized = kind.trim().toLowerCase();
     return normalized.includes(" def") || normalized.includes("_def") || normalized.endsWith(" def") || normalized.includes("definition");
@@ -125,7 +125,7 @@ var Spec42HeadlessRendererBundle = (() => {
     };
   }
 
-  // ../shared/diagram-renderer/src/graph-normalization.ts
+  // shared/diagram-renderer/src/graph-normalization.ts
   function normalizeEdgeKind(relationshipType) {
     const type2 = relationshipType.trim().toLowerCase();
     if (!type2) return "relationship";
@@ -163,7 +163,7 @@ var Spec42HeadlessRendererBundle = (() => {
     return !isPackageElementType(elementType) && !isNonDiagramSemanticElementType(elementType);
   }
 
-  // ../shared/diagram-renderer/src/prepare/util.ts
+  // shared/diagram-renderer/src/prepare/util.ts
   function asRecord(value) {
     return value && typeof value === "object" ? value : {};
   }
@@ -214,7 +214,7 @@ var Spec42HeadlessRendererBundle = (() => {
     return Boolean(node.synthetic ?? node.isSynthetic ?? attrs.synthetic ?? attrs.isSyntheticContainer);
   }
 
-  // ../shared/diagram-renderer/src/prepare/diagram-select.ts
+  // shared/diagram-renderer/src/prepare/diagram-select.ts
   function normalizeDiagramKey(value) {
     return value.replace(/::/g, ".").trim().toLowerCase();
   }
@@ -301,7 +301,7 @@ var Spec42HeadlessRendererBundle = (() => {
     return { title: asString(diagram.name, fallbackTitle), view, nodes, edges };
   }
 
-  // ../shared/diagram-renderer/src/prepare/graph.ts
+  // shared/diagram-renderer/src/prepare/graph.ts
   function isGeneralViewDiagramNode(node) {
     if (isSyntheticPackage(node)) {
       return false;
@@ -371,7 +371,7 @@ var Spec42HeadlessRendererBundle = (() => {
     };
   }
 
-  // ../shared/diagram-renderer/src/prepare/behavior.ts
+  // shared/diagram-renderer/src/prepare/behavior.ts
   function activityDiagramCatalog(visualization) {
     const normalized = asArray(visualization.diagrams).map(asRecord);
     if (normalized.length > 0) {
@@ -776,7 +776,7 @@ var Spec42HeadlessRendererBundle = (() => {
     return prepareGraph(visualization?.graph, visualization);
   }
 
-  // ../shared/diagram-renderer/src/prepare/normalize-payload.ts
+  // shared/diagram-renderer/src/prepare/normalize-payload.ts
   function asArray2(value) {
     return Array.isArray(value) ? value : [];
   }
@@ -841,7 +841,7 @@ var Spec42HeadlessRendererBundle = (() => {
     }
   }
 
-  // ../shared/diagram-renderer/src/prepare/interconnection-scene.ts
+  // shared/diagram-renderer/src/prepare/interconnection-scene.ts
   function portsForNode(ownerNodeId, ports) {
     return ports.filter((port) => port.ownerNodeId === ownerNodeId);
   }
@@ -852,6 +852,8 @@ var Spec42HeadlessRendererBundle = (() => {
       direction: port.direction,
       portType: port.typeName,
       portSide: port.sideHint === "west" ? "left" : port.sideHint === "east" ? "right" : void 0,
+      uri: port.uri,
+      range: port.range,
       attributes: {
         parentId: port.ownerNodeId,
         scenePortId: port.id,
@@ -868,6 +870,8 @@ var Spec42HeadlessRendererBundle = (() => {
         id: node.id,
         label: node.name,
         kind: node.kind === "ref" ? "part" : "part",
+        uri: node.uri,
+        range: node.range,
         attributes: {
           containerId: node.parentId ?? null,
           qualifiedName: node.qualifiedName,
@@ -933,7 +937,7 @@ var Spec42HeadlessRendererBundle = (() => {
     };
   }
 
-  // ../shared/diagram-renderer/src/prepare/interconnection.ts
+  // shared/diagram-renderer/src/prepare/interconnection.ts
   function prepareInterconnection(visualization) {
     const scene = visualization.interconnectionScene;
     if (scene && scene.schemaVersion >= 2) {
@@ -956,7 +960,7 @@ var Spec42HeadlessRendererBundle = (() => {
     };
   }
 
-  // ../shared/diagram-renderer/src/prepare/standard-views.ts
+  // shared/diagram-renderer/src/prepare/standard-views.ts
   function graphNodesForStandardView(visualization) {
     const graph = asRecord(visualization?.generalViewGraph ?? visualization?.graph);
     return asArray(graph.nodes).map(asRecord);
@@ -1171,12 +1175,12 @@ var Spec42HeadlessRendererBundle = (() => {
     };
   }
 
-  // ../shared/diagram-renderer/src/prepare/types.ts
+  // shared/diagram-renderer/src/prepare/types.ts
   function interconnectionPreparedForLayout(prepared) {
     return prepared;
   }
 
-  // ../shared/diagram-renderer/src/prepare/index.ts
+  // shared/diagram-renderer/src/prepare/index.ts
   function prepareViewData(visualizationInput) {
     const passthrough = asRecord(visualizationInput).preparedView;
     if (passthrough && typeof passthrough === "object") {
@@ -1198,7 +1202,7 @@ var Spec42HeadlessRendererBundle = (() => {
     return prepareGraph(visualization?.generalViewGraph ?? visualization?.graph, visualization);
   }
 
-  // ../shared/diagram-renderer/node_modules/d3-dispatch/src/dispatch.js
+  // shared/diagram-renderer/node_modules/d3-dispatch/src/dispatch.js
   var noop = { value: () => {
   } };
   function dispatch() {
@@ -1268,7 +1272,7 @@ var Spec42HeadlessRendererBundle = (() => {
   }
   var dispatch_default = dispatch;
 
-  // ../shared/diagram-renderer/node_modules/d3-selection/src/namespaces.js
+  // shared/diagram-renderer/node_modules/d3-selection/src/namespaces.js
   var xhtml = "http://www.w3.org/1999/xhtml";
   var namespaces_default = {
     svg: "http://www.w3.org/2000/svg",
@@ -1278,14 +1282,14 @@ var Spec42HeadlessRendererBundle = (() => {
     xmlns: "http://www.w3.org/2000/xmlns/"
   };
 
-  // ../shared/diagram-renderer/node_modules/d3-selection/src/namespace.js
+  // shared/diagram-renderer/node_modules/d3-selection/src/namespace.js
   function namespace_default(name) {
     var prefix = name += "", i = prefix.indexOf(":");
     if (i >= 0 && (prefix = name.slice(0, i)) !== "xmlns") name = name.slice(i + 1);
     return namespaces_default.hasOwnProperty(prefix) ? { space: namespaces_default[prefix], local: name } : name;
   }
 
-  // ../shared/diagram-renderer/node_modules/d3-selection/src/creator.js
+  // shared/diagram-renderer/node_modules/d3-selection/src/creator.js
   function creatorInherit(name) {
     return function() {
       var document2 = this.ownerDocument, uri = this.namespaceURI;
@@ -1302,7 +1306,7 @@ var Spec42HeadlessRendererBundle = (() => {
     return (fullname.local ? creatorFixed : creatorInherit)(fullname);
   }
 
-  // ../shared/diagram-renderer/node_modules/d3-selection/src/selector.js
+  // shared/diagram-renderer/node_modules/d3-selection/src/selector.js
   function none() {
   }
   function selector_default(selector) {
@@ -1311,7 +1315,7 @@ var Spec42HeadlessRendererBundle = (() => {
     };
   }
 
-  // ../shared/diagram-renderer/node_modules/d3-selection/src/selection/select.js
+  // shared/diagram-renderer/node_modules/d3-selection/src/selection/select.js
   function select_default(select) {
     if (typeof select !== "function") select = selector_default(select);
     for (var groups = this._groups, m = groups.length, subgroups = new Array(m), j = 0; j < m; ++j) {
@@ -1325,12 +1329,12 @@ var Spec42HeadlessRendererBundle = (() => {
     return new Selection(subgroups, this._parents);
   }
 
-  // ../shared/diagram-renderer/node_modules/d3-selection/src/array.js
+  // shared/diagram-renderer/node_modules/d3-selection/src/array.js
   function array(x2) {
     return x2 == null ? [] : Array.isArray(x2) ? x2 : Array.from(x2);
   }
 
-  // ../shared/diagram-renderer/node_modules/d3-selection/src/selectorAll.js
+  // shared/diagram-renderer/node_modules/d3-selection/src/selectorAll.js
   function empty() {
     return [];
   }
@@ -1340,7 +1344,7 @@ var Spec42HeadlessRendererBundle = (() => {
     };
   }
 
-  // ../shared/diagram-renderer/node_modules/d3-selection/src/selection/selectAll.js
+  // shared/diagram-renderer/node_modules/d3-selection/src/selection/selectAll.js
   function arrayAll(select) {
     return function() {
       return array(select.apply(this, arguments));
@@ -1360,7 +1364,7 @@ var Spec42HeadlessRendererBundle = (() => {
     return new Selection(subgroups, parents);
   }
 
-  // ../shared/diagram-renderer/node_modules/d3-selection/src/matcher.js
+  // shared/diagram-renderer/node_modules/d3-selection/src/matcher.js
   function matcher_default(selector) {
     return function() {
       return this.matches(selector);
@@ -1372,7 +1376,7 @@ var Spec42HeadlessRendererBundle = (() => {
     };
   }
 
-  // ../shared/diagram-renderer/node_modules/d3-selection/src/selection/selectChild.js
+  // shared/diagram-renderer/node_modules/d3-selection/src/selection/selectChild.js
   var find = Array.prototype.find;
   function childFind(match) {
     return function() {
@@ -1386,7 +1390,7 @@ var Spec42HeadlessRendererBundle = (() => {
     return this.select(match == null ? childFirst : childFind(typeof match === "function" ? match : childMatcher(match)));
   }
 
-  // ../shared/diagram-renderer/node_modules/d3-selection/src/selection/selectChildren.js
+  // shared/diagram-renderer/node_modules/d3-selection/src/selection/selectChildren.js
   var filter = Array.prototype.filter;
   function children() {
     return Array.from(this.children);
@@ -1400,7 +1404,7 @@ var Spec42HeadlessRendererBundle = (() => {
     return this.selectAll(match == null ? children : childrenFilter(typeof match === "function" ? match : childMatcher(match)));
   }
 
-  // ../shared/diagram-renderer/node_modules/d3-selection/src/selection/filter.js
+  // shared/diagram-renderer/node_modules/d3-selection/src/selection/filter.js
   function filter_default(match) {
     if (typeof match !== "function") match = matcher_default(match);
     for (var groups = this._groups, m = groups.length, subgroups = new Array(m), j = 0; j < m; ++j) {
@@ -1413,12 +1417,12 @@ var Spec42HeadlessRendererBundle = (() => {
     return new Selection(subgroups, this._parents);
   }
 
-  // ../shared/diagram-renderer/node_modules/d3-selection/src/selection/sparse.js
+  // shared/diagram-renderer/node_modules/d3-selection/src/selection/sparse.js
   function sparse_default(update) {
     return new Array(update.length);
   }
 
-  // ../shared/diagram-renderer/node_modules/d3-selection/src/selection/enter.js
+  // shared/diagram-renderer/node_modules/d3-selection/src/selection/enter.js
   function enter_default() {
     return new Selection(this._enter || this._groups.map(sparse_default), this._parents);
   }
@@ -1445,14 +1449,14 @@ var Spec42HeadlessRendererBundle = (() => {
     }
   };
 
-  // ../shared/diagram-renderer/node_modules/d3-selection/src/constant.js
+  // shared/diagram-renderer/node_modules/d3-selection/src/constant.js
   function constant_default(x2) {
     return function() {
       return x2;
     };
   }
 
-  // ../shared/diagram-renderer/node_modules/d3-selection/src/selection/data.js
+  // shared/diagram-renderer/node_modules/d3-selection/src/selection/data.js
   function bindIndex(parent, group, enter, update, exit, data) {
     var i = 0, node, groupLength = group.length, dataLength = data.length;
     for (; i < dataLength; ++i) {
@@ -1524,12 +1528,12 @@ var Spec42HeadlessRendererBundle = (() => {
     return typeof data === "object" && "length" in data ? data : Array.from(data);
   }
 
-  // ../shared/diagram-renderer/node_modules/d3-selection/src/selection/exit.js
+  // shared/diagram-renderer/node_modules/d3-selection/src/selection/exit.js
   function exit_default() {
     return new Selection(this._exit || this._groups.map(sparse_default), this._parents);
   }
 
-  // ../shared/diagram-renderer/node_modules/d3-selection/src/selection/join.js
+  // shared/diagram-renderer/node_modules/d3-selection/src/selection/join.js
   function join_default(onenter, onupdate, onexit) {
     var enter = this.enter(), update = this, exit = this.exit();
     if (typeof onenter === "function") {
@@ -1547,7 +1551,7 @@ var Spec42HeadlessRendererBundle = (() => {
     return enter && update ? enter.merge(update).order() : update;
   }
 
-  // ../shared/diagram-renderer/node_modules/d3-selection/src/selection/merge.js
+  // shared/diagram-renderer/node_modules/d3-selection/src/selection/merge.js
   function merge_default(context) {
     var selection2 = context.selection ? context.selection() : context;
     for (var groups0 = this._groups, groups1 = selection2._groups, m0 = groups0.length, m1 = groups1.length, m = Math.min(m0, m1), merges = new Array(m0), j = 0; j < m; ++j) {
@@ -1563,7 +1567,7 @@ var Spec42HeadlessRendererBundle = (() => {
     return new Selection(merges, this._parents);
   }
 
-  // ../shared/diagram-renderer/node_modules/d3-selection/src/selection/order.js
+  // shared/diagram-renderer/node_modules/d3-selection/src/selection/order.js
   function order_default() {
     for (var groups = this._groups, j = -1, m = groups.length; ++j < m; ) {
       for (var group = groups[j], i = group.length - 1, next = group[i], node; --i >= 0; ) {
@@ -1576,7 +1580,7 @@ var Spec42HeadlessRendererBundle = (() => {
     return this;
   }
 
-  // ../shared/diagram-renderer/node_modules/d3-selection/src/selection/sort.js
+  // shared/diagram-renderer/node_modules/d3-selection/src/selection/sort.js
   function sort_default(compare) {
     if (!compare) compare = ascending;
     function compareNode(a, b) {
@@ -1596,7 +1600,7 @@ var Spec42HeadlessRendererBundle = (() => {
     return a < b ? -1 : a > b ? 1 : a >= b ? 0 : NaN;
   }
 
-  // ../shared/diagram-renderer/node_modules/d3-selection/src/selection/call.js
+  // shared/diagram-renderer/node_modules/d3-selection/src/selection/call.js
   function call_default() {
     var callback = arguments[0];
     arguments[0] = this;
@@ -1604,12 +1608,12 @@ var Spec42HeadlessRendererBundle = (() => {
     return this;
   }
 
-  // ../shared/diagram-renderer/node_modules/d3-selection/src/selection/nodes.js
+  // shared/diagram-renderer/node_modules/d3-selection/src/selection/nodes.js
   function nodes_default() {
     return Array.from(this);
   }
 
-  // ../shared/diagram-renderer/node_modules/d3-selection/src/selection/node.js
+  // shared/diagram-renderer/node_modules/d3-selection/src/selection/node.js
   function node_default() {
     for (var groups = this._groups, j = 0, m = groups.length; j < m; ++j) {
       for (var group = groups[j], i = 0, n = group.length; i < n; ++i) {
@@ -1620,19 +1624,19 @@ var Spec42HeadlessRendererBundle = (() => {
     return null;
   }
 
-  // ../shared/diagram-renderer/node_modules/d3-selection/src/selection/size.js
+  // shared/diagram-renderer/node_modules/d3-selection/src/selection/size.js
   function size_default() {
     let size = 0;
     for (const node of this) ++size;
     return size;
   }
 
-  // ../shared/diagram-renderer/node_modules/d3-selection/src/selection/empty.js
+  // shared/diagram-renderer/node_modules/d3-selection/src/selection/empty.js
   function empty_default() {
     return !this.node();
   }
 
-  // ../shared/diagram-renderer/node_modules/d3-selection/src/selection/each.js
+  // shared/diagram-renderer/node_modules/d3-selection/src/selection/each.js
   function each_default(callback) {
     for (var groups = this._groups, j = 0, m = groups.length; j < m; ++j) {
       for (var group = groups[j], i = 0, n = group.length, node; i < n; ++i) {
@@ -1642,7 +1646,7 @@ var Spec42HeadlessRendererBundle = (() => {
     return this;
   }
 
-  // ../shared/diagram-renderer/node_modules/d3-selection/src/selection/attr.js
+  // shared/diagram-renderer/node_modules/d3-selection/src/selection/attr.js
   function attrRemove(name) {
     return function() {
       this.removeAttribute(name);
@@ -1686,12 +1690,12 @@ var Spec42HeadlessRendererBundle = (() => {
     return this.each((value == null ? fullname.local ? attrRemoveNS : attrRemove : typeof value === "function" ? fullname.local ? attrFunctionNS : attrFunction : fullname.local ? attrConstantNS : attrConstant)(fullname, value));
   }
 
-  // ../shared/diagram-renderer/node_modules/d3-selection/src/window.js
+  // shared/diagram-renderer/node_modules/d3-selection/src/window.js
   function window_default(node) {
     return node.ownerDocument && node.ownerDocument.defaultView || node.document && node || node.defaultView;
   }
 
-  // ../shared/diagram-renderer/node_modules/d3-selection/src/selection/style.js
+  // shared/diagram-renderer/node_modules/d3-selection/src/selection/style.js
   function styleRemove(name) {
     return function() {
       this.style.removeProperty(name);
@@ -1716,7 +1720,7 @@ var Spec42HeadlessRendererBundle = (() => {
     return node.style.getPropertyValue(name) || window_default(node).getComputedStyle(node, null).getPropertyValue(name);
   }
 
-  // ../shared/diagram-renderer/node_modules/d3-selection/src/selection/property.js
+  // shared/diagram-renderer/node_modules/d3-selection/src/selection/property.js
   function propertyRemove(name) {
     return function() {
       delete this[name];
@@ -1738,7 +1742,7 @@ var Spec42HeadlessRendererBundle = (() => {
     return arguments.length > 1 ? this.each((value == null ? propertyRemove : typeof value === "function" ? propertyFunction : propertyConstant)(name, value)) : this.node()[name];
   }
 
-  // ../shared/diagram-renderer/node_modules/d3-selection/src/selection/classed.js
+  // shared/diagram-renderer/node_modules/d3-selection/src/selection/classed.js
   function classArray(string) {
     return string.trim().split(/^|\s+/);
   }
@@ -1801,7 +1805,7 @@ var Spec42HeadlessRendererBundle = (() => {
     return this.each((typeof value === "function" ? classedFunction : value ? classedTrue : classedFalse)(names, value));
   }
 
-  // ../shared/diagram-renderer/node_modules/d3-selection/src/selection/text.js
+  // shared/diagram-renderer/node_modules/d3-selection/src/selection/text.js
   function textRemove() {
     this.textContent = "";
   }
@@ -1820,7 +1824,7 @@ var Spec42HeadlessRendererBundle = (() => {
     return arguments.length ? this.each(value == null ? textRemove : (typeof value === "function" ? textFunction : textConstant)(value)) : this.node().textContent;
   }
 
-  // ../shared/diagram-renderer/node_modules/d3-selection/src/selection/html.js
+  // shared/diagram-renderer/node_modules/d3-selection/src/selection/html.js
   function htmlRemove() {
     this.innerHTML = "";
   }
@@ -1839,7 +1843,7 @@ var Spec42HeadlessRendererBundle = (() => {
     return arguments.length ? this.each(value == null ? htmlRemove : (typeof value === "function" ? htmlFunction : htmlConstant)(value)) : this.node().innerHTML;
   }
 
-  // ../shared/diagram-renderer/node_modules/d3-selection/src/selection/raise.js
+  // shared/diagram-renderer/node_modules/d3-selection/src/selection/raise.js
   function raise() {
     if (this.nextSibling) this.parentNode.appendChild(this);
   }
@@ -1847,7 +1851,7 @@ var Spec42HeadlessRendererBundle = (() => {
     return this.each(raise);
   }
 
-  // ../shared/diagram-renderer/node_modules/d3-selection/src/selection/lower.js
+  // shared/diagram-renderer/node_modules/d3-selection/src/selection/lower.js
   function lower() {
     if (this.previousSibling) this.parentNode.insertBefore(this, this.parentNode.firstChild);
   }
@@ -1855,7 +1859,7 @@ var Spec42HeadlessRendererBundle = (() => {
     return this.each(lower);
   }
 
-  // ../shared/diagram-renderer/node_modules/d3-selection/src/selection/append.js
+  // shared/diagram-renderer/node_modules/d3-selection/src/selection/append.js
   function append_default(name) {
     var create2 = typeof name === "function" ? name : creator_default(name);
     return this.select(function() {
@@ -1863,7 +1867,7 @@ var Spec42HeadlessRendererBundle = (() => {
     });
   }
 
-  // ../shared/diagram-renderer/node_modules/d3-selection/src/selection/insert.js
+  // shared/diagram-renderer/node_modules/d3-selection/src/selection/insert.js
   function constantNull() {
     return null;
   }
@@ -1874,7 +1878,7 @@ var Spec42HeadlessRendererBundle = (() => {
     });
   }
 
-  // ../shared/diagram-renderer/node_modules/d3-selection/src/selection/remove.js
+  // shared/diagram-renderer/node_modules/d3-selection/src/selection/remove.js
   function remove() {
     var parent = this.parentNode;
     if (parent) parent.removeChild(this);
@@ -1883,7 +1887,7 @@ var Spec42HeadlessRendererBundle = (() => {
     return this.each(remove);
   }
 
-  // ../shared/diagram-renderer/node_modules/d3-selection/src/selection/clone.js
+  // shared/diagram-renderer/node_modules/d3-selection/src/selection/clone.js
   function selection_cloneShallow() {
     var clone = this.cloneNode(false), parent = this.parentNode;
     return parent ? parent.insertBefore(clone, this.nextSibling) : clone;
@@ -1896,12 +1900,12 @@ var Spec42HeadlessRendererBundle = (() => {
     return this.select(deep ? selection_cloneDeep : selection_cloneShallow);
   }
 
-  // ../shared/diagram-renderer/node_modules/d3-selection/src/selection/datum.js
+  // shared/diagram-renderer/node_modules/d3-selection/src/selection/datum.js
   function datum_default(value) {
     return arguments.length ? this.property("__data__", value) : this.node().__data__;
   }
 
-  // ../shared/diagram-renderer/node_modules/d3-selection/src/selection/on.js
+  // shared/diagram-renderer/node_modules/d3-selection/src/selection/on.js
   function contextListener(listener) {
     return function(event) {
       listener.call(this, event, this.__data__);
@@ -1964,7 +1968,7 @@ var Spec42HeadlessRendererBundle = (() => {
     return this;
   }
 
-  // ../shared/diagram-renderer/node_modules/d3-selection/src/selection/dispatch.js
+  // shared/diagram-renderer/node_modules/d3-selection/src/selection/dispatch.js
   function dispatchEvent(node, type2, params) {
     var window2 = window_default(node), event = window2.CustomEvent;
     if (typeof event === "function") {
@@ -1990,7 +1994,7 @@ var Spec42HeadlessRendererBundle = (() => {
     return this.each((typeof params === "function" ? dispatchFunction : dispatchConstant)(type2, params));
   }
 
-  // ../shared/diagram-renderer/node_modules/d3-selection/src/selection/iterator.js
+  // shared/diagram-renderer/node_modules/d3-selection/src/selection/iterator.js
   function* iterator_default() {
     for (var groups = this._groups, j = 0, m = groups.length; j < m; ++j) {
       for (var group = groups[j], i = 0, n = group.length, node; i < n; ++i) {
@@ -1999,7 +2003,7 @@ var Spec42HeadlessRendererBundle = (() => {
     }
   }
 
-  // ../shared/diagram-renderer/node_modules/d3-selection/src/selection/index.js
+  // shared/diagram-renderer/node_modules/d3-selection/src/selection/index.js
   var root = [null];
   function Selection(groups, parents) {
     this._groups = groups;
@@ -2051,19 +2055,19 @@ var Spec42HeadlessRendererBundle = (() => {
   };
   var selection_default = selection;
 
-  // ../shared/diagram-renderer/node_modules/d3-selection/src/select.js
+  // shared/diagram-renderer/node_modules/d3-selection/src/select.js
   function select_default2(selector) {
     return typeof selector === "string" ? new Selection([[document.querySelector(selector)]], [document.documentElement]) : new Selection([[selector]], root);
   }
 
-  // ../shared/diagram-renderer/node_modules/d3-selection/src/sourceEvent.js
+  // shared/diagram-renderer/node_modules/d3-selection/src/sourceEvent.js
   function sourceEvent_default(event) {
     let sourceEvent;
     while (sourceEvent = event.sourceEvent) event = sourceEvent;
     return event;
   }
 
-  // ../shared/diagram-renderer/node_modules/d3-selection/src/pointer.js
+  // shared/diagram-renderer/node_modules/d3-selection/src/pointer.js
   function pointer_default(event, node) {
     event = sourceEvent_default(event);
     if (node === void 0) node = event.currentTarget;
@@ -2083,14 +2087,14 @@ var Spec42HeadlessRendererBundle = (() => {
     return [event.pageX, event.pageY];
   }
 
-  // ../shared/diagram-renderer/node_modules/d3-drag/src/noevent.js
+  // shared/diagram-renderer/node_modules/d3-drag/src/noevent.js
   var nonpassivecapture = { capture: true, passive: false };
   function noevent_default(event) {
     event.preventDefault();
     event.stopImmediatePropagation();
   }
 
-  // ../shared/diagram-renderer/node_modules/d3-drag/src/nodrag.js
+  // shared/diagram-renderer/node_modules/d3-drag/src/nodrag.js
   function nodrag_default(view) {
     var root2 = view.document.documentElement, selection2 = select_default2(view).on("dragstart.drag", noevent_default, nonpassivecapture);
     if ("onselectstart" in root2) {
@@ -2116,7 +2120,7 @@ var Spec42HeadlessRendererBundle = (() => {
     }
   }
 
-  // ../shared/diagram-renderer/node_modules/d3-color/src/define.js
+  // shared/diagram-renderer/node_modules/d3-color/src/define.js
   function define_default(constructor, factory, prototype) {
     constructor.prototype = factory.prototype = prototype;
     prototype.constructor = constructor;
@@ -2127,7 +2131,7 @@ var Spec42HeadlessRendererBundle = (() => {
     return prototype;
   }
 
-  // ../shared/diagram-renderer/node_modules/d3-color/src/color.js
+  // shared/diagram-renderer/node_modules/d3-color/src/color.js
   function Color() {
   }
   var darker = 0.7;
@@ -2464,7 +2468,7 @@ var Spec42HeadlessRendererBundle = (() => {
     return (h < 60 ? m1 + (m2 - m1) * h / 60 : h < 180 ? m2 : h < 240 ? m1 + (m2 - m1) * (240 - h) / 60 : m1) * 255;
   }
 
-  // ../shared/diagram-renderer/node_modules/d3-interpolate/src/basis.js
+  // shared/diagram-renderer/node_modules/d3-interpolate/src/basis.js
   function basis(t1, v0, v1, v2, v3) {
     var t2 = t1 * t1, t3 = t2 * t1;
     return ((1 - 3 * t1 + 3 * t2 - t3) * v0 + (4 - 6 * t2 + 3 * t3) * v1 + (1 + 3 * t1 + 3 * t2 - 3 * t3) * v2 + t3 * v3) / 6;
@@ -2477,7 +2481,7 @@ var Spec42HeadlessRendererBundle = (() => {
     };
   }
 
-  // ../shared/diagram-renderer/node_modules/d3-interpolate/src/basisClosed.js
+  // shared/diagram-renderer/node_modules/d3-interpolate/src/basisClosed.js
   function basisClosed_default(values) {
     var n = values.length;
     return function(t) {
@@ -2486,10 +2490,10 @@ var Spec42HeadlessRendererBundle = (() => {
     };
   }
 
-  // ../shared/diagram-renderer/node_modules/d3-interpolate/src/constant.js
+  // shared/diagram-renderer/node_modules/d3-interpolate/src/constant.js
   var constant_default2 = (x2) => () => x2;
 
-  // ../shared/diagram-renderer/node_modules/d3-interpolate/src/color.js
+  // shared/diagram-renderer/node_modules/d3-interpolate/src/color.js
   function linear(a, d) {
     return function(t) {
       return a + t * d;
@@ -2510,7 +2514,7 @@ var Spec42HeadlessRendererBundle = (() => {
     return d ? linear(a, d) : constant_default2(isNaN(a) ? b : a);
   }
 
-  // ../shared/diagram-renderer/node_modules/d3-interpolate/src/rgb.js
+  // shared/diagram-renderer/node_modules/d3-interpolate/src/rgb.js
   var rgb_default = function rgbGamma(y2) {
     var color2 = gamma(y2);
     function rgb2(start2, end) {
@@ -2550,14 +2554,14 @@ var Spec42HeadlessRendererBundle = (() => {
   var rgbBasis = rgbSpline(basis_default);
   var rgbBasisClosed = rgbSpline(basisClosed_default);
 
-  // ../shared/diagram-renderer/node_modules/d3-interpolate/src/number.js
+  // shared/diagram-renderer/node_modules/d3-interpolate/src/number.js
   function number_default(a, b) {
     return a = +a, b = +b, function(t) {
       return a * (1 - t) + b * t;
     };
   }
 
-  // ../shared/diagram-renderer/node_modules/d3-interpolate/src/string.js
+  // shared/diagram-renderer/node_modules/d3-interpolate/src/string.js
   var reA = /[-+]?(?:\d+\.?\d*|\.?\d+)(?:[eE][-+]?\d+)?/g;
   var reB = new RegExp(reA.source, "g");
   function zero(b) {
@@ -2599,7 +2603,7 @@ var Spec42HeadlessRendererBundle = (() => {
     });
   }
 
-  // ../shared/diagram-renderer/node_modules/d3-interpolate/src/transform/decompose.js
+  // shared/diagram-renderer/node_modules/d3-interpolate/src/transform/decompose.js
   var degrees = 180 / Math.PI;
   var identity = {
     translateX: 0,
@@ -2625,7 +2629,7 @@ var Spec42HeadlessRendererBundle = (() => {
     };
   }
 
-  // ../shared/diagram-renderer/node_modules/d3-interpolate/src/transform/parse.js
+  // shared/diagram-renderer/node_modules/d3-interpolate/src/transform/parse.js
   var svgNode;
   function parseCss(value) {
     const m = new (typeof DOMMatrix === "function" ? DOMMatrix : WebKitCSSMatrix)(value + "");
@@ -2640,7 +2644,7 @@ var Spec42HeadlessRendererBundle = (() => {
     return decompose_default(value.a, value.b, value.c, value.d, value.e, value.f);
   }
 
-  // ../shared/diagram-renderer/node_modules/d3-interpolate/src/transform/index.js
+  // shared/diagram-renderer/node_modules/d3-interpolate/src/transform/index.js
   function interpolateTransform(parse, pxComma, pxParen, degParen) {
     function pop(s) {
       return s.length ? s.pop() + " " : "";
@@ -2695,7 +2699,7 @@ var Spec42HeadlessRendererBundle = (() => {
   var interpolateTransformCss = interpolateTransform(parseCss, "px, ", "px)", "deg)");
   var interpolateTransformSvg = interpolateTransform(parseSvg, ", ", ")", ")");
 
-  // ../shared/diagram-renderer/node_modules/d3-interpolate/src/zoom.js
+  // shared/diagram-renderer/node_modules/d3-interpolate/src/zoom.js
   var epsilon2 = 1e-12;
   function cosh(x2) {
     return ((x2 = Math.exp(x2)) + 1 / x2) / 2;
@@ -2740,7 +2744,7 @@ var Spec42HeadlessRendererBundle = (() => {
     return zoom;
   }(Math.SQRT2, 2, 4);
 
-  // ../shared/diagram-renderer/node_modules/d3-timer/src/timer.js
+  // shared/diagram-renderer/node_modules/d3-timer/src/timer.js
   var frame = 0;
   var timeout = 0;
   var interval = 0;
@@ -2842,7 +2846,7 @@ var Spec42HeadlessRendererBundle = (() => {
     }
   }
 
-  // ../shared/diagram-renderer/node_modules/d3-timer/src/timeout.js
+  // shared/diagram-renderer/node_modules/d3-timer/src/timeout.js
   function timeout_default(callback, delay, time) {
     var t = new Timer();
     delay = delay == null ? 0 : +delay;
@@ -2853,7 +2857,7 @@ var Spec42HeadlessRendererBundle = (() => {
     return t;
   }
 
-  // ../shared/diagram-renderer/node_modules/d3-transition/src/transition/schedule.js
+  // shared/diagram-renderer/node_modules/d3-transition/src/transition/schedule.js
   var emptyOn = dispatch_default("start", "end", "cancel", "interrupt");
   var emptyTween = [];
   var CREATED = 0;
@@ -2964,7 +2968,7 @@ var Spec42HeadlessRendererBundle = (() => {
     }
   }
 
-  // ../shared/diagram-renderer/node_modules/d3-transition/src/interrupt.js
+  // shared/diagram-renderer/node_modules/d3-transition/src/interrupt.js
   function interrupt_default(node, name) {
     var schedules = node.__transition, schedule, active, empty2 = true, i;
     if (!schedules) return;
@@ -2983,14 +2987,14 @@ var Spec42HeadlessRendererBundle = (() => {
     if (empty2) delete node.__transition;
   }
 
-  // ../shared/diagram-renderer/node_modules/d3-transition/src/selection/interrupt.js
+  // shared/diagram-renderer/node_modules/d3-transition/src/selection/interrupt.js
   function interrupt_default2(name) {
     return this.each(function() {
       interrupt_default(this, name);
     });
   }
 
-  // ../shared/diagram-renderer/node_modules/d3-transition/src/transition/tween.js
+  // shared/diagram-renderer/node_modules/d3-transition/src/transition/tween.js
   function tweenRemove(id2, name) {
     var tween0, tween1;
     return function() {
@@ -3051,13 +3055,13 @@ var Spec42HeadlessRendererBundle = (() => {
     };
   }
 
-  // ../shared/diagram-renderer/node_modules/d3-transition/src/transition/interpolate.js
+  // shared/diagram-renderer/node_modules/d3-transition/src/transition/interpolate.js
   function interpolate_default(a, b) {
     var c;
     return (typeof b === "number" ? number_default : b instanceof color ? rgb_default : (c = color(b)) ? (b = c, rgb_default) : string_default)(a, b);
   }
 
-  // ../shared/diagram-renderer/node_modules/d3-transition/src/transition/attr.js
+  // shared/diagram-renderer/node_modules/d3-transition/src/transition/attr.js
   function attrRemove2(name) {
     return function() {
       this.removeAttribute(name);
@@ -3107,7 +3111,7 @@ var Spec42HeadlessRendererBundle = (() => {
     return this.attrTween(name, typeof value === "function" ? (fullname.local ? attrFunctionNS2 : attrFunction2)(fullname, i, tweenValue(this, "attr." + name, value)) : value == null ? (fullname.local ? attrRemoveNS2 : attrRemove2)(fullname) : (fullname.local ? attrConstantNS2 : attrConstant2)(fullname, i, value));
   }
 
-  // ../shared/diagram-renderer/node_modules/d3-transition/src/transition/attrTween.js
+  // shared/diagram-renderer/node_modules/d3-transition/src/transition/attrTween.js
   function attrInterpolate(name, i) {
     return function(t) {
       this.setAttribute(name, i.call(this, t));
@@ -3147,7 +3151,7 @@ var Spec42HeadlessRendererBundle = (() => {
     return this.tween(key, (fullname.local ? attrTweenNS : attrTween)(fullname, value));
   }
 
-  // ../shared/diagram-renderer/node_modules/d3-transition/src/transition/delay.js
+  // shared/diagram-renderer/node_modules/d3-transition/src/transition/delay.js
   function delayFunction(id2, value) {
     return function() {
       init(this, id2).delay = +value.apply(this, arguments);
@@ -3163,7 +3167,7 @@ var Spec42HeadlessRendererBundle = (() => {
     return arguments.length ? this.each((typeof value === "function" ? delayFunction : delayConstant)(id2, value)) : get2(this.node(), id2).delay;
   }
 
-  // ../shared/diagram-renderer/node_modules/d3-transition/src/transition/duration.js
+  // shared/diagram-renderer/node_modules/d3-transition/src/transition/duration.js
   function durationFunction(id2, value) {
     return function() {
       set2(this, id2).duration = +value.apply(this, arguments);
@@ -3179,7 +3183,7 @@ var Spec42HeadlessRendererBundle = (() => {
     return arguments.length ? this.each((typeof value === "function" ? durationFunction : durationConstant)(id2, value)) : get2(this.node(), id2).duration;
   }
 
-  // ../shared/diagram-renderer/node_modules/d3-transition/src/transition/ease.js
+  // shared/diagram-renderer/node_modules/d3-transition/src/transition/ease.js
   function easeConstant(id2, value) {
     if (typeof value !== "function") throw new Error();
     return function() {
@@ -3191,7 +3195,7 @@ var Spec42HeadlessRendererBundle = (() => {
     return arguments.length ? this.each(easeConstant(id2, value)) : get2(this.node(), id2).ease;
   }
 
-  // ../shared/diagram-renderer/node_modules/d3-transition/src/transition/easeVarying.js
+  // shared/diagram-renderer/node_modules/d3-transition/src/transition/easeVarying.js
   function easeVarying(id2, value) {
     return function() {
       var v = value.apply(this, arguments);
@@ -3204,7 +3208,7 @@ var Spec42HeadlessRendererBundle = (() => {
     return this.each(easeVarying(this._id, value));
   }
 
-  // ../shared/diagram-renderer/node_modules/d3-transition/src/transition/filter.js
+  // shared/diagram-renderer/node_modules/d3-transition/src/transition/filter.js
   function filter_default2(match) {
     if (typeof match !== "function") match = matcher_default(match);
     for (var groups = this._groups, m = groups.length, subgroups = new Array(m), j = 0; j < m; ++j) {
@@ -3217,7 +3221,7 @@ var Spec42HeadlessRendererBundle = (() => {
     return new Transition(subgroups, this._parents, this._name, this._id);
   }
 
-  // ../shared/diagram-renderer/node_modules/d3-transition/src/transition/merge.js
+  // shared/diagram-renderer/node_modules/d3-transition/src/transition/merge.js
   function merge_default2(transition2) {
     if (transition2._id !== this._id) throw new Error();
     for (var groups0 = this._groups, groups1 = transition2._groups, m0 = groups0.length, m1 = groups1.length, m = Math.min(m0, m1), merges = new Array(m0), j = 0; j < m; ++j) {
@@ -3233,7 +3237,7 @@ var Spec42HeadlessRendererBundle = (() => {
     return new Transition(merges, this._parents, this._name, this._id);
   }
 
-  // ../shared/diagram-renderer/node_modules/d3-transition/src/transition/on.js
+  // shared/diagram-renderer/node_modules/d3-transition/src/transition/on.js
   function start(name) {
     return (name + "").trim().split(/^|\s+/).every(function(t) {
       var i = t.indexOf(".");
@@ -3254,7 +3258,7 @@ var Spec42HeadlessRendererBundle = (() => {
     return arguments.length < 2 ? get2(this.node(), id2).on.on(name) : this.each(onFunction(id2, name, listener));
   }
 
-  // ../shared/diagram-renderer/node_modules/d3-transition/src/transition/remove.js
+  // shared/diagram-renderer/node_modules/d3-transition/src/transition/remove.js
   function removeFunction(id2) {
     return function() {
       var parent = this.parentNode;
@@ -3266,7 +3270,7 @@ var Spec42HeadlessRendererBundle = (() => {
     return this.on("end.remove", removeFunction(this._id));
   }
 
-  // ../shared/diagram-renderer/node_modules/d3-transition/src/transition/select.js
+  // shared/diagram-renderer/node_modules/d3-transition/src/transition/select.js
   function select_default3(select) {
     var name = this._name, id2 = this._id;
     if (typeof select !== "function") select = selector_default(select);
@@ -3282,7 +3286,7 @@ var Spec42HeadlessRendererBundle = (() => {
     return new Transition(subgroups, this._parents, name, id2);
   }
 
-  // ../shared/diagram-renderer/node_modules/d3-transition/src/transition/selectAll.js
+  // shared/diagram-renderer/node_modules/d3-transition/src/transition/selectAll.js
   function selectAll_default2(select) {
     var name = this._name, id2 = this._id;
     if (typeof select !== "function") select = selectorAll_default(select);
@@ -3302,13 +3306,13 @@ var Spec42HeadlessRendererBundle = (() => {
     return new Transition(subgroups, parents, name, id2);
   }
 
-  // ../shared/diagram-renderer/node_modules/d3-transition/src/transition/selection.js
+  // shared/diagram-renderer/node_modules/d3-transition/src/transition/selection.js
   var Selection2 = selection_default.prototype.constructor;
   function selection_default2() {
     return new Selection2(this._groups, this._parents);
   }
 
-  // ../shared/diagram-renderer/node_modules/d3-transition/src/transition/style.js
+  // shared/diagram-renderer/node_modules/d3-transition/src/transition/style.js
   function styleNull(name, interpolate) {
     var string00, string10, interpolate0;
     return function() {
@@ -3349,7 +3353,7 @@ var Spec42HeadlessRendererBundle = (() => {
     return value == null ? this.styleTween(name, styleNull(name, i)).on("end.style." + name, styleRemove2(name)) : typeof value === "function" ? this.styleTween(name, styleFunction2(name, i, tweenValue(this, "style." + name, value))).each(styleMaybeRemove(this._id, name)) : this.styleTween(name, styleConstant2(name, i, value), priority).on("end.style." + name, null);
   }
 
-  // ../shared/diagram-renderer/node_modules/d3-transition/src/transition/styleTween.js
+  // shared/diagram-renderer/node_modules/d3-transition/src/transition/styleTween.js
   function styleInterpolate(name, i, priority) {
     return function(t) {
       this.style.setProperty(name, i.call(this, t), priority);
@@ -3373,7 +3377,7 @@ var Spec42HeadlessRendererBundle = (() => {
     return this.tween(key, styleTween(name, value, priority == null ? "" : priority));
   }
 
-  // ../shared/diagram-renderer/node_modules/d3-transition/src/transition/text.js
+  // shared/diagram-renderer/node_modules/d3-transition/src/transition/text.js
   function textConstant2(value) {
     return function() {
       this.textContent = value;
@@ -3389,7 +3393,7 @@ var Spec42HeadlessRendererBundle = (() => {
     return this.tween("text", typeof value === "function" ? textFunction2(tweenValue(this, "text", value)) : textConstant2(value == null ? "" : value + ""));
   }
 
-  // ../shared/diagram-renderer/node_modules/d3-transition/src/transition/textTween.js
+  // shared/diagram-renderer/node_modules/d3-transition/src/transition/textTween.js
   function textInterpolate(i) {
     return function(t) {
       this.textContent = i.call(this, t);
@@ -3413,7 +3417,7 @@ var Spec42HeadlessRendererBundle = (() => {
     return this.tween(key, textTween(value));
   }
 
-  // ../shared/diagram-renderer/node_modules/d3-transition/src/transition/transition.js
+  // shared/diagram-renderer/node_modules/d3-transition/src/transition/transition.js
   function transition_default() {
     var name = this._name, id0 = this._id, id1 = newId();
     for (var groups = this._groups, m = groups.length, j = 0; j < m; ++j) {
@@ -3432,7 +3436,7 @@ var Spec42HeadlessRendererBundle = (() => {
     return new Transition(groups, this._parents, name, id1);
   }
 
-  // ../shared/diagram-renderer/node_modules/d3-transition/src/transition/end.js
+  // shared/diagram-renderer/node_modules/d3-transition/src/transition/end.js
   function end_default() {
     var on0, on1, that = this, id2 = that._id, size = that.size();
     return new Promise(function(resolve, reject) {
@@ -3453,7 +3457,7 @@ var Spec42HeadlessRendererBundle = (() => {
     });
   }
 
-  // ../shared/diagram-renderer/node_modules/d3-transition/src/transition/index.js
+  // shared/diagram-renderer/node_modules/d3-transition/src/transition/index.js
   var id = 0;
   function Transition(groups, parents, name, id2) {
     this._groups = groups;
@@ -3501,12 +3505,12 @@ var Spec42HeadlessRendererBundle = (() => {
     [Symbol.iterator]: selection_prototype[Symbol.iterator]
   };
 
-  // ../shared/diagram-renderer/node_modules/d3-ease/src/cubic.js
+  // shared/diagram-renderer/node_modules/d3-ease/src/cubic.js
   function cubicInOut(t) {
     return ((t *= 2) <= 1 ? t * t * t : (t -= 2) * t * t + 2) / 2;
   }
 
-  // ../shared/diagram-renderer/node_modules/d3-transition/src/selection/transition.js
+  // shared/diagram-renderer/node_modules/d3-transition/src/selection/transition.js
   var defaultTiming = {
     time: null,
     // Set on use.
@@ -3540,11 +3544,11 @@ var Spec42HeadlessRendererBundle = (() => {
     return new Transition(groups, this._parents, name, id2);
   }
 
-  // ../shared/diagram-renderer/node_modules/d3-transition/src/selection/index.js
+  // shared/diagram-renderer/node_modules/d3-transition/src/selection/index.js
   selection_default.prototype.interrupt = interrupt_default2;
   selection_default.prototype.transition = transition_default2;
 
-  // ../shared/diagram-renderer/node_modules/d3-brush/src/brush.js
+  // shared/diagram-renderer/node_modules/d3-brush/src/brush.js
   var { abs, max, min } = Math;
   function number1(e) {
     return [+e[0], +e[1]];
@@ -3586,7 +3590,7 @@ var Spec42HeadlessRendererBundle = (() => {
     return { type: t };
   }
 
-  // ../shared/diagram-renderer/node_modules/d3-path/src/path.js
+  // shared/diagram-renderer/node_modules/d3-path/src/path.js
   var pi = Math.PI;
   var tau = 2 * pi;
   var epsilon = 1e-6;
@@ -3680,14 +3684,14 @@ var Spec42HeadlessRendererBundle = (() => {
   }
   path.prototype = Path.prototype;
 
-  // ../shared/diagram-renderer/node_modules/d3-shape/src/constant.js
+  // shared/diagram-renderer/node_modules/d3-shape/src/constant.js
   function constant_default4(x2) {
     return function constant() {
       return x2;
     };
   }
 
-  // ../shared/diagram-renderer/node_modules/d3-shape/src/path.js
+  // shared/diagram-renderer/node_modules/d3-shape/src/path.js
   function withPath(shape) {
     let digits = 3;
     shape.digits = function(_) {
@@ -3704,13 +3708,13 @@ var Spec42HeadlessRendererBundle = (() => {
     return () => new Path(digits);
   }
 
-  // ../shared/diagram-renderer/node_modules/d3-shape/src/array.js
+  // shared/diagram-renderer/node_modules/d3-shape/src/array.js
   var slice = Array.prototype.slice;
   function array_default(x2) {
     return typeof x2 === "object" && "length" in x2 ? x2 : Array.from(x2);
   }
 
-  // ../shared/diagram-renderer/node_modules/d3-shape/src/curve/linear.js
+  // shared/diagram-renderer/node_modules/d3-shape/src/curve/linear.js
   function Linear(context) {
     this._context = context;
   }
@@ -3748,7 +3752,7 @@ var Spec42HeadlessRendererBundle = (() => {
     return new Linear(context);
   }
 
-  // ../shared/diagram-renderer/node_modules/d3-shape/src/point.js
+  // shared/diagram-renderer/node_modules/d3-shape/src/point.js
   function x(p) {
     return p[0];
   }
@@ -3756,7 +3760,7 @@ var Spec42HeadlessRendererBundle = (() => {
     return p[1];
   }
 
-  // ../shared/diagram-renderer/node_modules/d3-shape/src/line.js
+  // shared/diagram-renderer/node_modules/d3-shape/src/line.js
   function line_default(x2, y2) {
     var defined = constant_default4(true), context = null, curve = linear_default, output = null, path2 = withPath(line);
     x2 = typeof x2 === "function" ? x2 : x2 === void 0 ? x : constant_default4(x2);
@@ -3791,10 +3795,10 @@ var Spec42HeadlessRendererBundle = (() => {
     return line;
   }
 
-  // ../shared/diagram-renderer/node_modules/d3-zoom/src/constant.js
+  // shared/diagram-renderer/node_modules/d3-zoom/src/constant.js
   var constant_default5 = (x2) => () => x2;
 
-  // ../shared/diagram-renderer/node_modules/d3-zoom/src/event.js
+  // shared/diagram-renderer/node_modules/d3-zoom/src/event.js
   function ZoomEvent(type2, {
     sourceEvent,
     target,
@@ -3810,7 +3814,7 @@ var Spec42HeadlessRendererBundle = (() => {
     });
   }
 
-  // ../shared/diagram-renderer/node_modules/d3-zoom/src/transform.js
+  // shared/diagram-renderer/node_modules/d3-zoom/src/transform.js
   function Transform(k, x2, y2) {
     this.k = k;
     this.x = x2;
@@ -3859,7 +3863,7 @@ var Spec42HeadlessRendererBundle = (() => {
     return node.__zoom;
   }
 
-  // ../shared/diagram-renderer/node_modules/d3-zoom/src/noevent.js
+  // shared/diagram-renderer/node_modules/d3-zoom/src/noevent.js
   function nopropagation2(event) {
     event.stopImmediatePropagation();
   }
@@ -3868,7 +3872,7 @@ var Spec42HeadlessRendererBundle = (() => {
     event.stopImmediatePropagation();
   }
 
-  // ../shared/diagram-renderer/node_modules/d3-zoom/src/zoom.js
+  // shared/diagram-renderer/node_modules/d3-zoom/src/zoom.js
   function defaultFilter(event) {
     return (!event.ctrlKey || event.type === "wheel") && !event.button;
   }
@@ -4183,7 +4187,7 @@ var Spec42HeadlessRendererBundle = (() => {
     return zoom;
   }
 
-  // ../shared/diagram-renderer/src/theme.ts
+  // shared/diagram-renderer/src/theme.ts
   var NOTATION_THEME_LIGHT = {
     canvasBackground: "#ffffff",
     panelBackground: "#f3f4f6",
@@ -4261,7 +4265,7 @@ var Spec42HeadlessRendererBundle = (() => {
     return theme.edge.default;
   }
 
-  // ../shared/diagram-renderer/src/views/behavior-interaction.ts
+  // shared/diagram-renderer/src/views/behavior-interaction.ts
   function nodeSupportsSourceNavigation(node) {
     const attrs = node.attributes ?? {};
     const qualifiedName = asString2(attrs.qualifiedName ?? node.id);
@@ -4305,7 +4309,7 @@ var Spec42HeadlessRendererBundle = (() => {
     return fallback;
   }
 
-  // ../shared/diagram-renderer/src/headless-elk-shim.ts
+  // shared/diagram-renderer/src/headless-elk-shim.ts
   var HeadlessElk = class {
     constructor(options = {}) {
       const global = globalThis;
@@ -4321,7 +4325,7 @@ var Spec42HeadlessRendererBundle = (() => {
     }
   };
 
-  // ../shared/diagram-renderer/src/views/elk-label-utils.ts
+  // shared/diagram-renderer/src/views/elk-label-utils.ts
   function estimateElkLabelBox(id2, text, options) {
     const paddingX = options?.paddingX ?? 10;
     const paddingY = options?.paddingY ?? 8;
@@ -4382,7 +4386,7 @@ var Spec42HeadlessRendererBundle = (() => {
     };
   }
 
-  // ../shared/diagram-renderer/src/views/behavior-common.ts
+  // shared/diagram-renderer/src/views/behavior-common.ts
   var behaviorElk = new HeadlessElk();
   function nodeKind(node) {
     return String(node.kind || "action").toLowerCase();
@@ -4556,7 +4560,7 @@ var Spec42HeadlessRendererBundle = (() => {
     return trimmed.length > max2 ? `${trimmed.slice(0, max2 - 2)}..` : trimmed;
   }
 
-  // ../shared/diagram-renderer/src/views/action-flow.ts
+  // shared/diagram-renderer/src/views/action-flow.ts
   function isInitial(kind) {
     return kind.includes("initial") || kind.includes("start");
   }
@@ -4704,7 +4708,7 @@ var Spec42HeadlessRendererBundle = (() => {
     defs.append("marker").attr("id", "action-flow-arrow").attr("viewBox", "0 -5 10 10").attr("refX", 8).attr("refY", 0).attr("markerWidth", 6).attr("markerHeight", 6).attr("orient", "auto").append("path").attr("d", "M0,-5L10,0L0,5").style("fill", theme.edge.default);
   }
 
-  // ../shared/diagram-renderer/src/views/sequence.ts
+  // shared/diagram-renderer/src/views/sequence.ts
   var HEADER_Y = 64;
   var LIFELINE_TOP = 118;
   var LIFELINE_GAP = 220;
@@ -4731,9 +4735,12 @@ var Spec42HeadlessRendererBundle = (() => {
   function findPreparedLifeline(preparedNodes, lifeline) {
     const id2 = asString3(lifeline.id ?? lifeline.name);
     const name = asString3(lifeline.name ?? lifeline.label);
-    return preparedNodes.find(
-      (node) => node.id === id2 || node.label === name || asString3(node.attributes?.qualifiedName) === id2 || asString3(node.attributes?.qualifiedName) === name
-    );
+    return preparedNodes.find((node) => {
+      const qualifiedName = asString3(node.attributes?.qualifiedName);
+      if (id2 && (node.id === id2 || qualifiedName === id2)) return true;
+      if (name && (node.label === name || qualifiedName === name)) return true;
+      return false;
+    });
   }
   function addSequenceMarkers(defs, theme) {
     defs.selectAll("#sequence-arrow-sync").remove();
@@ -4847,7 +4854,7 @@ var Spec42HeadlessRendererBundle = (() => {
     };
   }
 
-  // ../shared/diagram-renderer/src/views/state-transition.ts
+  // shared/diagram-renderer/src/views/state-transition.ts
   function transitionDisplayLabel2(label) {
     const trimmed = label.trim();
     if (!trimmed || trimmed.toLowerCase() === "entry") return "";
@@ -4956,7 +4963,7 @@ var Spec42HeadlessRendererBundle = (() => {
     defs.append("marker").attr("id", "state-transition-arrow").attr("viewBox", "0 -5 10 10").attr("refX", 8).attr("refY", 0).attr("markerWidth", 6).attr("markerHeight", 6).attr("orient", "auto").append("path").attr("d", "M0,-5L10,0L0,5").style("fill", theme.edge.default);
   }
 
-  // ../shared/diagram-renderer/src/views/standard-views.ts
+  // shared/diagram-renderer/src/views/standard-views.ts
   function asRecord3(value) {
     return value && typeof value === "object" ? value : {};
   }
@@ -5162,7 +5169,7 @@ var Spec42HeadlessRendererBundle = (() => {
     return { minX: 0, minY: 0, maxX: left + width, maxY: top + height };
   }
 
-  // ../shared/diagram-renderer/src/render/types.ts
+  // shared/diagram-renderer/src/render/types.ts
   var nodeWidth = 200;
   var nodeHeight = 70;
   var ibdNodeWidth = 280;
@@ -5209,7 +5216,7 @@ var Spec42HeadlessRendererBundle = (() => {
     return Math.min(340, Math.max(ibdNodeHeight, headerHeight + contentHeight + portsHeight));
   }
 
-  // ../shared/diagram-renderer/src/render/export.ts
+  // shared/diagram-renderer/src/render/export.ts
   function contentBounds(layout) {
     if (!layout.nodes.length) return { x: 0, y: 0, width: 100, height: 100 };
     const minX = Math.min(...layout.nodes.map((node) => node.x || 0));
@@ -5254,7 +5261,7 @@ var Spec42HeadlessRendererBundle = (() => {
     return new XMLSerializer().serializeToString(clone);
   }
 
-  // ../shared/diagram-renderer/src/sysml-node-builder.ts
+  // shared/diagram-renderer/src/sysml-node-builder.ts
   var LINE_HEIGHT = 12;
   var COMPARTMENT_LABEL_HEIGHT = 14;
   var COMPARTMENT_GAP = 2;
@@ -5475,7 +5482,7 @@ var Spec42HeadlessRendererBundle = (() => {
     return node;
   }
 
-  // ../shared/diagram-renderer/src/render/ibd-route.ts
+  // shared/diagram-renderer/src/render/ibd-route.ts
   function pruneRoutePoints(points) {
     const pruned = [];
     for (const point of points) {
@@ -5612,7 +5619,7 @@ var Spec42HeadlessRendererBundle = (() => {
     return snapRouteEndpoints(bestPoints, sourcePort, targetPort);
   }
 
-  // ../shared/diagram-renderer/src/render/interconnection-layout-dto.ts
+  // shared/diagram-renderer/src/render/interconnection-layout-dto.ts
   function createInterconnectionLayoutBuildState() {
     return { nodes: /* @__PURE__ */ new Map(), containers: [], diagnostics: [] };
   }
@@ -5646,7 +5653,7 @@ var Spec42HeadlessRendererBundle = (() => {
     };
   }
 
-  // ../shared/diagram-renderer/src/render/drawing.ts
+  // shared/diagram-renderer/src/render/drawing.ts
   function truncate2(value, max2) {
     const text = String(value || "");
     return text.length > max2 ? `${text.slice(0, max2 - 1)}...` : text;
@@ -5940,11 +5947,13 @@ var Spec42HeadlessRendererBundle = (() => {
     });
   }
   function formatIbdPortLabel(name, detail) {
+    const direction = String(detail?.direction || "").trim();
+    const directionPrefix = direction ? `${direction} ` : "";
     const type2 = String(detail?.portType || detail?.attributes?.portType || "").trim();
-    if (!type2) return name;
+    if (!type2) return `${directionPrefix}${name}`;
     const conjugated = type2.startsWith("~");
     const cleanType = type2.replace(/^~/, "").split(/::|\./).pop() || type2.replace(/^~/, "");
-    return `${name}: ${conjugated ? "~" : ""}${cleanType}`;
+    return `${directionPrefix}${name}: ${conjugated ? "~" : ""}${cleanType}`;
   }
   function formatCompartmentSummary(attributes) {
     if (!attributes) return "";
@@ -6078,7 +6087,7 @@ var Spec42HeadlessRendererBundle = (() => {
     return { x: 0, y: 0 };
   }
 
-  // ../shared/diagram-renderer/src/render/interconnection-elk-input.ts
+  // shared/diagram-renderer/src/render/interconnection-elk-input.ts
   function buildInterconnectionElkBuild(prepared) {
     const nodesById = new Map(prepared.nodes.map((node) => [node.id, node]));
     const childrenByParent = /* @__PURE__ */ new Map();
@@ -6300,7 +6309,7 @@ var Spec42HeadlessRendererBundle = (() => {
     return { elkGraphInput, elkEdges, nodesById, preparedIdForElkId, portDrawOrderFor };
   }
 
-  // ../shared/diagram-renderer/src/render/layout.ts
+  // shared/diagram-renderer/src/render/layout.ts
   var elk = new HeadlessElk();
   async function layoutPrepared(prepared) {
     if (!prepared.nodes.length) return { nodes: [], edges: [] };
@@ -6319,15 +6328,57 @@ var Spec42HeadlessRendererBundle = (() => {
     if (!diagramNodes.length) return { nodes: [], edges: [] };
     const width = isInterconnectionView ? ibdNodeWidth : nodeWidth;
     const height = isInterconnectionView ? ibdNodeHeight : nodeHeight;
+    const leafElkNode = (node) => {
+      const compartments = collectCompartments(node);
+      return {
+        id: node.id,
+        width,
+        height: Math.max(height, computeNodeHeight(compartments, { maxLinesPerCompartment: 8 }))
+      };
+    };
+    const packageGroups = !isInterconnectionView ? prepared.meta?.packageContainerGroups ?? [] : [];
+    const useHierarchy = packageGroups.length >= 2;
+    let children2;
+    if (useHierarchy) {
+      const memberToPackage = /* @__PURE__ */ new Map();
+      for (const group of packageGroups) {
+        for (const memberId of group.memberIds) memberToPackage.set(memberId, group.id);
+      }
+      const byPackage = /* @__PURE__ */ new Map();
+      const orphans = [];
+      for (const node of diagramNodes) {
+        const pkgId = memberToPackage.get(node.id);
+        const elkNode = leafElkNode(node);
+        if (pkgId) {
+          const list = byPackage.get(pkgId) ?? [];
+          list.push(elkNode);
+          byPackage.set(pkgId, list);
+        } else {
+          orphans.push(elkNode);
+        }
+      }
+      const containers = packageGroups.filter((group) => (byPackage.get(group.id) ?? []).length > 0).map((group) => ({
+        id: group.id,
+        layoutOptions: {
+          "elk.direction": "DOWN",
+          "elk.padding": "[top=36,left=20,bottom=20,right=20]"
+        },
+        children: byPackage.get(group.id) ?? []
+      }));
+      children2 = [...containers, ...orphans];
+    } else {
+      children2 = diagramNodes.map(leafElkNode);
+    }
     const graph = {
       id: "root",
       layoutOptions: {
         "elk.algorithm": "layered",
+        ...useHierarchy ? { "elk.hierarchyHandling": "INCLUDE_CHILDREN" } : {},
         "elk.direction": isInterconnectionView ? "RIGHT" : "DOWN",
-        "elk.spacing.nodeNode": isInterconnectionView ? "80" : "220",
-        "elk.layered.spacing.nodeNodeBetweenLayers": isInterconnectionView ? "110" : "280",
-        "elk.spacing.edgeNode": isInterconnectionView ? "80" : "120",
-        "elk.spacing.edgeEdge": isInterconnectionView ? "60" : "120",
+        "elk.spacing.nodeNode": isInterconnectionView ? "80" : "140",
+        "elk.layered.spacing.nodeNodeBetweenLayers": isInterconnectionView ? "110" : "180",
+        "elk.spacing.edgeNode": isInterconnectionView ? "80" : "90",
+        "elk.spacing.edgeEdge": isInterconnectionView ? "60" : "80",
         "elk.edgeRouting": "ORTHOGONAL",
         "elk.layered.nodePlacement.strategy": "NETWORK_SIMPLEX",
         "elk.separateConnectedComponents": "true",
@@ -6336,20 +6387,28 @@ var Spec42HeadlessRendererBundle = (() => {
         "org.eclipse.elk.portConstraints": "FIXED_SIDE",
         "org.eclipse.elk.json.edgeCoords": "ROOT"
       },
-      children: diagramNodes.map((node) => {
-        const compartments = collectCompartments(node);
-        return {
-          id: node.id,
-          width,
-          height: Math.max(height, computeNodeHeight(compartments, { maxLinesPerCompartment: 8 }))
-        };
-      }),
+      children: children2,
       edges: diagramEdges.map((edge) => ({ id: edge.id, sources: [edge.source], targets: [edge.target] }))
     };
     try {
       const laidOut = await elk.layout(graph);
       const byId = new Map(diagramNodes.map((node) => [node.id, node]));
-      const layouts = new Map((laidOut.children || []).map((node) => [String(node.id), node]));
+      const layouts = /* @__PURE__ */ new Map();
+      const visit = (elkNode, ox, oy) => {
+        const absX = ox + (elkNode.x ?? 0);
+        const absY = oy + (elkNode.y ?? 0);
+        layouts.set(String(elkNode.id), { ...elkNode, x: absX, y: absY });
+        for (const child of elkNode.children ?? []) visit(child, absX, absY);
+      };
+      for (const child of laidOut.children ?? []) visit(child, 0, 0);
+      const edgesById = /* @__PURE__ */ new Map();
+      const collectEdges = (elkNode) => {
+        for (const elkEdge of elkNode.edges ?? []) {
+          if (elkEdge?.id) edgesById.set(String(elkEdge.id), elkEdge);
+        }
+        for (const child of elkNode.children ?? []) collectEdges(child);
+      };
+      collectEdges(laidOut);
       return {
         nodes: diagramNodes.map((node) => {
           const compartments = collectCompartments(node);
@@ -6359,7 +6418,7 @@ var Spec42HeadlessRendererBundle = (() => {
           ...edge,
           sourceNode: byId.get(edge.source),
           targetNode: byId.get(edge.target),
-          layout: (laidOut.edges || []).find((item) => item.id === edge.id)
+          layout: edgesById.get(edge.id)
         }))
       };
     } catch {
@@ -6521,7 +6580,7 @@ var Spec42HeadlessRendererBundle = (() => {
     }
   }
 
-  // ../shared/diagram-renderer/src/renderer.ts
+  // shared/diagram-renderer/src/renderer.ts
   async function renderVisualization(target, prepared, options = {}) {
     const renderStartedAt = Date.now();
     target.innerHTML = "";
@@ -6646,7 +6705,7 @@ var Spec42HeadlessRendererBundle = (() => {
     };
   }
 
-  // ../shared/diagram-renderer/src/headless-export.ts
+  // shared/diagram-renderer/src/headless-export.ts
   function preparedViewFromPayload(payload) {
     const prepared = payload.preparedView;
     if (!prepared || typeof prepared !== "object") {

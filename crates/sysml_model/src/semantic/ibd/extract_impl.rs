@@ -629,6 +629,11 @@ fn prune_redundant_top_level_roots(
 }
 
 
+/// Qualifies a connector endpoint against a single, known enclosing container prefix.
+/// Used wherever the caller has a real container in hand (`connect.container_prefix`,
+/// `pending.container_prefix`). See [`qualify_occurrence_endpoint`] for the sibling function used
+/// when no single prefix is known — the two are deliberately not merged; see that function's doc
+/// comment for why.
 pub(crate) fn qualify_pending_connection_endpoint(container_prefix: Option<&str>, endpoint: &str) -> String {
     let trimmed = endpoint.trim();
     if trimmed.is_empty() {
@@ -652,6 +657,16 @@ pub(crate) fn qualify_pending_connection_endpoint(container_prefix: Option<&str>
     }
 }
 
+/// Qualifies a connector endpoint for the ambiguous fallback case: no single enclosing container
+/// is known, only a guess-list of every part-def in the file (`def_container_prefixes`). See
+/// [`qualify_pending_connection_endpoint`] for the primary path used whenever a real container
+/// prefix is available.
+///
+/// **Do not consolidate these two functions.** They deliberately diverge on how they treat
+/// `::`-containing endpoints (see the comment below), and collapsing that distinction previously
+/// caused a real regression (`drone_connections_scoped_ibd_matches_full_workspace_filter`, 24 vs 21
+/// connectors on the bundled `examples/drone` fixture) — confirmed correct-as-is by a dedicated
+/// research pass, not just an oversight left unfixed.
 pub(crate) fn qualify_occurrence_endpoint(endpoint: &str, def_container_prefixes: &[String]) -> String {
     let trimmed = endpoint.trim();
     if trimmed.is_empty() {
@@ -1326,6 +1341,8 @@ mod tests {
 
     use url::Url;
 
+    use super::DefInstanceMappingDto;
+
     use crate::semantic::source::{SysmlDocument, SysmlDocumentSourceKind};
     use crate::semantic::workspace_graph::build_semantic_graph_from_documents;
 
@@ -1906,7 +1923,15 @@ mod tests {
             root_candidates: Vec::new(),
             default_root: None,
             root_views: std::collections::HashMap::new(),
-            def_instance_mappings: Vec::new(),
+            // In production this is always populated by `build_instance_def_mappings` from real
+            // typing edges (see `ibd/connectors.rs`); this hand-built fixture supplies the
+            // equivalent mapping directly since it doesn't go through `build_ibd_for_uri`.
+            def_instance_mappings: vec![DefInstanceMappingDto {
+                def_root: "StedinRijnmondGridExpansion.Architecture.RijnmondGridArchitecture"
+                    .to_string(),
+                instance_root: "StedinRijnmondGridExpansion.rijnmondExpansionProject.architecture"
+                    .to_string(),
+            }],
         };
 
         normalize_ibd_to_instance_paths(&mut ibd);
