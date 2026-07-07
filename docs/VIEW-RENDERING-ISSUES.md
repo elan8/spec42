@@ -14,6 +14,27 @@ Convention: newest entries at the top of each section. Mark an item `Fixed` in p
 
 ## Open
 
+### O-4: Sprawling layout for a single package with many same-depth siblings
+- **Where:** `shared/diagram-renderer/src/render/layout.ts` (`layoutPrepared`, general-view branch).
+- **Symptom:** Even after [F-8](#f-8-sprawling-tangled-general-view-layout-partially-fixed-package-hierarchy)
+  gave ELK real per-package containment, a package with many nodes at the same tree depth (e.g.
+  `PhysicalArchitecture` in `sysml-robot-vacuum-cleaner`, 73 members) still lays out as one very wide
+  row *within its own container* (~9200px wide for that package alone in testing).
+- **Root cause, confirmed empirically:** ELK's `elk.layered.wrapping.strategy` (`MULTI_EDGE`/`SINGLE_EDGE`)
+  was assumed to solve this (see the original plan) but does **not** — it wraps a *long chain of layers*
+  into multiple rows/bands; it does not split *one wide layer with many parallel siblings* into a grid.
+  Verified with minimal standalone elkjs repros: a 20-node star graph (one root, 20 direct children) with
+  wrapping enabled still produces only 2 layout rows (root + one wide children row), not a compact grid.
+  The wrapping option was removed from `layout.ts` since it was dead config with zero effect for this
+  graph shape.
+- **Suggested fix (not yet attempted):** For a package whose direct-children count at one depth exceeds
+  some threshold, either (a) manually chunk those children into synthetic sub-groups (their own nested
+  ELK containers) to artificially create the layer-chain shape that wrapping *does* handle, or (b) switch
+  that specific sub-layout to a grid/box-packing algorithm (ELK's `box` algorithm, or a hand-rolled grid)
+  instead of `layered`.
+- **Discovered:** 2026-07-07, while verifying [F-8](#f-8-sprawling-tangled-general-view-layout-partially-fixed-package-hierarchy)
+  against the real repo.
+
 ### O-1: Scoped/incremental IBD build can pick a different (but valid) root than the full-workspace build
 - **Where:** `crates/sysml_model/src/semantic/visualization/scope.rs` (`ibd_uri_closure_for_exposed_ids`,
   `workspace_uris_for_ibd_scope` with `IbdBuildScope::ViewExposedPackages`).
@@ -68,6 +89,62 @@ Convention: newest entries at the top of each section. Mark an item `Fixed` in p
 ---
 
 ## Fixed
+
+### F-8: Sprawling, tangled general-view layout — partially fixed (package hierarchy)
+- **Fixed:** 2026-07-07 · `shared/diagram-renderer/src/render/layout.ts` (`layoutPrepared`).
+- **Was:** The ELK graph built for general-view diagrams was completely flat — `graph.children` was a
+  plain list of every node with no containment nesting for packages, unlike the Interconnection View
+  path (`interconnection-elk-input.ts`), which builds real parent/child ELK containers for IBD. Since
+  ELK had no idea packages existed, members of the same package could end up scattered anywhere in one
+  flat layered tree. Package "frames" (`general-package-frame`) were (and still are) a pure post-hoc
+  bounding box around wherever members landed, so scattered members produced huge/overlapping frames.
+  Spacing constants (`elk.spacing.nodeNode: 220`, `nodeNodeBetweenLayers: 280`) were also ~1.5-2x larger
+  than necessary.
+- **Fix:** `layoutPrepared` now reads `prepared.meta.packageContainerGroups` (already computed by
+  `prepare/graph.ts`'s `buildGeneralPackageContainerGroups`) and, when a diagram has 2+ packages, nests
+  each package's member nodes under their own ELK container node with `elk.hierarchyHandling:
+  "INCLUDE_CHILDREN"` at the root — mirroring the pattern already proven for IBD containers. Node/edge
+  position resolution was updated to recurse through the now-nested ELK result (absolute positions via
+  parent-offset accumulation; edges collected recursively since ELK can record them on a container's own
+  `.edges` array rather than the root's). Spacing was also tightened (`nodeNode: 220→140`,
+  `nodeNodeBetweenLayers: 280→180`, `edgeNode: 120→90`, `edgeEdge: 120→80`). Diagrams with 0-1 packages
+  are unaffected (same flat layout as before — verified against the small `webshop` example: 10 nodes,
+  no `packageContainerGroups`, bounding box unchanged).
+- **Verified against the real repo** (`productStructure`, 91 nodes / 3 packages): overall bounding box
+  went from ~15200×3300px (flat) to ~10100×2600px (hierarchical) — about a third narrower and a fifth
+  shorter — and each package's members are now confirmed to occupy a disjoint, non-overlapping x-range
+  (previously could be interleaved anywhere).
+- **Regression tests:** `shared/diagram-renderer/src/render/layout.general-view.test.ts` (package
+  clustering/disjointness for 2+ packages; flat-layout fallback for &lt;2 packages).
+- **Explicitly not fully fixed:** row-wrapping for a single package with very many same-depth siblings
+  turned out not to work the way the original plan assumed — see
+  [O-4](#o-4-sprawling-layout-for-a-single-package-with-many-same-depth-siblings) for what remains and
+  why the obvious next lever (ELK wrapping) is a dead end.
+
+### F-7: General-view node bodies render completely empty when the view has a kind-narrowing `filter`
+- **Fixed:** 2026-07-07 · `crates/sysml_model/src/semantic/view_projection.rs` (`ProjectedView`,
+  `project_view`), `crates/sysml_model/src/semantic/visualization/response.rs`.
+- **Was:** A general view declared with `filter @SysML::PartUsage;` (e.g. the real `productStructure`
+  view) legitimately excludes attribute/port nodes from becoming their own diagram boxes — but the
+  pipeline filtered the graph down to the `PartUsage`-only node set *before* handing it to
+  `canonical_general_view_graph` → `fold_general_view_leaf_details_into_owners`
+  (`crates/sysml_model/src/semantic/model_projection.rs:60-109`), whose compartment-folding logic needs
+  those same attribute/port nodes present as *input*. Its very first check,
+  `if detail_ids.is_empty() { return graph.clone(); }`, always tripped for such views (no attribute/port
+  nodes survived the earlier filter), so **every** node rendered as header-only (fixed 44px height, no
+  Attributes/Parts/Ports rows at all) — confirmed on the real repo: `generalViewDirectParts` wasn't even
+  present as a key on any of 94 nodes' attributes, let alone populated.
+- **Fix:** `ProjectedView` now also returns `pre_filter_node_ids` — the node set after scope expansion
+  but *before* the kind-narrowing filter runs. `response.rs` builds the compartment-fold input from that
+  broader set, then re-narrows the folded output back down to the original (filtered) `projected_ids` for
+  the actually-rendered graph — reusing the existing `project_graph_by_ids` helper for both steps. Views
+  with no kind filter are unaffected (`pre_filter_node_ids == projected_ids` already).
+- **Verified against the real repo:** `productStructure`'s `CleaningRobotSystemOfInterest` node now shows
+  `generalViewDirectParts: [{name: "physical", typeName: "AutonomousFloorCleaningRobot", ...}]`; 16 of 91
+  nodes now carry populated compartments (the rest are leaf usages with no local attributes/parts/ports
+  of their own, which is correct).
+- **Regression test:** `part_usage_filter_excludes_attributes_from_node_ids_but_not_pre_filter_node_ids`
+  (`view_projection.rs`).
 
 ### F-6: Node bodies don't show multiplicity, port direction, or redefines/subsets
 - **Fixed:** 2026-07-07 · `crates/sysml_model/src/semantic/model_projection.rs`,

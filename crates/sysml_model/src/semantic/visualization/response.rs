@@ -438,7 +438,7 @@ pub fn build_sysml_visualization_from_artifacts(
     let selected_evaluated = evaluated_views
         .iter()
         .find(|evaluated| evaluated.id == selected_view_id);
-    let (projected_ids, edge_predicate, projection_hints) =
+    let (projected_ids, pre_filter_node_ids, edge_predicate, projection_hints) =
         if let Some(evaluated) = selected_evaluated {
             let projected = project_view(evaluated, graph);
             let hints = if projected.hints.grid_layout.is_some()
@@ -459,17 +459,30 @@ pub fn build_sysml_visualization_from_artifacts(
             } else {
                 None
             };
-            (projected.node_ids, projected.edge_predicate, hints)
+            (
+                projected.node_ids,
+                projected.pre_filter_node_ids,
+                projected.edge_predicate,
+                hints,
+            )
         } else {
             (
+                HashSet::new(),
                 HashSet::new(),
                 crate::semantic::view_projection::EdgePredicate::All,
                 None,
             )
         };
     let selected_graph = project_graph_by_ids(graph, &projected_ids);
+    // Compartment folding needs attribute/port children that a kind-narrowing `filter` clause
+    // (e.g. `filter @SysML::PartUsage;`) may have already excluded from `projected_ids` — fold on
+    // the broader pre-filter set, then re-narrow to the actually-visible node set.
+    let fold_source_graph = project_graph_by_ids(graph, &pre_filter_node_ids);
     let general_view_graph = apply_edge_predicate(
-        &canonical_general_view_graph(&selected_graph, true),
+        &project_graph_by_ids(
+            &canonical_general_view_graph(&fold_source_graph, true),
+            &projected_ids,
+        ),
         edge_predicate,
     );
     let package_groups = Some(build_package_groups_from_graph(&general_view_graph));

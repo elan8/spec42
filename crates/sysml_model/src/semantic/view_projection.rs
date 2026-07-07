@@ -37,6 +37,14 @@ pub struct ProjectionHints {
 #[derive(Debug, Clone)]
 pub struct ProjectedView {
     pub node_ids: HashSet<String>,
+    /// Node ids after scope expansion (structural/descendants/traceability) but *before* the
+    /// view's `filter` clause narrows by element kind. A `filter @SysML::PartUsage;` clause (for
+    /// example) legitimately excludes attribute/port nodes from becoming their own diagram boxes,
+    /// but general-view compartment folding (`canonical_general_view_graph`) needs those same
+    /// attribute/port nodes present as input to compute a part's Attributes/Parts/Ports rows.
+    /// Callers that fold compartments should build their source graph from this broader set, then
+    /// re-narrow the folded result down to `node_ids` for the actual rendered/visible nodes.
+    pub pre_filter_node_ids: HashSet<String>,
     pub edge_predicate: EdgePredicate,
     pub hints: ProjectionHints,
 }
@@ -68,6 +76,8 @@ pub fn project_view(evaluated: &EvaluatedView, graph: &SysmlGraphDto) -> Project
         }
     };
 
+    let pre_filter_node_ids = expanded_ids.clone();
+
     let filtered_ids: HashSet<String> = if strategy.apply_filters_after_expansion {
         expanded_ids
             .iter()
@@ -88,6 +98,7 @@ pub fn project_view(evaluated: &EvaluatedView, graph: &SysmlGraphDto) -> Project
 
     ProjectedView {
         node_ids,
+        pre_filter_node_ids,
         edge_predicate: strategy.edge_predicate,
         hints: ProjectionHints {
             grid_layout: strategy.grid_layout.map(str::to_string),
@@ -576,6 +587,60 @@ mod tests {
         let projected = project_view(&evaluated, &graph);
         assert_eq!(projected.edge_predicate, EdgePredicate::All);
         assert!(projected.hints.grid_layout.is_none());
+    }
+
+    #[test]
+    fn part_usage_filter_excludes_attributes_from_node_ids_but_not_pre_filter_node_ids() {
+        // Regression test: `filter @SysML::PartUsage;` (e.g. the real "productStructure" view)
+        // legitimately excludes attribute nodes from `node_ids` (they shouldn't be their own
+        // diagram boxes), but general-view compartment folding needs them present as input to
+        // populate the owning part's Attributes compartment. `pre_filter_node_ids` must still
+        // contain the attribute node even though `node_ids` does not.
+        let graph = SysmlGraphDto {
+            nodes: vec![
+                GraphNodeDto {
+                    id: "Pkg::robot".to_string(),
+                    element_type: "part".to_string(),
+                    name: "robot".to_string(),
+                    uri: None,
+                    parent_id: None,
+                    range: zero_range(),
+                    attributes: HashMap::new(),
+                },
+                GraphNodeDto {
+                    id: "Pkg::robot::mass".to_string(),
+                    element_type: "attribute".to_string(),
+                    name: "mass".to_string(),
+                    uri: None,
+                    parent_id: Some("Pkg::robot".to_string()),
+                    range: zero_range(),
+                    attributes: HashMap::new(),
+                },
+            ],
+            edges: vec![],
+        };
+        let evaluated = EvaluatedView {
+            id: "Pkg::structure".to_string(),
+            name: "structure".to_string(),
+            effective_view_type: Some("GeneralView".to_string()),
+            exposed_ids: HashSet::from(["Pkg::robot".to_string()]),
+            conforms_to: Vec::new(),
+            filters: vec![FilterExpr::Matches("@SysML::PartUsage".to_string())],
+            visible_ids: HashSet::new(),
+            issues: Vec::new(),
+        };
+
+        let projected = project_view(&evaluated, &graph);
+        assert!(projected.node_ids.contains("Pkg::robot"));
+        assert!(
+            !projected.node_ids.contains("Pkg::robot::mass"),
+            "attribute should not become its own diagram box under a PartUsage filter"
+        );
+        assert!(
+            projected.pre_filter_node_ids.contains("Pkg::robot::mass"),
+            "attribute must still be present in pre_filter_node_ids so compartment folding can see it"
+        );
+        assert!(projected.pre_filter_node_ids.contains("Pkg::robot"));
     }
 
     #[test]
