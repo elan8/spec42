@@ -12,6 +12,44 @@ Convention: newest entries at the top of each section. Mark an item `Fixed` in p
 
 ---
 
+## Refactor plan — remaining work (not yet scheduled)
+
+Phases 0–8 of the view-projection/rendering refactor plan are done (see F-11 through F-18 below).
+The following were explicitly deferred, not forgotten — keeping them here so they don't get lost.
+
+### Phase 9 (not started): TS — converge the 3 rendering strategies
+- **Scope:** eliminate the "shadow" behavior-family rendering stack
+  (`views/behavior-common.ts` + `action-flow.ts`/`state-transition.ts`/`sequence.ts`, ~1150 lines) —
+  its own ELK instance, its own node-sizing logic, its own draw-call convention, its own color/theme
+  resolution — running parallel to `render/layout.ts` + `render/drawing.ts` (~1200 lines) as a
+  second complete layout+draw pipeline.
+- **Size/risk:** large, multi-week — the single highest-value item in the whole audit, but must be
+  sub-phased (unify node sizing → unify draw-call convention → route through the shared theme
+  resolver → only then retire the second ELK instance), keeping both stacks live and switchable
+  until each kind is CLI-verified. **Needs its own dedicated plan when picked up** — don't try to
+  fold it into a quick session.
+
+### Phase 10 (not started): Rust — DTO shape convergence
+- **Scope:** replace `SysmlVisualizationResultDto`'s 18 `Option<...>` fields (`dto.rs:228-293`)
+  with a per-kind sub-DTO or enum variant, and wire TS's hand-declared `prepare/types.ts` interfaces
+  to the `ts-rs`-generated bindings instead of maintaining a parallel, drift-prone copy.
+- **Size/risk:** large, multi-week, breaking change to the golden-file `ts-rs` bindings and every
+  DTO consumer (webview, CLI `--format json`, any external tooling). **Do not schedule concrete
+  work without a separate design pass on the enum-variant shape first.**
+
+### Follow-up on Phase 7 (done, but with a known verification gap)
+- Phase 7 gated `general_view_graph` computation per view kind ([F-17](#f-17-phase-7-of-the-view-pipeline-refactor-plan--skip-general_view_graph-computation-for-kinds-that-dont-use-it-partial-ibd-skipping-deferred)).
+  It was verified via CLI export diffing and by tracing every TS consumer directly, but the plan
+  also called for a manual VS Code webview spot-check, which wasn't possible in this (headless)
+  session. **Action:** before shipping, open general-view, browser-view, and interconnection-view
+  on a real workspace in the actual VS Code extension and confirm they render correctly.
+- [O-7](#o-7-ibdfiltered_ibd-computed-unconditionally-for-every-view-kind-despite-zero-direct-ts-consumers-found)
+  is the natural next step after Phase 7 — investigate whether `ibd` computation can also be
+  skipped for the 6 kinds that don't use it, once the unexplained `general-view` IBD-scoping
+  special case is understood.
+
+---
+
 ## Open
 
 ### O-7: `ibd`/`filtered_ibd` computed unconditionally for every view kind despite zero direct TS consumers found
