@@ -52,40 +52,6 @@ The following were explicitly deferred, not forgotten — keeping them here so t
 
 ## Open
 
-### O-8: A part exposed via its definition-side path renders with no ancestor containers ("empty parent" boxes) in Interconnection View
-- **Where:** `crates/sysml_model/src/semantic/ibd/extract_impl.rs` (`build_container_groups`),
-  and/or wherever definition→instance path normalization runs for exposed ids (the
-  `def_instance_mappings`/typing-edge machinery from
-  [F-4](#f-4-driveModule-interconnection-view-resolved-zero-connectors)/[A4](#a4-new-fix-def-instance-root-mapping-heuristic) —
-  not yet root-caused to a single line, see below).
-- **Symptom:** confirmed on `sysml-robot-vacuum-cleaner`'s `firmwareDeployment` view
-  (`expose PhysicalArchitecture::AutonomousFloorCleaningRobot.mainElectronics.mainControlPcb.mcu;`,
-  one of 3 `expose` statements on that view). `mcu`'s own `IbdPartDto.qualified_name` resolves to
-  `PhysicalArchitecture.MainElectronicsAssembly.mainControlPcb.mcu` — the **definition-side** path
-  (`MainElectronicsAssembly` is `mainElectronics`'s *type*, per a `part mainElectronics :
-  MainElectronicsAssembly;` usage declaration) — while the view's `expose` statement and the
-  workspace's only `container_groups` entry (`AutonomousFloorCleaningRobot`, confirmed via a full
-  CLI JSON export) both use the **instance-side** path
-  (`PhysicalArchitecture.AutonomousFloorCleaningRobot.mainElectronics.mainControlPcb.mcu`). Since
-  these are different strings, `mcu` never matches any container group's `member_part_ids`, so it
-  renders with a `containerId` pointing at `PhysicalArchitecture.MainElectronicsAssembly.mainControlPcb`
-  — a container that was never created as a node — while the workspace's real top-level
-  `PhysicalArchitecture` package container renders with zero children (the "empty parent" visual
-  the ancestor-chain bug produces).
-- **Relationship to prior fixes:** this is the same *class* of def/instance path-mismatch bug as
-  F-4/A4, but a variant not covered by that fix: F-4 handled two *differently-named top-level
-  packages* (`PhysicalArchitecture` defs vs `Architecture` instances); here both paths share the
-  same top package (`PhysicalArchitecture`) and only diverge partway down
-  (`AutonomousFloorCleaningRobot.mainElectronics` vs `MainElectronicsAssembly`), for a member
-  reached via a *third, independently-exposed* root on a multi-`expose` view — a shape not seen
-  in this session's earlier fixes or their regression tests.
-- **Not fixed:** root-caused to the path-mismatch above via real CLI JSON inspection, but the exact
-  point where `mcu`'s occurrence should have been normalized back to the instance-side path (before
-  `build_container_groups` runs) needs focused investigation — didn't want to guess a fix for a
-  path-resolution bug in an area ([O-1](#o-1-scopedincremental-ibd-build-can-pick-a-different-but-valid-root-than-the-full-workspace-build)-adjacent)
-  that already proved subtler than expected once before this session.
-- **Discovered:** 2026-07-07, investigating a user report against `firmwareDeployment`.
-
 ### O-7: `ibd`/`filtered_ibd` computed unconditionally for every view kind despite zero direct TS consumers found
 - **Where:** `crates/sysml_model/src/semantic/visualization/response.rs`
   (`build_sysml_visualization_from_artifacts`, `ibd_source`/`filtered_ibd` construction).
@@ -239,6 +205,69 @@ The following were explicitly deferred, not forgotten — keeping them here so t
 ---
 
 ## Fixed
+
+### F-20: Sibling subtypes of a shared ancestor cross-contaminate def→instance path mappings — orphan nodes + empty parent containers in Interconnection View
+- **Fixed:** 2026-07-07 · `crates/sysml_model/src/semantic/ibd/connectors.rs`
+  (`instance_def_mapping_for_part`).
+- **Root cause, fully confirmed via live tracing (not just hypothesized):** `instance_def_mapping_for_part`
+  builds a `(def_root, instance_root)` mapping from an `IbdPartDto` without checking that the part
+  actually represents a *usage* — a `part def` node (a definition, not a usage) can end up as an
+  `IbdPartDto` entry when extraction walks a member chain through a usage's inherited type body
+  (e.g. resolving `mainElectronics.mainControlPcb` reaches into `MainElectronicsAssembly`'s own
+  definition). When that happens, the function produces a nonsense mapping whose "instance" side is
+  really a *type's own qualified name* — confirmed live on `sysml-robot-vacuum-cleaner`:
+  `(def="PhysicalArchitecture.PhysicalAssembly", instance="PhysicalArchitecture.PowerModule")` and
+  `(def="PhysicalArchitecture.PhysicalAssembly", instance="PhysicalArchitecture.MainElectronicsAssembly")`
+  — both bogus, since `PowerModule`/`MainElectronicsAssembly` are unrelated sibling subtypes of
+  `PhysicalAssembly`, not real instance paths. `extend_instance_def_mappings_with_specializations`
+  then does exactly what it's supposed to do with a *good* seed — propagate it across every subtype
+  of the shared ancestor — except here the seed itself was garbage, so it produced
+  `(def="PhysicalArchitecture.MainElectronicsAssembly", instance="PhysicalArchitecture.PowerModule")`,
+  a mapping that remaps any real member of `MainElectronicsAssembly` (like `mainControlPcb`,
+  `safetyGpioHarness`) onto the wrong sibling's path. This is exactly what O-8 observed: 2 nodes
+  with `qualifiedName` incorrectly rooted at `PhysicalArchitecture.PowerModule.*`, `containerId`
+  pointing at a container that was never created (`occ:PhysicalArchitecture.PowerModule`), and —
+  confirmed as the same root cause producing a second visible symptom — those same 2 nodes falling
+  through `buildInterconnectionElkBuild`'s `if (parentId && nodesById.has(parentId))` check
+  (`shared/diagram-renderer/src/render/interconnection-elk-input.ts:43-53`) and rendering as
+  ownerless orphan boxes with no containment nesting at all.
+- **Fix:** `instance_def_mapping_for_part` now returns `None` immediately if the resolved graph
+  node is itself a `part def` — mirroring a guard that `collect_instance_def_mappings`'s *other*
+  mapping-collection loop already had for its own candidates (this function was the one path
+  missing it). One-line guard, no change to the (correct, once given a real seed) specialization
+  propagation logic.
+- **Regression test:** `instance_def_mapping_for_part_skips_definition_kind_nodes`
+  (`ibd/connectors.rs`) — constructs a minimal `SharedBase`/`SiblingA`/`SiblingB` graph, feeds in a
+  bogus `IbdPartDto` representing `SiblingB` itself (mirroring exactly how extraction can produce
+  one), and asserts no mapping is returned. Verified red→green: reproduces the exact bogus
+  `Some(("Demo.SharedBase", "Demo.SiblingB"))` output when the guard is removed, passes with it in
+  place.
+- **Verified against the real repo:** re-exported `sysml-robot-vacuum-cleaner`'s `interconnections`
+  view before/after — dangling `containerId` count went from 2 to 0, `mainControlPcb` now correctly
+  resolves to `PhysicalArchitecture.AutonomousFloorCleaningRobot.mainElectronics.mainControlPcb`
+  (nested under `mainElectronics`, itself nested correctly all the way to the root, no dangling
+  references anywhere in the response), and its own 11 real children (`wirelessModule`, `flashNode`,
+  `leftMotorDriver`, `mcu`, etc.) are now correctly attached under it instead of scattered as
+  orphans. Total node count dropped from 71 to 58 (removing the bogus `PowerModule`/
+  `MainElectronicsAssembly`-as-self-parts entries and their now-correctly-deduplicated descendants).
+  Full `cargo test` (`sysml_model`, `lsp_server`, `workspace`, `server`) green. Re-exported all 8
+  baseline view kinds from this session's earlier refactor-plan verification set: 6 of 8
+  byte-identical (general/sequence/state-transition/browser/grid/geometry — none of these fixtures
+  exercise the sibling-subtype shape), interconnection-view/action-flow-view showed only the
+  pre-existing [O-6](#o-6-interconnection-view-and-action-flow-view-layout-is-non-deterministic-run-to-run)
+  coordinate non-determinism, confirming the fix is correctly scoped and doesn't touch unrelated
+  cases.
+- **Not addressed by this fix, confirmed still separate:** re-ran the ignored real-repo
+  [O-1](#o-1-scopedincremental-ibd-build-can-pick-a-different-but-valid-root-than-the-full-workspace-build)
+  parity test after this fix landed — still fails (with different numbers, since the view under test
+  was renamed by ongoing external edits to the same repo) — confirming O-1's scoped-vs-full parity
+  gap is a genuinely separate mechanism (SysML variation/variant-selection, per its own tracker
+  entry), not fixed as a side effect here.
+- **History note:** this item was originally opened as O-8 against `sysml-robot-vacuum-cleaner`'s
+  `firmwareDeployment` view; that view's type changed from `InterconnectionView` to `GeneralView` in
+  the live external repo mid-investigation (it's being actively edited outside this session),
+  invalidating that specific repro. Re-confirmed and fixed against `interconnections`, a different,
+  stable view in the same repo exhibiting the identical bug.
 
 ### F-19: Click-to-source silently broken for every real interconnection-view export — `prepare_interconnection_prepared_view` hardcoded `uri`/`range` to `None`
 - **Fixed:** 2026-07-07 · `crates/sysml_model/src/semantic/prepared_view/preparers/interconnection.rs`.

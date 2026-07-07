@@ -137,6 +137,17 @@ fn instance_def_mapping_for_part(
     part: &IbdPartDto,
 ) -> Option<(String, String)> {
     let node = graph_node_for_ibd_part(graph, uri, part)?;
+    // `node` must itself be a usage, not a definition — otherwise this produces a bogus mapping
+    // whose "instance" side is really a type's own qualified name (e.g. `(PhysicalAssembly,
+    // PowerModule)` when `PowerModule` itself was extracted as an `IbdPartDto` while walking a
+    // member chain through an inherited type). `extend_instance_def_mappings_with_specializations`
+    // then propagates a bogus seed like that across every sibling subtype of the shared
+    // definition, cross-contaminating unrelated components' instance paths (see O-8 in
+    // docs/VIEW-RENDERING-ISSUES.md). The sibling loop in `collect_instance_def_mappings` already
+    // guards against this same case for its own candidates; this is the same guard for this path.
+    if node.element_kind.as_str().to_lowercase().contains("part def") {
+        return None;
+    }
     let def_node = graph
         .outgoing_typing_or_specializes_targets(node)
         .into_iter()
@@ -435,5 +446,73 @@ pub fn finalize_merged_ibd_connectors(
     for view in ibd.root_views.values_mut() {
         view.connectors = dedupe_connectors(std::mem::take(&mut view.connectors));
         enrich_connector_endpoint_refs(&mut view.connectors, &view.parts, &view.ports);
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use std::collections::HashMap;
+
+    use crate::semantic::source::{SysmlDocument, SysmlDocumentSourceKind};
+    use crate::semantic::workspace_graph::build_semantic_graph_from_documents;
+
+    use super::{instance_def_mapping_for_part, IbdPartDto};
+
+    fn doc(path: &str, content: &str) -> SysmlDocument {
+        SysmlDocument::from_memory_path(
+            "workspace",
+            path,
+            content.to_string(),
+            SysmlDocumentSourceKind::Workspace,
+            None,
+            None,
+        )
+        .expect("doc")
+    }
+
+    /// Regression test for O-8 (docs/VIEW-RENDERING-ISSUES.md): if a `part def` node ever ends up
+    /// represented as an `IbdPartDto` entry (which extraction can do when walking a member chain
+    /// through a usage's inherited type — e.g. resolving `mainElectronics.mainControlPcb` reaches
+    /// into `MainElectronicsAssembly`'s own definition body), `instance_def_mapping_for_part` must
+    /// not turn it into a `(def, instance)` mapping. Before the fix, this produced a bogus mapping
+    /// like `(SharedBase, SiblingB)` — "SiblingB" being a *type's own qualified name*, not a real
+    /// instance path — which `extend_instance_def_mappings_with_specializations` then propagated
+    /// across every sibling subtype of `SharedBase`, cross-contaminating unrelated components'
+    /// instance paths (confirmed on `sysml-robot-vacuum-cleaner`: `PowerModule` and
+    /// `MainElectronicsAssembly`, unrelated siblings both specializing `PhysicalAssembly`, ended up
+    /// mapped to each other, misrouting `mainControlPcb`/`safetyGpioHarness` under the wrong parent
+    /// and rendering them as parentless orphans with an empty ancestor container beside them).
+    #[test]
+    fn instance_def_mapping_for_part_skips_definition_kind_nodes() {
+        let document = doc(
+            "model.sysml",
+            r#"package Demo {
+    part def SharedBase;
+    part def SiblingA :> SharedBase;
+    part def SiblingB :> SharedBase;
+}"#,
+        );
+        let uri = document.uri.clone();
+        let (graph, _parsed) = build_semantic_graph_from_documents(&[document]).expect("graph");
+
+        // Simulate the bug precondition: `SiblingB` (a `part def`, not a usage) incorrectly
+        // present as an `IbdPartDto` entry.
+        let bogus_part = IbdPartDto {
+            id: "Demo::SiblingB".to_string(),
+            node_id: "Demo.SiblingB".to_string(),
+            name: "SiblingB".to_string(),
+            qualified_name: "Demo.SiblingB".to_string(),
+            uri: None,
+            container_id: None,
+            element_type: "part def".to_string(),
+            attributes: HashMap::new(),
+            range: None,
+        };
+
+        let mapping = instance_def_mapping_for_part(&graph, &uri, &bogus_part);
+        assert!(
+            mapping.is_none(),
+            "expected no def-instance mapping for a definition-kind part, got {mapping:?}"
+        );
     }
 }
