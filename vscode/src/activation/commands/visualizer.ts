@@ -37,14 +37,23 @@ export function registerVisualizerCommands(
 ): void {
   const { lspModelProvider } = handles;
 
+  const revealVisualizer = () => {
+    if (!getLanguageClient() || !isLanguageClientReady()) {
+      vscode.window.showErrorMessage("SysML language server is not running.");
+      return;
+    }
+    VisualizationPanel.reveal();
+  };
+
   context.subscriptions.push(
-    vscode.commands.registerCommand("sysml.showVisualizer", () => {
-      if (!getLanguageClient() || !isLanguageClientReady()) {
-        vscode.window.showErrorMessage("SysML language server is not running.");
-        return;
-      }
-      VisualizationPanel.reveal();
-    })
+    vscode.commands.registerCommand("sysml.showVisualizer", revealVisualizer)
+  );
+
+  // Same action as `sysml.showVisualizer` — registered separately so its
+  // `editor/title` menu entry can show a distinct "already open" icon
+  // (see package.json's `sysml.visualizerOpen` when-clause pair).
+  context.subscriptions.push(
+    vscode.commands.registerCommand("sysml.showVisualizerActive", revealVisualizer)
   );
 
   context.subscriptions.push(

@@ -149,7 +149,10 @@ export class VisualizationPanel implements vscode.WebviewViewProvider {
             createVariantConfig(this._runtimeState),
         );
 
-        setVisualizerOpenContext(true);
+        setVisualizerOpenContext(webviewView.visible);
+        webviewView.onDidChangeVisibility(() => {
+            setVisualizerOpenContext(webviewView.visible);
+        });
         webviewView.onDidDispose(() => {
             setVisualizerOpenContext(false);
             this._controller = undefined;

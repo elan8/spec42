@@ -266,6 +266,15 @@
         "category": "SysML"
       },
       {
+        "command": "sysml.showVisualizerActive",
+        "title": "SysML Visualizer (Open)",
+        "icon": {
+          "light": "media/icons/sysml-visualizer-logo-active.light.svg",
+          "dark": "media/icons/sysml-visualizer-logo-active.dark.svg"
+        },
+        "category": "SysML"
+      },
+      {
         "command": "sysml.showTypeHierarchy",
         "title": "Show Type Hierarchy",
         "icon": "$(type-hierarchy)",
@@ -419,6 +428,18 @@
           "group": "navigation@3"
         }
       ],
+      "editor/title": [
+        {
+          "command": "sysml.showVisualizer",
+          "when": "(resourceLangId == sysml || resourceLangId == kerml) && !sysml.visualizerOpen",
+          "group": "navigation"
+        },
+        {
+          "command": "sysml.showVisualizerActive",
+          "when": "(resourceLangId == sysml || resourceLangId == kerml) && sysml.visualizerOpen",
+          "group": "navigation"
+        }
+      ],
       "commandPalette": [
         {
           "command": "sysml.formatDocument",
@@ -439,6 +460,10 @@
         },
         {
           "command": "sysml.showVisualizer"
+        },
+        {
+          "command": "sysml.showVisualizerActive",
+          "when": "false"
         },
         {
           "command": "sysml.showTypeHierarchy",
