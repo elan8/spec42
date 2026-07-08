@@ -183,10 +183,38 @@ fn projection_diagnostic_to_scene(
     }
 }
 
+/// The nearest real `package` that (transitively) owns `qualified_name`, i.e. the
+/// longest `qualified_package` that is a dotted-prefix ancestor of it. Used to
+/// reconnect a definition/usage container (e.g. `AutonomousFloorCleaningRobot`,
+/// declared as a `part def` body member of `package PhysicalArchitecture`) to its
+/// owning package container, since `build_container_groups` only ever produces
+/// containers for part-like ancestors and always nulls out a `parent_id` that
+/// would otherwise point at an excluded package prefix.
+fn owning_package_qualified_name<'a>(
+    qualified_name: &str,
+    package_groups: &'a [crate::semantic::ibd::IbdPackageContainerGroupDto],
+) -> Option<&'a str> {
+    package_groups
+        .iter()
+        .map(|group| group.qualified_package.as_str())
+        .filter(|qualified_package| {
+            qualified_name.starts_with(&format!("{}.", qualified_name_to_dot(qualified_package)))
+        })
+        .max_by_key(|qualified_package| qualified_package.len())
+}
+
 fn map_containers(ibd: &IbdDataDto) -> Vec<InterconnectionContainerDto> {
     let mut containers = Vec::new();
     for group in &ibd.container_groups {
-        containers.push(map_container_group(group));
+        let mut mapped = map_container_group(group);
+        if mapped.parent_id.is_none() {
+            if let Some(owning_package) =
+                owning_package_qualified_name(&group.qualified_name, &ibd.package_container_groups)
+            {
+                mapped.parent_id = Some(occurrence_id_for_qualified_name(owning_package));
+            }
+        }
+        containers.push(mapped);
     }
     for group in &ibd.package_container_groups {
         containers.push(InterconnectionContainerDto {
@@ -495,5 +523,75 @@ mod tests {
             .expect("expected leftMotorPhaseOut port");
         assert_eq!(port.uri.as_deref(), Some("file:///model.sysml"));
         assert_eq!(port.range, Some(range));
+    }
+
+    /// Regression test for a real bug found against the sysml-robot-vacuum-cleaner
+    /// `interconnections` view: a `part def` declared directly inside a `package`
+    /// (e.g. `package PhysicalArchitecture { part def AutonomousFloorCleaningRobot
+    /// { part dockInterface : DockInterface; ... } }`) produces a definition/usage
+    /// container (`AutonomousFloorCleaningRobot`) whose immediate ancestor prefix
+    /// (`PhysicalArchitecture`) is a real package, not a part-like segment, so
+    /// `build_container_groups` excludes it and nulls the child's `parent_id` to
+    /// `None`. Separately, `build_ibd_package_container_groups` independently adds
+    /// `PhysicalArchitecture` as its own container. Before this fix, nothing ever
+    /// linked the two: `PhysicalArchitecture` rendered as an unrelated sibling
+    /// root with no real (immediate) children, i.e. an empty floating box,
+    /// despite `AutonomousFloorCleaningRobot` genuinely being its content.
+    #[test]
+    fn root_definition_container_reparents_under_owning_package_container() {
+        let part = test_part(
+            "dockInterface",
+            "PhysicalArchitecture.AutonomousFloorCleaningRobot.dockInterface",
+            Some("PhysicalArchitecture.AutonomousFloorCleaningRobot"),
+        );
+        let ibd = IbdDataDto {
+            parts: vec![part],
+            ports: Vec::new(),
+            connectors: Vec::new(),
+            container_groups: vec![crate::semantic::ibd::IbdContainerGroupDto {
+                id: "container:PhysicalArchitecture.AutonomousFloorCleaningRobot".to_string(),
+                label: "AutonomousFloorCleaningRobot".to_string(),
+                depth: 2,
+                qualified_name: "PhysicalArchitecture.AutonomousFloorCleaningRobot".to_string(),
+                parent_id: None,
+                member_part_ids: vec![
+                    "PhysicalArchitecture.AutonomousFloorCleaningRobot.dockInterface".to_string(),
+                ],
+            }],
+            package_container_groups: vec![crate::semantic::ibd::IbdPackageContainerGroupDto {
+                id: "package:PhysicalArchitecture".to_string(),
+                label: "PhysicalArchitecture".to_string(),
+                qualified_package: "PhysicalArchitecture".to_string(),
+                parent_id: None,
+                member_part_ids: vec![
+                    "PhysicalArchitecture.AutonomousFloorCleaningRobot.dockInterface".to_string(),
+                ],
+            }],
+            root_candidates: vec!["PhysicalArchitecture.AutonomousFloorCleaningRobot".to_string()],
+            default_root: None,
+            root_views: HashMap::new(),
+            def_instance_mappings: Vec::new(),
+        };
+
+        let scene = build_interconnection_scene(
+            &ibd,
+            "view-1",
+            "AutonomousFloorCleaningRobot",
+            &["PhysicalArchitecture.AutonomousFloorCleaningRobot".to_string()],
+            None,
+        );
+
+        let afr_container = scene
+            .containers
+            .iter()
+            .find(|c| c.label == "AutonomousFloorCleaningRobot")
+            .expect("expected AutonomousFloorCleaningRobot container");
+        let pa_container = scene
+            .containers
+            .iter()
+            .find(|c| c.label == "PhysicalArchitecture")
+            .expect("expected PhysicalArchitecture container");
+
+        assert_eq!(afr_container.parent_id.as_deref(), Some(pa_container.id.as_str()));
     }
 }

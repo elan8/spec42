@@ -206,6 +206,62 @@ The following were explicitly deferred, not forgotten — keeping them here so t
 
 ## Fixed
 
+### F-21: Empty `PhysicalArchitecture` package box in Interconnection View — real root cause, not just F-2's phantom-box case again
+- **Fixed:** 2026-07-08 · `crates/sysml_model/src/semantic/interconnection_scene.rs` (`map_containers`,
+  new `owning_package_qualified_name`).
+- **User report:** re-testing Spec42 against `sysml-robot-vacuum-cleaner`'s `interconnections` view still
+  showed an empty `PhysicalArchitecture` box floating disconnected below the real diagram, despite F-2
+  ("Phantom empty package box above focused part") having been marked fixed earlier.
+- **Why F-2 didn't cover this:** F-2 fixed `build_container_groups` (`extract_impl.rs`) so it no longer
+  creates a container for a package-like qualified-name prefix (packages aren't diagrammable parts). But
+  a *second*, independent mechanism — `build_ibd_package_container_groups` (`visualization/projection.rs`)
+  — was added later to build real package containers (e.g. for general-view package nesting), and nothing
+  ever connected the two. `PhysicalArchitecture::AutonomousFloorCleaningRobot` (a `part def` declared
+  directly inside `package PhysicalArchitecture`) produces a definition/usage container
+  (`AutonomousFloorCleaningRobot`) whose immediate ancestor prefix is the package, so F-2's fix correctly
+  excludes it from `container_groups` and nulls that child's `parent_id` to `None` — but
+  `build_ibd_package_container_groups` independently (and correctly) adds `PhysicalArchitecture` itself as
+  its own container, with `member_part_ids` populated via *transitive* prefix matching against every
+  descendant part. Verified empirically via `spec42 diagrams export .../sysml-robot-vacuum-cleaner/model
+  --selected-view interconnections --format json`: the `PhysicalArchitecture` package node's
+  `memberNodeIds` (56 entries) all resolved to real scene nodes — the container's data wasn't empty — but
+  **zero** nodes in the scene had `containerId === "occ:PhysicalArchitecture"` (the render/ELK nesting
+  pipeline nests strictly by each node's *immediate* parent, not by a container's transitively-computed
+  membership list), so it rendered with no visible children: a real, non-empty container with no actual
+  child relationship to anything.
+- **Fix:** `map_containers` now reconnects a root-level (`parent_id: None`) definition/usage container to
+  its real owning package, if one exists, by finding the longest `qualified_package` from
+  `package_container_groups` that is a dotted-prefix ancestor of the container's `qualified_name` — e.g.
+  `AutonomousFloorCleaningRobot`'s `parent_id` now resolves to `PhysicalArchitecture`'s container id
+  instead of staying `None`. This is a root-cause fix at the one place both container-generation
+  mechanisms are assembled together, not a downstream "hide it if empty" filter (a filter was tried first
+  and reverted — see below).
+- **Downstream filter approach tried and rejected:** an initial pass added an emptiness check to the two
+  render-layer consumers (`prepared_view/preparers/interconnection.rs`,
+  `shared/diagram-renderer/src/prepare/interconnection-scene.ts`) that would have hidden any container
+  whose `memberNodeIds` never resolved to a real node. Verified this would have been a **no-op** for this
+  exact bug — `PhysicalArchitecture`'s `memberNodeIds` do all resolve to real nodes (transitively), so the
+  filter's premise didn't match the actual defect. Reverted in favor of the root-cause fix above.
+- **Regression test:** `root_definition_container_reparents_under_owning_package_container`
+  (`interconnection_scene.rs`) — constructs a minimal `IbdDataDto` with exactly this def-inside-package
+  shape and asserts the definition container's `parent_id` resolves to the package container's `id`.
+- **Verified against the real repo:** re-exported `sysml-robot-vacuum-cleaner`'s `interconnections` view
+  before/after. Before: `PhysicalArchitecture` package node had `containerId: null` (root-level, sibling
+  of `AutonomousFloorCleaningRobot`) and 0 nodes pointed to it as immediate parent. After:
+  `AutonomousFloorCleaningRobot`'s `containerId` is `occ:PhysicalArchitecture`, and exactly 1 node (itself)
+  is an immediate child of `PhysicalArchitecture` — enough for the ELK nesting pipeline to draw it as a
+  real, populated outer wrapper instead of an empty floating box. Full `cargo test -p sysml_model -p
+  lsp_server -p server` green (zero failures).
+- **Not touched, flagged as a separate latent concern:** `map_container_group`'s and the package-loop's
+  own `parent_id` mapping in `interconnection_scene.rs` re-runs `occurrence_id_for_qualified_name` on a
+  `parent_id` string that's already prefixed (`"container:X.Y"` / `"package:X.Y"`) by the DTO builders in
+  `extract_impl.rs`/`projection.rs`, which looks like a second, independent id-format mismatch for
+  genuine container-to-container nesting (e.g. a package containing a sub-package, or two levels of
+  definition-derived containers). Not fixed here: this repo's real data only ever produced a single
+  `container_groups` entry with no parent, so there was no live case to reproduce or verify a fix against.
+  Worth a dedicated investigation if a workspace with real multi-level container nesting surfaces a
+  similar disconnected-box symptom.
+
 ### F-20: Sibling subtypes of a shared ancestor cross-contaminate def→instance path mappings — orphan nodes + empty parent containers in Interconnection View
 - **Fixed:** 2026-07-07 · `crates/sysml_model/src/semantic/ibd/connectors.rs`
   (`instance_def_mapping_for_part`).
