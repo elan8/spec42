@@ -126,7 +126,7 @@ Example:
     "renderer_compatibility_version": 1,
     "comparison_schema_version": 1
   },
-  "engine_version": "0.34.0",
+  "engine_version": "0.35.0",
   "library_catalog_hash": "catalog-hash",
   "built_at": "2026-06-22T12:34:56Z",
   "document_hashes": {

@@ -25,7 +25,7 @@ The 1.0 bar is:
 
 ---
 
-## Current state (as of 0.34.0)
+## Current state (as of 0.35.0)
 
 The table below shows what is **already complete** and will ship in 1.0 without additional work.
 
