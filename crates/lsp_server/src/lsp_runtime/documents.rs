@@ -90,7 +90,17 @@ fn schedule_semantic_relink_after_change(
         let library_snapshot_uris = base_graph.as_ref().map(|g| g.all_uris().len()).unwrap_or(0);
         let relink_start = Instant::now();
         let staged = tokio::task::spawn_blocking(move || {
-            crate::workspace::rebuild_semantic_graph_staged(&index, &library_paths, base_graph)
+            // Wave 1: structural relink only (`evaluate: false`) — publish diagnostics from
+            // this as fast as possible. Expression evaluation runs separately afterward, as
+            // Wave 2 (`schedule_expression_evaluation`), so a slow whole-graph evaluation pass
+            // never delays the near-instant structural feedback (unresolved references, etc.)
+            // a live edit should get. See Track C in `docs/engineering`.
+            crate::workspace::rebuild_semantic_graph_staged(
+                &index,
+                &library_paths,
+                base_graph,
+                false,
+            )
         })
         .await;
         let Ok((new_graph, new_symbols, relink_metrics)) = staged else {
@@ -125,6 +135,21 @@ fn schedule_semantic_relink_after_change(
 
         publish_workspace_diagnostics(&client, &handle, &config, &runtime_config, Some(&diag_uris))
             .await;
+
+        // Wave 2: evaluate expressions in the background against the structural graph just
+        // committed, and republish diagnostics again once that lands (e.g.
+        // `analysis_constraint_failed`, which depends on evaluation having run). Read the
+        // version *after* `report_relink_result` above so a superseding edit that arrives
+        // between now and Wave 2's debounce firing is correctly detected as stale.
+        let post_relink_version = handle.snapshot().session.version();
+        schedule_expression_evaluation(
+            &client,
+            &handle,
+            &config,
+            &runtime_config,
+            changed_uri.clone(),
+            post_relink_version,
+        );
 
         log_perf(
             &client,
@@ -170,6 +195,61 @@ fn schedule_semantic_relink_after_change(
             ],
         )
         .await;
+    });
+}
+
+/// "Wave 2" of the two-wave diagnostics split (see Track C design notes): runs expression
+/// evaluation against the structural graph Wave 1 (`schedule_semantic_relink_after_change`)
+/// just committed, debounced by `WORKSPACE_DIAGNOSTICS_DEBOUNCE_MS` (reusing the same constant
+/// this file already uses elsewhere for "let things settle before doing more work" — not a new
+/// number). `expected_version` is the session version right after Wave 1 committed; checked
+/// both before starting evaluation (skip the work entirely if already superseded) and again by
+/// `report_evaluation_result`'s own version gate at commit time (skip publishing a stale
+/// result if a newer edit landed while evaluation was running).
+fn schedule_expression_evaluation(
+    client: &Client,
+    handle: &WorkspaceHandle,
+    config: &Arc<Spec42Config>,
+    runtime_config: &Arc<std::sync::OnceLock<RuntimeConfig>>,
+    changed_uri: Url,
+    expected_version: u64,
+) {
+    let client = client.clone();
+    let handle = handle.clone();
+    let config = Arc::clone(config);
+    let runtime_config = Arc::clone(runtime_config);
+    tokio::spawn(async move {
+        tokio::time::sleep(Duration::from_millis(WORKSPACE_DIAGNOSTICS_DEBOUNCE_MS)).await;
+
+        if handle.snapshot().session.version() != expected_version {
+            return; // superseded before evaluation even started — don't waste the work
+        }
+        let graph = handle.snapshot().semantic_graph.clone(); // cheap Arc clone
+
+        let evaluated = tokio::task::spawn_blocking(move || {
+            let mut graph = graph;
+            crate::semantic::evaluate_workspace_graph(&mut graph);
+            graph
+        })
+        .await;
+        let Ok(evaluated_graph) = evaluated else {
+            return;
+        };
+
+        let committed = handle
+            .report_evaluation_result(expected_version, evaluated_graph)
+            .await
+            .unwrap_or(false);
+        if committed {
+            publish_workspace_diagnostics(
+                &client,
+                &handle,
+                &config,
+                &runtime_config,
+                Some(&[changed_uri]),
+            )
+            .await;
+        }
     });
 }
 
@@ -495,6 +575,7 @@ pub(crate) async fn initialized(
                         &index_snapshot,
                         &library_paths_snapshot,
                         base_graph_for_rebuild,
+                        true, // startup: settle fully before first use, not the live-edit fast path
                     )
                 })
                 .await

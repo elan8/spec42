@@ -53,9 +53,10 @@ pub use semantic::model::{
     ConnectStatementDetail, ElementKind, NodeId, RelationshipKind, SemanticEdge, SemanticNode,
 };
 pub use semantic::pipeline::{
-    build_and_link_graph, build_and_link_graph_parallel, finalize_and_evaluate,
-    finalize_workspace_graph, link_parsed_documents_parallel, link_parsed_documents_parallel_from,
-    patch_graph_for_document,
+    build_and_link_graph, build_and_link_graph_parallel, evaluate_workspace_graph,
+    finalize_and_evaluate, finalize_and_evaluate_frontier, finalize_workspace_graph,
+    link_parsed_documents_parallel, link_parsed_documents_parallel_from, patch_graph_for_document,
+    patch_graph_for_document_scoped,
 };
 pub use semantic::prepared_view::{
     prepare_interconnection_prepared_view, prepare_view_from_visualization, PreparedEdgeDto,

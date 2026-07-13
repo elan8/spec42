@@ -153,7 +153,7 @@ impl IncrementalWorkspace {
         &mut self,
         documents: Vec<(SysmlDocumentSourceKind, WorkspaceParsedDocument)>,
     ) -> WorkspaceUpdateMetrics {
-        self.load_parsed_from(SemanticGraph::new(), documents)
+        self.load_parsed_from(SemanticGraph::new(), documents, true)
     }
 
     /// [`Self::load_parsed`], but merging `documents` onto `base_graph` instead of starting
@@ -161,16 +161,24 @@ impl IncrementalWorkspace {
     /// cached library subgraph) and only wants to merge/link the rest. Delegates to
     /// [`link_parsed_documents_parallel_from`], which resolves cross-document edges against
     /// `base_graph`'s existing URIs too, not just `documents`'.
+    ///
+    /// `evaluate: false` skips expression evaluation (structural relink only) — the caller is
+    /// then responsible for running [`sysml_model::evaluate_workspace_graph`] itself as a
+    /// separate, later step (e.g. `lsp_server`'s live-edit relink publishes structural
+    /// diagnostics from the `evaluate: false` result immediately, then evaluates in a debounced
+    /// background task afterward — see `docs/engineering` Track C).
     pub fn load_parsed_from(
         &mut self,
         base_graph: SemanticGraph,
         documents: Vec<(SysmlDocumentSourceKind, WorkspaceParsedDocument)>,
+        evaluate: bool,
     ) -> WorkspaceUpdateMetrics {
         let total_start = Instant::now();
         let document_count = documents.len();
 
         let build_start = Instant::now();
-        let (graph, parsed_docs) = link_parsed_documents_parallel_from(base_graph, documents);
+        let (graph, parsed_docs) =
+            link_parsed_documents_parallel_from(base_graph, documents, evaluate);
         let graph_update_ms = elapsed_ms(build_start);
 
         self.graph = graph;
@@ -187,6 +195,12 @@ impl IncrementalWorkspace {
             node_count: self.graph.graph.node_count(),
             edge_count: self.graph.graph.edge_count(),
         }
+    }
+
+    /// Runs expression evaluation on the current graph in place — the deferred "Wave 2" step
+    /// for a graph built with `evaluate: false` (see [`Self::load_parsed_from`]).
+    pub fn evaluate(&mut self) {
+        sysml_model::evaluate_workspace_graph(&mut self.graph);
     }
 
     /// Full load that parses `documents` in parallel through this engine's own
@@ -609,7 +623,7 @@ package AnalysisCases {
             .map(parsed_entry)
             .collect();
         let mut merged = IncrementalWorkspace::new();
-        merged.load_parsed_from(base.graph(), remaining);
+        merged.load_parsed_from(base.graph(), remaining, true);
 
         assert_eq!(
             node_qualified_names(&merged.graph()),

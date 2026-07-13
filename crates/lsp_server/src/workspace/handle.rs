@@ -248,6 +248,30 @@ impl WorkspaceHandle {
         });
     }
 
+    /// Commits an evaluated graph only if `expected_version` still matches the live session —
+    /// i.e. no relink has landed since evaluation was kicked off. Unlike `report_relink_result`,
+    /// this does NOT go through `RelinkToken`/`commit_relink`: evaluation never changes the
+    /// session lifecycle (`Ready`/`Reindexing`), it's an orthogonal side-channel update to just
+    /// `semantic_graph`, so a direct version comparison (same pattern as
+    /// `commit_startup_relink_or_stale`/`update_render_cache`) is the right primitive here, not
+    /// the relink lifecycle machinery. Returns whether the commit applied, so the caller can
+    /// skip republishing diagnostics for a discarded (superseded) evaluation.
+    pub(crate) async fn report_evaluation_result(
+        &self,
+        expected_version: u64,
+        evaluated_graph: SemanticGraph,
+    ) -> Result<bool, MutatePanicked> {
+        self.actor
+            .mutate(move |s| {
+                if s.session.version() != expected_version {
+                    return false;
+                }
+                s.semantic_graph = evaluated_graph;
+                true
+            })
+            .await
+    }
+
     // --- did_change_watched_files --------------------------------------------------------
 
     pub(crate) async fn refresh_document(
@@ -340,5 +364,44 @@ impl WorkspaceHandle {
                 Some(apply(&mut s.render_cache))
             })
             .await
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::workspace::state::ServerState;
+
+    /// Track C: `report_evaluation_result` must commit when the session hasn't moved on since
+    /// evaluation was kicked off, and must silently discard (not commit, not panic) when a
+    /// newer relink/edit has bumped the version in the meantime — the same "supersede, don't
+    /// block" discipline `report_relink_result`/`update_render_cache` already follow.
+    #[tokio::test]
+    async fn report_evaluation_result_commits_only_when_version_still_current() {
+        let handle = WorkspaceHandle::spawn(ServerState::default());
+        let expected_version = handle.snapshot().session.version();
+
+        let evaluated_graph = SemanticGraph::new();
+        let committed = handle
+            .report_evaluation_result(expected_version, evaluated_graph)
+            .await
+            .expect("actor mutate should not panic");
+        assert!(committed, "matching version should commit");
+    }
+
+    #[tokio::test]
+    async fn report_evaluation_result_discards_stale_version() {
+        let handle = WorkspaceHandle::spawn(ServerState::default());
+        let stale_version = handle.snapshot().session.version();
+
+        // Bump the version, simulating a relink/edit that landed while evaluation was running.
+        handle.bump_version().await.expect("bump_version");
+
+        let evaluated_graph = SemanticGraph::new();
+        let committed = handle
+            .report_evaluation_result(stale_version, evaluated_graph)
+            .await
+            .expect("actor mutate should not panic");
+        assert!(!committed, "stale version must not commit");
     }
 }

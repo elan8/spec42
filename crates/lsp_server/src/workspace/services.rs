@@ -672,6 +672,7 @@ pub(crate) fn rebuild_semantic_graph_staged(
     index: &std::collections::HashMap<Url, IndexEntry>,
     library_paths: &[Url],
     base_graph: Option<semantic::SemanticGraph>,
+    evaluate: bool,
 ) -> (
     semantic::SemanticGraph,
     Vec<crate::language::SymbolEntry>,
@@ -705,7 +706,7 @@ pub(crate) fn rebuild_semantic_graph_staged(
     // are already present for cross-document resolution — `load_parsed_from` resolves
     // cross-document edges against the base graph's existing URIs too, not just `entries`'.
     let mut engine = IncrementalWorkspace::new();
-    engine.load_parsed_from(base_graph.unwrap_or_default(), entries);
+    engine.load_parsed_from(base_graph.unwrap_or_default(), entries, evaluate);
     let semantic_graph = engine.graph();
     let rebuild_ms = elapsed_ms(rebuild_start);
 

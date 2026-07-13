@@ -14,8 +14,9 @@ use crate::semantic::library_loader::declared_packages_from_parsed;
 use crate::semantic::model::SemanticEdge;
 use crate::semantic::relationships::{
     add_cross_document_edges_for_uri, add_semantic_edge_once, link_workspace_derivations,
-    link_workspace_relationships, resolve_cross_document_edges_for_uri,
-    resolve_workspace_pending_relationships,
+    link_workspace_relationships, rebuild_static_dependency_index, refresh_relationship_frontier,
+    resolve_cross_document_edges_for_uri, resolve_workspace_pending_relationships,
+    update_static_dependency_targets_for_uri,
 };
 use crate::semantic::source::{SysmlDocument, SysmlDocumentSourceKind};
 use crate::semantic::workspace_graph::WorkspaceParsedDocument;
@@ -112,7 +113,7 @@ pub fn build_and_link_graph_parallel(
         .par_iter()
         .filter_map(|document| parse_document(document).map(|entry| (document.source_kind, entry)))
         .collect();
-    link_parsed_documents_parallel(entries)
+    link_parsed_documents_parallel(entries, true)
 }
 
 /// Merges and links already-parsed documents in parallel — the merge/link half of
@@ -129,10 +130,18 @@ pub fn build_and_link_graph_parallel(
 ///
 /// Starts from an empty graph. Use [`link_parsed_documents_parallel_from`] to merge onto an
 /// existing graph instead (e.g. a cached library subgraph).
+///
+/// `evaluate: false` skips `evaluate_expressions` (structural relink only — typing/specializes/
+/// subject/derivation resolution still run); pass `true` for the same behavior as before this
+/// parameter existed. See [`evaluate_workspace_graph`] to run evaluation as a separate, later
+/// step on a graph built with `evaluate: false` — this is what lets a caller (e.g. `lsp_server`'s
+/// live-edit relink) publish structural diagnostics immediately and defer the more expensive
+/// evaluation pass without blocking on it.
 pub fn link_parsed_documents_parallel(
     documents: Vec<SourceTaggedDocument>,
+    evaluate: bool,
 ) -> (SemanticGraph, Vec<WorkspaceParsedDocument>) {
-    link_parsed_documents_parallel_from(SemanticGraph::new(), documents)
+    link_parsed_documents_parallel_from(SemanticGraph::new(), documents, evaluate)
 }
 
 /// [`link_parsed_documents_parallel`], but merging `documents` onto `base_graph` instead of
@@ -143,6 +152,7 @@ pub fn link_parsed_documents_parallel(
 pub fn link_parsed_documents_parallel_from(
     base_graph: SemanticGraph,
     documents: Vec<SourceTaggedDocument>,
+    evaluate: bool,
 ) -> (SemanticGraph, Vec<WorkspaceParsedDocument>) {
     let (workspace_entries, library_entries): (
         Vec<SourceTaggedDocument>,
@@ -207,10 +217,26 @@ pub fn link_parsed_documents_parallel_from(
     link_workspace_derivations(&mut graph);
     prepare_analysis_evaluation_context(&mut graph);
     resolve_workspace_pending_relationships(&mut graph);
-    evaluate_expressions(&mut graph);
+    if evaluate {
+        evaluate_expressions(&mut graph);
+    }
     graph.invalidate_query_indexes();
+    // See the matching comment in `finalize_and_evaluate` — this path resolves cross-document
+    // edges via `add_semantic_edge_once`, not `add_cross_document_edges_for_uri`, so the
+    // relationship-frontier index needs an explicit rebuild here too.
+    rebuild_static_dependency_index(&mut graph);
 
     (graph, parsed_docs)
+}
+
+/// Runs expression evaluation on `graph` in place and invalidates query indexes — the
+/// deferred "Wave 2" step for a graph previously built with `evaluate: false` (see
+/// [`link_parsed_documents_parallel_from`]). Exists so callers outside this crate don't need
+/// to reach into `semantic::evaluation` internals directly for what is otherwise exactly
+/// `finalize_and_evaluate`'s evaluation half.
+pub fn evaluate_workspace_graph(graph: &mut SemanticGraph) {
+    evaluate_expressions(graph);
+    graph.invalidate_query_indexes();
 }
 
 /// Link, prepare analysis context, and resolve pending relationships after graph mutation.
@@ -234,6 +260,12 @@ pub fn finalize_and_evaluate(graph: &mut SemanticGraph) {
     finalize_workspace_graph(graph);
     evaluate_expressions(graph);
     graph.invalidate_query_indexes();
+    // Whole-graph relink doesn't go through `add_cross_document_edges_for_uri`'s incremental
+    // index maintenance, so rebuild the relationship-frontier index from scratch here. Cheap
+    // (O(all nodes' attributes)) relative to the relink/evaluate work above. The scoped
+    // `finalize_and_evaluate_frontier` path deliberately does NOT do this — it relies on
+    // incremental maintenance to stay cheap.
+    rebuild_static_dependency_index(graph);
 }
 
 /// Patches `graph` in place for a single changed document: removes that document's
@@ -257,9 +289,54 @@ pub fn patch_graph_for_document(
     };
     let doc_graph = build_graph_from_doc(parsed, uri);
     graph.merge(doc_graph);
+    update_static_dependency_targets_for_uri(graph, uri);
     add_cross_document_edges_for_uri(graph, uri);
     if evaluate {
         finalize_and_evaluate(graph);
+    }
+}
+
+/// [`finalize_and_evaluate`], but scoped: relinks only `changed_uri` and the other URIs whose
+/// own content statically depends on it (via [`refresh_relationship_frontier`]) instead of the
+/// whole-graph [`link_workspace_relationships`]. Expression evaluation and pending-
+/// relationship resolution remain whole-graph — see the Track B Phase 1 plan
+/// (`docs/engineering/`) for the reasoning and the explicit non-goals this leaves for a
+/// follow-up. Relies on `graph.document_dependents` being incrementally maintained rather than
+/// rebuilt from scratch — do not call this on a graph that only ever went through the
+/// whole-graph paths without first confirming the index is populated (it always is after any
+/// full build or prior `patch_graph_for_document`/`patch_graph_for_document_scoped` call).
+pub fn finalize_and_evaluate_frontier(graph: &mut SemanticGraph, changed_uri: &Url) {
+    refresh_relationship_frontier(graph, changed_uri);
+    prepare_analysis_evaluation_context(graph);
+    resolve_workspace_pending_relationships(graph);
+    graph.invalidate_query_indexes();
+    evaluate_expressions(graph);
+    graph.invalidate_query_indexes();
+}
+
+/// [`patch_graph_for_document`], but using [`finalize_and_evaluate_frontier`] instead of
+/// [`finalize_and_evaluate`] when `evaluate` is `true` — scopes relationship relinking to the
+/// affected frontier instead of the whole graph. Opt-in sibling function rather than a change
+/// to `patch_graph_for_document`'s existing behavior/callers: wire real callers
+/// (`IncrementalWorkspace::apply_document`, `try_incremental_update`) to this only once the
+/// differential correctness tests and benchmark in the Track B Phase 1 plan confirm it's both
+/// correct and actually faster — do not assume either.
+pub fn patch_graph_for_document_scoped(
+    graph: &mut SemanticGraph,
+    uri: &Url,
+    parsed: Option<&sysml_v2_parser::RootNamespace>,
+    evaluate: bool,
+) {
+    graph.remove_nodes_for_uri(uri);
+    let Some(parsed) = parsed else {
+        return;
+    };
+    let doc_graph = build_graph_from_doc(parsed, uri);
+    graph.merge(doc_graph);
+    update_static_dependency_targets_for_uri(graph, uri);
+    add_cross_document_edges_for_uri(graph, uri);
+    if evaluate {
+        finalize_and_evaluate_frontier(graph, uri);
     }
 }
 
@@ -351,6 +428,55 @@ mod tests {
             .expect("mass attribute node");
         assert_eq!(
             mass.attributes.get("evaluatedValue"),
+            Some(&serde_json::json!(3))
+        );
+    }
+
+    /// Track C: `link_parsed_documents_parallel_from`'s `evaluate` parameter must skip
+    /// expression evaluation (but still do structural relink/dependency-index work) when
+    /// `false`, and populate `evaluatedValue` when `true` — the same contract
+    /// `patch_graph_for_document`'s `evaluate` flag already has, now on the parallel full-build
+    /// path `lsp_server`'s live-edit relink uses.
+    #[test]
+    fn link_parsed_documents_parallel_from_respects_evaluate_flag() {
+        let uri = Url::parse("file:///demo.sysml").expect("uri");
+        let content = "package Demo { part def Rocket { attribute mass = 1 + 2; } }";
+        let parsed = sysml_v2_parser::parse(content).expect("parse");
+        let entry = WorkspaceParsedDocument {
+            uri: uri.clone(),
+            content: content.to_string(),
+            parsed,
+            parse_time_ms: 1,
+            parse_cached: false,
+        };
+
+        let (graph_no_eval, _) = link_parsed_documents_parallel_from(
+            SemanticGraph::new(),
+            vec![(SysmlDocumentSourceKind::Workspace, entry.clone())],
+            false,
+        );
+        let mass_no_eval = graph_no_eval
+            .nodes_for_uri(&uri)
+            .into_iter()
+            .find(|node| node.name == "mass")
+            .expect("mass attribute node");
+        assert!(
+            !mass_no_eval.attributes.contains_key("evaluatedValue"),
+            "evaluate: false should not populate evaluatedValue"
+        );
+
+        let (graph_eval, _) = link_parsed_documents_parallel_from(
+            SemanticGraph::new(),
+            vec![(SysmlDocumentSourceKind::Workspace, entry)],
+            true,
+        );
+        let mass_eval = graph_eval
+            .nodes_for_uri(&uri)
+            .into_iter()
+            .find(|node| node.name == "mass")
+            .expect("mass attribute node");
+        assert_eq!(
+            mass_eval.attributes.get("evaluatedValue"),
             Some(&serde_json::json!(3))
         );
     }
@@ -564,6 +690,309 @@ package SystemRequirements {
     /// internally) for the same inputs. This is what lets `workspace::IncrementalWorkspace`
     /// build from already-parsed documents (e.g. served by a parse cache) without
     /// duplicating the merge/link sequence a second time.
+    // --- Track B Phase 1: relationship-linking frontier differential tests ---
+    //
+    // These compare `patch_graph_for_document_scoped` (frontier-scoped relink) against a full
+    // `build_and_link_graph` rebuild of the same document set after the same edit. See the
+    // Track B Phase 1 plan for the design this validates.
+
+    fn memory_doc(name: &str, content: &str) -> SysmlDocument {
+        SysmlDocument::from_memory_path(
+            "frontier",
+            name,
+            content.to_string(),
+            SysmlDocumentSourceKind::Workspace,
+            None,
+            None,
+        )
+        .expect("uri")
+    }
+
+    fn two_file_fixture(
+        a_name: &str,
+        a_content: &str,
+        b_name: &str,
+        b_content: &str,
+    ) -> (Url, SysmlDocument, Url, SysmlDocument) {
+        let a_doc = memory_doc(a_name, a_content);
+        let b_doc = memory_doc(b_name, b_content);
+        let a_uri = a_doc.uri.clone();
+        let b_uri = b_doc.uri.clone();
+        (a_uri, a_doc, b_uri, b_doc)
+    }
+
+    fn two_file_typing_fixture() -> (Url, SysmlDocument, Url, SysmlDocument) {
+        two_file_fixture(
+            "A.sysml",
+            "package A { part def Thing; }",
+            "B.sysml",
+            "package B { private import A::*; part x : Thing; }",
+        )
+    }
+
+    fn apply_scoped_patch(graph: &mut SemanticGraph, uri: &Url, content: &str) {
+        let parsed = sysml_v2_parser::parse(content).expect("parse");
+        patch_graph_for_document_scoped(graph, uri, Some(&parsed), true);
+    }
+
+    /// A rename in `A.sysml` that breaks `B.sysml`'s cross-file typing reference must drop the
+    /// edge identically under the scoped-patch path and a full rebuild — i.e. the frontier
+    /// mechanism doesn't leave a stale edge pointing at a node that no longer exists.
+    #[test]
+    fn frontier_patch_drops_edge_when_referenced_type_is_renamed_away() {
+        let (a_uri, a_doc, _b_uri, b_doc) = two_file_typing_fixture();
+        let renamed_a = "package A { part def Widget; }";
+
+        let mut graph = SemanticGraph::new();
+        let initial = sysml_v2_parser::parse(&a_doc.content).expect("parse a");
+        patch_graph_for_document_scoped(&mut graph, &a_uri, Some(&initial), false);
+        apply_scoped_patch(&mut graph, &b_doc.uri, &b_doc.content);
+        // Settle: b's initial patch already ran with evaluate:true via apply_scoped_patch, but
+        // a's first patch used evaluate:false above so cross-doc edges get a clean second pass.
+        finalize_and_evaluate_frontier(&mut graph, &a_uri);
+
+        apply_scoped_patch(&mut graph, &a_uri, renamed_a);
+
+        let baseline_docs = vec![
+            SysmlDocument::from_memory_path(
+                "frontier",
+                "A.sysml",
+                renamed_a.to_string(),
+                SysmlDocumentSourceKind::Workspace,
+                None,
+                None,
+            )
+            .expect("a uri"),
+            b_doc.clone(),
+        ];
+        let (baseline_graph, _) = build_and_link_graph(&baseline_docs).expect("baseline build");
+
+        assert_eq!(
+            node_qualified_names(&graph),
+            node_qualified_names(&baseline_graph)
+        );
+        assert_eq!(edge_triples(&graph), edge_triples(&baseline_graph));
+        let typing_edge = (
+            "B::x".to_string(),
+            "A::Thing".to_string(),
+            RelationshipKind::Typing.as_str().to_string(),
+        );
+        assert!(
+            !edge_triples(&graph).contains(&typing_edge),
+            "stale typing edge to the renamed-away type should be gone"
+        );
+    }
+
+    /// The scenario the frontier mechanism is riskiest for: `A.sysml` is edited twice — once
+    /// breaking `B.sysml`'s reference, then again restoring it. An earlier (replaced) design
+    /// built the frontier from a cache of *resolved edges* rather than static dependencies, and
+    /// under that design `B` silently dropped out of the reverse index on the first edit and
+    /// was never re-checked on the second, leaving its typing edge missing even though the type
+    /// was back. This test is the regression gate for that bug — see the Track B Phase 1 plan's
+    /// design-gap note.
+    #[test]
+    fn frontier_patch_restores_edge_after_referenced_type_reappears() {
+        let (a_uri, a_doc, _b_uri, b_doc) = two_file_typing_fixture();
+        let renamed_a = "package A { part def Widget; }";
+
+        let mut graph = SemanticGraph::new();
+        apply_scoped_patch(&mut graph, &a_uri, &a_doc.content);
+        apply_scoped_patch(&mut graph, &b_doc.uri, &b_doc.content);
+
+        // Break it.
+        apply_scoped_patch(&mut graph, &a_uri, renamed_a);
+        // Restore it.
+        apply_scoped_patch(&mut graph, &a_uri, &a_doc.content);
+
+        let baseline_docs = vec![a_doc.clone(), b_doc.clone()];
+        let (baseline_graph, _) = build_and_link_graph(&baseline_docs).expect("baseline build");
+
+        assert_eq!(
+            edge_triples(&graph),
+            edge_triples(&baseline_graph),
+            "B's typing edge to A::Thing should be restored once A is patched back, matching \
+             a full rebuild of the same document set"
+        );
+    }
+
+    /// Sibling of `frontier_patch_restores_edge_after_referenced_type_reappears` for
+    /// `Specializes` edges — confirms the static-dependency-based frontier doesn't have a
+    /// per-relationship-kind gap.
+    #[test]
+    fn frontier_patch_restores_specializes_edge_after_referenced_type_reappears() {
+        let (a_uri, a_doc, _b_uri, b_doc) = two_file_fixture(
+            "A.sysml",
+            "package A { part def Base; }",
+            "B.sysml",
+            "package B { private import A::*; part def Derived :> Base; }",
+        );
+        let renamed_a = "package A { part def Renamed; }";
+
+        let mut graph = SemanticGraph::new();
+        apply_scoped_patch(&mut graph, &a_uri, &a_doc.content);
+        apply_scoped_patch(&mut graph, &b_doc.uri, &b_doc.content);
+        apply_scoped_patch(&mut graph, &a_uri, renamed_a);
+        apply_scoped_patch(&mut graph, &a_uri, &a_doc.content);
+
+        let baseline_docs = vec![a_doc.clone(), b_doc.clone()];
+        let (baseline_graph, _) = build_and_link_graph(&baseline_docs).expect("baseline build");
+
+        assert_eq!(
+            edge_triples(&graph),
+            edge_triples(&baseline_graph),
+            "B's specializes edge to A::Base should be restored once A is patched back"
+        );
+        let specializes_edge = (
+            "B::Derived".to_string(),
+            "A::Base".to_string(),
+            RelationshipKind::Specializes.as_str().to_string(),
+        );
+        assert!(edge_triples(&graph).contains(&specializes_edge));
+    }
+
+    /// Sibling of `frontier_patch_restores_edge_after_referenced_type_reappears` for `Subject`
+    /// edges (analysis/requirement case subjects), reusing the cross-file subject relationship
+    /// pattern from `equivalence_fixture_documents`.
+    #[test]
+    fn frontier_patch_restores_subject_edge_after_referenced_type_reappears() {
+        let (a_uri, a_doc, _b_uri, b_doc) = two_file_fixture(
+            "Architecture.sysml",
+            "package Architecture { part def Robot; }",
+            "AnalysisCases.sysml",
+            "package AnalysisCases { private import Architecture::*; analysis def TotalPowerConsumptionAnalysis { subject robot : Robot; } }",
+        );
+        let renamed_a = "package Architecture { part def RenamedRobot; }";
+
+        let mut graph = SemanticGraph::new();
+        apply_scoped_patch(&mut graph, &a_uri, &a_doc.content);
+        apply_scoped_patch(&mut graph, &b_doc.uri, &b_doc.content);
+        apply_scoped_patch(&mut graph, &a_uri, renamed_a);
+        apply_scoped_patch(&mut graph, &a_uri, &a_doc.content);
+
+        let baseline_docs = vec![a_doc.clone(), b_doc.clone()];
+        let (baseline_graph, _) = build_and_link_graph(&baseline_docs).expect("baseline build");
+
+        assert_eq!(
+            edge_triples(&graph),
+            edge_triples(&baseline_graph),
+            "AnalysisCases's subject edge to Architecture::Robot should be restored once \
+             Architecture is patched back"
+        );
+        let subject_edge = (
+            "AnalysisCases::TotalPowerConsumptionAnalysis".to_string(),
+            "Architecture::Robot".to_string(),
+            RelationshipKind::Subject.as_str().to_string(),
+        );
+        assert!(edge_triples(&graph).contains(&subject_edge));
+    }
+
+    /// Three-file specializes chain (A <- B <- C): editing A should only need to refresh B
+    /// (which statically depends on A), not C (which only depends on B, not A directly) — but
+    /// the end result must still match a full rebuild either way.
+    #[test]
+    fn frontier_patch_handles_three_file_specializes_chain() {
+        let a_content = "package A { part def Base { attribute x : Integer; } }";
+        let b_content =
+            "package B { private import A::*; part def Mid :> Base { attribute y : Integer; } }";
+        let c_content = "package C { private import B::*; part def Leaf :> Mid; }";
+        let a_doc = memory_doc("A.sysml", a_content);
+        let b_doc = memory_doc("B.sysml", b_content);
+        let c_doc = memory_doc("C.sysml", c_content);
+        let a_uri = a_doc.uri.clone();
+
+        let mut graph = SemanticGraph::new();
+        apply_scoped_patch(&mut graph, &a_uri, &a_doc.content);
+        apply_scoped_patch(&mut graph, &b_doc.uri, &b_doc.content);
+        apply_scoped_patch(&mut graph, &c_doc.uri, &c_doc.content);
+
+        let edited_a = "package A { part def Base { attribute x : Integer; attribute z : Integer; } }";
+        apply_scoped_patch(&mut graph, &a_uri, edited_a);
+
+        let baseline_docs = vec![memory_doc("A.sysml", edited_a), b_doc.clone(), c_doc.clone()];
+        let (baseline_graph, _) = build_and_link_graph(&baseline_docs).expect("baseline build");
+
+        assert_eq!(node_qualified_names(&graph), node_qualified_names(&baseline_graph));
+        assert_eq!(edge_triples(&graph), edge_triples(&baseline_graph));
+        let leaf_to_mid = (
+            "C::Leaf".to_string(),
+            "B::Mid".to_string(),
+            RelationshipKind::Specializes.as_str().to_string(),
+        );
+        assert!(
+            edge_triples(&graph).contains(&leaf_to_mid),
+            "C's specializes edge to B::Mid should be unaffected by A's edit"
+        );
+    }
+
+    /// A previously-unrelated file that doesn't import or reference the changed URI at all
+    /// should stay untouched by a scoped patch — the frontier shouldn't wrongly expand to
+    /// include it, and the result should still match a full rebuild trivially.
+    #[test]
+    fn frontier_patch_leaves_unrelated_file_untouched() {
+        let (a_uri, a_doc, _b_uri, b_doc) = two_file_fixture(
+            "A.sysml",
+            "package A { part def Thing; }",
+            "B.sysml",
+            "package B { part def Other; }", // no import of / reference to A
+        );
+
+        let mut graph = SemanticGraph::new();
+        apply_scoped_patch(&mut graph, &a_uri, &a_doc.content);
+        apply_scoped_patch(&mut graph, &b_doc.uri, &b_doc.content);
+
+        let edited_a = "package A { part def Thing; part def Extra; }";
+        apply_scoped_patch(&mut graph, &a_uri, edited_a);
+
+        let baseline_docs = vec![memory_doc("A.sysml", edited_a), b_doc.clone()];
+        let (baseline_graph, _) = build_and_link_graph(&baseline_docs).expect("baseline build");
+
+        assert_eq!(node_qualified_names(&graph), node_qualified_names(&baseline_graph));
+        assert_eq!(edge_triples(&graph), edge_triples(&baseline_graph));
+    }
+
+    /// Confirms the deliberately-whole-graph derivation-connection fallback still produces
+    /// correct results when reached via `patch_graph_for_document_scoped`: a connection in a
+    /// third file referencing the changed URI's requirement must still rewire correctly.
+    #[test]
+    fn frontier_patch_rewires_derivation_connection_after_referenced_file_edit() {
+        let stakeholder_content =
+            "package StakeholderNeeds { requirement def CleanLargeAreas; requirement cleanLargeAreas : CleanLargeAreas; }";
+        let system_content = r#"package SystemRequirements {
+  private import StakeholderNeeds::*;
+  requirement def CleanAtLeastEightySquareMetersPerCharge;
+  requirement cleanAtLeastEighty : CleanAtLeastEightySquareMetersPerCharge;
+  #derivation connection {
+    end #original ::> cleanLargeAreas;
+    end #derive ::> cleanAtLeastEighty;
+  }
+}"#;
+        let stakeholder_doc = memory_doc("StakeholderNeeds.sysml", stakeholder_content);
+        let system_doc = memory_doc("SystemRequirements.sysml", system_content);
+        let stakeholder_uri = stakeholder_doc.uri.clone();
+
+        let mut graph = SemanticGraph::new();
+        apply_scoped_patch(&mut graph, &stakeholder_uri, &stakeholder_doc.content);
+        apply_scoped_patch(&mut graph, &system_doc.uri, &system_doc.content);
+
+        // Re-patch StakeholderNeeds with identical content (a no-op content-wise, but exercises
+        // the scoped path's remove+rebuild+derivation-rewire sequence for this URI).
+        apply_scoped_patch(&mut graph, &stakeholder_uri, &stakeholder_doc.content);
+
+        let baseline_docs = vec![stakeholder_doc.clone(), system_doc.clone()];
+        let (baseline_graph, _) = build_and_link_graph(&baseline_docs).expect("baseline build");
+
+        let derivation_edge = (
+            "StakeholderNeeds::cleanLargeAreas".to_string(),
+            "SystemRequirements::cleanAtLeastEighty".to_string(),
+            RelationshipKind::Derivation.as_str().to_string(),
+        );
+        assert!(
+            edge_triples(&graph).contains(&derivation_edge),
+            "derivation connection should still be wired after a scoped patch"
+        );
+        assert_eq!(edge_triples(&graph), edge_triples(&baseline_graph));
+    }
+
     #[test]
     fn link_parsed_documents_parallel_matches_build_and_link_graph_parallel() {
         let documents = equivalence_fixture_documents();
@@ -585,7 +1014,7 @@ package SystemRequirements {
                 ))
             })
             .collect();
-        let (actual_graph, actual_parsed) = link_parsed_documents_parallel(pre_parsed);
+        let (actual_graph, actual_parsed) = link_parsed_documents_parallel(pre_parsed, true);
 
         assert_eq!(
             node_qualified_names(&actual_graph),
@@ -623,19 +1052,83 @@ package SystemRequirements {
             .iter()
             .find(|doc| doc.source_kind == SysmlDocumentSourceKind::Library)
             .expect("fixture has a library document");
-        let (base_graph, _) = link_parsed_documents_parallel(vec![parsed_entry(units_doc)]);
+        let (base_graph, _) = link_parsed_documents_parallel(vec![parsed_entry(units_doc)], true);
 
         let remaining: Vec<SourceTaggedDocument> = documents
             .iter()
             .filter(|doc| doc.uri != units_doc.uri)
             .map(parsed_entry)
             .collect();
-        let (actual_graph, _) = link_parsed_documents_parallel_from(base_graph, remaining);
+        let (actual_graph, _) = link_parsed_documents_parallel_from(base_graph, remaining, true);
 
         assert_eq!(
             node_qualified_names(&actual_graph),
             node_qualified_names(&expected_graph)
         );
         assert_eq!(edge_triples(&actual_graph), edge_triples(&expected_graph));
+    }
+
+    /// Manual benchmark: full-graph relink (`finalize_and_evaluate`) vs frontier-scoped relink
+    /// (`finalize_and_evaluate_frontier`) on a fixture with real cross-file reference density —
+    /// PAIR_COUNT independent `A_i -> B_i` pairs (each pair has a real cross-document typing
+    /// edge), editing only pair 0 each iteration. Unlike Track A's disconnected one-package
+    /// fixture (which has zero cross-document edges and so cannot show any relink-scoping win
+    /// at all), this fixture is specifically designed to exercise
+    /// `link_workspace_relationships`'s per-node qualified-name/import resolution across many
+    /// files, while the frontier path only needs to touch the one edited pair.
+    ///
+    /// `#[ignore]`d like Track A's `incremental_benchmark.rs` conventions — this is exploratory
+    /// evidence-gathering, not a CI-enforced regression guard yet. Per the Track B Phase 1 plan
+    /// and Track A's own lesson, do not wire real callers to the frontier path based on
+    /// intuition alone; run this and read the actual numbers first.
+    #[test]
+    #[ignore = "manual benchmark: log full-relink vs frontier-relink timings"]
+    fn benchmark_frontier_relink_vs_full_relink_on_cross_referenced_fixture() {
+        const PAIR_COUNT: usize = 30;
+        const ITERATIONS: u32 = 5;
+
+        let mut documents = Vec::new();
+        for i in 0..PAIR_COUNT {
+            documents.push(memory_doc(
+                &format!("A{i}.sysml"),
+                &format!(
+                    "package A{i} {{ part def Thing{i} {{ attribute mass{i} : Integer; }} }}"
+                ),
+            ));
+            documents.push(memory_doc(
+                &format!("B{i}.sysml"),
+                &format!(
+                    "package B{i} {{ private import A{i}::*; part x{i} : Thing{i}; }}"
+                ),
+            ));
+        }
+
+        let (initial_graph, _) = build_and_link_graph(&documents).expect("initial build");
+        let a0_uri = documents[0].uri.clone();
+
+        let mut full_total = std::time::Duration::ZERO;
+        let mut frontier_total = std::time::Duration::ZERO;
+
+        for iteration in 0..ITERATIONS {
+            let edited_content = format!(
+                "package A0 {{ part def Thing0 {{ attribute mass0 : Integer; attribute extra{iteration} : Integer; }} }}"
+            );
+            let parsed = sysml_v2_parser::parse(&edited_content).expect("parse");
+
+            let mut full_graph = initial_graph.clone();
+            let full_start = Instant::now();
+            patch_graph_for_document(&mut full_graph, &a0_uri, Some(&parsed), true);
+            full_total += full_start.elapsed();
+
+            let mut frontier_graph = initial_graph.clone();
+            let frontier_start = Instant::now();
+            patch_graph_for_document_scoped(&mut frontier_graph, &a0_uri, Some(&parsed), true);
+            frontier_total += frontier_start.elapsed();
+        }
+
+        eprintln!(
+            "frontier relink benchmark ({PAIR_COUNT} pairs, {ITERATIONS} iterations): \
+             full={full_total:?} frontier={frontier_total:?}"
+        );
     }
 }

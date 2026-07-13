@@ -1,6 +1,6 @@
 //! Petgraph-backed semantic graph and query API.
 
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 use std::sync::{Arc, Mutex};
 
 use crate::semantic::text_span::{TextPosition, TextRange};
@@ -64,6 +64,28 @@ pub struct SemanticGraphData {
     query_indexes: Mutex<Option<Arc<GraphQueryIndexes>>>,
     #[serde(skip)]
     shape_cache: Mutex<ShapeCache>,
+    /// For each URI, the set of OTHER URIs its own parsed content (import statements +
+    /// `::`-qualified references) could plausibly depend on. Computed purely from that URI's
+    /// own nodes — see `compute_static_dependency_targets` — and recomputed only when that URI
+    /// itself is patched (`update_static_dependency_targets_for_uri`), never as a side effect
+    /// of another document's resolution outcome. Deliberately NOT a cache of resolution
+    /// results — a reference that temporarily fails to resolve (e.g. its target is renamed
+    /// away then back) must not cause this to go stale, since nothing would ever trigger
+    /// re-checking it. Rebuilt after deserialization via [`rebuild_derived_indexes`].
+    #[serde(skip)]
+    pub document_dependency_targets: HashMap<Url, HashSet<Url>>,
+    /// Reverse of `document_dependency_targets`: for each URI, the other URIs that statically
+    /// depend on it. This is `refresh_relationship_frontier`'s frontier source — every URI
+    /// that might need its relationships re-resolved after `changed_uri` is edited. Rebuilt
+    /// after deserialization via [`rebuild_derived_indexes`].
+    #[serde(skip)]
+    pub document_dependents: HashMap<Url, HashSet<Url>>,
+    /// The exact (src, tgt, kind) triples `add_cross_document_edges_for_uri` last added for a
+    /// given source URI. Lets a re-resolve for that URI cleanly remove its own prior
+    /// cross-document edges before adding fresh ones, without touching edges owned by other
+    /// passes. Rebuilt after deserialization via [`rebuild_derived_indexes`].
+    #[serde(skip)]
+    pub cross_document_edges_by_source_uri: HashMap<Url, Vec<(NodeId, NodeId, RelationshipKind)>>,
 }
 
 impl Default for SemanticGraphData {
@@ -85,6 +107,9 @@ impl Clone for SemanticGraphData {
             import_lookup_cache: Mutex::new(HashMap::new()),
             query_indexes: Mutex::new(None),
             shape_cache: Mutex::new(ShapeCache::default()),
+            document_dependency_targets: self.document_dependency_targets.clone(),
+            document_dependents: self.document_dependents.clone(),
+            cross_document_edges_by_source_uri: self.cross_document_edges_by_source_uri.clone(),
         }
     }
 }
@@ -182,6 +207,40 @@ impl SemanticGraphData {
                 }
             }
         }
+        crate::semantic::relationships::rebuild_static_dependency_index(self);
+    }
+
+    /// Removes `uri`'s previously-recorded outgoing cross-document edges (Typing/Specializes/
+    /// Subject) from the graph and from `cross_document_edges_by_source_uri`, without touching
+    /// in-document edges or edges owned by other passes (derivation connections, case-subject
+    /// links resolved outside `resolve_cross_document_edges_for_uri`). Used both by
+    /// `remove_nodes_for_uri` (whose node removal already dropped the underlying graph edges —
+    /// this just cleans up the now-stale index entry) and by `add_cross_document_edges_for_uri`
+    /// (which needs the edges actually removed from the graph before re-adding fresh ones,
+    /// since its nodes are *not* being removed).
+    ///
+    /// Deliberately does NOT touch `document_dependency_targets`/`document_dependents` — those
+    /// are static, resolution-independent facts about `uri`'s own content, maintained solely by
+    /// `update_static_dependency_targets_for_uri` when `uri` itself is patched. See that
+    /// function's doc comment for why conflating the two was the root cause of a real bug.
+    pub(crate) fn remove_recorded_cross_document_edges_for_uri(&mut self, uri: &Url) {
+        let Some(previous) = self.cross_document_edges_by_source_uri.remove(uri) else {
+            return;
+        };
+        for (src_id, tgt_id, kind) in &previous {
+            if let (Some(&src_idx), Some(&tgt_idx)) =
+                (self.node_index_by_id.get(src_id), self.node_index_by_id.get(tgt_id))
+            {
+                if let Some(edge_idx) = self
+                    .graph
+                    .edges_connecting(src_idx, tgt_idx)
+                    .find(|edge| edge.weight().kind == *kind)
+                    .map(|edge| edge.id())
+                {
+                    self.graph.remove_edge(edge_idx);
+                }
+            }
+        }
     }
 
     pub fn new() -> Self {
@@ -196,6 +255,9 @@ impl SemanticGraphData {
             import_lookup_cache: Mutex::new(HashMap::new()),
             query_indexes: Mutex::new(None),
             shape_cache: Mutex::new(ShapeCache::default()),
+            document_dependency_targets: HashMap::new(),
+            document_dependents: HashMap::new(),
+            cross_document_edges_by_source_uri: HashMap::new(),
         }
     }
 
@@ -382,6 +444,7 @@ impl SemanticGraphData {
                 }
             }
         }
+        self.remove_recorded_cross_document_edges_for_uri(uri);
         self.invalidate_query_indexes();
         self.clear_import_lookup_cache();
     }

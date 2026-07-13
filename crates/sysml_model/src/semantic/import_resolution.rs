@@ -23,7 +23,7 @@ pub(crate) fn import_target(import: &SemanticNode) -> Option<&str> {
         .and_then(|value| value.as_str())
 }
 
-fn is_import_all(import: &SemanticNode) -> bool {
+pub(crate) fn is_import_all(import: &SemanticNode) -> bool {
     import
         .attributes
         .get("importAll")
@@ -39,7 +39,7 @@ fn is_recursive(import: &SemanticNode) -> bool {
         .unwrap_or(false)
 }
 
-fn normalized_namespace_target(target: &str) -> String {
+pub(crate) fn normalized_namespace_target(target: &str) -> String {
     target
         .trim()
         .trim_end_matches("::**")
@@ -48,7 +48,7 @@ fn normalized_namespace_target(target: &str) -> String {
         .to_string()
 }
 
-fn normalized_membership_target(target: &str) -> String {
+pub(crate) fn normalized_membership_target(target: &str) -> String {
     target.trim().trim_end_matches("::**").trim().to_string()
 }
 
