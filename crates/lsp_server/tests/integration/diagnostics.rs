@@ -1333,9 +1333,9 @@ fn typed_requirement_local_attributes_resolve_in_arithmetic_constraint() {
 #[test]
 fn requirement_def_placeholder_attribute_does_not_emit_incomplete_analysis_info() {
     // `requirement def` is a reusable, parametric template intentionally left without a
-    // concrete binding (S42-LIM-012) — it must not emit `analysis_evaluation_incomplete`.
-    // `requirement_usage_placeholder_attribute_emits_incomplete_analysis_info` below covers
-    // the corresponding usage, where the diagnostic still applies.
+    // concrete binding (S42-LIM-012). `analysis_evaluation_incomplete` was removed entirely
+    // (it was more distracting than useful — an unassigned declared value isn't itself a
+    // problem worth surfacing), so this and the usage case below both assert its absence now.
     let content = r#"
         package P {
             requirement def PlaceholderEvaluation {
@@ -1357,7 +1357,7 @@ fn requirement_def_placeholder_attribute_does_not_emit_incomplete_analysis_info(
 }
 
 #[test]
-fn requirement_usage_placeholder_attribute_emits_incomplete_analysis_info() {
+fn requirement_usage_placeholder_attribute_does_not_emit_incomplete_analysis_info() {
     let content = r#"
         package P {
             requirement placeholderEvaluation {
@@ -1368,24 +1368,9 @@ fn requirement_usage_placeholder_attribute_emits_incomplete_analysis_info() {
         }
     "#;
     let diagnostics = validate_inline_sysml("analysis_requirement_usage_placeholder.sysml", content);
-    let incomplete: Vec<_> = diagnostics
-        .iter()
-        .filter(|diagnostic| {
-            diagnostic.source.as_deref() == Some("semantic")
-                && diagnostic.code.as_ref()
-                    == Some(&tower_lsp::lsp_types::NumberOrString::String(
-                        "analysis_evaluation_incomplete".to_string(),
-                    ))
-        })
-        .collect();
-    assert_eq!(
-        incomplete.len(),
-        1,
-        "expected one analysis_evaluation_incomplete diagnostic: {diagnostics:#?}"
-    );
-    assert_eq!(
-        incomplete[0].severity,
-        Some(tower_lsp::lsp_types::DiagnosticSeverity::INFORMATION)
+    assert!(
+        !has_diag_code(&diagnostics, "semantic", "analysis_evaluation_incomplete"),
+        "analysis_evaluation_incomplete was removed entirely: {diagnostics:#?}"
     );
     assert!(
         !has_diag_code(&diagnostics, "semantic", "analysis_evaluation_unresolved"),

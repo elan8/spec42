@@ -1,63 +1,22 @@
 use std::sync::Arc;
 use std::time::Instant;
 
-use tower_lsp::lsp_types::{Diagnostic, NumberOrString, Url};
+use tower_lsp::lsp_types::{Diagnostic, Url};
 use tower_lsp::Client;
 use tracing::info;
 
 use crate::analysis::diagnostics_core;
 use crate::host::config::Spec42Config;
-use crate::workspace::state::{supports_semantic_queries, suppresses_transient_semantic_diagnostics};
+use crate::workspace::state::supports_semantic_queries;
 use crate::workspace::{RuntimeConfig, WorkspaceHandle};
 use crate::common::util;
-
-const TRANSIENT_STARTUP_SEMANTIC_DIAGNOSTIC_CODES: &[&str] = &[
-    "unresolved_type_reference",
-    "unresolved_import_target",
-    "unresolved_specializes_reference",
-    "missing_library_context",
-];
+use crate::semantic::SemanticGraph;
 
 fn perf_logging_enabled(runtime_config: &Arc<std::sync::OnceLock<RuntimeConfig>>) -> bool {
     runtime_config
         .get()
         .expect("initialize precedes all other LSP requests")
         .perf_logging_enabled
-}
-
-/// Non-blocking: reads the actor's latest published snapshot, no lock/await needed.
-fn diagnostics_publication_ready(handle: &WorkspaceHandle) -> bool {
-    supports_semantic_queries(handle.snapshot().session.lifecycle())
-}
-
-fn semantic_diagnostic_code(diagnostic: &Diagnostic) -> Option<&str> {
-    if diagnostic.source.as_deref() != Some("semantic") {
-        return None;
-    }
-
-    match diagnostic.code.as_ref() {
-        Some(NumberOrString::String(code)) => Some(code.as_str()),
-        _ => None,
-    }
-}
-
-fn filter_transient_startup_semantic_diagnostics(
-    diagnostics: Vec<Diagnostic>,
-    should_suppress_transient_diagnostics: bool,
-) -> Vec<Diagnostic> {
-    if !should_suppress_transient_diagnostics {
-        return diagnostics;
-    }
-
-    diagnostics
-        .into_iter()
-        .filter(|diagnostic| {
-            let Some(code) = semantic_diagnostic_code(diagnostic) else {
-                return true;
-            };
-            !TRANSIENT_STARTUP_SEMANTIC_DIAGNOSTIC_CODES.contains(&code)
-        })
-        .collect()
 }
 
 pub(crate) async fn publish_document_diagnostics(
@@ -69,17 +28,11 @@ pub(crate) async fn publish_document_diagnostics(
     text: &str,
 ) {
     let started_at = Instant::now();
-    let (ready, is_library) = {
-        let snap = handle.snapshot();
-        (
-            supports_semantic_queries(snap.session.lifecycle()),
-            util::uri_under_any_library(&uri, &snap.library_paths),
-        )
-    };
-    if is_library {
+    let snap = handle.snapshot();
+    if util::uri_under_any_library(&uri, &snap.library_paths) {
         return;
     }
-    if !ready {
+    if !supports_semantic_queries(snap.session.lifecycle()) {
         if perf_logging_enabled(runtime_config) {
             info!(
                 event = "diagnostics:document:deferred",
@@ -89,7 +42,14 @@ pub(crate) async fn publish_document_diagnostics(
         }
         return;
     }
-    let diagnostics = collect_diagnostics_for_document(handle, config, &uri, text).await;
+    let diagnostics = collect_diagnostics_for_document(
+        &snap.semantic_graph,
+        &snap.library_paths,
+        config,
+        &uri,
+        text,
+    )
+    .await;
     if perf_logging_enabled(runtime_config) {
         info!(
             event = "diagnostics:document",
@@ -109,7 +69,12 @@ pub(crate) async fn publish_workspace_diagnostics(
     target_uris: Option<&[Url]>,
 ) {
     let started_at = Instant::now();
-    if !diagnostics_publication_ready(handle) {
+    // Single snapshot read for this entire operation — every document diagnosed below
+    // (including each parallel `JoinSet` task) shares this exact graph/lifecycle, so a
+    // concurrent relink landing mid-flight can't make different documents in the same publish
+    // call disagree about what state they were diagnosed against.
+    let snap = handle.snapshot();
+    if !supports_semantic_queries(snap.session.lifecycle()) {
         if perf_logging_enabled(runtime_config) {
             info!(
                 event = "diagnostics:workspace:deferred",
@@ -119,24 +84,21 @@ pub(crate) async fn publish_workspace_diagnostics(
         }
         return;
     }
-    let docs: Vec<(Url, String)> = {
-        let snap = handle.snapshot();
-        if let Some(targets) = target_uris {
-            targets
-                .iter()
-                .filter_map(|uri| {
-                    snap.index
-                        .get(uri)
-                        .map(|entry| (uri.clone(), entry.content.clone()))
-                })
-                .collect()
-        } else {
-            snap.index
-                .iter()
-                .filter(|(uri, _)| !util::uri_under_any_library(uri, &snap.library_paths))
-                .map(|(uri, entry)| (uri.clone(), entry.content.clone()))
-                .collect()
-        }
+    let docs: Vec<(Url, String)> = if let Some(targets) = target_uris {
+        targets
+            .iter()
+            .filter_map(|uri| {
+                snap.index
+                    .get(uri)
+                    .map(|entry| (uri.clone(), entry.content.clone()))
+            })
+            .collect()
+    } else {
+        snap.index
+            .iter()
+            .filter(|(uri, _)| !util::uri_under_any_library(uri, &snap.library_paths))
+            .map(|(uri, entry)| (uri.clone(), entry.content.clone()))
+            .collect()
     };
 
     let doc_count = docs.len();
@@ -145,11 +107,19 @@ pub(crate) async fn publish_workspace_diagnostics(
 
     let mut join_set = tokio::task::JoinSet::new();
     for (uri, text) in docs {
-        let handle = handle.clone();
+        let graph = snap.semantic_graph.clone();
+        let library_paths = snap.library_paths.clone();
         let config = Arc::clone(config);
         let client = client.clone();
         join_set.spawn(async move {
-            let diagnostics = collect_diagnostics_for_document(&handle, &config, &uri, &text).await;
+            let diagnostics = collect_diagnostics_for_document(
+                &graph,
+                &library_paths,
+                &config,
+                &uri,
+                &text,
+            )
+            .await;
             let count = diagnostics.len();
             client.publish_diagnostics(uri, diagnostics, None).await;
             count
@@ -174,24 +144,25 @@ pub(crate) async fn publish_workspace_diagnostics(
     }
 }
 
+/// Computes diagnostics for a single document from state the caller already captured — no
+/// `handle.snapshot()` call here. This is deliberate: every document diagnosed within one
+/// `publish_workspace_diagnostics` call (including its parallel per-document tasks) must see
+/// the exact same graph, otherwise a concurrent relink landing mid-flight could make different
+/// documents in the same publish operation disagree about what state they were diagnosed
+/// against.
 async fn collect_diagnostics_for_document(
-    handle: &WorkspaceHandle,
+    graph: &SemanticGraph,
+    library_paths: &[Url],
     config: &Arc<Spec42Config>,
     uri: &Url,
     text: &str,
 ) -> Vec<Diagnostic> {
     let uri_norm = util::normalize_file_uri(uri);
-    let (graph, library_paths, suppress_transient, check_providers) = {
-        let snap = handle.snapshot();
-        (
-            snap.semantic_graph.clone(),
-            snap.library_paths.clone(),
-            suppresses_transient_semantic_diagnostics(snap.session.lifecycle()),
-            config.check_providers.clone(),
-        )
-    };
+    let graph = graph.clone();
+    let library_paths = library_paths.to_vec();
+    let check_providers = config.check_providers.clone();
     let text = text.to_owned();
-    let mut diagnostics = tokio::task::spawn_blocking(move || {
+    tokio::task::spawn_blocking(move || {
         diagnostics_core::collect_document_diagnostics(
             &graph,
             &library_paths,
@@ -203,67 +174,49 @@ async fn collect_diagnostics_for_document(
         )
     })
     .await
-    .unwrap_or_default();
-    diagnostics = filter_transient_startup_semantic_diagnostics(diagnostics, suppress_transient);
-    diagnostics
+    .unwrap_or_default()
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
-    use tower_lsp::lsp_types::{DiagnosticSeverity, Position, Range};
 
-    fn diag(source: &str, code: &str) -> Diagnostic {
-        Diagnostic {
-            range: Range {
-                start: Position::new(0, 0),
-                end: Position::new(0, 1),
-            },
-            severity: Some(DiagnosticSeverity::WARNING),
-            code: Some(NumberOrString::String(code.to_string())),
-            code_description: None,
-            source: Some(source.to_string()),
-            message: format!("{source}:{code}"),
-            related_information: None,
-            tags: None,
-            data: None,
-        }
-    }
+    /// `publish_workspace_diagnostics`/`publish_document_diagnostics` now capture
+    /// `handle.snapshot()` exactly once and derive the graph/lifecycle from that single
+    /// capture — this is what guarantees every document diagnosed within one publish call
+    /// (including its parallel per-document `JoinSet` tasks) sees identical state, even if a
+    /// concurrent relink (from an unrelated edit) lands mid-flight. This test proves the
+    /// property the fix depends on: a captured snapshot is a frozen point-in-time read that a
+    /// later mutation cannot retroactively change.
+    #[tokio::test]
+    async fn captured_snapshot_is_immune_to_a_concurrent_relink_landing_afterward() {
+        let handle = WorkspaceHandle::spawn(crate::workspace::state::ServerState::default());
+        handle
+            .complete_startup()
+            .await
+            .expect("actor mutate should not panic");
 
-    #[test]
-    fn startup_filter_removes_only_transient_semantic_diagnostics() {
-        let diagnostics = vec![
-            diag("semantic", "unresolved_type_reference"),
-            diag("semantic", "unresolved_import_target"),
-            diag("semantic", "unresolved_specializes_reference"),
-            diag("semantic", "missing_library_context"),
-            diag("semantic", "unconnected_port"),
-            diag("sysml", "parse_error"),
-        ];
+        let snap = handle.snapshot();
+        assert_eq!(snap.session.lifecycle(), workspace::SessionLifecycle::Ready);
 
-        let filtered = filter_transient_startup_semantic_diagnostics(diagnostics, true);
-        let remaining_codes: Vec<_> = filtered
-            .iter()
-            .filter_map(semantic_diagnostic_code)
-            .map(str::to_string)
-            .collect();
+        // A concurrent edit to some other document schedules a relink, flipping the *live*
+        // session to Reindexing. Diagnostics for a document diagnosed against `snap` must not
+        // observe this — that's the whole point of consolidating to a single snapshot capture.
+        handle
+            .schedule_relink_if_ready()
+            .await
+            .expect("actor mutate should not panic");
 
-        assert_eq!(remaining_codes, vec!["unconnected_port".to_string()]);
-        assert!(filtered
-            .iter()
-            .any(|diagnostic| diagnostic.source.as_deref() == Some("sysml")));
-    }
-
-    #[test]
-    fn startup_filter_keeps_all_diagnostics_after_semantic_index_is_ready() {
-        let diagnostics = vec![
-            diag("semantic", "unresolved_type_reference"),
-            diag("semantic", "unconnected_port"),
-            diag("sysml", "parse_error"),
-        ];
-
-        let filtered = filter_transient_startup_semantic_diagnostics(diagnostics.clone(), false);
-
-        assert_eq!(filtered.len(), diagnostics.len());
+        assert_eq!(
+            handle.snapshot().session.lifecycle(),
+            workspace::SessionLifecycle::Reindexing,
+            "sanity check: the live session did move on"
+        );
+        assert_eq!(
+            snap.session.lifecycle(),
+            workspace::SessionLifecycle::Ready,
+            "a snapshot captured before a concurrent relink must stay Ready — proving it's \
+             immune to a later, independent read observing Reindexing"
+        );
     }
 }

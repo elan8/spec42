@@ -184,10 +184,10 @@ Two types stayed local to `lsp_server` rather than being replaced by `workspace`
 equivalents, deliberately:
 - **`SemanticLifecycle`** (in `workspace/state.rs`) stays a separate enum from
   `workspace::SessionLifecycle`, translated at the `coordinator.rs` boundary
-  (`to_semantic_lifecycle`). It carries LSP-specific inherent methods
-  (`supports_semantic_queries`, `suppresses_transient_semantic_diagnostics`) that can't be
-  added to a foreign type from another crate — collapsing the two into one type would need
-  moving those methods to free functions or an extension trait for a purely cosmetic gain.
+  (`to_semantic_lifecycle`). It carries an LSP-specific inherent method
+  (`supports_semantic_queries`) that can't be added to a foreign type from another crate —
+  collapsing the two into one type would need moving it to a free function or an extension
+  trait for a purely cosmetic gain.
 - **The `tokio::sync::watch` channel** stays in `coordinator.rs`, since `workspace` crate is
   guarded against depending on `tokio` at all (see Phase 1 below). `SemanticCoordinator` now
   just calls `self.publish()` (send over its own local channel) after every delegated

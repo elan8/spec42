@@ -19,7 +19,7 @@ use super::lifecycle::{scan_roots, workspace_roots_from_initialize};
 
 static WORKSPACE_DIAGNOSTICS_DEBOUNCE_GEN: AtomicU64 = AtomicU64::new(0);
 const WORKSPACE_DIAGNOSTICS_DEBOUNCE_MS: u64 = 450;
-const SEMANTIC_RELINK_DEBOUNCE_MS: u64 = 350;
+const SEMANTIC_RELINK_DEBOUNCE_MS: u64 = 700;
 
 fn schedule_workspace_diagnostics_republish(
     client: &Client,
@@ -159,7 +159,6 @@ fn schedule_semantic_relink_after_change(
             &handle,
             &config,
             &runtime_config,
-            changed_uri.clone(),
             post_relink_version,
         );
 
@@ -218,12 +217,21 @@ fn schedule_semantic_relink_after_change(
 /// both before starting evaluation (skip the work entirely if already superseded) and again by
 /// `report_evaluation_result`'s own version gate at commit time (skip publishing a stale
 /// result if a newer edit landed while evaluation was running).
+///
+/// Publishes workspace-wide (`target_uris: None`), not scoped to the edited file: unlike
+/// Wave 1's structural relink, `evaluate_workspace_graph` evaluates expressions across the
+/// *entire* graph with no per-file scoping, so evaluation-derived diagnostics
+/// (`analysis_constraint_failed`, `analysis_evaluation_unresolved`, etc.) can change on any file
+/// in the workspace, not just the one that was edited. Publishing only the edited file here
+/// left every other affected file stuck showing whatever Wave 1 last published for it
+/// (structural diagnostics with no evaluation attribute at all) until that specific file was
+/// itself edited — i.e. evaluation diagnostics could get cleared by an edit elsewhere and never
+/// come back.
 fn schedule_expression_evaluation(
     client: &Client,
     handle: &WorkspaceHandle,
     config: &Arc<Spec42Config>,
     runtime_config: &Arc<std::sync::OnceLock<RuntimeConfig>>,
-    changed_uri: Url,
     expected_version: u64,
 ) {
     let client = client.clone();
@@ -253,14 +261,8 @@ fn schedule_expression_evaluation(
             .await
             .unwrap_or(false);
         if committed {
-            publish_workspace_diagnostics(
-                &client,
-                &handle,
-                &config,
-                &runtime_config,
-                Some(&[changed_uri]),
-            )
-            .await;
+            // Workspace-wide, not `[changed_uri]` — see the doc comment above.
+            publish_workspace_diagnostics(&client, &handle, &config, &runtime_config, None).await;
         }
     });
 }

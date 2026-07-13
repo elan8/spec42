@@ -221,13 +221,6 @@ const CATALOG: &[DiagnosticCatalogEntry] = &[
         editor_quick_fixes: None,
     },
     DiagnosticCatalogEntry {
-        code: "analysis_evaluation_incomplete",
-        severity: "information",
-        meaning: "An analysis expression depends on declared values that are not assigned.",
-        typical_fix: "Assign the required values or accept that the analysis cannot be fully evaluated yet.",
-        editor_quick_fixes: None,
-    },
-    DiagnosticCatalogEntry {
         code: "analysis_evaluation_unresolved",
         severity: "warning",
         meaning: "An analysis expression could not be evaluated.",
@@ -679,7 +672,6 @@ const CATALOG: &[DiagnosticCatalogEntry] = &[
 
 /// Diagnostics that reflect modeling/tooling guidance rather than normative SysML constraints.
 const MODELING_GUIDANCE_CODES: &[&str] = &[
-    "analysis_evaluation_incomplete",
     "duplicate_connection",
     "missing_final_state",
     "missing_initial_state",
@@ -728,7 +720,6 @@ mod tests {
         ("conjugated_port_inconsistent", "warning"),
         ("connection_context_invalid", "warning"),
         ("analysis_constraint_failed", "warning"),
-        ("analysis_evaluation_incomplete", "information"),
         ("analysis_evaluation_unresolved", "warning"),
         ("assignment_target_unresolved", "warning"),
         ("connection_endpoint_not_port", "warning"),

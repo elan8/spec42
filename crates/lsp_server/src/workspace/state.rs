@@ -87,12 +87,6 @@ pub(crate) fn supports_semantic_queries(lifecycle: workspace::SessionLifecycle) 
     matches!(lifecycle, workspace::SessionLifecycle::Ready)
 }
 
-pub(crate) fn suppresses_transient_semantic_diagnostics(
-    lifecycle: workspace::SessionLifecycle,
-) -> bool {
-    !matches!(lifecycle, workspace::SessionLifecycle::Ready)
-}
-
 #[derive(Debug, Default)]
 pub(crate) struct ScanSummary {
     pub(crate) roots_scanned: usize,
