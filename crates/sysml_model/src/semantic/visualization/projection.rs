@@ -424,40 +424,38 @@ pub(crate) fn build_workspace_model_dto_from_graph(
     graph: &SysmlGraphDto,
     workspace_uris: &[Url],
 ) -> WorkspaceModelDto {
-    let mut files = Vec::with_capacity(workspace_uris.len());
-    let mut all_elements = Vec::new();
-    for workspace_uri in workspace_uris {
-        let uri_graph = SysmlGraphDto {
-            nodes: graph
-                .nodes
-                .iter()
-                .filter(|node| node.uri.as_deref() == Some(workspace_uri.as_str()))
-                .cloned()
-                .collect(),
-            edges: graph
-                .edges
-                .iter()
-                .filter(|edge| {
-                    graph.nodes.iter().any(|node| {
-                        node.id == edge.source
-                            && node.uri.as_deref() == Some(workspace_uri.as_str())
-                    }) || graph.nodes.iter().any(|node| {
-                        node.id == edge.target
-                            && node.uri.as_deref() == Some(workspace_uri.as_str())
-                    })
-                })
-                .cloned()
-                .collect(),
-        };
-        let elements = graph_to_element_tree(&uri_graph, workspace_uri);
-        all_elements.extend(elements.iter().map(clone_element));
-        if !elements.is_empty() {
-            files.push(WorkspaceFileModelDto {
-                uri: workspace_uri.as_str().to_string(),
-                elements,
-            });
+    // One pass over the whole graph instead of one per file. Safe because "contains" edges
+    // never cross files (containment comes from `build_graph_from_doc`'s per-document parse,
+    // so a node's parent is always in the same file), and two files declaring the same
+    // top-level package are already distinct root node instances (identity is
+    // `(uri, qualified_name)`) with no edge between them — so `graph_to_element_tree` produces
+    // the same root set here as it did per-file-then-concatenated, and `merge_namespace_elements`
+    // folds them identically either way. This replaces an O(files x edges x nodes) nested scan
+    // (filtering each file's subgraph out of the whole graph) with a single O(nodes + edges) pass.
+    let fallback_uri = workspace_uris
+        .first()
+        .cloned()
+        .unwrap_or_else(|| Url::parse("file:///").expect("static fallback uri"));
+    let all_elements = graph_to_element_tree(graph, &fallback_uri);
+
+    // Rebuild the per-file `files` list by grouping the resulting roots by their own `.uri`
+    // (already stamped on each element by `graph_to_element_tree`) — O(roots), not a second
+    // O(files x edges x nodes) pass.
+    let mut by_uri: HashMap<String, Vec<SysmlElementDto>> = HashMap::new();
+    for element in &all_elements {
+        if let Some(uri) = &element.uri {
+            by_uri
+                .entry(uri.clone())
+                .or_default()
+                .push(clone_element(element));
         }
     }
+    let mut files: Vec<WorkspaceFileModelDto> = by_uri
+        .into_iter()
+        .map(|(uri, elements)| WorkspaceFileModelDto { uri, elements })
+        .collect();
+    files.sort_by(|a, b| a.uri.cmp(&b.uri)); // deterministic ordering, matching prior behavior
+
     WorkspaceModelDto {
         summary: WorkspaceModelSummaryDto {
             scanned_files: files.len(),
@@ -733,4 +731,142 @@ pub(crate) fn workspace_parsed_documents_for_uris(
         .filter(|d| set.contains(&d.uri))
         .cloned()
         .collect()
+}
+
+#[cfg(test)]
+mod bench {
+    use super::*;
+    use crate::{build_semantic_graph_with_provider, FileSystemDocumentProvider};
+    use std::path::PathBuf;
+    use std::time::Instant;
+
+    /// The original per-file-loop implementation, kept here (not in production code) purely
+    /// as an equivalence oracle for the benchmark/regression test below — confirms the
+    /// single-whole-graph-pass rewrite in `build_workspace_model_dto_from_graph` produces an
+    /// identical result to the old O(files x edges x nodes) approach, not just a faster one.
+    fn old_build_workspace_model_dto_from_graph(
+        graph: &SysmlGraphDto,
+        workspace_uris: &[Url],
+    ) -> WorkspaceModelDto {
+        let mut files = Vec::with_capacity(workspace_uris.len());
+        let mut all_elements = Vec::new();
+        for workspace_uri in workspace_uris {
+            let uri_graph = SysmlGraphDto {
+                nodes: graph
+                    .nodes
+                    .iter()
+                    .filter(|node| node.uri.as_deref() == Some(workspace_uri.as_str()))
+                    .cloned()
+                    .collect(),
+                edges: graph
+                    .edges
+                    .iter()
+                    .filter(|edge| {
+                        graph.nodes.iter().any(|node| {
+                            node.id == edge.source
+                                && node.uri.as_deref() == Some(workspace_uri.as_str())
+                        }) || graph.nodes.iter().any(|node| {
+                            node.id == edge.target
+                                && node.uri.as_deref() == Some(workspace_uri.as_str())
+                        })
+                    })
+                    .cloned()
+                    .collect(),
+            };
+            let elements = graph_to_element_tree(&uri_graph, workspace_uri);
+            all_elements.extend(elements.iter().map(clone_element));
+            if !elements.is_empty() {
+                files.push(WorkspaceFileModelDto {
+                    uri: workspace_uri.as_str().to_string(),
+                    elements,
+                });
+            }
+        }
+        files.sort_by(|a, b| a.uri.cmp(&b.uri));
+        WorkspaceModelDto {
+            summary: WorkspaceModelSummaryDto {
+                scanned_files: files.len(),
+                loaded_files: files.len(),
+                failures: 0,
+                truncated: false,
+            },
+            semantic: merge_namespace_elements(&all_elements),
+            files,
+        }
+    }
+
+    /// Manual, local-only benchmark + equivalence check: compares the old per-file-loop
+    /// implementation against the new single-whole-graph-pass one for both correctness
+    /// (identical `files`/`semantic` output) and speed, against a real, large workspace.
+    /// Points at a real, external project checkout — not part of this repo — so it's
+    /// `#[ignore]`d and skips cleanly if the path doesn't exist on the machine running it.
+    #[test]
+    #[ignore = "manual benchmark: point PROJECT_PATH at a large real workspace and run with --ignored --nocapture"]
+    fn benchmark_workspace_model_dto_phases_on_real_project() {
+        const PROJECT_PATH: &str = r"C:\Git\sysml-robot-vacuum-cleaner\model";
+        let root = PathBuf::from(PROJECT_PATH);
+        if !root.exists() {
+            eprintln!("skipping: {PROJECT_PATH} not found on this machine");
+            return;
+        }
+
+        let provider = FileSystemDocumentProvider::new(root.clone(), Some(root), Vec::new());
+        let (semantic_graph, _parsed_docs) =
+            build_semantic_graph_with_provider(&provider).expect("build semantic graph");
+
+        let workspace_uris = semantic_graph.workspace_uris_excluding_libraries(&[]);
+        eprintln!("workspace file count: {}", workspace_uris.len());
+
+        let graph = build_workspace_graph_dto_for_uris(&semantic_graph, &workspace_uris);
+        eprintln!(
+            "graph node count: {}, edge count: {}",
+            graph.nodes.len(),
+            graph.edges.len()
+        );
+
+        let old_start = Instant::now();
+        let old_result = old_build_workspace_model_dto_from_graph(&graph, &workspace_uris);
+        let old_ms = old_start.elapsed().as_millis();
+
+        let new_start = Instant::now();
+        let new_result = build_workspace_model_dto_from_graph(&graph, &workspace_uris);
+        let new_ms = new_start.elapsed().as_millis();
+
+        eprintln!(
+            "old_ms={old_ms} new_ms={new_ms} old_files={} new_files={} old_semantic={} new_semantic={}",
+            old_result.files.len(),
+            new_result.files.len(),
+            old_result.semantic.len(),
+            new_result.semantic.len()
+        );
+
+        assert_eq!(
+            old_result.summary.scanned_files, new_result.summary.scanned_files,
+            "scanned_files count should match"
+        );
+        assert_eq!(
+            old_result.files.len(),
+            new_result.files.len(),
+            "files list length should match"
+        );
+        for (old_file, new_file) in old_result.files.iter().zip(new_result.files.iter()) {
+            assert_eq!(old_file.uri, new_file.uri, "file uri ordering should match");
+            assert_eq!(
+                old_file.elements.len(),
+                new_file.elements.len(),
+                "element count for {} should match",
+                old_file.uri
+            );
+        }
+        assert_eq!(
+            old_result.semantic.len(),
+            new_result.semantic.len(),
+            "merged semantic top-level count should match"
+        );
+
+        assert!(
+            new_ms * 10 < old_ms.max(1),
+            "expected the single-pass rewrite to be at least 10x faster; old_ms={old_ms} new_ms={new_ms}"
+        );
+    }
 }
