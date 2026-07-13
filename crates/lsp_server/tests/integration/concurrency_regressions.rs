@@ -51,7 +51,7 @@ fn hover_request_not_blocked_by_concurrent_relink() {
         &serde_json::json!({ "jsonrpc": "2.0", "method": "initialized", "params": {} }).to_string(),
     );
 
-    // Open the document — this schedules an async relink (90ms debounced) that runs in a
+    // Open the document — this schedules a debounced async relink that runs in a
     // detached task, entirely independent of the request below.
     send_message(
         &mut stdin,
@@ -197,7 +197,7 @@ fn superseded_relink_result_is_dropped_and_does_not_regress_diagnostics() {
     );
 
     // Open with the broken (unresolved-reference) content, then immediately edit to the fixed
-    // content — both land before the first edit's 90ms relink debounce can fire, so the first
+    // content — both land before the first edit's relink debounce can fire, so the first
     // relink (still reflecting the broken content) must be superseded and its result dropped
     // when it eventually completes; only the second (fixed) edit's relink should ever publish.
     send_message(

@@ -228,24 +228,33 @@ impl WorkspaceHandle {
             .await
     }
 
-    /// Fire-and-forget: hands back an async relink's result. Merged in only if `token` is
-    /// still current; otherwise dropped silently by the actor. Calls `session.commit_relink`
-    /// to perform the actual `Reindexing -> Ready` lifecycle transition — without this, the
-    /// session would stay stuck in `Reindexing` forever after any edit (the actor's own
-    /// pre-merge `is_token_current` check only decides *whether* to merge, it doesn't
-    /// transition the lifecycle by itself).
-    pub(crate) fn report_relink_result(
+    /// Commits an async relink's result via `mutate`, so the caller can `.await` it and be
+    /// guaranteed the new graph/lifecycle are visible before doing anything else (e.g.
+    /// publishing diagnostics) — `SessionActor::mutate` applies the closure and publishes to
+    /// the `watch` channel *before* replying, unlike the old fire-and-forget
+    /// `report_job_result` path this replaced. Calls `session.commit_relink` to perform the
+    /// actual `Reindexing -> Ready` lifecycle transition — without this, the session would stay
+    /// stuck in `Reindexing` forever after any edit. Returns whether the token was still
+    /// current (`false` means a newer relink superseded this one and nothing was applied — the
+    /// caller should skip any follow-up work tied to this result, since the superseding relink
+    /// will produce its own).
+    pub(crate) async fn report_relink_result(
         &self,
         token: workspace_session::RelinkToken,
         new_graph: SemanticGraph,
         new_symbols: Vec<SymbolEntry>,
-    ) {
-        self.actor.report_job_result(token, move |s| {
-            if s.session.commit_relink(&token) {
-                s.semantic_graph = new_graph;
-                s.symbol_table = new_symbols;
-            }
-        });
+    ) -> Result<bool, MutatePanicked> {
+        self.actor
+            .mutate(move |s| {
+                if s.session.commit_relink(&token) {
+                    s.semantic_graph = new_graph;
+                    s.symbol_table = new_symbols;
+                    true
+                } else {
+                    false
+                }
+            })
+            .await
     }
 
     /// Commits an evaluated graph only if `expected_version` still matches the live session —
@@ -403,5 +412,65 @@ mod tests {
             .await
             .expect("actor mutate should not panic");
         assert!(!committed, "stale version must not commit");
+    }
+
+    /// `report_relink_result` must commit (and the caller sees `Ok(true)`) when the token is
+    /// still current — this is the path that must be synchronous-on-await so a subsequent
+    /// `handle.snapshot()` (e.g. for diagnostics collection) never races ahead of the commit.
+    #[tokio::test]
+    async fn report_relink_result_commits_when_token_current() {
+        let handle = WorkspaceHandle::spawn(ServerState::default());
+        handle.complete_startup().await.expect("actor mutate should not panic");
+        let token = handle
+            .schedule_relink_if_ready()
+            .await
+            .expect("actor mutate should not panic")
+            .expect("fresh session should be ready to schedule a relink");
+
+        let new_graph = SemanticGraph::new();
+        let committed = handle
+            .report_relink_result(token, new_graph, Vec::new())
+            .await
+            .expect("actor mutate should not panic");
+        assert!(committed, "current token should commit");
+
+        assert!(matches!(
+            handle.snapshot().session.lifecycle(),
+            workspace::SessionLifecycle::Ready
+        ));
+    }
+
+    /// A superseded token (a newer relink scheduled after this one) must not commit — the
+    /// caller uses this to skip publishing diagnostics for a discarded, stale relink result.
+    #[tokio::test]
+    async fn report_relink_result_discards_superseded_token() {
+        let handle = WorkspaceHandle::spawn(ServerState::default());
+        handle.complete_startup().await.expect("actor mutate should not panic");
+        let stale_token = handle
+            .schedule_relink_if_ready()
+            .await
+            .expect("actor mutate should not panic")
+            .expect("fresh session should be ready to schedule a relink");
+
+        // Commit the stale token first so the session returns to `Ready`, then schedule a
+        // second relink — this mints a newer token that supersedes any future commit attempt
+        // using `stale_token`.
+        let first_new_graph = SemanticGraph::new();
+        handle
+            .report_relink_result(stale_token, first_new_graph, Vec::new())
+            .await
+            .expect("actor mutate should not panic");
+        handle
+            .schedule_relink_if_ready()
+            .await
+            .expect("actor mutate should not panic")
+            .expect("session should be ready to schedule another relink");
+
+        let superseded_new_graph = SemanticGraph::new();
+        let committed = handle
+            .report_relink_result(stale_token, superseded_new_graph, Vec::new())
+            .await
+            .expect("actor mutate should not panic");
+        assert!(!committed, "superseded token must not commit");
     }
 }

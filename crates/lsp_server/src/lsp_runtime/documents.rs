@@ -19,7 +19,7 @@ use super::lifecycle::{scan_roots, workspace_roots_from_initialize};
 
 static WORKSPACE_DIAGNOSTICS_DEBOUNCE_GEN: AtomicU64 = AtomicU64::new(0);
 const WORKSPACE_DIAGNOSTICS_DEBOUNCE_MS: u64 = 450;
-const SEMANTIC_RELINK_DEBOUNCE_MS: u64 = 90;
+const SEMANTIC_RELINK_DEBOUNCE_MS: u64 = 350;
 
 fn schedule_workspace_diagnostics_republish(
     client: &Client,
@@ -45,7 +45,7 @@ fn schedule_workspace_diagnostics_republish(
     });
 }
 
-/// Schedules an async semantic relink with a 90 ms debounce.
+/// Schedules an async semantic relink with a debounce (see `SEMANTIC_RELINK_DEBOUNCE_MS`).
 ///
 /// `token` is issued by [`workspace::WorkspaceSession::schedule_relink`] and
 /// encapsulates the current relink generation and snapshot version.
@@ -113,11 +113,9 @@ fn schedule_semantic_relink_after_change(
             return;
         };
 
-        // Compute diagnostics URIs from the locally-known (pre-commit) index/library_paths —
-        // `report_relink_result` is fire-and-forget under the actor model, so there's no
-        // synchronous confirmation of when (or whether) it applies. This function only ever
-        // reads raw source/parsed data, never the semantic graph, so the pre-relink snapshot's
-        // index is exactly as good as a post-commit read would be.
+        // Compute diagnostics URIs from the locally-known (pre-commit) index/library_paths.
+        // This function only ever reads raw source/parsed data, never the semantic graph, so
+        // the pre-relink snapshot's index is exactly as good as a post-commit read would be.
         let snap_for_diag = handle.snapshot();
         let mut diag_uris = crate::workspace::import_graph::workspace_uris_importing_declarations_from(
             &snap_for_diag.index,
@@ -131,7 +129,21 @@ fn schedule_semantic_relink_after_change(
             diag_uris.push(changed_uri.clone());
         }
 
-        handle.report_relink_result(token, new_graph, new_symbols);
+        // `report_relink_result` is now synchronized via `mutate`: awaiting it guarantees the
+        // committed graph/lifecycle are visible to any subsequent `handle.snapshot()` call,
+        // closing the race where diagnostics collection could previously read a stale
+        // (pre-commit) lifecycle and wrongly suppress transient-startup diagnostic codes.
+        let committed = handle
+            .report_relink_result(token, new_graph, new_symbols)
+            .await
+            .unwrap_or(false);
+
+        if !committed {
+            // Superseded by a newer relink token — that newer relink is already in flight and
+            // will publish its own (fresher) diagnostics, so publishing here would just
+            // redundantly republish stale results.
+            return;
+        }
 
         publish_workspace_diagnostics(&client, &handle, &config, &runtime_config, Some(&diag_uris))
             .await;

@@ -869,4 +869,54 @@ mod bench {
             "expected the single-pass rewrite to be at least 10x faster; old_ms={old_ms} new_ms={new_ms}"
         );
     }
+
+    /// Follow-up investigation: the Model Explorer fix above only covers
+    /// `build_workspace_model_dto_from_graph`, one of several steps in
+    /// `materialize_model_explorer_bundle`/`build_view_index` (the full pipeline behind a
+    /// `sysml/model` workspaceVisualization / `sysml/visualization` cache-miss). Real-world
+    /// testing after that fix landed still showed ~1.4s for a workspace-wide model request, so
+    /// this times every step separately to find the new bottleneck.
+    #[test]
+    #[ignore = "manual benchmark: point PROJECT_PATH at a large real workspace and run with --ignored --nocapture"]
+    fn benchmark_full_model_explorer_pipeline_phases_on_real_project() {
+        use crate::{build_view_index, materialize_model_explorer_bundle};
+
+        const PROJECT_PATH: &str = r"C:\Git\sysml-robot-vacuum-cleaner\model";
+        let root = PathBuf::from(PROJECT_PATH);
+        if !root.exists() {
+            eprintln!("skipping: {PROJECT_PATH} not found on this machine");
+            return;
+        }
+
+        let provider = FileSystemDocumentProvider::new(root.clone(), Some(root.clone()), Vec::new());
+        let (semantic_graph, parsed_docs) =
+            build_semantic_graph_with_provider(&provider).expect("build semantic graph");
+        let workspace_root_uri = Url::from_directory_path(root.canonicalize().unwrap()).unwrap();
+
+        let view_index_start = Instant::now();
+        let view_index = build_view_index(&semantic_graph, &parsed_docs, &[], &workspace_root_uri, 1)
+            .expect("build view index");
+        let view_index_ms = view_index_start.elapsed().as_millis();
+        eprintln!(
+            "view_index_ms={view_index_ms} graph_nodes={} graph_edges={}",
+            view_index.graph.nodes.len(),
+            view_index.graph.edges.len()
+        );
+
+        let snapshot = crate::WorkspaceRenderSnapshot {
+            version: 1,
+            workspace_root_uri: view_index.workspace_root_uri.clone(),
+            workspace_uris: view_index.workspace_uris.clone(),
+            view_index,
+        };
+
+        let bundle_start = Instant::now();
+        let bundle = materialize_model_explorer_bundle(&semantic_graph, &snapshot);
+        let bundle_ms = bundle_start.elapsed().as_millis();
+        eprintln!(
+            "bundle_total_ms={bundle_ms} workspace_model_files={} full_ibd_root_views={}",
+            bundle.workspace_model.files.len(),
+            bundle.full_ibd.root_views.len()
+        );
+    }
 }
