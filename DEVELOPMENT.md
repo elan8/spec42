@@ -276,7 +276,11 @@ Compare full in-memory rebuild vs. single-document `update_snapshot` on a synthe
 cargo test -p spec42_host --test incremental_benchmark -- --ignored --nocapture
 ```
 
-The benchmark stays `#[ignore]` in CI. Enable `experimental_incremental_updates(true)` on the engine builder before measuring incremental timings.
+The benchmark stays `#[ignore]` in CI (`experimental_incremental_updates` now defaults to
+`true`, so no builder change is needed to measure it). As of 2026-07-13 this benchmark does
+not show a measurable win — the graph patch skips re-parsing but `update_snapshot`'s
+downstream snapshot assembly is not scoped — see
+`docs/engineering/TIER2-UNIFIED-INCREMENTAL-ENGINE-DESIGN.md` for the open follow-up.
 
 ### Robot vacuum performance analysis (local only)
 

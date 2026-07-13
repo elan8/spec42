@@ -9,7 +9,35 @@ right call, not a shortfall. Along the way, `sysml_model` gained
 `build_and_link_graph_parallel`, usable with already-parsed documents and an optional base
 graph), closing the Phase 2 parse-cache gap for real. **Phase 5 dropped 2026-07-03 — see
 "Phase 5" below.**
-**Date:** 2026-07-03
+
+**Update 2026-07-13:** `experimental_incremental_updates` now defaults to `true`
+(`workspace/src/engine.rs`), after `workspace/tests/incremental_parity.rs` and
+`incremental_fallback.rs` were confirmed to cover the eligible cases (including the
+previously-untested library-catalog-hash-change fallback branch). This closes out the
+"two independently-implemented engines" correctness risk this doc opened with — `workspace`'s
+`try_incremental_update` and `lsp_server`/Babel42's direct `IncrementalWorkspace` usage now
+share the exact same underlying primitives, so there's one code path to keep correct instead
+of two that can drift.
+
+**This did not deliver a proven performance win, and that's a known, open gap, not an
+oversight.** `workspace/tests/incremental_benchmark.rs` gained a CI-shaped regression test
+(`incremental_update_is_meaningfully_faster_than_full_rebuild`, currently `#[ignore]`d because
+it fails) that measured `try_incremental_update` against a full rebuild on both a 20-file and
+a 40-file/~15-part-per-file fixture — in both cases the incremental path was **not** faster
+(marginally slower on the heavier fixture: ~29.5s vs ~27.0s incremental total over 5
+iterations). The graph patch itself skips re-parsing unchanged documents, but
+`assemble_snapshot_from_state` (`snapshot/update.rs:133-212`) still fully recomputes
+`language_workspace`, `render_snapshot`, eager `validation_report`, and `semantic_projection`
+over the *entire* graph on every call, regardless of how the graph itself was produced — that
+recompute appears to dominate at these fixture sizes, swallowing whatever the skipped-reparse
+saved. This is the same limitation flagged as "Track B" work (dependency-frontier-scoped
+relink/evaluate) in the companion incremental-semantic-graph proposal — until that lands, this
+flag change is an architectural/correctness cleanup, not a latency fix, for
+`Spec42Engine::update_snapshot`'s stateless CLI/MCP/HTTP callers. It has no effect at all on
+`lsp_server`'s `ServerState` or Babel42's `EditorSession`, both of which already call
+`IncrementalWorkspace` directly and never went through this flag.
+
+**Date:** 2026-07-03 (original); updated 2026-07-13
 **Related:** `docs/engineering/TIER2-LSP-WORKSPACE-CONSOLIDATION.md` (Phases 1-3a, Phase 3b
 Steps 1-4, Step 5a-5c, Phase 4 all landed — this doc addresses the split those phases
 deliberately left alone), `docs/engineering/TIER2-PHASE3B-LAZY-SNAPSHOT-DESIGN.md` (parked;

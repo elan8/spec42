@@ -73,7 +73,7 @@ use spec42_host::{DocumentChanges, EngineBuilder, HostContext, WorkspaceLoadRequ
 
 let engine = EngineBuilder::default()
     .cache_dir(cache_dir)
-    .experimental_incremental_updates(true) // default: false
+    .experimental_incremental_updates(true) // default: true; pass false to force full rebuilds
     .build()?;
 
 let request = WorkspaceLoadRequest::single_target(workspace_root.join("Demo.sysml"));
@@ -90,12 +90,22 @@ let next = engine.update_snapshot(
 
 | Input | Behavior |
 | --- | --- |
-| `DocumentChanges::with_changed` (one workspace doc) | Experimental graph patch when `experimental_incremental_updates(true)` |
+| `DocumentChanges::with_changed` (one workspace doc) | Graph patch (default on; disable with `experimental_incremental_updates(false)`) |
 | Add, remove, or multiple changed docs | In-memory full rebuild via `InMemoryDocumentProvider` (no base provider I/O) |
 | `experimental_incremental_updates(false)` | Always full-rebuild fallback (still skips filesystem provider) |
-| Library catalog change | Reload workspace with `load_workspace`; do not call `update_snapshot` |
+| Library catalog change | Always falls back to full rebuild internally, even with the flag on (`can_use_incremental_update` checks `library_catalog_hash`) — prefer calling `load_workspace` directly when you know the catalog changed |
 
 Pass the same `WorkspaceLoadRequest` used for the initial load (`targets`, `workspace_root`, `strict_diagnostics`) so validation and projection scope stay consistent.
+
+**Performance note:** the graph-patch itself skips re-parsing unchanged documents, but
+`update_snapshot`'s snapshot assembly (`language_workspace`, `render_snapshot`, eager
+`validation_report`, `semantic_projection`) is currently recomputed in full regardless of
+the patch — see `docs/engineering/TIER2-UNIFIED-INCREMENTAL-ENGINE-DESIGN.md`. Benchmarking
+(`workspace/tests/incremental_benchmark.rs`) has not yet shown a measurable end-to-end win at
+this layer; the default was flipped to `true` for single-code-path correctness (no more
+`try_incremental_update` drifting from `build_workspace_snapshot`), not a proven speedup.
+`lsp_server`'s `ServerState` and Babel42's `EditorSession` don't go through this flag at all —
+they hold `IncrementalWorkspace` directly and are unaffected by it either way.
 
 `DocumentChanges` rejects URIs that appear in more than one bucket (`added` / `changed` / `removed`). Use `replace(document)` for single-save editor flows.
 

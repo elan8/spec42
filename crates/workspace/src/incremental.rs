@@ -1,4 +1,4 @@
-//! Standalone incremental workspace engine (Tier 2 unified-incremental-engine, Phase 2).
+//! Shared incremental workspace engine (Tier 2 unified-incremental-engine).
 //!
 //! Wraps a [`SemanticGraph`] plus the documents currently indexed into it, and exposes a
 //! full-load operation and a single-document incremental patch operation, both delegating to
@@ -6,9 +6,13 @@
 //! `patch_graph_for_document`) rather than re-implementing the build/link sequence — see
 //! `docs/engineering/TIER2-UNIFIED-INCREMENTAL-ENGINE-DESIGN.md`.
 //!
-//! Not wired into [`crate::engine::Spec42Engine`]/`HostWorkspaceSnapshot` or `lsp_server`
-//! yet. Phase 2 is deliberately standalone and equivalence-tested against both the full-load
-//! primitive and the incremental-patch primitive before anything depends on it.
+//! This is the one engine every live consumer uses directly: `lsp_server`'s `ServerState`
+//! (`rebuild_all_document_links` / `rebuild_semantic_graph_staged`) and Babel42's
+//! `EditorSession` both hold an `IncrementalWorkspace` and call `apply_document` on every
+//! edit. `crate::engine::Spec42Engine`'s `update_snapshot` path also builds on it internally
+//! (`snapshot::update::try_incremental_update`), behind the `experimental_incremental_updates`
+//! flag, for stateless CLI/MCP/HTTP callers that want a frozen `HostWorkspaceSnapshot` rather
+//! than an owned, long-lived session.
 
 use std::collections::HashMap;
 use std::path::{Path, PathBuf};

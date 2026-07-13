@@ -26,7 +26,7 @@ pub struct Spec42Engine {
     experimental_incremental_updates: bool,
 }
 
-#[derive(Debug, Default)]
+#[derive(Debug)]
 pub struct EngineBuilder {
     cache_dir: Option<PathBuf>,
     server_embedding_mode: bool,
@@ -42,6 +42,34 @@ pub struct EngineBuilder {
     config_stdlib_path: Option<PathBuf>,
     config_no_stdlib: bool,
     experimental_incremental_updates: bool,
+}
+
+impl Default for EngineBuilder {
+    fn default() -> Self {
+        Self {
+            cache_dir: None,
+            server_embedding_mode: false,
+            no_stdlib: false,
+            stdlib_path_override: None,
+            domain_libraries_path_override: None,
+            library_paths: Vec::new(),
+            extra_library_paths: Vec::new(),
+            standard_library: StandardLibraryConfig::default(),
+            domain_libraries: DomainLibrariesConfig::default(),
+            use_embedded_stdlib: false,
+            use_embedded_domain_libraries: false,
+            config_stdlib_path: None,
+            config_no_stdlib: false,
+            // Default flipped from `false` to `true` once `try_incremental_update` had
+            // sufficient correctness coverage (parity + fallback tests in
+            // `workspace/tests/incremental_*.rs`). Note the measured performance win is not
+            // yet proven at the snapshot-assembly layer — see
+            // `docs/engineering/TIER2-UNIFIED-INCREMENTAL-ENGINE-DESIGN.md` — this default
+            // reflects "one correct code path" over "two paths that can drift," not a
+            // confirmed speedup. Still overridable via `.experimental_incremental_updates(false)`.
+            experimental_incremental_updates: true,
+        }
+    }
 }
 
 impl Spec42Engine {
