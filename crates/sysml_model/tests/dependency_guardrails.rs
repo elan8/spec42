@@ -15,7 +15,10 @@ fn graph_builder_does_not_use_ast_expansion_helpers() {
     let part_usage = include_str!("../src/semantic/graph_builder/part_usage.rs");
     let analysis_case = include_str!("../src/semantic/graph_builder/analysis_case.rs");
     let part_def = include_str!("../src/semantic/graph_builder/part_def.rs");
-    let package_body = include_str!("../src/semantic/graph_builder/package_body.rs");
+    let package_body_mod = include_str!("../src/semantic/graph_builder/package_body/mod.rs");
+    let package_body_materialize =
+        include_str!("../src/semantic/graph_builder/package_body/materialize.rs");
+    let package_body = format!("{package_body_mod}{package_body_materialize}");
 
     assert!(
         !part_usage.contains("find_part_def_in_root"),
@@ -24,7 +27,7 @@ fn graph_builder_does_not_use_ast_expansion_helpers() {
     for (name, content) in [
         ("analysis_case", analysis_case),
         ("part_def", part_def),
-        ("package_body", package_body),
+        ("package_body", package_body.as_str()),
         ("part_usage", part_usage),
     ] {
         assert!(
