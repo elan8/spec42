@@ -984,6 +984,20 @@ pub(crate) async fn did_close(client: &Client, params: DidCloseTextDocumentParam
         .await;
 }
 
+/// Whether `content` (freshly read from disk for `uri`) already matches what the server has
+/// tracked in memory for that URI — i.e. this watched-file event is just an echo of an edit
+/// the server already knows about via `textDocument/didChange`, not a genuinely new change.
+/// Pure, `Client`-free predicate so it can be unit tested directly without spinning up a real
+/// LSP client/subprocess (see the test module below for why that matters here).
+fn watched_file_content_already_current(handle: &WorkspaceHandle, uri: &Url, content: &str) -> bool {
+    handle
+        .snapshot()
+        .index
+        .get(uri)
+        .map(|entry| entry.content == content)
+        .unwrap_or(false)
+}
+
 pub(crate) async fn did_change_watched_files(
     client: &Client,
     handle: &WorkspaceHandle,
@@ -1008,6 +1022,18 @@ pub(crate) async fn did_change_watched_files(
             match event.uri.to_file_path() {
                 Ok(path) => match tokio::fs::read_to_string(&path).await {
                     Ok(content) => {
+                        // The editor already sent `textDocument/didChange` for its own edits
+                        // (handled cheaply/incrementally); saving that same content to disk
+                        // then fires this notification too, with disk content that's already
+                        // byte-identical to what the server has tracked. Doing the full,
+                        // synchronous `refresh_document` (whole-graph relink + eager evaluate)
+                        // again in that case is pure waste — skip it. A genuinely external
+                        // edit (another editor, git checkout, a formatter) still has different
+                        // content and gets the full treatment below, unchanged.
+                        if watched_file_content_already_current(handle, &uri_norm, &content) {
+                            continue;
+                        }
+
                         let refresh_start = Instant::now();
                         let warning = handle
                             .refresh_document(uri_norm.clone(), content)
@@ -1215,5 +1241,66 @@ mod tests {
         assert_eq!(params.lifecycle, "ready");
         assert_eq!(params.semantic_state_version, 8); // begin(1) + 6 bumps + complete(1) = 8
         assert_eq!(params.workspace_file_count, 0);
+    }
+
+    /// Fix for the redundant-save full-rebuild bug: a `didChangeWatchedFiles` event whose disk
+    /// content matches what the server already has tracked (the normal "I edited in VS Code,
+    /// then saved" case, since `didChange` already updated the in-memory copy) must be
+    /// recognized as a no-op so `did_change_watched_files` can skip the expensive
+    /// `refresh_document` call entirely.
+    #[tokio::test]
+    async fn watched_file_content_already_current_when_matching_tracked_content() {
+        let uri = Url::parse("file:///demo.sysml").expect("uri");
+        let mut state = ServerState::default();
+        state.index.insert(
+            uri.clone(),
+            crate::workspace::state::IndexEntry {
+                content: "package Demo { part def Thing; }".to_string(),
+                parsed: None,
+                parse_metadata: Default::default(),
+                include_in_semantic_graph: true,
+            },
+        );
+        let handle = WorkspaceHandle::spawn(state);
+
+        assert!(watched_file_content_already_current(
+            &handle,
+            &uri,
+            "package Demo { part def Thing; }"
+        ));
+    }
+
+    /// Genuinely different disk content (an external edit, e.g. another editor or `git
+    /// checkout`) must NOT be treated as a no-op — the full refresh path must still run.
+    #[tokio::test]
+    async fn watched_file_content_not_current_when_content_differs() {
+        let uri = Url::parse("file:///demo.sysml").expect("uri");
+        let mut state = ServerState::default();
+        state.index.insert(
+            uri.clone(),
+            crate::workspace::state::IndexEntry {
+                content: "package Demo { part def Thing; }".to_string(),
+                parsed: None,
+                parse_metadata: Default::default(),
+                include_in_semantic_graph: true,
+            },
+        );
+        let handle = WorkspaceHandle::spawn(state);
+
+        assert!(!watched_file_content_already_current(
+            &handle,
+            &uri,
+            "package Demo { part def Renamed; }"
+        ));
+    }
+
+    /// A URI the server has never seen before (not in `index` at all) must not be treated as
+    /// "already current" — it needs the normal ingest path, not a skip.
+    #[tokio::test]
+    async fn watched_file_content_not_current_when_uri_unknown() {
+        let uri = Url::parse("file:///unknown.sysml").expect("uri");
+        let handle = WorkspaceHandle::spawn(ServerState::default());
+
+        assert!(!watched_file_content_already_current(&handle, &uri, "anything"));
     }
 }
