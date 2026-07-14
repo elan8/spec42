@@ -16,6 +16,7 @@ pub fn built_workspace_input_from_snapshot(
 ) -> BuiltWorkspaceInput {
     BuiltWorkspaceInput {
         semantic_graph: snapshot.semantic_graph().clone(),
+        all_documents: snapshot.documents().to_vec(),
         parsed_documents: snapshot.parsed_documents().to_vec(),
         library_urls: snapshot.library_urls().to_vec(),
         workspace_root: Some(snapshot.workspace_root().to_path_buf()),

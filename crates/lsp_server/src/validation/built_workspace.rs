@@ -4,7 +4,7 @@ use std::collections::HashMap;
 use std::path::PathBuf;
 use std::sync::Arc;
 
-use sysml_model::{SemanticGraph, WorkspaceParsedDocument};
+use sysml_model::{SemanticGraph, SysmlDocument, WorkspaceParsedDocument};
 use tower_lsp::lsp_types::Url;
 
 use crate::host::config::Spec42Config;
@@ -19,6 +19,12 @@ use super::{SemanticValidationReport, ValidationReport, ValidationRequest};
 #[derive(Debug, Clone)]
 pub struct BuiltWorkspaceInput {
     pub semantic_graph: SemanticGraph,
+    /// Every document the provider loaded, including ones that failed the graph builder's
+    /// strict parse. Indexed for raw text below so `collect_diagnostics_for_document` can
+    /// re-parse them with a tolerant parser and still report syntax errors; without this,
+    /// documents dropped from `parsed_documents` silently vanish from the index and produce
+    /// zero diagnostics instead of a parse error.
+    pub all_documents: Vec<SysmlDocument>,
     pub parsed_documents: Vec<WorkspaceParsedDocument>,
     pub library_urls: Vec<Url>,
     pub workspace_root: Option<PathBuf>,
@@ -81,6 +87,17 @@ fn server_state_from_built(
     workspace_root_url: Option<Url>,
 ) -> ServerState {
     let mut index = HashMap::new();
+    for document in &built.all_documents {
+        index.insert(
+            document.uri.clone(),
+            IndexEntry {
+                content: document.content.clone(),
+                parsed: None,
+                parse_metadata: ParseMetadata::default(),
+                include_in_semantic_graph: true,
+            },
+        );
+    }
     for document in &built.parsed_documents {
         index.insert(
             document.uri.clone(),
