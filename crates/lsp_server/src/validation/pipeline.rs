@@ -1,19 +1,16 @@
-﻿use std::collections::{BTreeSet, HashMap};
+﻿use std::collections::BTreeSet;
 use std::sync::Arc;
 
-use sysml_model::{
-    build_semantic_graph_from_documents, FileSystemDocumentProvider, SemanticGraph,
-    SysmlDocument, SysmlDocumentProvider, WorkspaceParsedDocument,
-};
+use sysml_model::{build_semantic_graph_from_documents, FileSystemDocumentProvider, SysmlDocumentProvider};
 use tower_lsp::lsp_types::{Diagnostic, Url};
 
 use crate::analysis::diagnostics_core;
 use crate::host::config::Spec42Config;
-use crate::workspace::state::{IndexEntry, ParseMetadata, ServerState};
 use crate::workspace::indexed_text_or_empty;
+use crate::workspace::state::ServerState;
 
+use super::built_workspace::{semantic_report_from_built_workspace, BuiltWorkspaceInput};
 use super::discovery::{discover_target_files, path_to_file_url, resolve_workspace_root};
-use super::report::{build_advice, summarize};
 use super::{SemanticValidationReport, ValidatedDocument, ValidationReport, ValidationRequest};
 
 pub(super) fn validate_paths(
@@ -23,13 +20,15 @@ pub(super) fn validate_paths(
     Ok(validate_paths_with_semantics(config, request)?.validation)
 }
 
+/// Scans `request.targets`/`request.library_paths` from disk and builds a fresh graph, then
+/// delegates report assembly to [`semantic_report_from_built_workspace`] — the same function
+/// `crates/server/src/host_snapshot.rs` uses for the production `spec42 check`/MCP/API path, so
+/// there is exactly one implementation of "turn a built graph into a validation report" (see
+/// `docs/architecture-audit.md` P1-2). This function only owns the disk-scanning half.
 pub(super) fn validate_paths_with_semantics(
     config: &Arc<Spec42Config>,
     request: ValidationRequest,
 ) -> Result<SemanticValidationReport, String> {
-    for hook in &config.pipeline_hooks {
-        hook.before_validate(&request)?;
-    }
     let workspace_root = resolve_workspace_root(&request)?;
     let target_files = discover_target_files(&request.targets)?;
     if target_files.is_empty() {
@@ -46,103 +45,24 @@ pub(super) fn validate_paths_with_semantics(
     )
     .with_full_library_scan(crate::workspace::library_closure::library_full_scan_enabled());
 
-    // Load documents directly (rather than via `build_semantic_graph_with_provider`) so that
-    // files which fail the graph builder's strict parse still get their raw text indexed below —
-    // `collect_document_diagnostics` re-parses that text with a tolerant parser to report syntax
-    // errors, which only works if the text made it into `state.index` in the first place.
     let all_documents = provider.load_documents()?;
-    let (semantic_graph, parsed_documents) =
-        build_semantic_graph_from_documents(&all_documents)?;
+    let (semantic_graph, parsed_documents) = build_semantic_graph_from_documents(&all_documents)?;
 
-    let state = server_state_from_documents(
-        &all_documents,
-        &parsed_documents,
-        semantic_graph,
-        workspace_root.clone(),
-        &request.library_paths,
-    )?;
-
-    let documents =
-        collect_target_documents(&state, config, &target_files, request.strict_diagnostics)?;
-    let summary = summarize(&documents);
-    let advice = build_advice(&documents, request.library_paths.is_empty());
-    let semantic_model = workspace::project_semantic_model(&state.semantic_graph, &target_files)
-        .map_err(|err| err.to_string())?;
-
-    let mut report = ValidationReport {
-        workspace_root: workspace_root.map(|path| path.display().to_string()),
-        resolved_library_paths: request
-            .library_paths
-            .iter()
-            .map(|path| path.display().to_string())
-            .collect(),
-        documents,
-        summary,
-        advice,
-    };
-    for hook in &config.pipeline_hooks {
-        hook.after_validate(&mut report)?;
-    }
-    Ok(SemanticValidationReport {
-        validation: report,
-        semantic_model,
-    })
-}
-
-fn server_state_from_documents(
-    all_documents: &[SysmlDocument],
-    parsed_documents: &[WorkspaceParsedDocument],
-    semantic_graph: SemanticGraph,
-    workspace_root: Option<std::path::PathBuf>,
-    library_paths: &[std::path::PathBuf],
-) -> Result<ServerState, String> {
-    let workspace_root_url = workspace_root
-        .as_ref()
-        .map(|path| path_to_file_url(path.as_path()))
-        .transpose()?;
-    let library_root_urls = library_paths
+    let library_urls = request
+        .library_paths
         .iter()
         .map(|path| path_to_file_url(path.as_path()))
         .collect::<Result<Vec<_>, _>>()?;
 
-    let mut index = HashMap::new();
-    for document in all_documents {
-        index.insert(
-            document.uri.clone(),
-            IndexEntry {
-                content: document.content.clone(),
-                parsed: None,
-                parse_metadata: ParseMetadata::default(),
-                include_in_semantic_graph: true,
-            },
-        );
-    }
-    for document in parsed_documents {
-        index.insert(
-            document.uri.clone(),
-            IndexEntry {
-                content: document.content.clone(),
-                parsed: Some(document.parsed.clone()),
-                parse_metadata: ParseMetadata {
-                    parse_time_ms: document.parse_time_ms,
-                    parse_cached: document.parse_cached,
-                },
-                include_in_semantic_graph: true,
-            },
-        );
-    }
-
-    let mut session = workspace::WorkspaceSession::new();
-    session.begin_startup();
-    session.complete_startup();
-    Ok(ServerState {
-        workspace_roots: workspace_root_url.iter().cloned().collect(),
-        library_paths: library_root_urls,
+    let built = BuiltWorkspaceInput {
         semantic_graph,
-        index,
-        session,
-        ..ServerState::default()
-    })
+        all_documents,
+        parsed_documents,
+        library_urls,
+        workspace_root,
+    };
+
+    semantic_report_from_built_workspace(config, &built, request)
 }
 
 pub(super) fn collect_target_documents(
