@@ -33,9 +33,9 @@ pub use analysis::{
 pub use common::util::{merge_host_and_client_library_paths, parse_library_paths_from_value};
 pub use syntax::ast_util::{identification_name, span_to_range, span_to_source_range, SourceRange};
 pub use validation::{
-    semantic_report_from_built_workspace, validate_paths, validate_paths_with_semantics,
-    BuiltWorkspaceInput, SemanticValidationReport, ValidatedDocument, ValidationReport,
-    ValidationRequest, ValidationSummary,
+    built_workspace_input_from_snapshot, semantic_report_from_built_workspace, validate_paths,
+    validate_paths_with_semantics, BuiltWorkspaceInput, SemanticValidationReport,
+    ValidatedDocument, ValidationReport, ValidationRequest, ValidationSummary,
 };
 pub use views::dto::{
     SysmlClearCacheResultDto, SysmlFeatureInspectorElementDto, SysmlFeatureInspectorElementRefDto,

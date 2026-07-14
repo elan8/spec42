@@ -4,11 +4,10 @@ use std::sync::Arc;
 use crate::host::config::Spec42Config;
 use serde::Serialize;
 use tower_lsp::lsp_types::Diagnostic;
-use workspace::HostSemanticProjection;
+use workspace::{HostSemanticProjection, Spec42Engine};
 
 mod built_workspace;
 mod discovery;
-mod pipeline;
 mod report;
 
 #[derive(Debug, Clone)]
@@ -51,25 +50,38 @@ pub struct ValidationSummary {
 }
 
 pub fn validate_paths(
+    engine: &Spec42Engine,
     config: &Arc<Spec42Config>,
     request: ValidationRequest,
 ) -> Result<ValidationReport, String> {
-    pipeline::validate_paths(config, request)
+    built_workspace::validate_paths(engine, config, request)
 }
 
 pub fn validate_paths_with_semantics(
+    engine: &Spec42Engine,
     config: &Arc<Spec42Config>,
     request: ValidationRequest,
 ) -> Result<SemanticValidationReport, String> {
-    pipeline::validate_paths_with_semantics(config, request)
+    built_workspace::validate_paths_with_semantics(engine, config, request)
 }
 
-pub use built_workspace::{semantic_report_from_built_workspace, BuiltWorkspaceInput};
+pub use built_workspace::{
+    built_workspace_input_from_snapshot, semantic_report_from_built_workspace, BuiltWorkspaceInput,
+};
 
 #[cfg(test)]
 mod tests {
     use super::*;
     use tower_lsp::lsp_types::NumberOrString;
+
+    fn test_engine(cache: &tempfile::TempDir, library_paths: Vec<PathBuf>) -> Spec42Engine {
+        workspace::EngineBuilder::default()
+            .cache_dir(cache.path().to_path_buf())
+            .no_stdlib(true)
+            .library_paths(library_paths)
+            .build()
+            .expect("engine")
+    }
 
     fn timer_like_model() -> &'static str {
         r#"
@@ -123,9 +135,12 @@ package RiskTrace {
 "#,
         )
         .expect("write model");
+        let cache = tempfile::tempdir().expect("cache dir");
+        let engine = test_engine(&cache, Vec::new());
         let config = Arc::new(crate::default_server_config());
 
         let report = validate_paths_with_semantics(
+            &engine,
             &config,
             ValidationRequest {
                 targets: vec![model_path],
@@ -174,9 +189,12 @@ package UseLibrary {
             "package LibraryTypes { part def LibraryComponent; }",
         )
         .expect("write library");
+        let cache = tempfile::tempdir().expect("cache dir");
+        let engine = test_engine(&cache, vec![library_root.clone()]);
         let config = Arc::new(crate::default_server_config());
 
         let report = validate_paths_with_semantics(
+            &engine,
             &config,
             ValidationRequest {
                 targets: vec![model_path],
@@ -204,9 +222,12 @@ package UseLibrary {
     fn validate_paths_suggests_library_advice_when_imported_types_are_unresolved() {
         let temp = tempfile::tempdir().expect("temp dir");
         let model_path = write_timer_fixture(&temp);
+        let cache = tempfile::tempdir().expect("cache dir");
+        let engine = test_engine(&cache, Vec::new());
         let config = Arc::new(crate::default_server_config());
 
         let report = validate_paths(
+            &engine,
             &config,
             ValidationRequest {
                 targets: vec![model_path],
@@ -252,9 +273,12 @@ package UseLibrary {
         let temp = tempfile::tempdir().expect("temp dir");
         let model_path = write_timer_fixture(&temp);
         let stdlib_root = write_stdlib_fixture(&temp);
+        let cache = tempfile::tempdir().expect("cache dir");
+        let engine = test_engine(&cache, vec![stdlib_root.clone()]);
         let config = Arc::new(crate::default_server_config());
 
         let report = validate_paths(
+            &engine,
             &config,
             ValidationRequest {
                 targets: vec![model_path],

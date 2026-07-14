@@ -9,6 +9,8 @@ use sysml_model::{
     build_semantic_graph_with_provider, FileSystemDocumentProvider, SysmlDocumentProvider,
 };
 
+use super::harness::test_engine;
+
 #[test]
 fn built_workspace_report_matches_full_validation_pipeline() {
     let temp = tempfile::tempdir().expect("tempdir");
@@ -34,8 +36,11 @@ package RiskTrace {
         strict_diagnostics: false,
     };
     let config = Arc::new(default_server_config());
+    let cache = tempfile::tempdir().expect("cache dir");
+    let engine = test_engine(&cache, Vec::new());
 
-    let full = validate_paths_with_semantics(&config, request.clone()).expect("full report");
+    let full =
+        validate_paths_with_semantics(&engine, &config, request.clone()).expect("full report");
 
     let provider = FileSystemDocumentProvider::new(
         model_path.clone(),
@@ -138,12 +143,25 @@ fn built_workspace_reports_hard_parse_error() {
         library_urls: Vec::new(),
         workspace_root: model_path.parent().map(PathBuf::from),
     };
-    let adapted =
-        semantic_report_from_built_workspace(&config, &built, request).expect("built report");
+    let adapted = semantic_report_from_built_workspace(&config, &built, request.clone())
+        .expect("built report");
 
     assert_eq!(adapted.validation.documents.len(), 1);
     assert!(
         !adapted.validation.documents[0].diagnostics.is_empty(),
         "expected a parse-error diagnostic for the malformed document, got none"
+    );
+
+    // Same check through the engine-based path `validate_paths_with_semantics` now uses in
+    // production (`crates/server/src/host_snapshot.rs`'s `spec42 check`/MCP/HTTP-API callers) —
+    // confirms the fix isn't limited to the manually-constructed `BuiltWorkspaceInput` above.
+    let cache = tempfile::tempdir().expect("cache dir");
+    let engine = test_engine(&cache, Vec::new());
+    let via_engine = validate_paths_with_semantics(&engine, &config, request)
+        .expect("engine-based validation report");
+    assert_eq!(via_engine.validation.documents.len(), 1);
+    assert!(
+        !via_engine.validation.documents[0].diagnostics.is_empty(),
+        "expected a parse-error diagnostic via the engine path, got none"
     );
 }

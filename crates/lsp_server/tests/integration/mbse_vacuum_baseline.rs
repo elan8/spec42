@@ -33,8 +33,11 @@ fn mbse_vacuum_example_diagnostic_baseline() {
         );
     }
 
+    let cache = tempfile::tempdir().expect("cache dir");
+    let engine = super::harness::test_engine(&cache, Vec::new());
     let config = Arc::new(default_server_config());
     let report = validate_paths(
+        &engine,
         &config,
         ValidationRequest {
             targets: vec![root.clone()],

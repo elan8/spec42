@@ -83,8 +83,11 @@ fn validate_paths_resolves_view_expose_without_library_duplicates() {
     write_webshop_like_workspace(&workspace);
     write_duplicate_library_root(&library);
 
+    let cache = tempfile::tempdir().expect("cache dir");
+    let engine = super::harness::test_engine(&cache, vec![library.clone()]);
     let config = Arc::new(default_server_config());
     let report = validate_paths(
+        &engine,
         &config,
         ValidationRequest {
             targets: vec![workspace.clone()],
@@ -122,8 +125,11 @@ fn validate_paths_real_webshop_has_no_ambiguous_view_expose() {
         return;
     }
 
+    let cache = tempfile::tempdir().expect("cache dir");
+    let engine = super::harness::test_engine(&cache, vec![library.clone()]);
     let config = Arc::new(default_server_config());
     let report = validate_paths(
+        &engine,
         &config,
         ValidationRequest {
             targets: vec![workspace.clone()],

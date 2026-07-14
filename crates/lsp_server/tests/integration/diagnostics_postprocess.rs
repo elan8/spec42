@@ -18,8 +18,11 @@ part def Carrier {
     )
     .expect("write");
 
+    let cache = tempfile::tempdir().expect("cache dir");
+    let engine = super::harness::test_engine(&cache, Vec::new());
     let config = Arc::new(default_server_config());
     let report = validate_paths(
+        &engine,
         &config,
         ValidationRequest {
             targets: vec![path],
@@ -72,8 +75,11 @@ fn check_keeps_semantic_warnings_after_parse_error_by_default() {
     )
     .expect("write");
 
+    let cache = tempfile::tempdir().expect("cache dir");
+    let engine = super::harness::test_engine(&cache, Vec::new());
     let config = Arc::new(default_server_config());
     let report = validate_paths(
+        &engine,
         &config,
         ValidationRequest {
             targets: vec![path],

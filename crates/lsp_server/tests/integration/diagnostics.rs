@@ -8,10 +8,13 @@ use std::sync::Arc;
 
 fn validate_inline_sysml(filename: &str, content: &str) -> Vec<tower_lsp::lsp_types::Diagnostic> {
     let temp_dir = tempfile::tempdir().expect("tempdir");
+    let cache = tempfile::tempdir().expect("cache dir");
     let file_path = temp_dir.path().join(filename);
     fs::write(&file_path, content).expect("write sysml fixture");
+    let engine = super::harness::test_engine(&cache, Vec::new());
     let config = Arc::new(default_server_config());
     let report = validate_paths(
+        &engine,
         &config,
         ValidationRequest {
             targets: vec![file_path.clone()],

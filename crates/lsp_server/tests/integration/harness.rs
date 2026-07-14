@@ -1,10 +1,22 @@
 //! Shared LSP integration test harness: spawn server, send/read JSON-RPC messages.
 
 use std::io::{Read, Write};
+use std::path::PathBuf;
 use std::process::{Child, Command, Stdio};
 use std::sync::atomic::{AtomicI64, Ordering};
 
 pub static NEXT_ID: AtomicI64 = AtomicI64::new(1);
+
+/// Minimal `workspace::Spec42Engine` for `validate_paths`/`validate_paths_with_semantics` calls
+/// in these tests — mirrors `crates/workspace/tests/support/comparison_fixtures.rs::test_engine`.
+pub fn test_engine(cache: &tempfile::TempDir, library_paths: Vec<PathBuf>) -> workspace::Spec42Engine {
+    workspace::EngineBuilder::default()
+        .cache_dir(cache.path().to_path_buf())
+        .no_stdlib(true)
+        .library_paths(library_paths)
+        .build()
+        .expect("engine")
+}
 
 pub const INTEGRATION_LAUNCH_MODE: &str = "spec42-core-test-binary";
 

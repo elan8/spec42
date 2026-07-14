@@ -25,10 +25,10 @@ use cli::{
     ExplainDiagnosticArgs, ModelSummaryArgs, OutputFormat, StdlibCommand, SysandCommand,
 };
 pub use environment::DoctorReport;
-use environment::{build_doctor_report, resolve_environment};
-use host_snapshot::{load_snapshot_for_check, semantic_report_from_snapshot};
+use environment::{build_doctor_report, build_engine, resolve_environment};
 use lsp_server::{
-    SemanticValidationReport, ValidationReport, ValidationRequest, ValidationSummary,
+    validate_paths_with_semantics, SemanticValidationReport, ValidationReport, ValidationRequest,
+    ValidationSummary,
 };
 use workspace::{HostSemanticModelNode, HostSemanticModelRelationship};
 use mcp::schemas::Spec42GlobalParams;
@@ -41,10 +41,11 @@ use stdlib::{managed_status, remove_standard_library};
 pub fn perform_check(cli: &Cli, args: &CheckArgs) -> Result<ValidationReport, String> {
     let references_stdlib = environment::workspace_references_standard_library(&args.path);
     let environment = resolve_environment(cli)?;
-    let snapshot = load_snapshot_for_check(cli, args)?;
-    let mut report = semantic_report_from_snapshot(
-        &snapshot,
-        &environment,
+    let engine = build_engine(cli)?;
+    let config = Arc::new(lsp_server::default_server_config());
+    let mut report = validate_paths_with_semantics(
+        &engine,
+        &config,
         ValidationRequest {
             targets: vec![args.path.clone()],
             workspace_root: args.workspace_root.clone(),
@@ -52,22 +53,19 @@ pub fn perform_check(cli: &Cli, args: &CheckArgs) -> Result<ValidationReport, St
             parallel_enabled: true,
             strict_diagnostics: args.strict_diagnostics,
         },
-    )?;
+    )?
+    .validation;
     if references_stdlib
         && environment.stdlib_path.is_none()
         && !cli.no_stdlib
-        && !report
-            .validation
-            .advice
-            .iter()
-            .any(|line| line.contains("standard library"))
+        && !report.advice.iter().any(|line| line.contains("standard library"))
     {
-        report.validation.advice.push(
+        report.advice.push(
             "This workspace references standard-library packages (for example ScalarValues or ISQ); run with the embedded/bundled standard library available or pass `--stdlib-path`."
                 .to_string(),
         );
     }
-    Ok(report.validation)
+    Ok(report)
 }
 
 /// Build a CLI value from MCP global parameters.
@@ -102,10 +100,11 @@ pub fn perform_check_with_semantics(
 ) -> Result<SemanticValidationReport, String> {
     let references_stdlib = environment::workspace_references_standard_library(&args.path);
     let environment = resolve_environment(cli)?;
-    let snapshot = load_snapshot_for_check(cli, args)?;
-    let mut report = semantic_report_from_snapshot(
-        &snapshot,
-        &environment,
+    let engine = build_engine(cli)?;
+    let config = Arc::new(lsp_server::default_server_config());
+    let mut report = validate_paths_with_semantics(
+        &engine,
+        &config,
         ValidationRequest {
             targets: vec![args.path.clone()],
             workspace_root: args.workspace_root.clone(),
