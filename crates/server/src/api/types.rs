@@ -2,10 +2,8 @@ use serde::{Deserialize, Serialize};
 
 use crate::ai_tools::ExplainDiagnosticResponse;
 use crate::cli::DiagramExportFormat;
-use crate::{
-    DoctorReport, ModelSummaryResponse, SemanticModelNode, SemanticModelRelationship,
-    SemanticValidationReport, ValidationReport,
-};
+use crate::{DoctorReport, ModelSummaryResponse, SemanticValidationReport, ValidationReport};
+use workspace::{HostSemanticModelNode, HostSemanticModelRelationship};
 
 #[derive(Debug, Clone, Serialize)]
 pub struct HealthResponse {
@@ -61,16 +59,16 @@ pub struct DiagnosticCodesResponse {
 
 #[derive(Debug, Clone, Serialize)]
 pub struct ElementSearchResponse {
-    pub items: Vec<SemanticModelNode>,
+    pub items: Vec<HostSemanticModelNode>,
     pub total: usize,
     pub truncated: bool,
 }
 
 #[derive(Debug, Clone, Serialize)]
 pub struct ElementDetail {
-    pub element: SemanticModelNode,
-    pub incoming_relationships: Vec<SemanticModelRelationship>,
-    pub outgoing_relationships: Vec<SemanticModelRelationship>,
+    pub element: HostSemanticModelNode,
+    pub incoming_relationships: Vec<HostSemanticModelRelationship>,
+    pub outgoing_relationships: Vec<HostSemanticModelRelationship>,
 }
 
 pub type ValidateResponse = ValidationReport;

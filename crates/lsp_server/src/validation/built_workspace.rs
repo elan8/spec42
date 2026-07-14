@@ -11,7 +11,7 @@ use crate::host::config::Spec42Config;
 use crate::workspace::state::{IndexEntry, ParseMetadata, ServerState};
 
 use super::discovery::{discover_target_files, path_to_file_url, resolve_workspace_root};
-use super::pipeline::{collect_target_documents, project_semantic_model};
+use super::pipeline::collect_target_documents;
 use super::report::{build_advice, summarize};
 use super::{SemanticValidationReport, ValidationReport, ValidationRequest};
 
@@ -53,11 +53,8 @@ pub fn semantic_report_from_built_workspace(
         collect_target_documents(&state, config, &target_files, request.strict_diagnostics)?;
     let summary = summarize(&documents);
     let advice = build_advice(&documents, request.library_paths.is_empty());
-    let target_urls = target_files
-        .iter()
-        .map(|path| path_to_file_url(path.as_path()))
-        .collect::<Result<std::collections::BTreeSet<_>, _>>()?;
-    let semantic_model = project_semantic_model(&state, &target_urls);
+    let semantic_model = workspace::project_semantic_model(&state.semantic_graph, &target_files)
+        .map_err(|err| err.to_string())?;
 
     let mut report = ValidationReport {
         workspace_root: workspace_root.map(|path| path.display().to_string()),

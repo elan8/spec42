@@ -3,7 +3,8 @@ use std::sync::Arc;
 
 use crate::host::config::Spec42Config;
 use serde::Serialize;
-use tower_lsp::lsp_types::{Diagnostic, Range};
+use tower_lsp::lsp_types::Diagnostic;
+use workspace::HostSemanticProjection;
 
 mod built_workspace;
 mod discovery;
@@ -32,30 +33,7 @@ pub struct ValidationReport {
 #[derive(Debug, Clone, Serialize)]
 pub struct SemanticValidationReport {
     pub validation: ValidationReport,
-    pub semantic_model: SemanticModelProjection,
-}
-
-#[derive(Debug, Clone, Serialize, Default)]
-pub struct SemanticModelProjection {
-    pub nodes: Vec<SemanticModelNode>,
-    pub relationships: Vec<SemanticModelRelationship>,
-}
-
-#[derive(Debug, Clone, Serialize, PartialEq, Eq)]
-pub struct SemanticModelNode {
-    pub uri: String,
-    pub qualified_name: String,
-    pub name: String,
-    pub element_kind: String,
-    pub range: Range,
-    pub parent: Option<String>,
-}
-
-#[derive(Debug, Clone, Serialize, PartialEq, Eq)]
-pub struct SemanticModelRelationship {
-    pub source: String,
-    pub target: String,
-    pub kind: String,
+    pub semantic_model: HostSemanticProjection,
 }
 
 #[derive(Debug, Clone, Serialize)]
@@ -169,7 +147,7 @@ package RiskTrace {
             node.uri.ends_with("RiskTrace.sysml") && node.range.start.line <= node.range.end.line
         }));
         assert!(report.semantic_model.relationships.iter().any(|rel| {
-            rel.kind == "satisfy"
+            rel.kind.as_str() == "satisfy"
                 && rel.source.ends_with("verifiedControl")
                 && rel.target.ends_with("control")
         }));

@@ -19,10 +19,8 @@ use crate::api::ApiServerState;
 use crate::cli::{CheckArgs, OutputFormat};
 use crate::diagrams;
 use crate::mcp::diagnostic_catalog;
-use crate::{
-    perform_check, perform_check_with_semantics, perform_doctor, perform_model_summary,
-    SemanticModelNode, SemanticModelProjection, SemanticModelRelationship,
-};
+use crate::{perform_check, perform_check_with_semantics, perform_doctor, perform_model_summary};
+use workspace::{HostSemanticModelNode, HostSemanticModelRelationship, HostSemanticProjection};
 
 #[derive(Debug, Deserialize)]
 pub struct ExplainQuery {
@@ -209,7 +207,7 @@ pub async fn elements(
     let kind = query.kind.as_deref().map(str::to_lowercase);
     let uri = query.uri.clone();
 
-    let mut matches: Vec<SemanticModelNode> = projection
+    let mut matches: Vec<HostSemanticModelNode> = projection
         .nodes
         .into_iter()
         .filter(|node| {
@@ -221,7 +219,7 @@ pub async fn elements(
                 }
             }
             if let Some(ref expected_kind) = kind {
-                if node.element_kind.to_lowercase() != *expected_kind {
+                if node.element_kind.as_str().to_lowercase() != *expected_kind {
                     return false;
                 }
             }
@@ -261,13 +259,13 @@ pub async fn element_by_name(
             ApiError::not_found(format!("No element with qualified name '{qualified_name}'"))
         })?;
 
-    let incoming: Vec<SemanticModelRelationship> = projection
+    let incoming: Vec<HostSemanticModelRelationship> = projection
         .relationships
         .iter()
         .filter(|rel| rel.target == qualified_name)
         .cloned()
         .collect();
-    let outgoing: Vec<SemanticModelRelationship> = projection
+    let outgoing: Vec<HostSemanticModelRelationship> = projection
         .relationships
         .iter()
         .filter(|rel| rel.source == qualified_name)
@@ -328,7 +326,7 @@ pub async fn openapi_json() -> ApiResult<Response> {
 async fn load_projection(
     state: &ApiServerState,
     path: std::path::PathBuf,
-) -> ApiResult<SemanticModelProjection> {
+) -> ApiResult<HostSemanticProjection> {
     let cli = state.cli.clone();
     let workspace_root = state.workspace_root.clone();
     let report = tokio::task::spawn_blocking(move || {

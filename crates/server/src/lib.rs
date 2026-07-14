@@ -28,9 +28,9 @@ pub use environment::DoctorReport;
 use environment::{build_doctor_report, resolve_environment};
 use host_snapshot::{load_snapshot_for_check, semantic_report_from_snapshot};
 use lsp_server::{
-    SemanticModelNode, SemanticModelProjection, SemanticModelRelationship, SemanticValidationReport,
-    ValidationReport, ValidationRequest, ValidationSummary,
+    SemanticValidationReport, ValidationReport, ValidationRequest, ValidationSummary,
 };
+use workspace::{HostSemanticModelNode, HostSemanticModelRelationship};
 use mcp::schemas::Spec42GlobalParams;
 use reports::{apply_baseline, emit_validation_report};
 use serde::Serialize;
@@ -143,8 +143,8 @@ pub struct ModelSummaryTruncation {
 pub struct ModelSummaryResponse {
     pub workspace_root: Option<String>,
     pub summary: ValidationSummary,
-    pub nodes: Vec<SemanticModelNode>,
-    pub relationships: Vec<SemanticModelRelationship>,
+    pub nodes: Vec<HostSemanticModelNode>,
+    pub relationships: Vec<HostSemanticModelRelationship>,
     pub truncation: ModelSummaryTruncation,
 }
 
