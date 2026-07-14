@@ -14,6 +14,7 @@ pub struct FileSystemDocumentProvider {
     target: PathBuf,
     workspace_root: Option<PathBuf>,
     library_paths: Vec<PathBuf>,
+    full_library_scan: bool,
 }
 
 impl FileSystemDocumentProvider {
@@ -26,7 +27,15 @@ impl FileSystemDocumentProvider {
             target,
             workspace_root,
             library_paths,
+            full_library_scan: false,
         }
+    }
+
+    /// When enabled, every file under each library root is loaded wholesale
+    /// instead of only the files reachable from the workspace's import closure.
+    pub fn with_full_library_scan(mut self, enabled: bool) -> Self {
+        self.full_library_scan = enabled;
+        self
     }
 }
 
@@ -69,40 +78,67 @@ impl SysmlDocumentProvider for FileSystemDocumentProvider {
             });
         }
 
-        let library_roots: Vec<String> = self
-            .library_paths
-            .iter()
-            .map(|path| {
-                canonicalize_or_self(path)
-                    .to_string_lossy()
-                    .replace('\\', "/")
-            })
-            .collect();
-        if !library_roots.is_empty() && !workspace_file_contents.is_empty() {
-            let workspace_sources: Vec<WorkspaceSource<'_>> = workspace_path_hints
+        if self.full_library_scan {
+            for library_path in &self.library_paths {
+                let library_root = canonicalize_or_self(library_path);
+                if !library_root.exists() {
+                    continue;
+                }
+                for path in collect_sysml_files(&library_root)? {
+                    let content = fs::read_to_string(&path)
+                        .map_err(|err| format!("failed to read {}: {err}", path.display()))?;
+                    let path_hint = path
+                        .strip_prefix(&library_root)
+                        .ok()
+                        .map(|relative| relative.to_string_lossy().replace('\\', "/"))
+                        .unwrap_or_else(|| path.display().to_string());
+                    let uri = path_to_url(&path)?;
+                    documents.push(SysmlDocument {
+                        uri,
+                        content,
+                        path_hint: Some(path_hint),
+                        source_kind: SysmlDocumentSourceKind::Library,
+                        sha256: None,
+                        byte_size: None,
+                    });
+                }
+            }
+        } else {
+            let library_roots: Vec<String> = self
+                .library_paths
                 .iter()
-                .zip(workspace_file_contents.iter())
-                .map(|(path_hint, content)| WorkspaceSource {
-                    path: path_hint.as_str(),
-                    content: content.as_str(),
+                .map(|path| {
+                    canonicalize_or_self(path)
+                        .to_string_lossy()
+                        .replace('\\', "/")
                 })
                 .collect();
-            let loaded = resolve_library_closure(
-                &workspace_sources,
-                &library_roots,
-                &LibraryClosureOptions::default(),
-            )?;
-            for file in loaded {
-                let path = PathBuf::from(&file.root).join(&file.path);
-                let uri = path_to_url(&path)?;
-                documents.push(SysmlDocument {
-                    uri,
-                    content: file.content,
-                    path_hint: Some(file.path.replace('\\', "/")),
-                    source_kind: SysmlDocumentSourceKind::Library,
-                    sha256: None,
-                    byte_size: None,
-                });
+            if !library_roots.is_empty() && !workspace_file_contents.is_empty() {
+                let workspace_sources: Vec<WorkspaceSource<'_>> = workspace_path_hints
+                    .iter()
+                    .zip(workspace_file_contents.iter())
+                    .map(|(path_hint, content)| WorkspaceSource {
+                        path: path_hint.as_str(),
+                        content: content.as_str(),
+                    })
+                    .collect();
+                let loaded = resolve_library_closure(
+                    &workspace_sources,
+                    &library_roots,
+                    &LibraryClosureOptions::default(),
+                )?;
+                for file in loaded {
+                    let path = PathBuf::from(&file.root).join(&file.path);
+                    let uri = path_to_url(&path)?;
+                    documents.push(SysmlDocument {
+                        uri,
+                        content: file.content,
+                        path_hint: Some(file.path.replace('\\', "/")),
+                        source_kind: SysmlDocumentSourceKind::Library,
+                        sha256: None,
+                        byte_size: None,
+                    });
+                }
             }
         }
 
@@ -120,7 +156,7 @@ fn collect_sysml_files(root: &Path) -> Result<Vec<PathBuf>, String> {
         if path
             .extension()
             .and_then(|ext| ext.to_str())
-            .is_some_and(|ext| ext.eq_ignore_ascii_case("sysml"))
+            .is_some_and(|ext| ext.eq_ignore_ascii_case("sysml") || ext.eq_ignore_ascii_case("kerml"))
         {
             paths.push(path.to_path_buf());
         }
@@ -254,6 +290,102 @@ package Local {
         assert!(graph
             .node_ids_for_qualified_name("Unused::NeverLoaded")
             .is_none());
+    }
+
+    #[test]
+    fn provider_with_full_library_scan_loads_unreferenced_library_files() {
+        let temp = tempfile::tempdir().expect("tempdir");
+        let workspace = temp.path().join("workspace");
+        let lib = temp.path().join("lib");
+        fs::create_dir_all(&workspace).expect("workspace dir");
+        fs::create_dir_all(&lib).expect("lib dir");
+        fs::write(
+            workspace.join("App.sysml"),
+            r#"
+package App {
+    import Local::*;
+    part appRoot;
+}
+package Local {
+    private import ScalarValues::Real;
+    part def LocalPart { attribute x : Real; }
+}
+"#,
+        )
+        .expect("workspace model");
+        fs::write(
+            lib.join("Unused.sysml"),
+            "package Unused { part def NeverLoaded; }",
+        )
+        .expect("unused library");
+        fs::write(
+            lib.join("ScalarValues.sysml"),
+            "standard library package ScalarValues { attribute def Real; }",
+        )
+        .expect("scalar values");
+
+        let provider = FileSystemDocumentProvider::new(
+            workspace.clone(),
+            Some(workspace.clone()),
+            vec![lib.clone()],
+        )
+        .with_full_library_scan(true);
+        let documents = provider.load_documents().expect("documents");
+        let paths: Vec<_> = documents
+            .iter()
+            .filter_map(|doc| doc.path_hint.as_deref())
+            .collect();
+        assert!(
+            paths.iter().any(|path| path.contains("Unused.sysml")),
+            "full library scan should load every library file, including unreferenced ones, got {paths:?}"
+        );
+
+        let (graph, _) = build_semantic_graph_with_provider(&provider).expect("graph");
+        assert!(
+            graph
+                .node_ids_for_qualified_name("Unused::NeverLoaded")
+                .is_some(),
+            "Unused::NeverLoaded should reach the graph under full library scan"
+        );
+    }
+
+    #[test]
+    fn provider_loads_kerml_files_from_workspace_root() {
+        let temp = tempfile::tempdir().expect("tempdir");
+        let workspace = temp.path().join("workspace");
+        fs::create_dir_all(&workspace).expect("workspace dir");
+        fs::write(
+            workspace.join("App.sysml"),
+            "package App { part appRoot; }",
+        )
+        .expect("workspace model");
+        fs::write(
+            workspace.join("Core.kerml"),
+            "package Core { classifier Thing; }",
+        )
+        .expect("kerml source");
+
+        let provider =
+            FileSystemDocumentProvider::new(workspace.clone(), Some(workspace.clone()), Vec::new());
+        let documents = provider.load_documents().expect("documents");
+        let paths: Vec<_> = documents
+            .iter()
+            .filter_map(|doc| doc.path_hint.as_deref())
+            .collect();
+        assert!(
+            paths.iter().any(|path| path.ends_with("Core.kerml")),
+            "expected Core.kerml to be discovered, got {paths:?}"
+        );
+
+        let (graph, _) = build_semantic_graph_with_provider(&provider).expect("graph");
+        assert_eq!(
+            graph
+                .node_ids_for_qualified_name("Core::Thing")
+                .map(|ids| ids.len())
+                .unwrap_or(0),
+            1,
+            "Core::Thing from the .kerml source should reach the semantic graph"
+        );
     }
 
     #[test]
