@@ -20,6 +20,7 @@ pub use context::{
 };
 pub use metadata::HostArtifactMetadata;
 pub use projection::{
+    HostExpression, HostExpressionArgument, HostFeatureValue, HostMultiplicity,
     HostSemanticModelNode, HostSemanticModelRelationship, HostSemanticProjection,
 };
 pub use request::{ValidationTiming, WorkspaceLoadRequest};
