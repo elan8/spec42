@@ -68,6 +68,18 @@ pub struct HostSemanticModelRelationship {
     /// Opaque semantic ID of the relationship owner, when present.
     #[serde(default)]
     pub owner_id: Option<String>,
+    /// All related elements of this relationship. For binary relationships this
+    /// contains the source and target IDs in declaration order.
+    #[serde(default)]
+    pub related_element_ids: Vec<String>,
+    /// Source range of the relationship declaration when the semantic builder
+    /// retained one. Absence means the graph fact is resolved but has no
+    /// declaration range (for example a derived relationship).
+    #[serde(default)]
+    pub range: Option<TextRange>,
+    /// Whether this relationship was implied rather than explicitly declared.
+    #[serde(default)]
+    pub is_implied: bool,
     /// Concrete relationship metaclass; `kind` remains the graph-resolution fact.
     #[serde(default)]
     pub metaclass: HostRelationshipMetaclass,

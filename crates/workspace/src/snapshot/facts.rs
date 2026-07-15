@@ -127,16 +127,6 @@ pub(crate) fn project_host_semantic_model(
         .iter()
         .map(|node| (node.qualified_name.as_str(), node.semantic_id.as_str()))
         .collect::<HashMap<_, _>>();
-    let owner_ids = nodes
-        .iter()
-        .filter_map(|node| {
-            node.parent
-                .as_deref()
-                .and_then(|parent| semantic_ids.get(parent).copied())
-                .map(|owner_id| (node.qualified_name.as_str(), owner_id))
-        })
-        .collect::<HashMap<_, _>>();
-
     let mut relationships = Vec::new();
     for node in &nodes {
         let Some(parent) = node.parent.as_deref() else {
@@ -155,6 +145,9 @@ pub(crate) fn project_host_semantic_model(
             source_id: owner_id.to_owned(),
             target_id: node.semantic_id.clone(),
             owner_id: Some(owner_id.to_owned()),
+            related_element_ids: vec![owner_id.to_owned(), node.semantic_id.clone()],
+            range: Some(node.range),
+            is_implied: false,
             metaclass: HostRelationshipMetaclass::Membership,
             source: parent.to_owned(),
             target: node.qualified_name.clone(),
@@ -174,9 +167,9 @@ pub(crate) fn project_host_semantic_model(
                 .copied()
                 .unwrap_or_default()
                 .to_owned();
-            let owner_id = owner_ids
-                .get(src_id.qualified_name.as_str())
-                .map(|id| (*id).to_owned());
+            // A resolved graph edge is owned by the specific/source element.
+            // Its containing membership is separately projected above.
+            let owner_id = (!source_id.is_empty()).then(|| source_id.clone());
             relationships.push(HostSemanticModelRelationship {
                 semantic_id: semantic_relationship_id(
                     &edge.kind,
@@ -187,6 +180,23 @@ pub(crate) fn project_host_semantic_model(
                 source_id,
                 target_id,
                 owner_id,
+                related_element_ids: [
+                    semantic_ids
+                        .get(src_id.qualified_name.as_str())
+                        .copied()
+                        .unwrap_or_default()
+                        .to_owned(),
+                    semantic_ids
+                        .get(tgt_id.qualified_name.as_str())
+                        .copied()
+                        .unwrap_or_default()
+                        .to_owned(),
+                ]
+                .into_iter()
+                .filter(|id| !id.is_empty())
+                .collect(),
+                range: edge.connect.as_ref().map(|detail| detail.range),
+                is_implied: false,
                 metaclass: relationship_metaclass(&edge.kind),
                 source: src_id.qualified_name,
                 target: tgt_id.qualified_name,
@@ -435,6 +445,9 @@ package Demo {
                         == Some(&relationship.source_id.as_str())
                     && ids_by_name.get(relationship.target.as_str())
                         == Some(&relationship.target_id.as_str())
+                    && relationship.related_element_ids
+                        == vec![relationship.source_id.clone(), relationship.target_id.clone()]
+                    && !relationship.is_implied
             }),
             "relationship endpoints must be semantic IDs, not qualified-name identity"
         );
@@ -445,6 +458,7 @@ package Demo {
                     && relationship.target == "Demo::Robot::cleaningHead"
                     && relationship.owner_id.as_deref()
                         == ids_by_name.get("Demo::Robot").copied()
+                    && relationship.range.is_some()
             }),
             "parent ownership must be an addressable membership relationship"
         );
