@@ -6,7 +6,9 @@ use sysml_v2_parser::ast::{
 use sysml_v2_parser::Node;
 use url::Url;
 
-use crate::semantic::ast_util::{span_to_range, subsetting_target, typing_target};
+use crate::semantic::ast_util::{
+    declared_multiplicity, span_to_range, subsetting_target, typing_target,
+};
 use crate::semantic::graph::SemanticGraph;
 use crate::semantic::model::NodeId;
 use crate::semantic::relationships::add_typing_edge_if_exists;
@@ -95,6 +97,11 @@ pub(super) fn materialize_port_usage(
         Some(parent_id),
     );
     let node_id = NodeId::new(uri, &qualified);
+    if let Some(multiplicity) = &n.multiplicity {
+        if let Some(node) = g.get_node_mut(&node_id) {
+            node.declared_facts.multiplicity = Some(declared_multiplicity(multiplicity, false));
+        }
+    }
     if let Some(ref t) = n.type_name {
         add_typing_edge_if_exists(g, uri, &qualified, t, container_prefix);
     }
@@ -297,9 +304,14 @@ fn materialize_port_def_item_usage(
         attrs,
         Some(parent_id),
     );
+    let node_id = NodeId::new(uri, &qualified);
+    if let Some(multiplicity) = &n.multiplicity {
+        if let Some(node) = g.get_node_mut(&node_id) {
+            node.declared_facts.multiplicity = Some(declared_multiplicity(multiplicity, false));
+        }
+    }
     if let Some(ref t) = n.type_name {
         add_typing_edge_if_exists(g, uri, &qualified, t, container_prefix);
     }
-    let node_id = NodeId::new(uri, &qualified);
     attribute_body::build_from_attribute_body(&n.body, uri, Some(&qualified), &node_id, g);
 }

@@ -6,7 +6,9 @@ use sysml_v2_parser::ast::{
 };
 use url::Url;
 
-use crate::semantic::ast_util::{attach_short_name_attribute, identification_name, span_to_range};
+use crate::semantic::ast_util::{
+    attach_short_name_attribute, declared_multiplicity, identification_name, span_to_range,
+};
 use crate::semantic::graph::SemanticGraph;
 use crate::semantic::model::{NodeId, RelationshipKind};
 use crate::semantic::relationships::{
@@ -201,10 +203,16 @@ pub(super) fn build_from_part_def_body_element(
                 attrs,
                 Some(parent_id),
             );
+            let node_id = NodeId::new(uri, &qualified);
+            if let Some(multiplicity) = &item_node.multiplicity {
+                if let Some(node) = g.get_node_mut(&node_id) {
+                    node.declared_facts.multiplicity =
+                        Some(declared_multiplicity(multiplicity, false));
+                }
+            }
             if let Some(ref t) = item_node.type_name {
                 add_typing_edge_if_exists(g, uri, &qualified, t, container_prefix);
             }
-            let node_id = NodeId::new(uri, &qualified);
             attribute_body::build_from_attribute_body(
                 &item_node.body,
                 uri,
