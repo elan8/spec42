@@ -360,8 +360,7 @@ mod tests {
         assert_eq!(version, version_field());
         let mut payload_bytes2 = Vec::new();
         file.read_to_end(&mut payload_bytes2).unwrap();
-        let decoded: LibraryGraphCachePayload =
-            serde_json::from_slice(&payload_bytes2).unwrap();
+        let decoded: LibraryGraphCachePayload = serde_json::from_slice(&payload_bytes2).unwrap();
 
         assert_eq!(decoded.library_paths, Vec::<String>::new());
         assert_eq!(decoded.graph.graph.node_count(), 0);

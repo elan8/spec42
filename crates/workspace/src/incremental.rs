@@ -21,13 +21,15 @@ use std::time::Instant;
 use rayon::prelude::*;
 use url::Url;
 
-use sysml_model::{IbdDataDto, SysmlVisualizationResultDto, VisualizationBuildMeta, WorkspaceRenderSnapshot};
+use sysml_model::{
+    IbdDataDto, SysmlVisualizationResultDto, VisualizationBuildMeta, WorkspaceRenderSnapshot,
+};
 
 use crate::error::WorkspaceResult;
 use crate::parse_cache;
 use crate::semantic::{
-    build_and_link_graph_parallel, link_parsed_documents_parallel_from, patch_graph_for_document,
-    SemanticGraph, WorkspaceParsedDocument,
+    SemanticGraph, WorkspaceParsedDocument, build_and_link_graph_parallel,
+    link_parsed_documents_parallel_from, patch_graph_for_document,
 };
 use crate::snapshot::{HostSemanticProjection, HostValidationReport};
 use crate::{SysmlDocument, SysmlDocumentSourceKind};
@@ -428,7 +430,14 @@ pub fn render_view(
     selected_view: Option<&str>,
     build_start: Instant,
     cached_full_ibd: Option<&IbdDataDto>,
-) -> Result<(SysmlVisualizationResultDto, VisualizationBuildMeta, Option<IbdDataDto>), String> {
+) -> Result<
+    (
+        SysmlVisualizationResultDto,
+        VisualizationBuildMeta,
+        Option<IbdDataDto>,
+    ),
+    String,
+> {
     let options = sysml_model::visualization_build_options(view);
     let uses_empty_shortcut = options.ibd_build_scope
         == sysml_model::IbdBuildScope::ViewExposedPackages
@@ -437,7 +446,8 @@ pub fn render_view(
     let (full_ibd, resolved_full_ibd) = if uses_empty_shortcut {
         (sysml_model::empty_merged_ibd(), None)
     } else {
-        let resolved = sysml_model::full_ibd_for_render_snapshot(graph, view_catalog, cached_full_ibd);
+        let resolved =
+            sysml_model::full_ibd_for_render_snapshot(graph, view_catalog, cached_full_ibd);
         (resolved.clone(), Some(resolved))
     };
     let (response, meta) = sysml_model::build_sysml_visualization_from_render_snapshot_with_meta(
@@ -542,7 +552,10 @@ package AnalysisCases {
         let mut engine = IncrementalWorkspace::new();
         let metrics = engine.load(&documents);
 
-        assert_eq!(node_qualified_names(&engine.graph()), node_qualified_names(&expected_graph));
+        assert_eq!(
+            node_qualified_names(&engine.graph()),
+            node_qualified_names(&expected_graph)
+        );
         assert_eq!(edge_triples(&engine.graph()), edge_triples(&expected_graph));
         assert_eq!(engine.document_count(), expected_parsed.len());
         assert_eq!(metrics.document_count, documents.len());
@@ -585,9 +598,15 @@ package AnalysisCases {
             node_qualified_names(&from_parsed.graph()),
             node_qualified_names(&loaded.graph())
         );
-        assert_eq!(edge_triples(&from_parsed.graph()), edge_triples(&loaded.graph()));
+        assert_eq!(
+            edge_triples(&from_parsed.graph()),
+            edge_triples(&loaded.graph())
+        );
         assert_eq!(metrics.document_count, documents.len());
-        assert_eq!(metrics.parse_ms, 0, "load_parsed does no parsing of its own");
+        assert_eq!(
+            metrics.parse_ms, 0,
+            "load_parsed does no parsing of its own"
+        );
     }
 
     /// Equivalence for `load_parsed_from` (Phase 4): merging the remaining documents onto a
@@ -601,7 +620,9 @@ package AnalysisCases {
         let mut loaded = IncrementalWorkspace::new();
         loaded.load(&documents);
 
-        fn parsed_entry(document: &SysmlDocument) -> (SysmlDocumentSourceKind, WorkspaceParsedDocument) {
+        fn parsed_entry(
+            document: &SysmlDocument,
+        ) -> (SysmlDocumentSourceKind, WorkspaceParsedDocument) {
             let parsed = sysml_v2_parser::parse(&document.content).expect("parse");
             (
                 document.source_kind,
@@ -618,10 +639,8 @@ package AnalysisCases {
         let mut base = IncrementalWorkspace::new();
         base.load_parsed(vec![parsed_entry(&documents[0])]);
 
-        let remaining: Vec<(SysmlDocumentSourceKind, WorkspaceParsedDocument)> = documents[1..]
-            .iter()
-            .map(parsed_entry)
-            .collect();
+        let remaining: Vec<(SysmlDocumentSourceKind, WorkspaceParsedDocument)> =
+            documents[1..].iter().map(parsed_entry).collect();
         let mut merged = IncrementalWorkspace::new();
         merged.load_parsed_from(base.graph(), remaining, true);
 
@@ -644,10 +663,7 @@ package AnalysisCases {
         let mut first = IncrementalWorkspace::new();
         let first_metrics = first.load_with_cache(&documents, Some(cache_dir.path()));
         assert!(
-            first
-                .documents()
-                .iter()
-                .all(|doc| !doc.parse_cached),
+            first.documents().iter().all(|doc| !doc.parse_cached),
             "first load_with_cache call should be all cache misses"
         );
 
@@ -658,13 +674,19 @@ package AnalysisCases {
             "second load_with_cache call should be all cache hits"
         );
 
-        assert_eq!(node_qualified_names(&first.graph()), node_qualified_names(&second.graph()));
+        assert_eq!(
+            node_qualified_names(&first.graph()),
+            node_qualified_names(&second.graph())
+        );
         assert_eq!(edge_triples(&first.graph()), edge_triples(&second.graph()));
         assert_eq!(first_metrics.document_count, second_metrics.document_count);
 
         let mut loaded = IncrementalWorkspace::new();
         loaded.load(&documents);
-        assert_eq!(node_qualified_names(&loaded.graph()), node_qualified_names(&second.graph()));
+        assert_eq!(
+            node_qualified_names(&loaded.graph()),
+            node_qualified_names(&second.graph())
+        );
     }
 
     /// Equivalence: incrementally patching one document via `apply_document` should produce
@@ -697,7 +719,10 @@ package Architecture {
 
         let (expected_graph, _) = build_and_link_graph_parallel(&documents);
 
-        assert_eq!(node_qualified_names(&engine.graph()), node_qualified_names(&expected_graph));
+        assert_eq!(
+            node_qualified_names(&engine.graph()),
+            node_qualified_names(&expected_graph)
+        );
         assert_eq!(edge_triples(&engine.graph()), edge_triples(&expected_graph));
         assert_eq!(metrics.document_count, 2);
         assert!(metrics.parse_ms >= 1);
@@ -745,8 +770,12 @@ package Architecture {
         let mut loaded = IncrementalWorkspace::new();
         loaded.load(&documents);
 
-        let mut reconstructed = IncrementalWorkspace::from_parts(loaded.graph(), loaded.documents());
-        assert_eq!(node_qualified_names(&reconstructed.graph()), node_qualified_names(&loaded.graph()));
+        let mut reconstructed =
+            IncrementalWorkspace::from_parts(loaded.graph(), loaded.documents());
+        assert_eq!(
+            node_qualified_names(&reconstructed.graph()),
+            node_qualified_names(&loaded.graph())
+        );
         assert_eq!(reconstructed.document_count(), loaded.document_count());
 
         let updated_analysis = doc(
@@ -772,8 +801,14 @@ package AnalysisCases {
         expected_documents[1] = updated_analysis;
         let (expected_graph, _) = build_and_link_graph_parallel(&expected_documents);
 
-        assert_eq!(node_qualified_names(&reconstructed.graph()), node_qualified_names(&expected_graph));
-        assert_eq!(edge_triples(&reconstructed.graph()), edge_triples(&expected_graph));
+        assert_eq!(
+            node_qualified_names(&reconstructed.graph()),
+            node_qualified_names(&expected_graph)
+        );
+        assert_eq!(
+            edge_triples(&reconstructed.graph()),
+            edge_triples(&expected_graph)
+        );
     }
 
     #[test]
@@ -788,9 +823,11 @@ package AnalysisCases {
 
         assert!(engine.document(&uri).is_none());
         assert_eq!(metrics.document_count, 1);
-        assert!(!node_qualified_names(&engine.graph())
-            .iter()
-            .any(|name| name.starts_with("AnalysisCases")));
+        assert!(
+            !node_qualified_names(&engine.graph())
+                .iter()
+                .any(|name| name.starts_with("AnalysisCases"))
+        );
     }
 
     #[test]
@@ -805,10 +842,13 @@ package AnalysisCases {
         engine.load(std::slice::from_ref(&document));
 
         let first = engine.apply_document(&document, Some(cache_dir.path()));
-        assert!(!engine
-            .document(&document.uri)
-            .expect("document indexed")
-            .parse_cached, "first apply_document should be a cache miss");
+        assert!(
+            !engine
+                .document(&document.uri)
+                .expect("document indexed")
+                .parse_cached,
+            "first apply_document should be a cache miss"
+        );
 
         let second = engine.apply_document(&document, Some(cache_dir.path()));
         assert_eq!(
@@ -941,17 +981,18 @@ package AnalysisCases {
         assert!(resolved_full_ibd.is_none());
 
         let options = sysml_model::visualization_build_options("general-view");
-        let (via_direct_call, _meta) = sysml_model::build_sysml_visualization_from_render_snapshot_with_meta(
-            &engine.graph(),
-            &engine.documents(),
-            &view_catalog,
-            "general-view",
-            None,
-            Instant::now(),
-            sysml_model::empty_merged_ibd(),
-            options,
-        )
-        .expect("build_sysml_visualization_from_render_snapshot_with_meta succeeds");
+        let (via_direct_call, _meta) =
+            sysml_model::build_sysml_visualization_from_render_snapshot_with_meta(
+                &engine.graph(),
+                &engine.documents(),
+                &view_catalog,
+                "general-view",
+                None,
+                Instant::now(),
+                sysml_model::empty_merged_ibd(),
+                options,
+            )
+            .expect("build_sysml_visualization_from_render_snapshot_with_meta succeeds");
 
         assert_eq!(via_wrapper.view, via_direct_call.view);
         assert_eq!(via_wrapper.model_ready, via_direct_call.model_ready);

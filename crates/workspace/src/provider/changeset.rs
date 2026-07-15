@@ -1,4 +1,4 @@
-﻿//! In-memory document changes layered on a base provider.
+//! In-memory document changes layered on a base provider.
 
 use std::collections::HashSet;
 
@@ -45,11 +45,8 @@ impl<P: SysmlDocumentProvider> SysmlDocumentProvider for ChangesetDocumentProvid
         let mut documents = self.base.load_documents()?;
         documents.retain(|doc| !self.removed.contains(&doc.uri.to_string()));
 
-        let changed_uris: HashSet<String> = self
-            .changed
-            .iter()
-            .map(|doc| doc.uri.to_string())
-            .collect();
+        let changed_uris: HashSet<String> =
+            self.changed.iter().map(|doc| doc.uri.to_string()).collect();
         documents.retain(|doc| !changed_uris.contains(&doc.uri.to_string()));
         documents.extend(self.changed.clone());
         documents.extend(self.added.clone());

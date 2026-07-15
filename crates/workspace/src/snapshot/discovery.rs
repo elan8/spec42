@@ -1,4 +1,4 @@
-﻿//! Target discovery and URI helpers for workspace snapshots.
+//! Target discovery and URI helpers for workspace snapshots.
 
 use std::collections::BTreeSet;
 use std::path::{Path, PathBuf};
@@ -6,7 +6,7 @@ use std::path::{Path, PathBuf};
 use url::Url;
 use walkdir::WalkDir;
 
-use crate::error::{WorkspaceResult, WorkspaceError};
+use crate::error::{WorkspaceError, WorkspaceResult};
 
 pub fn resolve_workspace_root(
     targets: &[PathBuf],

@@ -1,9 +1,9 @@
-﻿//! View catalog and supported-view payload identity diff.
+//! View catalog and supported-view payload identity diff.
 
 use std::collections::BTreeMap;
 
-use sysml_model::{SysmlVisualizationResultDto, SysmlVisualizationViewCandidateDto};
 use sha2::{Digest, Sha256};
+use sysml_model::{SysmlVisualizationResultDto, SysmlVisualizationViewCandidateDto};
 
 use crate::error::WorkspaceResult;
 use crate::snapshot::HostWorkspaceSnapshot;
@@ -183,10 +183,7 @@ fn view_payload_fingerprint(result: &SysmlVisualizationResultDto) -> String {
         .collect();
     candidate_ids.sort();
 
-    let graph = result
-        .general_view_graph
-        .as_ref()
-        .or(result.graph.as_ref());
+    let graph = result.general_view_graph.as_ref().or(result.graph.as_ref());
     let node_count = graph.map(|graph| graph.nodes.len()).unwrap_or(0);
     let edge_count = graph.map(|graph| graph.edges.len()).unwrap_or(0);
     let prepared_view_key = result
@@ -207,8 +204,5 @@ fn view_payload_fingerprint(result: &SysmlVisualizationResultDto) -> String {
 
     let canonical = serde_json::to_string(&fingerprint).unwrap_or_default();
     let digest = Sha256::digest(canonical.as_bytes());
-    digest
-        .iter()
-        .map(|byte| format!("{byte:02x}"))
-        .collect()
+    digest.iter().map(|byte| format!("{byte:02x}")).collect()
 }

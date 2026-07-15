@@ -1,4 +1,4 @@
-﻿//! Semantic comparison between two immutable workspace snapshots.
+//! Semantic comparison between two immutable workspace snapshots.
 
 mod diagnostics;
 mod elements;
@@ -23,7 +23,7 @@ pub use views::{
 
 use crate::error::WorkspaceResult;
 use crate::snapshot::HostWorkspaceSnapshot;
-use crate::version::{rfc3339_timestamp, HostArtifactMetadata, HostSchemaVersions};
+use crate::version::{HostArtifactMetadata, HostSchemaVersions, rfc3339_timestamp};
 
 /// Facts-only comparison report between two workspace snapshots.
 #[derive(Debug, Clone, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
@@ -49,16 +49,13 @@ pub fn compare_snapshots(
     let identity_preservation =
         identity::assess_identity_preservation(&previous_artifact, &next_artifact);
 
-    let elements = elements::compare_elements(
-        previous.semantic_projection(),
-        next.semantic_projection(),
-    );
+    let elements =
+        elements::compare_elements(previous.semantic_projection(), next.semantic_projection());
     let relationships = relationships::compare_relationships(
         previous.semantic_projection(),
         next.semantic_projection(),
     );
-    let diagnostics =
-        diagnostics::compare_diagnostics(previous.validation(), next.validation());
+    let diagnostics = diagnostics::compare_diagnostics(previous.validation(), next.validation());
     let views = views::compare_views(previous, next)?;
 
     Ok(SemanticComparisonReport {

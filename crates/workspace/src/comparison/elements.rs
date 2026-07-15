@@ -1,4 +1,4 @@
-﻿//! Element diff from host semantic projections.
+//! Element diff from host semantic projections.
 
 use std::collections::BTreeMap;
 
@@ -78,7 +78,9 @@ pub(crate) fn compare_elements(
     }
 }
 
-fn nodes_by_identity(nodes: &[HostSemanticModelNode]) -> BTreeMap<HostElementIdentity, HostSemanticModelNode> {
+fn nodes_by_identity(
+    nodes: &[HostSemanticModelNode],
+) -> BTreeMap<HostElementIdentity, HostSemanticModelNode> {
     let mut map = BTreeMap::new();
     for node in nodes {
         let identity = HostElementIdentity {
@@ -138,9 +140,6 @@ fn diff_node_fields(
 fn format_range(range: TextRange) -> String {
     format!(
         "{}:{}-{}:{}",
-        range.start.line,
-        range.start.character,
-        range.end.line,
-        range.end.character
+        range.start.line, range.start.character, range.end.line, range.end.character
     )
 }

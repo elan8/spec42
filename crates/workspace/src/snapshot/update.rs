@@ -1,17 +1,17 @@
-﻿//! Incremental and full-rebuild snapshot updates.
+//! Incremental and full-rebuild snapshot updates.
 
 use std::sync::Arc;
 use std::time::Instant;
 
 use language_service::InMemoryWorkspace;
-use sysml_model::{build_render_snapshot, SemanticGraph, SysmlDocument, WorkspaceParsedDocument};
+use sysml_model::{SemanticGraph, SysmlDocument, WorkspaceParsedDocument, build_render_snapshot};
 
-use crate::error::{map_language_service_error, map_render_snapshot_error, WorkspaceResult};
+use crate::error::{WorkspaceResult, map_language_service_error, map_render_snapshot_error};
 use crate::provider::InMemoryDocumentProvider;
 use crate::snapshot::build::{
-    assemble_host_workspace_snapshot, build_workspace_snapshot, HostWorkspaceSnapshot,
+    HostWorkspaceSnapshot, assemble_host_workspace_snapshot, build_workspace_snapshot,
 };
-use crate::snapshot::changes::{apply_document_changes, is_workspace_document, DocumentChanges};
+use crate::snapshot::changes::{DocumentChanges, apply_document_changes, is_workspace_document};
 use crate::snapshot::context::{HostContext, HostPipelinePhase};
 use crate::snapshot::discovery::discover_target_files;
 use crate::snapshot::facts::{collect_host_validation_report, project_host_semantic_model};
@@ -83,9 +83,7 @@ fn can_use_incremental_update(
     if previous.metadata().library_catalog_hash != engine.library_catalog().content_hash {
         return false;
     }
-    merged_documents
-        .iter()
-        .any(|doc| doc.uri == changed.uri)
+    merged_documents.iter().any(|doc| doc.uri == changed.uri)
 }
 
 fn try_incremental_update(

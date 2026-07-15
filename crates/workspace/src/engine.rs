@@ -1,15 +1,12 @@
-﻿use std::path::{Path, PathBuf};
+use std::path::{Path, PathBuf};
 
-use crate::catalog::{resolve_library_catalog, HostLibraryRequest, LibraryCatalog};
-use crate::error::{WorkspaceResult, WorkspaceError};
-use crate::library::{
-    domain::DomainLibrariesConfig,
-    stdlib::StandardLibraryConfig,
-};
+use crate::catalog::{HostLibraryRequest, LibraryCatalog, resolve_library_catalog};
+use crate::error::{WorkspaceError, WorkspaceResult};
+use crate::library::{domain::DomainLibrariesConfig, stdlib::StandardLibraryConfig};
 use crate::snapshot::{HostContext, HostWorkspaceSnapshot, WorkspaceLoadRequest};
 use crate::version::HostSchemaVersions;
-use sysml_model::SysmlDocumentProvider;
 use std::sync::Arc;
+use sysml_model::SysmlDocumentProvider;
 
 /// Engine-level metadata (version identity for built snapshots).
 #[derive(Debug, Clone)]
@@ -198,7 +195,9 @@ impl EngineBuilder {
                 "cache_dir is required to build a Spec42Engine",
             )
         })?;
-        if self.server_embedding_mode && self.use_embedded_stdlib && self.stdlib_path_override.is_none()
+        if self.server_embedding_mode
+            && self.use_embedded_stdlib
+            && self.stdlib_path_override.is_none()
         {
             // Embedding hosts must either supply explicit library roots or opt into embedded bundles
             // with an explicit cache directory. No implicit profile writes occur in this mode.

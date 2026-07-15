@@ -5,9 +5,8 @@ use std::time::Instant;
 
 use language_service::uri::normalize_uri;
 use sysml_model::{
-    materialize_model_explorer_bundle, ModelExplorerBundle, SemanticGraph,
-    SysmlVisualizationResultDto, VisualizationBuildMeta, WorkspaceParsedDocument,
-    WorkspaceRenderSnapshot,
+    ModelExplorerBundle, SemanticGraph, SysmlVisualizationResultDto, VisualizationBuildMeta,
+    WorkspaceParsedDocument, WorkspaceRenderSnapshot, materialize_model_explorer_bundle,
 };
 use url::Url;
 
@@ -123,11 +122,8 @@ impl ViewRenderCache {
             return Ok(());
         }
 
-        let workspace_uris = sysml_model::workspace_uris_for_root(
-            graph,
-            library_urls,
-            &workspace_root_uri,
-        );
+        let workspace_uris =
+            sysml_model::workspace_uris_for_root(graph, library_urls, &workspace_root_uri);
         let viz_docs: Vec<WorkspaceParsedDocument> = workspace_uris
             .iter()
             .filter_map(|uri| {
@@ -172,12 +168,13 @@ impl ViewRenderCache {
         )?;
         let entry = self.entry.as_mut().expect("render cache initialized");
         if entry.model_explorer.is_none() {
-            entry.model_explorer = Some(materialize_model_explorer_bundle(
-                graph,
-                &entry.snapshot,
-            ));
+            entry.model_explorer = Some(materialize_model_explorer_bundle(graph, &entry.snapshot));
         }
-        Ok(entry.model_explorer.as_ref().expect("model explorer").clone())
+        Ok(entry
+            .model_explorer
+            .as_ref()
+            .expect("model explorer")
+            .clone())
     }
 
     pub fn build_visualization(
@@ -265,8 +262,8 @@ impl ViewRenderCache {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use sysml_model::{build_semantic_graph_with_provider, FileSystemDocumentProvider};
     use std::path::PathBuf;
+    use sysml_model::{FileSystemDocumentProvider, build_semantic_graph_with_provider};
 
     fn drone_workspace_inputs() -> (
         SemanticGraph,
@@ -282,7 +279,13 @@ mod tests {
             FileSystemDocumentProvider::new(repo_root.clone(), Some(repo_root), Vec::new());
         let (semantic_graph, parsed_docs) =
             build_semantic_graph_with_provider(&provider).expect("semantic graph");
-        (semantic_graph, parsed_docs, Vec::new(), workspace_root_uri, 1)
+        (
+            semantic_graph,
+            parsed_docs,
+            Vec::new(),
+            workspace_root_uri,
+            1,
+        )
     }
 
     #[test]

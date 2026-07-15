@@ -1,10 +1,10 @@
-﻿//! Execution context for workspace loads.
+//! Execution context for workspace loads.
 
-use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::Arc;
+use std::sync::atomic::{AtomicBool, Ordering};
 use std::time::{Duration, Instant};
 
-use crate::error::{WorkspaceResult, WorkspaceError};
+use crate::error::{WorkspaceError, WorkspaceResult};
 
 /// Cooperative cancellation handle shared across threads.
 #[derive(Debug, Clone, Default)]
@@ -127,9 +127,7 @@ impl HostContext {
             if total_bytes > max_total_bytes {
                 return Err(WorkspaceError::resource_limit_exceeded(
                     "max_total_bytes",
-                    format!(
-                        "workspace content is {total_bytes} bytes, limit is {max_total_bytes}"
-                    ),
+                    format!("workspace content is {total_bytes} bytes, limit is {max_total_bytes}"),
                 ));
             }
         }

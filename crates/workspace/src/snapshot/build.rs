@@ -1,4 +1,4 @@
-﻿//! Immutable workspace snapshot assembly.
+//! Immutable workspace snapshot assembly.
 
 use std::collections::BTreeMap;
 use std::path::{Path, PathBuf};
@@ -6,18 +6,18 @@ use std::sync::{Arc, OnceLock};
 use std::time::Instant;
 
 use language_service::InMemoryWorkspace;
+use sha2::{Digest, Sha256};
 use sysml_model::{
     IbdDataDto, SemanticGraph, SysmlDocument, SysmlDocumentProvider, SysmlVisualizationResultDto,
     WorkspaceParsedDocument, WorkspaceRenderSnapshot,
 };
-use sha2::{Digest, Sha256};
 use url::Url;
 
 use crate::catalog::LibraryCatalog;
 use crate::engine::HostEngineMetadata;
 use crate::error::{
-    map_language_service_error, map_provider_error, map_render_snapshot_error, map_view_error,
-    WorkspaceResult, WorkspaceError,
+    WorkspaceError, WorkspaceResult, map_language_service_error, map_provider_error,
+    map_render_snapshot_error, map_view_error,
 };
 use crate::snapshot::context::{HostContext, HostPipelinePhase};
 use crate::snapshot::discovery::{discover_target_files, path_to_file_url, resolve_workspace_root};
@@ -116,7 +116,10 @@ impl HostWorkspaceSnapshot {
             self.strict_diagnostics,
         )?;
         let _ = self.validation_report.set(report);
-        Ok(self.validation_report.get().expect("validation initialized"))
+        Ok(self
+            .validation_report
+            .get()
+            .expect("validation initialized"))
     }
 
     pub fn validation_timing(&self) -> ValidationTiming {
@@ -191,17 +194,12 @@ pub(crate) fn build_workspace_snapshot(
         Ok(documents) => documents,
     };
     enrich_document_hashes(&mut documents);
-    let total_bytes = documents
-        .iter()
-        .map(|doc| doc.content.len() as u64)
-        .sum();
+    let total_bytes = documents.iter().map(|doc| doc.content.len() as u64).sum();
     context.enforce_document_limits(documents.len(), total_bytes)?;
     context.check_continue(HostPipelinePhase::LoadingDocuments)?;
 
-    let workspace_root = resolve_workspace_root(
-        &request.targets,
-        request.workspace_root.as_deref(),
-    )?;
+    let workspace_root =
+        resolve_workspace_root(&request.targets, request.workspace_root.as_deref())?;
     let target_files = discover_target_files(&request.targets)?;
 
     let library_paths = engine.package_roots().to_vec();
@@ -395,13 +393,7 @@ pub fn load_workspace_snapshot(
 ) -> WorkspaceResult<Arc<HostWorkspaceSnapshot>> {
     let catalog = engine.library_catalog().clone();
     let metadata = engine.metadata().clone();
-    let snapshot = build_workspace_snapshot(
-        engine,
-        &catalog,
-        &metadata,
-        provider,
-        request,
-        &context,
-    )?;
+    let snapshot =
+        build_workspace_snapshot(engine, &catalog, &metadata, provider, request, &context)?;
     Ok(Arc::new(snapshot))
 }

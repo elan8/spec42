@@ -1,4 +1,4 @@
-﻿//! Diagnostic introduced/resolved diff from host validation reports.
+//! Diagnostic introduced/resolved diff from host validation reports.
 
 use std::collections::{BTreeMap, BTreeSet};
 
@@ -62,7 +62,9 @@ pub(crate) fn compare_diagnostics(
     HostDiagnosticComparison { by_document }
 }
 
-fn diagnostics_by_uri(report: &HostValidationReport) -> BTreeMap<String, BTreeSet<HostDiagnosticIdentity>> {
+fn diagnostics_by_uri(
+    report: &HostValidationReport,
+) -> BTreeMap<String, BTreeSet<HostDiagnosticIdentity>> {
     let mut by_uri = BTreeMap::new();
     for document in &report.documents {
         let mut identities = BTreeSet::new();

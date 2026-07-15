@@ -1,4 +1,4 @@
-﻿//! Robot-vacuum embedding-host performance harness (report-only).
+//! Robot-vacuum embedding-host performance harness (report-only).
 
 use std::collections::HashMap;
 use std::fs;
@@ -6,14 +6,14 @@ use std::path::{Path, PathBuf};
 use std::sync::{Arc, Mutex};
 use std::time::Instant;
 
-use sysml_model::{
-    build_ibd_for_uri, build_render_snapshot, build_semantic_graph_with_provider,
-    build_sysml_visualization_workspace, build_view_catalog, build_workspace_graph_dto_for_uris,
-    evaluate_views, finalize_merged_ibd_connectors, merge_ibd_payloads_for_workspace_finalize,
-    project_ids_for_renderer,
-    FileSystemDocumentProvider, SemanticGraph, WorkspaceParsedDocument,
-};
 use serde::Serialize;
+use sysml_model::{
+    FileSystemDocumentProvider, SemanticGraph, WorkspaceParsedDocument, build_ibd_for_uri,
+    build_render_snapshot, build_semantic_graph_with_provider, build_sysml_visualization_workspace,
+    build_view_catalog, build_workspace_graph_dto_for_uris, evaluate_views,
+    finalize_merged_ibd_connectors, merge_ibd_payloads_for_workspace_finalize,
+    project_ids_for_renderer,
+};
 use url::Url;
 use walkdir::WalkDir;
 
@@ -373,15 +373,11 @@ fn collect_post_snapshot_visualization(
     let library_urls = snapshot.library_urls();
     let workspace_root_uri = snapshot.workspace_root_uri();
 
-    let workspace_uris = sysml_model::workspace_uris_for_root(
-        semantic_graph,
-        library_urls,
-        workspace_root_uri,
-    );
+    let workspace_uris =
+        sysml_model::workspace_uris_for_root(semantic_graph, library_urls, workspace_root_uri);
 
     let graph_start = Instant::now();
-    let workspace_graph =
-        build_workspace_graph_dto_for_uris(semantic_graph, &workspace_uris);
+    let workspace_graph = build_workspace_graph_dto_for_uris(semantic_graph, &workspace_uris);
     let workspace_graph_dto_ms = graph_start.elapsed().as_millis();
 
     let ibd_start = Instant::now();
@@ -450,7 +446,10 @@ fn collect_post_snapshot_visualization(
     }
 }
 
-fn collect_cold_one_shot_visualization(root: &Path, model_dir: &Path) -> (u128, VisualizationPhaseBreakdown) {
+fn collect_cold_one_shot_visualization(
+    root: &Path,
+    model_dir: &Path,
+) -> (u128, VisualizationPhaseBreakdown) {
     let provider = FileSystemDocumentProvider::new(
         model_dir.to_path_buf(),
         Some(root.to_path_buf()),
@@ -462,10 +461,9 @@ fn collect_cold_one_shot_visualization(root: &Path, model_dir: &Path) -> (u128, 
         build_semantic_graph_with_provider(&provider).expect("semantic graph");
     let semantic_graph_build_ms = graph_start.elapsed().as_millis();
 
-    let workspace_root_uri = Url::from_directory_path(
-        root.canonicalize().unwrap_or_else(|_| root.to_path_buf()),
-    )
-    .expect("workspace root uri");
+    let workspace_root_uri =
+        Url::from_directory_path(root.canonicalize().unwrap_or_else(|_| root.to_path_buf()))
+            .expect("workspace root uri");
     let workspace_uris =
         sysml_model::workspace_uris_for_root(&semantic_graph, &[], &workspace_root_uri);
 
@@ -501,8 +499,7 @@ fn collect_post_snapshot_from_graph(
     _workspace_root_uri: &Url,
     workspace_uris: &[Url],
 ) -> VisualizationPhaseBreakdown {
-    let workspace_graph =
-        build_workspace_graph_dto_for_uris(semantic_graph, workspace_uris);
+    let workspace_graph = build_workspace_graph_dto_for_uris(semantic_graph, workspace_uris);
     let catalog = build_view_catalog(workspace_uris, parsed_documents);
     let evaluated_views = evaluate_views(&catalog, semantic_graph, &workspace_graph);
     VisualizationPhaseBreakdown {
@@ -515,10 +512,7 @@ fn collect_post_snapshot_from_graph(
     }
 }
 
-pub fn run_robot_vacuum_perf(
-    config: &PerfConfig,
-    cache_dir: &Path,
-) -> RobotVacuumPerfReport {
+pub fn run_robot_vacuum_perf(config: &PerfConfig, cache_dir: &Path) -> RobotVacuumPerfReport {
     let (root, model_dir) = require_robot_vacuum_fixture();
     let fixture = collect_fixture_summary(&model_dir);
 
@@ -564,12 +558,11 @@ pub fn run_robot_vacuum_perf(
     };
 
     let post_snapshot_visualization = collect_post_snapshot_visualization(snapshot.as_ref());
-    let (cold_one_shot_visualization_ms, _) = collect_cold_one_shot_visualization(&root, &model_dir);
+    let (cold_one_shot_visualization_ms, _) =
+        collect_cold_one_shot_visualization(&root, &model_dir);
 
-    let measured_total_ms = engine_build_ms
-        + load_workspace_total_ms
-        + prepare_view_ms
-        + ensure_validation_ms;
+    let measured_total_ms =
+        engine_build_ms + load_workspace_total_ms + prepare_view_ms + ensure_validation_ms;
 
     let host_phases = HostPhaseTimings {
         engine_build_ms,
@@ -607,16 +600,66 @@ pub fn median_u128(values: &[u128]) -> u128 {
 
 fn median_host_phases(reports: &[RobotVacuumPerfReport]) -> HostPhaseTimings {
     HostPhaseTimings {
-        engine_build_ms: median_u128(&reports.iter().map(|r| r.host_phases.engine_build_ms).collect::<Vec<_>>()),
-        loading_documents_ms: median_u128(&reports.iter().map(|r| r.host_phases.loading_documents_ms).collect::<Vec<_>>()),
-        building_graph_ms: median_u128(&reports.iter().map(|r| r.host_phases.building_graph_ms).collect::<Vec<_>>()),
-        building_language_workspace_ms: median_u128(&reports.iter().map(|r| r.host_phases.building_language_workspace_ms).collect::<Vec<_>>()),
-        building_view_catalog_ms: median_u128(&reports.iter().map(|r| r.host_phases.building_view_catalog_ms).collect::<Vec<_>>()),
-        collecting_validation_ms: median_u128(&reports.iter().map(|r| r.host_phases.collecting_validation_ms).collect::<Vec<_>>()),
-        projecting_model_ms: median_u128(&reports.iter().map(|r| r.host_phases.projecting_model_ms).collect::<Vec<_>>()),
-        load_workspace_total_ms: median_u128(&reports.iter().map(|r| r.host_phases.load_workspace_total_ms).collect::<Vec<_>>()),
-        prepare_view_ms: median_u128(&reports.iter().map(|r| r.host_phases.prepare_view_ms).collect::<Vec<_>>()),
-        ensure_validation_ms: median_u128(&reports.iter().map(|r| r.host_phases.ensure_validation_ms).collect::<Vec<_>>()),
+        engine_build_ms: median_u128(
+            &reports
+                .iter()
+                .map(|r| r.host_phases.engine_build_ms)
+                .collect::<Vec<_>>(),
+        ),
+        loading_documents_ms: median_u128(
+            &reports
+                .iter()
+                .map(|r| r.host_phases.loading_documents_ms)
+                .collect::<Vec<_>>(),
+        ),
+        building_graph_ms: median_u128(
+            &reports
+                .iter()
+                .map(|r| r.host_phases.building_graph_ms)
+                .collect::<Vec<_>>(),
+        ),
+        building_language_workspace_ms: median_u128(
+            &reports
+                .iter()
+                .map(|r| r.host_phases.building_language_workspace_ms)
+                .collect::<Vec<_>>(),
+        ),
+        building_view_catalog_ms: median_u128(
+            &reports
+                .iter()
+                .map(|r| r.host_phases.building_view_catalog_ms)
+                .collect::<Vec<_>>(),
+        ),
+        collecting_validation_ms: median_u128(
+            &reports
+                .iter()
+                .map(|r| r.host_phases.collecting_validation_ms)
+                .collect::<Vec<_>>(),
+        ),
+        projecting_model_ms: median_u128(
+            &reports
+                .iter()
+                .map(|r| r.host_phases.projecting_model_ms)
+                .collect::<Vec<_>>(),
+        ),
+        load_workspace_total_ms: median_u128(
+            &reports
+                .iter()
+                .map(|r| r.host_phases.load_workspace_total_ms)
+                .collect::<Vec<_>>(),
+        ),
+        prepare_view_ms: median_u128(
+            &reports
+                .iter()
+                .map(|r| r.host_phases.prepare_view_ms)
+                .collect::<Vec<_>>(),
+        ),
+        ensure_validation_ms: median_u128(
+            &reports
+                .iter()
+                .map(|r| r.host_phases.ensure_validation_ms)
+                .collect::<Vec<_>>(),
+        ),
         time_to_completed_validation_ms: median_u128(
             &reports
                 .iter()
@@ -627,7 +670,12 @@ fn median_host_phases(reports: &[RobotVacuumPerfReport]) -> HostPhaseTimings {
             .first()
             .map(|r| r.host_phases.validation_mode)
             .unwrap_or_default(),
-        total_ms: median_u128(&reports.iter().map(|r| r.host_phases.total_ms).collect::<Vec<_>>()),
+        total_ms: median_u128(
+            &reports
+                .iter()
+                .map(|r| r.host_phases.total_ms)
+                .collect::<Vec<_>>(),
+        ),
     }
 }
 

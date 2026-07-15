@@ -1,12 +1,12 @@
-﻿//! Host validation and projection assembly from a built semantic graph.
+//! Host validation and projection assembly from a built semantic graph.
 
 use std::collections::{BTreeSet, HashMap};
 
 use sha2::{Digest, Sha256};
 
 use sysml_model::{
-    resolved_usage_context, typed_by_reference, DiagnosticSeverity, SemanticDiagnostic,
-    SemanticGraph, SysmlDocument, UnitRegistry,
+    DiagnosticSeverity, SemanticDiagnostic, SemanticGraph, SysmlDocument, UnitRegistry,
+    resolved_usage_context, typed_by_reference,
 };
 use url::Url;
 
@@ -16,9 +16,7 @@ use super::projection::{
     HostRelationshipMetaclass, HostSemanticModelNode, HostSemanticModelRelationship,
     HostSemanticProjection,
 };
-use super::validation::{
-    HostValidatedDocument, HostValidationReport, HostValidationSummary,
-};
+use super::validation::{HostValidatedDocument, HostValidationReport, HostValidationSummary};
 
 pub(crate) fn collect_host_validation_report(
     graph: &SemanticGraph,
@@ -36,7 +34,12 @@ pub(crate) fn collect_host_validation_report(
     // always canonicalized by `path_to_file_url`), so raw string keys would silently miss.
     let document_text: HashMap<String, &str> = documents
         .iter()
-        .map(|doc| (language_service::uri::normalize_uri(&doc.uri).to_string(), doc.content.as_str()))
+        .map(|doc| {
+            (
+                language_service::uri::normalize_uri(&doc.uri).to_string(),
+                doc.content.as_str(),
+            )
+        })
         .collect();
     let mut host_documents = Vec::new();
 
@@ -241,14 +244,39 @@ pub(crate) fn project_host_semantic_model(
             .and_then(|ids| ids.first())
             .and_then(|id| graph.get_node(id))
             .map(|semantic| &semantic.declared_facts)
-        else { continue; };
-        let Some(multiplicity) = &facts.multiplicity else { continue; };
+        else {
+            continue;
+        };
+        let Some(multiplicity) = &facts.multiplicity else {
+            continue;
+        };
         let multiplicity_id = derived_fact_id("multiplicity", &node.semantic_id, "");
-        let lower_bound_id = multiplicity.lower.as_ref().map(|value| project_expression(value, &multiplicity_id, "lower", &mut expressions));
-        let upper_bound_id = multiplicity.upper.as_ref().map(|value| project_expression(value, &multiplicity_id, "upper", &mut expressions));
-        multiplicities.push(HostMultiplicity { semantic_id: multiplicity_id, owner_id: node.semantic_id.clone(), lower_bound_id, upper_bound_id, range: multiplicity.range, is_implied: multiplicity.is_implied, is_ordered: multiplicity.is_ordered, is_unique: multiplicity.is_unique });
+        let lower_bound_id = multiplicity
+            .lower
+            .as_ref()
+            .map(|value| project_expression(value, &multiplicity_id, "lower", &mut expressions));
+        let upper_bound_id = multiplicity
+            .upper
+            .as_ref()
+            .map(|value| project_expression(value, &multiplicity_id, "upper", &mut expressions));
+        multiplicities.push(HostMultiplicity {
+            semantic_id: multiplicity_id,
+            owner_id: node.semantic_id.clone(),
+            lower_bound_id,
+            upper_bound_id,
+            range: multiplicity.range,
+            is_implied: multiplicity.is_implied,
+            is_ordered: multiplicity.is_ordered,
+            is_unique: multiplicity.is_unique,
+        });
     }
-    Ok(HostSemanticProjection { nodes, relationships, multiplicities, expressions, feature_values: Vec::<HostFeatureValue>::new() })
+    Ok(HostSemanticProjection {
+        nodes,
+        relationships,
+        multiplicities,
+        expressions,
+        feature_values: Vec::<HostFeatureValue>::new(),
+    })
 }
 
 fn project_expression(
@@ -258,16 +286,47 @@ fn project_expression(
     output: &mut Vec<HostExpression>,
 ) -> String {
     let id = derived_fact_id("expression", owner_id, path);
-    let operand_ids = expression.children.iter().enumerate().map(|(index, child)| project_expression(child, &id, &format!("operand-{index}"), output)).collect();
-    let arguments = expression.arguments.iter().enumerate().map(|(index, argument)| HostExpressionArgument { name: argument.name.clone(), value_id: project_expression(&argument.value, &id, &format!("argument-{index}"), output) }).collect();
-    output.push(HostExpression { semantic_id: id.clone(), kind: expression.kind.clone(), range: expression.range, literal: expression.literal.clone(), reference: expression.reference.clone(), operator: expression.operator.clone(), operand_ids, arguments });
+    let operand_ids = expression
+        .children
+        .iter()
+        .enumerate()
+        .map(|(index, child)| project_expression(child, &id, &format!("operand-{index}"), output))
+        .collect();
+    let arguments = expression
+        .arguments
+        .iter()
+        .enumerate()
+        .map(|(index, argument)| HostExpressionArgument {
+            name: argument.name.clone(),
+            value_id: project_expression(
+                &argument.value,
+                &id,
+                &format!("argument-{index}"),
+                output,
+            ),
+        })
+        .collect();
+    output.push(HostExpression {
+        semantic_id: id.clone(),
+        kind: expression.kind.clone(),
+        range: expression.range,
+        literal: expression.literal.clone(),
+        reference: expression.reference.clone(),
+        operator: expression.operator.clone(),
+        operand_ids,
+        arguments,
+    });
     id
 }
 
 fn derived_fact_id(kind: &str, owner_id: &str, path: &str) -> String {
     let mut hasher = Sha256::new();
     hasher.update(b"spec42-semantic-fact-v4\0");
-    hasher.update(kind.as_bytes()); hasher.update([0]); hasher.update(owner_id.as_bytes()); hasher.update([0]); hasher.update(path.as_bytes());
+    hasher.update(kind.as_bytes());
+    hasher.update([0]);
+    hasher.update(owner_id.as_bytes());
+    hasher.update([0]);
+    hasher.update(path.as_bytes());
     format!("s42f:{:x}", hasher.finalize())
 }
 
@@ -314,7 +373,9 @@ fn semantic_relationship_id(
     format!("s42r:{:x}", hasher.finalize())
 }
 
-fn target_file_urls(target_files: &[std::path::PathBuf]) -> crate::error::WorkspaceResult<BTreeSet<Url>> {
+fn target_file_urls(
+    target_files: &[std::path::PathBuf],
+) -> crate::error::WorkspaceResult<BTreeSet<Url>> {
     target_files
         .iter()
         .map(|path| path_to_file_url(path.as_path()))
@@ -354,7 +415,7 @@ fn collect_host_document_diagnostics(
 mod tests {
     use super::*;
     use crate::snapshot::discovery::path_to_file_url;
-    use sysml_model::{build_semantic_graph_with_provider, InMemoryDocumentProvider};
+    use sysml_model::{InMemoryDocumentProvider, build_semantic_graph_with_provider};
 
     fn make_provider(uri: &str, content: &str) -> InMemoryDocumentProvider {
         let doc = sysml_model::SysmlDocument {
@@ -480,7 +541,10 @@ package Demo {
                     && ids_by_name.get(relationship.target.as_str())
                         == Some(&relationship.target_id.as_str())
                     && relationship.related_element_ids
-                        == vec![relationship.source_id.clone(), relationship.target_id.clone()]
+                        == vec![
+                            relationship.source_id.clone(),
+                            relationship.target_id.clone(),
+                        ]
                     && !relationship.is_implied
             }),
             "relationship endpoints must be semantic IDs, not qualified-name identity"
@@ -490,8 +554,7 @@ package Demo {
                 relationship.metaclass == HostRelationshipMetaclass::Membership
                     && relationship.source == "Demo::Robot"
                     && relationship.target == "Demo::Robot::cleaningHead"
-                    && relationship.owner_id.as_deref()
-                        == ids_by_name.get("Demo::Robot").copied()
+                    && relationship.owner_id.as_deref() == ids_by_name.get("Demo::Robot").copied()
                     && relationship.range.is_some()
             }),
             "parent ownership must be an addressable membership relationship"
@@ -515,9 +578,26 @@ package Demo {
         let provider = make_provider(uri.as_str(), content);
         let (graph, _) = build_semantic_graph_with_provider(&provider).expect("graph");
         let projection = project_host_semantic_model(&graph, &[target]).expect("projection");
-        let wheel = projection.nodes.iter().find(|node| node.qualified_name == "Demo::Car::wheel").expect("wheel usage");
-        let multiplicity = projection.multiplicities.iter().find(|value| value.owner_id == wheel.semantic_id).expect("multiplicity");
-        let lower = multiplicity.lower_bound_id.as_deref().and_then(|id| projection.expressions.iter().find(|expression| expression.semantic_id == id)).expect("lower bound");
+        let wheel = projection
+            .nodes
+            .iter()
+            .find(|node| node.qualified_name == "Demo::Car::wheel")
+            .expect("wheel usage");
+        let multiplicity = projection
+            .multiplicities
+            .iter()
+            .find(|value| value.owner_id == wheel.semantic_id)
+            .expect("multiplicity");
+        let lower = multiplicity
+            .lower_bound_id
+            .as_deref()
+            .and_then(|id| {
+                projection
+                    .expressions
+                    .iter()
+                    .find(|expression| expression.semantic_id == id)
+            })
+            .expect("lower bound");
         assert_eq!(lower.kind, "integerLiteral");
         assert_eq!(lower.literal, Some(serde_json::json!(1)));
         assert!(multiplicity.upper_bound_id.is_none(), "* is unbounded");

@@ -1,11 +1,11 @@
-﻿//! Logical document overlays for snapshot updates.
+//! Logical document overlays for snapshot updates.
 
 use std::collections::HashSet;
 
 use sysml_model::{SysmlDocument, SysmlDocumentSourceKind};
 use url::Url;
 
-use crate::error::{WorkspaceResult, WorkspaceError};
+use crate::error::{WorkspaceError, WorkspaceResult};
 
 use super::build::enrich_document_hashes;
 
@@ -69,11 +69,7 @@ pub fn apply_document_changes(
 ) -> WorkspaceResult<Vec<SysmlDocument>> {
     changes.validate()?;
 
-    let removed: HashSet<String> = changes
-        .removed
-        .iter()
-        .map(|uri| uri.to_string())
-        .collect();
+    let removed: HashSet<String> = changes.removed.iter().map(|uri| uri.to_string()).collect();
     let changed: HashSet<String> = changes
         .changed
         .iter()
