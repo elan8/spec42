@@ -50,7 +50,7 @@ pub use semantic::library_loader::{
     LoadedLibraryFile, WorkspaceSource,
 };
 pub use semantic::model::{
-    ConnectStatementDetail, ElementKind, NodeId, RelationshipKind, SemanticEdge, SemanticNode,
+    ConnectStatementDetail, DeclaredExpression, ElementKind, NodeId, RelationshipKind, SemanticEdge, SemanticNode,
 };
 pub use semantic::pipeline::{
     build_and_link_graph, build_and_link_graph_parallel, evaluate_workspace_graph,

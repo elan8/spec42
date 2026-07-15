@@ -264,10 +264,15 @@ pub(super) fn materialize_item_usage(
         attrs,
         Some(parent_id),
     );
+    let node_id = NodeId::new(uri, &qualified);
+    if let Some(multiplicity) = &n.multiplicity {
+        if let Some(node) = g.get_node_mut(&node_id) {
+            node.declared_facts.multiplicity = Some(declared_multiplicity(multiplicity, false));
+        }
+    }
     if let Some(ref t) = n.type_name {
         add_typing_edge_if_exists(g, uri, &qualified, t, container_prefix);
     }
-    let node_id = NodeId::new(uri, &qualified);
     super::attribute_body::build_from_attribute_body(&n.body, uri, Some(&qualified), &node_id, g);
     node_id
 }

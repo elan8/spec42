@@ -12,6 +12,7 @@ use url::Url;
 
 use super::discovery::path_to_file_url;
 use super::projection::{
+    HostExpression, HostExpressionArgument, HostFeatureValue, HostMultiplicity,
     HostRelationshipMetaclass, HostSemanticModelNode, HostSemanticModelRelationship,
     HostSemanticProjection,
 };
@@ -231,10 +232,43 @@ pub(crate) fn project_host_semantic_model(
             && a.connect == b.connect
     });
 
-    Ok(HostSemanticProjection {
-        nodes,
-        relationships,
-    })
+    let mut expressions = Vec::new();
+    let mut multiplicities = Vec::new();
+    for node in &nodes {
+        let Some(facts) = graph
+            .node_ids_by_qualified_name
+            .get(&node.qualified_name)
+            .and_then(|ids| ids.first())
+            .and_then(|id| graph.get_node(id))
+            .map(|semantic| &semantic.declared_facts)
+        else { continue; };
+        let Some(multiplicity) = &facts.multiplicity else { continue; };
+        let multiplicity_id = derived_fact_id("multiplicity", &node.semantic_id, "");
+        let lower_bound_id = multiplicity.lower.as_ref().map(|value| project_expression(value, &multiplicity_id, "lower", &mut expressions));
+        let upper_bound_id = multiplicity.upper.as_ref().map(|value| project_expression(value, &multiplicity_id, "upper", &mut expressions));
+        multiplicities.push(HostMultiplicity { semantic_id: multiplicity_id, owner_id: node.semantic_id.clone(), lower_bound_id, upper_bound_id, range: multiplicity.range, is_implied: multiplicity.is_implied, is_ordered: multiplicity.is_ordered, is_unique: multiplicity.is_unique });
+    }
+    Ok(HostSemanticProjection { nodes, relationships, multiplicities, expressions, feature_values: Vec::<HostFeatureValue>::new() })
+}
+
+fn project_expression(
+    expression: &sysml_model::DeclaredExpression,
+    owner_id: &str,
+    path: &str,
+    output: &mut Vec<HostExpression>,
+) -> String {
+    let id = derived_fact_id("expression", owner_id, path);
+    let operand_ids = expression.children.iter().enumerate().map(|(index, child)| project_expression(child, &id, &format!("operand-{index}"), output)).collect();
+    let arguments = expression.arguments.iter().enumerate().map(|(index, argument)| HostExpressionArgument { name: argument.name.clone(), value_id: project_expression(&argument.value, &id, &format!("argument-{index}"), output) }).collect();
+    output.push(HostExpression { semantic_id: id.clone(), kind: expression.kind.clone(), range: expression.range, literal: expression.literal.clone(), reference: expression.reference.clone(), operator: expression.operator.clone(), operand_ids, arguments });
+    id
+}
+
+fn derived_fact_id(kind: &str, owner_id: &str, path: &str) -> String {
+    let mut hasher = Sha256::new();
+    hasher.update(b"spec42-semantic-fact-v4\0");
+    hasher.update(kind.as_bytes()); hasher.update([0]); hasher.update(owner_id.as_bytes()); hasher.update([0]); hasher.update(path.as_bytes());
+    format!("s42f:{:x}", hasher.finalize())
 }
 
 fn relationship_metaclass(kind: &sysml_model::RelationshipKind) -> HostRelationshipMetaclass {
@@ -462,6 +496,31 @@ package Demo {
             }),
             "parent ownership must be an addressable membership relationship"
         );
+    }
+
+    #[test]
+    fn projection_materializes_typed_part_multiplicity_and_bounds() {
+        let content = r#"
+package Demo {
+    part def Wheel;
+    part def Car { part wheel : Wheel [1..*]; }
+}
+"#;
+        let target = std::path::PathBuf::from(if cfg!(windows) {
+            "c:/workspace/multiplicity.sysml"
+        } else {
+            "/workspace/multiplicity.sysml"
+        });
+        let uri = path_to_file_url(target.as_path()).expect("workspace uri");
+        let provider = make_provider(uri.as_str(), content);
+        let (graph, _) = build_semantic_graph_with_provider(&provider).expect("graph");
+        let projection = project_host_semantic_model(&graph, &[target]).expect("projection");
+        let wheel = projection.nodes.iter().find(|node| node.qualified_name == "Demo::Car::wheel").expect("wheel usage");
+        let multiplicity = projection.multiplicities.iter().find(|value| value.owner_id == wheel.semantic_id).expect("multiplicity");
+        let lower = multiplicity.lower_bound_id.as_deref().and_then(|id| projection.expressions.iter().find(|expression| expression.semantic_id == id)).expect("lower bound");
+        assert_eq!(lower.kind, "integerLiteral");
+        assert_eq!(lower.literal, Some(serde_json::json!(1)));
+        assert!(multiplicity.upper_bound_id.is_none(), "* is unbounded");
     }
 }
 

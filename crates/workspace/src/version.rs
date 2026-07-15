@@ -6,7 +6,7 @@ use std::time::{Duration, SystemTime, UNIX_EPOCH};
 use serde::{Deserialize, Serialize};
 
 pub const ARTIFACT_METADATA_VERSION: u32 = 1;
-pub const PROJECTION_SCHEMA_VERSION: u32 = 3;
+pub const PROJECTION_SCHEMA_VERSION: u32 = 4;
 pub const RENDERER_COMPATIBILITY_VERSION: u32 = 1;
 pub const COMPARISON_SCHEMA_VERSION: u32 = 1;
 

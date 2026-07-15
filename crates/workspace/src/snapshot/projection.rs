@@ -100,4 +100,55 @@ pub struct HostSemanticModelRelationship {
 pub struct HostSemanticProjection {
     pub nodes: Vec<HostSemanticModelNode>,
     pub relationships: Vec<HostSemanticModelRelationship>,
+    #[serde(default)]
+    pub multiplicities: Vec<HostMultiplicity>,
+    #[serde(default)]
+    pub expressions: Vec<HostExpression>,
+    #[serde(default)]
+    pub feature_values: Vec<HostFeatureValue>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+pub struct HostMultiplicity {
+    pub semantic_id: String,
+    pub owner_id: String,
+    pub lower_bound_id: Option<String>,
+    pub upper_bound_id: Option<String>,
+    pub range: TextRange,
+    pub is_implied: bool,
+    pub is_ordered: bool,
+    pub is_unique: Option<bool>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+pub struct HostExpression {
+    pub semantic_id: String,
+    pub kind: String,
+    pub range: TextRange,
+    #[serde(default)]
+    pub literal: Option<serde_json::Value>,
+    #[serde(default)]
+    pub reference: Option<String>,
+    #[serde(default)]
+    pub operator: Option<String>,
+    #[serde(default)]
+    pub operand_ids: Vec<String>,
+    #[serde(default)]
+    pub arguments: Vec<HostExpressionArgument>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+pub struct HostExpressionArgument {
+    pub name: Option<String>,
+    pub value_id: String,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+pub struct HostFeatureValue {
+    pub semantic_id: String,
+    pub owner_id: String,
+    pub expression_id: String,
+    pub kind: String,
+    pub range: TextRange,
+    pub is_implied: bool,
 }
