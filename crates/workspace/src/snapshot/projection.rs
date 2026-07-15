@@ -16,6 +16,7 @@ use sysml_model::{ConnectStatementDetail, ElementKind, RelationshipKind, TextRan
 pub struct HostSemanticModelNode {
     /// Opaque identity of the semantic element in this immutable projection.
     /// It is independent from the element's display and qualified names.
+    #[serde(default)]
     pub semantic_id: String,
     /// Document URI the node was declared in.
     pub uri: String,
@@ -40,12 +41,16 @@ pub struct HostSemanticModelNode {
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
 pub struct HostSemanticModelRelationship {
     /// Opaque identity of this addressable relationship element.
+    #[serde(default)]
     pub semantic_id: String,
     /// Opaque semantic ID of the relationship source.
+    #[serde(default)]
     pub source_id: String,
     /// Opaque semantic ID of the relationship target.
+    #[serde(default)]
     pub target_id: String,
     /// Opaque semantic ID of the relationship owner, when present.
+    #[serde(default)]
     pub owner_id: Option<String>,
     /// Qualified name of the source node.
     pub source: String,
