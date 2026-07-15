@@ -11,6 +11,22 @@ use serde::{Deserialize, Serialize};
 use serde_json::Value;
 use sysml_model::{ConnectStatementDetail, ElementKind, RelationshipKind, TextRange};
 
+/// Normative metaclass selected for an addressable projected relationship.
+#[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, Eq, PartialOrd, Ord)]
+#[serde(rename_all = "camelCase")]
+pub enum HostRelationshipMetaclass {
+    Membership,
+    FeatureTyping,
+    Specialization,
+    Relationship,
+}
+
+impl Default for HostRelationshipMetaclass {
+    fn default() -> Self {
+        Self::Relationship
+    }
+}
+
 /// A node in the semantic model — maps 1:1 to [`sysml_model::SemanticNode`].
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
 pub struct HostSemanticModelNode {
@@ -52,6 +68,9 @@ pub struct HostSemanticModelRelationship {
     /// Opaque semantic ID of the relationship owner, when present.
     #[serde(default)]
     pub owner_id: Option<String>,
+    /// Concrete relationship metaclass; `kind` remains the graph-resolution fact.
+    #[serde(default)]
+    pub metaclass: HostRelationshipMetaclass,
     /// Qualified name of the source node.
     pub source: String,
     /// Qualified name of the target node.

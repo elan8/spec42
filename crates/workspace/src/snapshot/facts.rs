@@ -12,7 +12,8 @@ use url::Url;
 
 use super::discovery::path_to_file_url;
 use super::projection::{
-    HostSemanticModelNode, HostSemanticModelRelationship, HostSemanticProjection,
+    HostRelationshipMetaclass, HostSemanticModelNode, HostSemanticModelRelationship,
+    HostSemanticProjection,
 };
 use super::validation::{
     HostValidatedDocument, HostValidationReport, HostValidationSummary,
@@ -137,6 +138,30 @@ pub(crate) fn project_host_semantic_model(
         .collect::<HashMap<_, _>>();
 
     let mut relationships = Vec::new();
+    for node in &nodes {
+        let Some(parent) = node.parent.as_deref() else {
+            continue;
+        };
+        let Some(owner_id) = semantic_ids.get(parent).copied() else {
+            continue;
+        };
+        relationships.push(HostSemanticModelRelationship {
+            semantic_id: semantic_relationship_id(
+                &sysml_model::RelationshipKind::Reference,
+                owner_id,
+                &node.semantic_id,
+                relationships.len(),
+            ),
+            source_id: owner_id.to_owned(),
+            target_id: node.semantic_id.clone(),
+            owner_id: Some(owner_id.to_owned()),
+            metaclass: HostRelationshipMetaclass::Membership,
+            source: parent.to_owned(),
+            target: node.qualified_name.clone(),
+            kind: sysml_model::RelationshipKind::Reference,
+            connect: None,
+        });
+    }
     for uri in &target_urls {
         for (src_id, tgt_id, edge) in graph.edges_for_uri(uri) {
             let source_id = semantic_ids
@@ -162,6 +187,7 @@ pub(crate) fn project_host_semantic_model(
                 source_id,
                 target_id,
                 owner_id,
+                metaclass: relationship_metaclass(&edge.kind),
                 source: src_id.qualified_name,
                 target: tgt_id.qualified_name,
                 kind: edge.kind,
@@ -183,17 +209,30 @@ pub(crate) fn project_host_semantic_model(
         a.source
             .cmp(&b.source)
             .then_with(|| a.target.cmp(&b.target))
+            .then_with(|| a.metaclass.cmp(&b.metaclass))
             .then_with(|| a.kind.as_str().cmp(b.kind.as_str()))
             .then_with(|| connect_sort_key(a).cmp(&connect_sort_key(b)))
     });
     relationships.dedup_by(|a, b| {
-        a.source == b.source && a.target == b.target && a.kind == b.kind && a.connect == b.connect
+        a.source == b.source
+            && a.target == b.target
+            && a.metaclass == b.metaclass
+            && a.kind == b.kind
+            && a.connect == b.connect
     });
 
     Ok(HostSemanticProjection {
         nodes,
         relationships,
     })
+}
+
+fn relationship_metaclass(kind: &sysml_model::RelationshipKind) -> HostRelationshipMetaclass {
+    match kind {
+        sysml_model::RelationshipKind::Typing => HostRelationshipMetaclass::FeatureTyping,
+        sysml_model::RelationshipKind::Specializes => HostRelationshipMetaclass::Specialization,
+        _ => HostRelationshipMetaclass::Relationship,
+    }
 }
 
 fn semantic_element_id(
@@ -398,6 +437,16 @@ package Demo {
                         == Some(&relationship.target_id.as_str())
             }),
             "relationship endpoints must be semantic IDs, not qualified-name identity"
+        );
+        assert!(
+            projection.relationships.iter().any(|relationship| {
+                relationship.metaclass == HostRelationshipMetaclass::Membership
+                    && relationship.source == "Demo::Robot"
+                    && relationship.target == "Demo::Robot::cleaningHead"
+                    && relationship.owner_id.as_deref()
+                        == ids_by_name.get("Demo::Robot").copied()
+            }),
+            "parent ownership must be an addressable membership relationship"
         );
     }
 }
