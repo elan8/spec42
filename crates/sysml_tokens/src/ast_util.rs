@@ -2,6 +2,24 @@
 
 use sysml_v2_parser::ast::Identification;
 use sysml_v2_parser::Span;
+use sysml_v2_parser::ast::TypingRelationship;
+
+/// Accept both legacy textual type names and parser 0.35 typed relationships.
+pub trait TypeNameRef {
+    fn type_name_ref(&self) -> &str;
+}
+
+impl TypeNameRef for str {
+    fn type_name_ref(&self) -> &str { self }
+}
+
+impl TypeNameRef for String {
+    fn type_name_ref(&self) -> &str { self }
+}
+
+impl TypeNameRef for TypingRelationship {
+    fn type_name_ref(&self) -> &str { self.target.as_str() }
+}
 
 use crate::types::{
     TYPE_CLASS, TYPE_FUNCTION, TYPE_INTERFACE, TYPE_NAMESPACE, TYPE_PROPERTY, TYPE_TYPE,
@@ -208,11 +226,11 @@ pub fn push_ident_definition_spans(
 }
 
 /// Push usage name/type ranges using parser spans when present, otherwise source lookup in the node span.
-pub fn push_usage_name_type_spans(
+pub fn push_usage_name_type_spans<T: TypeNameRef + ?Sized>(
     source: &str,
     node_span: &Span,
     name: &str,
-    type_name: Option<&str>,
+    type_name: Option<&T>,
     name_span: Option<&Span>,
     type_span: Option<&Span>,
     out: &mut Vec<(SourceRange, u32)>,
@@ -224,7 +242,7 @@ pub fn push_usage_name_type_spans(
     }
     if let Some(s) = type_span {
         out.push((span_to_source_range(s), TYPE_TYPE));
-    } else if let Some(type_name) = type_name {
+    } else if let Some(type_name) = type_name.map(TypeNameRef::type_name_ref) {
         if let Some(r) = word_range_within_span(source, &span_to_source_range(node_span), type_name) {
             out.push((r, TYPE_TYPE));
         }

@@ -702,7 +702,7 @@ mod tests {
             .into_iter()
             .next()
             .expect("ManagedRequirement status");
-        assert_eq!(managed_status.element_kind, ElementKind::AttributeDef);
+        assert_eq!(managed_status.element_kind, ElementKind::Attribute);
         let status_attr = graph
             .child_named(&need.id, "status")
             .into_iter()

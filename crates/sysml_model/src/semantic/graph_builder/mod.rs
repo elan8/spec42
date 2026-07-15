@@ -3,11 +3,11 @@
 use std::collections::HashMap;
 
 use crate::semantic::text_span::TextRange;
-use sysml_v2_parser::ast::RootElement;
+use sysml_v2_parser::ast::{RootElement, SubsettingRelationship, TypingRelationship};
 use sysml_v2_parser::RootNamespace;
 use url::Url;
 
-use crate::semantic::ast_util::span_to_range;
+use crate::semantic::ast_util::{span_to_range, subsetting_target, typing_target};
 use crate::semantic::graph::SemanticGraph;
 use crate::semantic::model::{ElementKind, NodeId, SemanticNode};
 
@@ -122,11 +122,17 @@ pub(crate) fn qualified_name(container_prefix: Option<&str>, name: &str) -> Stri
 /// declared, use it; otherwise, for a usage with an owned redefinition (`redefines`), fall back
 /// to the (simple, last-segment) name of the feature it redefines. Spec example: `part redefines
 /// cylinders[4];` has no declared name, but its effective name is `"cylinders"`.
-pub(super) fn effective_usage_name<'a>(declared: &'a str, redefines: Option<&'a str>) -> &'a str {
+pub(super) fn effective_usage_name<'a>(
+    declared: &'a str,
+    redefines: Option<&'a SubsettingRelationship>,
+) -> &'a str {
     if !declared.is_empty() {
         return declared;
     }
-    match redefines.map(str::trim).filter(|r| !r.is_empty()) {
+    match subsetting_target(redefines)
+        .map(str::trim)
+        .filter(|r| !r.is_empty())
+    {
         Some(r) => r.rsplit("::").next().unwrap_or(r),
         None => declared,
     }
@@ -222,9 +228,9 @@ pub(super) fn attach_doc_comment(g: &mut SemanticGraph, node_id: &NodeId, text: 
 /// Inserts a `specializes` attribute on a def-kind node's attribute map, if present.
 pub(super) fn insert_def_specialization_attr(
     attrs: &mut HashMap<String, serde_json::Value>,
-    specializes: Option<&str>,
+    specializes: Option<&TypingRelationship>,
 ) {
-    if let Some(s) = specializes {
+    if let Some(s) = typing_target(specializes) {
         attrs.insert("specializes".to_string(), serde_json::json!(s));
     }
 }
@@ -235,9 +241,9 @@ pub(super) fn wire_def_specialization_edge(
     uri: &Url,
     qualified: &str,
     container_prefix: Option<&str>,
-    specializes: Option<&str>,
+    specializes: Option<&TypingRelationship>,
 ) {
-    if let Some(s) = specializes {
+    if let Some(s) = typing_target(specializes) {
         crate::semantic::relationships::add_specializes_edge_if_exists(
             g,
             uri,

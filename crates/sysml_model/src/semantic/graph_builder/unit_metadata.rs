@@ -7,6 +7,7 @@ use sysml_v2_parser::ast::{
     AttributeBody, AttributeBodyElement, AttributeDef, AttributeUsage, BinaryOperator, Expression,
     Node, UnaryOperator,
 };
+use crate::semantic::ast_util::{subsetting_target, typing_target};
 
 /// Keys stored on unit-related `attribute def` graph nodes.
 pub const SHORT_NAME_KEY: &str = "shortName";
@@ -32,14 +33,14 @@ pub fn project_attribute_def_unit_metadata(attrs: &mut HashMap<String, Value>, d
         let rendered = super::expressions::expression_to_debug_string(expr);
         attrs.insert(UNIT_VALUE_EXPR_KEY.to_string(), json!(rendered));
     }
-    project_unit_body_metadata(attrs, def.typing.as_deref(), &def.body);
+    project_unit_body_metadata(attrs, typing_target(def.typing.as_deref()), &def.body);
 }
 
 pub fn project_attribute_usage_unit_metadata(
     attrs: &mut HashMap<String, Value>,
     usage: &AttributeUsage,
 ) {
-    project_unit_body_metadata(attrs, usage.typing.as_deref(), &usage.body);
+    project_unit_body_metadata(attrs, typing_target(usage.typing.as_deref()), &usage.body);
 }
 
 fn project_unit_body_metadata(
@@ -95,7 +96,7 @@ fn find_redefined_usage<'a>(
 ) -> Option<&'a AttributeUsage> {
     elements.iter().find_map(|element| match &element.value {
         AttributeBodyElement::AttributeUsage(usage)
-            if usage.value.redefines.as_deref() == Some(key) =>
+            if subsetting_target(usage.value.redefines.as_deref()) == Some(key) =>
         {
             Some(&usage.value)
         }
@@ -222,7 +223,7 @@ fn extract_unit_conversion_from_body(body: &AttributeBody) -> Option<UnitConvers
     else {
         return None;
     };
-    let kind = conversion_usage.typing.as_deref().map(base_type_name);
+    let kind = typing_target(conversion_usage.typing.as_deref()).map(base_type_name);
     match kind {
         Some("IntervalScale") => Some(interval_scale_meta(inner_elements)),
         Some("ConversionByPrefix") => Some(UnitConversionMeta {

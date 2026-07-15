@@ -92,7 +92,10 @@ fn expr_to_string(n: &sysml_v2_parser::Node<sysml_v2_parser::Expression>) -> Str
         Expression::Invocation { callee, args } => {
             let rendered = args
                 .iter()
-                .map(expr_to_string)
+                .map(|argument| {
+                    let value = expr_to_string(crate::semantic::ast_util::argument_expression(argument));
+                    argument.name.as_ref().map(|name| format!("{name} = {value}")).unwrap_or(value)
+                })
                 .collect::<Vec<_>>()
                 .join(", ");
             format!("{}({rendered})", expr_to_string(callee))
@@ -127,6 +130,20 @@ fn expr_to_string(n: &sysml_v2_parser::Node<sysml_v2_parser::Expression>) -> Str
         Expression::Collect { base, selector } => {
             format!("{}.**{selector}", expr_to_string(base))
         }
+        Expression::Parenthesized(inner) => format!("({})", expr_to_string(inner)),
+        Expression::Constructor { type_name, args } => {
+            let rendered = args.iter().map(|argument| {
+                let value = expr_to_string(crate::semantic::ast_util::argument_expression(argument));
+                argument.name.as_ref().map(|name| format!("{name} = {value}")).unwrap_or(value)
+            }).collect::<Vec<_>>().join(", ");
+            format!("new {type_name}({rendered})")
+        }
+        Expression::FeatureChainRef(chain) => chain.segments.join("."),
+        Expression::CollectionOp { op, base, args } => {
+            let rendered = args.iter().map(|argument| expr_to_string(crate::semantic::ast_util::argument_expression(argument))).collect::<Vec<_>>().join(", ");
+            format!("{}->{}({rendered})", expr_to_string(base), op.as_str())
+        }
+        Expression::MetadataAccess(base) => format!("{}.metadata", expr_to_string(base)),
         Expression::Null => String::new(),
     }
 }

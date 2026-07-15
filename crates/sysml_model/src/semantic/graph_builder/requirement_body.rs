@@ -559,7 +559,10 @@ pub(super) fn walk_requirement_def_body(
                     "attribute",
                 );
                 let mut attrs = HashMap::new();
-                if let Some(ref redefines) = attr_usage.value.redefines {
+                if let Some(typing) = crate::semantic::ast_util::typing_target(attr_usage.value.typing.as_deref()) {
+                    attrs.insert("attributeType".to_string(), serde_json::json!(typing));
+                }
+                if let Some(redefines) = crate::semantic::ast_util::subsetting_target(attr_usage.value.redefines.as_deref()) {
                     attrs.insert("redefines".to_string(), serde_json::json!(redefines));
                 }
                 if let Some(ref value) = attr_usage.value.value {
@@ -578,6 +581,9 @@ pub(super) fn walk_requirement_def_body(
                     attrs,
                     Some(parent_id),
                 );
+                if let Some(typing) = crate::semantic::ast_util::typing_target(attr_usage.value.typing.as_deref()) {
+                    add_typing_edge_if_exists(g, uri, &qualified, typing, type_resolution_prefix);
+                }
             }
             RequirementDefBodyElement::MetadataKeywordUsage(mk_node) => {
                 add_metadata_keyword_node(g, uri, parent_id, &mk_node.value, &mk_node.span);

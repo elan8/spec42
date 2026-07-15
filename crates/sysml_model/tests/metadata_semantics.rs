@@ -46,7 +46,7 @@ fn metadata_def_and_usage_with_attribute_bindings_have_no_semantic_diagnostics()
     let def_attributes: Vec<_> = graph
         .children_of(metadata_def)
         .into_iter()
-        .filter(|child| child.element_kind == "attribute def")
+        .filter(|child| child.element_kind == "attribute")
         .map(|child| child.name.as_str())
         .collect();
     assert!(def_attributes.contains(&"id"));

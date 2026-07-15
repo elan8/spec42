@@ -3,8 +3,31 @@
 use std::collections::HashMap;
 
 use crate::semantic::text_span::{TextPosition, TextRange};
-use sysml_v2_parser::ast::Identification;
-use sysml_v2_parser::Span;
+use sysml_v2_parser::ast::{
+    Argument, ConnectionEnd, Identification, Node, SubsettingRelationship, TypingRelationship,
+};
+use sysml_v2_parser::{Expression, Span};
+
+/// Returns the source-level target of a typed typing or specialization relationship.
+/// Consumers use this adapter rather than treating parser relationship nodes as strings.
+pub fn typing_target(relationship: Option<&TypingRelationship>) -> Option<&str> {
+    relationship.map(|relationship| relationship.target.as_str())
+}
+
+/// Returns the source-level target of a typed subsetting-family relationship.
+pub fn subsetting_target(relationship: Option<&SubsettingRelationship>) -> Option<&str> {
+    relationship.map(|relationship| relationship.target.as_str())
+}
+
+/// Returns the expression carried by a typed connection/interface endpoint.
+pub fn connection_end_expression(endpoint: &Node<ConnectionEnd>) -> &Node<Expression> {
+    &endpoint.value.expression
+}
+
+/// Returns the value expression of either a positional or named invocation argument.
+pub fn argument_expression(argument: &Argument) -> &Node<Expression> {
+    &argument.value
+}
 
 /// Converts sysml-v2-parser Span (1-based line/column) to 0-based TextRange.
 pub fn span_to_range(span: &Span) -> TextRange {

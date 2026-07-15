@@ -6,7 +6,7 @@ use sysml_v2_parser::ast::{AttributeBody, AttributeBodyElement};
 use url::Url;
 
 use super::{add_node_and_recurse, expressions, qualified_name_for_node, unit_metadata};
-use crate::semantic::ast_util::span_to_range;
+use crate::semantic::ast_util::{span_to_range, subsetting_target, typing_target};
 use crate::semantic::graph::SemanticGraph;
 use crate::semantic::kinds::METADATA_RESTRICTION_FEATURE_NAMES;
 use crate::semantic::model::{ElementKind, NodeId};
@@ -45,7 +45,7 @@ pub(super) fn build_from_attribute_body(
                 let qualified =
                     qualified_name_for_node(g, uri, container_prefix, &value.name, "attribute def");
                 let mut attrs = HashMap::new();
-                if let Some(ref typing) = value.typing {
+                if let Some(typing) = typing_target(value.typing.as_deref()) {
                     attrs.insert("attributeType".to_string(), serde_json::json!(typing));
                 }
                 unit_metadata::project_attribute_def_unit_metadata(&mut attrs, value);
@@ -64,7 +64,7 @@ pub(super) fn build_from_attribute_body(
                     attrs,
                     Some(parent_id),
                 );
-                if let Some(ref typing) = value.typing {
+                if let Some(typing) = typing_target(value.typing.as_deref()) {
                     add_typing_edge_if_exists(g, uri, &qualified, typing, container_prefix);
                 }
                 attach_nested_doc_comments(g, &NodeId::new(uri, &qualified), &value.body);
@@ -74,18 +74,18 @@ pub(super) fn build_from_attribute_body(
                 let name = super::effective_usage_name(&value.name, value.redefines.as_deref());
                 let qualified = qualified_name_for_node(g, uri, container_prefix, name, "attribute");
                 let mut attrs = HashMap::new();
-                if let Some(ref typing) = value.typing {
+                if let Some(typing) = typing_target(value.typing.as_deref()) {
                     attrs.insert("attributeType".to_string(), serde_json::json!(typing));
                 }
                 unit_metadata::project_attribute_usage_unit_metadata(&mut attrs, value);
-                if let Some(ref s) = value.subsets {
+                if let Some(s) = subsetting_target(value.subsets.as_deref()) {
                     attrs.insert("subsetsFeature".to_string(), serde_json::json!(s));
                 }
-                if let Some(ref r) = value.redefines {
+                if let Some(r) = subsetting_target(value.redefines.as_deref()) {
                     attrs.insert("redefines".to_string(), serde_json::json!(r));
                     if g.get_node(parent_id).is_some_and(|parent| {
                         parent.element_kind == ElementKind::MetadataDef
-                            && METADATA_RESTRICTION_FEATURE_NAMES.contains(&r.as_str())
+                            && METADATA_RESTRICTION_FEATURE_NAMES.contains(&r)
                     }) {
                         attrs.insert("subsetsFeature".to_string(), serde_json::json!(r));
                     }
@@ -106,7 +106,7 @@ pub(super) fn build_from_attribute_body(
                     attrs,
                     Some(parent_id),
                 );
-                if let Some(ref typing) = value.typing {
+                if let Some(typing) = typing_target(value.typing.as_deref()) {
                     add_typing_edge_if_exists(g, uri, &qualified, typing, container_prefix);
                 }
                 attach_nested_doc_comments(g, &NodeId::new(uri, &qualified), &value.body);

@@ -1,8 +1,8 @@
 //! Relationship edge logic: typing, specializes, connection, bind, workspace relationship linking.
 
 use petgraph::visit::EdgeRef;
-use sysml_v2_parser::ast::{PackageBody, PackageBodyElement};
-use sysml_v2_parser::RootNamespace;
+use sysml_v2_parser::ast::{PackageBody, PackageBodyElement, TypingRelationship};
+use sysml_v2_parser::{Node, RootNamespace};
 
 use url::Url;
 
@@ -27,6 +27,28 @@ pub use crate::semantic::resolution::naming::{
     type_ref_candidates_with_kind,
 };
 use crate::semantic::root_element::root_element_body;
+
+/// Uniform view of an explicit parser relationship target or a legacy textual target.
+/// The graph resolver consumes the target only at this boundary; builders retain typed AST facts.
+pub trait TypeReferenceTarget {
+    fn type_reference_target(&self) -> &str;
+}
+
+impl TypeReferenceTarget for str {
+    fn type_reference_target(&self) -> &str { self }
+}
+
+impl TypeReferenceTarget for String {
+    fn type_reference_target(&self) -> &str { self }
+}
+
+impl TypeReferenceTarget for TypingRelationship {
+    fn type_reference_target(&self) -> &str { self.target.as_str() }
+}
+
+impl TypeReferenceTarget for Node<TypingRelationship> {
+    fn type_reference_target(&self) -> &str { self.value.target.as_str() }
+}
 
 pub const TYPE_REFERENCE_ATTR_KEYS: &[&str] = &[
     "partType",
@@ -266,11 +288,11 @@ pub fn wire_metadata_annotated_elements(
 /// then qualified with package prefixes, then #kind-suffixed variants for disambiguated nodes.
 /// Only matches targets that are actual types (part def, port def, interface, requirement def) to avoid
 /// matching a package that shares the same name.
-pub fn add_typing_edge_if_exists(
+pub fn add_typing_edge_if_exists<T: TypeReferenceTarget + ?Sized>(
     g: &mut SemanticGraph,
     uri: &Url,
     source_qualified: &str,
-    type_ref: &str,
+    type_ref: &T,
     container_prefix: Option<&str>,
 ) {
     let source_id = NodeId::new(uri, normalize_for_lookup(source_qualified));
@@ -278,18 +300,18 @@ pub fn add_typing_edge_if_exists(
         return;
     }
     let _ = container_prefix;
-    add_typing_edge_for_node(g, &source_id, type_ref);
+    add_typing_edge_for_node(g, &source_id, type_ref.type_reference_target());
 }
 
 /// Adds a specializes edge if source exists and target can be resolved. Same resolution as typing:
 /// specializes target may be unqualified (e.g. "SurveillanceQuadrotorDrone") while the node
 /// has qualified name (e.g. "SurveillanceDrone::SurveillanceQuadrotorDrone").
 /// Only matches definition targets (part def, requirement def, …) to avoid matching a package.
-pub fn add_specializes_edge_if_exists(
+pub fn add_specializes_edge_if_exists<T: TypeReferenceTarget + ?Sized>(
     g: &mut SemanticGraph,
     uri: &Url,
     source_qualified: &str,
-    specializes_ref: &str,
+    specializes_ref: &T,
     container_prefix: Option<&str>,
 ) {
     let source_id = NodeId::new(uri, normalize_for_lookup(source_qualified));
@@ -297,7 +319,7 @@ pub fn add_specializes_edge_if_exists(
         return;
     }
     let _ = container_prefix;
-    add_specializes_edges_for_node(g, &source_id, specializes_ref);
+    add_specializes_edges_for_node(g, &source_id, specializes_ref.type_reference_target());
 }
 
 pub fn add_typing_edge_for_node(g: &mut SemanticGraph, source_id: &NodeId, type_ref: &str) {
@@ -408,4 +430,3 @@ pub fn link_workspace_derivations(g: &mut SemanticGraph) {
         try_wire_derivation_connection(g, &connection_id.uri, &connection_id);
     }
 }
-

@@ -227,8 +227,8 @@ pub(super) fn build_from_part_def_body_element(
                 g,
                 uri,
                 container_prefix,
-                &c.from,
-                &c.to,
+                crate::semantic::ast_util::connection_end_expression(&c.from),
+                crate::semantic::ast_util::connection_end_expression(&c.to),
                 RelationshipKind::Connection,
             );
         }
@@ -569,5 +569,6 @@ pub(super) fn build_from_part_def_body_element(
         PDBE::VariantUsage(n) => {
             usage_builders::materialize_variant_usage(n, uri, container_prefix, parent_id, g);
         }
+        _ => {}
     }
 }

@@ -123,7 +123,7 @@ pub(super) fn materialize_classifier_decl(
     );
 }
 
-pub(super) fn materialize_port_def(
+pub(crate) fn materialize_port_def(
     g: &mut SemanticGraph,
     uri: &Url,
     container_prefix: Option<&str>,
@@ -197,7 +197,7 @@ pub(super) fn materialize_interface_def(
     }
 }
 
-pub(super) fn materialize_attribute_def(
+pub(crate) fn materialize_attribute_def(
     g: &mut SemanticGraph,
     uri: &Url,
     container_prefix: Option<&str>,
@@ -209,7 +209,7 @@ pub(super) fn materialize_attribute_def(
     let qualified = qualified_name_for_node(g, uri, container_prefix, name, "attribute def");
     let range = span_to_range(&ad_node.span);
     let mut attrs = HashMap::new();
-    if let Some(ref t) = value.typing {
+    if let Some(t) = crate::semantic::ast_util::typing_target(value.typing.as_deref()) {
         attrs.insert("attributeType".to_string(), serde_json::json!(t));
     }
     unit_metadata::project_attribute_def_unit_metadata(&mut attrs, value);
@@ -223,7 +223,7 @@ pub(super) fn materialize_attribute_def(
         attrs,
         parent_id,
     );
-    if let Some(ref t) = value.typing {
+    if let Some(t) = crate::semantic::ast_util::typing_target(value.typing.as_deref()) {
         add_typing_edge_if_exists(g, uri, &qualified, t, container_prefix);
     }
 }
@@ -462,7 +462,7 @@ pub(super) fn materialize_use_case_usage(
     }
 }
 
-pub(super) fn materialize_item_def(
+pub(crate) fn materialize_item_def(
     g: &mut SemanticGraph,
     uri: &Url,
     container_prefix: Option<&str>,

@@ -6,7 +6,7 @@ use sysml_v2_parser::ast::{
 use sysml_v2_parser::Node;
 use url::Url;
 
-use crate::semantic::ast_util::span_to_range;
+use crate::semantic::ast_util::{span_to_range, subsetting_target, typing_target};
 use crate::semantic::graph::SemanticGraph;
 use crate::semantic::model::NodeId;
 use crate::semantic::relationships::add_typing_edge_if_exists;
@@ -119,7 +119,11 @@ pub(super) fn build_from_port_body_element(
             materialize_port_usage(n, uri, container_prefix, parent_id, g);
         }
         PBE::InOutDecl(w) => build_in_out_decl(w, uri, container_prefix, parent_id, g),
-        PBE::Error(_) | PBE::Other(_) => {}
+        PBE::AttributeUsage(attribute) => {
+            super::usage_builders::materialize_attribute_usage(attribute, uri, container_prefix, parent_id, g);
+        }
+        PBE::ItemUsage(item) => materialize_port_def_item_usage(item, uri, container_prefix, parent_id, g),
+        PBE::Error(_) => {}
         PBE::Doc(doc) => super::attach_doc_comment(g, parent_id, &doc.value.text),
     }
 }
@@ -143,7 +147,7 @@ pub(super) fn build_from_port_def_body_element(
                 qualified_name_for_node(g, uri, container_prefix, name, "attribute def");
             let range = span_to_range(&n.span);
             let mut attrs = HashMap::new();
-            if let Some(ref t) = n.typing {
+            if let Some(t) = typing_target(n.typing.as_deref()) {
                 attrs.insert("attributeType".to_string(), serde_json::json!(t));
             }
             add_node_and_recurse(
@@ -156,7 +160,7 @@ pub(super) fn build_from_port_def_body_element(
                 attrs,
                 Some(parent_id),
             );
-            if let Some(ref t) = n.typing {
+            if let Some(t) = typing_target(n.typing.as_deref()) {
                 add_typing_edge_if_exists(g, uri, &qualified, t, container_prefix);
             }
         }
@@ -175,10 +179,8 @@ pub(super) fn build_from_port_def_body_element(
                         InOut::InOut => "inout",
                     }),
                 );
-                let parameter_type = n
-                    .typing
-                    .as_deref()
-                    .or(n.subsets.as_deref())
+                let parameter_type = typing_target(n.typing.as_deref())
+                    .or(subsetting_target(n.subsets.as_deref()))
                     .unwrap_or_default();
                 if !parameter_type.is_empty() {
                     attrs.insert(
@@ -186,7 +188,7 @@ pub(super) fn build_from_port_def_body_element(
                         serde_json::json!(parameter_type),
                     );
                 }
-                if let Some(ref r) = n.redefines {
+                if let Some(r) = subsetting_target(n.redefines.as_deref()) {
                     attrs.insert("redefines".to_string(), serde_json::json!(r));
                 }
                 add_node_and_recurse(
@@ -208,19 +210,19 @@ pub(super) fn build_from_port_def_body_element(
                     qualified_name_for_node(g, uri, container_prefix, name, "attribute");
                 let range = span_to_range(&n.span);
                 let mut attrs = HashMap::new();
-                if let Some(ref t) = n.typing {
+                if let Some(t) = typing_target(n.typing.as_deref()) {
                     attrs.insert("attributeType".to_string(), serde_json::json!(t));
                 }
-                if let Some(ref s) = n.subsets {
+                if let Some(s) = subsetting_target(n.subsets.as_deref()) {
                     attrs.insert("subsetsFeature".to_string(), serde_json::json!(s));
                 }
-                if let Some(ref r) = n.references {
+                if let Some(r) = subsetting_target(n.references.as_deref()) {
                     attrs.insert("referencesFeature".to_string(), serde_json::json!(r));
                 }
-                if let Some(ref c) = n.crosses {
+                if let Some(c) = subsetting_target(n.crosses.as_deref()) {
                     attrs.insert("crossesFeature".to_string(), serde_json::json!(c));
                 }
-                if let Some(ref r) = n.redefines {
+                if let Some(r) = subsetting_target(n.redefines.as_deref()) {
                     attrs.insert("redefines".to_string(), serde_json::json!(r));
                 }
                 if let Some(ref v) = n.value.value {
@@ -247,6 +249,10 @@ pub(super) fn build_from_port_def_body_element(
         PDBE::ItemUsage(n) => {
             materialize_port_def_item_usage(n, uri, container_prefix, parent_id, g);
         }
+        PDBE::ItemDef(item) => super::package_body::materialize_item_def(
+            g, uri, container_prefix, Some(parent_id), item,
+        ),
+        PDBE::EnumerationUsage(_) => {}
         PDBE::PortUsage(n) => {
             materialize_port_usage(n, uri, container_prefix, parent_id, g);
         }

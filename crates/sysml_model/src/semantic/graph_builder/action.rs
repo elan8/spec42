@@ -792,13 +792,16 @@ pub(super) fn materialize_action_def(
     parent_id: Option<&NodeId>,
     ad_node: &sysml_v2_parser::Node<sysml_v2_parser::ast::ActionDef>,
     name: &str,
-    specializes: Option<&str>,
+    specializes: Option<&sysml_v2_parser::ast::TypingRelationship>,
 ) -> String {
     let qualified = qualified_name_for_node(g, uri, container_prefix, name, "action def");
     let action_id = NodeId::new(uri, &qualified);
     let mut attrs = HashMap::new();
     attach_short_name_attribute(&mut attrs, &ad_node.identification);
-    if let Some(spec) = specializes.filter(|s| !s.trim().is_empty()) {
+    if let Some(spec) = specializes
+        .map(|relationship| relationship.target.as_str())
+        .filter(|target| !target.trim().is_empty())
+    {
         attrs.insert("specializes".to_string(), serde_json::json!(spec));
     }
     add_node_and_recurse(

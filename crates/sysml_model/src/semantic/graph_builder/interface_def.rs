@@ -7,7 +7,7 @@ use sysml_v2_parser::ast::{
 };
 use url::Url;
 
-use crate::semantic::ast_util::span_to_range;
+use crate::semantic::ast_util::{connection_end_expression, span_to_range};
 use crate::semantic::graph::SemanticGraph;
 use crate::semantic::model::{ElementKind, NodeId, RelationshipKind};
 use crate::semantic::relationships::{
@@ -86,8 +86,8 @@ fn add_connect_stmt(
         g,
         uri,
         container_prefix,
-        &n.from,
-        &n.to,
+        connection_end_expression(&n.from),
+        connection_end_expression(&n.to),
         RelationshipKind::Connection,
     );
 }
@@ -175,6 +175,19 @@ pub(super) fn build_from_interface_def_body_element(
         E::EndDecl(w) => add_end_decl(g, uri, container_prefix, parent_id, w),
         E::RefDecl(w) => add_ref_decl(g, uri, container_prefix, parent_id, w),
         E::ConnectStmt(w) => add_connect_stmt(g, uri, container_prefix, w),
+        E::AttributeDef(attribute) => super::package_body::materialize_attribute_def(
+            g, uri, container_prefix, Some(parent_id), attribute,
+        ),
+        E::AttributeUsage(attribute) => {
+            super::usage_builders::materialize_attribute_usage(attribute, uri, container_prefix, parent_id, g);
+        }
+        E::ItemDef(item) => super::package_body::materialize_item_def(
+            g, uri, container_prefix, Some(parent_id), item,
+        ),
+        E::ItemUsage(_) | E::PortUsage(_) => {}
+        E::PortDef(port) => super::package_body::materialize_port_def(
+            g, uri, container_prefix, Some(parent_id), port,
+        ),
     }
 }
 
@@ -194,7 +207,19 @@ pub(super) fn build_from_connection_def_body_element(
         E::RefDecl(w) => add_ref_decl(g, uri, container_prefix, parent_id, w),
         E::ConnectStmt(w) => add_connect_stmt(g, uri, container_prefix, w),
         E::Doc(doc) => super::attach_doc_comment(g, parent_id, &doc.value.text),
-        E::Error(_) => {}
+        E::AttributeDef(attribute) => super::package_body::materialize_attribute_def(
+            g, uri, container_prefix, Some(parent_id), attribute,
+        ),
+        E::AttributeUsage(attribute) => {
+            super::usage_builders::materialize_attribute_usage(attribute, uri, container_prefix, parent_id, g);
+        }
+        E::ItemDef(item) => super::package_body::materialize_item_def(
+            g, uri, container_prefix, Some(parent_id), item,
+        ),
+        E::PortDef(port) => super::package_body::materialize_port_def(
+            g, uri, container_prefix, Some(parent_id), port,
+        ),
+        E::ItemUsage(_) | E::PortUsage(_) | E::Error(_) => {}
     }
 }
 

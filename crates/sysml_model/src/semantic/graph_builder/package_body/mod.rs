@@ -38,7 +38,7 @@ use super::{
 use super::{interface_def, part_def, port_def, state, usage_builders, use_case};
 
 mod materialize;
-use materialize::*;
+pub(crate) use materialize::*;
 
 pub(super) fn build_from_package_body_element(
     node: &Node<PackageBodyElement>,
@@ -88,6 +88,16 @@ pub(super) fn build_from_package_body_element(
         }
         PBE::AttributeDef(ad_node) => {
             materialize_attribute_def(g, uri, container_prefix, parent_id, ad_node)
+        }
+        PBE::AttributeUsage(attribute) => {
+            if let Some(parent_id) = parent_id {
+                usage_builders::materialize_attribute_usage(attribute, uri, container_prefix, parent_id, g);
+            }
+        }
+        PBE::PortUsage(port) => {
+            if let Some(parent_id) = parent_id {
+                port_def::materialize_port_usage(port, uri, container_prefix, parent_id, g);
+            }
         }
         PBE::ActionDef(ad_node) => {
             let name = identification_name(&ad_node.identification);
@@ -264,5 +274,6 @@ pub(super) fn build_from_package_body_element(
         PBE::ExtendedLibraryDecl(k) => {
             kerml_library::build_extended_library_decl(g, uri, container_prefix, parent_id, k);
         }
+        PBE::ItemUsage(_) | PBE::ConnectionUsage(_) | PBE::Ref(_) | PBE::EnumerationUsage(_) => {}
     }
 }

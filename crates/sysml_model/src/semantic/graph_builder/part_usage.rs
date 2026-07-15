@@ -3,7 +3,7 @@ use std::collections::HashMap;
 use sysml_v2_parser::ast::StateDefBody;
 use url::Url;
 
-use crate::semantic::ast_util::span_to_range;
+use crate::semantic::ast_util::{connection_end_expression, span_to_range};
 use crate::semantic::graph::SemanticGraph;
 use crate::semantic::model::{NodeId, RelationshipKind};
 use crate::semantic::relationships::{add_edge_if_both_exist, add_typing_edge_if_exists};
@@ -47,8 +47,8 @@ pub(super) fn build_from_part_usage_body_element(
                 g,
                 uri,
                 container_prefix,
-                &c.from,
-                &c.to,
+                connection_end_expression(&c.from),
+                connection_end_expression(&c.to),
                 RelationshipKind::Connection,
             );
         }
@@ -235,5 +235,6 @@ pub(super) fn build_from_part_usage_body_element(
             super::attach_doc_comment(g, parent_id, &doc.value.text);
         }
         PUBE::EnumerationUsage(_) | PUBE::Annotation(_) | PUBE::Error(_) => {}
+        _ => {}
     }
 }

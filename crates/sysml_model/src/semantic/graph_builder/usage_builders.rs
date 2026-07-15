@@ -10,7 +10,7 @@ use sysml_v2_parser::ast::{DefinitionPrefix, PartUsageBody};
 use sysml_v2_parser::Node;
 use url::Url;
 
-use crate::semantic::ast_util::span_to_range;
+use crate::semantic::ast_util::{span_to_range, subsetting_target, typing_target};
 use crate::semantic::graph::SemanticGraph;
 use crate::semantic::model::{ElementKind, NodeId};
 use crate::semantic::reference_resolution::{resolve_member_via_type, ResolveResult};
@@ -50,7 +50,7 @@ pub(super) fn materialize_part_usage(
     }
     attrs.insert("ordered".to_string(), serde_json::json!(n.ordered));
     if let Some((ref feat, ref val)) = n.subsets {
-        attrs.insert("subsetsFeature".to_string(), serde_json::json!(feat));
+        attrs.insert("subsetsFeature".to_string(), serde_json::json!(feat.value.target));
         if let Some(v) = val {
             attrs.insert(
                 "subsetsValue".to_string(),
@@ -58,7 +58,7 @@ pub(super) fn materialize_part_usage(
             );
         }
     }
-    if let Some(ref r) = n.redefines {
+    if let Some(r) = subsetting_target(n.redefines.as_deref()) {
         attrs.insert("redefines".to_string(), serde_json::json!(r));
     }
     if let Some(ref v) = n.value.value {
@@ -100,23 +100,23 @@ pub(super) fn materialize_attribute_usage(
     g: &mut SemanticGraph,
 ) -> NodeId {
     let name = effective_usage_name(&n.name, n.redefines.as_deref());
-    let kind = infer_attribute_usage_kind(g, parent_id, n.redefines.as_deref());
+    let kind = infer_attribute_usage_kind(g, parent_id, subsetting_target(n.redefines.as_deref()));
     let qualified = qualified_name_for_node(g, uri, container_prefix, name, kind);
     let range = span_to_range(&n.span);
     let mut attrs = HashMap::new();
-    if let Some(ref t) = n.typing {
+    if let Some(t) = typing_target(n.typing.as_deref()) {
         attrs.insert("attributeType".to_string(), serde_json::json!(t));
     }
-    if let Some(ref s) = n.subsets {
+    if let Some(s) = subsetting_target(n.subsets.as_deref()) {
         attrs.insert("subsetsFeature".to_string(), serde_json::json!(s));
     }
-    if let Some(ref r) = n.references {
+    if let Some(r) = subsetting_target(n.references.as_deref()) {
         attrs.insert("referencesFeature".to_string(), serde_json::json!(r));
     }
-    if let Some(ref c) = n.crosses {
+    if let Some(c) = subsetting_target(n.crosses.as_deref()) {
         attrs.insert("crossesFeature".to_string(), serde_json::json!(c));
     }
-    if let Some(ref r) = n.redefines {
+    if let Some(r) = subsetting_target(n.redefines.as_deref()) {
         attrs.insert("redefines".to_string(), serde_json::json!(r));
     }
     if let Some(ref v) = n.value.value {
@@ -206,7 +206,7 @@ pub(super) fn materialize_requirement_usage(
     if let Some(ref t) = n.type_name {
         attrs.insert("requirementType".to_string(), serde_json::json!(t));
     }
-    if let Some(ref subsets) = n.subsets {
+    if let Some(subsets) = subsetting_target(n.subsets.as_deref()) {
         attrs.insert("subsetsFeature".to_string(), serde_json::json!(subsets));
     }
     attrs.insert("isAbstract".to_string(), serde_json::json!(n.is_abstract));

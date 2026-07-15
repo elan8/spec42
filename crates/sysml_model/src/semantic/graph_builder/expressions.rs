@@ -405,12 +405,16 @@ pub(super) fn classify_expression(
         | Expression::LiteralString(_)
         | Expression::LiteralWithUnit { .. } => ExprClass::Literal,
         Expression::Bracket(inner) => classify_expression(inner),
+        Expression::Parenthesized(inner) => classify_expression(inner),
+        Expression::MetadataAccess(_) | Expression::FeatureChainRef(_) => ExprClass::FeatureRef,
         Expression::MemberAccess(_, _)
         | Expression::Index { .. }
         | Expression::Invocation { .. }
         | Expression::Tuple(_)
         | Expression::Select { .. }
         | Expression::Collect { .. }
+        | Expression::Constructor { .. }
+        | Expression::CollectionOp { .. }
         | Expression::Null => ExprClass::Unknown,
     }
 }
@@ -503,7 +507,7 @@ pub(crate) fn expression_to_debug_string(
         Expression::Invocation { callee, args } => {
             let rendered = args
                 .iter()
-                .map(expression_to_debug_string)
+                .map(argument_to_debug_string)
                 .collect::<Vec<_>>()
                 .join(", ");
             format!("{}({rendered})", expression_to_debug_string(callee))
@@ -516,8 +520,28 @@ pub(crate) fn expression_to_debug_string(
                 .join(", ");
             format!("({rendered})")
         }
+        Expression::Parenthesized(inner) => format!("({})", expression_to_debug_string(inner)),
+        Expression::Constructor { type_name, args } => {
+            let rendered = args.iter().map(argument_to_debug_string).collect::<Vec<_>>().join(", ");
+            format!("new {type_name}({rendered})")
+        }
+        Expression::FeatureChainRef(chain) => chain.segments.join("."),
+        Expression::CollectionOp { op, base, args } => {
+            let rendered = args.iter().map(argument_to_debug_string).collect::<Vec<_>>().join(", ");
+            format!("{}->{}({rendered})", expression_to_debug_string(base), op.as_str())
+        }
+        Expression::MetadataAccess(base) => format!("{}.metadata", expression_to_debug_string(base)),
         Expression::Null => "()".to_string(),
     }
+}
+
+fn argument_to_debug_string(argument: &sysml_v2_parser::Argument) -> String {
+    let value = expression_to_debug_string(crate::semantic::ast_util::argument_expression(argument));
+    argument
+        .name
+        .as_ref()
+        .map(|name| format!("{name} = {value}"))
+        .unwrap_or(value)
 }
 
 fn expression_to_unit_debug_string(
@@ -564,6 +588,10 @@ pub(super) fn expr_node_to_qualified_string(
             }
         }
         Expression::Bracket(inner) => expr_node_to_qualified_string(inner),
+        Expression::Parenthesized(inner) | Expression::MetadataAccess(inner) => {
+            expr_node_to_qualified_string(inner)
+        }
+        Expression::FeatureChainRef(chain) => chain.segments.join("::"),
         Expression::LiteralWithUnit { value, .. } => expr_node_to_qualified_string(value),
         Expression::LiteralInteger(_)
         | Expression::LiteralReal(_)
@@ -578,6 +606,8 @@ pub(super) fn expr_node_to_qualified_string(
         | Expression::TypeCheck { .. }
         | Expression::Select { .. }
         | Expression::Collect { .. }
+        | Expression::Constructor { .. }
+        | Expression::CollectionOp { .. }
         | Expression::Null => String::new(),
     }
 }

@@ -7,7 +7,7 @@ use sysml_v2_parser::ast::{
 };
 use url::Url;
 
-use crate::semantic::ast_util::span_to_range;
+use crate::semantic::ast_util::{span_to_range, typing_target};
 use crate::semantic::graph::SemanticGraph;
 use crate::semantic::model::{ElementKind, NodeId};
 use crate::semantic::relationships::add_typing_edge_if_exists;
@@ -56,7 +56,7 @@ pub(super) fn build_from_occurrence_body_element(
             let name = super::effective_usage_name(&value.name, value.redefines.as_deref());
             let qualified = qualified_name_for_node(g, uri, container_prefix, name, "attribute");
             let mut attrs = HashMap::new();
-            if let Some(ref typing) = value.typing {
+            if let Some(typing) = typing_target(value.typing.as_deref()) {
                 attrs.insert("attributeType".to_string(), serde_json::json!(typing));
             }
             if let Some(ref r) = value.redefines {
@@ -78,7 +78,7 @@ pub(super) fn build_from_occurrence_body_element(
                 attrs,
                 Some(parent_id),
             );
-            if let Some(ref typing) = value.typing {
+            if let Some(typing) = typing_target(value.typing.as_deref()) {
                 add_typing_edge_if_exists(g, uri, &qualified, typing, container_prefix);
             }
         }

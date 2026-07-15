@@ -519,7 +519,9 @@ pub(in crate::semantic::diagnostics) fn collect_view_metadata_conformance_diagno
         let required: HashSet<String> = graph
             .children_of(def_node)
             .into_iter()
-            .filter(|child| child.element_kind == ElementKind::AttributeDef)
+            .filter(|child| {
+                matches!(child.element_kind, ElementKind::AttributeDef | ElementKind::Attribute)
+            })
             .map(|child| child.name.clone())
             .collect();
         if required.is_empty() {
