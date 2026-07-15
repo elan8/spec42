@@ -10,7 +10,7 @@ use sysml_v2_parser::ast::{DefinitionPrefix, PartUsageBody};
 use sysml_v2_parser::Node;
 use url::Url;
 
-use crate::semantic::ast_util::{span_to_range, subsetting_target, typing_target};
+use crate::semantic::ast_util::{declared_multiplicity, span_to_range, subsetting_target, typing_target};
 use crate::semantic::graph::SemanticGraph;
 use crate::semantic::model::{ElementKind, NodeId};
 use crate::semantic::reference_resolution::{resolve_member_via_type, ResolveResult};
@@ -78,6 +78,11 @@ pub(super) fn materialize_part_usage(
         parent_id,
     );
     let node_id = NodeId::new(uri, &qualified);
+    if let Some(multiplicity) = &n.multiplicity {
+        if let Some(node) = g.get_node_mut(&node_id) {
+            node.declared_facts.multiplicity = Some(declared_multiplicity(multiplicity, n.ordered));
+        }
+    }
     add_typing_edge_if_exists(g, uri, &qualified, &n.type_name, container_prefix);
     if let PartUsageBody::Brace { elements } = &n.body {
         for child in elements {

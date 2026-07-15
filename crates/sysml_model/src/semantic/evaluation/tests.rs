@@ -28,6 +28,7 @@
             name: name.to_string(),
             range: range(),
             attributes,
+            declared_facts: Default::default(),
             parent_id: parent_id.cloned(),
         };
         let idx = graph.graph.add_node(node);

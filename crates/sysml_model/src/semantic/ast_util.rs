@@ -3,6 +3,7 @@
 use std::collections::HashMap;
 
 use crate::semantic::text_span::{TextPosition, TextRange};
+use crate::semantic::model::{DeclaredExpression, DeclaredExpressionArgument, DeclaredMultiplicity};
 use sysml_v2_parser::ast::{
     Argument, ConnectionEnd, Identification, Node, SubsettingRelationship, TypingRelationship,
 };
@@ -27,6 +28,48 @@ pub fn connection_end_expression(endpoint: &Node<ConnectionEnd>) -> &Node<Expres
 /// Returns the value expression of either a positional or named invocation argument.
 pub fn argument_expression(argument: &Argument) -> &Node<Expression> {
     &argument.value
+}
+
+/// Normalize the parser expression AST into typed semantic facts. This never
+/// uses the debug renderer; structural children and named arguments remain
+/// explicit for later addressable projection.
+pub fn declared_expression(node: &Node<Expression>) -> DeclaredExpression {
+    use sysml_v2_parser::ast::Expression as Expr;
+    let mut expression = DeclaredExpression {
+        kind: String::new(), range: span_to_range(&node.span), literal: None,
+        reference: None, operator: None, children: Vec::new(), arguments: Vec::new(),
+    };
+    match &node.value {
+        Expr::LiteralInteger(value) => { expression.kind = "integerLiteral".into(); expression.literal = Some(serde_json::json!(value)); }
+        Expr::LiteralReal(value) => { expression.kind = "realLiteral".into(); expression.literal = Some(serde_json::json!(value)); }
+        Expr::LiteralString(value) => { expression.kind = "stringLiteral".into(); expression.literal = Some(serde_json::json!(value)); }
+        Expr::LiteralBoolean(value) => { expression.kind = "booleanLiteral".into(); expression.literal = Some(serde_json::json!(value)); }
+        Expr::Null => expression.kind = "null".into(),
+        Expr::FeatureRef(value) => { expression.kind = "featureReference".into(); expression.reference = Some(value.clone()); }
+        Expr::FeatureChainRef(value) => { expression.kind = "featureChain".into(); expression.reference = Some(value.segments.join(".")); }
+        Expr::Classification { metaclass } => { expression.kind = "classification".into(); expression.reference = Some(metaclass.clone()); }
+        Expr::MemberAccess(base, member) => { expression.kind = "memberAccess".into(); expression.reference = Some(member.clone()); expression.children.push(declared_expression(base)); }
+        Expr::Select { base, selector } => { expression.kind = "select".into(); expression.reference = Some(selector.clone()); expression.children.push(declared_expression(base)); }
+        Expr::Collect { base, selector } => { expression.kind = "collect".into(); expression.reference = Some(selector.clone()); expression.children.push(declared_expression(base)); }
+        Expr::MetadataAccess(base) => { expression.kind = "metadataAccess".into(); expression.children.push(declared_expression(base)); }
+        Expr::Parenthesized(inner) => { expression.kind = "parenthesized".into(); expression.children.push(declared_expression(inner)); }
+        Expr::Bracket(inner) => { expression.kind = "bracket".into(); expression.children.push(declared_expression(inner)); }
+        Expr::UnaryOp { op, operand } => { expression.kind = "unary".into(); expression.operator = Some(op.as_str().into()); expression.children.push(declared_expression(operand)); }
+        Expr::BinaryOp { op, left, right } => { expression.kind = "binary".into(); expression.operator = Some(op.as_str().into()); expression.children = vec![declared_expression(left), declared_expression(right)]; }
+        Expr::Index { base, index } => { expression.kind = "index".into(); expression.children = vec![declared_expression(base), declared_expression(index)]; }
+        Expr::LiteralWithUnit { value, unit } => { expression.kind = "literalWithUnit".into(); expression.children = vec![declared_expression(value), declared_expression(unit)]; }
+        Expr::Tuple(values) => { expression.kind = "tuple".into(); expression.children = values.iter().map(declared_expression).collect(); }
+        Expr::Invocation { callee, args } => { expression.kind = "invocation".into(); expression.children.push(declared_expression(callee)); expression.arguments = args.iter().map(|arg| DeclaredExpressionArgument { name: arg.name.clone(), value: declared_expression(&arg.value) }).collect(); }
+        Expr::Constructor { type_name, args } => { expression.kind = "constructor".into(); expression.reference = Some(type_name.clone()); expression.arguments = args.iter().map(|arg| DeclaredExpressionArgument { name: arg.name.clone(), value: declared_expression(&arg.value) }).collect(); }
+        Expr::CollectionOp { op, base, args } => { expression.kind = "collectionOperation".into(); expression.operator = Some(op.as_str().into()); expression.children.push(declared_expression(base)); expression.arguments = args.iter().map(|arg| DeclaredExpressionArgument { name: arg.name.clone(), value: declared_expression(&arg.value) }).collect(); }
+        Expr::MetaCast { base, metaclass } => { expression.kind = "metaCast".into(); expression.reference = Some(metaclass.clone()); expression.children.push(declared_expression(base)); }
+        Expr::TypeCheck { kind, operand, type_name } => { expression.kind = "typeCheck".into(); expression.operator = Some(match kind { sysml_v2_parser::ast::TypeCheckKind::Istype => "istype", sysml_v2_parser::ast::TypeCheckKind::Hastype => "hastype", sysml_v2_parser::ast::TypeCheckKind::As => "as" }.into()); expression.reference = Some(type_name.clone()); if let Some(value) = operand { expression.children.push(declared_expression(value)); } }
+    }
+    expression
+}
+
+pub fn declared_multiplicity(node: &Node<sysml_v2_parser::ast::Multiplicity>, ordered: bool) -> DeclaredMultiplicity {
+    DeclaredMultiplicity { lower: node.value.lower.as_deref().map(declared_expression), upper: node.value.upper.as_deref().map(declared_expression), range: span_to_range(&node.span), is_implied: false, is_ordered: ordered, is_unique: None }
 }
 
 /// Converts sysml-v2-parser Span (1-based line/column) to 0-based TextRange.

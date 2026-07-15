@@ -184,6 +184,7 @@ pub(super) fn add_node_and_recurse(
         name,
         range,
         attributes: attrs,
+        declared_facts: Default::default(),
         parent_id: parent_id.cloned(),
     };
     // Also index the node under its short-name-qualified variant (if any), so

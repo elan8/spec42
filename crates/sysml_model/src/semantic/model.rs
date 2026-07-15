@@ -509,6 +509,62 @@ impl RelationshipKind {
 }
 
 /// A node in the semantic graph representing a model element.
+/// Typed source facts retained from the parser AST. These facts deliberately
+/// remain separate from the legacy display-oriented `attributes` map.
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+pub struct DeclaredSemanticFacts {
+    #[serde(default)]
+    pub multiplicity: Option<DeclaredMultiplicity>,
+    #[serde(default)]
+    pub feature_value: Option<DeclaredFeatureValue>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct DeclaredMultiplicity {
+    pub lower: Option<DeclaredExpression>,
+    pub upper: Option<DeclaredExpression>,
+    pub range: TextRange,
+    pub is_implied: bool,
+    pub is_ordered: bool,
+    pub is_unique: Option<bool>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct DeclaredFeatureValue {
+    pub kind: DeclaredFeatureValueKind,
+    pub expression: DeclaredExpression,
+    pub range: TextRange,
+}
+
+#[derive(Debug, Clone, Copy, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub enum DeclaredFeatureValueKind { Default, Initial, Bound, Override }
+
+/// Lossless-enough normalized expression tree for semantic projection. The
+/// original AST stays in the parser layer; this public form has no debug text.
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct DeclaredExpression {
+    pub kind: String,
+    pub range: TextRange,
+    #[serde(default)]
+    pub literal: Option<serde_json::Value>,
+    #[serde(default)]
+    pub reference: Option<String>,
+    #[serde(default)]
+    pub operator: Option<String>,
+    #[serde(default)]
+    pub children: Vec<DeclaredExpression>,
+    #[serde(default)]
+    pub arguments: Vec<DeclaredExpressionArgument>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct DeclaredExpressionArgument {
+    pub name: Option<String>,
+    pub value: DeclaredExpression,
+}
+
+/// A node in the semantic graph representing a model element.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct SemanticNode {
     pub id: NodeId,
@@ -516,6 +572,8 @@ pub struct SemanticNode {
     pub name: String,
     pub range: TextRange,
     pub attributes: HashMap<String, serde_json::Value>,
+    #[serde(default)]
+    pub declared_facts: DeclaredSemanticFacts,
     pub parent_id: Option<NodeId>,
 }
 
