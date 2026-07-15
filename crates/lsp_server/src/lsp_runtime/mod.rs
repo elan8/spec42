@@ -53,14 +53,8 @@ impl LanguageServer for Backend {
     }
 
     async fn initialized(&self, _: InitializedParams) {
-        documents::initialized(
-            &self.client,
-            &self.handle,
-            &self.config,
-            &self.server_name,
-            &self.runtime_config,
-        )
-        .await;
+        documents::initialized(&self.client, &self.handle, &self.server_name, &self.runtime_config)
+            .await;
     }
 
     async fn shutdown(&self) -> Result<()> {

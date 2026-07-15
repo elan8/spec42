@@ -3,12 +3,9 @@
 use std::collections::{BTreeSet, HashMap};
 
 use sysml_model::{
-    collect_diagnostics_from_graph_with_unit_registry, collect_untyped_part_usage_diagnostics,
-    missing_library_context_diagnostic, resolved_usage_context, typed_by_reference,
-    DiagnosticSeverity, DiagnosticsOptions, SemanticDiagnostic, SemanticGraph, SysmlDocument,
-    UnitRegistry,
+    resolved_usage_context, typed_by_reference, DiagnosticSeverity, SemanticDiagnostic,
+    SemanticGraph, SysmlDocument, UnitRegistry,
 };
-use sysml_v2_parser::DiagnosticSeverity as ParseSeverity;
 use url::Url;
 
 use super::discovery::path_to_file_url;
@@ -170,43 +167,18 @@ fn collect_host_document_diagnostics(
     text: &str,
     strict_diagnostics: bool,
 ) -> Vec<SemanticDiagnostic> {
-    let mut diagnostics = parse_diagnostics(uri, text);
-    diagnostics.extend(collect_untyped_part_usage_diagnostics(uri, text));
+    let mut diagnostics = sysml_model::collect_document_diagnostics(
+        graph,
+        unit_registry,
+        !library_urls.is_empty(),
+        uri,
+        text,
+        strict_diagnostics,
+    );
 
     let has_parse_error = diagnostics.iter().any(|diagnostic| {
         diagnostic.severity == DiagnosticSeverity::Error && diagnostic.source == "sysml"
     });
-    let allow_semantic = if strict_diagnostics {
-        !has_parse_error
-    } else {
-        true
-    };
-
-    if allow_semantic {
-        diagnostics.extend(collect_diagnostics_from_graph_with_unit_registry(
-            graph,
-            uri,
-            DiagnosticsOptions::default(),
-            unit_registry,
-        ));
-
-        let has_unresolved_type_reference = has_semantic_code(&diagnostics, "unresolved_type_reference");
-        let has_unresolved_import_target = has_semantic_code(&diagnostics, "unresolved_import_target");
-        let has_unresolved_specializes_reference =
-            has_semantic_code(&diagnostics, "unresolved_specializes_reference");
-
-        if let Some(diagnostic) = missing_library_context_diagnostic(
-            uri,
-            text,
-            has_unresolved_type_reference
-                || has_unresolved_import_target
-                || has_unresolved_specializes_reference,
-            !library_urls.is_empty(),
-        ) {
-            diagnostics.push(diagnostic);
-        }
-    }
-
     if strict_diagnostics && has_parse_error {
         diagnostics.retain(|diagnostic| {
             diagnostic.severity == DiagnosticSeverity::Error && diagnostic.source == "sysml"
@@ -214,47 +186,6 @@ fn collect_host_document_diagnostics(
     }
 
     diagnostics
-}
-
-fn parse_diagnostics(uri: &Url, text: &str) -> Vec<SemanticDiagnostic> {
-    let result = sysml_v2_parser::parse_with_diagnostics(text);
-
-    result
-        .errors
-        .into_iter()
-        .map(|error| {
-            let severity = match error.severity.unwrap_or(ParseSeverity::Error) {
-                ParseSeverity::Error => DiagnosticSeverity::Error,
-                ParseSeverity::Warning => DiagnosticSeverity::Warning,
-            };
-            SemanticDiagnostic {
-                uri: uri.clone(),
-                range: error
-                    .to_lsp_range()
-                    .map(|(sl, sc, el, ec)| {
-                        sysml_model::TextRange::new(
-                            sysml_model::TextPosition::new(sl, sc),
-                            sysml_model::TextPosition::new(el, ec),
-                        )
-                    })
-                    .unwrap_or_else(|| {
-                        sysml_model::TextRange::new(
-                            sysml_model::TextPosition::new(0, 0),
-                            sysml_model::TextPosition::new(0, 0),
-                        )
-                    }),
-                severity,
-                source: "sysml".to_string(),
-                code: error.code.unwrap_or_else(|| "parse_error".to_string()),
-                message: error.message,
-                related_information: Vec::new(),
-            }
-        })
-        .collect()
-}
-
-fn has_semantic_code(diagnostics: &[SemanticDiagnostic], code: &str) -> bool {
-    diagnostics.iter().any(|diagnostic| diagnostic.code == code)
 }
 
 #[cfg(test)]

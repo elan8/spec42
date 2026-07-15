@@ -4,7 +4,8 @@ use std::path::{Path, PathBuf};
 use std::sync::Arc;
 
 use workspace::{
-    HostContext, HostFilesystemProvider, HostWorkspaceSnapshot, Spec42Engine, WorkspaceLoadRequest,
+    HostContext, HostFilesystemProvider, HostWorkspaceSnapshot, Spec42Engine, ValidationTiming,
+    WorkspaceLoadRequest,
 };
 
 use crate::cli::{CheckArgs, Cli};
@@ -46,7 +47,8 @@ pub fn load_snapshot_with_engine(
     );
     let request = WorkspaceLoadRequest::single_target(path.to_path_buf())
         .with_workspace_root(workspace_root.map(Path::to_path_buf))
-        .with_strict_diagnostics(strict_diagnostics);
+        .with_strict_diagnostics(strict_diagnostics)
+        .with_validation_timing(ValidationTiming::Deferred);
     engine
         .load_workspace(provider, request, HostContext::default())
         .map_err(|error| error.to_string())

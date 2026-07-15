@@ -9,7 +9,7 @@ pub use semantic::component_view::{
 };
 pub use semantic::diagnostics::{
     collect_diagnostics_from_graph, collect_diagnostics_from_graph_with_unit_registry,
-    collect_untyped_part_usage_diagnostics,
+    collect_document_diagnostics, collect_untyped_part_usage_diagnostics,
     missing_library_context_diagnostic, DiagnosticRelatedInfo, DiagnosticSeverity,
     DiagnosticsOptions, SemanticDiagnostic,
 };

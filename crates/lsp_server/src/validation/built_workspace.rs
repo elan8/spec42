@@ -12,7 +12,8 @@ use std::sync::Arc;
 use sysml_model::{SemanticGraph, SysmlDocument, WorkspaceParsedDocument};
 use tower_lsp::lsp_types::{Diagnostic, Url};
 use workspace::{
-    HostContext, HostFilesystemProvider, HostWorkspaceSnapshot, Spec42Engine, WorkspaceLoadRequest,
+    HostContext, HostFilesystemProvider, HostWorkspaceSnapshot, Spec42Engine, ValidationTiming,
+    WorkspaceLoadRequest,
 };
 
 use crate::analysis::diagnostics_core;
@@ -83,7 +84,8 @@ pub(super) fn validate_paths_with_semantics(
     );
     let load_request = WorkspaceLoadRequest::single_target(target)
         .with_workspace_root(workspace_root.clone())
-        .with_strict_diagnostics(request.strict_diagnostics);
+        .with_strict_diagnostics(request.strict_diagnostics)
+        .with_validation_timing(ValidationTiming::Deferred);
     let snapshot = engine
         .load_workspace(provider, load_request, HostContext::default())
         .map_err(|error| error.to_string())?;
@@ -117,8 +119,7 @@ pub fn semantic_report_from_built_workspace(
 
     let state = server_state_from_built(built, workspace_root_url.clone());
 
-    let documents =
-        collect_target_documents(&state, config, &target_files, request.strict_diagnostics)?;
+    let documents = collect_target_documents(&state, &target_files, request.strict_diagnostics)?;
     let summary = summarize(&documents);
     let advice = build_advice(&documents, request.library_paths.is_empty());
     let semantic_model = workspace::project_semantic_model(&state.semantic_graph, &target_files)
@@ -190,7 +191,6 @@ fn server_state_from_built(
 
 pub(super) fn collect_target_documents(
     state: &ServerState,
-    config: &Arc<Spec42Config>,
     target_files: &[std::path::PathBuf],
     strict_diagnostics: bool,
 ) -> Result<Vec<ValidatedDocument>, String> {
@@ -200,8 +200,7 @@ pub(super) fn collect_target_documents(
         .into_iter()
         .map(|uri| {
             let text = indexed_text_or_empty(state, &uri);
-            let diagnostics =
-                collect_diagnostics_for_document(state, config, &uri, &text, strict_diagnostics);
+            let diagnostics = collect_diagnostics_for_document(state, &uri, &text, strict_diagnostics);
             ValidatedDocument {
                 uri: uri.to_string(),
                 diagnostics,
@@ -219,7 +218,6 @@ fn target_file_urls(target_files: &[std::path::PathBuf]) -> Result<BTreeSet<Url>
 
 fn collect_diagnostics_for_document(
     state: &ServerState,
-    config: &Arc<Spec42Config>,
     uri: &Url,
     text: &str,
     strict_diagnostics: bool,
@@ -227,10 +225,8 @@ fn collect_diagnostics_for_document(
     diagnostics_core::collect_document_diagnostics(
         &state.semantic_graph,
         &state.library_paths,
-        &config.check_providers,
         uri,
         text,
-        false,
         diagnostics_core::validation_postprocess_options(strict_diagnostics),
     )
 }

@@ -55,7 +55,6 @@ pub(crate) async fn initialize(
 pub(crate) async fn initialized(
     client: &Client,
     handle: &WorkspaceHandle,
-    config: &Arc<Spec42Config>,
     server_name: &str,
     runtime_config: &Arc<std::sync::OnceLock<RuntimeConfig>>,
 ) {
@@ -103,7 +102,6 @@ pub(crate) async fn initialized(
     }
 
     let handle = handle.clone();
-    let config = Arc::clone(config);
     let runtime_config = Arc::clone(runtime_config);
     let client = client.clone();
     tokio::spawn(async move {
@@ -400,7 +398,7 @@ pub(crate) async fn initialized(
         let diagnostics_start = Instant::now();
         handle.complete_startup().await.ok();
         send_semantic_ready_notification(&client, &handle).await;
-        publish_workspace_diagnostics(&client, &handle, &config, &runtime_config, None).await;
+        publish_workspace_diagnostics(&client, &handle, &runtime_config, None).await;
         let diagnostics_ms = diagnostics_start.elapsed().as_millis() as u64;
         log_perf(
             &client,

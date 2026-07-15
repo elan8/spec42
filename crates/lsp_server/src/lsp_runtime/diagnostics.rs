@@ -6,7 +6,6 @@ use tower_lsp::Client;
 use tracing::info;
 
 use crate::analysis::diagnostics_core;
-use crate::host::config::Spec42Config;
 use crate::workspace::state::supports_semantic_queries;
 use crate::workspace::{RuntimeConfig, WorkspaceHandle};
 use crate::common::util;
@@ -22,7 +21,6 @@ fn perf_logging_enabled(runtime_config: &Arc<std::sync::OnceLock<RuntimeConfig>>
 pub(crate) async fn publish_document_diagnostics(
     client: &Client,
     handle: &WorkspaceHandle,
-    config: &Arc<Spec42Config>,
     runtime_config: &Arc<std::sync::OnceLock<RuntimeConfig>>,
     uri: Url,
     text: &str,
@@ -42,14 +40,9 @@ pub(crate) async fn publish_document_diagnostics(
         }
         return;
     }
-    let diagnostics = collect_diagnostics_for_document(
-        &snap.semantic_graph,
-        &snap.library_paths,
-        config,
-        &uri,
-        text,
-    )
-    .await;
+    let diagnostics =
+        collect_diagnostics_for_document(&snap.semantic_graph, &snap.library_paths, &uri, text)
+            .await;
     if perf_logging_enabled(runtime_config) {
         info!(
             event = "diagnostics:document",
@@ -64,7 +57,6 @@ pub(crate) async fn publish_document_diagnostics(
 pub(crate) async fn publish_workspace_diagnostics(
     client: &Client,
     handle: &WorkspaceHandle,
-    config: &Arc<Spec42Config>,
     runtime_config: &Arc<std::sync::OnceLock<RuntimeConfig>>,
     target_uris: Option<&[Url]>,
 ) {
@@ -109,17 +101,10 @@ pub(crate) async fn publish_workspace_diagnostics(
     for (uri, text) in docs {
         let graph = snap.semantic_graph.clone();
         let library_paths = snap.library_paths.clone();
-        let config = Arc::clone(config);
         let client = client.clone();
         join_set.spawn(async move {
-            let diagnostics = collect_diagnostics_for_document(
-                &graph,
-                &library_paths,
-                &config,
-                &uri,
-                &text,
-            )
-            .await;
+            let diagnostics =
+                collect_diagnostics_for_document(&graph, &library_paths, &uri, &text).await;
             let count = diagnostics.len();
             client.publish_diagnostics(uri, diagnostics, None).await;
             count
@@ -153,23 +138,19 @@ pub(crate) async fn publish_workspace_diagnostics(
 async fn collect_diagnostics_for_document(
     graph: &SemanticGraph,
     library_paths: &[Url],
-    config: &Arc<Spec42Config>,
     uri: &Url,
     text: &str,
 ) -> Vec<Diagnostic> {
     let uri_norm = util::normalize_file_uri(uri);
     let graph = graph.clone();
     let library_paths = library_paths.to_vec();
-    let check_providers = config.check_providers.clone();
     let text = text.to_owned();
     tokio::task::spawn_blocking(move || {
         diagnostics_core::collect_document_diagnostics(
             &graph,
             &library_paths,
-            &check_providers,
             &uri_norm,
             &text,
-            false,
             diagnostics_core::lsp_postprocess_options(),
         )
     })

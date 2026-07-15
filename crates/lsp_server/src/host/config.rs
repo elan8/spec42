@@ -3,34 +3,13 @@
 use std::path::PathBuf;
 use std::sync::Arc;
 use std::time::Instant;
-use tower_lsp::lsp_types::{Diagnostic, ServerCapabilities, Url};
+use tower_lsp::lsp_types::ServerCapabilities;
 
-use crate::semantic::SemanticGraph;
 use crate::validation::{ValidationReport, ValidationRequest};
 
 pub const KERNEL_INTERFACE_VERSION: u32 = 1;
 
-pub type CheckProvider = Arc<dyn SemanticCheckProvider>;
 pub type PipelineHook = Arc<dyn ValidationPipelineHook>;
-
-/// Host context passed to semantic check providers.
-#[derive(Debug, Clone, Copy, Default)]
-pub struct DiagnosticsHostContext;
-
-/// Provider of semantic/quality diagnostics. Implement this to add custom checks (e.g. naming rules, complexity).
-pub trait SemanticCheckProvider: Send + Sync {
-    /// Returns LSP diagnostics for the given document using the semantic graph.
-    fn compute_diagnostics(&self, graph: &SemanticGraph, uri: &Url) -> Vec<Diagnostic> {
-        self.compute_diagnostics_with_context(graph, uri, DiagnosticsHostContext)
-    }
-
-    fn compute_diagnostics_with_context(
-        &self,
-        graph: &SemanticGraph,
-        uri: &Url,
-        _ctx: DiagnosticsHostContext,
-    ) -> Vec<Diagnostic>;
-}
 
 /// Optional host hook for capability augmentation.
 ///
@@ -110,9 +89,6 @@ impl CapabilityMetadata {
 
 pub trait CapabilityProvider: Send + Sync {
     fn metadata(&self) -> CapabilityMetadata;
-    fn check_providers(&self) -> Vec<CheckProvider> {
-        Vec::new()
-    }
     fn pipeline_hooks(&self) -> Vec<PipelineHook> {
         Vec::new()
     }
@@ -133,8 +109,6 @@ pub struct Spec42Config {
     /// Optional library roots supplied by the host (e.g. materialized standard library), merged
     /// before client `libraryPaths` during LSP initialize / configuration.
     pub default_library_paths: Vec<PathBuf>,
-    /// Semantic/quality check providers run when publishing diagnostics after a successful parse.
-    pub check_providers: Vec<Arc<dyn SemanticCheckProvider>>,
     /// Optional capability augmenters for additive host composition.
     pub capability_augmenters: Vec<Arc<dyn CapabilityAugmenter>>,
     /// Optional custom-method declaration providers for additive host composition.
@@ -149,7 +123,6 @@ impl std::fmt::Debug for Spec42Config {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         f.debug_struct("Spec42Config")
             .field("default_library_paths", &self.default_library_paths)
-            .field("check_providers", &self.check_providers.len())
             .field("capability_augmenters", &self.capability_augmenters.len())
             .field(
                 "custom_method_providers",
@@ -164,12 +137,6 @@ impl std::fmt::Debug for Spec42Config {
 impl Spec42Config {
     pub fn new() -> Self {
         Self::default()
-    }
-
-    /// Add a semantic check provider.
-    pub fn with_check_provider(mut self, p: Arc<dyn SemanticCheckProvider>) -> Self {
-        self.check_providers.push(p);
-        self
     }
 
     /// Add a capability augmenter.

@@ -1,4 +1,5 @@
 mod checks;
+mod document;
 pub mod engine;
 mod engine_impl;
 mod helpers;
@@ -8,6 +9,7 @@ mod relationship_endpoint_messages;
 mod shared_rules;
 pub mod types;
 
+pub use document::collect_document_diagnostics;
 pub use engine::{
     collect_diagnostics_from_graph, collect_diagnostics_from_graph_with_unit_registry,
 };

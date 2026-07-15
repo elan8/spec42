@@ -3,7 +3,7 @@ use super::*;
 pub(crate) async fn did_open(
     client: &Client,
     handle: &WorkspaceHandle,
-    config: &Arc<Spec42Config>,
+    _config: &Arc<Spec42Config>,
     runtime_config: &Arc<std::sync::OnceLock<RuntimeConfig>>,
     params: DidOpenTextDocumentParams,
 ) {
@@ -50,7 +50,6 @@ pub(crate) async fn did_open(
             schedule_semantic_relink_after_change(
                 client,
                 handle,
-                config,
                 runtime_config,
                 uri_norm.clone(),
                 token,
@@ -79,12 +78,11 @@ pub(crate) async fn did_open(
     if already_indexed {
         let client = client.clone();
         let handle = handle.clone();
-        let config = Arc::clone(config);
         let runtime_config = Arc::clone(runtime_config);
         let uri_norm_log = uri_norm.clone();
         tokio::spawn(async move {
             let diag_start = Instant::now();
-            publish_document_diagnostics(&client, &handle, &config, &runtime_config, uri, &text)
+            publish_document_diagnostics(&client, &handle, &runtime_config, uri, &text)
                 .await;
             if perf_logging_enabled {
                 client
@@ -110,7 +108,7 @@ pub(crate) async fn did_open(
 pub(crate) async fn did_change(
     client: &Client,
     handle: &WorkspaceHandle,
-    config: &Arc<Spec42Config>,
+    _config: &Arc<Spec42Config>,
     runtime_config: &Arc<std::sync::OnceLock<RuntimeConfig>>,
     params: DidChangeTextDocumentParams,
 ) {
@@ -188,14 +186,7 @@ pub(crate) async fn did_change(
     // evaluation haven't run yet; the relink task publishes diagnostics after
     // committing the fully-resolved graph.
     if let Some(token) = token {
-        schedule_semantic_relink_after_change(
-            client,
-            handle,
-            config,
-            runtime_config,
-            uri_norm.clone(),
-            token,
-        );
+        schedule_semantic_relink_after_change(client, handle, runtime_config, uri_norm.clone(), token);
     }
     log_perf(
         client,
@@ -208,7 +199,7 @@ pub(crate) async fn did_change(
         ],
     )
     .await;
-    schedule_workspace_diagnostics_republish(client, handle, config, runtime_config);
+    schedule_workspace_diagnostics_republish(client, handle, runtime_config);
 }
 
 pub(crate) async fn did_close(client: &Client, params: DidCloseTextDocumentParams) {
@@ -234,7 +225,7 @@ pub(crate) fn watched_file_content_already_current(handle: &WorkspaceHandle, uri
 pub(crate) async fn did_change_watched_files(
     client: &Client,
     handle: &WorkspaceHandle,
-    config: &Arc<Spec42Config>,
+    _config: &Arc<Spec42Config>,
     runtime_config: &Arc<std::sync::OnceLock<RuntimeConfig>>,
     params: DidChangeWatchedFilesParams,
 ) {
@@ -298,14 +289,8 @@ pub(crate) async fn did_change_watched_files(
     }
     let diagnostics_start = Instant::now();
     if !changed_or_created_uris.is_empty() {
-        publish_workspace_diagnostics(
-            client,
-            handle,
-            config,
-            runtime_config,
-            Some(&changed_or_created_uris),
-        )
-        .await;
+        publish_workspace_diagnostics(client, handle, runtime_config, Some(&changed_or_created_uris))
+            .await;
     }
     let diagnostics_ms = diagnostics_start.elapsed().as_millis() as u64;
     let deleted_uri_count = deleted_uris.len();
@@ -355,7 +340,6 @@ pub(crate) async fn did_change_configuration(
     }
 
     let handle = handle.clone();
-    let config = Arc::clone(config);
     let runtime_config = Arc::clone(runtime_config);
     let client = client.clone();
     tokio::spawn(async move {
@@ -413,7 +397,7 @@ pub(crate) async fn did_change_configuration(
         }
         send_semantic_ready_notification(&client, &handle).await;
         let diagnostics_start = Instant::now();
-        publish_workspace_diagnostics(&client, &handle, &config, &runtime_config, None).await;
+        publish_workspace_diagnostics(&client, &handle, &runtime_config, None).await;
         log_perf(
             &client,
             perf_logging_enabled,

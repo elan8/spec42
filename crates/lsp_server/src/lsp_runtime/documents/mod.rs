@@ -24,13 +24,11 @@ const SEMANTIC_RELINK_DEBOUNCE_MS: u64 = 700;
 fn schedule_workspace_diagnostics_republish(
     client: &Client,
     handle: &WorkspaceHandle,
-    config: &Arc<Spec42Config>,
     runtime_config: &Arc<std::sync::OnceLock<RuntimeConfig>>,
 ) {
     let generation = WORKSPACE_DIAGNOSTICS_DEBOUNCE_GEN.fetch_add(1, Ordering::SeqCst) + 1;
     let client = client.clone();
     let handle = handle.clone();
-    let config = Arc::clone(config);
     let runtime_config = Arc::clone(runtime_config);
     tokio::spawn(async move {
         tokio::time::sleep(Duration::from_millis(WORKSPACE_DIAGNOSTICS_DEBOUNCE_MS)).await;
@@ -41,7 +39,7 @@ fn schedule_workspace_diagnostics_republish(
         if !crate::workspace::state::supports_semantic_queries(lifecycle) {
             return;
         }
-        publish_workspace_diagnostics(&client, &handle, &config, &runtime_config, None).await;
+        publish_workspace_diagnostics(&client, &handle, &runtime_config, None).await;
     });
 }
 
@@ -55,14 +53,12 @@ fn schedule_workspace_diagnostics_republish(
 fn schedule_semantic_relink_after_change(
     client: &Client,
     handle: &WorkspaceHandle,
-    config: &Arc<Spec42Config>,
     runtime_config: &Arc<std::sync::OnceLock<RuntimeConfig>>,
     changed_uri: Url,
     token: RelinkToken,
 ) {
     let client = client.clone();
     let handle = handle.clone();
-    let config = Arc::clone(config);
     let runtime_config = Arc::clone(runtime_config);
     tokio::spawn(async move {
         tokio::time::sleep(Duration::from_millis(SEMANTIC_RELINK_DEBOUNCE_MS)).await;
@@ -145,8 +141,7 @@ fn schedule_semantic_relink_after_change(
             return;
         }
 
-        publish_workspace_diagnostics(&client, &handle, &config, &runtime_config, Some(&diag_uris))
-            .await;
+        publish_workspace_diagnostics(&client, &handle, &runtime_config, Some(&diag_uris)).await;
 
         // Wave 2: evaluate expressions in the background against the structural graph just
         // committed, and republish diagnostics again once that lands (e.g.
@@ -154,13 +149,7 @@ fn schedule_semantic_relink_after_change(
         // version *after* `report_relink_result` above so a superseding edit that arrives
         // between now and Wave 2's debounce firing is correctly detected as stale.
         let post_relink_version = handle.snapshot().session.version();
-        schedule_expression_evaluation(
-            &client,
-            &handle,
-            &config,
-            &runtime_config,
-            post_relink_version,
-        );
+        schedule_expression_evaluation(&client, &handle, &runtime_config, post_relink_version);
 
         log_perf(
             &client,
@@ -230,13 +219,11 @@ fn schedule_semantic_relink_after_change(
 fn schedule_expression_evaluation(
     client: &Client,
     handle: &WorkspaceHandle,
-    config: &Arc<Spec42Config>,
     runtime_config: &Arc<std::sync::OnceLock<RuntimeConfig>>,
     expected_version: u64,
 ) {
     let client = client.clone();
     let handle = handle.clone();
-    let config = Arc::clone(config);
     let runtime_config = Arc::clone(runtime_config);
     tokio::spawn(async move {
         tokio::time::sleep(Duration::from_millis(WORKSPACE_DIAGNOSTICS_DEBOUNCE_MS)).await;
@@ -262,7 +249,7 @@ fn schedule_expression_evaluation(
             .unwrap_or(false);
         if committed {
             // Workspace-wide, not `[changed_uri]` — see the doc comment above.
-            publish_workspace_diagnostics(&client, &handle, &config, &runtime_config, None).await;
+            publish_workspace_diagnostics(&client, &handle, &runtime_config, None).await;
         }
     });
 }

@@ -182,11 +182,8 @@
 
         rebuild_all_document_links(&mut state);
 
-        let rebuilt_diagnostics = compute_semantic_diagnostics(
-            &state.semantic_graph,
-            &importer_uri,
-            crate::DiagnosticsHostContext,
-        );
+        let rebuilt_diagnostics =
+            compute_semantic_diagnostics(&state.semantic_graph, &importer_uri);
         assert!(
             rebuilt_diagnostics.iter().all(|d| {
                 d.code
@@ -235,11 +232,8 @@
 
         rebuild_all_document_links(&mut state);
 
-        let rebuilt_diagnostics = compute_semantic_diagnostics(
-            &state.semantic_graph,
-            &importer_uri,
-            crate::DiagnosticsHostContext,
-        );
+        let rebuilt_diagnostics =
+            compute_semantic_diagnostics(&state.semantic_graph, &importer_uri);
         assert!(
             rebuilt_diagnostics.iter().all(|d| {
                 d.code.as_ref().is_none_or(|code| {
