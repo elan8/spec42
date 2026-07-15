@@ -55,8 +55,9 @@ pub use view_cache::{
 };
 pub use snapshot::{
     apply_document_changes, enrich_document_hashes, CancellationToken, DocumentChanges,
-    HostContext, HostPipelinePhase, HostResourceLimits, HostSemanticModelNode,
-    HostSemanticModelRelationship, HostSemanticProjection, HostMultiplicity, HostValidatedDocument,
+    HostContext, HostExpression, HostExpressionArgument, HostPipelinePhase, HostResourceLimits,
+    HostSemanticModelNode, HostSemanticModelRelationship, HostSemanticProjection, HostMultiplicity,
+    HostValidatedDocument,
     HostValidationReport, HostValidationSummary, HostWorkspaceSnapshot, Spec42ProjectionOutput,
     ValidationTiming, WorkspaceLoadRequest,
 };
