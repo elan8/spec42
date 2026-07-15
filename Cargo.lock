@@ -2103,9 +2103,9 @@ dependencies = [
 
 [[package]]
 name = "sysml-v2-parser"
-version = "0.32.0"
+version = "0.33.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "6f76a6e8911eaf6481e52b111d8558a081a3cae845199de5479dadd6e0daaa2d"
+checksum = "b904172ecfc1fca949a11a3d7a237677adf4f4c9466177f1a77ecf02e9e7ae14"
 dependencies = [
  "log",
  "nom",

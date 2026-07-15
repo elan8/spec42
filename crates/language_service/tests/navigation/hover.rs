@@ -190,7 +190,7 @@ fn hover_resolves_public_reexported_type_reference() {
     let content_core = "package Core { attribute def Name; }";
     let content_domain = "package Domain { public import Core::*; }";
     let content_use =
-        "package Demo { import Domain::*; part def Consumer { attribute groupName : Name; } }";
+        "package Demo { import Domain::*; part def Consumer { attribute label : Name; } }";
     let ws = multi_doc(&[
         ("core.sysml", content_core),
         ("domain.sysml", content_domain),
