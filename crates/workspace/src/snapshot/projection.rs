@@ -14,6 +14,9 @@ use sysml_model::{ConnectStatementDetail, ElementKind, RelationshipKind, TextRan
 /// A node in the semantic model — maps 1:1 to [`sysml_model::SemanticNode`].
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
 pub struct HostSemanticModelNode {
+    /// Opaque identity of the semantic element in this immutable projection.
+    /// It is independent from the element's display and qualified names.
+    pub semantic_id: String,
     /// Document URI the node was declared in.
     pub uri: String,
     /// Fully-qualified name (unique workspace-wide, may include `#kind` disambiguator).
@@ -36,6 +39,14 @@ pub struct HostSemanticModelNode {
 /// A directed relationship between two nodes — maps 1:1 to [`sysml_model::SemanticEdge`].
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
 pub struct HostSemanticModelRelationship {
+    /// Opaque identity of this addressable relationship element.
+    pub semantic_id: String,
+    /// Opaque semantic ID of the relationship source.
+    pub source_id: String,
+    /// Opaque semantic ID of the relationship target.
+    pub target_id: String,
+    /// Opaque semantic ID of the relationship owner, when present.
+    pub owner_id: Option<String>,
     /// Qualified name of the source node.
     pub source: String,
     /// Qualified name of the target node.
@@ -47,8 +58,8 @@ pub struct HostSemanticModelRelationship {
     pub connect: Option<ConnectStatementDetail>,
 }
 
-/// The complete semantic projection of a workspace — all nodes and relationships
-/// from workspace (non-library) documents.
+/// The complete semantic projection of a workspace — all nodes and addressable
+/// relationships from workspace (non-library) documents.
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 pub struct HostSemanticProjection {
     pub nodes: Vec<HostSemanticModelNode>,

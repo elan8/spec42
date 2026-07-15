@@ -2,6 +2,8 @@
 
 use std::collections::{BTreeSet, HashMap};
 
+use sha2::{Digest, Sha256};
+
 use sysml_model::{
     resolved_usage_context, typed_by_reference, DiagnosticSeverity, SemanticDiagnostic,
     SemanticGraph, SysmlDocument, UnitRegistry,
@@ -94,6 +96,12 @@ pub(crate) fn project_host_semantic_model(
             }
 
             nodes.push(HostSemanticModelNode {
+                semantic_id: semantic_element_id(
+                    node.id.uri.as_str(),
+                    &node.element_kind,
+                    node.range.start.line,
+                    node.range.start.character,
+                ),
                 uri: node.id.uri.to_string(),
                 qualified_name: node.id.qualified_name.clone(),
                 name: node.name.clone(),
@@ -114,10 +122,46 @@ pub(crate) fn project_host_semantic_model(
             .then_with(|| a.element_kind.as_str().cmp(b.element_kind.as_str()))
     });
 
+    let semantic_ids = nodes
+        .iter()
+        .map(|node| (node.qualified_name.as_str(), node.semantic_id.as_str()))
+        .collect::<HashMap<_, _>>();
+    let owner_ids = nodes
+        .iter()
+        .filter_map(|node| {
+            node.parent
+                .as_deref()
+                .and_then(|parent| semantic_ids.get(parent).copied())
+                .map(|owner_id| (node.qualified_name.as_str(), owner_id))
+        })
+        .collect::<HashMap<_, _>>();
+
     let mut relationships = Vec::new();
     for uri in &target_urls {
         for (src_id, tgt_id, edge) in graph.edges_for_uri(uri) {
+            let source_id = semantic_ids
+                .get(src_id.qualified_name.as_str())
+                .copied()
+                .unwrap_or_default()
+                .to_owned();
+            let target_id = semantic_ids
+                .get(tgt_id.qualified_name.as_str())
+                .copied()
+                .unwrap_or_default()
+                .to_owned();
+            let owner_id = owner_ids
+                .get(src_id.qualified_name.as_str())
+                .map(|id| (*id).to_owned());
             relationships.push(HostSemanticModelRelationship {
+                semantic_id: semantic_relationship_id(
+                    &edge.kind,
+                    &source_id,
+                    &target_id,
+                    relationships.len(),
+                ),
+                source_id,
+                target_id,
+                owner_id,
                 source: src_id.qualified_name,
                 target: tgt_id.qualified_name,
                 kind: edge.kind,
@@ -150,6 +194,41 @@ pub(crate) fn project_host_semantic_model(
         nodes,
         relationships,
     })
+}
+
+fn semantic_element_id(
+    uri: &str,
+    kind: &sysml_model::ElementKind,
+    line: u32,
+    character: u32,
+) -> String {
+    let mut hasher = Sha256::new();
+    hasher.update(b"spec42-semantic-element-v2\0");
+    hasher.update(uri.as_bytes());
+    hasher.update([0]);
+    hasher.update(kind.as_str().as_bytes());
+    hasher.update([0]);
+    hasher.update(line.to_le_bytes());
+    hasher.update(character.to_le_bytes());
+    format!("s42e:{:x}", hasher.finalize())
+}
+
+fn semantic_relationship_id(
+    kind: &sysml_model::RelationshipKind,
+    source_id: &str,
+    target_id: &str,
+    ordinal: usize,
+) -> String {
+    let mut hasher = Sha256::new();
+    hasher.update(b"spec42-semantic-relationship-v2\0");
+    hasher.update(kind.as_str().as_bytes());
+    hasher.update([0]);
+    hasher.update(source_id.as_bytes());
+    hasher.update([0]);
+    hasher.update(target_id.as_bytes());
+    hasher.update([0]);
+    hasher.update(ordinal.to_le_bytes());
+    format!("s42r:{:x}", hasher.finalize())
 }
 
 fn target_file_urls(target_files: &[std::path::PathBuf]) -> crate::error::WorkspaceResult<BTreeSet<Url>> {
@@ -296,6 +375,29 @@ package Demo {
         assert_eq!(
             parts[0].get("name").and_then(|v| v.as_str()),
             Some("brushMotor")
+        );
+
+        let ids_by_name = projection
+            .nodes
+            .iter()
+            .map(|node| (node.qualified_name.as_str(), node.semantic_id.as_str()))
+            .collect::<HashMap<_, _>>();
+        assert!(
+            projection
+                .nodes
+                .iter()
+                .all(|node| node.semantic_id.starts_with("s42e:")),
+            "every projected semantic element needs an opaque v2 identity"
+        );
+        assert!(
+            projection.relationships.iter().all(|relationship| {
+                relationship.semantic_id.starts_with("s42r:")
+                    && ids_by_name.get(relationship.source.as_str())
+                        == Some(&relationship.source_id.as_str())
+                    && ids_by_name.get(relationship.target.as_str())
+                        == Some(&relationship.target_id.as_str())
+            }),
+            "relationship endpoints must be semantic IDs, not qualified-name identity"
         );
     }
 }
