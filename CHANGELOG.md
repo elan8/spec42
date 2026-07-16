@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.38.0] - 2026-07-16
+
+- **Host projection schema v6** — Projected elements now carry typed
+  `feature_properties` on `HostElementFacts` for explicitly declared modifiers:
+  direction, abstract/variation, individual, derived, constant, end, ordered,
+  and unique. These facts come from the parser AST via `DeclaredFeatureProperties`
+  and are separate from the legacy display attribute map.
+- **Feature property materialization** — Part, attribute, port, and item usages,
+  part definitions, attribute definitions, and directed port parameters retain
+  declaration modifiers as semantic facts instead of dropping them after parse.
+
 ## [0.37.0] - 2026-07-16
 
 - **Typed host projection v5** — Added API-oriented element facts for declared

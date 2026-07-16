@@ -40,6 +40,33 @@ pub struct HostElementFacts {
     pub owner_id: Option<String>,
     pub owning_membership_id: Option<String>,
     pub is_library_element: bool,
+    /// Explicit declaration modifiers when the element is a feature or definition
+    /// that retained typed parser properties.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub feature_properties: Option<HostFeatureProperties>,
+}
+
+/// Explicit feature/definition modifiers projected from declared semantic facts.
+#[derive(Debug, Clone, Default, Serialize, Deserialize, PartialEq, Eq)]
+pub struct HostFeatureProperties {
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub direction: Option<String>,
+    #[serde(default)]
+    pub is_abstract: bool,
+    #[serde(default)]
+    pub is_variation: bool,
+    #[serde(default)]
+    pub is_individual: bool,
+    #[serde(default)]
+    pub is_derived: bool,
+    #[serde(default)]
+    pub is_constant: bool,
+    #[serde(default)]
+    pub is_end: bool,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub is_ordered: Option<bool>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub is_unique: Option<bool>,
 }
 
 impl Default for HostRelationshipMetaclass {

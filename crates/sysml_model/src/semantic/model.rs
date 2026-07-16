@@ -517,6 +517,37 @@ pub struct DeclaredSemanticFacts {
     pub multiplicity: Option<DeclaredMultiplicity>,
     #[serde(default)]
     pub feature_value: Option<DeclaredFeatureValue>,
+    /// Explicit declaration modifiers retained from the parser AST.
+    /// Absent for packages and other non-feature/definition nodes.
+    #[serde(default)]
+    pub feature_properties: Option<DeclaredFeatureProperties>,
+}
+
+/// Explicit feature/definition modifiers from the textual declaration.
+///
+/// Only fields backed by parser AST data are represented. Composite/reference
+/// ownership, conjugation, portion kind, and time-varying semantics are omitted
+/// until the parser exposes them as typed fields.
+#[derive(Debug, Clone, Default, Serialize, Deserialize, PartialEq, Eq)]
+pub struct DeclaredFeatureProperties {
+    #[serde(default)]
+    pub direction: Option<String>,
+    #[serde(default)]
+    pub is_abstract: bool,
+    #[serde(default)]
+    pub is_variation: bool,
+    #[serde(default)]
+    pub is_individual: bool,
+    #[serde(default)]
+    pub is_derived: bool,
+    #[serde(default)]
+    pub is_constant: bool,
+    #[serde(default)]
+    pub is_end: bool,
+    #[serde(default)]
+    pub is_ordered: Option<bool>,
+    #[serde(default)]
+    pub is_unique: Option<bool>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]

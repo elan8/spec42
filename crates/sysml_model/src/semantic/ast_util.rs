@@ -3,14 +3,121 @@
 use std::collections::HashMap;
 
 use crate::semantic::model::{
-    DeclaredExpression, DeclaredExpressionArgument, DeclaredFeatureValue, DeclaredFeatureValueKind,
-    DeclaredMultiplicity,
+    DeclaredExpression, DeclaredExpressionArgument, DeclaredFeatureProperties, DeclaredFeatureValue,
+    DeclaredFeatureValueKind, DeclaredMultiplicity,
 };
 use crate::semantic::text_span::{TextPosition, TextRange};
 use sysml_v2_parser::ast::{
-    Argument, ConnectionEnd, Identification, Node, SubsettingRelationship, TypingRelationship,
+    Argument, ConnectionEnd, DefinitionPrefix, Identification, InOut, Node,
+    SubsettingRelationship, TypingRelationship,
 };
 use sysml_v2_parser::{Expression, Span};
+
+/// Maps a parser direction prefix to the Systems Modeling API direction token.
+pub fn direction_name(direction: InOut) -> &'static str {
+    match direction {
+        InOut::In => "in",
+        InOut::Out => "out",
+        InOut::InOut => "inout",
+    }
+}
+
+/// Maps an optional `abstract` / `variation` definition or usage prefix.
+pub fn definition_prefix_flags(prefix: Option<&DefinitionPrefix>) -> (bool, bool) {
+    match prefix {
+        Some(DefinitionPrefix::Abstract) => (true, false),
+        Some(DefinitionPrefix::Variation) => (false, true),
+        None => (false, false),
+    }
+}
+
+/// Builds declared feature properties for a part usage.
+pub fn part_usage_feature_properties(
+    usage: &sysml_v2_parser::ast::PartUsage,
+) -> DeclaredFeatureProperties {
+    let (is_abstract, is_variation) = definition_prefix_flags(usage.usage_prefix.as_ref());
+    DeclaredFeatureProperties {
+        direction: usage.direction.map(direction_name).map(str::to_owned),
+        is_abstract,
+        is_variation,
+        is_individual: usage.is_individual,
+        is_derived: usage.is_derived,
+        is_constant: usage.is_constant,
+        is_end: false,
+        is_ordered: Some(usage.ordered),
+        is_unique: None,
+    }
+}
+
+/// Builds declared feature properties for an attribute usage.
+pub fn attribute_usage_feature_properties(
+    usage: &sysml_v2_parser::ast::AttributeUsage,
+) -> DeclaredFeatureProperties {
+    DeclaredFeatureProperties {
+        direction: usage.direction.map(direction_name).map(str::to_owned),
+        is_abstract: false,
+        is_variation: false,
+        is_individual: false,
+        is_derived: usage.is_derived,
+        is_constant: usage.is_constant,
+        is_end: usage.is_end,
+        is_ordered: Some(usage.ordered),
+        is_unique: Some(!usage.nonunique),
+    }
+}
+
+/// Builds declared feature properties for a port usage.
+pub fn port_usage_feature_properties(
+    usage: &sysml_v2_parser::ast::PortUsage,
+) -> DeclaredFeatureProperties {
+    DeclaredFeatureProperties {
+        direction: usage.direction.map(direction_name).map(str::to_owned),
+        is_abstract: false,
+        is_variation: false,
+        is_individual: false,
+        is_derived: usage.is_derived,
+        is_constant: usage.is_constant,
+        is_end: false,
+        is_ordered: None,
+        is_unique: None,
+    }
+}
+
+/// Builds declared feature properties for an item usage.
+pub fn item_usage_feature_properties(
+    usage: &sysml_v2_parser::ast::ItemUsage,
+) -> DeclaredFeatureProperties {
+    DeclaredFeatureProperties {
+        direction: usage.direction.map(direction_name).map(str::to_owned),
+        is_abstract: false,
+        is_variation: false,
+        is_individual: false,
+        is_derived: false,
+        is_constant: false,
+        is_end: false,
+        is_ordered: None,
+        is_unique: None,
+    }
+}
+
+/// Builds declared properties for a part/item-style definition with prefix and individual flags.
+pub fn definition_feature_properties(
+    prefix: Option<&DefinitionPrefix>,
+    is_individual: bool,
+) -> DeclaredFeatureProperties {
+    let (is_abstract, is_variation) = definition_prefix_flags(prefix);
+    DeclaredFeatureProperties {
+        direction: None,
+        is_abstract,
+        is_variation,
+        is_individual,
+        is_derived: false,
+        is_constant: false,
+        is_end: false,
+        is_ordered: None,
+        is_unique: None,
+    }
+}
 
 fn typing_relationship_target(relationship: &TypingRelationship) -> Option<&str> {
     relationship

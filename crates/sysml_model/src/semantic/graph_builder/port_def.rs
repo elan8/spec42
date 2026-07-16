@@ -1,21 +1,22 @@
 use std::collections::HashMap;
 
 use sysml_v2_parser::ast::{
-    InOut, InOutDecl, ItemUsage, PortBody, PortBodyElement, PortDefBodyElement, PortUsage,
+    InOutDecl, ItemUsage, PortBody, PortBodyElement, PortDefBodyElement, PortUsage,
 };
 use sysml_v2_parser::Node;
 use url::Url;
 
 use crate::semantic::ast_util::{
-    declared_multiplicity, span_to_range, subsetting_target, typing_target,
+    declared_multiplicity, direction_name, item_usage_feature_properties,
+    port_usage_feature_properties, span_to_range, subsetting_target, typing_target,
 };
 use crate::semantic::graph::SemanticGraph;
-use crate::semantic::model::NodeId;
+use crate::semantic::model::{DeclaredFeatureProperties, NodeId};
 use crate::semantic::relationships::add_typing_edge_if_exists;
 
 use super::attribute_body;
 use super::expressions;
-use super::{add_node_and_recurse, qualified_name_for_node};
+use super::{add_node_and_recurse, attach_feature_properties, qualified_name_for_node};
 
 fn build_in_out_decl(
     w: &Node<InOutDecl>,
@@ -30,11 +31,7 @@ fn build_in_out_decl(
     let mut attrs = HashMap::new();
     attrs.insert(
         "direction".to_string(),
-        serde_json::json!(match d.direction {
-            InOut::In => "in",
-            InOut::Out => "out",
-            InOut::InOut => "inout",
-        }),
+        serde_json::json!(direction_name(d.direction)),
     );
     attrs.insert("parameterType".to_string(), serde_json::json!(&d.type_name));
     add_node_and_recurse(
@@ -46,6 +43,15 @@ fn build_in_out_decl(
         range,
         attrs,
         Some(parent_id),
+    );
+    let node_id = NodeId::new(uri, &qualified);
+    attach_feature_properties(
+        g,
+        &node_id,
+        DeclaredFeatureProperties {
+            direction: Some(direction_name(d.direction).to_owned()),
+            ..DeclaredFeatureProperties::default()
+        },
     );
     add_typing_edge_if_exists(g, uri, &qualified, &d.type_name, container_prefix);
 }
@@ -97,6 +103,7 @@ pub(super) fn materialize_port_usage(
         Some(parent_id),
     );
     let node_id = NodeId::new(uri, &qualified);
+    attach_feature_properties(g, &node_id, port_usage_feature_properties(&n.value));
     if let Some(multiplicity) = &n.multiplicity {
         if let Some(node) = g.get_node_mut(&node_id) {
             node.declared_facts.multiplicity = Some(declared_multiplicity(multiplicity, false));
@@ -188,11 +195,7 @@ pub(super) fn build_from_port_def_body_element(
                 let mut attrs = HashMap::new();
                 attrs.insert(
                     "direction".to_string(),
-                    serde_json::json!(match direction {
-                        InOut::In => "in",
-                        InOut::Out => "out",
-                        InOut::InOut => "inout",
-                    }),
+                    serde_json::json!(direction_name(direction)),
                 );
                 let parameter_type = typing_target(n.typing.as_deref())
                     .or(subsetting_target(n.subsets.as_deref()))
@@ -216,51 +219,23 @@ pub(super) fn build_from_port_def_body_element(
                     attrs,
                     Some(parent_id),
                 );
+                let node_id = NodeId::new(uri, &qualified);
+                attach_feature_properties(
+                    g,
+                    &node_id,
+                    crate::semantic::ast_util::attribute_usage_feature_properties(&n.value),
+                );
                 if !parameter_type.is_empty() {
                     add_typing_edge_if_exists(g, uri, &qualified, parameter_type, container_prefix);
                 }
             } else {
-                let name = super::effective_usage_name(&n.name, n.redefines.as_deref());
-                let qualified =
-                    qualified_name_for_node(g, uri, container_prefix, name, "attribute");
-                let range = span_to_range(&n.span);
-                let mut attrs = HashMap::new();
-                if let Some(t) = typing_target(n.typing.as_deref()) {
-                    attrs.insert("attributeType".to_string(), serde_json::json!(t));
-                }
-                if let Some(s) = subsetting_target(n.subsets.as_deref()) {
-                    attrs.insert("subsetsFeature".to_string(), serde_json::json!(s));
-                }
-                if let Some(r) = subsetting_target(n.references.as_deref()) {
-                    attrs.insert("referencesFeature".to_string(), serde_json::json!(r));
-                }
-                if let Some(c) = subsetting_target(n.crosses.as_deref()) {
-                    attrs.insert("crossesFeature".to_string(), serde_json::json!(c));
-                }
-                if let Some(r) = subsetting_target(n.redefines.as_deref()) {
-                    attrs.insert("redefines".to_string(), serde_json::json!(r));
-                }
-                if let Some(ref v) = n.value.value {
-                    attrs.insert(
-                        "value".to_string(),
-                        serde_json::json!(expressions::expression_to_debug_string(
-                            &v.value.expression
-                        )),
-                    );
-                }
-                add_node_and_recurse(
-                    g,
+                super::usage_builders::materialize_attribute_usage(
+                    n,
                     uri,
-                    &qualified,
-                    "attribute",
-                    name.to_string(),
-                    range,
-                    attrs,
-                    Some(parent_id),
+                    container_prefix,
+                    parent_id,
+                    g,
                 );
-                if let Some(ref t) = n.typing {
-                    add_typing_edge_if_exists(g, uri, &qualified, t, container_prefix);
-                }
             }
         }
         PDBE::ItemUsage(n) => {
@@ -295,11 +270,7 @@ fn materialize_port_def_item_usage(
     if let Some(direction) = n.direction {
         attrs.insert(
             "direction".to_string(),
-            serde_json::json!(match direction {
-                InOut::In => "in",
-                InOut::Out => "out",
-                InOut::InOut => "inout",
-            }),
+            serde_json::json!(direction_name(direction)),
         );
     }
     if let Some(ref t) = n.type_name {
@@ -319,6 +290,7 @@ fn materialize_port_def_item_usage(
         Some(parent_id),
     );
     let node_id = NodeId::new(uri, &qualified);
+    attach_feature_properties(g, &node_id, item_usage_feature_properties(&n.value));
     if let Some(multiplicity) = &n.multiplicity {
         if let Some(node) = g.get_node_mut(&node_id) {
             node.declared_facts.multiplicity = Some(declared_multiplicity(multiplicity, false));

@@ -33,6 +33,14 @@ pub(super) fn materialize_part_def(
         parent_id,
     );
     let node_id = NodeId::new(uri, &qualified);
+    attach_feature_properties(
+        g,
+        &node_id,
+        definition_feature_properties(
+            pd_node.definition_prefix.as_ref(),
+            pd_node.is_individual,
+        ),
+    );
     wire_def_specialization_edge(
         g,
         uri,
@@ -224,6 +232,15 @@ pub(crate) fn materialize_attribute_def(
         parent_id,
     );
     let node_id = NodeId::new(uri, &qualified);
+    attach_feature_properties(
+        g,
+        &node_id,
+        crate::semantic::model::DeclaredFeatureProperties {
+            is_ordered: Some(value.ordered),
+            is_unique: Some(!value.nonunique),
+            ..crate::semantic::model::DeclaredFeatureProperties::default()
+        },
+    );
     if let Some(value) = &value.value {
         if let Some(node) = g.get_node_mut(&node_id) {
             node.declared_facts.feature_value =

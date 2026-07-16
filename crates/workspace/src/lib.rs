@@ -56,12 +56,11 @@ pub use session::{RelinkToken, SessionLifecycle, WorkspaceSession};
 pub use snapshot::discovery::{discover_target_files, path_to_file_url, resolve_workspace_root};
 pub use snapshot::{
     CancellationToken, DocumentChanges, HostContext, HostExpression, HostExpressionArgument,
-    HostElementFacts, HostFeatureValue, HostMembershipKind, HostMultiplicity, HostPipelinePhase,
-    HostRelationshipMetaclass, HostResourceLimits, HostSemanticModelNode,
-    HostSemanticModelRelationship, HostSemanticProjection,
-    HostValidatedDocument, HostValidationReport, HostValidationSummary, HostWorkspaceSnapshot,
-    Spec42ProjectionOutput, ValidationTiming, WorkspaceLoadRequest, apply_document_changes,
-    enrich_document_hashes,
+    HostElementFacts, HostFeatureProperties, HostFeatureValue, HostMembershipKind, HostMultiplicity,
+    HostPipelinePhase, HostRelationshipMetaclass, HostResourceLimits, HostSemanticModelNode,
+    HostSemanticModelRelationship, HostSemanticProjection, HostValidatedDocument,
+    HostValidationReport, HostValidationSummary, HostWorkspaceSnapshot, Spec42ProjectionOutput,
+    ValidationTiming, WorkspaceLoadRequest, apply_document_changes, enrich_document_hashes,
 };
 pub use version::{HostArtifactMetadata, HostSchemaVersions};
 pub use view_cache::{

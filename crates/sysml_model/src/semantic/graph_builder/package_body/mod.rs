@@ -13,7 +13,8 @@ use url::Url;
 
 use super::requirement_body::{import_member_label, walk_requirement_def_body};
 use crate::semantic::ast_util::{
-    attach_short_name_attribute, identification_name, span_to_range, text_range_to_json,
+    attach_short_name_attribute, definition_feature_properties, identification_name, span_to_range,
+    text_range_to_json,
 };
 use crate::semantic::graph::SemanticGraph;
 use crate::semantic::model::{ElementKind, NodeId, RelationshipKind};
@@ -32,8 +33,8 @@ use super::unit_metadata;
 use super::verification;
 use super::view_def;
 use super::{
-    add_node_and_recurse, insert_def_specialization_attr, qualified_name_for_node,
-    wire_def_specialization_edge,
+    add_node_and_recurse, attach_feature_properties, insert_def_specialization_attr,
+    qualified_name_for_node, wire_def_specialization_edge,
 };
 use super::{interface_def, part_def, port_def, state, usage_builders, use_case};
 

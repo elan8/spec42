@@ -6,10 +6,11 @@ use sysml_v2_parser::ast::{
 use url::Url;
 
 use crate::semantic::ast_util::{
-    attach_short_name_attribute, declared_multiplicity, identification_name, span_to_range,
+    attach_short_name_attribute, declared_multiplicity, definition_feature_properties,
+    identification_name, span_to_range,
 };
 use crate::semantic::graph::SemanticGraph;
-use crate::semantic::model::{NodeId, RelationshipKind};
+use crate::semantic::model::{DeclaredFeatureProperties, NodeId, RelationshipKind};
 use crate::semantic::relationships::{
     add_edge_if_both_exist, add_specializes_edge_if_exists, add_typing_edge_if_exists,
 };
@@ -20,7 +21,7 @@ use super::interface_def;
 use super::port_def::materialize_port_usage;
 use super::state;
 use super::usage_builders;
-use super::{add_node_and_recurse, qualified_name_for_node};
+use super::{add_node_and_recurse, attach_feature_properties, qualified_name_for_node};
 
 pub(super) fn build_from_part_def_body_element(
     node: &sysml_v2_parser::Node<PartDefBodyElement>,
@@ -54,6 +55,16 @@ pub(super) fn build_from_part_def_body_element(
                 range,
                 attrs,
                 Some(parent_id),
+            );
+            let node_id = NodeId::new(uri, &qualified);
+            attach_feature_properties(
+                g,
+                &node_id,
+                DeclaredFeatureProperties {
+                    is_ordered: Some(n.ordered),
+                    is_unique: Some(!n.nonunique),
+                    ..DeclaredFeatureProperties::default()
+                },
             );
             if let Some(ref t) = n.typing {
                 add_typing_edge_if_exists(g, uri, &qualified, t, container_prefix);
@@ -121,6 +132,14 @@ pub(super) fn build_from_part_def_body_element(
                 Some(parent_id),
             );
             let node_id = NodeId::new(uri, &qualified);
+            attach_feature_properties(
+                g,
+                &node_id,
+                definition_feature_properties(
+                    pd_node.definition_prefix.as_ref(),
+                    pd_node.is_individual,
+                ),
+            );
             if let Some(ref s) = pd_node.specializes {
                 add_specializes_edge_if_exists(g, uri, &qualified, s, container_prefix);
             }

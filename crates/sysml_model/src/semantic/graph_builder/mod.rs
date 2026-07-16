@@ -9,7 +9,7 @@ use url::Url;
 
 use crate::semantic::ast_util::{span_to_range, subsetting_target, typing_target};
 use crate::semantic::graph::SemanticGraph;
-use crate::semantic::model::{ElementKind, NodeId, SemanticNode};
+use crate::semantic::model::{DeclaredFeatureProperties, ElementKind, NodeId, SemanticNode};
 
 mod action;
 mod analysis_case;
@@ -211,6 +211,17 @@ pub(super) fn add_node_and_recurse(
             .push(node_id);
     }
     g.invalidate_query_indexes();
+}
+
+/// Records typed declaration modifiers on a semantic node.
+pub(super) fn attach_feature_properties(
+    g: &mut SemanticGraph,
+    node_id: &NodeId,
+    properties: DeclaredFeatureProperties,
+) {
+    if let Some(node) = g.get_node_mut(node_id) {
+        node.declared_facts.feature_properties = Some(properties);
+    }
 }
 
 /// Attaches a `doc /* ... */` comment's text to the `doc` attribute of the node it

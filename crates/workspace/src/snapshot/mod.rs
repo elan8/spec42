@@ -18,9 +18,9 @@ pub use context::{CancellationToken, HostContext, HostPipelinePhase, HostResourc
 pub use metadata::HostArtifactMetadata;
 pub use output::Spec42ProjectionOutput;
 pub use projection::{
-    HostElementFacts, HostExpression, HostExpressionArgument, HostFeatureValue,
-    HostMembershipKind, HostMultiplicity, HostRelationshipMetaclass, HostSemanticModelNode,
-    HostSemanticModelRelationship, HostSemanticProjection,
+    HostElementFacts, HostExpression, HostExpressionArgument, HostFeatureProperties,
+    HostFeatureValue, HostMembershipKind, HostMultiplicity, HostRelationshipMetaclass,
+    HostSemanticModelNode, HostSemanticModelRelationship, HostSemanticProjection,
 };
 pub use request::{ValidationTiming, WorkspaceLoadRequest};
 pub use update::update_workspace_snapshot;

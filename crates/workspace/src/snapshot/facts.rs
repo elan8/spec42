@@ -12,9 +12,9 @@ use url::Url;
 
 use super::discovery::path_to_file_url;
 use super::projection::{
-    HostElementFacts, HostExpression, HostExpressionArgument, HostFeatureValue, HostMembershipKind,
-    HostMultiplicity, HostRelationshipMetaclass, HostSemanticModelNode,
-    HostSemanticModelRelationship, HostSemanticProjection,
+    HostElementFacts, HostExpression, HostExpressionArgument, HostFeatureProperties,
+    HostFeatureValue, HostMembershipKind, HostMultiplicity, HostRelationshipMetaclass,
+    HostSemanticModelNode, HostSemanticModelRelationship, HostSemanticProjection,
 };
 use super::validation::{HostValidatedDocument, HostValidationReport, HostValidationSummary};
 
@@ -123,6 +123,21 @@ pub(crate) fn project_host_semantic_model(
                     owner_id: None,
                     owning_membership_id: None,
                     is_library_element: false,
+                    feature_properties: node
+                        .declared_facts
+                        .feature_properties
+                        .as_ref()
+                        .map(|properties| HostFeatureProperties {
+                            direction: properties.direction.clone(),
+                            is_abstract: properties.is_abstract,
+                            is_variation: properties.is_variation,
+                            is_individual: properties.is_individual,
+                            is_derived: properties.is_derived,
+                            is_constant: properties.is_constant,
+                            is_end: properties.is_end,
+                            is_ordered: properties.is_ordered,
+                            is_unique: properties.is_unique,
+                        }),
                 },
             });
         }
@@ -652,6 +667,146 @@ package Demo {
         assert_eq!(usage.facts.declared_name.as_deref(), Some("cleaningHead"));
         assert_eq!(usage.facts.effective_name, "cleaningHead");
         assert!(!usage.facts.is_library_element);
+        let properties = usage
+            .facts
+            .feature_properties
+            .as_ref()
+            .expect("part usage retains declared feature properties");
+        assert!(!properties.is_abstract);
+        assert!(!properties.is_derived);
+        assert_eq!(properties.is_ordered, Some(false));
+    }
+
+    #[test]
+    fn projection_exposes_declared_feature_properties_for_modifiers() {
+        let content = r#"
+package Demo {
+    attribute def Temperature;
+    abstract part def Sensor {
+        attribute reading : Temperature ordered;
+        derived constant attribute bias : Temperature;
+        end attribute mount;
+    }
+    port def SignalPort {
+        in item request;
+        out item response;
+    }
+    individual part sensor : Sensor;
+}
+"#;
+        let target = std::path::PathBuf::from(if cfg!(windows) {
+            "c:/workspace/feature_properties.sysml"
+        } else {
+            "/workspace/feature_properties.sysml"
+        });
+        let uri = path_to_file_url(target.as_path()).expect("workspace uri");
+        let provider = make_provider(uri.as_str(), content);
+        let (graph, _) = build_semantic_graph_with_provider(&provider).expect("graph");
+        let projection = project_host_semantic_model(&graph, &[target]).expect("projection");
+        let names = projection
+            .nodes
+            .iter()
+            .map(|node| node.qualified_name.as_str())
+            .collect::<Vec<_>>();
+
+        let sensor_def = projection
+            .nodes
+            .iter()
+            .find(|node| node.qualified_name == "Demo::Sensor")
+            .unwrap_or_else(|| panic!("Sensor definition missing; nodes={names:?}"));
+        let def_props = sensor_def
+            .facts
+            .feature_properties
+            .as_ref()
+            .expect("definition feature properties");
+        assert!(def_props.is_abstract);
+        assert!(!def_props.is_individual);
+
+        let reading = projection
+            .nodes
+            .iter()
+            .find(|node| node.qualified_name.ends_with("::reading"))
+            .unwrap_or_else(|| panic!("reading attribute missing; nodes={names:?}"));
+        let reading_props = reading
+            .facts
+            .feature_properties
+            .as_ref()
+            .expect("reading feature properties");
+        assert_eq!(reading_props.is_ordered, Some(true));
+        assert_eq!(reading_props.is_unique, Some(true));
+
+        let bias = projection
+            .nodes
+            .iter()
+            .find(|node| node.qualified_name.ends_with("::bias"))
+            .unwrap_or_else(|| panic!("bias attribute missing; nodes={names:?}"));
+        let bias_props = bias
+            .facts
+            .feature_properties
+            .as_ref()
+            .expect("bias feature properties");
+        assert!(bias_props.is_derived);
+        assert!(bias_props.is_constant);
+
+        let mount = projection
+            .nodes
+            .iter()
+            .find(|node| node.qualified_name.ends_with("::mount"))
+            .unwrap_or_else(|| panic!("mount attribute missing; nodes={names:?}"));
+        assert!(
+            mount
+                .facts
+                .feature_properties
+                .as_ref()
+                .expect("mount feature properties")
+                .is_end
+        );
+
+        let request = projection
+            .nodes
+            .iter()
+            .find(|node| node.qualified_name.ends_with("::request"))
+            .unwrap_or_else(|| panic!("request item missing; nodes={names:?}"));
+        assert_eq!(
+            request
+                .facts
+                .feature_properties
+                .as_ref()
+                .expect("request feature properties")
+                .direction
+                .as_deref(),
+            Some("in")
+        );
+
+        let response = projection
+            .nodes
+            .iter()
+            .find(|node| node.qualified_name.ends_with("::response"))
+            .unwrap_or_else(|| panic!("response item missing; nodes={names:?}"));
+        assert_eq!(
+            response
+                .facts
+                .feature_properties
+                .as_ref()
+                .expect("response feature properties")
+                .direction
+                .as_deref(),
+            Some("out")
+        );
+
+        let sensor_usage = projection
+            .nodes
+            .iter()
+            .find(|node| node.qualified_name == "Demo::sensor")
+            .unwrap_or_else(|| panic!("sensor usage missing; nodes={names:?}"));
+        assert!(
+            sensor_usage
+                .facts
+                .feature_properties
+                .as_ref()
+                .expect("usage feature properties")
+                .is_individual
+        );
     }
 
     #[test]
