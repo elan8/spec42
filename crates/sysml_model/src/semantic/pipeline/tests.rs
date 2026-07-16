@@ -1,4 +1,3 @@
-
 use super::*;
 use crate::semantic::model::RelationshipKind;
 

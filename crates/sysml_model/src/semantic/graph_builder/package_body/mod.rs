@@ -3,10 +3,11 @@ use std::collections::HashMap;
 use sysml_v2_parser::ast::{
     AliasDef, AllocationDef, AllocationUsage, AnalysisCaseDef, AnalysisCaseUsage, AttributeDef,
     CaseDef, CaseUsage, ClassifierDecl, ConcernUsage, ConnectionDef, ConnectionDefBody, Dependency,
-    EnumDef, FeatureDecl, Import, IndividualDef, InterfaceDef, InterfaceDefBody, ItemDef,
-    MetadataDef, OccurrenceDef, PackageBodyElement, PartDef, PartDefBody, PortDef, PortDefBody,
-    RequirementDef, StateDef, StateDefBody, StateUsage, TextualRepresentation, UseCaseDef,
-    UseCaseDefBody, UseCaseUsage, VerificationCaseDef, VerificationCaseUsage,
+    EnumDef, EnumeratedValue, EnumerationBody, EnumerationUsage, FeatureDecl, Import,
+    IndividualDef, InterfaceDef, InterfaceDefBody, ItemDef, MetadataDef, OccurrenceDef,
+    PackageBodyElement, PartDef, PartDefBody, PortDef, PortDefBody, RequirementDef, StateDef,
+    StateDefBody, StateUsage, TextualRepresentation, UseCaseDef, UseCaseDefBody, UseCaseUsage,
+    VerificationCaseDef, VerificationCaseUsage,
 };
 use sysml_v2_parser::{Node, RootNamespace};
 use url::Url;
@@ -303,9 +304,9 @@ pub(super) fn build_from_package_body_element(
                 );
             }
         }
-        PBE::ItemUsage(_)
-        | PBE::ConnectionUsage(_)
-        | PBE::InterfaceUsage(_)
-        | PBE::EnumerationUsage(_) => {}
+        PBE::EnumerationUsage(enum_node) => {
+            materialize_enum_usage(g, uri, container_prefix, parent_id, enum_node)
+        }
+        PBE::ItemUsage(_) | PBE::ConnectionUsage(_) | PBE::InterfaceUsage(_) => {}
     }
 }

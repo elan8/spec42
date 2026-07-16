@@ -7,6 +7,39 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.43.0] - 2026-07-16
+
+- **Enumeration vertical slice** — requires `sysml-v2-parser` **0.39.0**, which gives each
+  enumerated value inside `enum def { ... }` a real spanned AST node (`EnumeratedValue`) instead
+  of a bare `String`.
+  - New `ElementKind::EnumeratedValue` (`"enumerated value"`) — `materialize_enum_def` now walks
+    `EnumerationBody::Brace { values }` and materializes each enumerated value as its own
+    addressable child node, owned by the enclosing `EnumDef`. Initializer expressions (`= expr`)
+    and inline bodies (`active { ... }`) remain discarded; only name + span are retained, matching
+    the parser's own scope for this construct.
+  - New `ElementKind::Enumeration` (`"enumeration"`) — the kind-string an `enum status : Status;`
+    usage node was already materialized with by `graph_builder/part_def.rs`'s nested-in-`part def`
+    handler, but which had no `ElementKind::parse` mapping (fell to `Unknown("enumeration")`) and
+    no package-level dispatch at all (`PackageBodyElement::EnumerationUsage` was a no-op).
+    Package-level `enum status : Status;` now materializes and resolves its typing edge the same
+    way the nested form already did (`EnumDef` was already a valid typing target).
+  - No `PROJECTION_SCHEMA_VERSION` bump: `ElementKind` serializes as a plain string
+    (`#[serde(into = "String", from = "String")]`), so new kind variants are additive at the wire
+    level, same as the Requirements/Behavior slice's new definition/usage kinds in 0.42.0.
+
+## [0.42.1] - 2026-07-16
+
+- **Fix: `ConstraintDef`/`CalcDef`/`CaseDef` typing resolution** — added the three to
+  `TYPING_TARGET_KINDS` (`crates/sysml_model/src/semantic/kinds.rs`), matching what
+  `SPECIALIZES_TARGET_KINDS` already allowed. A nested `calc`/`case` usage's Typing edge to its
+  definition previously never resolved.
+- **Fix: `materialize_case_usage` never wired a typing edge** — unlike its sibling
+  analysis/verification/use-case usage builders, it never called `add_typing_edge_if_exists` even
+  though `CaseUsage.type_name` is captured by the parser. Fixed alongside the allowlist change
+  above, since the allowlist fix alone wasn't sufficient to make `case` usage typing resolve.
+- No `PROJECTION_SCHEMA_VERSION` bump — both fixes only improve resolution fidelity of an
+  already-projected fact; `HostSemanticProjection`'s shape is unchanged.
+
 ## [0.42.0] - 2026-07-16
 
 - **Host projection schema v10** — `Satisfy` and `Subject` relationships classify as

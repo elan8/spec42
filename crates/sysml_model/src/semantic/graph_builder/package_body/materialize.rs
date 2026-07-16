@@ -652,6 +652,73 @@ pub(super) fn materialize_enum_def(
         container_prefix,
         enum_node.specializes.as_deref(),
     );
+    // Each enumerated value becomes its own addressable child node, now that the parser retains
+    // a real span per value (`sysml-v2-parser` 0.39.0's `EnumeratedValue`) instead of a bare
+    // string. Owned by the enclosing EnumDef via the normal parent_id membership mechanism.
+    if let EnumerationBody::Brace { values } = &enum_node.body {
+        materialize_enumerated_values(g, uri, &qualified, values);
+    }
+}
+
+fn materialize_enumerated_values(
+    g: &mut SemanticGraph,
+    uri: &Url,
+    enum_def_qualified: &str,
+    values: &[Node<EnumeratedValue>],
+) {
+    let parent_id = NodeId::new(uri, enum_def_qualified);
+    for value_node in values {
+        let name = value_node.value.name.clone();
+        if name.is_empty() {
+            continue;
+        }
+        let qualified =
+            qualified_name_for_node(g, uri, Some(enum_def_qualified), &name, "enumerated value");
+        add_node_and_recurse(
+            g,
+            uri,
+            &qualified,
+            "enumerated value",
+            name,
+            span_to_range(&value_node.span),
+            HashMap::new(),
+            Some(&parent_id),
+        );
+    }
+}
+
+pub(super) fn materialize_enum_usage(
+    g: &mut SemanticGraph,
+    uri: &Url,
+    container_prefix: Option<&str>,
+    parent_id: Option<&NodeId>,
+    enum_node: &Node<EnumerationUsage>,
+) {
+    let name = &enum_node.name;
+    let qualified = qualified_name_for_node(g, uri, container_prefix, name, "enumeration");
+    let range = span_to_range(&enum_node.span);
+    let mut attrs = HashMap::new();
+    if let Some(ref t) = enum_node.type_name {
+        attrs.insert("enumerationType".to_string(), serde_json::json!(t));
+    }
+    if let Some(ref m) = enum_node.multiplicity {
+        attrs.insert("multiplicity".to_string(), serde_json::json!(m));
+    }
+    add_node_and_recurse(
+        g,
+        uri,
+        &qualified,
+        "enumeration",
+        name.clone(),
+        range,
+        attrs,
+        parent_id,
+    );
+    if let Some(ref t) = enum_node.type_name {
+        add_typing_edge_if_exists(g, uri, &qualified, t, container_prefix);
+    }
+    let node_id = NodeId::new(uri, &qualified);
+    attribute_body::build_from_attribute_body(&enum_node.body, uri, Some(&qualified), &node_id, g);
 }
 
 pub(super) fn materialize_occurrence_def(
@@ -916,6 +983,9 @@ pub(super) fn materialize_case_usage(
 ) {
     let qualified = qualified_name_for_node(g, uri, container_prefix, &c_node.name, "case");
     let mut attrs = HashMap::new();
+    if let Some(ref t) = c_node.type_name {
+        attrs.insert("caseType".to_string(), serde_json::json!(t));
+    }
     attrs.insert(
         "isAbstract".to_string(),
         serde_json::json!(c_node.is_abstract),
@@ -930,6 +1000,11 @@ pub(super) fn materialize_case_usage(
         attrs,
         parent_id,
     );
+    // Bug fix: unlike the sibling analysis/verification/use-case usage builders, this never
+    // wired a typing edge even though `CaseUsage.type_name` is captured by the parser.
+    if let Some(ref t) = c_node.type_name {
+        add_typing_edge_if_exists(g, uri, &qualified, t, container_prefix);
+    }
     let node_id = NodeId::new(uri, &qualified);
     // Same fix as materialize_case_def: this never walked the body before.
     if let UseCaseDefBody::Brace { elements } = &c_node.body {

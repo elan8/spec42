@@ -70,6 +70,9 @@ pub const TYPING_TARGET_KINDS: &[ElementKind] = &[
     ElementKind::EnumDef,
     ElementKind::Alias,
     ElementKind::KermlDecl,
+    ElementKind::ConstraintDef,
+    ElementKind::CalcDef,
+    ElementKind::CaseDef,
 ];
 
 pub const SPECIALIZES_TARGET_KINDS: &[ElementKind] = &[

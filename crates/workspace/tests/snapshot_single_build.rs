@@ -343,3 +343,111 @@ package Demo {
         "case def body's actor member is now materialized"
     );
 }
+
+#[test]
+fn snapshot_resolves_typing_for_calc_constraint_and_case_usages() {
+    let cache = tempdir().expect("tempdir");
+    let model_path = cache.path().join("TypingTargets.sysml");
+    let content = r#"
+package Demo {
+    calc def ComputeLoad;
+    case def InspectionCase;
+    case inspection : InspectionCase;
+    part def Instrument {
+        calc load : ComputeLoad;
+    }
+}
+"#;
+    std::fs::write(&model_path, content).expect("write model");
+
+    let engine = test_engine(&cache);
+    let snapshot = engine
+        .load_workspace(
+            InMemoryDocumentProvider::new(vec![file_document(&model_path, content)]),
+            WorkspaceLoadRequest::single_target(model_path),
+            HostContext::default(),
+        )
+        .expect("snapshot");
+    let projection = snapshot.semantic_projection();
+
+    // Regression guard: CalcDef/CaseDef were missing from TYPING_TARGET_KINDS even though
+    // SPECIALIZES_TARGET_KINDS already allowed them, so a `calc`/`case` usage's Typing edge to
+    // its definition never resolved. `case` is exercised at package level here, not nested in a
+    // `part def` body: `PartDefBodyElement::CaseDef`/`::CaseUsage` aren't dispatched anywhere in
+    // Spec42's graph builder at all (separate, larger gap, not fixed here). Also found in the
+    // same investigation and fixed alongside the allowlist: `materialize_case_usage` never wired
+    // a typing edge even at package level, unlike its analysis/verification/use-case siblings.
+    // ConstraintDef is in the same allowlist fix (kinds.rs), but a bare `constraint check : X;`
+    // usage isn't exercisable here: the parser has no distinct ConstraintUsage AST node, so it
+    // folds into another ConstraintDef rather than a usage with a typing edge (see
+    // sysml-v2-parser's constraint_def doc comment).
+    for (usage_suffix, definition_suffix) in [
+        ("::Instrument::load", "::ComputeLoad"),
+        ("::inspection", "::InspectionCase"),
+    ] {
+        assert!(
+            projection.relationships.iter().any(|relationship| {
+                relationship.kind.as_str() == "typing"
+                    && relationship.source.ends_with(usage_suffix)
+                    && relationship.target.ends_with(definition_suffix)
+            }),
+            "expected a resolved typing edge from {usage_suffix} to {definition_suffix}"
+        );
+    }
+}
+
+#[test]
+fn snapshot_materializes_enumerated_values_and_resolves_enum_usage_typing() {
+    let cache = tempdir().expect("tempdir");
+    let model_path = cache.path().join("Enumeration.sysml");
+    let content = r#"
+package Demo {
+    enum def Status {
+        active;
+        inactive = 1;
+        degraded { doc /* transient */ }
+    }
+    enum current : Status;
+}
+"#;
+    std::fs::write(&model_path, content).expect("write model");
+
+    let engine = test_engine(&cache);
+    let snapshot = engine
+        .load_workspace(
+            InMemoryDocumentProvider::new(vec![file_document(&model_path, content)]),
+            WorkspaceLoadRequest::single_target(model_path),
+            HostContext::default(),
+        )
+        .expect("snapshot");
+    let projection = snapshot.semantic_projection();
+
+    // `sysml-v2-parser` 0.39.0 gives each enumerated value a real span (previously a bare
+    // `String`, so it could never become an addressable element). Each value now materializes as
+    // its own child node of the `EnumDef`, regardless of which trailing form (bare `;`, `= expr`,
+    // or inline `{ ... }`) it uses.
+    for value_name in ["active", "inactive", "degraded"] {
+        let node = projection
+            .nodes
+            .iter()
+            .find(|node| {
+                node.qualified_name
+                    .ends_with(&format!("::Status::{value_name}"))
+            })
+            .unwrap_or_else(|| panic!("enumerated value {value_name} materialized"));
+        assert_eq!(node.element_kind.as_str(), "enumerated value");
+        assert_eq!(node.parent.as_deref(), Some("Demo::Status"));
+    }
+
+    // `enum current : Status;` resolves its Typing edge like any other usage (EnumDef was already
+    // a valid typing target before this round; this exercises the previously-unwired package-level
+    // `PackageBodyElement::EnumerationUsage` dispatch, which used to be a no-op).
+    assert!(
+        projection.relationships.iter().any(|relationship| {
+            relationship.kind.as_str() == "typing"
+                && relationship.source.ends_with("::current")
+                && relationship.target.ends_with("::Status")
+        }),
+        "expected a resolved typing edge from ::current to ::Status"
+    );
+}

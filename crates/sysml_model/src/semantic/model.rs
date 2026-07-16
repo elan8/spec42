@@ -137,9 +137,16 @@ pub enum ElementKind {
     Individual,
     Occurrence,
     Calc,
+    /// Usage of an `enum def` (e.g. `enum status : Status;`). Kind-string `"enumeration"`,
+    /// matching the pre-existing (but previously unmapped) node-kind string already produced by
+    /// `graph_builder/part_def.rs`'s nested-in-part-def handler.
+    Enumeration,
     // Sub-elements / structural
     Transition,
     FinalState,
+    /// One named value inside an `enum def { ... }` body (e.g. `active;`). Owned by the
+    /// enclosing `EnumDef`; not independently typed or specialized.
+    EnumeratedValue,
     ForLoop,
     Assign,
     Assert,
@@ -234,8 +241,10 @@ impl ElementKind {
             ElementKind::Individual => "individual",
             ElementKind::Occurrence => "occurrence",
             ElementKind::Calc => "calc",
+            ElementKind::Enumeration => "enumeration",
             ElementKind::Transition => "transition",
             ElementKind::FinalState => "final state",
+            ElementKind::EnumeratedValue => "enumerated value",
             ElementKind::ForLoop => "for loop",
             ElementKind::Assign => "assign",
             ElementKind::Assert => "assert",
@@ -327,8 +336,10 @@ impl ElementKind {
             "individual" => ElementKind::Individual,
             "occurrence" => ElementKind::Occurrence,
             "calc" => ElementKind::Calc,
+            "enumeration" => ElementKind::Enumeration,
             "transition" => ElementKind::Transition,
             "final state" => ElementKind::FinalState,
+            "enumerated value" => ElementKind::EnumeratedValue,
             "for loop" => ElementKind::ForLoop,
             "assign" => ElementKind::Assign,
             "assert" => ElementKind::Assert,
