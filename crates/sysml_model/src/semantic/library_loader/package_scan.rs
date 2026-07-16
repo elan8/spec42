@@ -95,7 +95,9 @@ pub(crate) fn package_declared_name(identification: &Identification) -> Option<S
         .map(str::to_string)
 }
 
-pub(crate) fn workspace_declared_packages(workspace: &[WorkspaceSource<'_>]) -> HashSet<PackageKey> {
+pub(crate) fn workspace_declared_packages(
+    workspace: &[WorkspaceSource<'_>],
+) -> HashSet<PackageKey> {
     let mut defined = HashSet::new();
     for source in workspace {
         defined.extend(
@@ -124,7 +126,10 @@ pub fn declared_packages_in_content(content: &str) -> HashSet<String> {
     declared_packages_from_parsed(&parsed)
 }
 
-pub(crate) fn for_each_package_in_parsed(parsed: &ParsedRoot, mut visit: impl FnMut(String, &PackageBody)) {
+pub(crate) fn for_each_package_in_parsed(
+    parsed: &ParsedRoot,
+    mut visit: impl FnMut(String, &PackageBody),
+) {
     for element in &parsed.elements {
         match &element.value {
             RootElement::Package(package) => visit_package_tree(package, None, &mut visit),

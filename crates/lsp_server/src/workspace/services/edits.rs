@@ -152,7 +152,8 @@ pub(crate) fn apply_document_changes_fast(
 
 pub(crate) fn remove_document(state: &mut impl DocumentStore, uri_norm: &Url) {
     state.index_mut().remove(uri_norm);
-    state.symbol_table_mut().retain(|entry| entry.uri != *uri_norm);
+    state
+        .symbol_table_mut()
+        .retain(|entry| entry.uri != *uri_norm);
     state.semantic_graph_mut().remove_nodes_for_uri(uri_norm);
 }
-

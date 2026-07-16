@@ -113,11 +113,12 @@ fn schedule_semantic_relink_after_change(
         // This function only ever reads raw source/parsed data, never the semantic graph, so
         // the pre-relink snapshot's index is exactly as good as a post-commit read would be.
         let snap_for_diag = handle.snapshot();
-        let mut diag_uris = crate::workspace::import_graph::workspace_uris_importing_declarations_from(
-            &snap_for_diag.index,
-            &snap_for_diag.library_paths,
-            &changed_uri,
-        );
+        let mut diag_uris =
+            crate::workspace::import_graph::workspace_uris_importing_declarations_from(
+                &snap_for_diag.index,
+                &snap_for_diag.library_paths,
+                &changed_uri,
+            );
         drop(snap_for_diag);
         // Always include the changed file — it was skipped during the fast
         // graph update and needs diagnostics from the fully-resolved graph.
@@ -302,11 +303,12 @@ async fn send_semantic_ready_notification(client: &Client, handle: &WorkspaceHan
     client.send_notification::<SemanticIndexReady>(params).await;
 }
 
-
 mod startup;
 mod sync;
 pub(crate) use startup::{initialize, initialized};
-pub(crate) use sync::{did_change, did_change_configuration, did_change_watched_files, did_close, did_open};
+pub(crate) use sync::{
+    did_change, did_change_configuration, did_change_watched_files, did_close, did_open,
+};
 
 #[cfg(test)]
 mod tests {
@@ -386,6 +388,8 @@ mod tests {
         let uri = Url::parse("file:///unknown.sysml").expect("uri");
         let handle = WorkspaceHandle::spawn(ServerState::default());
 
-        assert!(!watched_file_content_already_current(&handle, &uri, "anything"));
+        assert!(!watched_file_content_already_current(
+            &handle, &uri, "anything"
+        ));
     }
 }

@@ -340,6 +340,5 @@ pub fn patch_graph_for_document_scoped(
     }
 }
 
-
 #[cfg(test)]
 mod tests;

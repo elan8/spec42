@@ -1,4 +1,4 @@
-﻿use std::collections::HashMap;
+use std::collections::HashMap;
 use std::path::{Path, PathBuf};
 use std::time::Instant;
 
@@ -694,7 +694,11 @@ mod tests {
             .as_ref()
             .and_then(|meta| meta.get("schemaVersion"))
             .and_then(|value| value.as_u64());
-        assert_eq!(schema_version, Some(2), "expected preparedView schemaVersion 2");
+        assert_eq!(
+            schema_version,
+            Some(2),
+            "expected preparedView schemaVersion 2"
+        );
         assert!(
             response.ibd.is_none(),
             "slim interconnection payload should omit ibd when preparedView is present"

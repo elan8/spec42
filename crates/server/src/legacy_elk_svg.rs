@@ -1,13 +1,13 @@
-﻿//! Test-only Rust ELK/native SVG probes.
+//! Test-only Rust ELK/native SVG probes.
 //!
 //! Production SVG export uses [`super::render_diagram`] → shared headless renderer with
 //! `preparedView`. This module keeps the legacy `interconnectionScene` ELK path for parity
 //! fixtures only.
 
+use serde::{Deserialize, Serialize};
 use sysml_model::{
     build_elk_graph_from_scene, GraphNodeDto, RangeDto, SysmlGraphDto, SysmlVisualizationResultDto,
 };
-use serde::{Deserialize, Serialize};
 
 use super::safe_file_stem;
 use crate::elk_layout::layout_elk_graph;
@@ -60,7 +60,10 @@ pub(crate) fn native_svg(payload: &SysmlVisualizationResultDto, export_view: &st
     out
 }
 
-pub(crate) fn elk_svg(payload: &SysmlVisualizationResultDto, export_view: &str) -> Result<String, String> {
+pub(crate) fn elk_svg(
+    payload: &SysmlVisualizationResultDto,
+    export_view: &str,
+) -> Result<String, String> {
     let source = build_elk_source(payload, export_view)?;
     if source.graph.children.is_empty() {
         return Ok(empty_elk_svg(payload, export_view));

@@ -632,7 +632,10 @@ mod tests {
             .into_iter()
             .find(|node| {
                 node.name == "mass"
-                    && matches!(node.element_kind, ElementKind::Attribute | ElementKind::AttributeDef)
+                    && matches!(
+                        node.element_kind,
+                        ElementKind::Attribute | ElementKind::AttributeDef
+                    )
                     && node.id != child_mass.id
             })
             .expect("base mass");
@@ -897,7 +900,9 @@ mod tests {
         let analysis = graph
             .nodes_for_uri(&uri)
             .into_iter()
-            .find(|node| node.element_kind == ElementKind::AnalysisDef && node.name == "PowerAnalysis")
+            .find(|node| {
+                node.element_kind == ElementKind::AnalysisDef && node.name == "PowerAnalysis"
+            })
             .expect("analysis");
         assert_eq!(
             analysis

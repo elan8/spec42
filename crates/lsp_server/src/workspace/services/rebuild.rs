@@ -265,4 +265,3 @@ pub(crate) fn clear_documents_under_roots(
     }
     uris_to_remove
 }
-

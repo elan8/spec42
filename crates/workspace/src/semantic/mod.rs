@@ -15,7 +15,7 @@ pub use import_resolution::{
 pub use language_service::{hover_markdown_for_node, signature_from_node};
 pub use model::{NodeId, RelationshipKind, SemanticNode};
 pub use reference_resolution::{
-    ResolveResult, resolve_expression_endpoint_strict, resolve_member_via_type,
+    resolve_expression_endpoint_strict, resolve_member_via_type, ResolveResult,
 };
 pub use relationships::{
     add_cross_document_edges_for_uri, link_workspace_derivations, link_workspace_relationships,
@@ -24,9 +24,8 @@ pub use relationships::{
 pub use sysml_model::declared_packages_in_content;
 pub use sysml_model::semantic::graph_builder::build_graph_from_doc;
 pub use sysml_model::{
-    WorkspaceParsedDocument, add_semantic_edge_once, build_and_link_graph_parallel,
-    evaluate_workspace_graph, finalize_and_evaluate, link_parsed_documents_parallel,
-    link_parsed_documents_parallel_from, patch_graph_for_document,
-    prepare_analysis_evaluation_context,
+    add_semantic_edge_once, build_and_link_graph_parallel, evaluate_workspace_graph,
+    finalize_and_evaluate, link_parsed_documents_parallel, link_parsed_documents_parallel_from,
+    patch_graph_for_document, prepare_analysis_evaluation_context, WorkspaceParsedDocument,
 };
 pub use workspace_uri::uri_under_any_library;

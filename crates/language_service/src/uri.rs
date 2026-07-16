@@ -10,10 +10,7 @@ pub fn normalize_uri(uri: &Url) -> Url {
             let p = normalized.path();
             if p.len() >= 3 {
                 let mut chars: Vec<char> = p.chars().collect();
-                if chars[0] == '/'
-                    && chars[1].is_ascii_alphabetic()
-                    && chars.get(2) == Some(&':')
-                {
+                if chars[0] == '/' && chars[1].is_ascii_alphabetic() && chars.get(2) == Some(&':') {
                     chars[1] = chars[1].to_ascii_lowercase();
                     let new_path: String = chars.into_iter().collect();
                     if let Ok(u) = Url::parse(&format!("file://{new_path}")) {

@@ -23,7 +23,7 @@ pub use views::{
 
 use crate::error::WorkspaceResult;
 use crate::snapshot::HostWorkspaceSnapshot;
-use crate::version::{HostArtifactMetadata, HostSchemaVersions, rfc3339_timestamp};
+use crate::version::{rfc3339_timestamp, HostArtifactMetadata, HostSchemaVersions};
 
 /// Facts-only comparison report between two workspace snapshots.
 #[derive(Debug, Clone, PartialEq, Eq, serde::Serialize, serde::Deserialize)]

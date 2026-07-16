@@ -1,11 +1,9 @@
-﻿#[path = "../../../tests/fixtures/robot_vacuum_fixture.rs"]
+#[path = "../../../tests/fixtures/robot_vacuum_fixture.rs"]
 mod robot_vacuum_fixture;
 
 use robot_vacuum_fixture::require_robot_vacuum_fixture;
-use workspace::{
-    EngineBuilder, HostContext, HostFilesystemProvider, WorkspaceLoadRequest,
-};
 use tempfile::tempdir;
+use workspace::{EngineBuilder, HostContext, HostFilesystemProvider, WorkspaceLoadRequest};
 
 #[test]
 #[ignore = "local showcase: bash scripts/fetch-robot-vacuum-cleaner.sh then cargo test -- --ignored"]

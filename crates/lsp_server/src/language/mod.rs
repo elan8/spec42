@@ -4,9 +4,9 @@
 mod symbols;
 
 pub use language_service::{
-    completion_prefix, is_reserved_keyword, keyword_doc, keyword_hover_markdown, line_prefix_at_position,
-    position_to_byte_offset, sysml_keywords, unit_value_suffix_at_position, word_at_position,
-    RESERVED_KEYWORDS,
+    completion_prefix, is_reserved_keyword, keyword_doc, keyword_hover_markdown,
+    line_prefix_at_position, position_to_byte_offset, sysml_keywords,
+    unit_value_suffix_at_position, word_at_position, RESERVED_KEYWORDS,
 };
 #[cfg(test)]
 mod position {
@@ -43,17 +43,17 @@ mod position {
 }
 #[cfg(test)]
 pub use position::{source_position_to_range, source_range_to_range, SourcePosition, SourceRange};
-pub use symbols::{collect_document_symbols, collect_folding_ranges, find_reference_ranges, SymbolEntry};
 #[cfg(test)]
 pub use symbols::collect_named_elements;
+pub use symbols::{
+    collect_document_symbols, collect_folding_ranges, find_reference_ranges, SymbolEntry,
+};
 
+use language_service::{format_document_text, DiagnosticLine, FormatOptions, TextEditSuggestion};
 use tower_lsp::lsp_types::{
     CodeAction, CodeActionKind, Command, Diagnostic, FormattingOptions, OneOf,
     OptionalVersionedTextDocumentIdentifier, Position, Range, TextDocumentEdit, TextEdit, Url,
     WorkspaceEdit,
-};
-use language_service::{
-    format_document_text, DiagnosticLine, FormatOptions, TextEditSuggestion,
 };
 
 fn suggestion_to_code_action(
@@ -1074,7 +1074,6 @@ mod tests {
         let _ = std::fs::create_dir_all(&target_dir);
         let tokens_path = target_dir.join("semantic_tokens_vehicle_definitions.txt");
         write_semantic_ranges_for_review(&content, &ranges, &tokens_path);
-
     }
 
     #[cfg(test)]
@@ -1121,5 +1120,4 @@ mod tests {
             }
         }
     }
-
 }

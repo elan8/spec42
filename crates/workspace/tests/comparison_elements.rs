@@ -1,9 +1,9 @@
-﻿#[path = "support/comparison_fixtures.rs"]
+#[path = "support/comparison_fixtures.rs"]
 mod comparison_fixtures;
 
 use comparison_fixtures::{load_snapshot, test_engine};
-use workspace::compare_snapshots;
 use tempfile::tempdir;
+use workspace::compare_snapshots;
 
 #[test]
 fn added_and_removed_elements_are_reported() {
@@ -38,12 +38,20 @@ package Demo {
     let report = compare_snapshots(&previous, &next).expect("compare");
 
     assert!(
-        report.elements.removed.iter().any(|node| node.name == "item"),
+        report
+            .elements
+            .removed
+            .iter()
+            .any(|node| node.name == "item"),
         "removed part usage should be reported: {:?}",
         report.elements.removed
     );
     assert!(
-        report.elements.added.iter().any(|node| node.name == "other"),
+        report
+            .elements
+            .added
+            .iter()
+            .any(|node| node.name == "other"),
         "added part usage should be reported: {:?}",
         report.elements.added
     );
@@ -81,12 +89,20 @@ package Demo {
     let report = compare_snapshots(&previous, &next).expect("compare");
 
     assert!(
-        report.elements.removed.iter().any(|node| node.name == "item"),
+        report
+            .elements
+            .removed
+            .iter()
+            .any(|node| node.name == "item"),
         "old usage removed: {:?}",
         report.elements.removed
     );
     assert!(
-        report.elements.added.iter().any(|node| node.name == "widget"),
+        report
+            .elements
+            .added
+            .iter()
+            .any(|node| node.name == "widget"),
         "new usage added: {:?}",
         report.elements.added
     );

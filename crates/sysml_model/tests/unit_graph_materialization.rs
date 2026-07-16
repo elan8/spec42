@@ -1,4 +1,4 @@
-﻿//! Graph materialization tests for unit catalog attributes.
+//! Graph materialization tests for unit catalog attributes.
 
 use sysml_model::{
     build_semantic_graph_from_documents, SysmlDocument, SysmlDocumentSourceKind, UnitRegistry,
@@ -93,8 +93,8 @@ fn graph_only_registry_parity_with_engineering_catalog() {
 
 #[test]
 fn library_closure_seeds_quantity_packages_on_unit_literals() {
-    use sysml_model::{resolve_library_closure, LibraryClosureOptions, WorkspaceSource};
     use std::fs;
+    use sysml_model::{resolve_library_closure, LibraryClosureOptions, WorkspaceSource};
 
     let temp = tempfile::tempdir().expect("tempdir");
     let lib = temp.path().join("lib");

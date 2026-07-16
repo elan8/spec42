@@ -18,52 +18,54 @@ pub mod view_cache;
 
 pub use catalog::{HostConfigFile, HostLibraryRequest, LibraryCatalog};
 pub use comparison::{
-    HostDiagnosticComparison, HostDiagnosticIdentity, HostDocumentDiagnosticComparison,
-    HostElementChange, HostElementComparison, HostElementFieldChange, HostElementIdentity,
-    HostRelationshipComparison, HostRelationshipIdentity, HostViewCatalogChange,
-    HostViewCatalogEntry, HostViewCatalogFieldChange, HostViewComparison, HostViewPayloadChange,
-    IdentityPreservationStatus, SemanticComparisonReport, compare_snapshots,
+    compare_snapshots, HostDiagnosticComparison, HostDiagnosticIdentity,
+    HostDocumentDiagnosticComparison, HostElementChange, HostElementComparison,
+    HostElementFieldChange, HostElementIdentity, HostRelationshipComparison,
+    HostRelationshipIdentity, HostViewCatalogChange, HostViewCatalogEntry,
+    HostViewCatalogFieldChange, HostViewComparison, HostViewPayloadChange,
+    IdentityPreservationStatus, SemanticComparisonReport,
 };
 pub use engine::{EngineBuilder, HostEngineMetadata, Spec42Engine};
 pub use error::{WorkspaceError, WorkspaceResult};
 pub use incremental::{
-    IncrementalWorkspace, WorkspaceUpdateMetrics, build_view_catalog, project_semantic_model,
-    render_view, validate_workspace,
+    build_view_catalog, project_semantic_model, render_view, validate_workspace,
+    IncrementalWorkspace, WorkspaceUpdateMetrics,
 };
 pub use library::{
-    LibraryArchive, LibraryBundle, LibraryInstallRoot, LibraryPackageRoots, LibrarySource,
-    ResolvedExplicitLibrary,
     bundle::LibraryBundleConfig,
     domain::{
-        DomainLibrariesConfig, DomainLibrariesPaths, DomainLibrariesStatus,
-        domain_libraries_paths_from_data_dir,
+        domain_libraries_paths_from_data_dir, DomainLibrariesConfig, DomainLibrariesPaths,
+        DomainLibrariesStatus,
     },
     resolve_explicit_library_path,
     stdlib::{
-        StandardLibraryConfig, StandardLibraryPaths, StandardLibraryStatus, project_dirs,
-        standard_library_paths_from_data_dir,
+        project_dirs, standard_library_paths_from_data_dir, StandardLibraryConfig,
+        StandardLibraryPaths, StandardLibraryStatus,
     },
+    LibraryArchive, LibraryBundle, LibraryInstallRoot, LibraryPackageRoots, LibrarySource,
+    ResolvedExplicitLibrary,
 };
 pub use provider::{
     ChangesetDocumentProvider, FileSystemDocumentProvider, HostFilesystemProvider,
     InMemoryDocumentProvider, SysmlDocument, SysmlDocumentProvider, SysmlDocumentSourceKind,
 };
 pub use semantic::{
-    NodeId, RelationshipKind, SemanticGraph, SemanticNode, add_cross_document_edges_for_uri,
-    build_graph_from_doc, evaluate_expressions, hover_markdown_for_node,
+    add_cross_document_edges_for_uri, build_graph_from_doc, evaluate_expressions,
+    hover_markdown_for_node, NodeId, RelationshipKind, SemanticGraph, SemanticNode,
 };
 pub use session::{RelinkToken, SessionLifecycle, WorkspaceSession};
 pub use snapshot::discovery::{discover_target_files, path_to_file_url, resolve_workspace_root};
 pub use snapshot::{
-    CancellationToken, DocumentChanges, HostContext, HostExpression, HostExpressionArgument,
-    HostElementFacts, HostFeatureProperties, HostFeatureValue, HostMembershipKind, HostMultiplicity,
-    HostPipelinePhase, HostRelationshipMetaclass, HostResourceLimits, HostSemanticModelNode,
+    apply_document_changes, enrich_document_hashes, CancellationToken, DocumentChanges,
+    HostContext, HostElementFacts, HostExpression, HostExpressionArgument, HostFeatureProperties,
+    HostFeatureValue, HostMembershipKind, HostMultiplicity, HostPipelinePhase,
+    HostRelationshipMetaclass, HostResourceLimits, HostSemanticModelNode,
     HostSemanticModelRelationship, HostSemanticProjection, HostValidatedDocument,
     HostValidationReport, HostValidationSummary, HostWorkspaceSnapshot, Spec42ProjectionOutput,
-    ValidationTiming, WorkspaceLoadRequest, apply_document_changes, enrich_document_hashes,
+    ValidationTiming, WorkspaceLoadRequest,
 };
 pub use version::{HostArtifactMetadata, HostSchemaVersions};
 pub use view_cache::{
-    ViewCacheKey, ViewRenderCache, VisualizationBuildOutcome, visualization_response_is_cacheable,
-    workspace_root_for_uri,
+    visualization_response_is_cacheable, workspace_root_for_uri, ViewCacheKey, ViewRenderCache,
+    VisualizationBuildOutcome,
 };

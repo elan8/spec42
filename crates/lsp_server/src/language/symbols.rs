@@ -84,7 +84,11 @@ fn outline_kind_to_lsp(kind: &str) -> SymbolKind {
 fn map_outline_symbol(symbol: OutlineSymbol) -> DocumentSymbol {
     let range = to_lsp_range(symbol.range);
     let selection_range = to_lsp_range(symbol.selection_range);
-    let children = symbol.children.into_iter().map(map_outline_symbol).collect::<Vec<_>>();
+    let children = symbol
+        .children
+        .into_iter()
+        .map(map_outline_symbol)
+        .collect::<Vec<_>>();
     DocumentSymbol {
         name: symbol.name,
         detail: Some(symbol.kind.clone()),
@@ -141,7 +145,6 @@ pub struct SymbolEntry {
     /// One-line signature for hover code block (e.g. "part def Vehicle : Car;").
     pub signature: Option<String>,
 }
-
 
 /// Collects all named elements from the document for hover/completion: (name, short_description).
 #[cfg(test)]

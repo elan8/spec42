@@ -110,11 +110,13 @@ fn add_flow_edge_if_both_exist(
     if from_str.is_empty() || to_str.is_empty() {
         return;
     }
-    let Some(src) = expressions::resolve_expression_endpoint_legacy(g, uri, container_prefix, &from_str)
+    let Some(src) =
+        expressions::resolve_expression_endpoint_legacy(g, uri, container_prefix, &from_str)
     else {
         return;
     };
-    let Some(tgt) = expressions::resolve_expression_endpoint_legacy(g, uri, container_prefix, &to_str)
+    let Some(tgt) =
+        expressions::resolve_expression_endpoint_legacy(g, uri, container_prefix, &to_str)
     else {
         return;
     };

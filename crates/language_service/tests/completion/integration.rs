@@ -1,8 +1,6 @@
 use language_service::{complete, CompletionItemKindDto};
 
-use super::support::{
-    completion_labels, multi_doc, position_after, position_at, single_doc,
-};
+use super::support::{completion_labels, multi_doc, position_after, position_at, single_doc};
 
 #[test]
 fn complete_returns_keywords_for_top_level_prefix() {
@@ -71,7 +69,11 @@ fn complete_prioritizes_port_types_for_port_usage() {
     let command_idx = labels.iter().position(|label| label == "CommandBus");
     let controller_idx = labels.iter().position(|label| label == "Controller");
     assert!(command_idx.is_some(), "expected CommandBus in {:?}", labels);
-    assert!(controller_idx.is_some(), "expected Controller in {:?}", labels);
+    assert!(
+        controller_idx.is_some(),
+        "expected Controller in {:?}",
+        labels
+    );
     assert!(
         command_idx.unwrap() < controller_idx.unwrap(),
         "port-compatible type should outrank part def in {:?}",
@@ -93,7 +95,11 @@ fn complete_prioritizes_attribute_types() {
     let labels = completion_labels(&workspace, path, position_at(4, 25));
     let mass_idx = labels.iter().position(|label| label == "MassUnit");
     let motor_idx = labels.iter().position(|label| label == "Motor");
-    assert!(mass_idx.is_some() && motor_idx.is_some(), "expected symbols in {:?}", labels);
+    assert!(
+        mass_idx.is_some() && motor_idx.is_some(),
+        "expected symbols in {:?}",
+        labels
+    );
     assert!(
         mass_idx.unwrap() < motor_idx.unwrap(),
         "attribute-compatible type should outrank part def in {:?}",

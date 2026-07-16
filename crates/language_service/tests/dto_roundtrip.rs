@@ -1,4 +1,4 @@
-﻿use language_service::{
+use language_service::{
     CompletionItemDto, CompletionItemKindDto, CompletionResult, FoldingRangeDto,
     FoldingRangeKindDto, OutlineSymbol, TextEditDto, TextEditSuggestion, WorkspaceSymbolMatch,
 };
@@ -97,7 +97,8 @@ fn dto_roundtrip_serde_extended() {
         detail: Some("part def".to_string()),
     };
     let json = serde_json::to_string(&workspace_match).expect("serialize workspace match");
-    let parsed: WorkspaceSymbolMatch = serde_json::from_str(&json).expect("deserialize workspace match");
+    let parsed: WorkspaceSymbolMatch =
+        serde_json::from_str(&json).expect("deserialize workspace match");
     assert_eq!(workspace_match, parsed);
 
     let suggestion = TextEditSuggestion {

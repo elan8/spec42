@@ -250,7 +250,8 @@ pub(super) fn attach_doc_comment(g: &mut SemanticGraph, node_id: &NodeId, text: 
 
     let uri = &node_id.uri;
     let container_prefix = Some(node_id.qualified_name.as_str());
-    let qualified = qualified_name_for_node(g, uri, container_prefix, "_documentation", "documentation");
+    let qualified =
+        qualified_name_for_node(g, uri, container_prefix, "_documentation", "documentation");
     let mut attrs = HashMap::new();
     attrs.insert("body".to_string(), serde_json::json!(text));
     add_node_and_recurse(

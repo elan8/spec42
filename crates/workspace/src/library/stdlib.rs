@@ -529,7 +529,7 @@ fn canonicalize_lossy(path: &Path) -> PathBuf {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use kpar::pack::{PackOptions, build_kpar};
+    use kpar::pack::{build_kpar, PackOptions};
     use kpar::schema::Project;
 
     fn minimal_stdlib_kpar_bytes(work: &Path) -> Vec<u8> {
@@ -650,12 +650,10 @@ mod tests {
         assert!(!status.version_matches);
         assert!(!status.path_matches);
         assert_eq!(status.installed_version.as_deref(), Some("2026-02"));
-        assert!(
-            status
-                .status_message
-                .as_deref()
-                .is_some_and(|message| message.contains("stale"))
-        );
+        assert!(status
+            .status_message
+            .as_deref()
+            .is_some_and(|message| message.contains("stale")));
     }
 
     #[test]

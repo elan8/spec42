@@ -216,10 +216,12 @@ fn collect_state_nodes(
                 if !state_ids.insert(id.clone()) {
                     continue;
                 }
-                let has_nested_states = graph
-                    .children_of(child)
-                    .iter()
-                    .any(|node| matches!(node.element_kind, ElementKind::State | ElementKind::FinalState));
+                let has_nested_states = graph.children_of(child).iter().any(|node| {
+                    matches!(
+                        node.element_kind,
+                        ElementKind::State | ElementKind::FinalState
+                    )
+                });
                 let kind = if child.element_kind == ElementKind::FinalState {
                     "final".to_string()
                 } else if is_terminate_state(child) {
@@ -456,7 +458,10 @@ where
         F: FnMut(&SemanticNode),
     {
         for child in graph.children_of(parent) {
-            if matches!(child.element_kind, ElementKind::State | ElementKind::FinalState) {
+            if matches!(
+                child.element_kind,
+                ElementKind::State | ElementKind::FinalState
+            ) {
                 visit(child);
                 walk(graph, child, visit);
             }

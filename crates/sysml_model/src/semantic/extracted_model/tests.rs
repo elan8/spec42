@@ -1,4 +1,3 @@
-
 use super::extract_activity_diagrams;
 use sysml_v2_parser::parse;
 

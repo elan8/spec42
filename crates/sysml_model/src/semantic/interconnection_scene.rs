@@ -474,8 +474,14 @@ mod tests {
     #[test]
     fn scene_nodes_and_ports_carry_source_location_for_click_to_source() {
         let range = RangeDto {
-            start: crate::semantic::dto::PositionDto { line: 4, character: 2 },
-            end: crate::semantic::dto::PositionDto { line: 4, character: 10 },
+            start: crate::semantic::dto::PositionDto {
+                line: 4,
+                character: 2,
+            },
+            end: crate::semantic::dto::PositionDto {
+                line: 4,
+                character: 10,
+            },
         };
         let mut part = test_part("mainElectronics", "Grid.mainElectronics", None);
         part.uri = Some("file:///model.sysml".to_string());
@@ -592,6 +598,9 @@ mod tests {
             .find(|c| c.label == "PhysicalArchitecture")
             .expect("expected PhysicalArchitecture container");
 
-        assert_eq!(afr_container.parent_id.as_deref(), Some(pa_container.id.as_str()));
+        assert_eq!(
+            afr_container.parent_id.as_deref(),
+            Some(pa_container.id.as_str())
+        );
     }
 }

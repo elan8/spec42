@@ -4,8 +4,8 @@ use std::fs;
 use std::path::PathBuf;
 
 use sysml_tokens::{
-    ast_semantic_ranges, semantic_tokens_full, TYPE_CLASS, TYPE_FUNCTION, TYPE_KEYWORD, TYPE_PROPERTY,
-    TYPE_TYPE,
+    ast_semantic_ranges, semantic_tokens_full, TYPE_CLASS, TYPE_FUNCTION, TYPE_KEYWORD,
+    TYPE_PROPERTY, TYPE_TYPE,
 };
 use sysml_v2_parser::parse_for_editor;
 

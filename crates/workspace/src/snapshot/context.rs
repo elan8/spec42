@@ -1,7 +1,7 @@
 //! Execution context for workspace loads.
 
-use std::sync::Arc;
 use std::sync::atomic::{AtomicBool, Ordering};
+use std::sync::Arc;
 use std::time::{Duration, Instant};
 
 use crate::error::{WorkspaceError, WorkspaceResult};

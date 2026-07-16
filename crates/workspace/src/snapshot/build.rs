@@ -16,8 +16,8 @@ use url::Url;
 use crate::catalog::LibraryCatalog;
 use crate::engine::HostEngineMetadata;
 use crate::error::{
-    WorkspaceError, WorkspaceResult, map_language_service_error, map_provider_error,
-    map_render_snapshot_error, map_view_error,
+    map_language_service_error, map_provider_error, map_render_snapshot_error, map_view_error,
+    WorkspaceError, WorkspaceResult,
 };
 use crate::snapshot::context::{HostContext, HostPipelinePhase};
 use crate::snapshot::discovery::{discover_target_files, path_to_file_url, resolve_workspace_root};

@@ -1,4 +1,4 @@
-﻿//! Spec42 CLI and MCP shared implementation.
+//! Spec42 CLI and MCP shared implementation.
 
 pub mod ai_tools;
 pub mod api;
@@ -30,12 +30,12 @@ use lsp_server::{
     validate_paths_with_semantics, SemanticValidationReport, ValidationReport, ValidationRequest,
     ValidationSummary,
 };
-use workspace::{HostSemanticModelNode, HostSemanticModelRelationship};
 use mcp::schemas::Spec42GlobalParams;
 use reports::{apply_baseline, emit_validation_report};
 use serde::Serialize;
 use std::path::PathBuf;
 use stdlib::{managed_status, remove_standard_library};
+use workspace::{HostSemanticModelNode, HostSemanticModelRelationship};
 
 /// Run validation for the given CLI environment and [`CheckArgs`] (same logic as `spec42 check`).
 pub fn perform_check(cli: &Cli, args: &CheckArgs) -> Result<ValidationReport, String> {
@@ -58,7 +58,10 @@ pub fn perform_check(cli: &Cli, args: &CheckArgs) -> Result<ValidationReport, St
     if references_stdlib
         && environment.stdlib_path.is_none()
         && !cli.no_stdlib
-        && !report.advice.iter().any(|line| line.contains("standard library"))
+        && !report
+            .advice
+            .iter()
+            .any(|line| line.contains("standard library"))
     {
         report.advice.push(
             "This workspace references standard-library packages (for example ScalarValues or ISQ); run with the embedded/bundled standard library available or pass `--stdlib-path`."

@@ -1,4 +1,4 @@
-﻿use std::collections::HashMap;
+use std::collections::HashMap;
 
 use sysml_model::{
     build_semantic_graph_from_documents, SemanticGraph, SysmlDocument, TextPosition,
@@ -66,11 +66,7 @@ impl InMemoryWorkspace {
         let mut path_to_uri = HashMap::new();
 
         for parsed in parsed_docs {
-            let path = parsed
-                .uri
-                .path()
-                .trim_start_matches('/')
-                .replace('\\', "/");
+            let path = parsed.uri.path().trim_start_matches('/').replace('\\', "/");
             let path = parsed
                 .uri
                 .path()
@@ -126,7 +122,9 @@ impl WorkspaceSnapshot for InMemoryWorkspace {
         self.path_to_uri.get(&normalized).cloned().or_else(|| {
             self.path_to_uri
                 .iter()
-                .find(|(key, _)| key.as_str() == normalized || key.ends_with(&format!("/{normalized}")))
+                .find(|(key, _)| {
+                    key.as_str() == normalized || key.ends_with(&format!("/{normalized}"))
+                })
                 .map(|(_, uri)| uri.clone())
         })
     }

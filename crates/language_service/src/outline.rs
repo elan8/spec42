@@ -1,4 +1,4 @@
-﻿//! Document outline and folding ranges from parsed AST.
+//! Document outline and folding ranges from parsed AST.
 
 use sysml_model::semantic::ast_util::{identification_name, span_to_range};
 use sysml_v2_parser::ast::{
@@ -219,9 +219,7 @@ fn outline_symbol_from_element(
         }
         PBE::PartUsage(p) => {
             let children = match &p.body {
-                PartUsageBody::Brace { elements } => {
-                    outline_symbols_from_part_usage_body(elements)
-                }
+                PartUsageBody::Brace { elements } => outline_symbols_from_part_usage_body(elements),
                 _ => vec![],
             };
             Some(OutlineSymbol {
@@ -477,4 +475,3 @@ fn outline_symbols_from_port_def_body(
     }
     out
 }
-

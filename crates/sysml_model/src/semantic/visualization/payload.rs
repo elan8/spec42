@@ -2,12 +2,10 @@
 //!
 //! Replaces semantic shaping that previously lived in `normalize-payload.ts`.
 
-use crate::semantic::extracted_model::{
-    ActivityDiagramDto, SequenceDiagramDto, StateMachineDto,
-};
 use crate::semantic::dto::{
     ActivityDiagramCandidateDto, SequenceDiagramCandidateDto, StateMachineCandidateDto,
 };
+use crate::semantic::extracted_model::{ActivityDiagramDto, SequenceDiagramDto, StateMachineDto};
 
 /// Selector label shown in view pickers: `name - packagePath`.
 pub fn build_selector_label(name: &str, package_path: &str) -> String {
@@ -102,7 +100,9 @@ fn register_activity_aliases(
     if key.is_empty() {
         return;
     }
-    aliases.entry(key.to_string()).or_insert_with(|| node_id.to_string());
+    aliases
+        .entry(key.to_string())
+        .or_insert_with(|| node_id.to_string());
     let normalized = key.replace("::", ".");
     aliases
         .entry(normalized.clone())
@@ -121,10 +121,7 @@ fn finalize_activity_diagram(diagram: &mut ActivityDiagramDto) {
 
     let mut aliases = std::collections::HashMap::new();
     for action in &diagram.actions {
-        let node_id = action
-            .id
-            .clone()
-            .unwrap_or_else(|| action.name.clone());
+        let node_id = action.id.clone().unwrap_or_else(|| action.name.clone());
         register_activity_aliases(&mut aliases, &node_id, &node_id);
         register_activity_aliases(&mut aliases, &action.name, &node_id);
     }

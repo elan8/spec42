@@ -1,8 +1,8 @@
 //! Helpers for working with sysml-v2-parser AST: span/range conversion and name extraction.
 
 use sysml_v2_parser::ast::Identification;
-use sysml_v2_parser::Span;
 use sysml_v2_parser::ast::TypingRelationship;
+use sysml_v2_parser::Span;
 
 /// Accept both legacy textual type names and parser 0.35 typed relationships.
 pub trait TypeNameRef {
@@ -10,11 +10,15 @@ pub trait TypeNameRef {
 }
 
 impl TypeNameRef for str {
-    fn type_name_ref(&self) -> &str { self }
+    fn type_name_ref(&self) -> &str {
+        self
+    }
 }
 
 impl TypeNameRef for String {
-    fn type_name_ref(&self) -> &str { self }
+    fn type_name_ref(&self) -> &str {
+        self
+    }
 }
 
 impl TypeNameRef for TypingRelationship {
@@ -111,8 +115,14 @@ pub fn refine_declaration_ranges(
 fn declaration_name_bounds_in_slice(slice: &str) -> Option<(usize, usize)> {
     const DEF_PREFIX: &str = "def ";
     if let Some(def_idx) = slice.find(DEF_PREFIX) {
-        return identifier_bounds(&slice[def_idx + DEF_PREFIX.len()..])
-            .map(|(rel_start, rel_end)| (def_idx + DEF_PREFIX.len() + rel_start, def_idx + DEF_PREFIX.len() + rel_end));
+        return identifier_bounds(&slice[def_idx + DEF_PREFIX.len()..]).map(
+            |(rel_start, rel_end)| {
+                (
+                    def_idx + DEF_PREFIX.len() + rel_start,
+                    def_idx + DEF_PREFIX.len() + rel_end,
+                )
+            },
+        );
     }
     for prefix in [
         "package ",
@@ -173,11 +183,7 @@ fn identifier_bounds(slice: &str) -> Option<(usize, usize)> {
 }
 
 /// Locate a whole-word occurrence of `word` inside `span` on a single source line.
-pub fn word_range_within_span(
-    source: &str,
-    span: &SourceRange,
-    word: &str,
-) -> Option<SourceRange> {
+pub fn word_range_within_span(source: &str, span: &SourceRange, word: &str) -> Option<SourceRange> {
     if word.is_empty() || span.start_line != span.end_line {
         return None;
     }
@@ -248,7 +254,8 @@ pub fn push_usage_name_type_spans<T: TypeNameRef + ?Sized>(
     if let Some(s) = type_span {
         out.push((span_to_source_range(s), TYPE_TYPE));
     } else if let Some(type_name) = type_name.map(TypeNameRef::type_name_ref) {
-        if let Some(r) = word_range_within_span(source, &span_to_source_range(node_span), type_name) {
+        if let Some(r) = word_range_within_span(source, &span_to_source_range(node_span), type_name)
+        {
             out.push((r, TYPE_TYPE));
         }
     }

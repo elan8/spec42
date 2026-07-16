@@ -1,6 +1,6 @@
 use std::path::{Path, PathBuf};
 
-use crate::catalog::{HostLibraryRequest, LibraryCatalog, resolve_library_catalog};
+use crate::catalog::{resolve_library_catalog, HostLibraryRequest, LibraryCatalog};
 use crate::error::{WorkspaceError, WorkspaceResult};
 use crate::library::{domain::DomainLibrariesConfig, stdlib::StandardLibraryConfig};
 use crate::snapshot::{HostContext, HostWorkspaceSnapshot, WorkspaceLoadRequest};

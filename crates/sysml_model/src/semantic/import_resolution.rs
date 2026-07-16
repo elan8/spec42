@@ -76,7 +76,7 @@ fn unique_graph_wide_named_members(
             let node = graph.get_node(id)?;
             (node_matches_simple_name(node, simple_name)
                 && element_kind_allowed(&node.element_kind, allowed_kinds))
-                .then(|| id.clone())
+            .then(|| id.clone())
         })
         .collect();
 
@@ -144,7 +144,9 @@ fn owned_namespace_children(graph: &SemanticGraph, namespace_id: &NodeId) -> Vec
     graph
         .children_of(namespace)
         .into_iter()
-        .filter(|child| child.element_kind != ElementKind::Import && is_namespace(&child.element_kind))
+        .filter(|child| {
+            child.element_kind != ElementKind::Import && is_namespace(&child.element_kind)
+        })
         .map(|child| child.id.clone())
         .collect()
 }
@@ -230,8 +232,7 @@ fn exported_members_named_from_namespace(
     };
 
     for child in graph.children_of(namespace) {
-        if child.element_kind != ElementKind::Import
-            && node_matches_simple_name(child, simple_name)
+        if child.element_kind != ElementKind::Import && node_matches_simple_name(child, simple_name)
         {
             out.push(child.id.clone());
         }

@@ -6,10 +6,10 @@ use tower_lsp::Client;
 use tracing::info;
 
 use crate::analysis::diagnostics_core;
-use crate::workspace::state::supports_semantic_queries;
-use crate::workspace::{RuntimeConfig, WorkspaceHandle};
 use crate::common::util;
 use crate::semantic::SemanticGraph;
+use crate::workspace::state::supports_semantic_queries;
+use crate::workspace::{RuntimeConfig, WorkspaceHandle};
 
 fn perf_logging_enabled(runtime_config: &Arc<std::sync::OnceLock<RuntimeConfig>>) -> bool {
     runtime_config

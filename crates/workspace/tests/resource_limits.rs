@@ -1,9 +1,9 @@
-﻿use sysml_model::{SysmlDocument, SysmlDocumentProvider, SysmlDocumentSourceKind};
+use sysml_model::{SysmlDocument, SysmlDocumentProvider, SysmlDocumentSourceKind};
+use tempfile::tempdir;
+use url::Url;
 use workspace::{
     EngineBuilder, HostContext, HostResourceLimits, InMemoryDocumentProvider, WorkspaceLoadRequest,
 };
-use tempfile::tempdir;
-use url::Url;
 
 struct TwoDocumentProvider;
 
@@ -69,7 +69,9 @@ fn max_total_bytes_limit_rejects_large_content() {
     let large = "x".repeat(2048);
     let document = SysmlDocument {
         uri: Url::from_file_path(&target).expect("uri"),
-        content: format!("package L {{ part def Big {{ attribute value : String = \"{large}\"; }} }}"),
+        content: format!(
+            "package L {{ part def Big {{ attribute value : String = \"{large}\"; }} }}"
+        ),
         path_hint: Some("Large.sysml".to_string()),
         source_kind: SysmlDocumentSourceKind::Workspace,
         sha256: None,

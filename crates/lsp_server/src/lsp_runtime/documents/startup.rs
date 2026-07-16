@@ -39,10 +39,7 @@ pub(crate) async fn initialize(
             perf_logging_enabled,
         })
         .expect("initialize called twice");
-    handle
-        .set_startup_config(roots, library_paths)
-        .await
-        .ok();
+    handle.set_startup_config(roots, library_paths).await.ok();
     Ok(InitializeResult {
         server_info: Some(ServerInfo {
             name: server_name.to_string(),
@@ -264,8 +261,8 @@ pub(crate) async fn initialized(
             // concurrently instead of queueing behind anything.
             let (snapshot_version, index_snapshot, library_paths_snapshot) =
                 handle.relink_snapshot();
-            let base_graph_for_rebuild = library_graph_cache_was_hit
-                .then(|| handle.snapshot().semantic_graph.clone());
+            let base_graph_for_rebuild =
+                library_graph_cache_was_hit.then(|| handle.snapshot().semantic_graph.clone());
             let (new_graph, new_symbols, staged_relink_metrics) =
                 tokio::task::spawn_blocking(move || {
                     crate::workspace::rebuild_semantic_graph_staged(
@@ -463,4 +460,3 @@ pub(crate) async fn initialized(
         .await;
     });
 }
-

@@ -1,9 +1,9 @@
-﻿#[path = "support/comparison_fixtures.rs"]
+#[path = "support/comparison_fixtures.rs"]
 mod comparison_fixtures;
 
 use comparison_fixtures::{load_snapshot, test_engine};
-use workspace::compare_snapshots;
 use tempfile::tempdir;
+use workspace::compare_snapshots;
 
 #[test]
 fn introduced_parse_diagnostic_is_reported() {

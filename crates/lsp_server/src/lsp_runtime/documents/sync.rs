@@ -82,8 +82,7 @@ pub(crate) async fn did_open(
         let uri_norm_log = uri_norm.clone();
         tokio::spawn(async move {
             let diag_start = Instant::now();
-            publish_document_diagnostics(&client, &handle, &runtime_config, uri, &text)
-                .await;
+            publish_document_diagnostics(&client, &handle, &runtime_config, uri, &text).await;
             if perf_logging_enabled {
                 client
                     .log_message(
@@ -186,7 +185,13 @@ pub(crate) async fn did_change(
     // evaluation haven't run yet; the relink task publishes diagnostics after
     // committing the fully-resolved graph.
     if let Some(token) = token {
-        schedule_semantic_relink_after_change(client, handle, runtime_config, uri_norm.clone(), token);
+        schedule_semantic_relink_after_change(
+            client,
+            handle,
+            runtime_config,
+            uri_norm.clone(),
+            token,
+        );
     }
     log_perf(
         client,
@@ -213,7 +218,11 @@ pub(crate) async fn did_close(client: &Client, params: DidCloseTextDocumentParam
 /// the server already knows about via `textDocument/didChange`, not a genuinely new change.
 /// Pure, `Client`-free predicate so it can be unit tested directly without spinning up a real
 /// LSP client/subprocess (see the test module below for why that matters here).
-pub(crate) fn watched_file_content_already_current(handle: &WorkspaceHandle, uri: &Url, content: &str) -> bool {
+pub(crate) fn watched_file_content_already_current(
+    handle: &WorkspaceHandle,
+    uri: &Url,
+    content: &str,
+) -> bool {
     handle
         .snapshot()
         .index
@@ -289,8 +298,13 @@ pub(crate) async fn did_change_watched_files(
     }
     let diagnostics_start = Instant::now();
     if !changed_or_created_uris.is_empty() {
-        publish_workspace_diagnostics(client, handle, runtime_config, Some(&changed_or_created_uris))
-            .await;
+        publish_workspace_diagnostics(
+            client,
+            handle,
+            runtime_config,
+            Some(&changed_or_created_uris),
+        )
+        .await;
     }
     let diagnostics_ms = diagnostics_start.elapsed().as_millis() as u64;
     let deleted_uri_count = deleted_uris.len();
@@ -440,4 +454,3 @@ pub(crate) async fn did_change_configuration(
         .await;
     });
 }
-

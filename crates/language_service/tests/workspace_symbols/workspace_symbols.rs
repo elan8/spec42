@@ -29,10 +29,7 @@ fn search_filters_by_substring() {
 
 #[test]
 fn search_includes_path_and_container_metadata() {
-    let workspace = multi_doc(&[(
-        "pkg/vehicle.sysml",
-        "package VehiclePkg { part def Car; }",
-    )]);
+    let workspace = multi_doc(&[("pkg/vehicle.sysml", "package VehiclePkg { part def Car; }")]);
     let matches = search_workspace_symbols(&workspace, "Car");
     assert_eq!(matches.len(), 1);
     assert_eq!(matches[0].name, "Car");

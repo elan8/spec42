@@ -197,9 +197,7 @@ fn hover_resolves_public_reexported_type_reference() {
         ("use.sysml", content_use),
     ]);
     let pos = position_for(content_use, "Name");
-    let result = hover(&ws, "use.sysml", pos)
-        .expect("hover")
-        .contents;
+    let result = hover(&ws, "use.sysml", pos).expect("hover").contents;
     assert!(
         result.contains("Name") && result.contains("attribute def"),
         "hover on public re-exported type should resolve to definition: {result}"

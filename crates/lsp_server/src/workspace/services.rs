@@ -2,9 +2,9 @@ use crate::common::util;
 use crate::semantic;
 use crate::workspace::library_search;
 use crate::workspace::parse_cache;
-use crate::workspace::state::{DocumentStore, IndexEntry, ParseMetadata};
 #[cfg(test)]
 use crate::workspace::state::ServerState;
+use crate::workspace::state::{DocumentStore, IndexEntry, ParseMetadata};
 use rayon::prelude::*;
 use std::path::Path;
 use std::time::Instant;
@@ -18,7 +18,10 @@ fn elapsed_ms(start: Instant) -> u32 {
 }
 
 pub(crate) fn indexed_text(state: &impl DocumentStore, uri_norm: &Url) -> Option<String> {
-    state.index().get(uri_norm).map(|entry| entry.content.clone())
+    state
+        .index()
+        .get(uri_norm)
+        .map(|entry| entry.content.clone())
 }
 
 pub(crate) fn indexed_text_or_empty(state: &impl DocumentStore, uri_norm: &Url) -> String {
@@ -342,12 +345,13 @@ pub(crate) fn ingest_parsed_scan_entries_batch(
 /// semantic graph work). Cheap and safe to run while holding the server's
 /// write lock. Returns whether the content actually changed, so the caller
 /// can decide whether a (potentially slow) parse is needed.
-
 mod edits;
 mod rebuild;
-pub(crate) use edits::{apply_document_content_edit, apply_parsed_document_update, remove_document};
 #[cfg(test)]
 pub(crate) use edits::{apply_document_changes, apply_document_changes_fast};
+pub(crate) use edits::{
+    apply_document_content_edit, apply_parsed_document_update, remove_document,
+};
 pub(crate) use rebuild::{
     clear_documents_under_roots, index_library_paths_for_search, rebuild_all_document_links,
     rebuild_semantic_graph_staged,

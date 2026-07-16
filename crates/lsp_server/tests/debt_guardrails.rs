@@ -1,4 +1,4 @@
-﻿use std::fs;
+use std::fs;
 use std::path::{Path, PathBuf};
 
 const MAX_IGNORE_ATTRIBUTES: usize = 6;
@@ -47,10 +47,7 @@ fn kernel_semantic_layer_contains_only_shims_and_runtime_modules() {
 #[test]
 fn frontend_normalize_payload_line_count_does_not_increase() {
     let manifest = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
-    let repo_root = manifest
-        .parent()
-        .and_then(Path::parent)
-        .expect("repo root");
+    let repo_root = manifest.parent().and_then(Path::parent).expect("repo root");
     let normalize_path = repo_root.join("shared/diagram-renderer/src/prepare/normalize-payload.ts");
     let contents = fs::read_to_string(normalize_path).expect("normalize-payload.ts");
     const MAX_NORMALIZE_PAYLOAD_LINES: usize = 100;

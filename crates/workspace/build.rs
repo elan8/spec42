@@ -1,4 +1,4 @@
-﻿//! Build script: embed SysML standard library and domain libraries for `include_bytes!`.
+//! Build script: embed SysML standard library and domain libraries for `include_bytes!`.
 //!
 //! Override inputs:
 //! - `SPEC42_STDLIB_KPAR_DIR`: directory of OMG `.kpar` archives for the pinned stdlib tag.
@@ -171,7 +171,9 @@ fn embed_domain_libraries() {
     let sibling = manifest_dir.join("../../../sysml-domain-libraries");
     if sibling.is_dir() {
         pack_domain_kpar_from_dir(&sibling, &config, &out_kpar).unwrap_or_else(|e| {
-            eprintln!("workspace build: failed to pack domain libraries from sibling checkout: {e}");
+            eprintln!(
+                "workspace build: failed to pack domain libraries from sibling checkout: {e}"
+            );
             process::exit(1);
         });
         eprintln!(

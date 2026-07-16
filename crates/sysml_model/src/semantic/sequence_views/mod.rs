@@ -26,6 +26,10 @@ pub fn filter_sequence_diagrams_by_exposed_ids(
     exposed_ids: &std::collections::HashSet<String>,
 ) -> Vec<SequenceDiagramDto> {
     filter_by_exposed_ids(diagrams, exposed_ids, |diagram| {
-        (diagram.id.as_str(), diagram.package_path.as_str(), diagram.name.as_str())
+        (
+            diagram.id.as_str(),
+            diagram.package_path.as_str(),
+            diagram.name.as_str(),
+        )
     })
 }

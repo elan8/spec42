@@ -6,7 +6,9 @@ use sysml_v2_parser::ast::RefDecl;
 use sysml_v2_parser::Node;
 use url::Url;
 
-use crate::semantic::ast_util::{declared_feature_value, ref_decl_feature_properties, span_to_range};
+use crate::semantic::ast_util::{
+    declared_feature_value, ref_decl_feature_properties, span_to_range,
+};
 use crate::semantic::graph::SemanticGraph;
 use crate::semantic::model::{NodeId, RelationshipKind};
 use crate::semantic::relationships::{add_edge_if_both_exist, add_typing_edge_if_exists};
@@ -69,13 +71,7 @@ pub(super) fn materialize_ref_decl(
                 container_prefix,
                 value_expression,
             ) {
-                add_edge_if_both_exist(
-                    g,
-                    uri,
-                    &qualified,
-                    &target,
-                    RelationshipKind::Reference,
-                );
+                add_edge_if_both_exist(g, uri, &qualified, &target, RelationshipKind::Reference);
             }
         }
     }

@@ -17,8 +17,8 @@ use sysml_v2_parser::ast::{
     AttributeBody, AttributeBodyElement, AttributeDef, AttributeUsage, Identification, Import,
     ItemUsage, LibraryPackage, MetadataDef, MetadataUsage, Package, PackageBody,
     PackageBodyElement, PartDef, PartDefBody, PartDefBodyElement, PartUsage, PartUsageBody,
-    PartUsageBodyElement, PortDef, PortDefBody, PortDefBodyElement, PortUsage, PortBody,
-    PortBodyElement, RefDecl, RootElement,
+    PartUsageBodyElement, PortBody, PortBodyElement, PortDef, PortDefBody, PortDefBodyElement,
+    PortUsage, RefDecl, RootElement,
 };
 use sysml_v2_parser::{Node, RootNamespace as ParsedRoot};
 use walkdir::WalkDir;
@@ -119,7 +119,12 @@ pub fn resolve_library_closure(
     let mut files = Vec::<LoadedLibraryFile>::new();
     let mut visited_packages = HashSet::<PackageKey>::new();
     let mut queue: VecDeque<PackageKey> = seeds.into_iter().collect();
-    enqueue_imports_from_workspace_packages(workspace, &workspace_declared_packages, options, &mut queue);
+    enqueue_imports_from_workspace_packages(
+        workspace,
+        &workspace_declared_packages,
+        options,
+        &mut queue,
+    );
     while let Some(pkg) = queue.pop_front() {
         if !visited_packages.insert(pkg.clone()) {
             continue;
@@ -172,7 +177,6 @@ pub fn resolve_library_closure(
     });
     Ok(files)
 }
-
 
 mod package_scan;
 mod type_refs;

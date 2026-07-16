@@ -42,7 +42,9 @@ pub struct BuiltWorkspaceInput {
 
 /// Converts an already-built `workspace::HostWorkspaceSnapshot` into the shape
 /// [`semantic_report_from_built_workspace`] consumes.
-pub fn built_workspace_input_from_snapshot(snapshot: &HostWorkspaceSnapshot) -> BuiltWorkspaceInput {
+pub fn built_workspace_input_from_snapshot(
+    snapshot: &HostWorkspaceSnapshot,
+) -> BuiltWorkspaceInput {
     BuiltWorkspaceInput {
         semantic_graph: snapshot.semantic_graph().clone(),
         all_documents: snapshot.documents().to_vec(),
@@ -200,7 +202,8 @@ pub(super) fn collect_target_documents(
         .into_iter()
         .map(|uri| {
             let text = indexed_text_or_empty(state, &uri);
-            let diagnostics = collect_diagnostics_for_document(state, &uri, &text, strict_diagnostics);
+            let diagnostics =
+                collect_diagnostics_for_document(state, &uri, &text, strict_diagnostics);
             ValidatedDocument {
                 uri: uri.to_string(),
                 diagnostics,

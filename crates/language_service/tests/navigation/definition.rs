@@ -8,7 +8,10 @@ fn goto_definition_resolves_part_def() {
     let ws = single_doc("test.sysml", content);
     let pos = position_for(content, "Engine");
     let result = goto_definition(&ws, "test.sysml", pos);
-    assert!(!result.locations.is_empty(), "expected definition for Engine");
+    assert!(
+        !result.locations.is_empty(),
+        "expected definition for Engine"
+    );
     assert_eq!(result.locations[0].path, "test.sysml");
 }
 
@@ -34,7 +37,10 @@ fn goto_definition_cross_file_resolves_to_definition() {
     let pos = position_at(0, 22);
     let result = goto_definition(&ws, "use.sysml", pos);
     assert!(
-        result.locations.iter().any(|loc| loc.path.contains("def.sysml")),
+        result
+            .locations
+            .iter()
+            .any(|loc| loc.path.contains("def.sysml")),
         "expected goto-definition to def.sysml, got: {:?}",
         result.locations
     );

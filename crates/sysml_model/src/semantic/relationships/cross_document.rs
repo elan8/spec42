@@ -153,7 +153,10 @@ pub fn refresh_relationship_frontier(g: &mut SemanticGraph, changed_uri: &Url) {
 /// such namespace's URI is included as a candidate dependency, even if only one of them
 /// actually supplies any given name. Over-inclusion just means the frontier occasionally does
 /// slightly more work than strictly necessary; it is never incorrect.
-pub fn compute_static_dependency_targets(g: &SemanticGraphData, uri: &Url) -> std::collections::HashSet<Url> {
+pub fn compute_static_dependency_targets(
+    g: &SemanticGraphData,
+    uri: &Url,
+) -> std::collections::HashSet<Url> {
     let mut prefixes: std::collections::HashSet<String> = std::collections::HashSet::new();
     let Some(node_ids) = g.nodes_by_uri.get(uri) else {
         return std::collections::HashSet::new();
@@ -179,11 +182,11 @@ pub fn compute_static_dependency_targets(g: &SemanticGraphData, uri: &Url) -> st
             }
             continue;
         }
-        for key in TYPE_REFERENCE_ATTR_KEYS
-            .iter()
-            .copied()
-            .chain(["specializes", "subjectType", "verifiedRequirement"])
-        {
+        for key in TYPE_REFERENCE_ATTR_KEYS.iter().copied().chain([
+            "specializes",
+            "subjectType",
+            "verifiedRequirement",
+        ]) {
             let Some(raw) = node.attributes.get(key).and_then(|value| value.as_str()) else {
                 continue;
             };
@@ -227,7 +230,11 @@ pub fn compute_static_dependency_targets(g: &SemanticGraphData, uri: &Url) -> st
 /// defensive re-check would reintroduce the same failure mode by a different path.
 pub fn update_static_dependency_targets_for_uri(g: &mut SemanticGraphData, uri: &Url) {
     let new_targets = compute_static_dependency_targets(g, uri);
-    let old_targets = g.document_dependency_targets.get(uri).cloned().unwrap_or_default();
+    let old_targets = g
+        .document_dependency_targets
+        .get(uri)
+        .cloned()
+        .unwrap_or_default();
 
     for old_target in old_targets.difference(&new_targets) {
         let mut remove_entry = false;
@@ -249,7 +256,8 @@ pub fn update_static_dependency_targets_for_uri(g: &mut SemanticGraphData, uri: 
     if new_targets.is_empty() {
         g.document_dependency_targets.remove(uri);
     } else {
-        g.document_dependency_targets.insert(uri.clone(), new_targets);
+        g.document_dependency_targets
+            .insert(uri.clone(), new_targets);
     }
 }
 
@@ -454,10 +462,7 @@ fn resolve_typing_edge_cross_document_inner(
                 if let Some(target_ids) = g.node_ids_for_qualified_name(&tgt_qualified) {
                     for target_id in target_ids {
                         if let Some(target) = g.get_node(target_id) {
-                            if element_kind_allowed(
-                                &target.element_kind,
-                                target_element_kinds,
-                            ) {
+                            if element_kind_allowed(&target.element_kind, target_element_kinds) {
                                 targets.push(target_id.clone());
                             }
                         }

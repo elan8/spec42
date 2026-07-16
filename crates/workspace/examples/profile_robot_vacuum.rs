@@ -1,4 +1,4 @@
-﻿//! Cold-path profiler entry point for the robot-vacuum embedding host scenario.
+//! Cold-path profiler entry point for the robot-vacuum embedding host scenario.
 //!
 //! ```bash
 //! export CARGO_TARGET_DIR=/path/to/spec42/target
@@ -7,8 +7,8 @@
 //! ```
 
 use workspace::robot_vacuum_perf::{
-    default_matrix_scenarios, emit_perf_report, run_perf_matrix, run_robot_vacuum_perf,
-    PerfConfig, ValidationPerfMode,
+    default_matrix_scenarios, emit_perf_report, run_perf_matrix, run_robot_vacuum_perf, PerfConfig,
+    ValidationPerfMode,
 };
 
 fn main() {
@@ -23,7 +23,10 @@ fn main() {
         let release_build = !cfg!(debug_assertions);
         let matrix = run_perf_matrix(&default_matrix_scenarios(release_build), 3, &cache_root);
         let path = emit_perf_report(&matrix, "robot-vacuum-host-matrix.json");
-        println!("SPEC42_PERF_REPORT {}", serde_json::to_string(&matrix).expect("json"));
+        println!(
+            "SPEC42_PERF_REPORT {}",
+            serde_json::to_string(&matrix).expect("json")
+        );
         println!("wrote {}", path.display());
         return;
     }
@@ -42,6 +45,9 @@ fn main() {
 
     let report = run_robot_vacuum_perf(&config, &cache_root);
     let path = emit_perf_report(&report, "robot-vacuum-host-phases.json");
-    println!("SPEC42_PERF_REPORT {}", serde_json::to_string(&report).expect("json"));
+    println!(
+        "SPEC42_PERF_REPORT {}",
+        serde_json::to_string(&report).expect("json")
+    );
     println!("wrote {}", path.display());
 }

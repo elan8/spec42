@@ -9,16 +9,16 @@ use sha2::{Digest, Sha256};
 use crate::error::{WorkspaceError, WorkspaceResult};
 use crate::library::{
     domain::{
-        DomainLibrariesConfig, DomainLibrariesPaths, EMBEDDED_DOMAIN_LIBRARIES_ARCHIVE,
-        EMBEDDED_DOMAIN_LIBRARIES_REPO, domain_libraries_paths_from_data_dir,
-        install_embedded_domain_libraries, load_managed_metadata as load_domain_libraries_metadata,
-        managed_install_path as domain_managed_install_path,
+        domain_libraries_paths_from_data_dir, install_embedded_domain_libraries,
+        load_managed_metadata as load_domain_libraries_metadata,
+        managed_install_path as domain_managed_install_path, DomainLibrariesConfig,
+        DomainLibrariesPaths, EMBEDDED_DOMAIN_LIBRARIES_ARCHIVE, EMBEDDED_DOMAIN_LIBRARIES_REPO,
     },
     resolve_explicit_library_path,
     stdlib::{
-        EMBEDDED_STDLIB_ARCHIVE, EMBEDDED_STDLIB_REPO, StandardLibraryConfig, StandardLibraryPaths,
         install_embedded_standard_library, legacy_vscode_stdlib_path, load_managed_metadata,
-        standard_library_paths_from_data_dir, stdlib_library_roots,
+        standard_library_paths_from_data_dir, stdlib_library_roots, StandardLibraryConfig,
+        StandardLibraryPaths, EMBEDDED_STDLIB_ARCHIVE, EMBEDDED_STDLIB_REPO,
     },
 };
 

@@ -1,4 +1,4 @@
-﻿use language_service::{complete, dto::SourceLocation, InMemoryWorkspace};
+use language_service::{complete, dto::SourceLocation, InMemoryWorkspace};
 use sysml_model::{SysmlDocument, SysmlDocumentSourceKind, TextPosition};
 
 pub fn document(path: &str, content: &str) -> SysmlDocument {
@@ -75,20 +75,12 @@ pub fn completion_labels(
     position: TextPosition,
 ) -> Vec<String> {
     complete(workspace, path, position)
-        .map(|result| {
-            result
-                .items
-                .into_iter()
-                .map(|item| item.label)
-                .collect()
-        })
+        .map(|result| result.items.into_iter().map(|item| item.label).collect())
         .unwrap_or_default()
 }
 
 pub fn any_on_line(locations: &[SourceLocation], line: u32) -> bool {
-    locations
-        .iter()
-        .any(|loc| loc.range.start.line == line)
+    locations.iter().any(|loc| loc.range.start.line == line)
 }
 
 pub fn count_on_line(locations: &[SourceLocation], line: u32) -> usize {
@@ -99,9 +91,9 @@ pub fn count_on_line(locations: &[SourceLocation], line: u32) -> usize {
 }
 
 pub fn any_on_line_at(locations: &[SourceLocation], line: u32, character: u32) -> bool {
-    locations.iter().any(|loc| {
-        loc.range.start.line == line && loc.range.start.character == character
-    })
+    locations
+        .iter()
+        .any(|loc| loc.range.start.line == line && loc.range.start.character == character)
 }
 
 pub fn paths(locations: &[SourceLocation]) -> Vec<&str> {

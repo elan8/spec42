@@ -11,9 +11,9 @@ use crate::language::{
     suggest_search_library_for_symbol_quick_fix, suggest_show_standard_library_info_quick_fix,
     suggest_wrap_in_package,
 };
-use language_service::WorkspaceSnapshot;
 use crate::workspace::snapshot::ServerStateSnapshot;
 use crate::workspace::ServerState;
+use language_service::WorkspaceSnapshot;
 
 fn collect_brace_folding_ranges(text: &str) -> Vec<FoldingRange> {
     let mut out = Vec::new();
@@ -99,7 +99,8 @@ pub(crate) fn prepare_rename(
     }
     let snapshot = ServerStateSnapshot::new(state, perf_logging_enabled);
     let path = snapshot.path_for_uri(&uri_norm);
-    let Some(target) = language_service::rename_target(&snapshot, &path, to_core_position(pos)) else {
+    let Some(target) = language_service::rename_target(&snapshot, &path, to_core_position(pos))
+    else {
         return Ok(None);
     };
     if let Some(def_uri) = snapshot.resolve_uri_for_path(&target.definition.path) {
@@ -142,8 +143,7 @@ pub(crate) fn rename(
         }
     }
 
-    let edits =
-        language_service::apply_rename(&snapshot, &path, to_core_position(pos), &new_name);
+    let edits = language_service::apply_rename(&snapshot, &path, to_core_position(pos), &new_name);
     if edits.is_empty() {
         return Ok(Some(WorkspaceEdit::default()));
     }

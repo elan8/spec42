@@ -56,7 +56,6 @@ pub fn canonical_general_view_graph(
     }
 }
 
-
 mod general_view_fold;
 mod workspace_dto;
 pub(crate) use general_view_fold::*;

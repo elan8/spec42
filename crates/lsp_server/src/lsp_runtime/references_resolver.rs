@@ -23,10 +23,12 @@ pub(crate) fn resolved_references_at_position(
             .locations
             .into_iter()
             .filter_map(|loc| {
-                snapshot.resolve_uri_for_path(&loc.path).map(|uri| Location {
-                    uri,
-                    range: to_lsp_range(loc.range),
-                })
+                snapshot
+                    .resolve_uri_for_path(&loc.path)
+                    .map(|uri| Location {
+                        uri,
+                        range: to_lsp_range(loc.range),
+                    })
             })
             .collect(),
     )

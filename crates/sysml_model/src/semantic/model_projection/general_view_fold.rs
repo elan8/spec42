@@ -344,7 +344,10 @@ pub(crate) fn detail_direction(detail: &GraphNodeDto) -> Option<String> {
         .map(str::to_string)
 }
 
-pub(crate) fn short_name_of_qualified_attribute(detail: &GraphNodeDto, key: &str) -> Option<String> {
+pub(crate) fn short_name_of_qualified_attribute(
+    detail: &GraphNodeDto,
+    key: &str,
+) -> Option<String> {
     detail
         .attributes
         .get(key)
@@ -516,12 +519,14 @@ pub(crate) fn format_general_view_detail_display_text(
     text
 }
 
-pub(crate) fn insert_detail_items(attributes: &mut HashMap<String, Value>, key: &str, items: Vec<Value>) {
+pub(crate) fn insert_detail_items(
+    attributes: &mut HashMap<String, Value>,
+    key: &str,
+    items: Vec<Value>,
+) {
     if items.is_empty() {
         attributes.remove(key);
     } else {
         attributes.insert(key.to_string(), Value::Array(items));
     }
 }
-
-

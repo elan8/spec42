@@ -1,11 +1,11 @@
-﻿//! JSON schema parity between Rust PreparedViewDto and TS prepare/types.ts consumers.
+//! JSON schema parity between Rust PreparedViewDto and TS prepare/types.ts consumers.
 
 use std::fs;
 use std::path::PathBuf;
 
 use sysml_model::{
-    prepare_interconnection_prepared_view, prepare_view_from_visualization, InterconnectionSceneDto,
-    PreparedViewDto, SysmlVisualizationResultDto,
+    prepare_interconnection_prepared_view, prepare_view_from_visualization,
+    InterconnectionSceneDto, PreparedViewDto, SysmlVisualizationResultDto,
 };
 
 fn fixture_path(name: &str) -> PathBuf {
@@ -56,7 +56,8 @@ fn deserializes_ts_interconnection_fixture_into_prepared_view_dto() {
     let fixture: InterconnectionFixture =
         serde_json::from_str(&raw).expect("deserialize interconnection fixture");
     let response = response_from_fixture(fixture);
-    let prepared = prepare_interconnection_prepared_view(&response).expect("prepare interconnection");
+    let prepared =
+        prepare_interconnection_prepared_view(&response).expect("prepare interconnection");
     assert_eq!(prepared.view, "interconnection-view");
     assert_eq!(prepared.nodes.len(), 2);
     assert_eq!(prepared.edges.len(), 1);

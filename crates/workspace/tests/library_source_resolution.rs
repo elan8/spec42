@@ -1,10 +1,10 @@
-﻿use std::fs;
+use std::fs;
 
 use kpar::pack::{build_kpar, PackOptions};
 use kpar::schema::Project;
 use workspace::{
-    library::bundle::discover_library_roots,
-    resolve_explicit_library_path, EngineBuilder, LibraryInstallRoot, LibraryPackageRoots,
+    library::bundle::discover_library_roots, resolve_explicit_library_path, EngineBuilder,
+    LibraryInstallRoot, LibraryPackageRoots,
 };
 
 fn minimal_domain_kpar(work: &std::path::Path) -> std::path::PathBuf {
@@ -46,13 +46,11 @@ fn archive_path_materializes_to_package_roots() {
     assert_eq!(resolved.source, "archive-materialized");
     assert!(resolved.install_path.is_dir());
     assert!(!resolved.package_roots.roots.is_empty());
-    assert!(
-        resolved
-            .package_roots
-            .roots
-            .iter()
-            .all(|root| root.is_dir())
-    );
+    assert!(resolved
+        .package_roots
+        .roots
+        .iter()
+        .all(|root| root.is_dir()));
 }
 
 #[test]
@@ -64,12 +62,13 @@ fn install_root_uses_discovered_package_roots() {
     fs::write(lib.join("Widget.sysml"), b"package Widget { part def A; }").expect("write");
 
     let package_roots = LibraryPackageRoots::from_install_root(&LibraryInstallRoot(root.clone()));
-    assert!(
-        package_roots
-            .roots
+    assert!(package_roots
+        .roots
+        .iter()
+        .any(|path| discover_library_roots(path)
             .iter()
-            .any(|path| discover_library_roots(path).iter().any(|r| r.ends_with("lib")) || path.ends_with("lib"))
-    );
+            .any(|r| r.ends_with("lib"))
+            || path.ends_with("lib")));
 
     let engine = EngineBuilder::default()
         .cache_dir(temp.path().join("cache"))

@@ -5,7 +5,9 @@ use serde_json::{json, Value};
 use crate::semantic::dto::SysmlVisualizationResultDto;
 use crate::semantic::interconnection_scene::InterconnectionSceneDto;
 use crate::semantic::prepared_view::dto::{PreparedEdgeDto, PreparedNodeDto, PreparedViewDto};
-use crate::semantic::prepared_view::graph_norm::{is_definition_kind, is_reference_kind, normalize_edge_kind};
+use crate::semantic::prepared_view::graph_norm::{
+    is_definition_kind, is_reference_kind, normalize_edge_kind,
+};
 
 pub fn prepare_interconnection_prepared_view(
     response: &SysmlVisualizationResultDto,
@@ -100,15 +102,14 @@ pub fn prepare_interconnection_scene(
     let edges: Vec<PreparedEdgeDto> = scene
         .edges
         .iter()
-        .filter(|edge| node_ids.contains(&edge.source_node_id) && node_ids.contains(&edge.target_node_id))
+        .filter(|edge| {
+            node_ids.contains(&edge.source_node_id) && node_ids.contains(&edge.target_node_id)
+        })
         .map(|edge| PreparedEdgeDto {
             id: edge.id.clone(),
             source: edge.source_node_id.clone(),
             target: edge.target_node_id.clone(),
-            label: edge
-                .label
-                .clone()
-                .unwrap_or_else(|| edge.kind.clone()),
+            label: edge.label.clone().unwrap_or_else(|| edge.kind.clone()),
             edge_kind: Some(normalize_edge_kind(&edge.kind)),
             attributes: Some(json!({
                 "sourceId": edge.source_port_id,
@@ -169,8 +170,14 @@ mod tests {
             element_type: "part".to_string(),
             attributes: HashMap::new(),
             range: Some(RangeDto {
-                start: PositionDto { line: 4, character: 2 },
-                end: PositionDto { line: 4, character: 10 },
+                start: PositionDto {
+                    line: 4,
+                    character: 2,
+                },
+                end: PositionDto {
+                    line: 4,
+                    character: 10,
+                },
             }),
         }
     }
@@ -186,8 +193,14 @@ mod tests {
             port_side: None,
             uri: Some("file:///model.sysml".to_string()),
             range: Some(RangeDto {
-                start: PositionDto { line: 4, character: 2 },
-                end: PositionDto { line: 4, character: 10 },
+                start: PositionDto {
+                    line: 4,
+                    character: 2,
+                },
+                end: PositionDto {
+                    line: 4,
+                    character: 10,
+                },
             }),
         }
     }
@@ -272,7 +285,10 @@ mod tests {
             .iter()
             .find(|p| p.get("name").and_then(|v| v.as_str()) == Some("leftMotorPhaseOut"))
             .expect("expected leftMotorPhaseOut port detail");
-        assert_eq!(port.get("uri").and_then(|v| v.as_str()), Some("file:///model.sysml"));
+        assert_eq!(
+            port.get("uri").and_then(|v| v.as_str()),
+            Some("file:///model.sysml")
+        );
         assert!(port.get("range").is_some_and(|value| !value.is_null()));
     }
 }

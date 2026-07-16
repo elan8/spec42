@@ -3,8 +3,8 @@ use crate::views::dto;
 use crate::workspace::handle::WorkspaceHandle;
 use crate::workspace::state::DocumentStore;
 use crate::workspace::ServerState;
-use sysml_model::{visualization_model_not_ready, SysmlVisualizationResultDto};
 use std::time::Instant;
+use sysml_model::{visualization_model_not_ready, SysmlVisualizationResultDto};
 use tower_lsp::jsonrpc::Result;
 use tower_lsp::lsp_types::{MessageType, Url};
 use tower_lsp::Client;
@@ -42,7 +42,9 @@ pub(crate) async fn sysml_model_result(
         scope.iter().any(|entry| entry == "workspaceVisualization");
     let params_ms = params_start.elapsed().as_millis().max(1);
     let build_start = Instant::now();
-    if workspace_visualization_requested && !crate::workspace::state::supports_semantic_queries(state.session.lifecycle()) {
+    if workspace_visualization_requested
+        && !crate::workspace::state::supports_semantic_queries(state.session.lifecycle())
+    {
         return Ok((crate::views::empty_model_response(build_start), None));
     }
     let workspace_visualization_root = if workspace_visualization_requested {

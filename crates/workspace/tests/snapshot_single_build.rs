@@ -1,15 +1,13 @@
-﻿use std::sync::atomic::{AtomicUsize, Ordering};
+use std::sync::atomic::{AtomicUsize, Ordering};
 use std::sync::Arc;
 
-use sysml_model::{
-    SysmlDocument, SysmlDocumentProvider, SysmlDocumentSourceKind,
-};
-use workspace::{
-    ChangesetDocumentProvider, EngineBuilder, HostContext, InMemoryDocumentProvider, Spec42Engine,
-    WorkspaceLoadRequest,
-};
+use sysml_model::{SysmlDocument, SysmlDocumentProvider, SysmlDocumentSourceKind};
 use tempfile::tempdir;
 use url::Url;
+use workspace::{
+    ChangesetDocumentProvider, EngineBuilder, HostContext, HostRelationshipMetaclass,
+    InMemoryDocumentProvider, Spec42Engine, WorkspaceLoadRequest,
+};
 
 struct CountingProvider {
     inner: InMemoryDocumentProvider,
@@ -105,10 +103,12 @@ fn changeset_provider_overlays_documents() {
     std::fs::write(&base_path, changed_content).expect("write changed");
 
     let engine = test_engine(&cache);
-    let provider = ChangesetDocumentProvider::new(InMemoryDocumentProvider::new(vec![
-        file_document(&base_path, "package Base { part def A; }"),
-    ]))
-    .with_changed(vec![file_document(&base_path, changed_content)]);
+    let provider =
+        ChangesetDocumentProvider::new(InMemoryDocumentProvider::new(vec![file_document(
+            &base_path,
+            "package Base { part def A; }",
+        )]))
+        .with_changed(vec![file_document(&base_path, changed_content)]);
 
     let snapshot = engine
         .load_workspace(
@@ -253,4 +253,93 @@ package Demo {
     assert_eq!(detail.payload_expression.as_deref(), Some("Payload"));
     assert!(detail.source_expression.is_some());
     assert!(detail.target_expression.is_some());
+}
+
+#[test]
+fn snapshot_classifies_satisfy_and_subject_as_their_own_metaclass() {
+    let cache = tempdir().expect("tempdir");
+    let model_path = cache.path().join("SatisfySubject.sysml");
+    let content = r#"
+package Demo {
+    part def Component;
+    part comp1 : Component;
+    requirement def Req {
+        subject sys : Component;
+    }
+    requirement req1 : Req;
+    satisfy req1 by comp1;
+}
+"#;
+    std::fs::write(&model_path, content).expect("write model");
+
+    let engine = test_engine(&cache);
+    let snapshot = engine
+        .load_workspace(
+            InMemoryDocumentProvider::new(vec![file_document(&model_path, content)]),
+            WorkspaceLoadRequest::single_target(model_path),
+            HostContext::default(),
+        )
+        .expect("snapshot");
+    let projection = snapshot.semantic_projection();
+
+    assert!(
+        projection
+            .relationships
+            .iter()
+            .any(|relationship| relationship.kind.as_str() == "satisfy"
+                && relationship.metaclass == HostRelationshipMetaclass::Satisfy),
+        "a satisfy relationship classifies as the Satisfy metaclass"
+    );
+    assert!(
+        projection
+            .relationships
+            .iter()
+            .any(|relationship| relationship.kind.as_str() == "subject"
+                && relationship.metaclass == HostRelationshipMetaclass::Subject),
+        "a subject relationship classifies as the Subject metaclass"
+    );
+}
+
+#[test]
+fn snapshot_walks_case_def_body_for_subject_and_actor_members() {
+    let cache = tempdir().expect("tempdir");
+    let model_path = cache.path().join("CaseBody.sysml");
+    let content = r#"
+package Demo {
+    part def System;
+    part def Operator;
+    case def MyCase {
+        subject sys : System;
+        actor op : Operator;
+    }
+}
+"#;
+    std::fs::write(&model_path, content).expect("write model");
+
+    let engine = test_engine(&cache);
+    let snapshot = engine
+        .load_workspace(
+            InMemoryDocumentProvider::new(vec![file_document(&model_path, content)]),
+            WorkspaceLoadRequest::single_target(model_path),
+            HostContext::default(),
+        )
+        .expect("snapshot");
+    let projection = snapshot.semantic_projection();
+
+    // Regression guard: materialize_case_def previously never walked its body at all, so
+    // subject/actor members inside `case def { ... }` were silently dropped from the graph.
+    assert!(
+        projection
+            .nodes
+            .iter()
+            .any(|node| node.qualified_name.ends_with("::MyCase::sys")),
+        "case def body's subject member is now materialized"
+    );
+    assert!(
+        projection
+            .nodes
+            .iter()
+            .any(|node| node.qualified_name.ends_with("::MyCase::op")),
+        "case def body's actor member is now materialized"
+    );
 }

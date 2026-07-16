@@ -1,4 +1,4 @@
-﻿use tower_lsp::jsonrpc::Result;
+use tower_lsp::jsonrpc::Result;
 use tower_lsp::lsp_types::*;
 
 use crate::common::text_span::{to_core_position, to_lsp_range};
@@ -6,7 +6,9 @@ use crate::common::util;
 use crate::workspace::snapshot::ServerStateSnapshot;
 use crate::workspace::ServerState;
 
-use language_service::{complete as ls_complete, CompletionItemDto, CompletionItemKindDto, WorkspaceSnapshot};
+use language_service::{
+    complete as ls_complete, CompletionItemDto, CompletionItemKindDto, WorkspaceSnapshot,
+};
 
 const COMPLETION_RESOLVE_DATA_KEY: &str = "spec42Completion";
 
@@ -163,7 +165,10 @@ mod tests {
             resolve_documentation: None,
         });
         assert_eq!(item.kind, Some(CompletionItemKind::SNIPPET));
-        assert_eq!(item.insert_text_format, Some(tower_lsp::lsp_types::InsertTextFormat::SNIPPET));
+        assert_eq!(
+            item.insert_text_format,
+            Some(tower_lsp::lsp_types::InsertTextFormat::SNIPPET)
+        );
         assert_eq!(item.preselect, Some(true));
     }
 }

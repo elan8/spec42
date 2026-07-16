@@ -31,10 +31,15 @@ fn export_interconnection_scene_typescript_bindings() {
         let generated = fs::read_to_string(temp_dir.path().join(&relative_path))
             .expect("read generated TypeScript binding");
         let committed_path = committed_dir.join(&relative_path);
-        let committed = fs::read_to_string(&committed_path)
-            .unwrap_or_else(|_| panic!("missing committed TypeScript binding {}", committed_path.display()));
+        let committed = fs::read_to_string(&committed_path).unwrap_or_else(|_| {
+            panic!(
+                "missing committed TypeScript binding {}",
+                committed_path.display()
+            )
+        });
         assert_eq!(
-            committed, generated,
+            committed,
+            generated,
             "TypeScript binding {} is stale; rerun with SPEC42_UPDATE_TS_BINDINGS=1",
             committed_path.display()
         );

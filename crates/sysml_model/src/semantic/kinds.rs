@@ -1,4 +1,4 @@
-﻿//! Canonical element-kind predicates and resolution allowlists for sysml_model.
+//! Canonical element-kind predicates and resolution allowlists for sysml_model.
 
 use crate::{ElementKind, SemanticNode};
 
@@ -209,7 +209,10 @@ pub fn is_namespace(element_kind: &ElementKind) -> bool {
 pub fn is_part_like(element_kind: &ElementKind) -> bool {
     matches!(
         element_kind,
-        ElementKind::Part | ElementKind::PartDef | ElementKind::ItemDef | ElementKind::OccurrenceDef
+        ElementKind::Part
+            | ElementKind::PartDef
+            | ElementKind::ItemDef
+            | ElementKind::OccurrenceDef
     ) || matches!(element_kind, ElementKind::Unknown(s) if s.contains("part"))
 }
 
@@ -241,7 +244,10 @@ pub fn is_known_metadata_redefine(node: &SemanticNode) -> bool {
 
 pub fn is_reflective_sysml_usage_type(type_ref: &str, target: &SemanticNode) -> bool {
     type_ref.contains("SysML::")
-        && matches!(target.element_kind, ElementKind::MetadataDef | ElementKind::KermlDecl)
+        && matches!(
+            target.element_kind,
+            ElementKind::MetadataDef | ElementKind::KermlDecl
+        )
 }
 
 pub fn is_kerml_metadata_supertype(target: &SemanticNode) -> bool {
@@ -254,12 +260,18 @@ pub fn is_kerml_metadata_supertype(target: &SemanticNode) -> bool {
         return true;
     }
     if target.name == "SemanticMetadata"
-        && matches!(target.element_kind, ElementKind::KermlDecl | ElementKind::MetadataDef)
+        && matches!(
+            target.element_kind,
+            ElementKind::KermlDecl | ElementKind::MetadataDef
+        )
     {
         return true;
     }
     target.id.qualified_name.ends_with("::SemanticMetadata")
-        && matches!(target.element_kind, ElementKind::KermlDecl | ElementKind::MetadataDef)
+        && matches!(
+            target.element_kind,
+            ElementKind::KermlDecl | ElementKind::MetadataDef
+        )
 }
 
 pub fn is_semantic_metadata_base_type_redefine(owner: &SemanticNode, node: &SemanticNode) -> bool {
@@ -294,7 +306,11 @@ pub fn is_compatible_specializes_target(def_kind: &ElementKind, target: &Semanti
 /// Per-usage typing compatibility (diagnostics layer).
 pub fn allowed_typing_target_kinds(usage_kind: &ElementKind) -> &'static [ElementKind] {
     match usage_kind {
-        ElementKind::Part => &[ElementKind::PartDef, ElementKind::ItemDef, ElementKind::OccurrenceDef],
+        ElementKind::Part => &[
+            ElementKind::PartDef,
+            ElementKind::ItemDef,
+            ElementKind::OccurrenceDef,
+        ],
         ElementKind::Port => &[ElementKind::PortDef],
         ElementKind::Item => &[ElementKind::ItemDef, ElementKind::PartDef],
         ElementKind::Attribute => &[ElementKind::AttributeDef, ElementKind::EnumDef],
@@ -307,9 +323,11 @@ pub fn allowed_typing_target_kinds(usage_kind: &ElementKind) -> &'static [Elemen
         ElementKind::View => &[ElementKind::ViewDef],
         ElementKind::Viewpoint => &[ElementKind::ViewpointDef],
         ElementKind::Concern => &[ElementKind::ConcernDef],
-        ElementKind::Actor | ElementKind::Stakeholder => {
-            &[ElementKind::PartDef, ElementKind::ItemDef, ElementKind::OccurrenceDef]
-        }
+        ElementKind::Actor | ElementKind::Stakeholder => &[
+            ElementKind::PartDef,
+            ElementKind::ItemDef,
+            ElementKind::OccurrenceDef,
+        ],
         ElementKind::Flow => &[ElementKind::FlowDef],
         ElementKind::Allocation => &[ElementKind::AllocationDef],
         ElementKind::Interface => &[ElementKind::InterfaceDef],
@@ -377,9 +395,16 @@ const PART_SUBSET_TARGETS: &[ElementKind] = &[
     ElementKind::OccurrenceDef,
 ];
 const PORT_SUBSET_TARGETS: &[ElementKind] = &[ElementKind::Port, ElementKind::PortDef];
-const ITEM_SUBSET_TARGETS: &[ElementKind] = &[ElementKind::Item, ElementKind::ItemDef, ElementKind::PartDef];
-const ATTRIBUTE_SUBSET_TARGETS: &[ElementKind] =
-    &[ElementKind::Attribute, ElementKind::AttributeDef, ElementKind::EnumDef];
+const ITEM_SUBSET_TARGETS: &[ElementKind] = &[
+    ElementKind::Item,
+    ElementKind::ItemDef,
+    ElementKind::PartDef,
+];
+const ATTRIBUTE_SUBSET_TARGETS: &[ElementKind] = &[
+    ElementKind::Attribute,
+    ElementKind::AttributeDef,
+    ElementKind::EnumDef,
+];
 const ACTION_SUBSET_TARGETS: &[ElementKind] = &[ElementKind::Action, ElementKind::ActionDef];
 const STATE_SUBSET_TARGETS: &[ElementKind] = &[ElementKind::State, ElementKind::StateDef];
 const REQUIREMENT_SUBSET_TARGETS: &[ElementKind] =
@@ -389,7 +414,8 @@ const ANALYSIS_SUBSET_TARGETS: &[ElementKind] = &[ElementKind::Analysis, Element
 const VERIFICATION_SUBSET_TARGETS: &[ElementKind] =
     &[ElementKind::Verification, ElementKind::VerificationDef];
 const VIEW_SUBSET_TARGETS: &[ElementKind] = &[ElementKind::View, ElementKind::ViewDef];
-const VIEWPOINT_SUBSET_TARGETS: &[ElementKind] = &[ElementKind::Viewpoint, ElementKind::ViewpointDef];
+const VIEWPOINT_SUBSET_TARGETS: &[ElementKind] =
+    &[ElementKind::Viewpoint, ElementKind::ViewpointDef];
 const CONCERN_SUBSET_TARGETS: &[ElementKind] = &[ElementKind::Concern, ElementKind::ConcernDef];
 const ACTOR_SUBSET_TARGETS: &[ElementKind] = &[
     ElementKind::Actor,
@@ -399,7 +425,8 @@ const ACTOR_SUBSET_TARGETS: &[ElementKind] = &[
     ElementKind::OccurrenceDef,
 ];
 const FLOW_SUBSET_TARGETS: &[ElementKind] = &[ElementKind::Flow, ElementKind::FlowDef];
-const ALLOCATION_SUBSET_TARGETS: &[ElementKind] = &[ElementKind::Allocation, ElementKind::AllocationDef];
+const ALLOCATION_SUBSET_TARGETS: &[ElementKind] =
+    &[ElementKind::Allocation, ElementKind::AllocationDef];
 const INTERFACE_SUBSET_TARGETS: &[ElementKind] =
     &[ElementKind::Interface, ElementKind::InterfaceDef];
 

@@ -53,8 +53,13 @@ impl LanguageServer for Backend {
     }
 
     async fn initialized(&self, _: InitializedParams) {
-        documents::initialized(&self.client, &self.handle, &self.server_name, &self.runtime_config)
-            .await;
+        documents::initialized(
+            &self.client,
+            &self.handle,
+            &self.server_name,
+            &self.runtime_config,
+        )
+        .await;
     }
 
     async fn shutdown(&self) -> Result<()> {
@@ -459,7 +464,10 @@ impl Backend {
         let _ = tokio::time::timeout(
             std::time::Duration::from_secs(30),
             snapshot_rx.wait_for(|s| {
-                !matches!(s.session.lifecycle(), workspace::SessionLifecycle::Reindexing)
+                !matches!(
+                    s.session.lifecycle(),
+                    workspace::SessionLifecycle::Reindexing
+                )
             }),
         )
         .await;

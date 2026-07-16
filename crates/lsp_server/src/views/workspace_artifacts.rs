@@ -77,11 +77,11 @@ pub(crate) async fn build_visualization_with_cache(
         view: view.to_string(),
         selected_view: selected_view.map(str::to_string),
     };
-    if let Some(cached) = state.render_cache.cached_response(
-        expected_version,
-        &workspace_root_uri,
-        &cache_key,
-    ) {
+    if let Some(cached) =
+        state
+            .render_cache
+            .cached_response(expected_version, &workspace_root_uri, &cache_key)
+    {
         return Ok(VisualizationBuildOutcome {
             response: cached,
             meta: sysml_model::VisualizationBuildMeta {
@@ -113,8 +113,8 @@ pub(crate) async fn build_visualization_with_cache(
 mod cache_tests {
     use super::*;
     use crate::workspace::state::{IndexEntry, ParseMetadata, ServerState};
-    use sysml_model::{build_semantic_graph_with_provider, FileSystemDocumentProvider};
     use std::path::PathBuf;
+    use sysml_model::{build_semantic_graph_with_provider, FileSystemDocumentProvider};
 
     fn drone_workspace_state() -> (WorkspaceHandle, ServerState, Url) {
         let repo_root = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../../examples/drone");

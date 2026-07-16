@@ -17,12 +17,16 @@ fn rename_cross_file_updates_definition_and_use() {
     let edits = apply_rename(&workspace, def_path, pos, "Bar");
     assert!(!edits.is_empty(), "expected rename edits");
     assert!(
-        edits.iter().any(|e| e.path == def_path && e.replacement == "Bar"),
+        edits
+            .iter()
+            .any(|e| e.path == def_path && e.replacement == "Bar"),
         "expected definition edit: {:?}",
         edits
     );
     assert!(
-        edits.iter().any(|e| e.path == use_path && e.replacement == "Bar"),
+        edits
+            .iter()
+            .any(|e| e.path == use_path && e.replacement == "Bar"),
         "expected use-site edit: {:?}",
         edits
     );
@@ -78,10 +82,7 @@ fn rename_does_not_touch_same_file_homonyms() {
         edits
     );
     assert_eq!(
-        edits
-            .iter()
-            .filter(|e| e.range.start.line == 10)
-            .count(),
+        edits.iter().filter(|e| e.range.start.line == 10).count(),
         1,
         "should rename only laptop.hdmi on connect line: {:?}",
         edits

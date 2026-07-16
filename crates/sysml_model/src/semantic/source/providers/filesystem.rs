@@ -156,7 +156,9 @@ fn collect_sysml_files(root: &Path) -> Result<Vec<PathBuf>, String> {
         if path
             .extension()
             .and_then(|ext| ext.to_str())
-            .is_some_and(|ext| ext.eq_ignore_ascii_case("sysml") || ext.eq_ignore_ascii_case("kerml"))
+            .is_some_and(|ext| {
+                ext.eq_ignore_ascii_case("sysml") || ext.eq_ignore_ascii_case("kerml")
+            })
         {
             paths.push(path.to_path_buf());
         }
@@ -354,11 +356,8 @@ package Local {
         let temp = tempfile::tempdir().expect("tempdir");
         let workspace = temp.path().join("workspace");
         fs::create_dir_all(&workspace).expect("workspace dir");
-        fs::write(
-            workspace.join("App.sysml"),
-            "package App { part appRoot; }",
-        )
-        .expect("workspace model");
+        fs::write(workspace.join("App.sysml"), "package App { part appRoot; }")
+            .expect("workspace model");
         fs::write(
             workspace.join("Core.kerml"),
             "package Core { classifier Thing; }",

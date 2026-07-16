@@ -128,7 +128,10 @@ pub fn materialize_model_explorer_bundle(
     }
 }
 
-pub fn view_index_to_artifacts(index: &ViewIndex, full_ibd: IbdDataDto) -> crate::semantic::visualization::response::WorkspaceVisualizationArtifacts {
+pub fn view_index_to_artifacts(
+    index: &ViewIndex,
+    full_ibd: IbdDataDto,
+) -> crate::semantic::visualization::response::WorkspaceVisualizationArtifacts {
     crate::semantic::visualization::response::WorkspaceVisualizationArtifacts {
         workspace_root_uri: index.workspace_root_uri.clone(),
         workspace_uris: index.workspace_uris.clone(),

@@ -1,9 +1,9 @@
-﻿#![allow(dead_code)] // staged inherited-attribute lens helpers; wired fully in follow-up work
+#![allow(dead_code)] // staged inherited-attribute lens helpers; wired fully in follow-up work
 
 use crate::semantic::{RelationshipKind, SemanticNode};
-use sysml_model::ElementKind;
 use crate::workspace::ServerState;
 use std::time::Instant;
+use sysml_model::ElementKind;
 use tower_lsp::lsp_types::{CodeLens, Url};
 use tracing::info;
 

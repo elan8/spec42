@@ -1,7 +1,5 @@
-﻿use language_service::{InMemoryWorkspace, WorkspaceSnapshot};
-use sysml_model::{
-    InMemoryDocumentProvider, SysmlDocument, SysmlDocumentSourceKind,
-};
+use language_service::{InMemoryWorkspace, WorkspaceSnapshot};
+use sysml_model::{InMemoryDocumentProvider, SysmlDocument, SysmlDocumentSourceKind};
 
 #[test]
 fn inmemory_workspace_builds_graph_and_symbols() {

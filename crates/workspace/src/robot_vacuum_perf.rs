@@ -8,11 +8,10 @@ use std::time::Instant;
 
 use serde::Serialize;
 use sysml_model::{
-    FileSystemDocumentProvider, SemanticGraph, WorkspaceParsedDocument, build_ibd_for_uri,
-    build_render_snapshot, build_semantic_graph_with_provider, build_sysml_visualization_workspace,
-    build_view_catalog, build_workspace_graph_dto_for_uris, evaluate_views,
-    finalize_merged_ibd_connectors, merge_ibd_payloads_for_workspace_finalize,
-    project_ids_for_renderer,
+    build_ibd_for_uri, build_render_snapshot, build_semantic_graph_with_provider,
+    build_sysml_visualization_workspace, build_view_catalog, build_workspace_graph_dto_for_uris,
+    evaluate_views, finalize_merged_ibd_connectors, merge_ibd_payloads_for_workspace_finalize,
+    project_ids_for_renderer, FileSystemDocumentProvider, SemanticGraph, WorkspaceParsedDocument,
 };
 use url::Url;
 use walkdir::WalkDir;

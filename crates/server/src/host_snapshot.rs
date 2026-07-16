@@ -1,4 +1,4 @@
-﻿//! Shared host workspace snapshot loading for CLI, HTTP, and MCP surfaces.
+//! Shared host workspace snapshot loading for CLI, HTTP, and MCP surfaces.
 
 use std::path::{Path, PathBuf};
 use std::sync::Arc;
@@ -40,11 +40,7 @@ pub fn load_snapshot_with_engine(
     workspace_root: Option<&Path>,
     strict_diagnostics: bool,
 ) -> Result<Arc<HostWorkspaceSnapshot>, String> {
-    let provider = HostFilesystemProvider::from_paths(
-        path,
-        workspace_root,
-        engine.package_roots(),
-    );
+    let provider = HostFilesystemProvider::from_paths(path, workspace_root, engine.package_roots());
     let request = WorkspaceLoadRequest::single_target(path.to_path_buf())
         .with_workspace_root(workspace_root.map(Path::to_path_buf))
         .with_strict_diagnostics(strict_diagnostics)

@@ -1,4 +1,4 @@
-﻿//! Neutral quick-fix text edit suggesters.
+//! Neutral quick-fix text edit suggesters.
 
 use sysml_model::semantic::ast_util::identification_name;
 use sysml_model::{TextPosition, TextRange};
@@ -428,7 +428,10 @@ pub fn suggest_wrap_in_package(source: &str, path: &str) -> Option<TextEditSugge
         title: "Wrap in package".to_string(),
         edits: vec![TextEditDto {
             path: path.to_string(),
-            range: TextRange::new(TextPosition::new(0, 0), TextPosition::new(last_line, last_char)),
+            range: TextRange::new(
+                TextPosition::new(0, 0),
+                TextPosition::new(last_line, last_char),
+            ),
             replacement: format!("package Generated {{\n{}\n}}\n", source.trim_end()),
         }],
     })

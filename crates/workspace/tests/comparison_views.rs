@@ -1,9 +1,9 @@
-﻿#[path = "support/comparison_fixtures.rs"]
+#[path = "support/comparison_fixtures.rs"]
 mod comparison_fixtures;
 
 use comparison_fixtures::{load_snapshot, test_engine};
-use workspace::compare_snapshots;
 use tempfile::tempdir;
+use workspace::compare_snapshots;
 
 #[test]
 fn view_catalog_change_is_reported_when_expose_changes() {
@@ -90,8 +90,7 @@ package Demo {
 
     let report = compare_snapshots(&previous, &next).expect("compare");
     assert!(
-        !report.views.changed_view_payloads.is_empty()
-            || !report.elements.added.is_empty(),
+        !report.views.changed_view_payloads.is_empty() || !report.elements.added.is_empty(),
         "payload or element change expected: views={:?} elements={:?}",
         report.views.changed_view_payloads,
         report.elements.added

@@ -37,55 +37,44 @@ fn suggest_wrap_in_package_unwrapped_member() {
 #[test]
 fn suggest_create_matching_part_def_creates_def_and_types_usage() {
     let source = "package P {\n  part def Laptop {\n    part display;\n  }\n}\n";
-    let suggestion = suggest_create_matching_part_def_quick_fix(
-        source,
-        PATH,
-        diagnostic_line(2),
-    )
-    .expect("quick fix");
+    let suggestion = suggest_create_matching_part_def_quick_fix(source, PATH, diagnostic_line(2))
+        .expect("quick fix");
     assert!(suggestion.title.contains("part def Display"));
     assert_eq!(suggestion.edits.len(), 2);
-    assert!(suggestion.edits[0].replacement.contains("part def Display { }"));
-    assert!(
-        suggestion.edits[1]
-            .replacement
-            .trim()
-            .ends_with("part display : Display;")
-    );
+    assert!(suggestion.edits[0]
+        .replacement
+        .contains("part def Display { }"));
+    assert!(suggestion.edits[1]
+        .replacement
+        .trim()
+        .ends_with("part display : Display;"));
 }
 
 #[test]
 fn suggest_create_matching_part_def_respects_indent() {
     let source = "package P {\n    part def Laptop {\n        part display;\n    }\n}\n";
-    let suggestion = suggest_create_matching_part_def_quick_fix(
-        source,
-        PATH,
-        diagnostic_line(2),
-    )
-    .expect("quick fix");
-    assert_eq!(suggestion.edits[0].replacement, "    part def Display { }\n");
+    let suggestion = suggest_create_matching_part_def_quick_fix(source, PATH, diagnostic_line(2))
+        .expect("quick fix");
+    assert_eq!(
+        suggestion.edits[0].replacement,
+        "    part def Display { }\n"
+    );
 }
 
 #[test]
 fn suggest_create_matching_part_def_noop_for_typed_usage() {
     let source = "package P {\n  part def Laptop {\n    part display : Display;\n  }\n}\n";
-    assert!(suggest_create_matching_part_def_quick_fix(
-        source,
-        PATH,
-        diagnostic_line(2),
-    )
-    .is_none());
+    assert!(
+        suggest_create_matching_part_def_quick_fix(source, PATH, diagnostic_line(2),).is_none()
+    );
 }
 
 #[test]
 fn suggest_create_definition_for_unresolved_part_type() {
     let source = "package P {\n  part car : Vehicle;\n}\n";
-    let suggestion = suggest_create_definition_for_unresolved_type_quick_fix(
-        source,
-        PATH,
-        diagnostic_line(1),
-    )
-    .expect("quick fix");
+    let suggestion =
+        suggest_create_definition_for_unresolved_type_quick_fix(source, PATH, diagnostic_line(1))
+            .expect("quick fix");
     assert_eq!(suggestion.title, "Create `part def Vehicle`");
     assert_eq!(suggestion.edits[0].replacement, "  part def Vehicle { }\n");
 }
@@ -93,26 +82,18 @@ fn suggest_create_definition_for_unresolved_part_type() {
 #[test]
 fn suggest_create_definition_for_unresolved_port_type() {
     let source = "package P {\n  port command : CommandPort;\n}\n";
-    let suggestion = suggest_create_definition_for_unresolved_type_quick_fix(
-        source,
-        PATH,
-        diagnostic_line(1),
-    )
-    .expect("quick fix");
+    let suggestion =
+        suggest_create_definition_for_unresolved_type_quick_fix(source, PATH, diagnostic_line(1))
+            .expect("quick fix");
     assert_eq!(suggestion.title, "Create `port def CommandPort`");
     assert_eq!(suggestion.edits[0].replacement, "  port def CommandPort;\n");
 }
 
 #[test]
 fn suggest_explicit_redefinition_rewrites_line() {
-    let source =
-        "package P {\n  part def Child :> Base {\n    attribute mass = 1200;\n  }\n}\n";
-    let suggestion = suggest_explicit_redefinition_quick_fix(
-        source,
-        PATH,
-        diagnostic_line(2),
-    )
-    .expect("quick fix");
+    let source = "package P {\n  part def Child :> Base {\n    attribute mass = 1200;\n  }\n}\n";
+    let suggestion = suggest_explicit_redefinition_quick_fix(source, PATH, diagnostic_line(2))
+        .expect("quick fix");
     assert_eq!(suggestion.edits.len(), 1);
     assert_eq!(
         suggestion.edits[0].replacement.trim(),
@@ -124,10 +105,5 @@ fn suggest_explicit_redefinition_rewrites_line() {
 fn suggest_explicit_redefinition_noop_when_already_explicit() {
     let source =
         "package P {\n  part def Child :> Base {\n    attribute :>> mass = 1200;\n  }\n}\n";
-    assert!(suggest_explicit_redefinition_quick_fix(
-        source,
-        PATH,
-        diagnostic_line(2),
-    )
-    .is_none());
+    assert!(suggest_explicit_redefinition_quick_fix(source, PATH, diagnostic_line(2),).is_none());
 }

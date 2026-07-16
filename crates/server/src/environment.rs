@@ -1,4 +1,4 @@
-﻿use std::collections::BTreeSet;
+use std::collections::BTreeSet;
 use std::fs;
 use std::path::{Path, PathBuf};
 
@@ -6,18 +6,15 @@ use serde::{Deserialize, Serialize};
 
 use crate::cli::Cli;
 use crate::domain_libraries::{
-    managed_status as domain_managed_status,
-    DomainLibrariesConfig, DomainLibrariesPaths, DomainLibrariesStatus,
+    managed_status as domain_managed_status, DomainLibrariesConfig, DomainLibrariesPaths,
+    DomainLibrariesStatus,
 };
 use crate::stdlib::{
-    managed_status, project_dirs, StandardLibraryConfig,
-    StandardLibraryPaths, StandardLibraryStatus,
+    managed_status, project_dirs, StandardLibraryConfig, StandardLibraryPaths,
+    StandardLibraryStatus,
 };
 use crate::sysand::{dependency_roots_from_status, detect_sysand_status, SysandStatus};
-use workspace::{
-    catalog::HostLibraryRequest,
-    EngineBuilder, Spec42Engine,
-};
+use workspace::{catalog::HostLibraryRequest, EngineBuilder, Spec42Engine};
 
 #[cfg(test)]
 use workspace::catalog::{
@@ -382,8 +379,8 @@ fn build_host_library_request(
         .as_ref()
         .or(default_config.stdlib_path.as_ref())
         .map(|path| canonicalize_lossy(Path::new(path)));
-    let config_no_stdlib = explicit_config.no_stdlib.unwrap_or(false)
-        || default_config.no_stdlib.unwrap_or(false);
+    let config_no_stdlib =
+        explicit_config.no_stdlib.unwrap_or(false) || default_config.no_stdlib.unwrap_or(false);
 
     let use_embedded_stdlib = cfg!(feature = "embed-stdlib");
     let use_embedded_domain_libraries = cfg!(feature = "embed-domain-libraries");
@@ -519,8 +516,8 @@ fn resolve_stdlib_path(
         .as_ref()
         .or(default_config.stdlib_path.as_ref())
         .map(|path| canonicalize_lossy(Path::new(path)));
-    let config_no_stdlib = explicit_config.no_stdlib.unwrap_or(false)
-        || default_config.no_stdlib.unwrap_or(false);
+    let config_no_stdlib =
+        explicit_config.no_stdlib.unwrap_or(false) || default_config.no_stdlib.unwrap_or(false);
     let request = HostLibraryRequest {
         cache_dir: standard_library_paths.managed_root.clone(),
         no_stdlib: cli.no_stdlib,

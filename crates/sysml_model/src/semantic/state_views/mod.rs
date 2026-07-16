@@ -22,6 +22,10 @@ pub fn filter_state_machines_by_exposed_ids(
     exposed_ids: &HashSet<String>,
 ) -> Vec<StateMachineDto> {
     filter_by_exposed_ids(machines, exposed_ids, |machine| {
-        (machine.id.as_str(), machine.package_path.as_str(), machine.name.as_str())
+        (
+            machine.id.as_str(),
+            machine.package_path.as_str(),
+            machine.name.as_str(),
+        )
     })
 }

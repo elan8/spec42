@@ -32,6 +32,10 @@ pub enum HostRelationshipMetaclass {
     MembershipImport,
     /// `alias Name for Target;` membership.
     AliasMembership,
+    /// `satisfy` requirement-verification relationship.
+    Satisfy,
+    /// Requirement/case `subject` relationship.
+    Subject,
     Relationship,
 }
 

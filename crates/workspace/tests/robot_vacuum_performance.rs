@@ -1,9 +1,9 @@
-﻿use workspace::robot_vacuum_perf::{
-    assert_release_perf_thresholds, assert_release_validation_perf_thresholds,
-    default_matrix_scenarios, emit_perf_report, run_perf_matrix, run_robot_vacuum_perf,
-    PerfConfig, ValidationPerfMode,
-};
 use tempfile::tempdir;
+use workspace::robot_vacuum_perf::{
+    assert_release_perf_thresholds, assert_release_validation_perf_thresholds,
+    default_matrix_scenarios, emit_perf_report, run_perf_matrix, run_robot_vacuum_perf, PerfConfig,
+    ValidationPerfMode,
+};
 
 #[test]
 #[ignore = "local perf: bash scripts/fetch-robot-vacuum-cleaner.sh then cargo test -- --ignored --nocapture"]

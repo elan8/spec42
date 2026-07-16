@@ -4,14 +4,14 @@ use std::sync::Arc;
 use std::time::Instant;
 
 use language_service::InMemoryWorkspace;
-use sysml_model::{SemanticGraph, SysmlDocument, WorkspaceParsedDocument, build_render_snapshot};
+use sysml_model::{build_render_snapshot, SemanticGraph, SysmlDocument, WorkspaceParsedDocument};
 
-use crate::error::{WorkspaceResult, map_language_service_error, map_render_snapshot_error};
+use crate::error::{map_language_service_error, map_render_snapshot_error, WorkspaceResult};
 use crate::provider::InMemoryDocumentProvider;
 use crate::snapshot::build::{
-    HostWorkspaceSnapshot, assemble_host_workspace_snapshot, build_workspace_snapshot,
+    assemble_host_workspace_snapshot, build_workspace_snapshot, HostWorkspaceSnapshot,
 };
-use crate::snapshot::changes::{DocumentChanges, apply_document_changes, is_workspace_document};
+use crate::snapshot::changes::{apply_document_changes, is_workspace_document, DocumentChanges};
 use crate::snapshot::context::{HostContext, HostPipelinePhase};
 use crate::snapshot::discovery::discover_target_files;
 use crate::snapshot::facts::{collect_host_validation_report, project_host_semantic_model};

@@ -6,7 +6,7 @@ use std::path::{Path, PathBuf};
 use serde::{Deserialize, Serialize};
 
 use super::bundle::{
-    LibraryBundleConfig, discover_library_roots, is_kpar_bytes, materialize_kpar_bytes,
+    discover_library_roots, is_kpar_bytes, materialize_kpar_bytes, LibraryBundleConfig,
 };
 
 /// A `.kpar` file or in-memory archive bytes.

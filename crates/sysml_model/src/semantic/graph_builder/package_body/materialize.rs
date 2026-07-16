@@ -36,10 +36,7 @@ pub(super) fn materialize_part_def(
     attach_feature_properties(
         g,
         &node_id,
-        definition_feature_properties(
-            pd_node.definition_prefix.as_ref(),
-            pd_node.is_individual,
-        ),
+        definition_feature_properties(pd_node.definition_prefix.as_ref(), pd_node.is_individual),
     );
     wire_def_specialization_edge(
         g,
@@ -894,6 +891,7 @@ pub(super) fn materialize_case_def(
         attrs,
         parent_id,
     );
+    let node_id = NodeId::new(uri, &qualified);
     wire_def_specialization_edge(
         g,
         uri,
@@ -901,6 +899,12 @@ pub(super) fn materialize_case_def(
         container_prefix,
         c_node.specializes.as_deref(),
     );
+    // Bug fix: unlike the sibling use_case/analysis_case/verification_case builders, this
+    // never walked the body -- subject/actor/objective/include members were silently dropped.
+    // `CaseDef::body` is the same `UseCaseDefBody` type `use_case_def` walks, so reuse its walker.
+    if let UseCaseDefBody::Brace { elements } = &c_node.body {
+        use_case::build_from_use_case_body(elements, uri, Some(&qualified), &node_id, g);
+    }
 }
 
 pub(super) fn materialize_case_usage(
@@ -926,6 +930,11 @@ pub(super) fn materialize_case_usage(
         attrs,
         parent_id,
     );
+    let node_id = NodeId::new(uri, &qualified);
+    // Same fix as materialize_case_def: this never walked the body before.
+    if let UseCaseDefBody::Brace { elements } = &c_node.body {
+        use_case::build_from_use_case_body(elements, uri, Some(&qualified), &node_id, g);
+    }
 }
 
 pub(super) fn materialize_analysis_case_def(

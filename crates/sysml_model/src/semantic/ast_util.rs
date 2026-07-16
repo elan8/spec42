@@ -3,13 +3,13 @@
 use std::collections::HashMap;
 
 use crate::semantic::model::{
-    DeclaredExpression, DeclaredExpressionArgument, DeclaredFeatureProperties, DeclaredFeatureValue,
-    DeclaredFeatureValueKind, DeclaredMultiplicity,
+    DeclaredExpression, DeclaredExpressionArgument, DeclaredFeatureProperties,
+    DeclaredFeatureValue, DeclaredFeatureValueKind, DeclaredMultiplicity,
 };
 use crate::semantic::text_span::{TextPosition, TextRange};
 use sysml_v2_parser::ast::{
-    Argument, ConnectionEnd, DefinitionPrefix, Identification, InOut, Node,
-    SubsettingRelationship, TypingRelationship,
+    Argument, ConnectionEnd, DefinitionPrefix, Identification, InOut, Node, SubsettingRelationship,
+    TypingRelationship,
 };
 use sysml_v2_parser::{Expression, Span};
 
@@ -197,9 +197,7 @@ pub fn subsetting_target(relationship: Option<&SubsettingRelationship>) -> Optio
 /// Returns the complete source-level feature chain of a subsetting-family
 /// relationship. Keep this distinct from [`subsetting_target`], whose local
 /// name remains useful for display and effective-name rules.
-pub fn subsetting_target_display(
-    relationship: Option<&SubsettingRelationship>,
-) -> Option<String> {
+pub fn subsetting_target_display(relationship: Option<&SubsettingRelationship>) -> Option<String> {
     relationship.and_then(|relationship| {
         relationship
             .target

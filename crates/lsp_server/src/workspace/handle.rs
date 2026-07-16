@@ -93,9 +93,8 @@ impl WorkspaceHandle {
     ) -> Result<Vec<(Url, Option<String>)>, MutatePanicked> {
         self.actor
             .mutate(move |s| {
-                let results = crate::workspace::services::ingest_parsed_scan_entries_batch(
-                    s, entries,
-                );
+                let results =
+                    crate::workspace::services::ingest_parsed_scan_entries_batch(s, entries);
                 s.session.bump_version();
                 results
             })
@@ -168,8 +167,7 @@ impl WorkspaceHandle {
     ) -> Result<(Option<String>, Option<workspace_session::RelinkToken>), MutatePanicked> {
         self.actor
             .mutate(move |s| {
-                let warning =
-                    crate::workspace::services::store_document_text_fast(s, &uri, text);
+                let warning = crate::workspace::services::store_document_text_fast(s, &uri, text);
                 let can_relink = matches!(
                     s.session.lifecycle(),
                     workspace::SessionLifecycle::Ready | workspace::SessionLifecycle::Reindexing
@@ -420,7 +418,10 @@ mod tests {
     #[tokio::test]
     async fn report_relink_result_commits_when_token_current() {
         let handle = WorkspaceHandle::spawn(ServerState::default());
-        handle.complete_startup().await.expect("actor mutate should not panic");
+        handle
+            .complete_startup()
+            .await
+            .expect("actor mutate should not panic");
         let token = handle
             .schedule_relink_if_ready()
             .await
@@ -445,7 +446,10 @@ mod tests {
     #[tokio::test]
     async fn report_relink_result_discards_superseded_token() {
         let handle = WorkspaceHandle::spawn(ServerState::default());
-        handle.complete_startup().await.expect("actor mutate should not panic");
+        handle
+            .complete_startup()
+            .await
+            .expect("actor mutate should not panic");
         let stale_token = handle
             .schedule_relink_if_ready()
             .await

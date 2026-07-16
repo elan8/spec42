@@ -87,7 +87,8 @@ pub fn resolve_expression_endpoint_qualified(
                 .iter()
                 .filter_map(|node_id| {
                     graph.get_node(node_id).and_then(|node| {
-                        (node.element_kind != ElementKind::Import).then_some(node_id.qualified_name.clone())
+                        (node.element_kind != ElementKind::Import)
+                            .then_some(node_id.qualified_name.clone())
                     })
                 })
                 .min_by_key(|qualified_name| qualified_name.len())

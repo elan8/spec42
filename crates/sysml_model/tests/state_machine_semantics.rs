@@ -1,4 +1,4 @@
-﻿use sysml_model::{
+use sysml_model::{
     build_semantic_graph_from_documents, build_workspace_state_machines,
     finalize_state_machines_for_response, SysmlDocument, SysmlDocumentSourceKind,
 };
@@ -175,10 +175,8 @@ fn exhibit_state_usage_does_not_duplicate_state_machine_selector_roots() {
     let doc = workspace_doc("exhibit-state.sysml", content);
     let uri = doc.uri.clone();
     let (graph, _) = build_semantic_graph_from_documents(&[doc]).expect("graph");
-    let machines = finalize_state_machines_for_response(build_workspace_state_machines(
-        &graph,
-        &[uri],
-    ));
+    let machines =
+        finalize_state_machines_for_response(build_workspace_state_machines(&graph, &[uri]));
     assert_eq!(
         machines.len(),
         1,
@@ -197,10 +195,8 @@ fn finalized_state_machines_include_selector_labels() {
     let doc = workspace_doc("final-state.sysml", content);
     let uri = doc.uri.clone();
     let (graph, _) = build_semantic_graph_from_documents(&[doc]).expect("graph");
-    let machines = finalize_state_machines_for_response(build_workspace_state_machines(
-        &graph,
-        &[uri],
-    ));
+    let machines =
+        finalize_state_machines_for_response(build_workspace_state_machines(&graph, &[uri]));
     assert!(
         machines.iter().all(|machine| !machine.label.is_empty()),
         "expected selector labels on all machines: {:?}",

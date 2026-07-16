@@ -1,13 +1,13 @@
-﻿use std::sync::atomic::{AtomicUsize, Ordering};
+use std::sync::atomic::{AtomicUsize, Ordering};
 use std::sync::Arc;
 use std::thread;
 use std::time::Duration;
 
 use sysml_model::{SysmlDocument, SysmlDocumentProvider, SysmlDocumentSourceKind};
+use tempfile::tempdir;
 use workspace::{
     CancellationToken, EngineBuilder, HostContext, Spec42Engine, WorkspaceLoadRequest,
 };
-use tempfile::tempdir;
 
 struct SlowDocumentProvider {
     cancellation: CancellationToken,
@@ -16,7 +16,11 @@ struct SlowDocumentProvider {
 }
 
 impl SlowDocumentProvider {
-    fn new(cancellation: CancellationToken, steps: usize, observed_loads: Arc<AtomicUsize>) -> Self {
+    fn new(
+        cancellation: CancellationToken,
+        steps: usize,
+        observed_loads: Arc<AtomicUsize>,
+    ) -> Self {
         Self {
             cancellation,
             steps,

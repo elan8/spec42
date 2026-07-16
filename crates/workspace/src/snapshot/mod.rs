@@ -12,8 +12,8 @@ mod request;
 mod update;
 mod validation;
 
-pub use build::{HostWorkspaceSnapshot, enrich_document_hashes, load_workspace_snapshot};
-pub use changes::{DocumentChanges, apply_document_changes};
+pub use build::{enrich_document_hashes, load_workspace_snapshot, HostWorkspaceSnapshot};
+pub use changes::{apply_document_changes, DocumentChanges};
 pub use context::{CancellationToken, HostContext, HostPipelinePhase, HostResourceLimits};
 pub use metadata::HostArtifactMetadata;
 pub use output::Spec42ProjectionOutput;

@@ -20,7 +20,10 @@ pub(crate) fn collect_type_reference_targets_from_root(root: &ParsedRoot, out: &
     }
 }
 
-pub(crate) fn collect_type_reference_targets_from_package_body(body: &PackageBody, out: &mut Vec<String>) {
+pub(crate) fn collect_type_reference_targets_from_package_body(
+    body: &PackageBody,
+    out: &mut Vec<String>,
+) {
     let PackageBody::Brace { elements } = body else {
         return;
     };
@@ -33,16 +36,24 @@ pub(crate) fn walk_package_type_refs(package: &Node<Package>, out: &mut Vec<Stri
     collect_type_reference_targets_from_package_body(&package.value.body, out);
 }
 
-pub(crate) fn walk_library_package_type_refs(package: &Node<LibraryPackage>, out: &mut Vec<String>) {
+pub(crate) fn walk_library_package_type_refs(
+    package: &Node<LibraryPackage>,
+    out: &mut Vec<String>,
+) {
     collect_type_reference_targets_from_package_body(&package.value.body, out);
 }
 
-pub(crate) fn walk_package_body_element_type_refs(element: &PackageBodyElement, out: &mut Vec<String>) {
+pub(crate) fn walk_package_body_element_type_refs(
+    element: &PackageBodyElement,
+    out: &mut Vec<String>,
+) {
     match element {
         PackageBodyElement::Package(nested) => walk_package_type_refs(nested, out),
         PackageBodyElement::LibraryPackage(nested) => walk_library_package_type_refs(nested, out),
         PackageBodyElement::PartDef(part_def) => walk_part_def_type_refs(&part_def.value, out),
-        PackageBodyElement::PartUsage(part_usage) => walk_part_usage_type_refs(&part_usage.value, out),
+        PackageBodyElement::PartUsage(part_usage) => {
+            walk_part_usage_type_refs(&part_usage.value, out)
+        }
         PackageBodyElement::PortDef(port_def) => walk_port_def_type_refs(&port_def.value, out),
         PackageBodyElement::ItemDef(item_def) => {
             push_optional_typing_reference(item_def.value.specializes.as_deref(), out);
@@ -67,13 +78,18 @@ pub(crate) fn walk_part_def_type_refs(part_def: &PartDef, out: &mut Vec<String>)
     }
 }
 
-pub(crate) fn walk_part_def_body_element_type_refs(element: &PartDefBodyElement, out: &mut Vec<String>) {
+pub(crate) fn walk_part_def_body_element_type_refs(
+    element: &PartDefBodyElement,
+    out: &mut Vec<String>,
+) {
     match element {
         PartDefBodyElement::PartDef(part_def) => walk_part_def_type_refs(&part_def.value, out),
         PartDefBodyElement::PartUsage(part_usage) => {
             walk_part_usage_type_refs(&part_usage.value, out);
         }
-        PartDefBodyElement::PortUsage(port_usage) => walk_port_usage_type_refs(&port_usage.value, out),
+        PartDefBodyElement::PortUsage(port_usage) => {
+            walk_port_usage_type_refs(&port_usage.value, out)
+        }
         PartDefBodyElement::AttributeDef(attribute_def) => {
             walk_attribute_def_type_refs(&attribute_def.value, out);
         }
@@ -92,8 +108,14 @@ pub(crate) fn walk_part_def_body_element_type_refs(element: &PartDefBodyElement,
         }
         PartDefBodyElement::Connection(connection) => {
             push_optional_type_reference(connection.value.type_name.as_deref(), out);
-            push_optional_type_reference(subsetting_target(connection.value.subsets.as_deref()), out);
-            push_optional_type_reference(subsetting_target(connection.value.redefines.as_deref()), out);
+            push_optional_type_reference(
+                subsetting_target(connection.value.subsets.as_deref()),
+                out,
+            );
+            push_optional_type_reference(
+                subsetting_target(connection.value.redefines.as_deref()),
+                out,
+            );
         }
         _ => {}
     }
@@ -115,12 +137,17 @@ pub(crate) fn walk_part_usage_type_refs(part_usage: &PartUsage, out: &mut Vec<St
     }
 }
 
-pub(crate) fn walk_part_usage_body_element_type_refs(element: &PartUsageBodyElement, out: &mut Vec<String>) {
+pub(crate) fn walk_part_usage_body_element_type_refs(
+    element: &PartUsageBodyElement,
+    out: &mut Vec<String>,
+) {
     match element {
         PartUsageBodyElement::PartUsage(part_usage) => {
             walk_part_usage_type_refs(&part_usage.value, out);
         }
-        PartUsageBodyElement::PortUsage(port_usage) => walk_port_usage_type_refs(&port_usage.value, out),
+        PartUsageBodyElement::PortUsage(port_usage) => {
+            walk_port_usage_type_refs(&port_usage.value, out)
+        }
         PartUsageBodyElement::AttributeUsage(attribute_usage) => {
             walk_attribute_usage_type_refs(&attribute_usage.value, out);
         }
@@ -178,10 +205,16 @@ pub(crate) fn walk_attribute_def_type_refs(attribute_def: &AttributeDef, out: &m
     walk_attribute_body_type_refs(&attribute_def.body, out);
 }
 
-pub(crate) fn walk_attribute_usage_type_refs(attribute_usage: &AttributeUsage, out: &mut Vec<String>) {
+pub(crate) fn walk_attribute_usage_type_refs(
+    attribute_usage: &AttributeUsage,
+    out: &mut Vec<String>,
+) {
     push_optional_typing_reference(attribute_usage.typing.as_deref(), out);
     push_optional_type_reference(subsetting_target(attribute_usage.redefines.as_deref()), out);
-    push_optional_type_reference(subsetting_target(attribute_usage.references.as_deref()), out);
+    push_optional_type_reference(
+        subsetting_target(attribute_usage.references.as_deref()),
+        out,
+    );
     push_optional_type_reference(subsetting_target(attribute_usage.crosses.as_deref()), out);
     walk_attribute_body_type_refs(&attribute_usage.body, out);
 }

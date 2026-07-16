@@ -1,4 +1,4 @@
-﻿use std::collections::HashSet;
+use std::collections::HashSet;
 
 use sysml_model::{
     resolve_member_via_type, resolve_type_reference_targets, ElementKind, NodeId, ResolveResult,
@@ -9,9 +9,7 @@ use url::Url;
 use crate::dto::{DefinitionResult, ReferencesResult, SourceLocation};
 use crate::keywords::is_reserved_keyword;
 use crate::lookup::collect_symbol_matches_for_lookup;
-use crate::symbol::{
-    find_reference_ranges, location_node_id, symbol_entry_node_id, SymbolEntry,
-};
+use crate::symbol::{find_reference_ranges, location_node_id, symbol_entry_node_id, SymbolEntry};
 use crate::text::word_at_position;
 use crate::workspace::WorkspaceSnapshot;
 
@@ -76,9 +74,11 @@ pub fn find_references_at_position(
 ) -> ReferencesResult {
     let uri = match workspace.resolve_uri_for_path(path) {
         Some(uri) => workspace.normalize_uri(&uri),
-        None => return ReferencesResult {
-            locations: Vec::new(),
-        },
+        None => {
+            return ReferencesResult {
+                locations: Vec::new(),
+            }
+        }
     };
     let pos = position;
     let Some(mut target) = resolve_symbol_target_at_position(workspace, &uri, pos) else {
@@ -152,9 +152,11 @@ pub fn goto_definition_at_position(
 ) -> DefinitionResult {
     let uri = match workspace.resolve_uri_for_path(path) {
         Some(uri) => workspace.normalize_uri(&uri),
-        None => return DefinitionResult {
-            locations: Vec::new(),
-        },
+        None => {
+            return DefinitionResult {
+                locations: Vec::new(),
+            }
+        }
     };
     let text = match workspace.document_text(&uri) {
         Some(text) => text,
@@ -203,21 +205,17 @@ pub fn goto_definition_at_position(
             }
         }
         if word != node.name {
-            if let Some(target) = resolve_type_reference_targets(
-                graph,
-                node,
-                &word,
-                TYPE_LOOKUP_ELEMENT_KINDS,
-            )
-            .into_iter()
-            .find_map(|target_id| graph.get_node(&target_id))
-            .filter(|target| {
-                target.name == lookup_name
-                    || target
-                        .id
-                        .qualified_name
-                        .ends_with(&format!("::{}", lookup_name))
-            })
+            if let Some(target) =
+                resolve_type_reference_targets(graph, node, &word, TYPE_LOOKUP_ELEMENT_KINDS)
+                    .into_iter()
+                    .find_map(|target_id| graph.get_node(&target_id))
+                    .filter(|target| {
+                        target.name == lookup_name
+                            || target
+                                .id
+                                .qualified_name
+                                .ends_with(&format!("::{}", lookup_name))
+                    })
             {
                 return DefinitionResult {
                     locations: vec![SourceLocation {
@@ -231,10 +229,8 @@ pub fn goto_definition_at_position(
 
     let (same_file_matches, other_file_matches) =
         collect_symbol_matches_for_lookup(workspace, &uri, &lookup_name, qualifier.as_deref());
-    let same_file_definitions =
-        definition_locations_from_entries(workspace, &same_file_matches);
-    let other_file_definitions =
-        definition_locations_from_entries(workspace, &other_file_matches);
+    let same_file_definitions = definition_locations_from_entries(workspace, &same_file_matches);
+    let other_file_definitions = definition_locations_from_entries(workspace, &other_file_matches);
     let same_file: Vec<SourceLocation> = same_file_matches
         .into_iter()
         .map(|entry| SourceLocation {
@@ -312,21 +308,17 @@ pub fn resolve_symbol_target_at_position(
             }
         }
         if word != node.name {
-            if let Some(target) = resolve_type_reference_targets(
-                graph,
-                node,
-                &word,
-                TYPE_LOOKUP_ELEMENT_KINDS,
-            )
-            .into_iter()
-            .find_map(|target_id| graph.get_node(&target_id))
-            .filter(|target| {
-                target.name == lookup_name
-                    || target
-                        .id
-                        .qualified_name
-                        .ends_with(&format!("::{}", lookup_name))
-            })
+            if let Some(target) =
+                resolve_type_reference_targets(graph, node, &word, TYPE_LOOKUP_ELEMENT_KINDS)
+                    .into_iter()
+                    .find_map(|target_id| graph.get_node(&target_id))
+                    .filter(|target| {
+                        target.name == lookup_name
+                            || target
+                                .id
+                                .qualified_name
+                                .ends_with(&format!("::{}", lookup_name))
+                    })
             {
                 return Some(ResolvedSymbolTarget {
                     target_id: target.id.clone(),
@@ -430,7 +422,12 @@ fn collect_references_for_lookup(
                 workspace
                     .resolve_uri_for_path(&location.path)
                     .and_then(|uri| {
-                        location_node_id(graph, &workspace.normalize_uri(&uri), lookup_name, location.range)
+                        location_node_id(
+                            graph,
+                            &workspace.normalize_uri(&uri),
+                            lookup_name,
+                            location.range,
+                        )
                     })
             })
             .collect()
@@ -644,14 +641,12 @@ fn resolve_owner_member_defs<'a>(
 ) -> Option<Vec<&'a SymbolEntry>> {
     let owner_ident = dotted_owner_at_position(workspace, uri, lookup_name, pos)?;
     let graph = workspace.semantic_graph();
-    let owner_node = graph
-        .find_deepest_node_at_position(uri, pos)
-        .or_else(|| {
-            graph
-                .nodes_for_uri(uri)
-                .into_iter()
-                .find(|n| n.name == owner_ident)
-        })?;
+    let owner_node = graph.find_deepest_node_at_position(uri, pos).or_else(|| {
+        graph
+            .nodes_for_uri(uri)
+            .into_iter()
+            .find(|n| n.name == owner_ident)
+    })?;
     let resolved = resolve_member_via_type(graph, owner_node, lookup_name);
     let resolved_id = match resolved {
         ResolveResult::Resolved(id) => id,

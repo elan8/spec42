@@ -1,9 +1,9 @@
 //! Visualization pipeline helpers (payload shaping, scoping, artifacts).
 
 pub mod ibd_scope;
+pub mod payload;
 pub mod projection;
 pub mod response;
-pub mod payload;
 pub mod scope;
 
 pub use payload::{

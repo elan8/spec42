@@ -1,11 +1,9 @@
-﻿#[path = "support/comparison_fixtures.rs"]
+#[path = "support/comparison_fixtures.rs"]
 mod comparison_fixtures;
 
 use comparison_fixtures::{memory_document, test_engine};
-use workspace::{
-    HostContext, InMemoryDocumentProvider, ValidationTiming, WorkspaceLoadRequest,
-};
 use tempfile::tempdir;
+use workspace::{HostContext, InMemoryDocumentProvider, ValidationTiming, WorkspaceLoadRequest};
 
 const MODEL: &str = r#"
 package Demo {

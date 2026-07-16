@@ -443,10 +443,7 @@ impl From<ElementKind> for String {
 /// Optional metadata when a `Connection` edge came from a resolved `connect` statement.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct ConnectStatementDetail {
-    #[serde(
-        serialize_with = "serialize_url",
-        deserialize_with = "deserialize_url"
-    )]
+    #[serde(serialize_with = "serialize_url", deserialize_with = "deserialize_url")]
     pub declaring_uri: Url,
     pub range: TextRange,
     pub source_expression: String,
@@ -459,10 +456,7 @@ pub struct ConnectStatementDetail {
 /// downstream in the graph builder, not in this struct.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct FlowStatementDetail {
-    #[serde(
-        serialize_with = "serialize_url",
-        deserialize_with = "deserialize_url"
-    )]
+    #[serde(serialize_with = "serialize_url", deserialize_with = "deserialize_url")]
     pub declaring_uri: Url,
     pub range: TextRange,
     pub payload_expression: Option<String>,
@@ -622,7 +616,12 @@ pub struct DeclaredFeatureValue {
 
 #[derive(Debug, Clone, Copy, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
-pub enum DeclaredFeatureValueKind { Default, Initial, Bound, Override }
+pub enum DeclaredFeatureValueKind {
+    Default,
+    Initial,
+    Bound,
+    Override,
+}
 
 /// Lossless-enough normalized expression tree for semantic projection. The
 /// original AST stays in the parser layer; this public form has no debug text.

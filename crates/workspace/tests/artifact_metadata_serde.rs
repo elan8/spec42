@@ -1,4 +1,4 @@
-﻿use std::collections::BTreeMap;
+use std::collections::BTreeMap;
 
 use workspace::{HostArtifactMetadata, HostSchemaVersions};
 
@@ -26,7 +26,10 @@ fn host_artifact_metadata_round_trips_through_json() {
 
     assert_eq!(restored, metadata);
     assert_eq!(
-        restored.document_hashes.get("file:///demo/A.sysml").map(String::as_str),
+        restored
+            .document_hashes
+            .get("file:///demo/A.sysml")
+            .map(String::as_str),
         Some("abc123")
     );
 }

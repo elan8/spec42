@@ -242,7 +242,10 @@ fn architecture_scope_prefix(root_prefixes: &HashSet<String>) -> Option<String> 
     }
 }
 
-pub(crate) fn filter_ibd_by_root_prefixes(ibd: &IbdDataDto, root_prefixes: &HashSet<String>) -> IbdDataDto {
+pub(crate) fn filter_ibd_by_root_prefixes(
+    ibd: &IbdDataDto,
+    root_prefixes: &HashSet<String>,
+) -> IbdDataDto {
     let strict_part_expose = root_prefixes.len() > 1;
     let architecture_scope = architecture_scope_prefix(root_prefixes);
     let matches_any_root = |endpoint: &str| {

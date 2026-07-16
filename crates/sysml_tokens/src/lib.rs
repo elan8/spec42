@@ -11,7 +11,9 @@ mod lexer;
 mod types;
 
 pub use ast_ranges::ast_semantic_ranges;
-pub use ast_util::{identification_name, refine_declaration_ranges, span_to_source_range, SourceRange};
+pub use ast_util::{
+    identification_name, refine_declaration_ranges, span_to_source_range, SourceRange,
+};
 pub use types::*;
 
 use lexer::tokenize_line;

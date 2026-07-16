@@ -1,11 +1,11 @@
-﻿use std::sync::Arc;
+use std::sync::Arc;
 
-use workspace::{
-    EngineBuilder, HostContext, HostWorkspaceSnapshot, InMemoryDocumentProvider,
-    Spec42Engine, SysmlDocument, SysmlDocumentSourceKind, WorkspaceLoadRequest,
-};
 use tempfile::TempDir;
 use url::Url;
+use workspace::{
+    EngineBuilder, HostContext, HostWorkspaceSnapshot, InMemoryDocumentProvider, Spec42Engine,
+    SysmlDocument, SysmlDocumentSourceKind, WorkspaceLoadRequest,
+};
 
 pub fn test_engine(cache: &TempDir) -> Spec42Engine {
     EngineBuilder::default()

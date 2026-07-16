@@ -85,4 +85,3 @@ pub enum AddSemanticEdgeResult {
     SkippedSameKind,
     DuplicateConnect,
 }
-

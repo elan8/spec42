@@ -5,8 +5,9 @@ use std::time::Instant;
 
 use language_service::uri::normalize_uri;
 use sysml_model::{
-    ModelExplorerBundle, SemanticGraph, SysmlVisualizationResultDto, VisualizationBuildMeta,
-    WorkspaceParsedDocument, WorkspaceRenderSnapshot, materialize_model_explorer_bundle,
+    materialize_model_explorer_bundle, ModelExplorerBundle, SemanticGraph,
+    SysmlVisualizationResultDto, VisualizationBuildMeta, WorkspaceParsedDocument,
+    WorkspaceRenderSnapshot,
 };
 use url::Url;
 
@@ -263,7 +264,7 @@ impl ViewRenderCache {
 mod tests {
     use super::*;
     use std::path::PathBuf;
-    use sysml_model::{FileSystemDocumentProvider, build_semantic_graph_with_provider};
+    use sysml_model::{build_semantic_graph_with_provider, FileSystemDocumentProvider};
 
     fn drone_workspace_inputs() -> (
         SemanticGraph,

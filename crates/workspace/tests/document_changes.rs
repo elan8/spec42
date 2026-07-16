@@ -1,5 +1,5 @@
-﻿use workspace::{apply_document_changes, DocumentChanges, SysmlDocumentSourceKind};
 use url::Url;
+use workspace::{apply_document_changes, DocumentChanges, SysmlDocumentSourceKind};
 
 fn memory_doc(path: &str, content: &str) -> workspace::SysmlDocument {
     let uri = Url::parse(&format!("file://{path}")).expect("uri");

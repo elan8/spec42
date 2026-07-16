@@ -1,4 +1,3 @@
-
 use super::{
     build_view_candidates, build_view_catalog, parse_filter_text, project_ids_for_renderer,
     EvaluatedView, FilterExpr,

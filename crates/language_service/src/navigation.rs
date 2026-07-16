@@ -1,4 +1,4 @@
-﻿use sysml_model::{
+use sysml_model::{
     resolve_expression_endpoint_strict, resolve_type_reference_targets, ResolveResult,
     TextPosition, TextRange, UnitRegistry,
 };
@@ -88,11 +88,7 @@ pub fn hover_at_position(
 
     if let Some(target) = resolve_hover_reference_target(workspace, &uri_norm, position, &word) {
         return Some(HoverResult {
-            contents: hover_markdown_for_node(
-                graph,
-                target,
-                target.id.uri != uri_norm,
-            ),
+            contents: hover_markdown_for_node(graph, target, target.id.uri != uri_norm),
             range,
         });
     }
@@ -181,14 +177,10 @@ fn resolve_hover_type_reference_target<'a>(
     }
 
     for candidate in candidates {
-        if let Some(target_id) = resolve_type_reference_targets(
-            graph,
-            node,
-            &candidate,
-            TYPE_LOOKUP_ELEMENT_KINDS,
-        )
-        .into_iter()
-        .next()
+        if let Some(target_id) =
+            resolve_type_reference_targets(graph, node, &candidate, TYPE_LOOKUP_ELEMENT_KINDS)
+                .into_iter()
+                .next()
         {
             if let Some(target) = graph.get_node(&target_id) {
                 return Some(target);
@@ -206,14 +198,12 @@ fn resolve_hover_reference_target<'a>(
     word: &str,
 ) -> Option<&'a sysml_model::SemanticNode> {
     let graph = workspace.semantic_graph();
-    let context_node = graph
-        .find_deepest_node_at_position(uri, pos)
-        .or_else(|| {
-            graph
-                .nodes_for_uri(uri)
-                .into_iter()
-                .find(|n| n.name == word)
-        })?;
+    let context_node = graph.find_deepest_node_at_position(uri, pos).or_else(|| {
+        graph
+            .nodes_for_uri(uri)
+            .into_iter()
+            .find(|n| n.name == word)
+    })?;
 
     let mut prefixes = Vec::<Option<String>>::new();
     prefixes.push(Some(context_node.id.qualified_name.clone()));

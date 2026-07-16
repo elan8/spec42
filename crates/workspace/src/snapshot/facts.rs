@@ -140,11 +140,8 @@ pub(crate) fn project_host_semantic_model(
                     documentation,
                     declared_short_name,
                     element_type: host_element_type(&node.element_kind),
-                    feature_properties: node
-                        .declared_facts
-                        .feature_properties
-                        .as_ref()
-                        .map(|properties| HostFeatureProperties {
+                    feature_properties: node.declared_facts.feature_properties.as_ref().map(
+                        |properties| HostFeatureProperties {
                             direction: properties.direction.clone(),
                             is_abstract: properties.is_abstract,
                             is_variation: properties.is_variation,
@@ -157,7 +154,8 @@ pub(crate) fn project_host_semantic_model(
                             is_conjugated: properties.is_conjugated,
                             is_ordered: properties.is_ordered,
                             is_unique: properties.is_unique,
-                        }),
+                        },
+                    ),
                 },
             });
         }
@@ -452,6 +450,8 @@ fn relationship_metaclass(kind: &sysml_model::RelationshipKind) -> HostRelations
         sysml_model::RelationshipKind::Subsetting => HostRelationshipMetaclass::Subsetting,
         sysml_model::RelationshipKind::Redefinition => HostRelationshipMetaclass::Redefinition,
         sysml_model::RelationshipKind::Annotation => HostRelationshipMetaclass::Annotation,
+        sysml_model::RelationshipKind::Satisfy => HostRelationshipMetaclass::Satisfy,
+        sysml_model::RelationshipKind::Subject => HostRelationshipMetaclass::Subject,
         _ => HostRelationshipMetaclass::Relationship,
     }
 }
@@ -506,7 +506,7 @@ fn membership_kind(node: &HostSemanticModelNode) -> HostMembershipKind {
         | ElementKind::Interface
         | ElementKind::Stakeholder
         | ElementKind::IncludeUseCase
-        |         ElementKind::VerifiedRequirement => HostMembershipKind::FeatureMembership,
+        | ElementKind::VerifiedRequirement => HostMembershipKind::FeatureMembership,
         ElementKind::Documentation => HostMembershipKind::OwningMembership,
         _ => HostMembershipKind::OwningMembership,
     }
@@ -1011,7 +1011,8 @@ package Demo {
         let (graph, _) = build_semantic_graph_with_provider(&provider).expect("graph");
         let first = project_host_semantic_model(&graph, std::slice::from_ref(&target), &[])
             .expect("first projection");
-        let second = project_host_semantic_model(&graph, &[target], &[]).expect("second projection");
+        let second =
+            project_host_semantic_model(&graph, &[target], &[]).expect("second projection");
         assert_eq!(
             first
                 .relationships
@@ -1059,10 +1060,7 @@ package Demo {
             .expect("ref feature properties");
         assert_eq!(shared_props.is_reference, Some(true));
         assert_eq!(shared_props.is_composite, Some(false));
-        assert_eq!(
-            shared.facts.element_type.as_deref(),
-            Some("ReferenceUsage")
-        );
+        assert_eq!(shared.facts.element_type.as_deref(), Some("ReferenceUsage"));
         assert_eq!(
             projection
                 .relationships

@@ -1,4 +1,6 @@
-﻿use sysml_tokens::{ast_semantic_ranges, semantic_tokens_full, TYPE_CLASS, TYPE_KEYWORD, TYPE_PROPERTY, TYPE_TYPE};
+use sysml_tokens::{
+    ast_semantic_ranges, semantic_tokens_full, TYPE_CLASS, TYPE_KEYWORD, TYPE_PROPERTY, TYPE_TYPE,
+};
 use sysml_v2_parser::parse_for_editor;
 
 fn decode_semantic_tokens(data: &[u32]) -> Vec<(u32, u32, u32, u32)> {
@@ -34,11 +36,7 @@ fn token_text(content: &str, tokens: &[(u32, u32, u32, u32)], ident: &str) -> bo
     })
 }
 
-fn tokens_on_line(
-    content: &str,
-    tokens: &[(u32, u32, u32, u32)],
-    line: u32,
-) -> Vec<(String, u32)> {
+fn tokens_on_line(content: &str, tokens: &[(u32, u32, u32, u32)], line: u32) -> Vec<(String, u32)> {
     let lines: Vec<&str> = content.lines().collect();
     tokens
         .iter()
@@ -160,13 +158,19 @@ fn nested_state_usage_tokenizes_name_and_type() {
 
     let usage_line = tokens_on_line(content, &decoded, 2);
     assert_eq!(
-        usage_line.iter().find(|(t, _)| t == "idle").map(|(_, ty)| *ty),
+        usage_line
+            .iter()
+            .find(|(t, _)| t == "idle")
+            .map(|(_, ty)| *ty),
         Some(TYPE_PROPERTY),
         "usage line: {:?}",
         usage_line
     );
     assert_eq!(
-        usage_line.iter().find(|(t, _)| t == "Idle").map(|(_, ty)| *ty),
+        usage_line
+            .iter()
+            .find(|(t, _)| t == "Idle")
+            .map(|(_, ty)| *ty),
         Some(TYPE_TYPE),
         "usage line: {:?}",
         usage_line

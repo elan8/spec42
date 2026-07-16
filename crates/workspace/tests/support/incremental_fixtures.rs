@@ -1,4 +1,4 @@
-﻿use workspace::{compare_snapshots, HostWorkspaceSnapshot};
+use workspace::{compare_snapshots, HostWorkspaceSnapshot};
 
 pub fn assert_snapshot_parity(
     label: &str,

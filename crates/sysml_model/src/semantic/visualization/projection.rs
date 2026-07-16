@@ -5,9 +5,9 @@ use std::collections::{HashMap, HashSet};
 use url::Url;
 
 use crate::semantic::dto::{
-    range_to_dto, GraphEdgeDto, GraphNodeDto, RelationshipDto,
-    SysmlElementDto, SysmlGraphDto, SysmlVisualizationGroupDto, SysmlVisualizationPackageCandidateDto,
-    WorkspaceFileModelDto, WorkspaceModelDto, WorkspaceModelSummaryDto,
+    range_to_dto, GraphEdgeDto, GraphNodeDto, RelationshipDto, SysmlElementDto, SysmlGraphDto,
+    SysmlVisualizationGroupDto, SysmlVisualizationPackageCandidateDto, WorkspaceFileModelDto,
+    WorkspaceModelDto, WorkspaceModelSummaryDto,
 };
 use crate::semantic::extracted_model::{extract_activity_diagrams, ActivityDiagramDto};
 use crate::semantic::ibd::{IbdDataDto, IbdPackageContainerGroupDto, IbdPartDto};
@@ -93,7 +93,10 @@ pub fn build_workspace_graph_dto_for_uris(
     SysmlGraphDto { nodes, edges }
 }
 
-pub(crate) fn project_graph_by_ids(graph: &SysmlGraphDto, visible_ids: &HashSet<String>) -> SysmlGraphDto {
+pub(crate) fn project_graph_by_ids(
+    graph: &SysmlGraphDto,
+    visible_ids: &HashSet<String>,
+) -> SysmlGraphDto {
     let nodes: Vec<_> = graph
         .nodes
         .iter()
@@ -888,14 +891,16 @@ mod bench {
             return;
         }
 
-        let provider = FileSystemDocumentProvider::new(root.clone(), Some(root.clone()), Vec::new());
+        let provider =
+            FileSystemDocumentProvider::new(root.clone(), Some(root.clone()), Vec::new());
         let (semantic_graph, parsed_docs) =
             build_semantic_graph_with_provider(&provider).expect("build semantic graph");
         let workspace_root_uri = Url::from_directory_path(root.canonicalize().unwrap()).unwrap();
 
         let view_index_start = Instant::now();
-        let view_index = build_view_index(&semantic_graph, &parsed_docs, &[], &workspace_root_uri, 1)
-            .expect("build view index");
+        let view_index =
+            build_view_index(&semantic_graph, &parsed_docs, &[], &workspace_root_uri, 1)
+                .expect("build view index");
         let view_index_ms = view_index_start.elapsed().as_millis();
         eprintln!(
             "view_index_ms={view_index_ms} graph_nodes={} graph_edges={}",

@@ -80,10 +80,10 @@ fn document_symbols_feature_and_classifier_decls() {
     let root = sysml_v2_parser::parse(text).expect("parse");
     let symbols = document_symbols(&root);
     let children = &symbols[0].children;
-    assert!(children.iter().any(|child| {
-        child.name == "myFeature" && child.kind == "feature decl"
-    }));
-    assert!(children.iter().any(|child| {
-        child.name == "VehicleClass" && child.kind == "classifier decl"
-    }));
+    assert!(children
+        .iter()
+        .any(|child| { child.name == "myFeature" && child.kind == "feature decl" }));
+    assert!(children
+        .iter()
+        .any(|child| { child.name == "VehicleClass" && child.kind == "classifier decl" }));
 }

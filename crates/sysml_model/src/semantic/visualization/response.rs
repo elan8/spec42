@@ -5,17 +5,18 @@ use std::time::Instant;
 
 use url::Url;
 
+use crate::semantic::activity_graph::enrich_activity_diagrams_from_graph;
 use crate::semantic::dto::{
-    SysmlGraphDto, SysmlModelStatsDto,
-    SysmlVisualizationProjectionHintsDto, SysmlVisualizationResultDto,
+    SysmlGraphDto, SysmlModelStatsDto, SysmlVisualizationProjectionHintsDto,
+    SysmlVisualizationResultDto,
 };
 use crate::semantic::explicit_views;
 use crate::semantic::extracted_model::{ActivityDiagramDto, SequenceDiagramDto, StateMachineDto};
 use crate::semantic::ibd::{self, IbdDataDto};
 use crate::semantic::interconnection_projection::occurrence_id_for_qualified_name;
 use crate::semantic::interconnection_scene::build_interconnection_scene;
-use crate::semantic::activity_graph::enrich_activity_diagrams_from_graph;
 use crate::semantic::model_projection::{self, canonical_general_view_graph};
+use crate::semantic::prepared_view::prepare_view_from_visualization;
 use crate::semantic::sequence_views::{
     build_workspace_sequence_diagrams, filter_sequence_diagrams_by_exposed_ids,
 };
@@ -24,9 +25,8 @@ use crate::semantic::state_views::{
 };
 use crate::semantic::view_projection::{apply_edge_predicate, project_view};
 use crate::semantic::visualization::ibd_scope::{
-    filter_ibd_by_visible_ids, ibd_scope_trace_enabled,
-    log_ibd_scope_trace, select_interconnection_ibd_scope_with_trace,
-    IbdScopeTrace,
+    filter_ibd_by_visible_ids, ibd_scope_trace_enabled, log_ibd_scope_trace,
+    select_interconnection_ibd_scope_with_trace, IbdScopeTrace,
 };
 use crate::semantic::visualization::payload::{
     finalize_activity_diagram_candidates_for_response, finalize_activity_diagrams_for_response,
@@ -35,18 +35,16 @@ use crate::semantic::visualization::payload::{
     warn_if_behavior_payload_missing,
 };
 use crate::semantic::visualization::projection::{
-    build_package_groups_from_graph,
+    attach_ibd_package_container_groups, build_package_groups_from_graph,
     build_workspace_activity_diagrams, build_workspace_graph_dto_for_uris,
-    build_workspace_model_dto_from_graph, attach_ibd_package_container_groups,
-    collect_package_candidates, filter_activity_diagrams_by_graph,
-    no_defined_views_message, project_graph_by_ids, renderer_empty_state_message,
-    unsupported_view_type_message,
+    build_workspace_model_dto_from_graph, collect_package_candidates,
+    filter_activity_diagrams_by_graph, no_defined_views_message, project_graph_by_ids,
+    renderer_empty_state_message, unsupported_view_type_message,
     workspace_parsed_documents_for_uris,
 };
 use crate::semantic::visualization::scope::{
     workspace_uris_for_ibd_scope, workspace_uris_for_root, IbdArtifactMode, IbdBuildScope,
 };
-use crate::semantic::prepared_view::prepare_view_from_visualization;
 use crate::semantic::workspace_graph::WorkspaceParsedDocument;
 use crate::SemanticGraph;
 
@@ -179,7 +177,10 @@ pub fn empty_merged_ibd() -> IbdDataDto {
     }
 }
 
-fn ibd_artifact_mode_for_options(view: &str, options: &VisualizationBuildOptions) -> IbdArtifactMode {
+fn ibd_artifact_mode_for_options(
+    view: &str,
+    options: &VisualizationBuildOptions,
+) -> IbdArtifactMode {
     if options.ibd_build_scope == IbdBuildScope::ViewExposedPackages
         && ((options.slim_interconnection_payload && view == "interconnection-view")
             || view == "general-view")
@@ -616,17 +617,23 @@ pub fn build_sysml_visualization_from_artifacts(
         .map(|scene| scene.nodes.len() as u32)
         .unwrap_or(0);
     let activity_diagram_candidates = if resolved_view == "action-flow-view" && !slim {
-        Some(finalize_activity_diagram_candidates_for_response(&activity_diagrams))
+        Some(finalize_activity_diagram_candidates_for_response(
+            &activity_diagrams,
+        ))
     } else {
         None
     };
     let state_machine_candidates = if resolved_view == "state-transition-view" && !slim {
-        Some(finalize_state_machine_candidates_for_response(&state_machines))
+        Some(finalize_state_machine_candidates_for_response(
+            &state_machines,
+        ))
     } else {
         None
     };
     let sequence_diagram_candidates = if resolved_view == "sequence-view" && !slim {
-        Some(finalize_sequence_diagram_candidates_for_response(&sequence_diagrams))
+        Some(finalize_sequence_diagram_candidates_for_response(
+            &sequence_diagrams,
+        ))
     } else {
         None
     };
@@ -642,7 +649,11 @@ pub fn build_sysml_visualization_from_artifacts(
             selected_view_name,
             empty_state_message: None,
             package_groups: if slim { None } else { package_groups },
-            graph: if slim { None } else { Some(selected_graph.clone()) },
+            graph: if slim {
+                None
+            } else {
+                Some(selected_graph.clone())
+            },
             general_view_graph: if slim { None } else { general_view_graph },
             workspace_model: if slim { None } else { Some(workspace_model) },
             activity_diagrams: if slim || activity_diagrams.is_empty() {
@@ -663,11 +674,7 @@ pub fn build_sysml_visualization_from_artifacts(
                 Some(state_machines)
             },
             state_machine_candidates,
-            ibd: if slim {
-                None
-            } else {
-                Some(filtered_ibd)
-            },
+            ibd: if slim { None } else { Some(filtered_ibd) },
             interconnection_scene,
             stats: Some(SysmlModelStatsDto {
                 total_elements: if slim {
@@ -787,7 +794,9 @@ pub fn build_sysml_visualization_workspace_with_meta(
     Ok((response, meta))
 }
 
-pub(crate) fn infer_workspace_root_uri(documents: &[WorkspaceParsedDocument]) -> Result<Url, String> {
+pub(crate) fn infer_workspace_root_uri(
+    documents: &[WorkspaceParsedDocument],
+) -> Result<Url, String> {
     let mut uris: Vec<Url> = documents
         .iter()
         .map(|d| d.uri.clone())

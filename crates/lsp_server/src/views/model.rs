@@ -1,4 +1,4 @@
-﻿//! sysml/model request parsing and response building.
+//! sysml/model request parsing and response building.
 
 #[path = "model_params.rs"]
 mod model_params;
@@ -597,13 +597,16 @@ pub async fn build_sysml_model_response(
 
     let ibd_start = Instant::now();
     let ibd = if want_ibd && want_graph && graph.is_some() && workspace_viz {
-        model_explorer_bundle.map(|bundle| bundle.full_ibd.clone()).or_else(|| {
-            let workspace_uris = semantic_graph.workspace_uris_excluding_libraries(library_paths);
-            Some(sysml_model::build_merged_workspace_ibd(
-                semantic_graph,
-                &workspace_uris,
-            ))
-        })
+        model_explorer_bundle
+            .map(|bundle| bundle.full_ibd.clone())
+            .or_else(|| {
+                let workspace_uris =
+                    semantic_graph.workspace_uris_excluding_libraries(library_paths);
+                Some(sysml_model::build_merged_workspace_ibd(
+                    semantic_graph,
+                    &workspace_uris,
+                ))
+            })
     } else if want_ibd && want_graph && graph.is_some() {
         Some(ibd::build_ibd_for_uri(semantic_graph, uri))
     } else {

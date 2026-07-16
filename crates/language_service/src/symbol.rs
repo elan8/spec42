@@ -1,4 +1,4 @@
-﻿use sysml_model::{SemanticGraph, SemanticNode, TextPosition, TextRange};
+use sysml_model::{SemanticGraph, SemanticNode, TextPosition, TextRange};
 use url::Url;
 
 use crate::presentation_hover::signature_from_node;
@@ -77,12 +77,10 @@ pub fn find_reference_ranges(source: &str, name: &str) -> Vec<TextRange> {
         while let Some(off) = line[search_start..].find(name) {
             let start = search_start + off;
             let end = start + name.len();
-            let before_ok = start == 0
-                || !line[..start]
-                    .chars()
-                    .next_back()
-                    .is_some_and(is_ident_char);
-            let after_ok = end >= line.len() || !line[end..].chars().next().is_some_and(is_ident_char);
+            let before_ok =
+                start == 0 || !line[..start].chars().next_back().is_some_and(is_ident_char);
+            let after_ok =
+                end >= line.len() || !line[end..].chars().next().is_some_and(is_ident_char);
             if before_ok && after_ok {
                 let start_char = line[..start].chars().count() as u32;
                 let end_char = start_char + name.chars().count() as u32;

@@ -28,8 +28,8 @@ use sysml_model::{
 use crate::error::WorkspaceResult;
 use crate::parse_cache;
 use crate::semantic::{
-    SemanticGraph, WorkspaceParsedDocument, build_and_link_graph_parallel,
-    link_parsed_documents_parallel_from, patch_graph_for_document,
+    build_and_link_graph_parallel, link_parsed_documents_parallel_from, patch_graph_for_document,
+    SemanticGraph, WorkspaceParsedDocument,
 };
 use crate::snapshot::{HostSemanticProjection, HostValidationReport};
 use crate::{SysmlDocument, SysmlDocumentSourceKind};
@@ -823,11 +823,9 @@ package AnalysisCases {
 
         assert!(engine.document(&uri).is_none());
         assert_eq!(metrics.document_count, 1);
-        assert!(
-            !node_qualified_names(&engine.graph())
-                .iter()
-                .any(|name| name.starts_with("AnalysisCases"))
-        );
+        assert!(!node_qualified_names(&engine.graph())
+            .iter()
+            .any(|name| name.starts_with("AnalysisCases")));
     }
 
     #[test]

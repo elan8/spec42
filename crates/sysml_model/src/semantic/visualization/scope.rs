@@ -31,12 +31,14 @@ fn resolve_redefines_or_subsets_targets<'a>(
             return targets;
         }
     }
-    let member = attribute_value.split("::").last().unwrap_or(attribute_value);
+    let member = attribute_value
+        .split("::")
+        .last()
+        .unwrap_or(attribute_value);
     match resolve_inherited_member_via_type(semantic_graph, owner, member) {
-        ResolveResult::Resolved(target_id) => semantic_graph
-            .get_node(&target_id)
-            .into_iter()
-            .collect(),
+        ResolveResult::Resolved(target_id) => {
+            semantic_graph.get_node(&target_id).into_iter().collect()
+        }
         _ => Vec::new(),
     }
 }

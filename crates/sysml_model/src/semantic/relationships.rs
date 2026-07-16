@@ -37,22 +37,33 @@ pub trait TypeReferenceTarget {
 }
 
 impl TypeReferenceTarget for str {
-    fn type_reference_target(&self) -> &str { self }
+    fn type_reference_target(&self) -> &str {
+        self
+    }
 }
 
 impl TypeReferenceTarget for String {
-    fn type_reference_target(&self) -> &str { self }
+    fn type_reference_target(&self) -> &str {
+        self
+    }
 }
 
 impl TypeReferenceTarget for TypingRelationship {
     fn type_reference_target(&self) -> &str {
-        self.target.first().and_then(|target| target.value.local_name()).unwrap_or_default()
+        self.target
+            .first()
+            .and_then(|target| target.value.local_name())
+            .unwrap_or_default()
     }
 }
 
 impl TypeReferenceTarget for Node<TypingRelationship> {
     fn type_reference_target(&self) -> &str {
-        self.value.target.first().and_then(|target| target.value.local_name()).unwrap_or_default()
+        self.value
+            .target
+            .first()
+            .and_then(|target| target.value.local_name())
+            .unwrap_or_default()
     }
 }
 
@@ -140,9 +151,7 @@ fn link_subsetting_and_redefinition_edges_for_node(g: &mut SemanticGraph, node_i
         .get("subsetsFeature")
         .and_then(|value| value.as_str())
     {
-        if let Some(target_id) =
-            resolve_subsets_or_redefines_target(g, owner.as_ref(), attr)
-        {
+        if let Some(target_id) = resolve_subsets_or_redefines_target(g, owner.as_ref(), attr) {
             add_semantic_edge_once(
                 g,
                 node_id,
@@ -156,9 +165,7 @@ fn link_subsetting_and_redefinition_edges_for_node(g: &mut SemanticGraph, node_i
         .get("redefines")
         .and_then(|value| value.as_str())
     {
-        if let Some(target_id) =
-            resolve_subsets_or_redefines_target(g, owner.as_ref(), attr)
-        {
+        if let Some(target_id) = resolve_subsets_or_redefines_target(g, owner.as_ref(), attr) {
             add_semantic_edge_once(
                 g,
                 node_id,
@@ -169,15 +176,14 @@ fn link_subsetting_and_redefinition_edges_for_node(g: &mut SemanticGraph, node_i
     }
 }
 
-
-mod subject;
-mod pending;
-mod derivation;
 mod cross_document;
-pub use subject::*;
-pub use pending::*;
-pub use derivation::*;
+mod derivation;
+mod pending;
+mod subject;
 pub use cross_document::*;
+pub use derivation::*;
+pub use pending::*;
+pub use subject::*;
 
 pub fn add_edge_if_both_exist(
     g: &mut SemanticGraph,
@@ -227,7 +233,6 @@ fn add_edge_if_both_exist_opt(
         .add_edge(src_idx, tgt_idx, SemanticEdge::plain(kind));
     true
 }
-
 
 /// Adds an edge when no same-kind edge exists between the pair.
 /// For `Connection` edges with connect metadata, returns [`AddSemanticEdgeResult::DuplicateConnect`]

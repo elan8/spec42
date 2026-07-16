@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.42.0] - 2026-07-16
+
+- **Host projection schema v10** — `Satisfy` and `Subject` relationships classify as
+  their own `HostRelationshipMetaclass` instead of the generic `Relationship` fallback.
+  Both were already real, resolved graph edges; only the metaclass classification was
+  missing.
+- **Bug fix: `case`/`case def` bodies were silently dropped** — `materialize_case_def`/
+  `materialize_case_usage` created the case node but never walked its body, unlike the
+  sibling `use_case`/`analysis_case`/`verification_case` builders. `subject`/`actor`/
+  `objective`/`include` members inside a `case`/`case def` are now materialized the same
+  way they already were for `use case`/`analysis`/`verification case`.
+
 ## [0.41.0] - 2026-07-16
 
 - **Host projection schema v9** — Addressable `HostConnectorEnd` facts for resolved
