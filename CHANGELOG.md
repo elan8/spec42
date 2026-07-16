@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.37.0] - 2026-07-16
+
+- **Typed host projection v5** — Added API-oriented element facts for declared
+  and effective names, ownership, owning membership, and library status. These
+  facts are separate from the legacy display-oriented attribute map.
+- **Addressable ownership** — Parent containment now records an explicit
+  membership form (`OwningMembership` or `FeatureMembership`) and gives both
+  the child and relationship the same stable membership identity.
+- **Deterministic relationship identities** — Relationship IDs no longer depend
+  on graph enumeration order. Explicit connection facts use their source range
+  and endpoint expressions as an identity discriminator.
+
 ## [0.36.0] - 2026-07-16
 
 - **Parser dependency** — Bumped `sysml-v2-parser` to **0.36.0** and aligned

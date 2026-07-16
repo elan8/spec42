@@ -5,16 +5,16 @@ use std::collections::{BTreeSet, HashMap};
 use sha2::{Digest, Sha256};
 
 use sysml_model::{
-    DiagnosticSeverity, SemanticDiagnostic, SemanticGraph, SysmlDocument, UnitRegistry,
-    resolved_usage_context, typed_by_reference,
+    resolved_usage_context, typed_by_reference, DiagnosticSeverity, SemanticDiagnostic,
+    SemanticGraph, SysmlDocument, UnitRegistry,
 };
 use url::Url;
 
 use super::discovery::path_to_file_url;
 use super::projection::{
-    HostExpression, HostExpressionArgument, HostFeatureValue, HostMultiplicity,
-    HostRelationshipMetaclass, HostSemanticModelNode, HostSemanticModelRelationship,
-    HostSemanticProjection,
+    HostElementFacts, HostExpression, HostExpressionArgument, HostFeatureValue, HostMembershipKind,
+    HostMultiplicity, HostRelationshipMetaclass, HostSemanticModelNode,
+    HostSemanticModelRelationship, HostSemanticProjection,
 };
 use super::validation::{HostValidatedDocument, HostValidationReport, HostValidationSummary};
 
@@ -117,6 +117,13 @@ pub(crate) fn project_host_semantic_model(
                     .as_ref()
                     .map(|parent| parent.qualified_name.clone()),
                 attributes,
+                facts: HostElementFacts {
+                    declared_name: (!node.name.is_empty()).then(|| node.name.clone()),
+                    effective_name: node.name.clone(),
+                    owner_id: None,
+                    owning_membership_id: None,
+                    is_library_element: false,
+                },
             });
         }
     }
@@ -129,30 +136,45 @@ pub(crate) fn project_host_semantic_model(
 
     let semantic_ids = nodes
         .iter()
-        .map(|node| (node.qualified_name.as_str(), node.semantic_id.as_str()))
+        .map(|node| (node.qualified_name.clone(), node.semantic_id.clone()))
         .collect::<HashMap<_, _>>();
+    for node in &mut nodes {
+        let Some(parent) = node.parent.as_deref() else {
+            continue;
+        };
+        let Some(owner_id) = semantic_ids.get(parent) else {
+            continue;
+        };
+        node.facts.owner_id = Some(owner_id.clone());
+        node.facts.owning_membership_id = Some(semantic_relationship_id(
+            &sysml_model::RelationshipKind::Reference,
+            owner_id,
+            &node.semantic_id,
+            "membership".to_string(),
+        ));
+    }
     let mut relationships = Vec::new();
     for node in &nodes {
         let Some(parent) = node.parent.as_deref() else {
             continue;
         };
-        let Some(owner_id) = semantic_ids.get(parent).copied() else {
+        let Some(owner_id) = semantic_ids.get(parent) else {
             continue;
         };
         relationships.push(HostSemanticModelRelationship {
-            semantic_id: semantic_relationship_id(
-                &sysml_model::RelationshipKind::Reference,
-                owner_id,
-                &node.semantic_id,
-                relationships.len(),
-            ),
-            source_id: owner_id.to_owned(),
+            semantic_id: node
+                .facts
+                .owning_membership_id
+                .clone()
+                .expect("owned node must have a membership identity"),
+            source_id: owner_id.clone(),
             target_id: node.semantic_id.clone(),
-            owner_id: Some(owner_id.to_owned()),
-            related_element_ids: vec![owner_id.to_owned(), node.semantic_id.clone()],
+            owner_id: Some(owner_id.clone()),
+            related_element_ids: vec![owner_id.clone(), node.semantic_id.clone()],
             range: Some(node.range),
             is_implied: false,
             metaclass: HostRelationshipMetaclass::Membership,
+            membership_kind: Some(membership_kind(node)),
             source: parent.to_owned(),
             target: node.qualified_name.clone(),
             kind: sysml_model::RelationshipKind::Reference,
@@ -162,13 +184,13 @@ pub(crate) fn project_host_semantic_model(
     for uri in &target_urls {
         for (src_id, tgt_id, edge) in graph.edges_for_uri(uri) {
             let source_id = semantic_ids
-                .get(src_id.qualified_name.as_str())
-                .copied()
+                .get(&src_id.qualified_name)
+                .cloned()
                 .unwrap_or_default()
                 .to_owned();
             let target_id = semantic_ids
-                .get(tgt_id.qualified_name.as_str())
-                .copied()
+                .get(&tgt_id.qualified_name)
+                .cloned()
                 .unwrap_or_default()
                 .to_owned();
             // A resolved graph edge is owned by the specific/source element.
@@ -179,20 +201,20 @@ pub(crate) fn project_host_semantic_model(
                     &edge.kind,
                     &source_id,
                     &target_id,
-                    relationships.len(),
+                    edge_identity_discriminator(&edge),
                 ),
                 source_id,
                 target_id,
                 owner_id,
                 related_element_ids: [
                     semantic_ids
-                        .get(src_id.qualified_name.as_str())
-                        .copied()
+                        .get(&src_id.qualified_name)
+                        .cloned()
                         .unwrap_or_default()
                         .to_owned(),
                     semantic_ids
-                        .get(tgt_id.qualified_name.as_str())
-                        .copied()
+                        .get(&tgt_id.qualified_name)
+                        .cloned()
                         .unwrap_or_default()
                         .to_owned(),
                 ]
@@ -202,6 +224,7 @@ pub(crate) fn project_host_semantic_model(
                 range: edge.connect.as_ref().map(|detail| detail.range),
                 is_implied: false,
                 metaclass: relationship_metaclass(&edge.kind),
+                membership_kind: None,
                 source: src_id.qualified_name,
                 target: tgt_id.qualified_name,
                 kind: edge.kind,
@@ -353,6 +376,38 @@ fn relationship_metaclass(kind: &sysml_model::RelationshipKind) -> HostRelations
     }
 }
 
+fn membership_kind(node: &HostSemanticModelNode) -> HostMembershipKind {
+    use sysml_model::ElementKind;
+
+    match node.element_kind {
+        ElementKind::Attribute
+        | ElementKind::AttributeDef
+        | ElementKind::Item
+        | ElementKind::ItemDef
+        | ElementKind::Part
+        | ElementKind::PartDef
+        | ElementKind::Port
+        | ElementKind::PortDef => HostMembershipKind::FeatureMembership,
+        _ => HostMembershipKind::OwningMembership,
+    }
+}
+
+fn edge_identity_discriminator(edge: &sysml_model::SemanticEdge) -> String {
+    edge.connect
+        .as_ref()
+        .map(|detail| {
+            format!(
+                "{}:{}:{}:{}:{}",
+                detail.declaring_uri,
+                detail.range.start.line,
+                detail.range.start.character,
+                detail.source_expression,
+                detail.target_expression
+            )
+        })
+        .unwrap_or_default()
+}
+
 fn semantic_element_id(
     uri: &str,
     kind: &sysml_model::ElementKind,
@@ -374,7 +429,7 @@ fn semantic_relationship_id(
     kind: &sysml_model::RelationshipKind,
     source_id: &str,
     target_id: &str,
-    ordinal: usize,
+    discriminator: String,
 ) -> String {
     let mut hasher = Sha256::new();
     hasher.update(b"spec42-semantic-relationship-v2\0");
@@ -384,7 +439,7 @@ fn semantic_relationship_id(
     hasher.update([0]);
     hasher.update(target_id.as_bytes());
     hasher.update([0]);
-    hasher.update(ordinal.to_le_bytes());
+    hasher.update(discriminator.as_bytes());
     format!("s42r:{:x}", hasher.finalize())
 }
 
@@ -430,7 +485,7 @@ fn collect_host_document_diagnostics(
 mod tests {
     use super::*;
     use crate::snapshot::discovery::path_to_file_url;
-    use sysml_model::{InMemoryDocumentProvider, build_semantic_graph_with_provider};
+    use sysml_model::{build_semantic_graph_with_provider, InMemoryDocumentProvider};
 
     fn make_provider(uri: &str, content: &str) -> InMemoryDocumentProvider {
         let doc = sysml_model::SysmlDocument {
@@ -574,6 +629,29 @@ package Demo {
             }),
             "parent ownership must be an addressable membership relationship"
         );
+        let membership = projection
+            .relationships
+            .iter()
+            .find(|relationship| {
+                relationship.metaclass == HostRelationshipMetaclass::Membership
+                    && relationship.target == "Demo::Robot::cleaningHead"
+            })
+            .expect("feature membership");
+        assert_eq!(
+            membership.membership_kind,
+            Some(HostMembershipKind::FeatureMembership)
+        );
+        assert_eq!(
+            usage.facts.owner_id.as_deref(),
+            Some(membership.source_id.as_str())
+        );
+        assert_eq!(
+            usage.facts.owning_membership_id.as_deref(),
+            Some(membership.semantic_id.as_str())
+        );
+        assert_eq!(usage.facts.declared_name.as_deref(), Some("cleaningHead"));
+        assert_eq!(usage.facts.effective_name, "cleaningHead");
+        assert!(!usage.facts.is_library_element);
     }
 
     #[test]
@@ -616,6 +694,39 @@ package Demo {
         assert_eq!(lower.kind, "integerLiteral");
         assert_eq!(lower.literal, Some(serde_json::json!(1)));
         assert!(multiplicity.upper_bound_id.is_none(), "* is unbounded");
+    }
+
+    #[test]
+    fn relationship_ids_are_independent_of_graph_enumeration_order() {
+        let content = r#"
+package Demo {
+    part def Wheel;
+    part def Car { part wheel : Wheel; }
+}
+"#;
+        let target = std::path::PathBuf::from(if cfg!(windows) {
+            "c:/workspace/stable.sysml"
+        } else {
+            "/workspace/stable.sysml"
+        });
+        let uri = path_to_file_url(target.as_path()).expect("workspace uri");
+        let provider = make_provider(uri.as_str(), content);
+        let (graph, _) = build_semantic_graph_with_provider(&provider).expect("graph");
+        let first = project_host_semantic_model(&graph, std::slice::from_ref(&target))
+            .expect("first projection");
+        let second = project_host_semantic_model(&graph, &[target]).expect("second projection");
+        assert_eq!(
+            first
+                .relationships
+                .iter()
+                .map(|relationship| &relationship.semantic_id)
+                .collect::<Vec<_>>(),
+            second
+                .relationships
+                .iter()
+                .map(|relationship| &relationship.semantic_id)
+                .collect::<Vec<_>>()
+        );
     }
 }
 

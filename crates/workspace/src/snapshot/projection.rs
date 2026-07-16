@@ -21,6 +21,27 @@ pub enum HostRelationshipMetaclass {
     Relationship,
 }
 
+/// The KerML membership form used to establish containment.  This is kept
+/// separate from the graph-resolution `RelationshipKind`: a parent/child
+/// relation is a model element in its own right, not merely a display tree.
+#[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, Eq, PartialOrd, Ord)]
+#[serde(rename_all = "camelCase")]
+pub enum HostMembershipKind {
+    OwningMembership,
+    FeatureMembership,
+}
+
+/// Typed, API-oriented identity and ownership facts for a semantic element.
+/// These facts deliberately duplicate no display-only `attributes` entries.
+#[derive(Debug, Clone, Default, Serialize, Deserialize, PartialEq, Eq)]
+pub struct HostElementFacts {
+    pub declared_name: Option<String>,
+    pub effective_name: String,
+    pub owner_id: Option<String>,
+    pub owning_membership_id: Option<String>,
+    pub is_library_element: bool,
+}
+
 impl Default for HostRelationshipMetaclass {
     fn default() -> Self {
         Self::Relationship
@@ -51,6 +72,9 @@ pub struct HostSemanticModelNode {
     /// `"redefines"`, `"evaluatedValue"`, …).
     #[serde(default)]
     pub attributes: HashMap<String, Value>,
+    /// Typed identity and containment data consumed by API projections.
+    #[serde(default)]
+    pub facts: HostElementFacts,
 }
 
 /// A directed relationship between two nodes — maps 1:1 to [`sysml_model::SemanticEdge`].
@@ -83,6 +107,9 @@ pub struct HostSemanticModelRelationship {
     /// Concrete relationship metaclass; `kind` remains the graph-resolution fact.
     #[serde(default)]
     pub metaclass: HostRelationshipMetaclass,
+    /// Present exactly for `Membership` metaclasses.
+    #[serde(default)]
+    pub membership_kind: Option<HostMembershipKind>,
     /// Qualified name of the source node.
     pub source: String,
     /// Qualified name of the target node.
