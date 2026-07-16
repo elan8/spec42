@@ -7,6 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.40.0] - 2026-07-16
+
+- **Host projection schema v8** — Addressable Documentation elements with Annotation
+  edges, Import/Alias as NamespaceImport / MembershipImport / AliasMembership
+  relationships (with visibility), first-class `element_type` for ReferenceUsage,
+  and AttributeUsage multiplicity projection. Requires `sysml-v2-parser` **0.37.0**.
+- **Documentation** — `doc /* … */` materializes as `ElementKind::Documentation`
+  children while keeping `HostElementFacts.documentation` text on the annotated element.
+- **Import / Alias relationships** — Containment memberships for import/alias nodes
+  use dedicated metaclasses instead of generic Membership.
+- **ReferenceUsage** — `ElementKind::Ref` projects `facts.element_type = "ReferenceUsage"`.
+- **AttributeUsage multiplicity** — Structured multiplicity ranges from parser 0.37
+  project as addressable `HostMultiplicity` facts.
+
 ## [0.39.0] - 2026-07-16
 
 - **Host projection schema v7** — Extends v6 feature properties with composite/reference

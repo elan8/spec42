@@ -2,6 +2,6 @@
 # [build]
 # rustflags = ["-D", "warnings"]
 
-# To test against a sibling parser checkout before publish, uncomment:
-# [patch.crates-io]
-# sysml-v2-parser = { path = "../sysml-v2-parser" }
+# Local sibling parser for Spec42 0.40 development (AttributeUsage multiplicity).
+[patch.crates-io]
+sysml-v2-parser = { path = "../sysml-v2-parser" }

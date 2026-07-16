@@ -138,6 +138,7 @@ pub(crate) fn project_host_semantic_model(
                     ),
                     documentation,
                     declared_short_name,
+                    element_type: host_element_type(&node.element_kind),
                     feature_properties: node
                         .declared_facts
                         .feature_properties
@@ -194,6 +195,7 @@ pub(crate) fn project_host_semantic_model(
         let Some(owner_id) = semantic_ids.get(parent) else {
             continue;
         };
+        let membership_kind = membership_kind(node);
         relationships.push(HostSemanticModelRelationship {
             semantic_id: node
                 .facts
@@ -206,8 +208,9 @@ pub(crate) fn project_host_semantic_model(
             related_element_ids: vec![owner_id.clone(), node.semantic_id.clone()],
             range: Some(node.range),
             is_implied: false,
-            metaclass: HostRelationshipMetaclass::Membership,
-            membership_kind: Some(membership_kind(node)),
+            metaclass: membership_relationship_metaclass(node, membership_kind),
+            membership_kind: Some(membership_kind),
+            visibility: membership_visibility(node),
             source: parent.to_owned(),
             target: node.qualified_name.clone(),
             kind: sysml_model::RelationshipKind::Reference,
@@ -258,6 +261,7 @@ pub(crate) fn project_host_semantic_model(
                 is_implied: false,
                 metaclass: relationship_metaclass(&edge.kind),
                 membership_kind: None,
+                visibility: None,
                 source: src_id.qualified_name,
                 target: tgt_id.qualified_name,
                 kind: edge.kind,
@@ -462,9 +466,47 @@ fn membership_kind(node: &HostSemanticModelNode) -> HostMembershipKind {
         | ElementKind::Interface
         | ElementKind::Stakeholder
         | ElementKind::IncludeUseCase
-        | ElementKind::VerifiedRequirement => HostMembershipKind::FeatureMembership,
+        |         ElementKind::VerifiedRequirement => HostMembershipKind::FeatureMembership,
+        ElementKind::Documentation => HostMembershipKind::OwningMembership,
         _ => HostMembershipKind::OwningMembership,
     }
+}
+
+fn host_element_type(kind: &sysml_model::ElementKind) -> Option<String> {
+    match kind {
+        sysml_model::ElementKind::Ref => Some("ReferenceUsage".to_owned()),
+        sysml_model::ElementKind::Documentation => Some("Documentation".to_owned()),
+        _ => None,
+    }
+}
+
+fn membership_relationship_metaclass(
+    node: &HostSemanticModelNode,
+    kind: HostMembershipKind,
+) -> HostRelationshipMetaclass {
+    match kind {
+        HostMembershipKind::Import => {
+            if node
+                .attributes
+                .get("importAll")
+                .and_then(|value| value.as_bool())
+                == Some(true)
+            {
+                HostRelationshipMetaclass::NamespaceImport
+            } else {
+                HostRelationshipMetaclass::MembershipImport
+            }
+        }
+        HostMembershipKind::Alias => HostRelationshipMetaclass::AliasMembership,
+        _ => HostRelationshipMetaclass::Membership,
+    }
+}
+
+fn membership_visibility(node: &HostSemanticModelNode) -> Option<String> {
+    node.attributes
+        .get("visibility")
+        .and_then(|value| value.as_str())
+        .map(|value| value.trim_matches('"').to_owned())
 }
 
 fn edge_identity_discriminator(edge: &sysml_model::SemanticEdge) -> String {
@@ -978,6 +1020,10 @@ package Demo {
         assert_eq!(shared_props.is_reference, Some(true));
         assert_eq!(shared_props.is_composite, Some(false));
         assert_eq!(
+            shared.facts.element_type.as_deref(),
+            Some("ReferenceUsage")
+        );
+        assert_eq!(
             projection
                 .relationships
                 .iter()
@@ -1030,11 +1076,8 @@ package Demo {
             projection
                 .relationships
                 .iter()
-                .find(|relationship| {
-                    relationship.metaclass == HostRelationshipMetaclass::Membership
-                        && relationship.target == qualified
-                })
-                .map(|relationship| relationship.membership_kind)
+                .find(|relationship| relationship.target == qualified)
+                .map(|relationship| (relationship.metaclass, relationship.membership_kind))
         };
 
         let thing = projection
@@ -1044,30 +1087,37 @@ package Demo {
             .expect("Thing def");
         assert_eq!(
             membership_for(&thing.qualified_name),
-            Some(Some(HostMembershipKind::OwningMembership))
+            Some((
+                HostRelationshipMetaclass::Membership,
+                Some(HostMembershipKind::OwningMembership)
+            ))
         );
 
-        if let Some(import_node) = projection
+        let import_node = projection
             .nodes
             .iter()
             .find(|node| node.element_kind == sysml_model::ElementKind::Import)
-        {
-            assert_eq!(
-                membership_for(&import_node.qualified_name),
-                Some(Some(HostMembershipKind::Import))
-            );
-        }
+            .expect("import node");
+        assert_eq!(
+            membership_for(&import_node.qualified_name),
+            Some((
+                HostRelationshipMetaclass::NamespaceImport,
+                Some(HostMembershipKind::Import)
+            ))
+        );
 
-        if let Some(alias_node) = projection
+        let alias_node = projection
             .nodes
             .iter()
             .find(|node| node.element_kind == sysml_model::ElementKind::Alias)
-        {
-            assert_eq!(
-                membership_for(&alias_node.qualified_name),
-                Some(Some(HostMembershipKind::Alias))
-            );
-        }
+            .expect("alias node");
+        assert_eq!(
+            membership_for(&alias_node.qualified_name),
+            Some((
+                HostRelationshipMetaclass::AliasMembership,
+                Some(HostMembershipKind::Alias)
+            ))
+        );
 
         if let Some(actor_node) = projection
             .nodes
@@ -1076,7 +1126,10 @@ package Demo {
         {
             assert_eq!(
                 membership_for(&actor_node.qualified_name),
-                Some(Some(HostMembershipKind::ActorMembership))
+                Some((
+                    HostRelationshipMetaclass::Membership,
+                    Some(HostMembershipKind::ActorMembership)
+                ))
             );
         }
     }
@@ -1174,6 +1227,23 @@ package Demo {
             board.facts.documentation.as_deref(),
             Some("Control board assembly")
         );
+        let documentation = projection
+            .nodes
+            .iter()
+            .find(|node| node.element_kind == sysml_model::ElementKind::Documentation)
+            .expect("Documentation node");
+        assert_eq!(
+            documentation.facts.element_type.as_deref(),
+            Some("Documentation")
+        );
+        assert!(
+            projection.relationships.iter().any(|relationship| {
+                relationship.metaclass == HostRelationshipMetaclass::Annotation
+                    && relationship.source_id == documentation.semantic_id
+                    && relationship.target_id == board.semantic_id
+            }),
+            "Documentation should annotate ControlBoard"
+        );
 
         let power = projection
             .nodes
@@ -1187,6 +1257,54 @@ package Demo {
                 .as_ref()
                 .expect("port properties")
                 .is_conjugated
+        );
+    }
+
+    #[test]
+    fn projection_attribute_usage_multiplicity_is_addressable() {
+        let content = r#"
+package Demo {
+    part def Sensor {
+        attribute mass [0..1] ordered;
+        attribute tags : String[0..*] nonunique;
+    }
+}
+"#;
+        let target = std::path::PathBuf::from(if cfg!(windows) {
+            "c:/workspace/attr_mult.sysml"
+        } else {
+            "/workspace/attr_mult.sysml"
+        });
+        let uri = path_to_file_url(target.as_path()).expect("workspace uri");
+        let provider = make_provider(uri.as_str(), content);
+        let (graph, _) = build_semantic_graph_with_provider(&provider).expect("graph");
+        let projection = project_host_semantic_model(&graph, &[target], &[]).expect("projection");
+
+        let mass = projection
+            .nodes
+            .iter()
+            .find(|node| node.qualified_name.ends_with("::mass"))
+            .expect("mass");
+        assert!(
+            projection
+                .multiplicities
+                .iter()
+                .any(|value| value.owner_id == mass.semantic_id && value.is_ordered),
+            "mass should project ordered multiplicity; multiplicities={:?}",
+            projection.multiplicities
+        );
+
+        let tags = projection
+            .nodes
+            .iter()
+            .find(|node| node.qualified_name.ends_with("::tags"))
+            .expect("tags");
+        assert!(
+            projection
+                .multiplicities
+                .iter()
+                .any(|value| value.owner_id == tags.semantic_id && value.is_unique == Some(false)),
+            "tags should project nonunique multiplicity"
         );
     }
 

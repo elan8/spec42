@@ -9,7 +9,10 @@ use url::Url;
 
 use crate::semantic::ast_util::{span_to_range, subsetting_target, typing_target};
 use crate::semantic::graph::SemanticGraph;
-use crate::semantic::model::{DeclaredFeatureProperties, ElementKind, NodeId, SemanticNode};
+use crate::semantic::model::{
+    DeclaredFeatureProperties, ElementKind, NodeId, RelationshipKind, SemanticEdge, SemanticNode,
+};
+use crate::semantic::relationships::add_semantic_edge_once;
 
 mod action;
 mod analysis_case;
@@ -225,21 +228,48 @@ pub(super) fn attach_feature_properties(
     }
 }
 
-/// Attaches a `doc /* ... */` comment's text to the `doc` attribute of the node it
-/// annotates. Multiple doc blocks on the same node are joined with a blank line.
+/// Attaches a `doc /* ... */` comment as an addressable Documentation child of the
+/// annotated element, wires an Annotation edge, and keeps the convenience `doc`
+/// attribute text on the annotated node (multiple docs join with a blank line).
 pub(super) fn attach_doc_comment(g: &mut SemanticGraph, node_id: &NodeId, text: &str) {
     let text = text.trim();
     if text.is_empty() {
         return;
     }
+    let Some(annotated) = g.get_node(node_id).cloned() else {
+        return;
+    };
+    let combined = match annotated.attributes.get("doc").and_then(|v| v.as_str()) {
+        Some(existing) if !existing.is_empty() => format!("{existing}\n\n{text}"),
+        _ => text.to_string(),
+    };
     if let Some(node) = g.get_node_mut(node_id) {
-        let combined = match node.attributes.get("doc").and_then(|v| v.as_str()) {
-            Some(existing) if !existing.is_empty() => format!("{existing}\n\n{text}"),
-            _ => text.to_string(),
-        };
         node.attributes
             .insert("doc".to_string(), serde_json::json!(combined));
     }
+
+    let uri = &node_id.uri;
+    let container_prefix = Some(node_id.qualified_name.as_str());
+    let qualified = qualified_name_for_node(g, uri, container_prefix, "_documentation", "documentation");
+    let mut attrs = HashMap::new();
+    attrs.insert("body".to_string(), serde_json::json!(text));
+    add_node_and_recurse(
+        g,
+        uri,
+        &qualified,
+        "documentation",
+        String::new(),
+        annotated.range,
+        attrs,
+        Some(node_id),
+    );
+    let doc_id = NodeId::new(uri, &qualified);
+    add_semantic_edge_once(
+        g,
+        &doc_id,
+        node_id,
+        SemanticEdge::plain(RelationshipKind::Annotation),
+    );
 }
 
 /// Inserts a `specializes` attribute on a def-kind node's attribute map, if present.

@@ -24,6 +24,12 @@ pub enum HostRelationshipMetaclass {
     Subsetting,
     Redefinition,
     Annotation,
+    /// Package `import Namespace::*;` / import-all form.
+    NamespaceImport,
+    /// Package `import Namespace::Member;` member import.
+    MembershipImport,
+    /// `alias Name for Target;` membership.
+    AliasMembership,
     Relationship,
 }
 
@@ -56,6 +62,10 @@ pub struct HostElementFacts {
     /// Declared short name lifted from the legacy `shortName` attribute.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub declared_short_name: Option<String>,
+    /// Normative Systems Modeling API `@type` for this element when it differs from
+    /// the raw [`ElementKind`] spelling (for example `ReferenceUsage` for `ref`).
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub element_type: Option<String>,
     /// Explicit declaration modifiers when the element is a feature or definition
     /// that retained typed parser properties.
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -159,6 +169,10 @@ pub struct HostSemanticModelRelationship {
     /// Present exactly for `Membership` metaclasses.
     #[serde(default)]
     pub membership_kind: Option<HostMembershipKind>,
+    /// Explicit visibility (`public` / `private` / `protected`) when projected for
+    /// import/alias memberships.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub visibility: Option<String>,
     /// Qualified name of the source node.
     pub source: String,
     /// Qualified name of the target node.

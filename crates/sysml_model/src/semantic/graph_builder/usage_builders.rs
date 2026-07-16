@@ -166,6 +166,15 @@ pub(super) fn materialize_attribute_usage(
     }
     let node_id = NodeId::new(uri, &qualified);
     attach_feature_properties(g, &node_id, attribute_usage_feature_properties(&n.value));
+    if let Some(multiplicity) = &n.multiplicity {
+        if let Some(node) = g.get_node_mut(&node_id) {
+            let mut declared = declared_multiplicity(multiplicity, n.ordered);
+            if n.nonunique {
+                declared.is_unique = Some(false);
+            }
+            node.declared_facts.multiplicity = Some(declared);
+        }
+    }
     if let Some(value) = &n.value.value {
         if let Some(node) = g.get_node_mut(&node_id) {
             node.declared_facts.feature_value = Some(declared_feature_value(value));
