@@ -490,7 +490,7 @@ pub(super) fn walk_requirement_def_body(
                 let mut attrs = HashMap::new();
                 attrs.insert("importTarget".to_string(), serde_json::json!(&v.target));
                 attrs.insert("importAll".to_string(), serde_json::json!(v.is_import_all));
-                if let Some(vis) = &v.visibility {
+                if let Some(vis) = &v.membership.visibility {
                     attrs.insert(
                         "visibility".to_string(),
                         serde_json::json!(format!("{vis:?}")),
@@ -522,7 +522,7 @@ pub(super) fn walk_requirement_def_body(
                     attrs.insert("attributeType".to_string(), serde_json::json!(typing));
                 }
                 if let Some(value_expr) = &attr_def.value.value {
-                    let rendered = expression_to_debug_string(value_expr);
+                    let rendered = expression_to_debug_string(&value_expr.value.expression);
                     if !rendered.is_empty() {
                         attrs.insert("value".to_string(), serde_json::json!(rendered));
                         attrs.insert("defaultValue".to_string(), serde_json::json!(rendered));
@@ -559,16 +559,20 @@ pub(super) fn walk_requirement_def_body(
                     "attribute",
                 );
                 let mut attrs = HashMap::new();
-                if let Some(typing) = crate::semantic::ast_util::typing_target(attr_usage.value.typing.as_deref()) {
+                if let Some(typing) =
+                    crate::semantic::ast_util::typing_target(attr_usage.value.typing.as_deref())
+                {
                     attrs.insert("attributeType".to_string(), serde_json::json!(typing));
                 }
-                if let Some(redefines) = crate::semantic::ast_util::subsetting_target(attr_usage.value.redefines.as_deref()) {
+                if let Some(redefines) = crate::semantic::ast_util::subsetting_target(
+                    attr_usage.value.redefines.as_deref(),
+                ) {
                     attrs.insert("redefines".to_string(), serde_json::json!(redefines));
                 }
                 if let Some(ref value) = attr_usage.value.value {
                     attrs.insert(
                         "value".to_string(),
-                        serde_json::json!(expression_to_debug_string(value)),
+                        serde_json::json!(expression_to_debug_string(&value.value.expression)),
                     );
                 }
                 add_node_and_recurse(
@@ -581,7 +585,9 @@ pub(super) fn walk_requirement_def_body(
                     attrs,
                     Some(parent_id),
                 );
-                if let Some(typing) = crate::semantic::ast_util::typing_target(attr_usage.value.typing.as_deref()) {
+                if let Some(typing) =
+                    crate::semantic::ast_util::typing_target(attr_usage.value.typing.as_deref())
+                {
                     add_typing_edge_if_exists(g, uri, &qualified, typing, type_resolution_prefix);
                 }
             }

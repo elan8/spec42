@@ -5,7 +5,9 @@ use crate::semantic::text_span::{TextPosition, TextRange};
 use crate::UnitRegistry;
 
 use super::engine::collect_diagnostics_from_graph_with_unit_registry;
-use super::shared_rules::{collect_untyped_part_usage_diagnostics, missing_library_context_diagnostic};
+use super::shared_rules::{
+    collect_untyped_part_usage_diagnostics, missing_library_context_diagnostic,
+};
 use super::types::{DiagnosticSeverity, DiagnosticsOptions, SemanticDiagnostic};
 
 /// Assembles the full diagnostic set for one document: parse errors, untyped-part-usage hints,

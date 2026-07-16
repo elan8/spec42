@@ -101,4 +101,3 @@ pub struct SequenceFragmentDto {
     pub uri: Option<String>,
     pub range: RangeDto,
 }
-

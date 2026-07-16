@@ -10,7 +10,9 @@ use sysml_v2_parser::ast::{DefinitionPrefix, PartUsageBody};
 use sysml_v2_parser::Node;
 use url::Url;
 
-use crate::semantic::ast_util::{declared_multiplicity, span_to_range, subsetting_target, typing_target};
+use crate::semantic::ast_util::{
+    declared_feature_value, declared_multiplicity, span_to_range, subsetting_target, typing_target,
+};
 use crate::semantic::graph::SemanticGraph;
 use crate::semantic::model::{ElementKind, NodeId};
 use crate::semantic::reference_resolution::{resolve_member_via_type, ResolveResult};
@@ -50,7 +52,10 @@ pub(super) fn materialize_part_usage(
     }
     attrs.insert("ordered".to_string(), serde_json::json!(n.ordered));
     if let Some((ref feat, ref val)) = n.subsets {
-        attrs.insert("subsetsFeature".to_string(), serde_json::json!(feat.value.target));
+        attrs.insert(
+            "subsetsFeature".to_string(),
+            serde_json::json!(feat.value.target),
+        );
         if let Some(v) = val {
             attrs.insert(
                 "subsetsValue".to_string(),
@@ -64,7 +69,7 @@ pub(super) fn materialize_part_usage(
     if let Some(ref v) = n.value.value {
         attrs.insert(
             "value".to_string(),
-            serde_json::json!(expressions::expression_to_debug_string(v)),
+            serde_json::json!(expressions::expression_to_debug_string(&v.value.expression)),
         );
     }
     add_node_and_recurse(
@@ -83,10 +88,21 @@ pub(super) fn materialize_part_usage(
             node.declared_facts.multiplicity = Some(declared_multiplicity(multiplicity, n.ordered));
         }
     }
+    if let Some(value) = &n.value.value {
+        if let Some(node) = g.get_node_mut(&node_id) {
+            node.declared_facts.feature_value = Some(declared_feature_value(value));
+        }
+    }
     add_typing_edge_if_exists(g, uri, &qualified, &n.type_name, container_prefix);
     if let PartUsageBody::Brace { elements } = &n.body {
         for child in elements {
-            part_usage::build_from_part_usage_body_element(child, uri, Some(&qualified), &node_id, g);
+            part_usage::build_from_part_usage_body_element(
+                child,
+                uri,
+                Some(&qualified),
+                &node_id,
+                g,
+            );
         }
     }
     node_id
@@ -127,7 +143,7 @@ pub(super) fn materialize_attribute_usage(
     if let Some(ref v) = n.value.value {
         attrs.insert(
             "value".to_string(),
-            serde_json::json!(expressions::expression_to_debug_string(v)),
+            serde_json::json!(expressions::expression_to_debug_string(&v.value.expression)),
         );
     }
     add_node_and_recurse(
@@ -143,7 +159,13 @@ pub(super) fn materialize_attribute_usage(
     if let Some(ref t) = n.typing {
         add_typing_edge_if_exists(g, uri, &qualified, t, container_prefix);
     }
-    NodeId::new(uri, &qualified)
+    let node_id = NodeId::new(uri, &qualified);
+    if let Some(value) = &n.value.value {
+        if let Some(node) = g.get_node_mut(&node_id) {
+            node.declared_facts.feature_value = Some(declared_feature_value(value));
+        }
+    }
+    node_id
 }
 
 /// Builds an `occurrence`-usage node, wiring the typing edge and recursing into its body.

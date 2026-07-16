@@ -196,7 +196,11 @@ mod tests {
         // preceding report_job_result command, so this deterministically waits for it.
         actor.mutate(|_| {}).await.unwrap();
 
-        assert_eq!(snapshot.current().value, 1, "stale job result must not publish");
+        assert_eq!(
+            snapshot.current().value,
+            1,
+            "stale job result must not publish"
+        );
     }
 
     #[tokio::test]

@@ -103,7 +103,9 @@ pub(crate) fn walk_part_usage_type_refs(part_usage: &PartUsage, out: &mut Vec<St
     push_type_reference(&part_usage.type_name, out);
     push_optional_type_reference(subsetting_target(part_usage.redefines.as_deref()), out);
     if let Some((subsets, _)) = &part_usage.subsets {
-        push_type_reference(&subsets.value.target, out);
+        for target in &subsets.value.target {
+            push_type_reference(&target.value.to_display_string(), out);
+        }
     }
     let PartUsageBody::Brace { elements } = &part_usage.body else {
         return;
@@ -157,7 +159,9 @@ pub(crate) fn walk_port_usage_type_refs(port_usage: &PortUsage, out: &mut Vec<St
     push_optional_type_reference(subsetting_target(port_usage.references.as_deref()), out);
     push_optional_type_reference(subsetting_target(port_usage.crosses.as_deref()), out);
     if let Some((subsets, _)) = &port_usage.subsets {
-        push_type_reference(&subsets.value.target, out);
+        for target in &subsets.value.target {
+            push_type_reference(&target.value.to_display_string(), out);
+        }
     }
     let PortBody::Brace { elements } = &port_usage.body else {
         return;

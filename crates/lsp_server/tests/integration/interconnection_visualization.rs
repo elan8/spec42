@@ -111,7 +111,10 @@ fn lsp_interconnection_visualization_returns_slim_scene_only_payload_for_drone()
     let edges = prepared["edges"]
         .as_array()
         .expect("preparedView.edges should be an array");
-    assert!(!edges.is_empty(), "expected non-empty prepared interconnection view");
+    assert!(
+        !edges.is_empty(),
+        "expected non-empty prepared interconnection view"
+    );
 
     let scene = result.get("interconnectionScene");
     assert!(

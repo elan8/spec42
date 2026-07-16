@@ -43,11 +43,15 @@ impl TypeReferenceTarget for String {
 }
 
 impl TypeReferenceTarget for TypingRelationship {
-    fn type_reference_target(&self) -> &str { self.target.as_str() }
+    fn type_reference_target(&self) -> &str {
+        self.target.first().and_then(|target| target.value.local_name()).unwrap_or_default()
+    }
 }
 
 impl TypeReferenceTarget for Node<TypingRelationship> {
-    fn type_reference_target(&self) -> &str { self.value.target.as_str() }
+    fn type_reference_target(&self) -> &str {
+        self.value.target.first().and_then(|target| target.value.local_name()).unwrap_or_default()
+    }
 }
 
 pub const TYPE_REFERENCE_ATTR_KEYS: &[&str] = &[

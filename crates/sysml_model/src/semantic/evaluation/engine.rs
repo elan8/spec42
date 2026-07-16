@@ -133,7 +133,11 @@ impl<'a> EvalEngine<'a> {
         Ok(quantity)
     }
 
-    pub(crate) fn resolve_identifier_value(&mut self, node_id: &NodeId, identifier: &str) -> EvalOutcome {
+    pub(crate) fn resolve_identifier_value(
+        &mut self,
+        node_id: &NodeId,
+        identifier: &str,
+    ) -> EvalOutcome {
         let referenced_id = match self.resolve_identifier_node(node_id, identifier) {
             Ok(found) => found,
             Err(outcome) => return outcome,
@@ -240,7 +244,11 @@ impl<'a> EvalEngine<'a> {
         ))
     }
 
-    pub(crate) fn scoped_candidates(&self, current: &SemanticNode, identifier: &str) -> Vec<NodeId> {
+    pub(crate) fn scoped_candidates(
+        &self,
+        current: &SemanticNode,
+        identifier: &str,
+    ) -> Vec<NodeId> {
         let mut candidates = Vec::new();
         let mut prefixes = scope_prefixes(self.graph, current);
         prefixes.insert(0, current.id.qualified_name.clone());
@@ -255,7 +263,11 @@ impl<'a> EvalEngine<'a> {
         dedupe_node_ids(candidates)
     }
 
-    pub(crate) fn fallback_candidates(&self, current: &SemanticNode, identifier: &str) -> Vec<NodeId> {
+    pub(crate) fn fallback_candidates(
+        &self,
+        current: &SemanticNode,
+        identifier: &str,
+    ) -> Vec<NodeId> {
         let mut candidates = Vec::new();
         if identifier.contains("::") {
             candidates.extend(self.lookup_qualified_candidates(identifier));
@@ -336,7 +348,10 @@ impl<'a> EvalEngine<'a> {
         result
     }
 
-    pub(crate) fn evaluate_builtin_count(&self, normalized_args: &[&str]) -> Result<Quantity, EvalStatus> {
+    pub(crate) fn evaluate_builtin_count(
+        &self,
+        normalized_args: &[&str],
+    ) -> Result<Quantity, EvalStatus> {
         if normalized_args.is_empty() {
             return Err(EvalStatus::Unsupported);
         }
@@ -586,7 +601,11 @@ impl<'a> EvalEngine<'a> {
         }
     }
 
-    pub(crate) fn resolve_callable_node(&self, context_id: &NodeId, callable_name: &str) -> Option<NodeId> {
+    pub(crate) fn resolve_callable_node(
+        &self,
+        context_id: &NodeId,
+        callable_name: &str,
+    ) -> Option<NodeId> {
         let current = self.graph.get_node(context_id)?;
         let mut candidates = Vec::new();
         for scope_prefix in scope_prefixes(self.graph, current) {
@@ -602,7 +621,10 @@ impl<'a> EvalEngine<'a> {
                     .into_iter()
                     .filter(|node| {
                         node.name == callable_name
-                            && matches!(node.element_kind, ElementKind::CalcDef | ElementKind::ConstraintDef)
+                            && matches!(
+                                node.element_kind,
+                                ElementKind::CalcDef | ElementKind::ConstraintDef
+                            )
                     })
                     .map(|node| node.id.clone()),
             );
@@ -619,8 +641,11 @@ impl<'a> EvalEngine<'a> {
             .flatten()
             .filter_map(|node_id| {
                 let node = self.graph.get_node(node_id)?;
-                matches!(node.element_kind, ElementKind::CalcDef | ElementKind::ConstraintDef)
-                    .then_some(node_id.clone())
+                matches!(
+                    node.element_kind,
+                    ElementKind::CalcDef | ElementKind::ConstraintDef
+                )
+                .then_some(node_id.clone())
             })
             .collect()
     }
@@ -755,4 +780,3 @@ pub(crate) fn infer_parameter_names_from_expression(expression: &str) -> Vec<Str
     }
     names
 }
-

@@ -65,8 +65,10 @@ pub(crate) fn build_container_groups(
         }
     }
 
-    let existing_group_ids: std::collections::HashSet<String> =
-        groups_by_qn.values().map(|group| group.id.clone()).collect();
+    let existing_group_ids: std::collections::HashSet<String> = groups_by_qn
+        .values()
+        .map(|group| group.id.clone())
+        .collect();
     let mut groups: Vec<IbdContainerGroupDto> = groups_by_qn
         .into_values()
         .filter(|group| !group.member_part_ids.is_empty())
@@ -91,7 +93,11 @@ pub(crate) fn expanded_port_to_ibd_dto(
     graph: &SemanticGraph,
     port: &crate::semantic::component_view::ExpandedPort,
 ) -> IbdPortDto {
-    let port_side = infer_port_side(&port.name, port.direction.as_deref(), port.port_type.as_deref());
+    let port_side = infer_port_side(
+        &port.name,
+        port.direction.as_deref(),
+        port.port_type.as_deref(),
+    );
     let declaring_node = graph.get_node(&port.node_id);
     IbdPortDto {
         id: canonical_port_id(&port.parent_path, &port.name),

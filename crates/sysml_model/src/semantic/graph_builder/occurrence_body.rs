@@ -3,7 +3,8 @@
 use std::collections::HashMap;
 
 use sysml_v2_parser::ast::{
-    AssertConstraintMember, ConstraintDefBody, ConstraintDefBodyElement, OccurrenceBodyElement, PartUsageBody,
+    AssertConstraintMember, ConstraintDefBody, ConstraintDefBodyElement, OccurrenceBodyElement,
+    PartUsageBody,
 };
 use url::Url;
 
@@ -65,7 +66,7 @@ pub(super) fn build_from_occurrence_body_element(
             if let Some(expr_node) = &value.value {
                 attrs.insert(
                     "value".to_string(),
-                    serde_json::json!(expression_to_debug_string(expr_node)),
+                    serde_json::json!(expression_to_debug_string(&expr_node.value.expression)),
                 );
             }
             add_node_and_recurse(

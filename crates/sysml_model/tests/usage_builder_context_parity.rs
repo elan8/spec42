@@ -172,9 +172,14 @@ fn unnamed_redefining_usage_gets_effective_name_per_spec_7_6_5() {
         .nodes_named("cylinders")
         .into_iter()
         .find(|node| node.id.qualified_name == "P::SixCylinderEngine::cylinders")
-        .expect("expected the redefining `cylinders` usage to be addressable by its effective name");
+        .expect(
+            "expected the redefining `cylinders` usage to be addressable by its effective name",
+        );
     assert_eq!(
-        redefining.attributes.get("redefines").and_then(|v| v.as_str()),
+        redefining
+            .attributes
+            .get("redefines")
+            .and_then(|v| v.as_str()),
         Some("cylinders")
     );
 }
@@ -274,9 +279,13 @@ fn requirement_usage_subsets_feature_is_preserved_in_every_containing_context() 
             .nodes_named("r2")
             .into_iter()
             .find(|node| node.element_kind == "requirement")
-            .unwrap_or_else(|| panic!("expected requirement usage `r2` to exist in context {path}"));
+            .unwrap_or_else(|| {
+                panic!("expected requirement usage `r2` to exist in context {path}")
+            });
         assert_eq!(
-            node.attributes.get("subsetsFeature").and_then(|v| v.as_str()),
+            node.attributes
+                .get("subsetsFeature")
+                .and_then(|v| v.as_str()),
             Some("r1"),
             "expected `r2` to keep subsetsFeature=\"r1\" in context {path}, got {:#?}",
             node.attributes

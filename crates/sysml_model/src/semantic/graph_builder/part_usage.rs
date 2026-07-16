@@ -136,7 +136,7 @@ pub(super) fn build_from_part_usage_body_element(
             let value_expression = n
                 .value
                 .as_ref()
-                .map(expressions::expression_to_debug_string);
+                .map(|value| expressions::expression_to_debug_string(&value.value.expression));
             if let Some(ref v) = value_expression {
                 attrs.insert("value".to_string(), serde_json::json!(v));
             }

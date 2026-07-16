@@ -197,12 +197,15 @@ pub(super) fn build_from_analysis_body(
                     attrs.insert("attributeType".to_string(), serde_json::json!(typing));
                 }
                 if let Some(expr_node) = &value.value {
-                    let rendered = expressions::expression_to_debug_string(expr_node);
+                    let rendered =
+                        expressions::expression_to_debug_string(&expr_node.value.expression);
                     attrs.insert("value".to_string(), serde_json::json!(rendered));
                     attrs.insert("defaultValue".to_string(), serde_json::json!(rendered));
                     attrs.insert(
                         "valueIsBoolean".to_string(),
-                        serde_json::json!(expressions::expression_is_boolean_valued(expr_node)),
+                        serde_json::json!(expressions::expression_is_boolean_valued(
+                            &expr_node.value.expression
+                        )),
                     );
                 }
                 if let Some(span) = value.value_span.as_ref() {

@@ -4,13 +4,13 @@ use std::collections::HashMap;
 
 use url::Url;
 
-use crate::SemanticGraph;
 use crate::semantic::model::{RelationshipKind, SemanticNode};
+use crate::SemanticGraph;
 
 use super::dto::{IbdConnectorDto, IbdDataDto, IbdPartDto, IbdPortDto};
 use super::extract_impl::{
     expand_relative_endpoint_to_part_path, graph_node_for_ibd_part, is_part_like,
-    qualify_occurrence_endpoint, qualify_pending_connection_endpoint, qualified_name_to_dot,
+    qualified_name_to_dot, qualify_occurrence_endpoint, qualify_pending_connection_endpoint,
     resolve_owner_part_qn_for_endpoint, resolve_port_id_for_endpoint,
 };
 
@@ -52,7 +52,11 @@ fn collect_instance_def_mappings(
     }
     for node in graph.nodes_for_uri(uri) {
         if !is_part_like(node.element_kind.as_str())
-            || node.element_kind.as_str().to_lowercase().contains("part def")
+            || node
+                .element_kind
+                .as_str()
+                .to_lowercase()
+                .contains("part def")
         {
             continue;
         }
@@ -98,15 +102,17 @@ fn build_workspace_instance_def_mappings(
         let empty = Vec::new();
         let indices = parts_by_uri.get(uri.as_str()).unwrap_or(&empty);
         for &index in indices {
-            if let Some(mapping) =
-                instance_def_mapping_for_part(graph, uri, &all_parts[index])
-            {
+            if let Some(mapping) = instance_def_mapping_for_part(graph, uri, &all_parts[index]) {
                 mappings.push(mapping);
             }
         }
         for node in graph.nodes_for_uri(uri) {
             if !is_part_like(node.element_kind.as_str())
-                || node.element_kind.as_str().to_lowercase().contains("part def")
+                || node
+                    .element_kind
+                    .as_str()
+                    .to_lowercase()
+                    .contains("part def")
             {
                 continue;
             }
@@ -145,7 +151,12 @@ fn instance_def_mapping_for_part(
     // definition, cross-contaminating unrelated components' instance paths (see O-8 in
     // docs/VIEW-RENDERING-ISSUES.md). The sibling loop in `collect_instance_def_mappings` already
     // guards against this same case for its own candidates; this is the same guard for this path.
-    if node.element_kind.as_str().to_lowercase().contains("part def") {
+    if node
+        .element_kind
+        .as_str()
+        .to_lowercase()
+        .contains("part def")
+    {
         return None;
     }
     let def_node = graph
@@ -178,7 +189,11 @@ fn extend_instance_def_mappings_with_specializations(
             let mut visited: std::collections::HashSet<String> = std::collections::HashSet::new();
             while let Some(source) = stack.pop() {
                 if !is_part_like(source.element_kind.as_str())
-                    || !source.element_kind.as_str().to_lowercase().contains("part def")
+                    || !source
+                        .element_kind
+                        .as_str()
+                        .to_lowercase()
+                        .contains("part def")
                 {
                     continue;
                 }
@@ -308,7 +323,12 @@ fn def_container_prefixes_for_uri(graph: &SemanticGraph, uri: &Url) -> Vec<Strin
     graph
         .nodes_for_uri(uri)
         .iter()
-        .filter(|node| node.element_kind.as_str().to_lowercase().contains("part def"))
+        .filter(|node| {
+            node.element_kind
+                .as_str()
+                .to_lowercase()
+                .contains("part def")
+        })
         .map(|node| node.id.qualified_name.clone())
         .collect()
 }

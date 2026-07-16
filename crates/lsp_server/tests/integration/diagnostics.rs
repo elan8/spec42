@@ -1,4 +1,4 @@
-﻿//! Diagnostics integration tests.
+//! Diagnostics integration tests.
 
 use super::harness::{next_id, read_message, send_message, spawn_server};
 use lsp_server::common::util;
@@ -1369,7 +1369,8 @@ fn requirement_usage_placeholder_attribute_does_not_emit_incomplete_analysis_inf
             }
         }
     "#;
-    let diagnostics = validate_inline_sysml("analysis_requirement_usage_placeholder.sysml", content);
+    let diagnostics =
+        validate_inline_sysml("analysis_requirement_usage_placeholder.sysml", content);
     assert!(
         !has_diag_code(&diagnostics, "semantic", "analysis_evaluation_incomplete"),
         "analysis_evaluation_incomplete was removed entirely: {diagnostics:#?}"
@@ -2266,7 +2267,6 @@ fn public_import_reexport_clears_unresolved_type_diagnostic() {
 
     let _ = child.kill();
 }
-
 
 #[test]
 fn private_import_chain_keeps_unresolved_type_diagnostic() {

@@ -195,7 +195,7 @@ fn add_ref_decl(
     if let Some(ref v) = n.value {
         attrs.insert(
             "value".to_string(),
-            serde_json::json!(expressions::expression_to_debug_string(v)),
+            serde_json::json!(expressions::expression_to_debug_string(&v.value.expression)),
         );
     }
     add_node_and_recurse(
@@ -799,7 +799,7 @@ pub(super) fn materialize_action_def(
     let mut attrs = HashMap::new();
     attach_short_name_attribute(&mut attrs, &ad_node.identification);
     if let Some(spec) = specializes
-        .map(|relationship| relationship.target.as_str())
+        .and_then(|spec| crate::semantic::ast_util::typing_target(Some(spec)))
         .filter(|target| !target.trim().is_empty())
     {
         attrs.insert("specializes".to_string(), serde_json::json!(spec));

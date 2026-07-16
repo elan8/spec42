@@ -105,7 +105,10 @@ fn add_kerml_library_decl_node(g: &mut SemanticGraph, input: KermlLibraryNodeInp
     }
 }
 
-pub(super) fn add_kerml_library_feature_node(g: &mut SemanticGraph, input: KermlLibraryNodeInput<'_>) {
+pub(super) fn add_kerml_library_feature_node(
+    g: &mut SemanticGraph,
+    input: KermlLibraryNodeInput<'_>,
+) {
     let KermlLibraryNodeInput {
         uri,
         container_prefix,
@@ -193,7 +196,8 @@ pub(super) fn build_kerml_semantic_decl(
             })
             .is_some();
     if !promoted {
-        let display_name = extract_modeled_decl_name(&kv.bnf_production, &kv.text, "_kermlSemantic");
+        let display_name =
+            extract_modeled_decl_name(&kv.bnf_production, &kv.text, "_kermlSemantic");
         add_kerml_library_decl_node(
             g,
             KermlLibraryNodeInput {

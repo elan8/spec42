@@ -37,7 +37,10 @@ fn transition_effect_to_debug_string(effect: &TransitionEffect) -> String {
             type_name,
             via,
         } => {
-            let mut s = format!("accept {}", expressions::expression_to_debug_string(payload));
+            let mut s = format!(
+                "accept {}",
+                expressions::expression_to_debug_string(payload)
+            );
             if let Some(t) = type_name {
                 s.push_str(&format!(" : {t}"));
             }
@@ -375,7 +378,9 @@ pub(super) fn build_from_state_body(
                 if let Some(ref v) = n.value {
                     attrs.insert(
                         "value".to_string(),
-                        serde_json::json!(expressions::expression_to_debug_string(v)),
+                        serde_json::json!(expressions::expression_to_debug_string(
+                            &v.value.expression
+                        )),
                     );
                 }
                 add_node_and_recurse(

@@ -291,7 +291,11 @@ where
         }
     }
 
-    pub(crate) fn add_quantities(&self, left: Quantity, right: Quantity) -> Result<Quantity, EvalStatus> {
+    pub(crate) fn add_quantities(
+        &self,
+        left: Quantity,
+        right: Quantity,
+    ) -> Result<Quantity, EvalStatus> {
         match (&left.unit, &right.unit) {
             (None, None) => Ok(Quantity::scalar(left.value + right.value)),
             (Some(unit), None) | (None, Some(unit)) => {
@@ -313,7 +317,11 @@ where
         }
     }
 
-    pub(crate) fn sub_quantities(&self, left: Quantity, right: Quantity) -> Result<Quantity, EvalStatus> {
+    pub(crate) fn sub_quantities(
+        &self,
+        left: Quantity,
+        right: Quantity,
+    ) -> Result<Quantity, EvalStatus> {
         self.add_quantities(
             left,
             Quantity {
@@ -369,5 +377,3 @@ pub(crate) fn add_quantities_with_units(
         }
     }
 }
-
-

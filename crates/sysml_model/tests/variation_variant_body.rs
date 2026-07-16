@@ -116,7 +116,10 @@ fn variation_part_def_typed_part_variant_materializes_as_part_node() {
             "typed variant '{name}' should be owned by the variation part def"
         );
         assert_eq!(
-            variant.attributes.get("isVariant").and_then(|v| v.as_bool()),
+            variant
+                .attributes
+                .get("isVariant")
+                .and_then(|v| v.as_bool()),
             Some(true),
             "typed variant '{name}' should be tagged isVariant"
         );

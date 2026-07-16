@@ -82,7 +82,11 @@ fn collect_semantic_ranges_package_body_element(
         PBE::PartDef(pd_node) => {
             push_ident_definition_spans(
                 &pd_node.span,
-                pd_node.value.specializes.as_ref().map(|relationship| &relationship.value.span),
+                pd_node
+                    .value
+                    .specializes
+                    .as_ref()
+                    .map(|relationship| &relationship.value.span),
                 TYPE_CLASS,
                 out,
             );
@@ -147,7 +151,11 @@ fn collect_semantic_ranges_package_body_element(
         PBE::ActionDef(ad_node) => {
             push_ident_definition_spans(
                 &ad_node.span,
-                ad_node.value.specializes.as_ref().map(|relationship| &relationship.value.span),
+                ad_node
+                    .value
+                    .specializes
+                    .as_ref()
+                    .map(|relationship| &relationship.value.span),
                 TYPE_FUNCTION,
                 out,
             );
@@ -163,7 +171,11 @@ fn collect_semantic_ranges_package_body_element(
         PBE::RequirementDef(rd_node) => {
             push_ident_definition_spans(
                 &rd_node.span,
-                rd_node.value.specializes.as_ref().map(|relationship| &relationship.value.span),
+                rd_node
+                    .value
+                    .specializes
+                    .as_ref()
+                    .map(|relationship| &relationship.value.span),
                 TYPE_CLASS,
                 out,
             );
@@ -259,7 +271,11 @@ fn collect_semantic_ranges_package_body_element(
         PBE::ItemDef(id_node) => {
             push_ident_definition_spans(
                 &id_node.span,
-                id_node.value.specializes.as_ref().map(|relationship| &relationship.value.span),
+                id_node
+                    .value
+                    .specializes
+                    .as_ref()
+                    .map(|relationship| &relationship.value.span),
                 TYPE_CLASS,
                 out,
             );
@@ -268,7 +284,11 @@ fn collect_semantic_ranges_package_body_element(
         PBE::IndividualDef(id_node) => {
             push_ident_definition_spans(
                 &id_node.span,
-                id_node.value.specializes.as_ref().map(|relationship| &relationship.value.span),
+                id_node
+                    .value
+                    .specializes
+                    .as_ref()
+                    .map(|relationship| &relationship.value.span),
                 TYPE_CLASS,
                 out,
             );
@@ -277,7 +297,11 @@ fn collect_semantic_ranges_package_body_element(
         PBE::MetadataDef(md_node) => {
             push_ident_definition_spans(
                 &md_node.span,
-                md_node.value.specializes.as_ref().map(|relationship| &relationship.value.span),
+                md_node
+                    .value
+                    .specializes
+                    .as_ref()
+                    .map(|relationship| &relationship.value.span),
                 TYPE_CLASS,
                 out,
             );
@@ -286,7 +310,11 @@ fn collect_semantic_ranges_package_body_element(
         PBE::OccurrenceDef(occ_node) => {
             push_ident_definition_spans(
                 &occ_node.span,
-                occ_node.value.specializes.as_ref().map(|relationship| &relationship.value.span),
+                occ_node
+                    .value
+                    .specializes
+                    .as_ref()
+                    .map(|relationship| &relationship.value.span),
                 TYPE_CLASS,
                 out,
             );
@@ -295,7 +323,11 @@ fn collect_semantic_ranges_package_body_element(
         PBE::FlowDef(flow_node) => {
             push_ident_definition_spans(
                 &flow_node.span,
-                flow_node.value.specializes.as_ref().map(|relationship| &relationship.value.span),
+                flow_node
+                    .value
+                    .specializes
+                    .as_ref()
+                    .map(|relationship| &relationship.value.span),
                 TYPE_INTERFACE,
                 out,
             );
@@ -318,7 +350,11 @@ fn collect_semantic_ranges_package_body_element(
         PBE::AllocationDef(alloc_node) => {
             push_ident_definition_spans(
                 &alloc_node.span,
-                alloc_node.value.specializes.as_ref().map(|relationship| &relationship.value.span),
+                alloc_node
+                    .value
+                    .specializes
+                    .as_ref()
+                    .map(|relationship| &relationship.value.span),
                 TYPE_INTERFACE,
                 out,
             );
@@ -327,7 +363,11 @@ fn collect_semantic_ranges_package_body_element(
         PBE::StateDef(sd_node) => {
             push_ident_definition_spans(
                 &sd_node.span,
-                sd_node.value.specializes.as_ref().map(|relationship| &relationship.value.span),
+                sd_node
+                    .value
+                    .specializes
+                    .as_ref()
+                    .map(|relationship| &relationship.value.span),
                 TYPE_CLASS,
                 out,
             );
@@ -351,7 +391,11 @@ fn collect_semantic_ranges_package_body_element(
         PBE::ConstraintDef(cd_node) => {
             push_ident_definition_spans(
                 &cd_node.span,
-                cd_node.value.specializes.as_ref().map(|relationship| &relationship.value.span),
+                cd_node
+                    .value
+                    .specializes
+                    .as_ref()
+                    .map(|relationship| &relationship.value.span),
                 TYPE_CLASS,
                 out,
             );
@@ -362,7 +406,11 @@ fn collect_semantic_ranges_package_body_element(
         PBE::EnumDef(enum_node) => {
             push_ident_definition_spans(
                 &enum_node.span,
-                enum_node.value.specializes.as_ref().map(|relationship| &relationship.value.span),
+                enum_node
+                    .value
+                    .specializes
+                    .as_ref()
+                    .map(|relationship| &relationship.value.span),
                 TYPE_CLASS,
                 out,
             );
@@ -370,7 +418,11 @@ fn collect_semantic_ranges_package_body_element(
         PBE::UseCaseDef(uc_node) => {
             push_ident_definition_spans(
                 &uc_node.span,
-                uc_node.value.specializes.as_ref().map(|relationship| &relationship.value.span),
+                uc_node
+                    .value
+                    .specializes
+                    .as_ref()
+                    .map(|relationship| &relationship.value.span),
                 TYPE_CLASS,
                 out,
             );
@@ -378,7 +430,11 @@ fn collect_semantic_ranges_package_body_element(
         PBE::VerificationCaseDef(vc_node) => {
             push_ident_definition_spans(
                 &vc_node.span,
-                vc_node.value.specializes.as_ref().map(|relationship| &relationship.value.span),
+                vc_node
+                    .value
+                    .specializes
+                    .as_ref()
+                    .map(|relationship| &relationship.value.span),
                 TYPE_CLASS,
                 out,
             );
@@ -386,7 +442,11 @@ fn collect_semantic_ranges_package_body_element(
         PBE::CaseDef(case_node) => {
             push_ident_definition_spans(
                 &case_node.span,
-                case_node.value.specializes.as_ref().map(|relationship| &relationship.value.span),
+                case_node
+                    .value
+                    .specializes
+                    .as_ref()
+                    .map(|relationship| &relationship.value.span),
                 TYPE_CLASS,
                 out,
             );
@@ -394,7 +454,11 @@ fn collect_semantic_ranges_package_body_element(
         PBE::AnalysisCaseDef(ac_node) => {
             push_ident_definition_spans(
                 &ac_node.span,
-                ac_node.value.specializes.as_ref().map(|relationship| &relationship.value.span),
+                ac_node
+                    .value
+                    .specializes
+                    .as_ref()
+                    .map(|relationship| &relationship.value.span),
                 TYPE_CLASS,
                 out,
             );
@@ -652,9 +716,7 @@ fn collect_semantic_ranges_state_def_body_element(
 ) {
     use StateDefBodyElement as SDBE;
     match &node.value {
-        SDBE::StateUsage(state_usage) => {
-            collect_semantic_ranges_state_usage(ctx, state_usage, out)
-        }
+        SDBE::StateUsage(state_usage) => collect_semantic_ranges_state_usage(ctx, state_usage, out),
         SDBE::Transition(transition) => collect_semantic_ranges_transition(transition, out),
         SDBE::Then(then_stmt) => collect_semantic_ranges_then_stmt(&then_stmt.value, out),
         SDBE::FinalState(final_state) => {
@@ -811,7 +873,11 @@ fn collect_semantic_ranges_part_def_body_element(
         PDBE::ItemDef(id_node) => {
             push_ident_definition_spans(
                 &id_node.span,
-                id_node.value.specializes.as_ref().map(|relationship| &relationship.value.span),
+                id_node
+                    .value
+                    .specializes
+                    .as_ref()
+                    .map(|relationship| &relationship.value.span),
                 TYPE_CLASS,
                 out,
             );
@@ -832,7 +898,11 @@ fn collect_semantic_ranges_part_def_body_element(
         PDBE::PartDef(pd_node) => {
             push_ident_definition_spans(
                 &pd_node.span,
-                pd_node.value.specializes.as_ref().map(|relationship| &relationship.value.span),
+                pd_node
+                    .value
+                    .specializes
+                    .as_ref()
+                    .map(|relationship| &relationship.value.span),
                 TYPE_CLASS,
                 out,
             );
@@ -1190,9 +1260,10 @@ fn collect_semantic_ranges_requirement_def_body_element(
                 RequirementDefBody::Semicolon => {}
             }
         }
-        RDBE::Import(import) => {
-            out.push((span_to_source_range(&import.value.target_span), TYPE_NAMESPACE))
-        }
+        RDBE::Import(import) => out.push((
+            span_to_source_range(&import.value.target_span),
+            TYPE_NAMESPACE,
+        )),
         RDBE::TextualRep(textual) => {
             if let Some(ref span) = textual.value.language_span {
                 out.push((span_to_source_range(span), TYPE_STRING));

@@ -127,9 +127,17 @@ pub(super) fn build_from_port_body_element(
         }
         PBE::InOutDecl(w) => build_in_out_decl(w, uri, container_prefix, parent_id, g),
         PBE::AttributeUsage(attribute) => {
-            super::usage_builders::materialize_attribute_usage(attribute, uri, container_prefix, parent_id, g);
+            super::usage_builders::materialize_attribute_usage(
+                attribute,
+                uri,
+                container_prefix,
+                parent_id,
+                g,
+            );
         }
-        PBE::ItemUsage(item) => materialize_port_def_item_usage(item, uri, container_prefix, parent_id, g),
+        PBE::ItemUsage(item) => {
+            materialize_port_def_item_usage(item, uri, container_prefix, parent_id, g)
+        }
         PBE::Error(_) => {}
         PBE::Doc(doc) => super::attach_doc_comment(g, parent_id, &doc.value.text),
     }
@@ -235,7 +243,9 @@ pub(super) fn build_from_port_def_body_element(
                 if let Some(ref v) = n.value.value {
                     attrs.insert(
                         "value".to_string(),
-                        serde_json::json!(expressions::expression_to_debug_string(v)),
+                        serde_json::json!(expressions::expression_to_debug_string(
+                            &v.value.expression
+                        )),
                     );
                 }
                 add_node_and_recurse(
@@ -257,7 +267,11 @@ pub(super) fn build_from_port_def_body_element(
             materialize_port_def_item_usage(n, uri, container_prefix, parent_id, g);
         }
         PDBE::ItemDef(item) => super::package_body::materialize_item_def(
-            g, uri, container_prefix, Some(parent_id), item,
+            g,
+            uri,
+            container_prefix,
+            Some(parent_id),
+            item,
         ),
         PDBE::EnumerationUsage(_) => {}
         PDBE::PortUsage(n) => {

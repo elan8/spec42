@@ -237,6 +237,7 @@ pub(crate) fn project_host_semantic_model(
 
     let mut expressions = Vec::new();
     let mut multiplicities = Vec::new();
+    let mut feature_values = Vec::new();
     for node in &nodes {
         let Some(facts) = graph
             .node_ids_by_qualified_name
@@ -247,35 +248,49 @@ pub(crate) fn project_host_semantic_model(
         else {
             continue;
         };
-        let Some(multiplicity) = &facts.multiplicity else {
-            continue;
-        };
-        let multiplicity_id = derived_fact_id("multiplicity", &node.semantic_id, "");
-        let lower_bound_id = multiplicity
-            .lower
-            .as_ref()
-            .map(|value| project_expression(value, &multiplicity_id, "lower", &mut expressions));
-        let upper_bound_id = multiplicity
-            .upper
-            .as_ref()
-            .map(|value| project_expression(value, &multiplicity_id, "upper", &mut expressions));
-        multiplicities.push(HostMultiplicity {
-            semantic_id: multiplicity_id,
-            owner_id: node.semantic_id.clone(),
-            lower_bound_id,
-            upper_bound_id,
-            range: multiplicity.range,
-            is_implied: multiplicity.is_implied,
-            is_ordered: multiplicity.is_ordered,
-            is_unique: multiplicity.is_unique,
-        });
+        if let Some(multiplicity) = &facts.multiplicity {
+            let multiplicity_id = derived_fact_id("multiplicity", &node.semantic_id, "");
+            let lower_bound_id = multiplicity.lower.as_ref().map(|value| {
+                project_expression(value, &multiplicity_id, "lower", &mut expressions)
+            });
+            let upper_bound_id = multiplicity.upper.as_ref().map(|value| {
+                project_expression(value, &multiplicity_id, "upper", &mut expressions)
+            });
+            multiplicities.push(HostMultiplicity {
+                semantic_id: multiplicity_id,
+                owner_id: node.semantic_id.clone(),
+                lower_bound_id,
+                upper_bound_id,
+                range: multiplicity.range,
+                is_implied: multiplicity.is_implied,
+                is_ordered: multiplicity.is_ordered,
+                is_unique: multiplicity.is_unique,
+            });
+        }
+        if let Some(value) = &facts.feature_value {
+            let feature_value_id = derived_fact_id("featureValue", &node.semantic_id, "");
+            let expression_id = project_expression(
+                &value.expression,
+                &feature_value_id,
+                "expression",
+                &mut expressions,
+            );
+            feature_values.push(HostFeatureValue {
+                semantic_id: feature_value_id,
+                owner_id: node.semantic_id.clone(),
+                expression_id,
+                kind: format!("{:?}", value.kind).to_ascii_lowercase(),
+                range: value.range,
+                is_implied: false,
+            });
+        }
     }
     Ok(HostSemanticProjection {
         nodes,
         relationships,
         multiplicities,
         expressions,
-        feature_values: Vec::<HostFeatureValue>::new(),
+        feature_values,
     })
 }
 

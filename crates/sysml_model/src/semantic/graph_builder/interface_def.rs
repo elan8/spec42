@@ -59,7 +59,7 @@ fn add_ref_decl(
     if let Some(ref v) = n.value {
         attrs.insert(
             "value".to_string(),
-            serde_json::json!(expressions::expression_to_debug_string(v)),
+            serde_json::json!(expressions::expression_to_debug_string(&v.value.expression)),
         );
     }
     add_node_and_recurse(
@@ -176,17 +176,35 @@ pub(super) fn build_from_interface_def_body_element(
         E::RefDecl(w) => add_ref_decl(g, uri, container_prefix, parent_id, w),
         E::ConnectStmt(w) => add_connect_stmt(g, uri, container_prefix, w),
         E::AttributeDef(attribute) => super::package_body::materialize_attribute_def(
-            g, uri, container_prefix, Some(parent_id), attribute,
+            g,
+            uri,
+            container_prefix,
+            Some(parent_id),
+            attribute,
         ),
         E::AttributeUsage(attribute) => {
-            super::usage_builders::materialize_attribute_usage(attribute, uri, container_prefix, parent_id, g);
+            super::usage_builders::materialize_attribute_usage(
+                attribute,
+                uri,
+                container_prefix,
+                parent_id,
+                g,
+            );
         }
         E::ItemDef(item) => super::package_body::materialize_item_def(
-            g, uri, container_prefix, Some(parent_id), item,
+            g,
+            uri,
+            container_prefix,
+            Some(parent_id),
+            item,
         ),
         E::ItemUsage(_) | E::PortUsage(_) => {}
         E::PortDef(port) => super::package_body::materialize_port_def(
-            g, uri, container_prefix, Some(parent_id), port,
+            g,
+            uri,
+            container_prefix,
+            Some(parent_id),
+            port,
         ),
     }
 }
@@ -208,16 +226,34 @@ pub(super) fn build_from_connection_def_body_element(
         E::ConnectStmt(w) => add_connect_stmt(g, uri, container_prefix, w),
         E::Doc(doc) => super::attach_doc_comment(g, parent_id, &doc.value.text),
         E::AttributeDef(attribute) => super::package_body::materialize_attribute_def(
-            g, uri, container_prefix, Some(parent_id), attribute,
+            g,
+            uri,
+            container_prefix,
+            Some(parent_id),
+            attribute,
         ),
         E::AttributeUsage(attribute) => {
-            super::usage_builders::materialize_attribute_usage(attribute, uri, container_prefix, parent_id, g);
+            super::usage_builders::materialize_attribute_usage(
+                attribute,
+                uri,
+                container_prefix,
+                parent_id,
+                g,
+            );
         }
         E::ItemDef(item) => super::package_body::materialize_item_def(
-            g, uri, container_prefix, Some(parent_id), item,
+            g,
+            uri,
+            container_prefix,
+            Some(parent_id),
+            item,
         ),
         E::PortDef(port) => super::package_body::materialize_port_def(
-            g, uri, container_prefix, Some(parent_id), port,
+            g,
+            uri,
+            container_prefix,
+            Some(parent_id),
+            port,
         ),
         E::ItemUsage(_) | E::PortUsage(_) | E::Error(_) => {}
     }

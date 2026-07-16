@@ -13,7 +13,7 @@ members = [
 ]
 
 [workspace.package]
-version = "0.35.0"
+version = "0.36.0"
 edition = "2021"
 authors = ["Elan8"]
 license = "MIT"
@@ -30,5 +30,5 @@ clap = { version = "4", features = ["derive"] }
 rmcp = { version = "0.9", features = ["server"] }
 schemars = { version = "1.1", features = ["derive"] }
 petgraph = { version = "0.8", features = ["serde-1"] }
-sysml-v2-parser = { version = "0.35.0", features = ["serde"] }
+sysml-v2-parser = { version = "0.36.0", features = ["serde"] }
 ts-rs = { version = "11", features = ["serde-compat", "serde-json-impl"] }

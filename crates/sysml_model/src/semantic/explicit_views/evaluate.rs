@@ -176,4 +176,3 @@ pub(crate) fn with_ancestors(
     }
     visible_ids
 }
-

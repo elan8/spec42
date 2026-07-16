@@ -25,7 +25,10 @@ fn is_action_like(kind: &crate::ElementKind) -> bool {
 }
 
 fn is_state_like(kind: &crate::ElementKind) -> bool {
-    matches!(kind, crate::ElementKind::State | crate::ElementKind::StateDef)
+    matches!(
+        kind,
+        crate::ElementKind::State | crate::ElementKind::StateDef
+    )
 }
 
 fn state_def_contains_node(graph: &SemanticGraph, state_def_qn: &str, node: &SemanticNode) -> bool {

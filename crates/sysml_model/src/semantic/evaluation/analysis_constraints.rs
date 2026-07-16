@@ -67,7 +67,10 @@ pub(crate) fn evaluate_analysis_display_quantity(
 }
 
 pub(crate) fn is_definition_only_analysis_node(node: &SemanticNode) -> bool {
-    matches!(node.element_kind, ElementKind::ConstraintDef | ElementKind::CalcDef)
+    matches!(
+        node.element_kind,
+        ElementKind::ConstraintDef | ElementKind::CalcDef
+    )
 }
 
 pub(crate) fn parse_verdict_kind_token(expression: &str) -> Option<String> {
@@ -670,7 +673,10 @@ pub(crate) fn map_analysis_eval_error(status: EvalStatus) -> String {
     }
 }
 
-pub(crate) fn prefer_analysis_error(left: AnalysisEvalError, right: AnalysisEvalError) -> AnalysisEvalError {
+pub(crate) fn prefer_analysis_error(
+    left: AnalysisEvalError,
+    right: AnalysisEvalError,
+) -> AnalysisEvalError {
     if left.status == EvalStatus::Incomplete || right.status != EvalStatus::Incomplete {
         left
     } else {
@@ -681,4 +687,3 @@ pub(crate) fn prefer_analysis_error(left: AnalysisEvalError, right: AnalysisEval
 pub(crate) fn is_identifier_char(ch: char) -> bool {
     ch.is_ascii_alphanumeric() || ch == '_'
 }
-

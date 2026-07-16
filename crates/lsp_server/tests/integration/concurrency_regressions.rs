@@ -171,7 +171,8 @@ fn superseded_relink_result_is_dropped_and_does_not_regress_diagnostics() {
     let mut stdout = child.stdout.take().expect("stdout");
 
     let uri = "file:///superseded_relink.sysml";
-    let broken = "package P {\n  part def Vehicle {\n    part engine : MissingEngineType;\n  }\n}\n";
+    let broken =
+        "package P {\n  part def Vehicle {\n    part engine : MissingEngineType;\n  }\n}\n";
     let fixed = "package P {\n  part def MissingEngineType;\n  part def Vehicle {\n    part engine : MissingEngineType;\n  }\n}\n";
 
     let init_id = next_id();
@@ -246,7 +247,8 @@ fn superseded_relink_result_is_dropped_and_does_not_regress_diagnostics() {
             .to_string(),
         );
         loop {
-            let msg = read_message(&mut stdout).expect("expected message while waiting for barrier");
+            let msg =
+                read_message(&mut stdout).expect("expected message while waiting for barrier");
             let json: serde_json::Value = serde_json::from_str(&msg).unwrap_or_default();
             if json["method"].as_str() == Some("textDocument/publishDiagnostics")
                 && json["params"]["uri"].as_str() == Some(uri)

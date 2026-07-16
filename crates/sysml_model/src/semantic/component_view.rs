@@ -129,7 +129,14 @@ pub fn inherited_ports(
     let mut out = Vec::new();
     let mut seen: HashSet<(String, String)> = HashSet::new();
     let mut visiting = HashSet::new();
-    collect_inherited_ports(graph, def_node, parent_path, &mut out, &mut seen, &mut visiting);
+    collect_inherited_ports(
+        graph,
+        def_node,
+        parent_path,
+        &mut out,
+        &mut seen,
+        &mut visiting,
+    );
     out
 }
 
@@ -172,7 +179,12 @@ pub fn expand_part_usage(
 ) -> Option<Vec<ExpandedPart>> {
     let def_node = first_typed_definition_with_shape(graph, usage_node)?;
     let parent_path = usage_node.name.as_str();
-    Some(expand_part_definition(graph, def_node, parent_path, max_depth))
+    Some(expand_part_definition(
+        graph,
+        def_node,
+        parent_path,
+        max_depth,
+    ))
 }
 
 /// Resolves the canonical type/specialization target for a usage-like node.
@@ -211,9 +223,10 @@ pub fn resolved_usage_context(
         let bucket = match child.element_kind {
             ElementKind::Part | ElementKind::PartDef => Some(&mut parts),
             ElementKind::Port | ElementKind::PortDef => Some(&mut ports),
-            ElementKind::Interface | ElementKind::InterfaceDef | ElementKind::Connection | ElementKind::ConnectionDef => {
-                Some(&mut interfaces)
-            }
+            ElementKind::Interface
+            | ElementKind::InterfaceDef
+            | ElementKind::Connection
+            | ElementKind::ConnectionDef => Some(&mut interfaces),
             ElementKind::Item | ElementKind::ItemDef => Some(&mut items),
             ElementKind::Attribute | ElementKind::AttributeDef => Some(&mut attributes),
             ElementKind::Action
@@ -222,9 +235,9 @@ pub fn resolved_usage_context(
             | ElementKind::State
             | ElementKind::StateDef
             | ElementKind::Transition => Some(&mut behaviors),
-            ElementKind::Requirement | ElementKind::RequirementDef | ElementKind::VerifiedRequirement => {
-                Some(&mut requirements)
-            }
+            ElementKind::Requirement
+            | ElementKind::RequirementDef
+            | ElementKind::VerifiedRequirement => Some(&mut requirements),
             _ => None,
         };
         if let Some(bucket) = bucket {
@@ -310,15 +323,15 @@ fn compute_has_materialized_shape(
     if !visiting.insert(def_node.id.clone()) {
         return false;
     }
-    let has_direct = graph
-        .children_of(def_node)
-        .iter()
-        .any(|child| is_part_like(child.element_kind.as_str()) || is_port_like(child.element_kind.as_str()));
-    let result = has_direct || graph
-        .outgoing_typing_or_specializes_targets(def_node)
-        .into_iter()
-        .filter(|g| is_part_like(g.element_kind.as_str()))
-        .any(|generalization| compute_has_materialized_shape(graph, generalization, visiting));
+    let has_direct = graph.children_of(def_node).iter().any(|child| {
+        is_part_like(child.element_kind.as_str()) || is_port_like(child.element_kind.as_str())
+    });
+    let result = has_direct
+        || graph
+            .outgoing_typing_or_specializes_targets(def_node)
+            .into_iter()
+            .filter(|g| is_part_like(g.element_kind.as_str()))
+            .any(|generalization| compute_has_materialized_shape(graph, generalization, visiting));
     visiting.remove(&def_node.id);
     graph.set_cached_shape(&def_node.id, result);
     result
@@ -584,7 +597,10 @@ mod tests {
         let usage = node_by_qualified_name(&graph, "Demo::Robot::cleaningHead");
         let context = resolved_usage_context(&graph, usage).expect("context should resolve");
 
-        assert_eq!(context.resolved_definition.qualified_name, "Demo::CleaningHead");
+        assert_eq!(
+            context.resolved_definition.qualified_name,
+            "Demo::CleaningHead"
+        );
         assert_eq!(context.parts.len(), 1);
         assert_eq!(context.parts[0].name, "brushMotor");
         assert_eq!(context.parts[0].origin, "direct");

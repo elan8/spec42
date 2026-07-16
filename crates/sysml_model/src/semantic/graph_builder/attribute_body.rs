@@ -50,7 +50,8 @@ pub(super) fn build_from_attribute_body(
                 }
                 unit_metadata::project_attribute_def_unit_metadata(&mut attrs, value);
                 if let Some(expr_node) = &value.value {
-                    let rendered = expressions::expression_to_debug_string(expr_node);
+                    let rendered =
+                        expressions::expression_to_debug_string(&expr_node.value.expression);
                     attrs.insert("value".to_string(), serde_json::json!(rendered));
                     attrs.insert("defaultValue".to_string(), serde_json::json!(rendered));
                 }
@@ -72,7 +73,8 @@ pub(super) fn build_from_attribute_body(
             AttributeBodyElement::AttributeUsage(attribute) => {
                 let value = &attribute.value;
                 let name = super::effective_usage_name(&value.name, value.redefines.as_deref());
-                let qualified = qualified_name_for_node(g, uri, container_prefix, name, "attribute");
+                let qualified =
+                    qualified_name_for_node(g, uri, container_prefix, name, "attribute");
                 let mut attrs = HashMap::new();
                 if let Some(typing) = typing_target(value.typing.as_deref()) {
                     attrs.insert("attributeType".to_string(), serde_json::json!(typing));
@@ -93,7 +95,9 @@ pub(super) fn build_from_attribute_body(
                 if let Some(expr_node) = &value.value {
                     attrs.insert(
                         "value".to_string(),
-                        serde_json::json!(expressions::expression_to_debug_string(expr_node)),
+                        serde_json::json!(expressions::expression_to_debug_string(
+                            &expr_node.value.expression
+                        )),
                     );
                 }
                 add_node_and_recurse(

@@ -53,8 +53,10 @@ fn merge_ibd_payloads_inner(ibds: Vec<IbdDataDto>, enrich_connectors: bool) -> I
         String,
         IbdPackageContainerGroupDto,
     > = std::collections::HashMap::new();
-    let mut def_instance_mappings_by_key: std::collections::HashMap<(String, String), DefInstanceMappingDto> =
-        std::collections::HashMap::new();
+    let mut def_instance_mappings_by_key: std::collections::HashMap<
+        (String, String),
+        DefInstanceMappingDto,
+    > = std::collections::HashMap::new();
 
     for ibd in ibds {
         for mapping in ibd.def_instance_mappings {

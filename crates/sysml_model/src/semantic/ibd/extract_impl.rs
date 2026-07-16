@@ -6,8 +6,8 @@ use std::collections::{HashMap, HashSet};
 use url::Url;
 
 use super::connectors::{
-    build_instance_def_mappings, dedupe_connectors, enrich_connector_endpoint_refs,
-    endpoint_under_definition_prefix, map_definition_endpoint_to_usage,
+    build_instance_def_mappings, dedupe_connectors, endpoint_under_definition_prefix,
+    enrich_connector_endpoint_refs, map_definition_endpoint_to_usage,
     mirror_connectors_from_definition_document, remap_connectors_to_typed_instances,
     IbdConnectorSink,
 };
@@ -17,17 +17,16 @@ use super::dto::{
 };
 use crate::{ElementKind, NodeId, RelationshipKind, SemanticGraph, SemanticNode};
 
-
-mod kind_classify;
-mod endpoint_resolution;
-mod scope_pruning;
-mod endpoint_expansion;
 mod container_groups;
-pub(crate) use kind_classify::*;
-pub(crate) use endpoint_resolution::*;
-pub(crate) use scope_pruning::*;
-pub(crate) use endpoint_expansion::*;
+mod endpoint_expansion;
+mod endpoint_resolution;
+mod kind_classify;
+mod scope_pruning;
 pub(crate) use container_groups::*;
+pub(crate) use endpoint_expansion::*;
+pub(crate) use endpoint_resolution::*;
+pub(crate) use kind_classify::*;
+pub(crate) use scope_pruning::*;
 
 /// Interconnection view (BNF): `interconnection-element = part | part-ref` — no definitions on canvas.
 pub(crate) fn prune_interconnection_definition_parts(
@@ -148,8 +147,6 @@ pub(crate) fn graph_node_for_ibd_part<'a>(
         .and_then(|id| graph.get_node(&id))
 }
 
-
-
 /// Builds IBD data for the given URI from the semantic graph.
 pub fn build_ibd_for_uri(graph: &SemanticGraph, uri: &Url) -> IbdDataDto {
     let nodes = graph.nodes_for_uri(uri);
@@ -228,14 +225,16 @@ pub fn build_ibd_for_uri(graph: &SemanticGraph, uri: &Url) -> IbdDataDto {
         let Some(node) = graph_node_for_ibd_part(graph, uri, p) else {
             continue;
         };
-        let Some(def_node) = crate::semantic::component_view::first_typed_definition_with_shape(graph, node)
+        let Some(def_node) =
+            crate::semantic::component_view::first_typed_definition_with_shape(graph, node)
         else {
             continue;
         };
         typed_roots.push((p.qualified_name.clone(), def_node.id.clone()));
         let parent_dot = p.qualified_name.as_str();
-        let expanded =
-            crate::semantic::component_view::expand_part_definition(graph, def_node, parent_dot, None);
+        let expanded = crate::semantic::component_view::expand_part_definition(
+            graph, def_node, parent_dot, None,
+        );
         for ep in &expanded {
             if !existing_part_qn_dot.insert(ep.path.clone()) {
                 continue;
@@ -271,7 +270,12 @@ pub fn build_ibd_for_uri(graph: &SemanticGraph, uri: &Url) -> IbdDataDto {
 
     let def_container_prefixes: Vec<String> = nodes
         .iter()
-        .filter(|node| node.element_kind.as_str().to_lowercase().contains("part def"))
+        .filter(|node| {
+            node.element_kind
+                .as_str()
+                .to_lowercase()
+                .contains("part def")
+        })
         .map(|node| node.id.qualified_name.clone())
         .collect();
 
@@ -605,9 +609,6 @@ pub fn build_ibd_for_uri(graph: &SemanticGraph, uri: &Url) -> IbdDataDto {
         def_instance_mappings,
     }
 }
-
-
-
 
 #[cfg(test)]
 mod tests;

@@ -196,7 +196,10 @@ pub(super) fn add_node_and_recurse(
     g.register_short_name_alias(&node_id, &node);
     let idx = g.graph.add_node(node);
     g.node_index_by_id.insert(node_id.clone(), idx);
-    g.nodes_by_uri.entry(uri.clone()).or_default().push(node_id.clone());
+    g.nodes_by_uri
+        .entry(uri.clone())
+        .or_default()
+        .push(node_id.clone());
     g.node_ids_by_qualified_name
         .entry(qualified.to_string())
         .or_default()
@@ -222,7 +225,8 @@ pub(super) fn attach_doc_comment(g: &mut SemanticGraph, node_id: &NodeId, text: 
             Some(existing) if !existing.is_empty() => format!("{existing}\n\n{text}"),
             _ => text.to_string(),
         };
-        node.attributes.insert("doc".to_string(), serde_json::json!(combined));
+        node.attributes
+            .insert("doc".to_string(), serde_json::json!(combined));
     }
 }
 
@@ -272,9 +276,7 @@ mod short_name_tests {
 
     #[test]
     fn typing_resolves_by_short_name_when_declared_alongside_a_name() {
-        let (graph, uri) = build(
-            "package Demo { part def <'CB'> ControlBoard; part x : CB; }",
-        );
+        let (graph, uri) = build("package Demo { part def <'CB'> ControlBoard; part x : CB; }");
         let usage = graph
             .nodes_for_uri(&uri)
             .into_iter()
@@ -289,9 +291,8 @@ mod short_name_tests {
 
     #[test]
     fn nested_member_resolves_by_short_name() {
-        let (graph, uri) = build(
-            "package Demo { part def Robot { part def <'CB'> ControlBoard; } }",
-        );
+        let (graph, uri) =
+            build("package Demo { part def Robot { part def <'CB'> ControlBoard; } }");
         let robot = graph
             .nodes_for_uri(&uri)
             .into_iter()
@@ -306,9 +307,7 @@ mod short_name_tests {
 
     #[test]
     fn short_name_alias_does_not_shadow_a_real_element_of_the_same_name() {
-        let (graph, uri) = build(
-            "package Demo { part def <'CB'> ControlBoard; part def CB; }",
-        );
+        let (graph, uri) = build("package Demo { part def <'CB'> ControlBoard; part def CB; }");
         let matching_ids = graph
             .node_ids_by_qualified_name
             .get("Demo::CB")
@@ -325,9 +324,7 @@ mod short_name_tests {
 
     #[test]
     fn removing_a_document_deregisters_its_short_name_alias() {
-        let (mut graph, uri) = build(
-            "package Demo { part def <'CB'> ControlBoard; part x : CB; }",
-        );
+        let (mut graph, uri) = build("package Demo { part def <'CB'> ControlBoard; part x : CB; }");
         assert!(graph.node_ids_by_qualified_name.contains_key("Demo::CB"));
 
         patch_graph_for_document(&mut graph, &uri, None, true);

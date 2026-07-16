@@ -9,7 +9,10 @@ pub static NEXT_ID: AtomicI64 = AtomicI64::new(1);
 
 /// Minimal `workspace::Spec42Engine` for `validate_paths`/`validate_paths_with_semantics` calls
 /// in these tests — mirrors `crates/workspace/tests/support/comparison_fixtures.rs::test_engine`.
-pub fn test_engine(cache: &tempfile::TempDir, library_paths: Vec<PathBuf>) -> workspace::Spec42Engine {
+pub fn test_engine(
+    cache: &tempfile::TempDir,
+    library_paths: Vec<PathBuf>,
+) -> workspace::Spec42Engine {
     workspace::EngineBuilder::default()
         .cache_dir(cache.path().to_path_buf())
         .no_stdlib(true)

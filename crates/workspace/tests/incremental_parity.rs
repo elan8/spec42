@@ -1,14 +1,14 @@
-﻿#[path = "support/comparison_fixtures.rs"]
+#[path = "support/comparison_fixtures.rs"]
 mod comparison_fixtures;
 #[path = "support/incremental_fixtures.rs"]
 mod incremental_fixtures;
 
 use comparison_fixtures::{load_snapshot, memory_document};
 use incremental_fixtures::assert_snapshot_parity;
+use tempfile::tempdir;
 use workspace::{
     apply_document_changes, DocumentChanges, EngineBuilder, HostContext, WorkspaceLoadRequest,
 };
-use tempfile::tempdir;
 
 fn multi_target(paths: Vec<std::path::PathBuf>) -> WorkspaceLoadRequest {
     WorkspaceLoadRequest {

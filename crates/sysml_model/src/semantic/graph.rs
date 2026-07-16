@@ -228,9 +228,10 @@ impl SemanticGraphData {
             return;
         };
         for (src_id, tgt_id, kind) in &previous {
-            if let (Some(&src_idx), Some(&tgt_idx)) =
-                (self.node_index_by_id.get(src_id), self.node_index_by_id.get(tgt_id))
-            {
+            if let (Some(&src_idx), Some(&tgt_idx)) = (
+                self.node_index_by_id.get(src_id),
+                self.node_index_by_id.get(tgt_id),
+            ) {
                 if let Some(edge_idx) = self
                     .graph
                     .edges_connecting(src_idx, tgt_idx)
@@ -284,15 +285,17 @@ impl SemanticGraphData {
             let weight = e.weight();
 
             // Index by source URI; also by target URI when it differs.
-            edges_by_uri
-                .entry(src_id.uri.clone())
-                .or_default()
-                .push((src_id.clone(), tgt_id.clone(), weight.clone()));
+            edges_by_uri.entry(src_id.uri.clone()).or_default().push((
+                src_id.clone(),
+                tgt_id.clone(),
+                weight.clone(),
+            ));
             if tgt_id.uri != src_id.uri {
-                edges_by_uri
-                    .entry(tgt_id.uri.clone())
-                    .or_default()
-                    .push((src_id.clone(), tgt_id.clone(), weight.clone()));
+                edges_by_uri.entry(tgt_id.uri.clone()).or_default().push((
+                    src_id.clone(),
+                    tgt_id.clone(),
+                    weight.clone(),
+                ));
             }
 
             // Index connect-statement edges by their declaring URI.
@@ -922,11 +925,7 @@ impl SemanticGraphData {
     /// Returns all edges incident to nodes in the given URI with full edge detail.
     pub fn edges_for_uri(&self, uri: &Url) -> Vec<(NodeId, NodeId, SemanticEdge)> {
         let indexes = self.query_indexes();
-        indexes
-            .edges_by_uri
-            .get(uri)
-            .cloned()
-            .unwrap_or_default()
+        indexes.edges_by_uri.get(uri).cloned().unwrap_or_default()
     }
 
     /// Returns edges incident to nodes in the given URI as (source, target, kind, optional edge name).

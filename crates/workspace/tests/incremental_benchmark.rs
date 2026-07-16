@@ -1,10 +1,10 @@
-﻿#[path = "support/comparison_fixtures.rs"]
+#[path = "support/comparison_fixtures.rs"]
 mod comparison_fixtures;
 
 use comparison_fixtures::memory_document;
-use workspace::{DocumentChanges, EngineBuilder, HostContext, WorkspaceLoadRequest};
 use std::time::Instant;
 use tempfile::tempdir;
+use workspace::{DocumentChanges, EngineBuilder, HostContext, WorkspaceLoadRequest};
 
 fn incremental_engine(cache: &tempfile::TempDir) -> workspace::Spec42Engine {
     EngineBuilder::default()
@@ -78,16 +78,13 @@ fn benchmark_single_document_incremental_vs_full_rebuild() {
 
     let incremental_start = Instant::now();
     let _incremental = engine
-        .update_snapshot(
-            previous.as_ref(),
-            changes,
-            request,
-            HostContext::default(),
-        )
+        .update_snapshot(previous.as_ref(), changes, request, HostContext::default())
         .expect("incremental update");
     let incremental_ms = incremental_start.elapsed().as_millis();
 
-    eprintln!("incremental benchmark (8 files, 1 edit): full={full_ms}ms incremental={incremental_ms}ms");
+    eprintln!(
+        "incremental benchmark (8 files, 1 edit): full={full_ms}ms incremental={incremental_ms}ms"
+    );
 }
 
 /// CI-enforced regression guard: the incremental single-document update path must stay
@@ -139,8 +136,7 @@ fn incremental_update_is_meaningfully_faster_than_full_rebuild() {
         edited_content.push_str(&format!(
             "    part def Extra{iteration};\n    part extra{iteration} : Extra{iteration};\n}}\n"
         ));
-        let changes =
-            DocumentChanges::new().replace(memory_document(&edit_path, &edited_content));
+        let changes = DocumentChanges::new().replace(memory_document(&edit_path, &edited_content));
 
         let full_start = Instant::now();
         let merged =

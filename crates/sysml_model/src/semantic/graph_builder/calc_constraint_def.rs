@@ -3,7 +3,10 @@
 use std::collections::HashMap;
 use std::fs;
 
-use sysml_v2_parser::ast::{CalcDef, CalcDefBody, CalcDefBodyElement, ConstraintDef, ConstraintDefBody, ConstraintDefBodyElement, InOut};
+use sysml_v2_parser::ast::{
+    CalcDef, CalcDefBody, CalcDefBodyElement, ConstraintDef, ConstraintDefBody,
+    ConstraintDefBodyElement, InOut,
+};
 use sysml_v2_parser::Node;
 use url::Url;
 

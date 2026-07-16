@@ -124,3 +124,32 @@ fn changeset_provider_overlays_documents() {
         .iter()
         .any(|node| node.name == "B"));
 }
+
+#[test]
+fn snapshot_projects_typed_feature_value_and_expression() {
+    let cache = tempdir().expect("tempdir");
+    let model_path = cache.path().join("FeatureValue.sysml");
+    let content = "package Demo { attribute mass = 10; }";
+    std::fs::write(&model_path, content).expect("write model");
+
+    let engine = test_engine(&cache);
+    let snapshot = engine
+        .load_workspace(
+            InMemoryDocumentProvider::new(vec![file_document(&model_path, content)]),
+            WorkspaceLoadRequest::single_target(model_path),
+            HostContext::default(),
+        )
+        .expect("snapshot");
+    let projection = snapshot.semantic_projection();
+
+    let value = projection
+        .feature_values
+        .iter()
+        .find(|value| value.kind == "bound")
+        .expect("bound FeatureValue is projected");
+    assert!(projection
+        .expressions
+        .iter()
+        .any(|expression| expression.semantic_id == value.expression_id
+            && expression.kind == "integerLiteral"));
+}

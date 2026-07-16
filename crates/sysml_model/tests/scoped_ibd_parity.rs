@@ -1,4 +1,4 @@
-﻿//! Scoped vs full-workspace IBD parity for interconnection views.
+//! Scoped vs full-workspace IBD parity for interconnection views.
 //!
 //! Ensures `IbdBuildScope::ViewExposedPackages` + scoped merge produces the same
 //! interconnection scene as full-workspace IBD + `select_interconnection_ibd_scope`.
@@ -45,7 +45,10 @@ struct InterconnectionWorkspace {
     parsed: Vec<sysml_model::WorkspaceParsedDocument>,
 }
 
-fn load_filesystem_workspace(scan_root: PathBuf, workspace_root: PathBuf) -> InterconnectionWorkspace {
+fn load_filesystem_workspace(
+    scan_root: PathBuf,
+    workspace_root: PathBuf,
+) -> InterconnectionWorkspace {
     let provider = FileSystemDocumentProvider::new(
         scan_root.clone(),
         Some(workspace_root.clone()),
@@ -53,14 +56,10 @@ fn load_filesystem_workspace(scan_root: PathBuf, workspace_root: PathBuf) -> Int
     );
     let (graph, parsed) =
         build_semantic_graph_with_provider(&provider).expect("semantic graph should build");
-    let workspace_root_uri = Url::from_directory_path(
-        workspace_root
-            .canonicalize()
-            .unwrap_or(workspace_root),
-    )
-    .expect("workspace root uri");
-    let workspace_uris =
-        workspace_uris_for_root(&graph, &[], &workspace_root_uri);
+    let workspace_root_uri =
+        Url::from_directory_path(workspace_root.canonicalize().unwrap_or(workspace_root))
+            .expect("workspace root uri");
+    let workspace_uris = workspace_uris_for_root(&graph, &[], &workspace_root_uri);
     InterconnectionWorkspace {
         workspace_uris,
         graph,
@@ -80,14 +79,10 @@ fn build_scene_for_view(
     view: &EvaluatedView,
     ibd_source: &sysml_model::IbdDataDto,
 ) -> InterconnectionSceneDto {
-    let graph_dto =
-        build_workspace_graph_dto_for_uris(&workspace.graph, &workspace.workspace_uris);
+    let graph_dto = build_workspace_graph_dto_for_uris(&workspace.graph, &workspace.workspace_uris);
     let projected = project_ids_for_renderer(view, &graph_dto, "interconnection-view");
-    let scoped_ibd = select_interconnection_ibd_scope(
-        ibd_source,
-        &projected,
-        Some(&view.exposed_ids),
-    );
+    let scoped_ibd =
+        select_interconnection_ibd_scope(ibd_source, &projected, Some(&view.exposed_ids));
     build_interconnection_scene(
         &scoped_ibd,
         &view.id,
@@ -146,8 +141,7 @@ fn assert_scenes_equivalent(
 
 fn assert_scoped_ibd_parity_for_interconnection_views(workspace: &InterconnectionWorkspace) {
     let full_ibd = build_merged_workspace_ibd(&workspace.graph, &workspace.workspace_uris);
-    let graph_dto =
-        build_workspace_graph_dto_for_uris(&workspace.graph, &workspace.workspace_uris);
+    let graph_dto = build_workspace_graph_dto_for_uris(&workspace.graph, &workspace.workspace_uris);
     let catalog = build_view_catalog(&workspace.workspace_uris, &workspace.parsed);
     let evaluated = evaluate_views(&catalog, &workspace.graph, &graph_dto);
 
@@ -195,11 +189,8 @@ fn assert_scoped_ibd_parity_for_interconnection_views(workspace: &Interconnectio
         let projected = project_ids_for_renderer(view, &graph_dto, "interconnection-view");
         let ibd_from_full =
             select_interconnection_ibd_scope(&full_ibd, &projected, Some(&view.exposed_ids));
-        let ibd_from_scoped = select_interconnection_ibd_scope(
-            &scoped_merged,
-            &projected,
-            Some(&view.exposed_ids),
-        );
+        let ibd_from_scoped =
+            select_interconnection_ibd_scope(&scoped_merged, &projected, Some(&view.exposed_ids));
         assert_eq!(
             ibd_from_full.parts.len(),
             ibd_from_scoped.parts.len(),

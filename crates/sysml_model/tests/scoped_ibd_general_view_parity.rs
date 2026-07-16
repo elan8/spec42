@@ -1,4 +1,4 @@
-﻿//! Scoped vs full-workspace IBD parity for general views.
+//! Scoped vs full-workspace IBD parity for general views.
 //!
 //! Ensures `IbdBuildScope::ViewExposedPackages` + scoped merge produces the same
 //! filtered IBD as full-workspace IBD + `filter_ibd_by_visible_ids`.
@@ -51,15 +51,10 @@ fn load_filesystem_workspace(scan_root: PathBuf, workspace_root: PathBuf) -> Gen
         Some(workspace_root.clone()),
         Vec::new(),
     );
-    let (graph, parsed) =
-        build_semantic_graph_with_provider(&provider).expect("semantic graph");
+    let (graph, parsed) = build_semantic_graph_with_provider(&provider).expect("semantic graph");
     let workspace_root_uri =
         Url::from_directory_path(workspace_root.canonicalize().unwrap()).unwrap();
-    let workspace_uris = sysml_model::workspace_uris_for_root(
-        &graph,
-        &[],
-        &workspace_root_uri,
-    );
+    let workspace_uris = sysml_model::workspace_uris_for_root(&graph, &[], &workspace_root_uri);
     GeneralViewWorkspace {
         workspace_uris,
         graph,
@@ -102,8 +97,7 @@ fn assert_filtered_ibd_equivalent(
 
 fn assert_scoped_ibd_parity_for_general_views(workspace: &GeneralViewWorkspace) {
     let full_ibd = build_merged_workspace_ibd(&workspace.graph, &workspace.workspace_uris);
-    let graph_dto =
-        build_workspace_graph_dto_for_uris(&workspace.graph, &workspace.workspace_uris);
+    let graph_dto = build_workspace_graph_dto_for_uris(&workspace.graph, &workspace.workspace_uris);
     let catalog = build_view_catalog(&workspace.workspace_uris, &workspace.parsed);
     let evaluated = evaluate_views(&catalog, &workspace.graph, &graph_dto);
 

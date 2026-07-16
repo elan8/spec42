@@ -14,16 +14,15 @@ mod units;
 use units::UnitError;
 pub use units::UnitRegistry;
 
-
-mod outcome;
 mod analysis_constraints;
 mod engine;
 mod invocation_parsing;
+mod outcome;
 mod quantity_parser;
-use outcome::*;
 use analysis_constraints::*;
 use engine::*;
 use invocation_parsing::*;
+use outcome::*;
 use quantity_parser::*;
 
 pub fn evaluate_expressions(graph: &mut SemanticGraph) {

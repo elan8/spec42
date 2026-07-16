@@ -1,4 +1,4 @@
-﻿use std::path::{Path, PathBuf};
+use std::path::{Path, PathBuf};
 
 use sysml_model::SysmlVisualizationResultDto;
 use workspace::HostWorkspaceSnapshot;
@@ -78,19 +78,17 @@ pub fn render_diagram_for_path(
     render_diagram(&payload, format)
 }
 
-pub fn export_diagrams(cli: &Cli, args: &DiagramExportArgs) -> Result<DiagramExportSummary, String> {
+pub fn export_diagrams(
+    cli: &Cli,
+    args: &DiagramExportArgs,
+) -> Result<DiagramExportSummary, String> {
     std::fs::create_dir_all(&args.output)
         .map_err(|err| format!("Failed to create {}: {err}", args.output.display()))?;
     if args.view == "model-views" {
         return export_model_views(cli, args);
     }
     if args.selected_view.is_some() {
-        return export_single_diagram(
-            cli,
-            args,
-            args.view.as_str(),
-            args.selected_view.as_deref(),
-        );
+        return export_single_diagram(cli, args, args.view.as_str(), args.selected_view.as_deref());
     }
     let views = requested_renderer_views(args.view.as_str())?;
     let mut exported = 0;
@@ -233,12 +231,12 @@ mod legacy_elk_svg;
 
 #[cfg(test)]
 mod tests {
-    use super::*;
     use super::legacy_elk_svg::{elk_svg, native_svg};
+    use super::*;
+    use std::collections::HashMap;
     use sysml_model::{
         GraphEdgeDto, GraphNodeDto, InterconnectionSceneDto, PositionDto, RangeDto, SysmlGraphDto,
     };
-    use std::collections::HashMap;
 
     fn zero_range() -> RangeDto {
         RangeDto {
@@ -424,8 +422,7 @@ mod tests {
 
     #[test]
     fn interconnection_export_matches_slim_scoped_lsp_contract_for_drone() {
-        let repo_root =
-            PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../../examples/drone");
+        let repo_root = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../../examples/drone");
         assert!(
             repo_root.is_dir(),
             "expected drone example at {}",
@@ -467,8 +464,9 @@ mod tests {
             "CLI interconnection export should retain viewCandidates"
         );
 
-        let payload_bytes =
-            serde_json::to_string(&payload).map(|raw| raw.len()).unwrap_or(0);
+        let payload_bytes = serde_json::to_string(&payload)
+            .map(|raw| raw.len())
+            .unwrap_or(0);
         // Budget bumped from 52_000: prepared nodes/ports now carry `uri`/`range` for
         // click-to-source (previously hardcoded to `None` in
         // `prepare_interconnection_prepared_view` — a real bug, not a size-budget trade-off),

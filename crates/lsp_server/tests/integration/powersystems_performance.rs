@@ -1,4 +1,4 @@
-﻿//! Report-only performance drill-down for interconnection visualization.
+//! Report-only performance drill-down for interconnection visualization.
 //!
 //! Optional grid drill-down (requires `SYSML_POWERSYSTEMS_DIR`):
 //! ```text
@@ -16,8 +16,8 @@ use sysml_model::{
     build_sysml_visualization_workspace_with_meta, build_view_catalog,
     build_workspace_graph_dto_for_uris, evaluate_views, finalize_merged_ibd_connectors,
     merge_ibd_payloads, project_ids_for_renderer, select_interconnection_ibd_scope,
-    FileSystemDocumentProvider, IbdBuildScope, VisualizationBuildOptions,
-    WorkspaceParsedDocument, WorkspaceVisualizationRequest,
+    FileSystemDocumentProvider, IbdBuildScope, VisualizationBuildOptions, WorkspaceParsedDocument,
+    WorkspaceVisualizationRequest,
 };
 use tower_lsp::lsp_types::Url;
 
@@ -205,8 +205,9 @@ fn collect_visualization_phase_breakdown(
     )
     .expect("scoped visualization");
     let scoped_visualization_workspace_ms = scoped_viz_start.elapsed().as_millis();
-    let slim_payload_bytes =
-        serde_json::to_string(&scoped_viz).map(|payload| payload.len()).unwrap_or(0);
+    let slim_payload_bytes = serde_json::to_string(&scoped_viz)
+        .map(|payload| payload.len())
+        .unwrap_or(0);
 
     let cold_start = Instant::now();
     let _cold = build_sysml_visualization_for_paths(
@@ -385,7 +386,9 @@ fn run_interconnection_lsp_performance_report(config: InterconnectionPerfReportC
     );
 
     let visualization_result = &visualization_capture.json["result"];
-    let has_ibd = visualization_result.get("ibd").is_some_and(|value| !value.is_null());
+    let has_ibd = visualization_result
+        .get("ibd")
+        .is_some_and(|value| !value.is_null());
     let ibd_parts = visualization_result["ibd"]["parts"]
         .as_array()
         .map(Vec::len)
@@ -610,7 +613,10 @@ fn run_interconnection_lsp_performance_report(config: InterconnectionPerfReportC
         "expected scoped workspace slim payload under {MAX_DRONE_SLIM_INTERCONNECTION_BYTES} bytes, got {}",
         phase_breakdown.slim_payload_bytes
     );
-    assert!(scene_edges > 0, "expected non-empty prepared interconnection view");
+    assert!(
+        scene_edges > 0,
+        "expected non-empty prepared interconnection view"
+    );
     assert!(
         phase_breakdown.scoped_uri_count <= phase_breakdown.workspace_uri_count,
         "scoped URI count should not exceed workspace URI count"

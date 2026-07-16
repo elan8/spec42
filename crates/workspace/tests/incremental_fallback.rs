@@ -1,15 +1,15 @@
-﻿#[path = "support/comparison_fixtures.rs"]
+#[path = "support/comparison_fixtures.rs"]
 mod comparison_fixtures;
 #[path = "support/incremental_fixtures.rs"]
 mod incremental_fixtures;
 
 use comparison_fixtures::{load_snapshot, memory_document};
 use incremental_fixtures::assert_snapshot_parity;
+use tempfile::tempdir;
+use url::Url;
 use workspace::{
     apply_document_changes, DocumentChanges, EngineBuilder, HostContext, WorkspaceLoadRequest,
 };
-use tempfile::tempdir;
-use url::Url;
 
 fn fallback_engine(cache: &tempfile::TempDir, incremental: bool) -> workspace::Spec42Engine {
     EngineBuilder::default()
@@ -153,7 +153,11 @@ fn multi_changed_documents_fall_back_to_full_rebuild() {
         )
         .expect("baseline");
 
-    assert_snapshot_parity("multi-changed fallback", baseline.as_ref(), updated.as_ref());
+    assert_snapshot_parity(
+        "multi-changed fallback",
+        baseline.as_ref(),
+        updated.as_ref(),
+    );
 }
 
 /// Covers the third `can_use_incremental_update` guard (`update.rs:83`): if the engine's
@@ -221,7 +225,11 @@ fn library_catalog_change_falls_back_to_full_rebuild() {
         )
         .expect("baseline");
 
-    assert_snapshot_parity("library catalog fallback", baseline.as_ref(), updated.as_ref());
+    assert_snapshot_parity(
+        "library catalog fallback",
+        baseline.as_ref(),
+        updated.as_ref(),
+    );
 }
 
 #[test]
@@ -238,8 +246,7 @@ fn experimental_flag_off_still_correct_via_fallback() {
     );
 
     let updated_content = "package Demo { part def Thing; part widget : Thing; }";
-    let changes =
-        DocumentChanges::new().replace(memory_document(&model_path, updated_content));
+    let changes = DocumentChanges::new().replace(memory_document(&model_path, updated_content));
     let request = WorkspaceLoadRequest::single_target(model_path.clone());
 
     let updated = engine

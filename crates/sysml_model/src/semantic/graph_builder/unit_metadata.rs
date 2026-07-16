@@ -2,12 +2,12 @@
 
 use std::collections::HashMap;
 
+use crate::semantic::ast_util::{subsetting_target, typing_target};
 use serde_json::{json, Value};
 use sysml_v2_parser::ast::{
     AttributeBody, AttributeBodyElement, AttributeDef, AttributeUsage, BinaryOperator, Expression,
     Node, UnaryOperator,
 };
-use crate::semantic::ast_util::{subsetting_target, typing_target};
 
 /// Keys stored on unit-related `attribute def` graph nodes.
 pub const SHORT_NAME_KEY: &str = "shortName";
@@ -30,7 +30,7 @@ pub fn project_attribute_def_unit_metadata(attrs: &mut HashMap<String, Value>, d
         attrs.insert(SHORT_NAME_KEY.to_string(), json!(short));
     }
     if let Some(expr) = &def.value {
-        let rendered = super::expressions::expression_to_debug_string(expr);
+        let rendered = super::expressions::expression_to_debug_string(&expr.value.expression);
         attrs.insert(UNIT_VALUE_EXPR_KEY.to_string(), json!(rendered));
     }
     project_unit_body_metadata(attrs, typing_target(def.typing.as_deref()), &def.body);
@@ -116,22 +116,32 @@ fn find_value_by_name_contains<'a>(
     needle: &str,
 ) -> Option<&'a Node<Expression>> {
     elements.iter().find_map(|element| match &element.value {
-        AttributeBodyElement::AttributeUsage(usage) if usage.value.name.contains(needle) => {
-            usage.value.value.as_ref()
-        }
-        AttributeBodyElement::AttributeDef(def) if def.value.name.contains(needle) => {
-            def.value.value.as_ref()
-        }
+        AttributeBodyElement::AttributeUsage(usage) if usage.value.name.contains(needle) => usage
+            .value
+            .value
+            .as_ref()
+            .map(|value| &value.value.expression),
+        AttributeBodyElement::AttributeDef(def) if def.value.name.contains(needle) => def
+            .value
+            .value
+            .as_ref()
+            .map(|value| &value.value.expression),
         _ => None,
     })
 }
 
 fn usage_value_number(usage: &AttributeUsage) -> Option<f64> {
-    usage.value.as_ref().and_then(|node| expr_as_number(&node.value))
+    usage
+        .value
+        .as_ref()
+        .and_then(|node| expr_as_number(&node.value.expression))
 }
 
 fn usage_value_name(usage: &AttributeUsage) -> Option<String> {
-    usage.value.as_ref().and_then(|node| expr_as_name(&node.value))
+    usage
+        .value
+        .as_ref()
+        .and_then(|node| expr_as_name(&node.value.expression))
 }
 
 /// Evaluates a numeric literal expression (integers, reals, unit-suffixed quantities like
@@ -179,8 +189,8 @@ fn extract_unit_prefix_from_body(body: &AttributeBody) -> Option<UnitPrefixMeta>
     let AttributeBody::Brace { elements } = body else {
         return None;
     };
-    let conversion_factor = find_redefined_usage(elements, "conversionFactor")
-        .and_then(usage_value_number)?;
+    let conversion_factor =
+        find_redefined_usage(elements, "conversionFactor").and_then(usage_value_number)?;
     let symbol = find_redefined_usage(elements, "symbol").and_then(usage_value_name);
     Some(UnitPrefixMeta {
         symbol,
@@ -236,8 +246,8 @@ fn extract_unit_conversion_from_body(body: &AttributeBody) -> Option<UnitConvers
             zero_offset_kelvin: None,
         }),
         _ => {
-            let reference_unit = find_redefined_usage(inner_elements, "referenceUnit")
-                .and_then(usage_value_name);
+            let reference_unit =
+                find_redefined_usage(inner_elements, "referenceUnit").and_then(usage_value_name);
             // `ConversionByConvention` is the catalog's default/fallback shape: accept it
             // whether or not the nested body is explicitly typed, as long as it carries a
             // `referenceUnit` redefinition.

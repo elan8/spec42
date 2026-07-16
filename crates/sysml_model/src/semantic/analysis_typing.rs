@@ -25,7 +25,10 @@ pub fn propagate_typed_case_context(graph: &mut SemanticGraph) {
         let Some(node) = graph.get_node(&node_id).cloned() else {
             continue;
         };
-        if !matches!(node.element_kind, ElementKind::Analysis | ElementKind::Verification) {
+        if !matches!(
+            node.element_kind,
+            ElementKind::Analysis | ElementKind::Verification
+        ) {
             continue;
         }
         propagate_case_usage_from_typing(graph, &node_id, &node);
@@ -232,7 +235,10 @@ pub(crate) fn typed_case_definition_id(
     graph: &SemanticGraph,
     usage: &SemanticNode,
 ) -> Option<NodeId> {
-    if !matches!(usage.element_kind, ElementKind::Analysis | ElementKind::Verification) {
+    if !matches!(
+        usage.element_kind,
+        ElementKind::Analysis | ElementKind::Verification
+    ) {
         return None;
     }
     let expected_def_kind = match usage.element_kind {

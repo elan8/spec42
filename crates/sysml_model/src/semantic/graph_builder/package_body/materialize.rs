@@ -223,6 +223,13 @@ pub(crate) fn materialize_attribute_def(
         attrs,
         parent_id,
     );
+    let node_id = NodeId::new(uri, &qualified);
+    if let Some(value) = &value.value {
+        if let Some(node) = g.get_node_mut(&node_id) {
+            node.declared_facts.feature_value =
+                Some(crate::semantic::ast_util::declared_feature_value(value));
+        }
+    }
     if let Some(t) = crate::semantic::ast_util::typing_target(value.typing.as_deref()) {
         add_typing_edge_if_exists(g, uri, &qualified, t, container_prefix);
     }
@@ -237,7 +244,7 @@ pub(super) fn materialize_alias_def(
 ) {
     let mut name = identification_name(&alias_node.identification);
     if name.is_empty() {
-        name = alias_node.target.clone();
+        name = alias_node.target.to_display_string();
     }
     let qualified = qualified_name_for_node(g, uri, container_prefix, &name, "alias");
     let range = span_to_range(&alias_node.span);
@@ -245,7 +252,7 @@ pub(super) fn materialize_alias_def(
     attach_short_name_attribute(&mut attrs, &alias_node.identification);
     attrs.insert(
         "target".to_string(),
-        serde_json::json!(alias_node.target.clone()),
+        serde_json::json!(alias_node.target.to_display_string()),
     );
     add_node_and_recurse(g, uri, &qualified, "alias", name, range, attrs, parent_id);
 }
@@ -263,7 +270,10 @@ pub(super) fn materialize_requirement_def(
     let mut attrs = HashMap::new();
     attach_short_name_attribute(&mut attrs, &rd_node.identification);
     insert_def_specialization_attr(&mut attrs, rd_node.specializes.as_deref());
-    attrs.insert("isAbstract".to_string(), serde_json::json!(rd_node.is_abstract));
+    attrs.insert(
+        "isAbstract".to_string(),
+        serde_json::json!(rd_node.is_abstract),
+    );
     add_node_and_recurse(
         g,
         uri,
@@ -282,7 +292,14 @@ pub(super) fn materialize_requirement_def(
         container_prefix,
         rd_node.specializes.as_deref(),
     );
-    walk_requirement_def_body(g, uri, container_prefix, &qualified, &node_id, &rd_node.body);
+    walk_requirement_def_body(
+        g,
+        uri,
+        container_prefix,
+        &qualified,
+        &node_id,
+        &rd_node.body,
+    );
 }
 
 pub(super) fn materialize_satisfy(
@@ -388,7 +405,14 @@ pub(super) fn materialize_concern_usage(
         add_typing_edge_if_exists(g, uri, &qualified, t, container_prefix);
     }
     let node_id = NodeId::new(uri, &qualified);
-    walk_requirement_def_body(g, uri, container_prefix, &qualified, &node_id, &cu_node.body);
+    walk_requirement_def_body(
+        g,
+        uri,
+        container_prefix,
+        &qualified,
+        &node_id,
+        &cu_node.body,
+    );
 }
 
 pub(super) fn materialize_use_case_def(
@@ -404,7 +428,10 @@ pub(super) fn materialize_use_case_def(
     let mut attrs = HashMap::new();
     attach_short_name_attribute(&mut attrs, &ucd_node.identification);
     insert_def_specialization_attr(&mut attrs, ucd_node.specializes.as_deref());
-    attrs.insert("isAbstract".to_string(), serde_json::json!(ucd_node.is_abstract));
+    attrs.insert(
+        "isAbstract".to_string(),
+        serde_json::json!(ucd_node.is_abstract),
+    );
     add_node_and_recurse(
         g,
         uri,
@@ -442,7 +469,10 @@ pub(super) fn materialize_use_case_usage(
     if let Some(ref t) = ucu_node.type_name {
         attrs.insert("useCaseType".to_string(), serde_json::json!(t));
     }
-    attrs.insert("isAbstract".to_string(), serde_json::json!(ucu_node.is_abstract));
+    attrs.insert(
+        "isAbstract".to_string(),
+        serde_json::json!(ucu_node.is_abstract),
+    );
     add_node_and_recurse(
         g,
         uri,
@@ -737,7 +767,13 @@ pub(super) fn materialize_flow_def(
         flow_node.specializes.as_deref(),
     );
     let node_id = NodeId::new(uri, &qualified);
-    definition_body::build_from_definition_body(&flow_node.body, uri, Some(&qualified), &node_id, g);
+    definition_body::build_from_definition_body(
+        &flow_node.body,
+        uri,
+        Some(&qualified),
+        &node_id,
+        g,
+    );
 }
 
 pub(super) fn materialize_allocation_def(
@@ -827,7 +863,10 @@ pub(super) fn materialize_case_def(
     let mut attrs = HashMap::new();
     attach_short_name_attribute(&mut attrs, &c_node.identification);
     insert_def_specialization_attr(&mut attrs, c_node.specializes.as_deref());
-    attrs.insert("isAbstract".to_string(), serde_json::json!(c_node.is_abstract));
+    attrs.insert(
+        "isAbstract".to_string(),
+        serde_json::json!(c_node.is_abstract),
+    );
     add_node_and_recurse(
         g,
         uri,
@@ -856,7 +895,10 @@ pub(super) fn materialize_case_usage(
 ) {
     let qualified = qualified_name_for_node(g, uri, container_prefix, &c_node.name, "case");
     let mut attrs = HashMap::new();
-    attrs.insert("isAbstract".to_string(), serde_json::json!(c_node.is_abstract));
+    attrs.insert(
+        "isAbstract".to_string(),
+        serde_json::json!(c_node.is_abstract),
+    );
     add_node_and_recurse(
         g,
         uri,
@@ -884,7 +926,10 @@ pub(super) fn materialize_analysis_case_def(
     let mut attrs = HashMap::new();
     attach_short_name_attribute(&mut attrs, &c_node.identification);
     insert_def_specialization_attr(&mut attrs, c_node.specializes.as_deref());
-    attrs.insert("isAbstract".to_string(), serde_json::json!(c_node.is_abstract));
+    attrs.insert(
+        "isAbstract".to_string(),
+        serde_json::json!(c_node.is_abstract),
+    );
     add_node_and_recurse(
         g,
         uri,
@@ -918,7 +963,10 @@ pub(super) fn materialize_analysis_case_usage(
     if let Some(ref t) = c_node.type_name {
         attrs.insert("analysisType".to_string(), serde_json::json!(t));
     }
-    attrs.insert("isAbstract".to_string(), serde_json::json!(c_node.is_abstract));
+    attrs.insert(
+        "isAbstract".to_string(),
+        serde_json::json!(c_node.is_abstract),
+    );
     add_node_and_recurse(
         g,
         uri,
@@ -951,7 +999,10 @@ pub(super) fn materialize_verification_case_def(
     let mut attrs = HashMap::new();
     attach_short_name_attribute(&mut attrs, &c_node.identification);
     insert_def_specialization_attr(&mut attrs, c_node.specializes.as_deref());
-    attrs.insert("isAbstract".to_string(), serde_json::json!(c_node.is_abstract));
+    attrs.insert(
+        "isAbstract".to_string(),
+        serde_json::json!(c_node.is_abstract),
+    );
     add_node_and_recurse(
         g,
         uri,
@@ -985,7 +1036,10 @@ pub(super) fn materialize_verification_case_usage(
     if let Some(ref t) = c_node.type_name {
         attrs.insert("verificationType".to_string(), serde_json::json!(t));
     }
-    attrs.insert("isAbstract".to_string(), serde_json::json!(c_node.is_abstract));
+    attrs.insert(
+        "isAbstract".to_string(),
+        serde_json::json!(c_node.is_abstract),
+    );
     add_node_and_recurse(
         g,
         uri,
@@ -1103,7 +1157,7 @@ pub(super) fn materialize_import(
     let mut attrs = HashMap::new();
     attrs.insert("importTarget".to_string(), serde_json::json!(&v.target));
     attrs.insert("importAll".to_string(), serde_json::json!(v.is_import_all));
-    if let Some(vis) = &v.visibility {
+    if let Some(vis) = &v.membership.visibility {
         attrs.insert(
             "visibility".to_string(),
             serde_json::json!(format!("{vis:?}")),

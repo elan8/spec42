@@ -189,7 +189,10 @@ pub(crate) fn extract_rendering_from_view_def_body(
     (None, None)
 }
 
-pub(crate) fn resolve_explicit_view_type(usage: &ViewUsageSpec, _catalog: &ViewCatalog) -> Option<String> {
+pub(crate) fn resolve_explicit_view_type(
+    usage: &ViewUsageSpec,
+    _catalog: &ViewCatalog,
+) -> Option<String> {
     if usage.definition_id.is_some() {
         return None;
     }

@@ -522,21 +522,36 @@ pub(crate) fn expression_to_debug_string(
         }
         Expression::Parenthesized(inner) => format!("({})", expression_to_debug_string(inner)),
         Expression::Constructor { type_name, args } => {
-            let rendered = args.iter().map(argument_to_debug_string).collect::<Vec<_>>().join(", ");
+            let rendered = args
+                .iter()
+                .map(argument_to_debug_string)
+                .collect::<Vec<_>>()
+                .join(", ");
             format!("new {type_name}({rendered})")
         }
         Expression::FeatureChainRef(chain) => chain.segments.join("."),
         Expression::CollectionOp { op, base, args } => {
-            let rendered = args.iter().map(argument_to_debug_string).collect::<Vec<_>>().join(", ");
-            format!("{}->{}({rendered})", expression_to_debug_string(base), op.as_str())
+            let rendered = args
+                .iter()
+                .map(argument_to_debug_string)
+                .collect::<Vec<_>>()
+                .join(", ");
+            format!(
+                "{}->{}({rendered})",
+                expression_to_debug_string(base),
+                op.as_str()
+            )
         }
-        Expression::MetadataAccess(base) => format!("{}.metadata", expression_to_debug_string(base)),
+        Expression::MetadataAccess(base) => {
+            format!("{}.metadata", expression_to_debug_string(base))
+        }
         Expression::Null => "()".to_string(),
     }
 }
 
 fn argument_to_debug_string(argument: &sysml_v2_parser::Argument) -> String {
-    let value = expression_to_debug_string(crate::semantic::ast_util::argument_expression(argument));
+    let value =
+        expression_to_debug_string(crate::semantic::ast_util::argument_expression(argument));
     argument
         .name
         .as_ref()

@@ -172,7 +172,8 @@ fn annotate_view_usage_body(g: &mut SemanticGraph, view_id: &NodeId, body: &View
             ViewBodyElement::Doc(doc) => {
                 super::attach_doc_comment(g, view_id, &doc.value.text);
             }
-            ViewBodyElement::Error(_) | ViewBodyElement::Other(_) | ViewBodyElement::Satisfy(_) => {}
+            ViewBodyElement::Error(_) | ViewBodyElement::Other(_) | ViewBodyElement::Satisfy(_) => {
+            }
         }
     }
     if has_expose {

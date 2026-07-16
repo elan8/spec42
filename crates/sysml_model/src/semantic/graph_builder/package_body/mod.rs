@@ -91,7 +91,13 @@ pub(super) fn build_from_package_body_element(
         }
         PBE::AttributeUsage(attribute) => {
             if let Some(parent_id) = parent_id {
-                usage_builders::materialize_attribute_usage(attribute, uri, container_prefix, parent_id, g);
+                usage_builders::materialize_attribute_usage(
+                    attribute,
+                    uri,
+                    container_prefix,
+                    parent_id,
+                    g,
+                );
             }
         }
         PBE::PortUsage(port) => {
@@ -142,9 +148,7 @@ pub(super) fn build_from_package_body_element(
                 g,
             );
         }
-        PBE::Satisfy(satisfy_node) => {
-            materialize_satisfy(g, uri, container_prefix, satisfy_node)
-        }
+        PBE::Satisfy(satisfy_node) => materialize_satisfy(g, uri, container_prefix, satisfy_node),
         PBE::AllocationUsage(alloc_node) => {
             materialize_allocation_usage(g, uri, container_prefix, parent_id, alloc_node)
         }
@@ -185,7 +189,13 @@ pub(super) fn build_from_package_body_element(
             materialize_occurrence_def(g, uri, container_prefix, parent_id, occ_node)
         }
         PBE::OccurrenceUsage(occ_node) => {
-            usage_builders::materialize_occurrence_usage(occ_node, uri, container_prefix, parent_id, g);
+            usage_builders::materialize_occurrence_usage(
+                occ_node,
+                uri,
+                container_prefix,
+                parent_id,
+                g,
+            );
         }
         PBE::ConnectionDef(conn_node) => {
             materialize_connection_def(g, uri, container_prefix, parent_id, conn_node)
@@ -217,7 +227,9 @@ pub(super) fn build_from_package_body_element(
             calc_constraint_def::build_calc_def(g, uri, container_prefix, parent_id, c_node);
         }
         PBE::CaseDef(c_node) => materialize_case_def(g, uri, container_prefix, parent_id, c_node),
-        PBE::CaseUsage(c_node) => materialize_case_usage(g, uri, container_prefix, parent_id, c_node),
+        PBE::CaseUsage(c_node) => {
+            materialize_case_usage(g, uri, container_prefix, parent_id, c_node)
+        }
         PBE::AnalysisCaseDef(c_node) => {
             materialize_analysis_case_def(g, uri, container_prefix, parent_id, c_node)
         }
@@ -230,8 +242,12 @@ pub(super) fn build_from_package_body_element(
         PBE::VerificationCaseUsage(c_node) => {
             materialize_verification_case_usage(g, uri, container_prefix, parent_id, c_node)
         }
-        PBE::Actor(actor_node) => materialize_actor(g, uri, container_prefix, parent_id, actor_node),
-        PBE::StateDef(sd_node) => materialize_state_def(g, uri, container_prefix, parent_id, sd_node),
+        PBE::Actor(actor_node) => {
+            materialize_actor(g, uri, container_prefix, parent_id, actor_node)
+        }
+        PBE::StateDef(sd_node) => {
+            materialize_state_def(g, uri, container_prefix, parent_id, sd_node)
+        }
         PBE::StateUsage(su_node) => {
             materialize_state_usage(g, uri, container_prefix, parent_id, su_node)
         }

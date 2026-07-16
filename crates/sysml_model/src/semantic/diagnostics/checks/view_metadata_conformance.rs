@@ -274,7 +274,10 @@ pub(in crate::semantic::diagnostics) fn collect_view_metadata_conformance_diagno
                 .and_then(|v| v.as_str())
                 .unwrap_or("import");
             (target.to_string(), "viewpoint_import")
-        } else if matches!(node.element_kind, ElementKind::Stakeholder | ElementKind::Purpose) {
+        } else if matches!(
+            node.element_kind,
+            ElementKind::Stakeholder | ElementKind::Purpose
+        ) {
             let Some(parent) = node.parent_id.as_ref().and_then(|id| graph.get_node(id)) else {
                 continue;
             };
@@ -402,7 +405,9 @@ pub(in crate::semantic::diagnostics) fn collect_view_metadata_conformance_diagno
         } else {
             continue;
         };
-        if resolve_type_target_in_workspace(graph, node, &keyword, &[ElementKind::MetadataDef]).is_some() {
+        if resolve_type_target_in_workspace(graph, node, &keyword, &[ElementKind::MetadataDef])
+            .is_some()
+        {
             continue;
         }
         let diag_key = format!("metadata_kw|{}", node.id.qualified_name);
@@ -520,7 +525,10 @@ pub(in crate::semantic::diagnostics) fn collect_view_metadata_conformance_diagno
             .children_of(def_node)
             .into_iter()
             .filter(|child| {
-                matches!(child.element_kind, ElementKind::AttributeDef | ElementKind::Attribute)
+                matches!(
+                    child.element_kind,
+                    ElementKind::AttributeDef | ElementKind::Attribute
+                )
             })
             .map(|child| child.name.clone())
             .collect();
@@ -688,7 +696,10 @@ fn expose_target_entry_range(
     node.range
 }
 
-fn annotated_element_matches_restriction(element_kind: &crate::ElementKind, restriction: &str) -> bool {
+fn annotated_element_matches_restriction(
+    element_kind: &crate::ElementKind,
+    restriction: &str,
+) -> bool {
     let element_kind = element_kind.as_str();
     let local = restriction.rsplit("::").next().unwrap_or(restriction);
     let normalized = local

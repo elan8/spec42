@@ -18,7 +18,12 @@ impl TypeNameRef for String {
 }
 
 impl TypeNameRef for TypingRelationship {
-    fn type_name_ref(&self) -> &str { self.target.as_str() }
+    fn type_name_ref(&self) -> &str {
+        self.target
+            .first()
+            .and_then(|target| target.value.local_name())
+            .unwrap_or_default()
+    }
 }
 
 use crate::types::{

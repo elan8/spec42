@@ -1,4 +1,4 @@
-﻿//! Workspace scan integration tests.
+//! Workspace scan integration tests.
 
 use std::collections::HashMap;
 use std::path::PathBuf;
@@ -270,7 +270,8 @@ fn lsp_publishes_diagnostics_for_loose_file_on_did_open() {
         send_message(&mut stdin, &barrier_req.to_string());
 
         loop {
-            let msg = read_message(&mut stdout).expect("expected message while waiting for barrier");
+            let msg =
+                read_message(&mut stdout).expect("expected message while waiting for barrier");
             let json: serde_json::Value = serde_json::from_str(&msg).unwrap_or_default();
             if json["method"].as_str() == Some("textDocument/publishDiagnostics")
                 && json["params"]["uri"]

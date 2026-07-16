@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.36.0] - 2026-07-16
+
+- **Parser dependency** — Bumped `sysml-v2-parser` to **0.36.0** and aligned
+  Spec42 with typed relationship targets, `Membership`, import visibility, and
+  typed `FeatureValue` AST nodes.
+- **Host projection** — Projects declared feature values and their structural
+  expression trees as addressable `HostFeatureValue` and `HostExpression`
+  facts, preserving bind/default/initial semantics without parser debug text.
+
 ## [0.35.0] - 2026-07-08
 
 ### Added

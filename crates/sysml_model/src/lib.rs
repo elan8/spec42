@@ -50,7 +50,8 @@ pub use semantic::library_loader::{
     LoadedLibraryFile, WorkspaceSource,
 };
 pub use semantic::model::{
-    ConnectStatementDetail, DeclaredExpression, ElementKind, NodeId, RelationshipKind, SemanticEdge, SemanticNode,
+    ConnectStatementDetail, DeclaredExpression, ElementKind, NodeId, RelationshipKind,
+    SemanticEdge, SemanticNode,
 };
 pub use semantic::pipeline::{
     build_and_link_graph, build_and_link_graph_parallel, evaluate_workspace_graph,
@@ -61,12 +62,6 @@ pub use semantic::pipeline::{
 pub use semantic::prepared_view::{
     prepare_interconnection_prepared_view, prepare_view_from_visualization, PreparedEdgeDto,
     PreparedNodeDto, PreparedViewDto,
-};
-pub use semantic::render_snapshot::{
-    build_render_snapshot, build_sysml_visualization_from_render_snapshot,
-    build_sysml_visualization_from_render_snapshot_with_meta, build_view_index,
-    full_ibd_for_render_snapshot, materialize_model_explorer_bundle, view_index_to_artifacts,
-    ModelExplorerBundle, ViewBundleKey, ViewIndex, WorkspaceRenderSnapshot,
 };
 pub use semantic::reference_resolution::{
     parse_expose_target_suffix, resolve_expose_target, resolve_expression_endpoint_strict,
@@ -79,6 +74,12 @@ pub use semantic::relationships::{
     TYPE_REFERENCE_ATTR_KEYS,
 };
 pub use semantic::relationships::{add_semantic_edge_once, AddSemanticEdgeResult};
+pub use semantic::render_snapshot::{
+    build_render_snapshot, build_sysml_visualization_from_render_snapshot,
+    build_sysml_visualization_from_render_snapshot_with_meta, build_view_index,
+    full_ibd_for_render_snapshot, materialize_model_explorer_bundle, view_index_to_artifacts,
+    ModelExplorerBundle, ViewBundleKey, ViewIndex, WorkspaceRenderSnapshot,
+};
 pub use semantic::root_element::root_element_body;
 pub use semantic::source::providers::filesystem::FileSystemDocumentProvider;
 pub use semantic::source::{
@@ -93,26 +94,26 @@ pub use semantic::text_span::{TextPosition, TextRange};
 pub use semantic::view_projection::{
     apply_edge_predicate, project_view, EdgePredicate, ProjectedView, ProjectionHints,
 };
+pub use semantic::visualization::payload::{
+    finalize_activity_diagram_candidates_for_response, finalize_activity_diagrams_for_response,
+    finalize_sequence_diagram_candidates_for_response, finalize_sequence_diagrams_for_response,
+    finalize_state_machine_candidates_for_response, finalize_state_machines_for_response,
+};
+pub use semantic::visualization::scope::{
+    workspace_uris_for_ibd_scope, IbdArtifactMode, IbdBuildScope,
+};
 pub use semantic::visualization_entry::build_sysml_visualization_from_graph;
 pub use semantic::visualization_workspace::{
     attach_ibd_package_container_groups, build_ibd_package_container_groups,
     build_merged_workspace_ibd, build_package_groups_from_graph,
     build_sysml_visualization_from_artifacts, build_sysml_visualization_from_graph_and_documents,
     build_sysml_visualization_workspace, build_sysml_visualization_workspace_with_meta,
-    WorkspaceVisualizationRequest,
     build_workspace_activity_diagrams, build_workspace_graph_dto_for_uris,
     build_workspace_visualization_artifacts, empty_merged_ibd, filter_ibd_by_visible_ids,
-    interconnection_build_options, visualization_build_options, select_interconnection_ibd_scope, select_interconnection_ibd_scope_with_trace, uri_under_root,
+    interconnection_build_options, select_interconnection_ibd_scope,
+    select_interconnection_ibd_scope_with_trace, uri_under_root, visualization_build_options,
     workspace_uris_for_root, IbdScopeTrace, VisualizationBuildMeta, VisualizationBuildOptions,
-    WorkspaceVisualizationArtifacts,
-};
-pub use semantic::visualization::scope::{
-    workspace_uris_for_ibd_scope, IbdArtifactMode, IbdBuildScope,
-};
-pub use semantic::visualization::payload::{
-    finalize_activity_diagram_candidates_for_response, finalize_activity_diagrams_for_response,
-    finalize_sequence_diagram_candidates_for_response, finalize_sequence_diagrams_for_response,
-    finalize_state_machine_candidates_for_response, finalize_state_machines_for_response,
+    WorkspaceVisualizationArtifacts, WorkspaceVisualizationRequest,
 };
 pub use semantic::workspace_graph::{
     build_semantic_graph_from_documents, build_semantic_graph_with_provider,

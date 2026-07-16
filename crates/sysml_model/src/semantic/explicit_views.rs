@@ -107,7 +107,6 @@ pub fn build_view_catalog(
     }
 }
 
-
 mod catalog_build;
 mod evaluate;
 mod filter_match;
@@ -157,7 +156,6 @@ pub(crate) fn parse_filter_text(text: &str) -> FilterExpr {
     let mut parser = FilterParser { tokens, index: 0 };
     parser.parse_expr()
 }
-
 
 pub fn build_view_candidates(
     evaluated_views: &[EvaluatedView],

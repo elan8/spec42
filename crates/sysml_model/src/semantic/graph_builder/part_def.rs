@@ -1,8 +1,7 @@
 use std::collections::HashMap;
 
 use sysml_v2_parser::ast::{
-    CalcDefBody, CalcDefBodyElement, InterfaceDefBody, PartDefBody,
-    PartDefBodyElement,
+    CalcDefBody, CalcDefBodyElement, InterfaceDefBody, PartDefBody, PartDefBodyElement,
 };
 use url::Url;
 
@@ -42,7 +41,7 @@ pub(super) fn build_from_part_def_body_element(
                 attrs.insert("attributeType".to_string(), serde_json::json!(t));
             }
             if let Some(ref v) = n.value.value {
-                let rendered = expressions::expression_to_debug_string(v);
+                let rendered = expressions::expression_to_debug_string(&v.value.expression);
                 attrs.insert("value".to_string(), serde_json::json!(rendered));
                 attrs.insert("defaultValue".to_string(), serde_json::json!(rendered));
             }
@@ -132,13 +131,7 @@ pub(super) fn build_from_part_def_body_element(
             }
         }
         PDBE::PartUsage(n) => {
-            usage_builders::materialize_part_usage(
-                n,
-                uri,
-                container_prefix,
-                Some(parent_id),
-                g,
-            );
+            usage_builders::materialize_part_usage(n, uri, container_prefix, Some(parent_id), g);
         }
         PDBE::OccurrenceUsage(occ_node) => {
             usage_builders::materialize_occurrence_usage(
@@ -370,10 +363,7 @@ pub(super) fn build_from_part_def_body_element(
                                 "return parameter",
                             );
                             let mut attrs = HashMap::new();
-                            attrs.insert(
-                                "direction".to_string(),
-                                serde_json::json!("return"),
-                            );
+                            attrs.insert("direction".to_string(), serde_json::json!("return"));
                             attrs.insert(
                                 "parameterType".to_string(),
                                 serde_json::json!(&ret.value.type_name),
@@ -453,7 +443,7 @@ pub(super) fn build_from_part_def_body_element(
             let value_expression = n
                 .value
                 .as_ref()
-                .map(expressions::expression_to_debug_string);
+                .map(|value| expressions::expression_to_debug_string(&value.value.expression));
             if let Some(ref v) = value_expression {
                 attrs.insert("value".to_string(), serde_json::json!(v));
             }

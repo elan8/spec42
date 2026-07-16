@@ -4,12 +4,12 @@ use crate::semantic::ast_util::identification_name;
 use crate::semantic::dto::{PositionDto, RangeDto};
 use crate::semantic::graph_builder::expressions::expression_to_debug_string;
 use serde::Serialize;
-use ts_rs::TS;
 use sysml_v2_parser::ast::{
     ActionDefBody, ActionDefBodyElement, FlowUsageKind, PackageBody, PackageBodyElement,
     PartDefBody, PartDefBodyElement, PartUsageBody, PartUsageBodyElement, RootElement,
 };
 use sysml_v2_parser::{RootNamespace, Span};
+use ts_rs::TS;
 
 fn normalized_type_name(type_name: &str) -> String {
     type_name
@@ -93,8 +93,13 @@ fn expr_to_string(n: &sysml_v2_parser::Node<sysml_v2_parser::Expression>) -> Str
             let rendered = args
                 .iter()
                 .map(|argument| {
-                    let value = expr_to_string(crate::semantic::ast_util::argument_expression(argument));
-                    argument.name.as_ref().map(|name| format!("{name} = {value}")).unwrap_or(value)
+                    let value =
+                        expr_to_string(crate::semantic::ast_util::argument_expression(argument));
+                    argument
+                        .name
+                        .as_ref()
+                        .map(|name| format!("{name} = {value}"))
+                        .unwrap_or(value)
                 })
                 .collect::<Vec<_>>()
                 .join(", ");
@@ -132,15 +137,30 @@ fn expr_to_string(n: &sysml_v2_parser::Node<sysml_v2_parser::Expression>) -> Str
         }
         Expression::Parenthesized(inner) => format!("({})", expr_to_string(inner)),
         Expression::Constructor { type_name, args } => {
-            let rendered = args.iter().map(|argument| {
-                let value = expr_to_string(crate::semantic::ast_util::argument_expression(argument));
-                argument.name.as_ref().map(|name| format!("{name} = {value}")).unwrap_or(value)
-            }).collect::<Vec<_>>().join(", ");
+            let rendered = args
+                .iter()
+                .map(|argument| {
+                    let value =
+                        expr_to_string(crate::semantic::ast_util::argument_expression(argument));
+                    argument
+                        .name
+                        .as_ref()
+                        .map(|name| format!("{name} = {value}"))
+                        .unwrap_or(value)
+                })
+                .collect::<Vec<_>>()
+                .join(", ");
             format!("new {type_name}({rendered})")
         }
         Expression::FeatureChainRef(chain) => chain.segments.join("."),
         Expression::CollectionOp { op, base, args } => {
-            let rendered = args.iter().map(|argument| expr_to_string(crate::semantic::ast_util::argument_expression(argument))).collect::<Vec<_>>().join(", ");
+            let rendered = args
+                .iter()
+                .map(|argument| {
+                    expr_to_string(crate::semantic::ast_util::argument_expression(argument))
+                })
+                .collect::<Vec<_>>()
+                .join(", ");
             format!("{}->{}({rendered})", expr_to_string(base), op.as_str())
         }
         Expression::MetadataAccess(base) => format!("{}.metadata", expr_to_string(base)),
@@ -162,17 +182,16 @@ fn span_to_range_dto(span: &Span) -> RangeDto {
     }
 }
 
-
 mod activity_dto;
+mod activity_extract;
+mod activity_walk;
 mod sequence_dto;
 mod state_dto;
-mod activity_walk;
-mod activity_extract;
 pub use activity_dto::*;
+pub(crate) use activity_extract::*;
+pub use activity_walk::*;
 pub use sequence_dto::*;
 pub use state_dto::*;
-pub use activity_walk::*;
-pub(crate) use activity_extract::*;
 
 #[cfg(test)]
 mod tests;

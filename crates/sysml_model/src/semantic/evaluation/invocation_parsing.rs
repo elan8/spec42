@@ -146,7 +146,9 @@ pub(crate) enum BoundValue {
     Collection(Vec<String>),
 }
 
-pub(crate) fn parse_invocation_args<'a>(args: &[&'a str]) -> Result<InvocationArgs<'a>, EvalStatus> {
+pub(crate) fn parse_invocation_args<'a>(
+    args: &[&'a str],
+) -> Result<InvocationArgs<'a>, EvalStatus> {
     if args.is_empty() {
         return Ok(InvocationArgs::Positional(Vec::new()));
     }
@@ -295,4 +297,3 @@ pub(crate) fn parse_tuple_identifier_list(expr: &str) -> Result<Vec<String>, Eva
     }
     Ok(items)
 }
-

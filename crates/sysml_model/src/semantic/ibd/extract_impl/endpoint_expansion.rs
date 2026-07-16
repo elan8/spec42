@@ -5,7 +5,10 @@ use super::*;
 /// `pending.container_prefix`). See [`qualify_occurrence_endpoint`] for the sibling function used
 /// when no single prefix is known — the two are deliberately not merged; see that function's doc
 /// comment for why.
-pub(crate) fn qualify_pending_connection_endpoint(container_prefix: Option<&str>, endpoint: &str) -> String {
+pub(crate) fn qualify_pending_connection_endpoint(
+    container_prefix: Option<&str>,
+    endpoint: &str,
+) -> String {
     let trimmed = endpoint.trim();
     if trimmed.is_empty() {
         return String::new();
@@ -38,7 +41,10 @@ pub(crate) fn qualify_pending_connection_endpoint(container_prefix: Option<&str>
 /// caused a real regression (`drone_connections_scoped_ibd_matches_full_workspace_filter`, 24 vs 21
 /// connectors on the bundled `examples/drone` fixture) — confirmed correct-as-is by a dedicated
 /// research pass, not just an oversight left unfixed.
-pub(crate) fn qualify_occurrence_endpoint(endpoint: &str, def_container_prefixes: &[String]) -> String {
+pub(crate) fn qualify_occurrence_endpoint(
+    endpoint: &str,
+    def_container_prefixes: &[String],
+) -> String {
     let trimmed = endpoint.trim();
     if trimmed.is_empty() {
         return String::new();
