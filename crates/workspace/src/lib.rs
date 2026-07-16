@@ -56,7 +56,7 @@ pub use session::{RelinkToken, SessionLifecycle, WorkspaceSession};
 pub use snapshot::discovery::{discover_target_files, path_to_file_url, resolve_workspace_root};
 pub use snapshot::{
     CancellationToken, DocumentChanges, HostContext, HostExpression, HostExpressionArgument,
-    HostMultiplicity, HostPipelinePhase, HostRelationshipMetaclass, HostResourceLimits,
+    HostFeatureValue, HostMultiplicity, HostPipelinePhase, HostRelationshipMetaclass, HostResourceLimits,
     HostSemanticModelNode, HostSemanticModelRelationship, HostSemanticProjection,
     HostValidatedDocument, HostValidationReport, HostValidationSummary, HostWorkspaceSnapshot,
     Spec42ProjectionOutput, ValidationTiming, WorkspaceLoadRequest, apply_document_changes,
