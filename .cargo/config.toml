@@ -1,7 +1,3 @@
 # Optional: uncomment to fail the build on warnings locally.
 # [build]
 # rustflags = ["-D", "warnings"]
-
-# Local sibling parser for Spec42 0.40 development (AttributeUsage multiplicity).
-[patch.crates-io]
-sysml-v2-parser = { path = "../sysml-v2-parser" }
