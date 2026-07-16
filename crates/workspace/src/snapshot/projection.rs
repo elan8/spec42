@@ -51,6 +51,9 @@ pub enum HostMembershipKind {
     Alias,
     VariantMembership,
     ActorMembership,
+    SubjectMembership,
+    StakeholderMembership,
+    ObjectiveMembership,
 }
 
 /// Typed, API-oriented identity and ownership facts for a semantic element.

@@ -473,6 +473,9 @@ fn membership_kind(node: &HostSemanticModelNode) -> HostMembershipKind {
         ElementKind::Import => HostMembershipKind::Import,
         ElementKind::Alias => HostMembershipKind::Alias,
         ElementKind::Actor => HostMembershipKind::ActorMembership,
+        ElementKind::Subject => HostMembershipKind::SubjectMembership,
+        ElementKind::Stakeholder => HostMembershipKind::StakeholderMembership,
+        ElementKind::Objective => HostMembershipKind::ObjectiveMembership,
         kind if kind.is_definition() => HostMembershipKind::OwningMembership,
         ElementKind::Package | ElementKind::KermlDecl | ElementKind::Filter => {
             HostMembershipKind::OwningMembership
@@ -496,7 +499,6 @@ fn membership_kind(node: &HostSemanticModelNode) -> HostMembershipKind {
         | ElementKind::Flow
         | ElementKind::Allocation
         | ElementKind::Perform
-        | ElementKind::Subject
         | ElementKind::Ref
         | ElementKind::Constraint
         | ElementKind::Connection
@@ -504,7 +506,6 @@ fn membership_kind(node: &HostSemanticModelNode) -> HostMembershipKind {
         | ElementKind::Occurrence
         | ElementKind::Calc
         | ElementKind::Interface
-        | ElementKind::Stakeholder
         | ElementKind::IncludeUseCase
         | ElementKind::VerifiedRequirement => HostMembershipKind::FeatureMembership,
         ElementKind::Documentation => HostMembershipKind::OwningMembership,
@@ -1095,8 +1096,13 @@ package Demo {
     private import Outer::*;
     alias AliasName for Outer::Thing;
     part def Thing;
+    requirement def Req {
+        subject subj : Thing;
+        stakeholder holder : Thing;
+    }
     use case def Mission {
         actor operator;
+        objective goal : Req;
     }
 }
 "#;
@@ -1170,6 +1176,48 @@ package Demo {
                 ))
             );
         }
+
+        // Regression guard: `subject`/`stakeholder` used to fall into the generic
+        // `FeatureMembership` bucket, and `objective` was unhandled entirely (silently defaulted
+        // to `OwningMembership`).
+        let subject_node = projection
+            .nodes
+            .iter()
+            .find(|node| node.element_kind == sysml_model::ElementKind::Subject)
+            .expect("subject node");
+        assert_eq!(
+            membership_for(&subject_node.qualified_name),
+            Some((
+                HostRelationshipMetaclass::Membership,
+                Some(HostMembershipKind::SubjectMembership)
+            ))
+        );
+
+        let stakeholder_node = projection
+            .nodes
+            .iter()
+            .find(|node| node.element_kind == sysml_model::ElementKind::Stakeholder)
+            .expect("stakeholder node");
+        assert_eq!(
+            membership_for(&stakeholder_node.qualified_name),
+            Some((
+                HostRelationshipMetaclass::Membership,
+                Some(HostMembershipKind::StakeholderMembership)
+            ))
+        );
+
+        let objective_node = projection
+            .nodes
+            .iter()
+            .find(|node| node.element_kind == sysml_model::ElementKind::Objective)
+            .expect("objective node");
+        assert_eq!(
+            membership_for(&objective_node.qualified_name),
+            Some((
+                HostRelationshipMetaclass::Membership,
+                Some(HostMembershipKind::ObjectiveMembership)
+            ))
+        );
     }
 
     #[test]

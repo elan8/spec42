@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.43.1] - 2026-07-16
+
+- **Specialized memberships: Subject/Stakeholder/Objective (S42-003)** — `HostMembershipKind`
+  gains `SubjectMembership`, `StakeholderMembership`, and `ObjectiveMembership` variants,
+  alongside the existing `ActorMembership`/`VariantMembership`. `subject`/`stakeholder` member
+  nodes previously fell into the generic `FeatureMembership` bucket in `membership_kind()`
+  (`crates/workspace/src/snapshot/facts.rs`); `objective` member nodes weren't handled at all and
+  silently defaulted to `OwningMembership` — a real misclassification, not a deliberate choice.
+  No `PROJECTION_SCHEMA_VERSION` bump: `membership_kind: Option<HostMembershipKind>` already
+  exists on the wire shape, this only changes which value three node kinds receive.
+
 ## [0.43.0] - 2026-07-16
 
 - **Enumeration vertical slice** — requires `sysml-v2-parser` **0.39.0**, which gives each
