@@ -92,9 +92,13 @@ jobs:
 
       - name: Rust tests
         run: |
-          cargo test --workspace --exclude server
+          cargo test --workspace --exclude server --exclude lsp_server
           cargo test -p server --lib
           cargo test -p server --test multi_file_check
+          cargo test -p lsp_server --lib --test debt_guardrails --test parse_validation
+          # Each integration test starts a server and awaits asynchronous indexing.
+          # Run this suite serially so CPU contention cannot exhaust its retry budget.
+          cargo test -p lsp_server --test lsp_integration -- --test-threads=1
           cargo test -p server \
             --test api_http \
             --test mcp_tools \

@@ -44,7 +44,7 @@ fn lsp_goto_definition() {
 
     // Go to definition on "A" (usage "part a : A" -> def A). Retry for CI determinism.
     let mut resolved_uri: Option<String> = None;
-    for _ in 0..20 {
+    for _ in 0..100 {
         let def_id = next_id();
         let def_req = serde_json::json!({
             "jsonrpc": "2.0",
@@ -77,7 +77,7 @@ fn lsp_goto_definition() {
         }
         // See lsp_cross_file_goto_definition: give background indexing real wall-clock
         // time between retries, not just a message-queue round trip.
-        std::thread::sleep(std::time::Duration::from_millis(50));
+        std::thread::sleep(std::time::Duration::from_millis(100));
         lsp_barrier(&mut stdin, &mut stdout);
     }
 
