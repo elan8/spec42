@@ -188,30 +188,16 @@ fn add_ref_decl(
     parent_id: &NodeId,
     wrap: &sysml_v2_parser::Node<RefDecl>,
 ) {
-    let n = &wrap.value;
-    let qualified = qualified_name_for_node(g, uri, container_prefix, &n.name, "ref");
-    let mut attrs = HashMap::new();
-    attrs.insert("refType".to_string(), serde_json::json!(&n.type_name));
-    if let Some(ref v) = n.value {
-        attrs.insert(
-            "value".to_string(),
-            serde_json::json!(expressions::expression_to_debug_string(&v.value.expression)),
-        );
-    }
-    add_node_and_recurse(
+    let ref_node_id = super::ref_decl::materialize_ref_decl(
         g,
         uri,
-        &qualified,
-        "ref",
-        n.name.clone(),
-        span_to_range(&wrap.span),
-        attrs,
-        Some(parent_id),
+        container_prefix,
+        parent_id,
+        wrap,
+        super::ref_decl::RefDeclOptions::default(),
     );
-    add_typing_edge_if_exists(g, uri, &qualified, &n.type_name, container_prefix);
-    if let RefBody::Brace { elements } = &n.body {
+    if let RefBody::Brace { elements } = &wrap.value.body {
         if !elements.is_empty() {
-            let ref_node_id = NodeId::new(uri, &qualified);
             build_from_action_def_body(elements, uri, container_prefix, &ref_node_id, g);
         }
     }

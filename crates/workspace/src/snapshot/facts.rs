@@ -76,6 +76,7 @@ pub(crate) fn collect_host_validation_report(
 pub(crate) fn project_host_semantic_model(
     graph: &SemanticGraph,
     target_files: &[std::path::PathBuf],
+    library_urls: &[Url],
 ) -> crate::error::WorkspaceResult<HostSemanticProjection> {
     let target_urls = target_file_urls(target_files)?;
     let mut nodes = Vec::new();
@@ -100,6 +101,15 @@ pub(crate) fn project_host_semantic_model(
                 }
             }
 
+            let documentation = attributes
+                .get("doc")
+                .and_then(|value| value.as_str())
+                .map(str::to_owned);
+            let declared_short_name = attributes
+                .get("shortName")
+                .and_then(|value| value.as_str())
+                .map(str::to_owned);
+
             nodes.push(HostSemanticModelNode {
                 semantic_id: semantic_element_id(
                     node.id.uri.as_str(),
@@ -122,7 +132,12 @@ pub(crate) fn project_host_semantic_model(
                     effective_name: node.name.clone(),
                     owner_id: None,
                     owning_membership_id: None,
-                    is_library_element: false,
+                    is_library_element: sysml_model::semantic::workspace_uri::uri_under_any_library(
+                        &node.id.uri,
+                        library_urls,
+                    ),
+                    documentation,
+                    declared_short_name,
                     feature_properties: node
                         .declared_facts
                         .feature_properties
@@ -135,6 +150,9 @@ pub(crate) fn project_host_semantic_model(
                             is_derived: properties.is_derived,
                             is_constant: properties.is_constant,
                             is_end: properties.is_end,
+                            is_composite: properties.is_composite,
+                            is_reference: properties.is_reference,
+                            is_conjugated: properties.is_conjugated,
                             is_ordered: properties.is_ordered,
                             is_unique: properties.is_unique,
                         }),
@@ -386,7 +404,10 @@ fn derived_fact_id(kind: &str, owner_id: &str, path: &str) -> String {
 fn relationship_metaclass(kind: &sysml_model::RelationshipKind) -> HostRelationshipMetaclass {
     match kind {
         sysml_model::RelationshipKind::Typing => HostRelationshipMetaclass::FeatureTyping,
-        sysml_model::RelationshipKind::Specializes => HostRelationshipMetaclass::Specialization,
+        sysml_model::RelationshipKind::Specializes => HostRelationshipMetaclass::Subclassification,
+        sysml_model::RelationshipKind::Subsetting => HostRelationshipMetaclass::Subsetting,
+        sysml_model::RelationshipKind::Redefinition => HostRelationshipMetaclass::Redefinition,
+        sysml_model::RelationshipKind::Annotation => HostRelationshipMetaclass::Annotation,
         _ => HostRelationshipMetaclass::Relationship,
     }
 }
@@ -394,15 +415,54 @@ fn relationship_metaclass(kind: &sysml_model::RelationshipKind) -> HostRelations
 fn membership_kind(node: &HostSemanticModelNode) -> HostMembershipKind {
     use sysml_model::ElementKind;
 
-    match node.element_kind {
-        ElementKind::Attribute
-        | ElementKind::AttributeDef
-        | ElementKind::Item
-        | ElementKind::ItemDef
-        | ElementKind::Part
-        | ElementKind::PartDef
+    if node
+        .attributes
+        .get("isVariant")
+        .and_then(|value| value.as_bool())
+        == Some(true)
+        || node.element_kind.as_str() == "variant"
+    {
+        return HostMembershipKind::VariantMembership;
+    }
+
+    match &node.element_kind {
+        ElementKind::Import => HostMembershipKind::Import,
+        ElementKind::Alias => HostMembershipKind::Alias,
+        ElementKind::Actor => HostMembershipKind::ActorMembership,
+        kind if kind.is_definition() => HostMembershipKind::OwningMembership,
+        ElementKind::Package | ElementKind::KermlDecl | ElementKind::Filter => {
+            HostMembershipKind::OwningMembership
+        }
+        ElementKind::Part
         | ElementKind::Port
-        | ElementKind::PortDef => HostMembershipKind::FeatureMembership,
+        | ElementKind::Item
+        | ElementKind::Attribute
+        | ElementKind::Action
+        | ElementKind::State
+        | ElementKind::Requirement
+        | ElementKind::UseCase
+        | ElementKind::Concern
+        | ElementKind::Analysis
+        | ElementKind::Verification
+        | ElementKind::View
+        | ElementKind::Viewpoint
+        | ElementKind::Rendering
+        | ElementKind::ViewRendering
+        | ElementKind::MetadataUsage
+        | ElementKind::Flow
+        | ElementKind::Allocation
+        | ElementKind::Perform
+        | ElementKind::Subject
+        | ElementKind::Ref
+        | ElementKind::Constraint
+        | ElementKind::Connection
+        | ElementKind::Individual
+        | ElementKind::Occurrence
+        | ElementKind::Calc
+        | ElementKind::Interface
+        | ElementKind::Stakeholder
+        | ElementKind::IncludeUseCase
+        | ElementKind::VerifiedRequirement => HostMembershipKind::FeatureMembership,
         _ => HostMembershipKind::OwningMembership,
     }
 }
@@ -532,7 +592,7 @@ package Pkg {
 
         let target = std::path::PathBuf::from("/workspace/pkg.sysml");
         let projection =
-            project_host_semantic_model(&graph, &[target.clone()]).expect("projection");
+            project_host_semantic_model(&graph, &[target.clone()], &[]).expect("projection");
 
         assert!(
             projection
@@ -568,7 +628,7 @@ package Demo {
         let provider = make_provider(uri.as_str(), content);
         let (graph, _docs) = build_semantic_graph_with_provider(&provider).expect("graph");
 
-        let projection = project_host_semantic_model(&graph, &[target]).expect("projection");
+        let projection = project_host_semantic_model(&graph, &[target], &[]).expect("projection");
 
         let usage = projection
             .nodes
@@ -702,7 +762,7 @@ package Demo {
         let uri = path_to_file_url(target.as_path()).expect("workspace uri");
         let provider = make_provider(uri.as_str(), content);
         let (graph, _) = build_semantic_graph_with_provider(&provider).expect("graph");
-        let projection = project_host_semantic_model(&graph, &[target]).expect("projection");
+        let projection = project_host_semantic_model(&graph, &[target], &[]).expect("projection");
         let names = projection
             .nodes
             .iter()
@@ -825,7 +885,7 @@ package Demo {
         let uri = path_to_file_url(target.as_path()).expect("workspace uri");
         let provider = make_provider(uri.as_str(), content);
         let (graph, _) = build_semantic_graph_with_provider(&provider).expect("graph");
-        let projection = project_host_semantic_model(&graph, &[target]).expect("projection");
+        let projection = project_host_semantic_model(&graph, &[target], &[]).expect("projection");
         let wheel = projection
             .nodes
             .iter()
@@ -867,9 +927,9 @@ package Demo {
         let uri = path_to_file_url(target.as_path()).expect("workspace uri");
         let provider = make_provider(uri.as_str(), content);
         let (graph, _) = build_semantic_graph_with_provider(&provider).expect("graph");
-        let first = project_host_semantic_model(&graph, std::slice::from_ref(&target))
+        let first = project_host_semantic_model(&graph, std::slice::from_ref(&target), &[])
             .expect("first projection");
-        let second = project_host_semantic_model(&graph, &[target]).expect("second projection");
+        let second = project_host_semantic_model(&graph, &[target], &[]).expect("second projection");
         assert_eq!(
             first
                 .relationships
@@ -881,6 +941,284 @@ package Demo {
                 .iter()
                 .map(|relationship| &relationship.semantic_id)
                 .collect::<Vec<_>>()
+        );
+    }
+
+    #[test]
+    fn projection_exposes_ref_ownership_and_composite_usage_defaults() {
+        let content = r#"
+package Demo {
+    part def Tree;
+    part def Orbit {
+        ref sharedBranch : Tree;
+        part localBranch : Tree;
+    }
+}
+"#;
+        let target = std::path::PathBuf::from(if cfg!(windows) {
+            "c:/workspace/ref_ownership.sysml"
+        } else {
+            "/workspace/ref_ownership.sysml"
+        });
+        let uri = path_to_file_url(target.as_path()).expect("workspace uri");
+        let provider = make_provider(uri.as_str(), content);
+        let (graph, _) = build_semantic_graph_with_provider(&provider).expect("graph");
+        let projection = project_host_semantic_model(&graph, &[target], &[]).expect("projection");
+
+        let shared = projection
+            .nodes
+            .iter()
+            .find(|node| node.qualified_name.ends_with("::sharedBranch"))
+            .expect("sharedBranch ref");
+        let shared_props = shared
+            .facts
+            .feature_properties
+            .as_ref()
+            .expect("ref feature properties");
+        assert_eq!(shared_props.is_reference, Some(true));
+        assert_eq!(shared_props.is_composite, Some(false));
+        assert_eq!(
+            projection
+                .relationships
+                .iter()
+                .find(|relationship| {
+                    relationship.metaclass == HostRelationshipMetaclass::Membership
+                        && relationship.target == shared.qualified_name
+                })
+                .expect("ref membership")
+                .membership_kind,
+            Some(HostMembershipKind::FeatureMembership)
+        );
+
+        let local = projection
+            .nodes
+            .iter()
+            .find(|node| node.qualified_name.ends_with("::localBranch"))
+            .expect("localBranch part");
+        let local_props = local
+            .facts
+            .feature_properties
+            .as_ref()
+            .expect("part feature properties");
+        assert_eq!(local_props.is_composite, Some(true));
+        assert_eq!(local_props.is_reference, Some(false));
+    }
+
+    #[test]
+    fn projection_membership_kinds_for_import_alias_actor_and_defs() {
+        let content = r#"
+package Demo {
+    private import Outer::*;
+    alias AliasName for Outer::Thing;
+    part def Thing;
+    use case def Mission {
+        actor operator;
+    }
+}
+"#;
+        let target = std::path::PathBuf::from(if cfg!(windows) {
+            "c:/workspace/membership_kinds.sysml"
+        } else {
+            "/workspace/membership_kinds.sysml"
+        });
+        let uri = path_to_file_url(target.as_path()).expect("workspace uri");
+        let provider = make_provider(uri.as_str(), content);
+        let (graph, _) = build_semantic_graph_with_provider(&provider).expect("graph");
+        let projection = project_host_semantic_model(&graph, &[target], &[]).expect("projection");
+
+        let membership_for = |qualified: &str| {
+            projection
+                .relationships
+                .iter()
+                .find(|relationship| {
+                    relationship.metaclass == HostRelationshipMetaclass::Membership
+                        && relationship.target == qualified
+                })
+                .map(|relationship| relationship.membership_kind)
+        };
+
+        let thing = projection
+            .nodes
+            .iter()
+            .find(|node| node.qualified_name.ends_with("::Thing"))
+            .expect("Thing def");
+        assert_eq!(
+            membership_for(&thing.qualified_name),
+            Some(Some(HostMembershipKind::OwningMembership))
+        );
+
+        if let Some(import_node) = projection
+            .nodes
+            .iter()
+            .find(|node| node.element_kind == sysml_model::ElementKind::Import)
+        {
+            assert_eq!(
+                membership_for(&import_node.qualified_name),
+                Some(Some(HostMembershipKind::Import))
+            );
+        }
+
+        if let Some(alias_node) = projection
+            .nodes
+            .iter()
+            .find(|node| node.element_kind == sysml_model::ElementKind::Alias)
+        {
+            assert_eq!(
+                membership_for(&alias_node.qualified_name),
+                Some(Some(HostMembershipKind::Alias))
+            );
+        }
+
+        if let Some(actor_node) = projection
+            .nodes
+            .iter()
+            .find(|node| node.element_kind == sysml_model::ElementKind::Actor)
+        {
+            assert_eq!(
+                membership_for(&actor_node.qualified_name),
+                Some(Some(HostMembershipKind::ActorMembership))
+            );
+        }
+    }
+
+    #[test]
+    fn projection_relationship_family_subset_redefine_specialize_annotation() {
+        let content = r#"
+package Demo {
+    metadata def Tag;
+    part def Base {
+        attribute mass;
+        port signal;
+    }
+    part def Child specializes Base {
+        attribute payload subsets mass;
+        port cmd redefines signal;
+        @Tag;
+    }
+}
+"#;
+        let target = std::path::PathBuf::from(if cfg!(windows) {
+            "c:/workspace/rel_family.sysml"
+        } else {
+            "/workspace/rel_family.sysml"
+        });
+        let uri = path_to_file_url(target.as_path()).expect("workspace uri");
+        let provider = make_provider(uri.as_str(), content);
+        let (graph, _) = build_semantic_graph_with_provider(&provider).expect("graph");
+        let projection = project_host_semantic_model(&graph, &[target], &[]).expect("projection");
+
+        assert!(
+            projection.relationships.iter().any(|relationship| {
+                relationship.kind == sysml_model::RelationshipKind::Specializes
+                    && relationship.metaclass == HostRelationshipMetaclass::Subclassification
+                    && relationship.source.ends_with("::Child")
+            }),
+            "specializes should project as Subclassification"
+        );
+        assert!(
+            projection.relationships.iter().any(|relationship| {
+                relationship.kind == sysml_model::RelationshipKind::Subsetting
+                    && relationship.metaclass == HostRelationshipMetaclass::Subsetting
+            }),
+            "subsets should project as Subsetting; relationships={:?}",
+            projection
+                .relationships
+                .iter()
+                .map(|r| (&r.kind, &r.metaclass, &r.source, &r.target))
+                .collect::<Vec<_>>()
+        );
+        assert!(
+            projection.relationships.iter().any(|relationship| {
+                relationship.kind == sysml_model::RelationshipKind::Redefinition
+                    && relationship.metaclass == HostRelationshipMetaclass::Redefinition
+            }),
+            "redefines should project as Redefinition"
+        );
+        assert!(
+            projection.relationships.iter().any(|relationship| {
+                relationship.kind == sysml_model::RelationshipKind::Annotation
+                    && relationship.metaclass == HostRelationshipMetaclass::Annotation
+            }),
+            "annotation edges should project Annotation metaclass"
+        );
+    }
+
+    #[test]
+    fn projection_lifts_doc_short_name_and_conjugated_port() {
+        let content = r#"
+package Demo {
+    part def <'CB'> ControlBoard {
+        doc /* Control board assembly */
+        port power : ~PowerPort;
+    }
+    port def PowerPort;
+}
+"#;
+        let target = std::path::PathBuf::from(if cfg!(windows) {
+            "c:/workspace/names_conj.sysml"
+        } else {
+            "/workspace/names_conj.sysml"
+        });
+        let uri = path_to_file_url(target.as_path()).expect("workspace uri");
+        let provider = make_provider(uri.as_str(), content);
+        let (graph, _) = build_semantic_graph_with_provider(&provider).expect("graph");
+        let projection = project_host_semantic_model(&graph, &[target], &[]).expect("projection");
+
+        let board = projection
+            .nodes
+            .iter()
+            .find(|node| node.qualified_name.ends_with("::ControlBoard"))
+            .expect("ControlBoard");
+        assert_eq!(board.facts.declared_short_name.as_deref(), Some("CB"));
+        assert_eq!(
+            board.facts.documentation.as_deref(),
+            Some("Control board assembly")
+        );
+
+        let power = projection
+            .nodes
+            .iter()
+            .find(|node| node.qualified_name.ends_with("::power"))
+            .expect("power port");
+        assert!(
+            power
+                .facts
+                .feature_properties
+                .as_ref()
+                .expect("port properties")
+                .is_conjugated
+        );
+    }
+
+    #[test]
+    fn projection_marks_library_elements_from_library_urls() {
+        let content = r#"
+package LibPkg {
+    part def LibraryPart;
+}
+"#;
+        let target = std::path::PathBuf::from(if cfg!(windows) {
+            "c:/libs/std/lib.sysml"
+        } else {
+            "/libs/std/lib.sysml"
+        });
+        let library_root = std::path::PathBuf::from(if cfg!(windows) {
+            "c:/libs/std"
+        } else {
+            "/libs/std"
+        });
+        let uri = path_to_file_url(target.as_path()).expect("library uri");
+        let library_url = path_to_file_url(library_root.as_path()).expect("library root uri");
+        let provider = make_provider(uri.as_str(), content);
+        let (graph, _) = build_semantic_graph_with_provider(&provider).expect("graph");
+        let projection =
+            project_host_semantic_model(&graph, &[target], &[library_url]).expect("projection");
+        assert!(
+            projection
+                .nodes
+                .iter()
+                .any(|node| node.facts.is_library_element),
+            "nodes under library URLs should set is_library_element"
         );
     }
 }

@@ -41,6 +41,10 @@ impl NodeId {
 pub enum RelationshipKind {
     Typing,
     Specializes,
+    /// Explicit `subsets` / `:>` feature relationship on a usage.
+    Subsetting,
+    /// Explicit `redefines` / `:>>` feature relationship on a usage.
+    Redefinition,
     Connection,
     Bind,
     /// Control/data flow relationship inside behaviors (e.g. `flow`, `first ... then ...`).
@@ -472,6 +476,8 @@ impl RelationshipKind {
         match self {
             RelationshipKind::Typing => "typing",
             RelationshipKind::Specializes => "specializes",
+            RelationshipKind::Subsetting => "subsetting",
+            RelationshipKind::Redefinition => "redefinition",
             RelationshipKind::Connection => "connection",
             RelationshipKind::Bind => "bind",
             RelationshipKind::Flow => "flow",
@@ -492,6 +498,8 @@ impl RelationshipKind {
         match value.trim().to_ascii_lowercase().as_str() {
             "typing" => Some(RelationshipKind::Typing),
             "specializes" => Some(RelationshipKind::Specializes),
+            "subsetting" => Some(RelationshipKind::Subsetting),
+            "redefinition" => Some(RelationshipKind::Redefinition),
             "connection" => Some(RelationshipKind::Connection),
             "bind" => Some(RelationshipKind::Bind),
             "flow" => Some(RelationshipKind::Flow),
@@ -525,9 +533,10 @@ pub struct DeclaredSemanticFacts {
 
 /// Explicit feature/definition modifiers from the textual declaration.
 ///
-/// Only fields backed by parser AST data are represented. Composite/reference
-/// ownership, conjugation, portion kind, and time-varying semantics are omitted
-/// until the parser exposes them as typed fields.
+/// Composite/reference ownership is inferred from ordinary usage vs `RefDecl`
+/// materialization (`ElementKind::Ref`). Conjugation is set when a type
+/// reference is prefixed with `~`. Portion/time-varying semantics remain
+/// omitted until the parser exposes them as typed fields.
 #[derive(Debug, Clone, Default, Serialize, Deserialize, PartialEq, Eq)]
 pub struct DeclaredFeatureProperties {
     #[serde(default)]
@@ -544,6 +553,12 @@ pub struct DeclaredFeatureProperties {
     pub is_constant: bool,
     #[serde(default)]
     pub is_end: bool,
+    #[serde(default)]
+    pub is_composite: Option<bool>,
+    #[serde(default)]
+    pub is_reference: Option<bool>,
+    #[serde(default)]
+    pub is_conjugated: bool,
     #[serde(default)]
     pub is_ordered: Option<bool>,
     #[serde(default)]

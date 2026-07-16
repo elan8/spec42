@@ -185,7 +185,8 @@ fn assemble_snapshot_from_state(
     context.check_continue(HostPipelinePhase::CollectingValidation)?;
 
     context.check_continue(HostPipelinePhase::ProjectingModel)?;
-    let semantic_projection = project_host_semantic_model(&semantic_graph, &target_files)?;
+    let semantic_projection =
+        project_host_semantic_model(&semantic_graph, &target_files, &library_urls)?;
     context.check_continue(HostPipelinePhase::ProjectingModel)?;
 
     Ok(assemble_host_workspace_snapshot(

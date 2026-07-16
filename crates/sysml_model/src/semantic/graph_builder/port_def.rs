@@ -75,7 +75,9 @@ pub(super) fn materialize_port_usage(
         attrs.insert("multiplicity".to_string(), serde_json::json!(m));
     }
     if let Some((ref feat, ref val)) = n.subsets {
-        attrs.insert("subsetsFeature".to_string(), serde_json::json!(feat));
+        if let Some(target) = subsetting_target(Some(&feat.value)) {
+            attrs.insert("subsetsFeature".to_string(), serde_json::json!(target));
+        }
         if let Some(v) = val {
             attrs.insert(
                 "subsetsValue".to_string(),
@@ -83,13 +85,13 @@ pub(super) fn materialize_port_usage(
             );
         }
     }
-    if let Some(ref r) = n.references {
+    if let Some(r) = subsetting_target(n.references.as_deref()) {
         attrs.insert("referencesFeature".to_string(), serde_json::json!(r));
     }
-    if let Some(ref c) = n.crosses {
+    if let Some(c) = subsetting_target(n.crosses.as_deref()) {
         attrs.insert("crossesFeature".to_string(), serde_json::json!(c));
     }
-    if let Some(ref r) = n.redefines {
+    if let Some(r) = subsetting_target(n.redefines.as_deref()) {
         attrs.insert("redefines".to_string(), serde_json::json!(r));
     }
     add_node_and_recurse(

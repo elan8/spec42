@@ -30,6 +30,7 @@ mod part_def;
 mod part_usage;
 mod payload;
 mod port_def;
+mod ref_decl;
 mod requirement_body;
 mod state;
 pub(crate) mod unit_metadata;

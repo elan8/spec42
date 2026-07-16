@@ -7,6 +7,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.39.0] - 2026-07-16
+
+- **Host projection schema v7** — Extends v6 feature properties with composite/reference
+  ownership and conjugation, adds documentation/short-name facts, library-element flagging,
+  richer membership kinds, and relationship metaclasses for Subsetting, Redefinition,
+  Subclassification, and Annotation.
+- **RefDecl ownership** — Package-level and nested `ref` declarations materialize as
+  `ElementKind::Ref` with `is_reference=true` / `is_composite=false` and retain typed
+  feature values when present. Ordinary part/item/port/attribute usages default to
+  composite ownership.
+- **Membership taxonomy** — Containment memberships distinguish FeatureMembership (usages),
+  OwningMembership (definitions/packages), plus Import, Alias, VariantMembership, and
+  ActorMembership.
+- **Relationship family** — Graph edges for `subsets`/`redefines` resolve to Subsetting /
+  Redefinition; def `specializes` projects as Subclassification; Annotation edges keep an
+  Annotation metaclass.
+- **Library / conjugation / names** — `is_library_element` uses the library URI set;
+  conjugated port typing (`~Type`) sets `is_conjugated`; `doc` and `shortName` attributes
+  lift into typed `HostElementFacts` fields.
+
 ## [0.38.0] - 2026-07-16
 
 - **Host projection schema v6** — Projected elements now carry typed

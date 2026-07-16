@@ -370,30 +370,14 @@ pub(super) fn build_from_state_body(
                 }
             }
             SDBE::Ref(r) => {
-                let n = &r.value;
-                let qualified = qualified_name_for_node(g, uri, container_prefix, &n.name, "ref");
-                let range = span_to_range(&r.span);
-                let mut attrs = HashMap::new();
-                attrs.insert("refType".to_string(), serde_json::json!(&n.type_name));
-                if let Some(ref v) = n.value {
-                    attrs.insert(
-                        "value".to_string(),
-                        serde_json::json!(expressions::expression_to_debug_string(
-                            &v.value.expression
-                        )),
-                    );
-                }
-                add_node_and_recurse(
+                super::ref_decl::materialize_ref_decl(
                     g,
                     uri,
-                    &qualified,
-                    "ref",
-                    n.name.clone(),
-                    range,
-                    attrs,
-                    Some(parent_id),
+                    container_prefix,
+                    parent_id,
+                    r,
+                    super::ref_decl::RefDeclOptions::default(),
                 );
-                add_typing_edge_if_exists(g, uri, &qualified, &n.type_name, container_prefix);
             }
             SDBE::RequirementUsage(ru_node) => {
                 super::usage_builders::materialize_requirement_usage(

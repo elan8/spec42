@@ -17,7 +17,13 @@ use sysml_model::{ConnectStatementDetail, ElementKind, RelationshipKind, TextRan
 pub enum HostRelationshipMetaclass {
     Membership,
     FeatureTyping,
+    /// Definition-level `specializes` / subclassification.
+    Subclassification,
+    /// Retained as a compatibility alias for older consumers; maps like Subclassification.
     Specialization,
+    Subsetting,
+    Redefinition,
+    Annotation,
     Relationship,
 }
 
@@ -29,6 +35,10 @@ pub enum HostRelationshipMetaclass {
 pub enum HostMembershipKind {
     OwningMembership,
     FeatureMembership,
+    Import,
+    Alias,
+    VariantMembership,
+    ActorMembership,
 }
 
 /// Typed, API-oriented identity and ownership facts for a semantic element.
@@ -40,6 +50,12 @@ pub struct HostElementFacts {
     pub owner_id: Option<String>,
     pub owning_membership_id: Option<String>,
     pub is_library_element: bool,
+    /// Documentation comment text lifted from the legacy `doc` attribute.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub documentation: Option<String>,
+    /// Declared short name lifted from the legacy `shortName` attribute.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub declared_short_name: Option<String>,
     /// Explicit declaration modifiers when the element is a feature or definition
     /// that retained typed parser properties.
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -63,6 +79,12 @@ pub struct HostFeatureProperties {
     pub is_constant: bool,
     #[serde(default)]
     pub is_end: bool,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub is_composite: Option<bool>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub is_reference: Option<bool>,
+    #[serde(default)]
+    pub is_conjugated: bool,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub is_ordered: Option<bool>,
     #[serde(default, skip_serializing_if = "Option::is_none")]

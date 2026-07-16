@@ -291,6 +291,18 @@ pub(super) fn build_from_package_body_element(
         PBE::ExtendedLibraryDecl(k) => {
             kerml_library::build_extended_library_decl(g, uri, container_prefix, parent_id, k);
         }
-        PBE::ItemUsage(_) | PBE::ConnectionUsage(_) | PBE::Ref(_) | PBE::EnumerationUsage(_) => {}
+        PBE::Ref(r) => {
+            if let Some(pid) = parent_id {
+                super::ref_decl::materialize_ref_decl(
+                    g,
+                    uri,
+                    container_prefix,
+                    pid,
+                    r,
+                    super::ref_decl::RefDeclOptions::default(),
+                );
+            }
+        }
+        PBE::ItemUsage(_) | PBE::ConnectionUsage(_) | PBE::EnumerationUsage(_) => {}
     }
 }

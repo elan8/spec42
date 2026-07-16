@@ -128,45 +128,16 @@ pub(super) fn build_from_part_usage_body_element(
             }
         }
         PUBE::Ref(r) => {
-            let n = &r.value;
-            let qualified = qualified_name_for_node(g, uri, container_prefix, &n.name, "ref");
-            let range = span_to_range(&r.span);
-            let mut attrs = HashMap::new();
-            attrs.insert("refType".to_string(), serde_json::json!(&n.type_name));
-            let value_expression = n
-                .value
-                .as_ref()
-                .map(|value| expressions::expression_to_debug_string(&value.value.expression));
-            if let Some(ref v) = value_expression {
-                attrs.insert("value".to_string(), serde_json::json!(v));
-            }
-            add_node_and_recurse(
+            super::ref_decl::materialize_ref_decl(
                 g,
                 uri,
-                &qualified,
-                "ref",
-                n.name.clone(),
-                range,
-                attrs,
-                Some(parent_id),
+                container_prefix,
+                parent_id,
+                r,
+                super::ref_decl::RefDeclOptions {
+                    wire_value_reference: true,
+                },
             );
-            add_typing_edge_if_exists(g, uri, &qualified, &n.type_name, container_prefix);
-            if let Some(value_expression) = value_expression.as_deref() {
-                if let Some(target) = expressions::resolve_expression_endpoint_legacy(
-                    g,
-                    uri,
-                    container_prefix,
-                    value_expression,
-                ) {
-                    add_edge_if_both_exist(
-                        g,
-                        uri,
-                        &qualified,
-                        &target,
-                        RelationshipKind::Reference,
-                    );
-                }
-            }
         }
         PUBE::StateUsage(state_node) => {
             let name = &state_node.name;

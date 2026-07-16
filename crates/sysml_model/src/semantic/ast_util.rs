@@ -31,11 +31,17 @@ pub fn definition_prefix_flags(prefix: Option<&DefinitionPrefix>) -> (bool, bool
     }
 }
 
+/// Composite ownership defaults for ordinary (non-`ref`) feature usages.
+fn composite_usage_ownership() -> (Option<bool>, Option<bool>) {
+    (Some(true), Some(false))
+}
+
 /// Builds declared feature properties for a part usage.
 pub fn part_usage_feature_properties(
     usage: &sysml_v2_parser::ast::PartUsage,
 ) -> DeclaredFeatureProperties {
     let (is_abstract, is_variation) = definition_prefix_flags(usage.usage_prefix.as_ref());
+    let (is_composite, is_reference) = composite_usage_ownership();
     DeclaredFeatureProperties {
         direction: usage.direction.map(direction_name).map(str::to_owned),
         is_abstract,
@@ -44,6 +50,9 @@ pub fn part_usage_feature_properties(
         is_derived: usage.is_derived,
         is_constant: usage.is_constant,
         is_end: false,
+        is_composite,
+        is_reference,
+        is_conjugated: false,
         is_ordered: Some(usage.ordered),
         is_unique: None,
     }
@@ -53,6 +62,7 @@ pub fn part_usage_feature_properties(
 pub fn attribute_usage_feature_properties(
     usage: &sysml_v2_parser::ast::AttributeUsage,
 ) -> DeclaredFeatureProperties {
+    let (is_composite, is_reference) = composite_usage_ownership();
     DeclaredFeatureProperties {
         direction: usage.direction.map(direction_name).map(str::to_owned),
         is_abstract: false,
@@ -61,6 +71,9 @@ pub fn attribute_usage_feature_properties(
         is_derived: usage.is_derived,
         is_constant: usage.is_constant,
         is_end: usage.is_end,
+        is_composite,
+        is_reference,
+        is_conjugated: false,
         is_ordered: Some(usage.ordered),
         is_unique: Some(!usage.nonunique),
     }
@@ -70,6 +83,11 @@ pub fn attribute_usage_feature_properties(
 pub fn port_usage_feature_properties(
     usage: &sysml_v2_parser::ast::PortUsage,
 ) -> DeclaredFeatureProperties {
+    let (is_composite, is_reference) = composite_usage_ownership();
+    let conjugated = usage
+        .type_name
+        .as_deref()
+        .is_some_and(|type_name| type_name.trim_start().starts_with('~'));
     DeclaredFeatureProperties {
         direction: usage.direction.map(direction_name).map(str::to_owned),
         is_abstract: false,
@@ -78,6 +96,9 @@ pub fn port_usage_feature_properties(
         is_derived: usage.is_derived,
         is_constant: usage.is_constant,
         is_end: false,
+        is_composite,
+        is_reference,
+        is_conjugated: conjugated,
         is_ordered: None,
         is_unique: None,
     }
@@ -87,6 +108,7 @@ pub fn port_usage_feature_properties(
 pub fn item_usage_feature_properties(
     usage: &sysml_v2_parser::ast::ItemUsage,
 ) -> DeclaredFeatureProperties {
+    let (is_composite, is_reference) = composite_usage_ownership();
     DeclaredFeatureProperties {
         direction: usage.direction.map(direction_name).map(str::to_owned),
         is_abstract: false,
@@ -95,8 +117,20 @@ pub fn item_usage_feature_properties(
         is_derived: false,
         is_constant: false,
         is_end: false,
+        is_composite,
+        is_reference,
+        is_conjugated: false,
         is_ordered: None,
         is_unique: None,
+    }
+}
+
+/// Builds declared properties for a `ref` declaration (`RefDecl`).
+pub fn ref_decl_feature_properties() -> DeclaredFeatureProperties {
+    DeclaredFeatureProperties {
+        is_composite: Some(false),
+        is_reference: Some(true),
+        ..DeclaredFeatureProperties::default()
     }
 }
 
@@ -114,6 +148,9 @@ pub fn definition_feature_properties(
         is_derived: false,
         is_constant: false,
         is_end: false,
+        is_composite: None,
+        is_reference: None,
+        is_conjugated: false,
         is_ordered: None,
         is_unique: None,
     }

@@ -21,7 +21,9 @@ pub use crate::semantic::kinds::{
 use crate::semantic::model::{
     ConnectStatementDetail, ElementKind, NodeId, RelationshipKind, SemanticEdge, SemanticNode,
 };
-use crate::semantic::reference_resolution::{resolve_expression_endpoint_strict, ResolveResult};
+use crate::semantic::reference_resolution::{
+    resolve_expression_endpoint_strict, resolve_inherited_member_via_type, ResolveResult,
+};
 pub use crate::semantic::resolution::naming::{
     normalize_declared_type_ref, normalize_for_lookup, type_ref_candidates,
     type_ref_candidates_with_kind,
@@ -97,6 +99,73 @@ fn specializes_refs_from_value(value: &serde_json::Value) -> Vec<String> {
             .flat_map(split_specializes_refs)
             .collect(),
         _ => Vec::new(),
+    }
+}
+
+/// Resolve a `subsetsFeature` / `redefines` attribute value to a target node id.
+/// Prefers a direct qualified-name hit, then inherited-member resolution via the owner.
+fn resolve_subsets_or_redefines_target(
+    g: &SemanticGraph,
+    owner: Option<&SemanticNode>,
+    attribute_value: &str,
+) -> Option<NodeId> {
+    let qualified = attribute_value.replace('.', "::");
+    if let Some(node_ids) = g.node_ids_by_qualified_name.get(&qualified) {
+        if let Some(id) = node_ids.first() {
+            return Some(id.clone());
+        }
+    }
+    let owner = owner?;
+    let member = attribute_value
+        .split("::")
+        .last()
+        .unwrap_or(attribute_value);
+    match resolve_inherited_member_via_type(g, owner, member) {
+        ResolveResult::Resolved(target_id) => Some(target_id),
+        _ => None,
+    }
+}
+
+fn link_subsetting_and_redefinition_edges_for_node(g: &mut SemanticGraph, node_id: &NodeId) {
+    let Some(node) = g.get_node(node_id).cloned() else {
+        return;
+    };
+    let owner = node
+        .parent_id
+        .as_ref()
+        .and_then(|pid| g.get_node(pid))
+        .cloned();
+    if let Some(attr) = node
+        .attributes
+        .get("subsetsFeature")
+        .and_then(|value| value.as_str())
+    {
+        if let Some(target_id) =
+            resolve_subsets_or_redefines_target(g, owner.as_ref(), attr)
+        {
+            add_semantic_edge_once(
+                g,
+                node_id,
+                &target_id,
+                SemanticEdge::plain(RelationshipKind::Subsetting),
+            );
+        }
+    }
+    if let Some(attr) = node
+        .attributes
+        .get("redefines")
+        .and_then(|value| value.as_str())
+    {
+        if let Some(target_id) =
+            resolve_subsets_or_redefines_target(g, owner.as_ref(), attr)
+        {
+            add_semantic_edge_once(
+                g,
+                node_id,
+                &target_id,
+                SemanticEdge::plain(RelationshipKind::Redefinition),
+            );
+        }
     }
 }
 
@@ -388,6 +457,7 @@ pub fn link_workspace_relationships(g: &mut SemanticGraph) {
         for specializes_ref in specializes_refs {
             add_specializes_edges_for_node(g, &node_id, &specializes_ref);
         }
+        link_subsetting_and_redefinition_edges_for_node(g, &node_id);
     }
 
     // Per-document graph build cannot see imported elements from other files; re-wire after merge.
@@ -432,5 +502,12 @@ pub fn link_workspace_derivations(g: &mut SemanticGraph) {
         .collect();
     for connection_id in connection_ids {
         try_wire_derivation_connection(g, &connection_id.uri, &connection_id);
+    }
+    // Full parallel builds resolve typing/specializes/subject in
+    // `resolve_cross_document_edges_for_uri`; subsetting/redefinition still need
+    // a whole-graph pass after merge (same shape as derivation rewiring).
+    let node_ids: Vec<NodeId> = g.node_index_by_id.keys().cloned().collect();
+    for node_id in node_ids {
+        link_subsetting_and_redefinition_edges_for_node(g, &node_id);
     }
 }
