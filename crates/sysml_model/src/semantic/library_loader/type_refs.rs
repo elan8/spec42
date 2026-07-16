@@ -1,5 +1,5 @@
 use super::*;
-use crate::semantic::ast_util::{subsetting_target, typing_target};
+use crate::semantic::ast_util::{subsetting_target, typing_target_display};
 
 pub(crate) fn collect_type_reference_targets_from_content(content: &str) -> Vec<String> {
     let Ok(parsed) = sysml_v2_parser::parse(content) else {
@@ -45,7 +45,7 @@ pub(crate) fn walk_package_body_element_type_refs(element: &PackageBodyElement, 
         PackageBodyElement::PartUsage(part_usage) => walk_part_usage_type_refs(&part_usage.value, out),
         PackageBodyElement::PortDef(port_def) => walk_port_def_type_refs(&port_def.value, out),
         PackageBodyElement::ItemDef(item_def) => {
-            push_optional_type_reference(typing_target(item_def.value.specializes.as_deref()), out);
+            push_optional_typing_reference(item_def.value.specializes.as_deref(), out);
         }
         PackageBodyElement::MetadataDef(metadata_def) => {
             walk_metadata_def_type_refs(&metadata_def.value, out);
@@ -58,7 +58,7 @@ pub(crate) fn walk_package_body_element_type_refs(element: &PackageBodyElement, 
 }
 
 pub(crate) fn walk_part_def_type_refs(part_def: &PartDef, out: &mut Vec<String>) {
-    push_optional_type_reference(typing_target(part_def.specializes.as_deref()), out);
+    push_optional_typing_reference(part_def.specializes.as_deref(), out);
     let PartDefBody::Brace { elements } = &part_def.body else {
         return;
     };
@@ -81,7 +81,7 @@ pub(crate) fn walk_part_def_body_element_type_refs(element: &PartDefBodyElement,
             walk_attribute_usage_type_refs(&attribute_usage.value, out);
         }
         PartDefBodyElement::ItemDef(item_def) => {
-            push_optional_type_reference(typing_target(item_def.value.specializes.as_deref()), out);
+            push_optional_typing_reference(item_def.value.specializes.as_deref(), out);
         }
         PartDefBodyElement::ItemUsage(item_usage) => {
             walk_item_usage_type_refs(&item_usage.value, out);
@@ -130,7 +130,7 @@ pub(crate) fn walk_part_usage_body_element_type_refs(element: &PartUsageBodyElem
 }
 
 pub(crate) fn walk_port_def_type_refs(port_def: &PortDef, out: &mut Vec<String>) {
-    push_optional_type_reference(typing_target(port_def.specializes.as_deref()), out);
+    push_optional_typing_reference(port_def.specializes.as_deref(), out);
     let PortDefBody::Brace { elements } = &port_def.body else {
         return;
     };
@@ -174,12 +174,12 @@ pub(crate) fn walk_port_usage_type_refs(port_usage: &PortUsage, out: &mut Vec<St
 }
 
 pub(crate) fn walk_attribute_def_type_refs(attribute_def: &AttributeDef, out: &mut Vec<String>) {
-    push_optional_type_reference(typing_target(attribute_def.typing.as_deref()), out);
+    push_optional_typing_reference(attribute_def.typing.as_deref(), out);
     walk_attribute_body_type_refs(&attribute_def.body, out);
 }
 
 pub(crate) fn walk_attribute_usage_type_refs(attribute_usage: &AttributeUsage, out: &mut Vec<String>) {
-    push_optional_type_reference(typing_target(attribute_usage.typing.as_deref()), out);
+    push_optional_typing_reference(attribute_usage.typing.as_deref(), out);
     push_optional_type_reference(subsetting_target(attribute_usage.redefines.as_deref()), out);
     push_optional_type_reference(subsetting_target(attribute_usage.references.as_deref()), out);
     push_optional_type_reference(subsetting_target(attribute_usage.crosses.as_deref()), out);
@@ -213,7 +213,7 @@ pub(crate) fn walk_ref_decl_type_refs(ref_decl: &RefDecl, out: &mut Vec<String>)
 }
 
 pub(crate) fn walk_metadata_def_type_refs(metadata_def: &MetadataDef, out: &mut Vec<String>) {
-    push_optional_type_reference(typing_target(metadata_def.specializes.as_deref()), out);
+    push_optional_typing_reference(metadata_def.specializes.as_deref(), out);
     walk_attribute_body_type_refs(&metadata_def.body, out);
 }
 
@@ -223,6 +223,15 @@ pub(crate) fn walk_metadata_usage_type_refs(metadata_usage: &MetadataUsage, out:
         push_type_reference(target, out);
     }
     walk_attribute_body_type_refs(&metadata_usage.body, out);
+}
+
+fn push_optional_typing_reference(
+    relationship: Option<&sysml_v2_parser::ast::TypingRelationship>,
+    out: &mut Vec<String>,
+) {
+    if let Some(target) = typing_target_display(relationship) {
+        push_type_reference(&target, out);
+    }
 }
 
 pub(crate) fn package_keys_for_import_target(target: &str) -> Vec<String> {

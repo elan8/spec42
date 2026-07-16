@@ -32,9 +32,36 @@ pub fn typing_target(relationship: Option<&TypingRelationship>) -> Option<&str> 
     relationship.and_then(typing_relationship_target)
 }
 
+/// Returns the complete source-level feature chain of a typed typing or
+/// specialization relationship. Resolution and dependency-closure consumers
+/// must use this form: reducing `OtherPkg::Base` to `Base` loses the package
+/// that owns the referenced definition.
+pub fn typing_target_display(relationship: Option<&TypingRelationship>) -> Option<String> {
+    relationship.and_then(|relationship| {
+        relationship
+            .target
+            .first()
+            .map(|target| target.value.to_display_string())
+    })
+}
+
 /// Returns the source-level target of a typed subsetting-family relationship.
 pub fn subsetting_target(relationship: Option<&SubsettingRelationship>) -> Option<&str> {
     relationship.and_then(subsetting_relationship_target)
+}
+
+/// Returns the complete source-level feature chain of a subsetting-family
+/// relationship. Keep this distinct from [`subsetting_target`], whose local
+/// name remains useful for display and effective-name rules.
+pub fn subsetting_target_display(
+    relationship: Option<&SubsettingRelationship>,
+) -> Option<String> {
+    relationship.and_then(|relationship| {
+        relationship
+            .target
+            .first()
+            .map(|target| target.value.to_display_string())
+    })
 }
 
 /// Returns the expression carried by a typed connection/interface endpoint.

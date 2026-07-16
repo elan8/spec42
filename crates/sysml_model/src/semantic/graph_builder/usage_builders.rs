@@ -11,7 +11,8 @@ use sysml_v2_parser::Node;
 use url::Url;
 
 use crate::semantic::ast_util::{
-    declared_feature_value, declared_multiplicity, span_to_range, subsetting_target, typing_target,
+    declared_feature_value, declared_multiplicity, span_to_range, subsetting_target,
+    subsetting_target_display, typing_target,
 };
 use crate::semantic::graph::SemanticGraph;
 use crate::semantic::model::{ElementKind, NodeId};
@@ -54,7 +55,7 @@ pub(super) fn materialize_part_usage(
     if let Some((ref feat, ref val)) = n.subsets {
         attrs.insert(
             "subsetsFeature".to_string(),
-            serde_json::json!(feat.value.target),
+            serde_json::json!(subsetting_target_display(Some(&feat.value))),
         );
         if let Some(v) = val {
             attrs.insert(
