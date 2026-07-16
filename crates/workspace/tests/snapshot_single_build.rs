@@ -153,3 +153,104 @@ fn snapshot_projects_typed_feature_value_and_expression() {
         .any(|expression| expression.semantic_id == value.expression_id
             && expression.kind == "integerLiteral"));
 }
+
+#[test]
+fn snapshot_projects_connector_ends_for_a_resolved_connect_statement() {
+    let cache = tempdir().expect("tempdir");
+    let model_path = cache.path().join("Connector.sysml");
+    let content = r#"
+package Demo {
+    port def CmdPort;
+    part def Sensor {
+        port cmd : CmdPort;
+    }
+    part def System {
+        part sensorA : Sensor;
+        part sensorB : Sensor;
+        connect sensorA.cmd to sensorB.cmd;
+    }
+}
+"#;
+    std::fs::write(&model_path, content).expect("write model");
+
+    let engine = test_engine(&cache);
+    let snapshot = engine
+        .load_workspace(
+            InMemoryDocumentProvider::new(vec![file_document(&model_path, content)]),
+            WorkspaceLoadRequest::single_target(model_path),
+            HostContext::default(),
+        )
+        .expect("snapshot");
+    let projection = snapshot.semantic_projection();
+
+    let connection = projection
+        .relationships
+        .iter()
+        .find(|relationship| relationship.connect.is_some())
+        .expect("Connection relationship with connect detail is projected");
+
+    let ends: Vec<_> = projection
+        .connector_ends
+        .iter()
+        .filter(|end| end.owner_id == connection.semantic_id)
+        .collect();
+    assert_eq!(ends.len(), 2, "both connector ends are projected");
+    let end_0 = ends
+        .iter()
+        .find(|end| end.end_index == 0)
+        .expect("end 0 present");
+    let end_1 = ends
+        .iter()
+        .find(|end| end.end_index == 1)
+        .expect("end 1 present");
+    assert_eq!(
+        end_0.target_feature_id.as_deref(),
+        Some(connection.source_id.as_str())
+    );
+    assert_eq!(
+        end_1.target_feature_id.as_deref(),
+        Some(connection.target_id.as_str())
+    );
+}
+
+#[test]
+fn snapshot_projects_flow_detail_with_payload_and_succession_kind() {
+    let cache = tempdir().expect("tempdir");
+    let model_path = cache.path().join("FlowDetail.sysml");
+    let content = r#"
+package Demo {
+    port def CmdPort;
+    part def Sensor {
+        port cmd : CmdPort;
+    }
+    attribute def Payload;
+    part def System {
+        part sensorA : Sensor;
+        part sensorB : Sensor;
+        succession flow dataFlow of Payload from sensorA.cmd to sensorB.cmd;
+    }
+}
+"#;
+    std::fs::write(&model_path, content).expect("write model");
+
+    let engine = test_engine(&cache);
+    let snapshot = engine
+        .load_workspace(
+            InMemoryDocumentProvider::new(vec![file_document(&model_path, content)]),
+            WorkspaceLoadRequest::single_target(model_path),
+            HostContext::default(),
+        )
+        .expect("snapshot");
+    let projection = snapshot.semantic_projection();
+
+    let flow = projection
+        .relationships
+        .iter()
+        .find(|relationship| relationship.flow.is_some())
+        .expect("Flow relationship with flow detail is projected");
+    assert_eq!(flow.kind.as_str(), "successionFlow");
+    let detail = flow.flow.as_ref().expect("flow detail present");
+    assert_eq!(detail.payload_expression.as_deref(), Some("Payload"));
+    assert!(detail.source_expression.is_some());
+    assert!(detail.target_expression.is_some());
+}

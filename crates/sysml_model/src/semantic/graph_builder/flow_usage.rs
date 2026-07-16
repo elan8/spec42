@@ -7,8 +7,8 @@ use url::Url;
 
 use crate::semantic::ast_util::span_to_range;
 use crate::semantic::graph::SemanticGraph;
-use crate::semantic::model::{NodeId, RelationshipKind};
-use crate::semantic::relationships::add_typing_edge_if_exists;
+use crate::semantic::model::{FlowStatementDetail, NodeId, RelationshipKind, SemanticEdge};
+use crate::semantic::relationships::{add_semantic_edge_once, add_typing_edge_if_exists};
 
 use super::definition_body;
 use super::expressions::{self, expression_to_debug_string};
@@ -76,14 +76,59 @@ pub(super) fn materialize_flow_usage(
         definition_body::build_from_definition_body(&flow.body, uri, Some(&qualified), &node_id, g);
     }
 
-    if let (Some(from), Some(to)) = (&flow.from, &flow.to) {
-        expressions::add_expression_edge_if_both_exist(
-            g,
-            uri,
-            container_prefix,
-            from,
-            to,
-            RelationshipKind::Flow,
-        );
+    add_flow_edge_if_both_exist(g, uri, container_prefix, flow);
+}
+
+/// `RelationshipKind` for a resolved flow edge: `SuccessionFlow` gets its own kind (it implies an
+/// ordering constraint, not just data/control flow); plain `Flow` and `Message` share the
+/// existing generic `Flow` kind -- `flow.kind`'s full distinction is retained in
+/// `FlowStatementDetail`/the `flowKind` display attribute above regardless.
+fn relationship_kind_for_flow(kind: FlowUsageKind) -> RelationshipKind {
+    match kind {
+        FlowUsageKind::Flow | FlowUsageKind::Message => RelationshipKind::Flow,
+        FlowUsageKind::SuccessionFlow => RelationshipKind::SuccessionFlow,
     }
+}
+
+/// Resolve `flow`'s `from`/`to` endpoints and add a `Flow`/`SuccessionFlow` edge carrying a
+/// [`FlowStatementDetail`] (payload/source/target text), mirroring how `Connection` edges carry
+/// [`crate::semantic::model::ConnectStatementDetail`]. Endpoint resolution is the existing
+/// "legacy" (non-strict) path already used for `Flow` edges before this detail was added, not
+/// the strict `Connection`-only resolver -- unresolved endpoints are silently skipped, matching
+/// prior behavior for this edge kind.
+fn add_flow_edge_if_both_exist(
+    g: &mut SemanticGraph,
+    uri: &Url,
+    container_prefix: Option<&str>,
+    flow: &FlowUsage,
+) {
+    let (Some(from), Some(to)) = (&flow.from, &flow.to) else {
+        return;
+    };
+    let from_str = expressions::expr_node_to_qualified_string(from);
+    let to_str = expressions::expr_node_to_qualified_string(to);
+    if from_str.is_empty() || to_str.is_empty() {
+        return;
+    }
+    let Some(src) = expressions::resolve_expression_endpoint_legacy(g, uri, container_prefix, &from_str)
+    else {
+        return;
+    };
+    let Some(tgt) = expressions::resolve_expression_endpoint_legacy(g, uri, container_prefix, &to_str)
+    else {
+        return;
+    };
+    let detail = FlowStatementDetail {
+        declaring_uri: uri.clone(),
+        range: span_to_range(&from.span),
+        payload_expression: flow.payload.as_ref().map(expression_to_debug_string),
+        source_expression: Some(from_str),
+        target_expression: Some(to_str),
+    };
+    add_semantic_edge_once(
+        g,
+        &NodeId::new(uri, &src),
+        &NodeId::new(uri, &tgt),
+        SemanticEdge::flow_with_detail(relationship_kind_for_flow(flow.kind), detail),
+    );
 }

@@ -7,6 +7,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.41.0] - 2026-07-16
+
+- **Host projection schema v9** — Addressable `HostConnectorEnd` facts for resolved
+  `Connection`/`Interface` connect statements, and a `FlowStatementDetail` (payload,
+  source/target expression text) plus a distinct `SuccessionFlow` relationship kind for
+  `flow`/`succession flow` usages. Requires `sysml-v2-parser` **0.38.0**, which fixes a
+  parser bug (PAR-007) where a package-level `connection`/`interface` usage typed with an
+  inline `connect ... to ...` clause was misclassified as a definition with the clause
+  silently discarded.
+- **Connector ends** — `HostSemanticProjection.connector_ends` projects the binary
+  `from`/`to` ends of a resolved `connect` statement as addressable, explicitly-ordered
+  facts (`end_index` 0/1), derived from the relationship's already-resolved
+  `source_id`/`target_id`. N-ary `connect (a, b, c, ...)` ends beyond the binary pair are
+  parsed (`ConnectStmt::extra_ends`) but not yet resolved to feature IDs anywhere in the
+  graph builder, so they are not projected yet — tracked as a follow-up.
+- **Flow detail** — `HostSemanticModelRelationship.flow` carries payload and source/target
+  expression text for `Flow`/`SuccessionFlow` edges, mirroring `Connection`'s existing
+  `connect` field. `RelationshipKind::SuccessionFlow` distinguishes `succession flow` from
+  plain `flow`/`message` (previously all three collapsed into one generic `Flow` edge kind).
+
 ## [0.40.0] - 2026-07-16
 
 - **Host projection schema v8** — Addressable Documentation elements with Annotation

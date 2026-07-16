@@ -9,7 +9,9 @@ use std::collections::HashMap;
 
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
-use sysml_model::{ConnectStatementDetail, ElementKind, RelationshipKind, TextRange};
+use sysml_model::{
+    ConnectStatementDetail, ElementKind, FlowStatementDetail, RelationshipKind, TextRange,
+};
 
 /// Normative metaclass selected for an addressable projected relationship.
 #[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, Eq, PartialOrd, Ord)]
@@ -182,6 +184,9 @@ pub struct HostSemanticModelRelationship {
     /// Present when this `Connection` edge was resolved from an explicit `connect` statement.
     #[serde(default)]
     pub connect: Option<ConnectStatementDetail>,
+    /// Present when this `Flow`/`SuccessionFlow` edge was resolved from a `flow` usage.
+    #[serde(default)]
+    pub flow: Option<FlowStatementDetail>,
 }
 
 /// The complete semantic projection of a workspace — all nodes and addressable
@@ -196,6 +201,8 @@ pub struct HostSemanticProjection {
     pub expressions: Vec<HostExpression>,
     #[serde(default)]
     pub feature_values: Vec<HostFeatureValue>,
+    #[serde(default)]
+    pub connector_ends: Vec<HostConnectorEnd>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
@@ -239,6 +246,25 @@ pub struct HostFeatureValue {
     pub owner_id: String,
     pub expression_id: String,
     pub kind: String,
+    pub range: TextRange,
+    pub is_implied: bool,
+}
+
+/// One end of a `Connection`/`Interface` connector, addressable and ordered independently of
+/// the owning relationship's `source_id`/`target_id` pair -- supports the n-ary
+/// `connect (a, b, c, ...)` form, not just the binary `from ... to ...` case.
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+pub struct HostConnectorEnd {
+    pub semantic_id: String,
+    /// Semantic ID of the owning `Connection`/`Interface` relationship.
+    pub owner_id: String,
+    /// Declared position among the connector's ends (`0` for the first/`from` end, `1` for the
+    /// second/`to` end, `2..` for additional n-ary ends). Explicit rather than relying on `Vec`
+    /// order, which has no documented meaning once serialized/diffed independently.
+    pub end_index: u32,
+    /// Semantic ID the end's expression resolves to (e.g. `sensorA.cmd`), when resolution
+    /// succeeded.
+    pub target_feature_id: Option<String>,
     pub range: TextRange,
     pub is_implied: bool,
 }

@@ -12,9 +12,10 @@ use url::Url;
 
 use super::discovery::path_to_file_url;
 use super::projection::{
-    HostElementFacts, HostExpression, HostExpressionArgument, HostFeatureProperties,
-    HostFeatureValue, HostMembershipKind, HostMultiplicity, HostRelationshipMetaclass,
-    HostSemanticModelNode, HostSemanticModelRelationship, HostSemanticProjection,
+    HostConnectorEnd, HostElementFacts, HostExpression, HostExpressionArgument,
+    HostFeatureProperties, HostFeatureValue, HostMembershipKind, HostMultiplicity,
+    HostRelationshipMetaclass, HostSemanticModelNode, HostSemanticModelRelationship,
+    HostSemanticProjection,
 };
 use super::validation::{HostValidatedDocument, HostValidationReport, HostValidationSummary};
 
@@ -215,6 +216,7 @@ pub(crate) fn project_host_semantic_model(
             target: node.qualified_name.clone(),
             kind: sysml_model::RelationshipKind::Reference,
             connect: None,
+            flow: None,
         });
     }
     for uri in &target_urls {
@@ -266,6 +268,7 @@ pub(crate) fn project_host_semantic_model(
                 target: tgt_id.qualified_name,
                 kind: edge.kind,
                 connect: edge.connect,
+                flow: edge.flow,
             });
         }
     }
@@ -345,12 +348,49 @@ pub(crate) fn project_host_semantic_model(
             });
         }
     }
+    // Connector ends for the binary `from ... to ...` case: derived directly from the
+    // relationship's own already-resolved `source_id`/`target_id`, since a resolved `connect`
+    // statement's endpoints are exactly a connector's first two ends. N-ary `connect (a, b, c,
+    // ...)` ends beyond the binary pair are parsed (`ConnectStmt::extra_ends`) but not yet
+    // resolved to feature IDs anywhere in the graph builder, so they are not projected here --
+    // see spec42-systems-modeling-api-gaps.md for that follow-up.
+    let connector_ends = relationships
+        .iter()
+        .filter(|relationship| relationship.connect.is_some())
+        .flat_map(|relationship| {
+            let detail = relationship
+                .connect
+                .as_ref()
+                .expect("filtered to Some above");
+            [
+                (0u32, &relationship.source_id),
+                (1u32, &relationship.target_id),
+            ]
+            .into_iter()
+            .filter(|(_, feature_id)| !feature_id.is_empty())
+            .map(|(end_index, feature_id)| HostConnectorEnd {
+                semantic_id: derived_fact_id(
+                    "connectorEnd",
+                    &relationship.semantic_id,
+                    &end_index.to_string(),
+                ),
+                owner_id: relationship.semantic_id.clone(),
+                end_index,
+                target_feature_id: Some(feature_id.clone()),
+                range: detail.range,
+                is_implied: relationship.is_implied,
+            })
+            .collect::<Vec<_>>()
+        })
+        .collect();
+
     Ok(HostSemanticProjection {
         nodes,
         relationships,
         multiplicities,
         expressions,
         feature_values,
+        connector_ends,
     })
 }
 

@@ -303,6 +303,9 @@ pub(super) fn build_from_package_body_element(
                 );
             }
         }
-        PBE::ItemUsage(_) | PBE::ConnectionUsage(_) | PBE::EnumerationUsage(_) => {}
+        PBE::ItemUsage(_)
+        | PBE::ConnectionUsage(_)
+        | PBE::InterfaceUsage(_)
+        | PBE::EnumerationUsage(_) => {}
     }
 }

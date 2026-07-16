@@ -49,6 +49,9 @@ pub enum RelationshipKind {
     Bind,
     /// Control/data flow relationship inside behaviors (e.g. `flow`, `first ... then ...`).
     Flow,
+    /// `FlowUsageKind::SuccessionFlow` — a flow that also implies a succession/ordering
+    /// constraint between the connected actions, distinct from a plain data/control [`Flow`](Self::Flow).
+    SuccessionFlow,
     Perform,
     Allocate,
     Satisfy,
@@ -451,12 +454,31 @@ pub struct ConnectStatementDetail {
     pub container_prefix: Option<String>,
 }
 
-/// Edge weight in the semantic graph: relationship kind plus optional connect metadata.
+/// Optional metadata when a `Flow`/`SuccessionFlow` edge came from a resolved `flow` usage.
+/// Text-layer only, mirroring [`ConnectStatementDetail`]: resolution to feature/type IDs happens
+/// downstream in the graph builder, not in this struct.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct FlowStatementDetail {
+    #[serde(
+        serialize_with = "serialize_url",
+        deserialize_with = "deserialize_url"
+    )]
+    pub declaring_uri: Url,
+    pub range: TextRange,
+    pub payload_expression: Option<String>,
+    pub source_expression: Option<String>,
+    pub target_expression: Option<String>,
+}
+
+/// Edge weight in the semantic graph: relationship kind plus optional connect/flow metadata.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct SemanticEdge {
     pub kind: RelationshipKind,
     /// Set when this `Connection` came from a resolved `connect` (or pending-expression resolve).
     pub connect: Option<ConnectStatementDetail>,
+    /// Set when this `Flow`/`SuccessionFlow` came from a resolved `flow` usage.
+    #[serde(default)]
+    pub flow: Option<FlowStatementDetail>,
 }
 
 impl SemanticEdge {
@@ -464,6 +486,7 @@ impl SemanticEdge {
         Self {
             kind,
             connect: None,
+            flow: None,
         }
     }
 
@@ -471,6 +494,15 @@ impl SemanticEdge {
         Self {
             kind: RelationshipKind::Connection,
             connect: Some(connect),
+            flow: None,
+        }
+    }
+
+    pub fn flow_with_detail(kind: RelationshipKind, flow: FlowStatementDetail) -> Self {
+        Self {
+            kind,
+            connect: None,
+            flow: Some(flow),
         }
     }
 }
@@ -485,6 +517,7 @@ impl RelationshipKind {
             RelationshipKind::Connection => "connection",
             RelationshipKind::Bind => "bind",
             RelationshipKind::Flow => "flow",
+            RelationshipKind::SuccessionFlow => "successionFlow",
             RelationshipKind::Perform => "perform",
             RelationshipKind::Allocate => "allocate",
             RelationshipKind::Satisfy => "satisfy",
@@ -507,6 +540,7 @@ impl RelationshipKind {
             "connection" => Some(RelationshipKind::Connection),
             "bind" => Some(RelationshipKind::Bind),
             "flow" => Some(RelationshipKind::Flow),
+            "successionflow" => Some(RelationshipKind::SuccessionFlow),
             "perform" => Some(RelationshipKind::Perform),
             "allocate" => Some(RelationshipKind::Allocate),
             "satisfy" => Some(RelationshipKind::Satisfy),
