@@ -429,7 +429,7 @@ pub(super) fn materialize_concern_usage(
     );
 }
 
-pub(super) fn materialize_use_case_def(
+pub(crate) fn materialize_use_case_def(
     g: &mut SemanticGraph,
     uri: &Url,
     container_prefix: Option<&str>,
@@ -469,7 +469,7 @@ pub(super) fn materialize_use_case_def(
     }
 }
 
-pub(super) fn materialize_use_case_usage(
+pub(crate) fn materialize_use_case_usage(
     g: &mut SemanticGraph,
     uri: &Url,
     container_prefix: Option<&str>,
@@ -1016,7 +1016,7 @@ pub(crate) fn materialize_case_usage(
     }
 }
 
-pub(super) fn materialize_analysis_case_def(
+pub(crate) fn materialize_analysis_case_def(
     g: &mut SemanticGraph,
     uri: &Url,
     container_prefix: Option<&str>,
@@ -1056,7 +1056,7 @@ pub(super) fn materialize_analysis_case_def(
     analysis_case::build_from_analysis_body(&c_node.body, uri, Some(&qualified), &node_id, g);
 }
 
-pub(super) fn materialize_analysis_case_usage(
+pub(crate) fn materialize_analysis_case_usage(
     g: &mut SemanticGraph,
     uri: &Url,
     container_prefix: Option<&str>,
@@ -1089,7 +1089,7 @@ pub(super) fn materialize_analysis_case_usage(
     analysis_case::build_from_analysis_body(&c_node.body, uri, Some(&qualified), &node_id, g);
 }
 
-pub(super) fn materialize_verification_case_def(
+pub(crate) fn materialize_verification_case_def(
     g: &mut SemanticGraph,
     uri: &Url,
     container_prefix: Option<&str>,
@@ -1129,7 +1129,7 @@ pub(super) fn materialize_verification_case_def(
     verification::build_from_verification_body(&c_node.body, uri, Some(&qualified), &node_id, g);
 }
 
-pub(super) fn materialize_verification_case_usage(
+pub(crate) fn materialize_verification_case_usage(
     g: &mut SemanticGraph,
     uri: &Url,
     container_prefix: Option<&str>,

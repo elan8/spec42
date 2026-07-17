@@ -467,6 +467,104 @@ package Demo {
 }
 
 #[test]
+fn snapshot_materializes_use_case_analysis_and_verification_nested_in_part_def() {
+    let cache = tempdir().expect("tempdir");
+    let model_path = cache.path().join("NestedCaseFamilies.sysml");
+    let content = r#"
+package Demo {
+    use case def InspectUseCase;
+    analysis def InspectAnalysis;
+    verification def InspectVerification;
+    part def Instrument {
+        use case def LocalUseCase {
+            subject sys : Instrument;
+        }
+        use case localUseCase : InspectUseCase;
+        analysis def LocalAnalysis {
+            subject sys : Instrument;
+        }
+        analysis localAnalysis : InspectAnalysis;
+        verification def LocalVerification {
+            subject sys : Instrument;
+        }
+        verification localVerification : InspectVerification;
+    }
+}
+"#;
+    std::fs::write(&model_path, content).expect("write model");
+
+    let engine = test_engine(&cache);
+    let snapshot = engine
+        .load_workspace(
+            InMemoryDocumentProvider::new(vec![file_document(&model_path, content)]),
+            WorkspaceLoadRequest::single_target(model_path),
+            HostContext::default(),
+        )
+        .expect("snapshot");
+    let projection = snapshot.semantic_projection();
+
+    // Regression guard: `PartDefBodyElement::UseCaseDef`/`::UseCaseUsage`,
+    // `::AnalysisCaseDef`/`::AnalysisCaseUsage`, and `::VerificationCaseDef`/
+    // `::VerificationCaseUsage` previously had no dispatch arm at all in
+    // `graph_builder/part_def.rs` -- same bug class as the `case`/`case def` gap fixed
+    // previously -- so any of the six nested inside a `part def { ... }` body were silently
+    // dropped from the graph entirely, at both the definition and usage level.
+    for (def_suffix, def_kind, usage_suffix, usage_kind, definition_target) in [
+        (
+            "::Instrument::LocalUseCase",
+            "use case def",
+            "::Instrument::localUseCase",
+            "use case",
+            "::InspectUseCase",
+        ),
+        (
+            "::Instrument::LocalAnalysis",
+            "analysis def",
+            "::Instrument::localAnalysis",
+            "analysis",
+            "::InspectAnalysis",
+        ),
+        (
+            "::Instrument::LocalVerification",
+            "verification def",
+            "::Instrument::localVerification",
+            "verification",
+            "::InspectVerification",
+        ),
+    ] {
+        let def_node = projection
+            .nodes
+            .iter()
+            .find(|node| node.qualified_name.ends_with(def_suffix))
+            .unwrap_or_else(|| panic!("{def_suffix} nested in a part def body is materialized"));
+        assert_eq!(def_node.element_kind.as_str(), def_kind);
+        assert!(
+            projection
+                .nodes
+                .iter()
+                .any(|node| node.qualified_name.ends_with(&format!("{def_suffix}::sys"))),
+            "the nested {def_kind}'s own body is walked (subject member materialized)"
+        );
+
+        let usage_node = projection
+            .nodes
+            .iter()
+            .find(|node| node.qualified_name.ends_with(usage_suffix))
+            .unwrap_or_else(|| panic!("{usage_suffix} nested in a part def body is materialized"));
+        assert_eq!(usage_node.element_kind.as_str(), usage_kind);
+
+        assert!(
+            projection.relationships.iter().any(|relationship| {
+                relationship.kind.as_str() == "typing"
+                    && relationship.source.ends_with(usage_suffix)
+                    && relationship.target.ends_with(definition_target)
+            }),
+            "nested {usage_kind} usage's typing edge to {definition_target} resolves"
+        );
+    }
+}
+
+#[test]
 fn snapshot_materializes_bare_constraint_usage_and_resolves_its_typing() {
     let cache = tempdir().expect("tempdir");
     let model_path = cache.path().join("ConstraintUsage.sysml");

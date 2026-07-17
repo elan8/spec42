@@ -448,6 +448,64 @@ pub(super) fn build_from_part_def_body_element(
                 c_node,
             );
         }
+        // A `use case`/`analysis`/`verification` def or usage nested inside a `part def { ... }`
+        // body was previously dropped entirely -- same bug class as the `case`/`case def` gap
+        // fixed above, no dispatch arm existed here even though the package-level `PBE::*`
+        // dispatch already calls these same materializers (`package_body::materialize`).
+        PDBE::UseCaseDef(n) => {
+            super::package_body::materialize_use_case_def(
+                g,
+                uri,
+                container_prefix,
+                Some(parent_id),
+                n,
+            );
+        }
+        PDBE::UseCaseUsage(n) => {
+            super::package_body::materialize_use_case_usage(
+                g,
+                uri,
+                container_prefix,
+                Some(parent_id),
+                n,
+            );
+        }
+        PDBE::AnalysisCaseDef(n) => {
+            super::package_body::materialize_analysis_case_def(
+                g,
+                uri,
+                container_prefix,
+                Some(parent_id),
+                n,
+            );
+        }
+        PDBE::AnalysisCaseUsage(n) => {
+            super::package_body::materialize_analysis_case_usage(
+                g,
+                uri,
+                container_prefix,
+                Some(parent_id),
+                n,
+            );
+        }
+        PDBE::VerificationCaseDef(n) => {
+            super::package_body::materialize_verification_case_def(
+                g,
+                uri,
+                container_prefix,
+                Some(parent_id),
+                n,
+            );
+        }
+        PDBE::VerificationCaseUsage(n) => {
+            super::package_body::materialize_verification_case_usage(
+                g,
+                uri,
+                container_prefix,
+                Some(parent_id),
+                n,
+            );
+        }
         PDBE::Perform(perform_node) => {
             let perform_qualified = expressions::add_perform_usage_node(
                 g,

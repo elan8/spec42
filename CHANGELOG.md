@@ -7,6 +7,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.44.3] - 2026-07-17
+
+- **Nested `use case`/`analysis`/`verification` def and usage support in `part def` bodies.**
+  `PartDefBodyElement::UseCaseDef`/`::UseCaseUsage`, `::AnalysisCaseDef`/`::AnalysisCaseUsage`,
+  and `::VerificationCaseDef`/`::VerificationCaseUsage` were already parsed correctly
+  (`sysml-v2-parser`'s `part_def_body_element`), and the package-level
+  `PackageBodyElement` counterparts already dispatched to the same materializers with full
+  body-walking and typing-edge resolution -- but `graph_builder/part_def.rs`'s `PDBE` match had
+  no arm at all for any of these six variants, unlike the sibling `PDBE::CalcUsage`/`PDBE::CaseDef`
+  arms. All six fell to the `_ => {}` catch-all and were silently dropped from the graph when
+  nested inside a `part def { ... }` body -- the exact same bug class already fixed once for
+  `case`/`case def` in 0.44.1. Fixed by adding the six missing dispatch arms, reusing the existing
+  `materialize_use_case_def`/`_usage`, `materialize_analysis_case_def`/`_usage`, and
+  `materialize_verification_case_def`/`_usage` builders the package-level dispatch already calls
+  (widened from `pub(super)` to `pub(crate)`, same as the `case` builders were in 0.44.1). No
+  `PROJECTION_SCHEMA_VERSION` bump: this is dispatch-coverage only, not a `HostSemanticProjection`
+  shape change. Regression coverage: `crates/workspace/tests/snapshot_single_build.rs`'s
+  `snapshot_materializes_use_case_analysis_and_verification_nested_in_part_def`.
+
 ## [0.44.2] - 2026-07-17
 
 - **`ConstraintUsage` classification, package-level.** `sysml-v2-parser` 0.40.0 added a distinct
