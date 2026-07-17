@@ -171,6 +171,10 @@ pub(crate) fn project_host_semantic_model(
         .iter()
         .map(|node| (node.qualified_name.clone(), node.semantic_id.clone()))
         .collect::<HashMap<_, _>>();
+    let element_kinds_by_qualified_name = nodes
+        .iter()
+        .map(|node| (node.qualified_name.clone(), node.element_kind.clone()))
+        .collect::<HashMap<_, _>>();
     for node in &mut nodes {
         let Some(parent) = node.parent.as_deref() else {
             continue;
@@ -194,7 +198,8 @@ pub(crate) fn project_host_semantic_model(
         let Some(owner_id) = semantic_ids.get(parent) else {
             continue;
         };
-        let membership_kind = membership_kind(node);
+        let owner_kind = element_kinds_by_qualified_name.get(parent);
+        let membership_kind = membership_kind(node, owner_kind);
         relationships.push(HostSemanticModelRelationship {
             semantic_id: node
                 .facts
@@ -456,7 +461,10 @@ fn relationship_metaclass(kind: &sysml_model::RelationshipKind) -> HostRelations
     }
 }
 
-fn membership_kind(node: &HostSemanticModelNode) -> HostMembershipKind {
+fn membership_kind(
+    node: &HostSemanticModelNode,
+    owner_kind: Option<&sysml_model::ElementKind>,
+) -> HostMembershipKind {
     use sysml_model::ElementKind;
 
     if node
@@ -476,6 +484,22 @@ fn membership_kind(node: &HostSemanticModelNode) -> HostMembershipKind {
         ElementKind::Subject => HostMembershipKind::SubjectMembership,
         ElementKind::Stakeholder => HostMembershipKind::StakeholderMembership,
         ElementKind::Objective => HostMembershipKind::ObjectiveMembership,
+        ElementKind::ViewRendering => HostMembershipKind::ViewRenderingMembership,
+        // `InOutDecl` is shared grammar: Action/Calc definition and usage bodies own genuine
+        // Behavior parameters (ParameterMembership per KerML 8.3.19.2), but Port/PortDef bodies
+        // reuse the same production for directed (in/out) features, which are ordinary
+        // FeatureMembership, not parameters. Only the owner distinguishes the two; the parser
+        // does not project a `constraint def`'s InOutDecl as a node at all (folded into a text
+        // attribute), so no owner_kind arm is needed for Constraint here.
+        ElementKind::InOutParameter => match owner_kind {
+            Some(
+                ElementKind::ActionDef
+                | ElementKind::Action
+                | ElementKind::CalcDef
+                | ElementKind::Calc,
+            ) => HostMembershipKind::ParameterMembership,
+            _ => HostMembershipKind::FeatureMembership,
+        },
         kind if kind.is_definition() => HostMembershipKind::OwningMembership,
         ElementKind::Package | ElementKind::KermlDecl | ElementKind::Filter => {
             HostMembershipKind::OwningMembership
@@ -494,7 +518,6 @@ fn membership_kind(node: &HostSemanticModelNode) -> HostMembershipKind {
         | ElementKind::View
         | ElementKind::Viewpoint
         | ElementKind::Rendering
-        | ElementKind::ViewRendering
         | ElementKind::MetadataUsage
         | ElementKind::Flow
         | ElementKind::Allocation
@@ -1104,6 +1127,16 @@ package Demo {
         actor operator;
         objective goal : Req;
     }
+    action def Survey {
+        in target : Thing;
+        out result : Thing;
+    }
+    port def Feed {
+        in signal : Thing;
+    }
+    rendering def Style {
+        render diagram : Thing;
+    }
 }
 "#;
         let target = std::path::PathBuf::from(if cfg!(windows) {
@@ -1216,6 +1249,57 @@ package Demo {
             Some((
                 HostRelationshipMetaclass::Membership,
                 Some(HostMembershipKind::ObjectiveMembership)
+            ))
+        );
+
+        // Regression guard: `InOutDecl` is shared grammar between Action/Calc parameters and
+        // Port directed features. Only the owner distinguishes genuine KerML ParameterMembership
+        // (Behavior parameters) from ordinary FeatureMembership (port in/out features) — both
+        // used to fall into the generic OwningMembership default.
+        let action_param = projection
+            .nodes
+            .iter()
+            .find(|node| {
+                node.element_kind == sysml_model::ElementKind::InOutParameter
+                    && node.qualified_name.ends_with("::target")
+            })
+            .expect("action parameter node");
+        assert_eq!(
+            membership_for(&action_param.qualified_name),
+            Some((
+                HostRelationshipMetaclass::Membership,
+                Some(HostMembershipKind::ParameterMembership)
+            ))
+        );
+
+        let port_feature = projection
+            .nodes
+            .iter()
+            .find(|node| {
+                node.element_kind == sysml_model::ElementKind::InOutParameter
+                    && node.qualified_name.ends_with("::signal")
+            })
+            .expect("port in/out feature node");
+        assert_eq!(
+            membership_for(&port_feature.qualified_name),
+            Some((
+                HostRelationshipMetaclass::Membership,
+                Some(HostMembershipKind::FeatureMembership)
+            ))
+        );
+
+        // Regression guard: `view rendering` members used to fall into the generic
+        // `FeatureMembership` bucket alongside every other feature-owning usage kind.
+        let view_rendering_node = projection
+            .nodes
+            .iter()
+            .find(|node| node.element_kind == sysml_model::ElementKind::ViewRendering)
+            .expect("view rendering node");
+        assert_eq!(
+            membership_for(&view_rendering_node.qualified_name),
+            Some((
+                HostRelationshipMetaclass::Membership,
+                Some(HostMembershipKind::ViewRenderingMembership)
             ))
         );
     }

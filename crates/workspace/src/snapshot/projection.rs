@@ -54,6 +54,8 @@ pub enum HostMembershipKind {
     SubjectMembership,
     StakeholderMembership,
     ObjectiveMembership,
+    ParameterMembership,
+    ViewRenderingMembership,
 }
 
 /// Typed, API-oriented identity and ownership facts for a semantic element.

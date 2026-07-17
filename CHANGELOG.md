@@ -7,6 +7,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.43.2] - 2026-07-17
+
+- **Specialized memberships: Parameter/ViewRendering (S42-003)** — `HostMembershipKind` gains
+  `ParameterMembership` and `ViewRenderingMembership` variants. `view rendering` member nodes
+  previously fell into the generic `FeatureMembership` bucket. `membership_kind()`
+  (`crates/workspace/src/snapshot/facts.rs`) now also takes the owner's `ElementKind`:
+  `InOutDecl` (`in`/`out`/`inout`) is shared grammar between genuine Behavior parameters
+  (Action/Calc definition and usage bodies — KerML 8.3.19.2 `ParameterMembership`) and Port/
+  PortDef directed features, which reuse the same production but are ordinary
+  `FeatureMembership`, not parameters. Both previously defaulted to `OwningMembership` since
+  `InOutParameter` wasn't dispatched at all. No `PROJECTION_SCHEMA_VERSION` bump: this only
+  changes which value some node kinds receive, not the wire shape.
+  **Known remaining gap:** `TransitionFeatureMembership` (trigger/guard/effect of a
+  `TransitionUsage`) is not yet implementable — Spec42 flattens a transition's guard/effect into
+  string attributes (`guardExpression`/`effectExpression`) on the `transition` node rather than
+  materializing them as addressable child features, so there is no node to classify as
+  `TransitionFeatureMembership` yet. The `transition` node's own membership within its owning
+  state is also still unclassified (falls to `OwningMembership`, should be `FeatureMembership`)
+  and is deliberately left alone in this release rather than mixed in with the correct fix.
+
 ## [0.43.1] - 2026-07-16
 
 - **Specialized memberships: Subject/Stakeholder/Objective (S42-003)** — `HostMembershipKind`
