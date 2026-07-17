@@ -436,10 +436,9 @@ package Demo {
         "case def nested in a part def body is now materialized"
     );
     assert!(
-        projection
-            .nodes
-            .iter()
-            .any(|node| node.qualified_name.ends_with("::Instrument::LocalCase::sys")),
+        projection.nodes.iter().any(|node| node
+            .qualified_name
+            .ends_with("::Instrument::LocalCase::sys")),
         "the nested case def's own body is walked (subject member materialized)"
     );
 
