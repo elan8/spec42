@@ -13,7 +13,7 @@ use url::Url;
 
 use crate::semantic::graph::SemanticGraph;
 use crate::semantic::ibd::is_part_like;
-use crate::semantic::model::{ElementKind, NodeId, SemanticNode};
+use crate::semantic::model::{NodeId, SemanticNode};
 
 // Re-export the str-based port predicate for consumers of this module.
 pub use crate::semantic::ibd::is_port_like;
@@ -67,38 +67,6 @@ pub struct TypedByRef {
     pub name: String,
     pub kind: String,
     pub source: ResolvedSourceLocation,
-}
-
-/// One member of a `ResolvedUsageContext` bucket (a part, port, item, attribute,
-/// behavior, or requirement belonging to the resolved definition).
-#[derive(Debug, Clone, serde::Serialize)]
-#[serde(rename_all = "camelCase")]
-pub struct ResolvedContextItem {
-    pub id: String,
-    pub qualified_name: String,
-    pub name: String,
-    pub kind: String,
-    pub display_text: String,
-    /// One of `"usage"`, `"direct"`, `"inherited"`, `"redefined"`, `"relationship"`.
-    /// Only `"direct"` is produced today; inheritance/redefinition/relationship
-    /// origins are a follow-up (see `docs/engineering/COMPONENT-IMPLEMENTATION-CONTEXT-ROADMAP.md`).
-    pub origin: &'static str,
-    pub source: ResolvedSourceLocation,
-}
-
-/// The effective implementation context for a selected usage: its resolved
-/// definition plus that definition's direct members, bucketed by role.
-#[derive(Debug, Clone, serde::Serialize)]
-#[serde(rename_all = "camelCase")]
-pub struct ResolvedUsageContext {
-    pub resolved_definition: TypedByRef,
-    pub parts: Vec<ResolvedContextItem>,
-    pub ports: Vec<ResolvedContextItem>,
-    pub interfaces: Vec<ResolvedContextItem>,
-    pub items: Vec<ResolvedContextItem>,
-    pub attributes: Vec<ResolvedContextItem>,
-    pub behaviors: Vec<ResolvedContextItem>,
-    pub requirements: Vec<ResolvedContextItem>,
 }
 
 // ---------------------------------------------------------------------------
@@ -197,66 +165,6 @@ pub fn typed_by_reference(graph: &SemanticGraph, usage_node: &SemanticNode) -> O
     first_typing_or_specializes_target(graph, usage_node).map(node_to_typed_by_ref)
 }
 
-/// Builds the effective implementation context for a selected usage: its
-/// resolved definition plus that definition's direct members, bucketed by role.
-///
-/// Returns `None` when the usage has no resolvable `typedBy` target. Only
-/// direct members are populated today; inheritance, redefinition, and
-/// relationship-backed context are a follow-up (see
-/// `docs/engineering/COMPONENT-IMPLEMENTATION-CONTEXT-ROADMAP.md`).
-pub fn resolved_usage_context(
-    graph: &SemanticGraph,
-    usage_node: &SemanticNode,
-) -> Option<ResolvedUsageContext> {
-    let def_node = first_typing_or_specializes_target(graph, usage_node)?;
-    let resolved_definition = node_to_typed_by_ref(def_node);
-
-    let mut parts = Vec::new();
-    let mut ports = Vec::new();
-    let mut interfaces = Vec::new();
-    let mut items = Vec::new();
-    let mut attributes = Vec::new();
-    let mut behaviors = Vec::new();
-    let mut requirements = Vec::new();
-
-    for child in graph.children_of(def_node) {
-        let bucket = match child.element_kind {
-            ElementKind::Part | ElementKind::PartDef => Some(&mut parts),
-            ElementKind::Port | ElementKind::PortDef => Some(&mut ports),
-            ElementKind::Interface
-            | ElementKind::InterfaceDef
-            | ElementKind::Connection
-            | ElementKind::ConnectionDef => Some(&mut interfaces),
-            ElementKind::Item | ElementKind::ItemDef => Some(&mut items),
-            ElementKind::Attribute | ElementKind::AttributeDef => Some(&mut attributes),
-            ElementKind::Action
-            | ElementKind::ActionDef
-            | ElementKind::Perform
-            | ElementKind::State
-            | ElementKind::StateDef
-            | ElementKind::Transition => Some(&mut behaviors),
-            ElementKind::Requirement
-            | ElementKind::RequirementDef
-            | ElementKind::VerifiedRequirement => Some(&mut requirements),
-            _ => None,
-        };
-        if let Some(bucket) = bucket {
-            bucket.push(node_to_context_item(child));
-        }
-    }
-
-    Some(ResolvedUsageContext {
-        resolved_definition,
-        parts,
-        ports,
-        interfaces,
-        items,
-        attributes,
-        behaviors,
-        requirements,
-    })
-}
-
 // ---------------------------------------------------------------------------
 // Internal helpers
 // ---------------------------------------------------------------------------
@@ -286,28 +194,6 @@ fn node_to_typed_by_ref(node: &SemanticNode) -> TypedByRef {
         qualified_name: node.id.qualified_name.clone(),
         name: node.name.clone(),
         kind: node.element_kind.as_str().to_string(),
-        source: node_source_location(node),
-    }
-}
-
-fn node_to_context_item(node: &SemanticNode) -> ResolvedContextItem {
-    let type_hint = node
-        .attributes
-        .get("partType")
-        .or_else(|| node.attributes.get("portType"))
-        .or_else(|| node.attributes.get("type"))
-        .and_then(|v| v.as_str());
-    let display_text = match type_hint {
-        Some(type_name) => format!("{} : {}", node.name, type_name),
-        None => node.name.clone(),
-    };
-    ResolvedContextItem {
-        id: node.id.qualified_name.clone(),
-        qualified_name: node.id.qualified_name.clone(),
-        name: node.name.clone(),
-        kind: node.element_kind.as_str().to_string(),
-        display_text,
-        origin: "direct",
         source: node_source_location(node),
     }
 }
@@ -542,7 +428,7 @@ mod tests {
     use crate::semantic::source::{SysmlDocument, SysmlDocumentSourceKind};
     use crate::semantic::workspace_graph::build_semantic_graph_from_documents;
 
-    use super::{resolved_usage_context, typed_by_reference};
+    use super::typed_by_reference;
 
     fn build_graph(source: &str) -> crate::semantic::graph::SemanticGraph {
         let doc = SysmlDocument::from_memory_path(
@@ -589,23 +475,6 @@ mod tests {
         let typed_by = typed_by_reference(&graph, usage).expect("typedBy should resolve");
         assert_eq!(typed_by.qualified_name, "Demo::CleaningHead");
         assert_eq!(typed_by.name, "CleaningHead");
-    }
-
-    #[test]
-    fn resolved_usage_context_exposes_direct_parts_and_ports_of_resolved_definition() {
-        let graph = build_graph(CLEANING_HEAD_MODEL);
-        let usage = node_by_qualified_name(&graph, "Demo::Robot::cleaningHead");
-        let context = resolved_usage_context(&graph, usage).expect("context should resolve");
-
-        assert_eq!(
-            context.resolved_definition.qualified_name,
-            "Demo::CleaningHead"
-        );
-        assert_eq!(context.parts.len(), 1);
-        assert_eq!(context.parts[0].name, "brushMotor");
-        assert_eq!(context.parts[0].origin, "direct");
-        assert_eq!(context.ports.len(), 1);
-        assert_eq!(context.ports[0].name, "powerIn");
     }
 
     #[test]

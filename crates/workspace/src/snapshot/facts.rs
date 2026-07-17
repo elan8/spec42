@@ -5,8 +5,8 @@ use std::collections::{BTreeSet, HashMap};
 use sha2::{Digest, Sha256};
 
 use sysml_model::{
-    resolved_usage_context, typed_by_reference, DiagnosticSeverity, SemanticDiagnostic,
-    SemanticGraph, SysmlDocument, UnitRegistry,
+    typed_by_reference, DiagnosticSeverity, SemanticDiagnostic, SemanticGraph, SysmlDocument,
+    UnitRegistry,
 };
 use url::Url;
 
@@ -87,21 +87,13 @@ pub(crate) fn project_host_semantic_model(
                 continue;
             }
             let mut attributes = node.attributes.clone();
-            // Additive: resolve the usage's canonical type reference and, from it,
-            // the definition's direct implementation context. Existing textual
-            // hints (`partType`, `type`, `typing`, ...) are left untouched.
-            // See docs/engineering/COMPONENT-IMPLEMENTATION-CONTEXT-ROADMAP.md.
+            // Additive: resolve the usage's canonical type reference. Existing
+            // textual hints (`partType`, `type`, `typing`, ...) are left untouched.
             if let Some(typed_by) = typed_by_reference(graph, node) {
                 if let Ok(value) = serde_json::to_value(&typed_by) {
                     attributes.insert("typedBy".to_string(), value);
                 }
             }
-            if let Some(context) = resolved_usage_context(graph, node) {
-                if let Ok(value) = serde_json::to_value(&context) {
-                    attributes.insert("resolvedUsageContext".to_string(), value);
-                }
-            }
-
             let documentation = attributes
                 .get("doc")
                 .and_then(|value| value.as_str())
@@ -724,10 +716,7 @@ package Pkg {
     }
 
     #[test]
-    fn projection_exposes_typed_by_and_resolved_usage_context_for_part_usage() {
-        // See docs/engineering/COMPONENT-IMPLEMENTATION-CONTEXT-ROADMAP.md: selecting a usage
-        // (`cleaningHead`) should expose the implementation context of its resolved definition
-        // (`CleaningHead`), not just the usage's own (empty) direct children.
+    fn projection_exposes_typed_by_for_part_usage() {
         let content = r#"
 package Demo {
     part def BrushMotor;
@@ -763,27 +752,6 @@ package Demo {
         assert_eq!(
             typed_by.get("qualifiedName").and_then(|v| v.as_str()),
             Some("Demo::CleaningHead")
-        );
-
-        let context = usage
-            .attributes
-            .get("resolvedUsageContext")
-            .expect("resolvedUsageContext attribute present");
-        assert_eq!(
-            context
-                .get("resolvedDefinition")
-                .and_then(|d| d.get("qualifiedName"))
-                .and_then(|v| v.as_str()),
-            Some("Demo::CleaningHead")
-        );
-        let parts = context
-            .get("parts")
-            .and_then(|v| v.as_array())
-            .expect("parts array present");
-        assert_eq!(parts.len(), 1);
-        assert_eq!(
-            parts[0].get("name").and_then(|v| v.as_str()),
-            Some("brushMotor")
         );
 
         let ids_by_name = projection
