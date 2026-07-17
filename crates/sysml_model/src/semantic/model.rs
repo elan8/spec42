@@ -115,6 +115,11 @@ pub enum ElementKind {
     Stakeholder,
     State,
     Requirement,
+    /// Usage of a `case def` (e.g. `case c : SomeCase;`). Kind-string `"case"`, mirroring
+    /// `ElementKind::CaseDef`'s existing `"case def"` — package-level case usages already
+    /// materialized with this string via `graph_builder/package_body`'s dispatch, but had no
+    /// `From<&str>` arm and fell through to `Unknown("case")` until this variant existed.
+    Case,
     UseCase,
     Concern,
     Analysis,
@@ -231,6 +236,7 @@ impl ElementKind {
             ElementKind::Stakeholder => "stakeholder",
             ElementKind::State => "state",
             ElementKind::Requirement => "requirement",
+            ElementKind::Case => "case",
             ElementKind::UseCase => "use case",
             ElementKind::Concern => "concern",
             ElementKind::Analysis => "analysis",
@@ -329,6 +335,7 @@ impl ElementKind {
             "stakeholder" => ElementKind::Stakeholder,
             "state" => ElementKind::State,
             "requirement" | "requirement usage" => ElementKind::Requirement,
+            "case" => ElementKind::Case,
             "use case" => ElementKind::UseCase,
             "concern" => ElementKind::Concern,
             "analysis" => ElementKind::Analysis,

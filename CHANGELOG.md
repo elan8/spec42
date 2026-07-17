@@ -7,6 +7,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.44.1] - 2026-07-17
+
+- **`CaseUsage` classification and nested `case`/`case def` support (S42-003 follow-up).**
+  `ElementKind` had a `"case def"` string arm but no `"case"` arm, so a bare `case c : X;`
+  usage — even at package level, where it already materialized — fell to
+  `ElementKind::Unknown("case")` and could never become a concrete API resource. Added
+  `ElementKind::Case` plus its `Display`/`FromStr` arms
+  (`crates/sysml_model/src/semantic/model.rs`). Separately, `case`/`case def` nested inside a
+  `part def { ... }` body had no dispatch arm at all in
+  `crates/sysml_model/src/semantic/graph_builder/part_def.rs` (unlike the sibling
+  `PartDefBodyElement::CalcUsage` arm), so it was silently dropped from the graph entirely at
+  both the definition and usage level — not merely misclassified. Fixed by adding
+  `PartDefBodyElement::CaseDef`/`::CaseUsage` dispatch arms that reuse the existing
+  `materialize_case_def`/`materialize_case_usage` builders package-level dispatch already
+  calls, widening those two functions from `pub(super)` to `pub(crate)` so the sibling
+  `graph_builder::part_def` module can reach them through `package_body`'s existing
+  `pub(crate) use materialize::*` re-export instead of duplicating the body-walking logic.
+  No `PROJECTION_SCHEMA_VERSION` bump: this changes graph-builder dispatch coverage and
+  `ElementKind` classification, not `HostSemanticProjection`'s shape. Regression coverage:
+  `crates/workspace/tests/snapshot_single_build.rs`'s
+  `snapshot_materializes_case_def_and_case_usage_nested_in_part_def`.
+
 ## [0.44.0] - 2026-07-17
 
 - **`TransitionFeatureMembership` baseline (S42-003)** — a `transition` statement's `accept`

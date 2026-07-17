@@ -929,7 +929,11 @@ pub(super) fn materialize_dependency(
     );
 }
 
-pub(super) fn materialize_case_def(
+// `pub(crate)` rather than `pub(super)`: `part_def.rs`'s `PDBE::CaseDef`/`::CaseUsage` arms
+// (a sibling module under `graph_builder`, reached via the `pub(crate) use materialize::*`
+// re-export in `package_body/mod.rs`) reuse these builders for `case`/`case def` nested in a
+// `part def { ... }` body, instead of duplicating the body-walking logic.
+pub(crate) fn materialize_case_def(
     g: &mut SemanticGraph,
     uri: &Url,
     container_prefix: Option<&str>,
@@ -974,7 +978,7 @@ pub(super) fn materialize_case_def(
     }
 }
 
-pub(super) fn materialize_case_usage(
+pub(crate) fn materialize_case_usage(
     g: &mut SemanticGraph,
     uri: &Url,
     container_prefix: Option<&str>,

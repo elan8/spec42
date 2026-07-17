@@ -373,10 +373,11 @@ package Demo {
     // Regression guard: CalcDef/CaseDef were missing from TYPING_TARGET_KINDS even though
     // SPECIALIZES_TARGET_KINDS already allowed them, so a `calc`/`case` usage's Typing edge to
     // its definition never resolved. `case` is exercised at package level here, not nested in a
-    // `part def` body: `PartDefBodyElement::CaseDef`/`::CaseUsage` aren't dispatched anywhere in
-    // Spec42's graph builder at all (separate, larger gap, not fixed here). Also found in the
-    // same investigation and fixed alongside the allowlist: `materialize_case_usage` never wired
-    // a typing edge even at package level, unlike its analysis/verification/use-case siblings.
+    // `part def` body -- see `snapshot_materializes_case_def_and_case_usage_nested_in_part_def`
+    // below for that scenario, since `PartDefBodyElement::CaseDef`/`::CaseUsage` now have a
+    // dispatch arm in `graph_builder/part_def.rs`. Also found in the same investigation and
+    // fixed alongside the allowlist: `materialize_case_usage` never wired a typing edge even at
+    // package level, unlike its analysis/verification/use-case siblings.
     // ConstraintDef is in the same allowlist fix (kinds.rs), but a bare `constraint check : X;`
     // usage isn't exercisable here: the parser has no distinct ConstraintUsage AST node, so it
     // folds into another ConstraintDef rather than a usage with a typing edge (see
@@ -394,6 +395,75 @@ package Demo {
             "expected a resolved typing edge from {usage_suffix} to {definition_suffix}"
         );
     }
+}
+
+#[test]
+fn snapshot_materializes_case_def_and_case_usage_nested_in_part_def() {
+    let cache = tempdir().expect("tempdir");
+    let model_path = cache.path().join("NestedCase.sysml");
+    let content = r#"
+package Demo {
+    case def InspectionCase;
+    part def Instrument {
+        case def LocalCase {
+            subject sys : Instrument;
+        }
+        case inspection : InspectionCase;
+    }
+}
+"#;
+    std::fs::write(&model_path, content).expect("write model");
+
+    let engine = test_engine(&cache);
+    let snapshot = engine
+        .load_workspace(
+            InMemoryDocumentProvider::new(vec![file_document(&model_path, content)]),
+            WorkspaceLoadRequest::single_target(model_path),
+            HostContext::default(),
+        )
+        .expect("snapshot");
+    let projection = snapshot.semantic_projection();
+
+    // Regression guard: `PartDefBodyElement::CaseDef`/`::CaseUsage` previously had no dispatch
+    // arm at all in `graph_builder/part_def.rs`, unlike the sibling `PDBE::CalcUsage` arm, so a
+    // `case`/`case def` nested inside a `part def { ... }` body was silently dropped from the
+    // graph entirely -- at both the definition and usage level.
+    assert!(
+        projection
+            .nodes
+            .iter()
+            .any(|node| node.qualified_name.ends_with("::Instrument::LocalCase")),
+        "case def nested in a part def body is now materialized"
+    );
+    assert!(
+        projection
+            .nodes
+            .iter()
+            .any(|node| node.qualified_name.ends_with("::Instrument::LocalCase::sys")),
+        "the nested case def's own body is walked (subject member materialized)"
+    );
+
+    let inspection_node = projection
+        .nodes
+        .iter()
+        .find(|node| node.qualified_name.ends_with("::Instrument::inspection"))
+        .expect("case usage nested in a part def body is now materialized");
+    // Regression guard: `ElementKind` had no `From<&str>` arm for the bare "case" kind-string
+    // (only "case def"), so even a package-level case usage fell to `Unknown("case")` and could
+    // never become a concrete API resource.
+    assert_eq!(
+        inspection_node.element_kind.as_str(),
+        "case",
+        "nested case usage classifies as ElementKind::Case, not Unknown(\"case\")"
+    );
+    assert!(
+        projection.relationships.iter().any(|relationship| {
+            relationship.kind.as_str() == "typing"
+                && relationship.source.ends_with("::Instrument::inspection")
+                && relationship.target.ends_with("::InspectionCase")
+        }),
+        "nested case usage's typing edge to its definition resolves"
+    );
 }
 
 #[test]

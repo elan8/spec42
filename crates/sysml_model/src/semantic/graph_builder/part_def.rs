@@ -425,6 +425,29 @@ pub(super) fn build_from_part_def_body_element(
                 }
             }
         }
+        // A `case`/`case def` nested inside a `part def { ... }` body was previously dropped
+        // entirely -- no dispatch arm existed here, unlike the sibling `PDBE::CalcUsage` arm
+        // above. Reuse the same `materialize_case_def`/`materialize_case_usage` builders the
+        // package-level `PBE::CaseDef`/`PBE::CaseUsage` dispatch already calls
+        // (`package_body::materialize`, re-exported `pub(crate)` from `package_body/mod.rs`).
+        PDBE::CaseDef(c_node) => {
+            super::package_body::materialize_case_def(
+                g,
+                uri,
+                container_prefix,
+                Some(parent_id),
+                c_node,
+            );
+        }
+        PDBE::CaseUsage(c_node) => {
+            super::package_body::materialize_case_usage(
+                g,
+                uri,
+                container_prefix,
+                Some(parent_id),
+                c_node,
+            );
+        }
         PDBE::Perform(perform_node) => {
             let perform_qualified = expressions::add_perform_usage_node(
                 g,
