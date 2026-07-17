@@ -7,6 +7,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.44.2] - 2026-07-17
+
+- **`ConstraintUsage` classification, package-level.** `sysml-v2-parser` 0.40.0 added a distinct
+  `ConstraintUsage` AST node (previously bare `constraint c : X;` folded into `ConstraintDef` at
+  parse time, since no usage-side node existed to classify it separately). `ElementKind` already
+  had a `"constraint"` string arm (`ElementKind::Constraint`) from an earlier round, but nothing
+  ever constructed it -- `graph_builder/calc_constraint_def.rs` gains `build_constraint_usage`
+  (materializing kind-string `"constraint"`, mirroring `build_constraint_def`'s metadata
+  extraction over the shared `ConstraintDefBody` type, plus a typing edge when `type_name` is
+  present), dispatched from `PackageBodyElement::ConstraintUsage` in
+  `graph_builder/package_body/mod.rs`. No `PROJECTION_SCHEMA_VERSION` bump: this adds
+  graph-builder dispatch coverage and consumes a new (but backward-compatible) parser AST node,
+  not a `HostSemanticProjection` shape change. Regression coverage:
+  `crates/workspace/tests/snapshot_single_build.rs`'s
+  `snapshot_materializes_bare_constraint_usage_and_resolves_its_typing`, covering both the simple
+  typed form and the real `Systems Library/Constraints.sysml` `constraintChecks` shape (`abstract`
+  + typing + trailing multiplicity + `nonunique` + subsetting, all `def`-less).
+  Nested-in-another-body `constraint` members (e.g. `Requirements.sysml`'s
+  `RequirementConstraintCheck::assumptions`) remain out of scope -- the parser change only covers
+  package-level dispatch; see `sysml-v2-parser` CHANGELOG 0.40.0 for the parser-side detail and
+  `babel42-v2`'s `spec42-systems-modeling-api-gaps.md` for the API-level tracking.
+
 ## [0.44.1] - 2026-07-17
 
 - **`CaseUsage` classification and nested `case`/`case def` support (S42-003 follow-up).**

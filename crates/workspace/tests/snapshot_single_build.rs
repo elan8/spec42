@@ -467,6 +467,66 @@ package Demo {
 }
 
 #[test]
+fn snapshot_materializes_bare_constraint_usage_and_resolves_its_typing() {
+    let cache = tempdir().expect("tempdir");
+    let model_path = cache.path().join("ConstraintUsage.sysml");
+    let content = r#"
+package Demo {
+    constraint def MassConstraint {
+        in totalMass : MassValue;
+    }
+    constraint mc : MassConstraint;
+    abstract constraint constraintChecks: MassConstraint[0..*] nonunique :> booleanEvaluations;
+}
+"#;
+    std::fs::write(&model_path, content).expect("write model");
+
+    let engine = test_engine(&cache);
+    let snapshot = engine
+        .load_workspace(
+            InMemoryDocumentProvider::new(vec![file_document(&model_path, content)]),
+            WorkspaceLoadRequest::single_target(model_path),
+            HostContext::default(),
+        )
+        .expect("snapshot");
+    let projection = snapshot.semantic_projection();
+
+    // Regression guard: `sysml-v2-parser` 0.40.0 added `ConstraintUsage` as a distinct AST node
+    // (previously bare `constraint` usages folded into `ConstraintDef`); Spec42's `ElementKind`
+    // already had a `"constraint"` string arm (`ElementKind::Constraint`) but nothing ever
+    // constructed it until this dispatch existed.
+    let mc = projection
+        .nodes
+        .iter()
+        .find(|node| node.qualified_name.ends_with("::mc"))
+        .expect("bare constraint usage is materialized");
+    assert_eq!(
+        mc.element_kind.as_str(),
+        "constraint",
+        "bare constraint usage classifies as ElementKind::Constraint"
+    );
+    assert!(
+        projection.relationships.iter().any(|relationship| {
+            relationship.kind.as_str() == "typing"
+                && relationship.source.ends_with("::mc")
+                && relationship.target.ends_with("::MassConstraint")
+        }),
+        "bare constraint usage's typing edge to its definition resolves"
+    );
+
+    // Regression guard: the real-library `constraintChecks` shape (abstract + typing + trailing
+    // multiplicity + nonunique + subsetting, all def-less) must also materialize, not merely the
+    // simple typed form.
+    assert!(
+        projection
+            .nodes
+            .iter()
+            .any(|node| node.qualified_name.ends_with("::constraintChecks")),
+        "the real-library constraintChecks shape is materialized"
+    );
+}
+
+#[test]
 fn snapshot_materializes_enumerated_values_and_resolves_enum_usage_typing() {
     let cache = tempdir().expect("tempdir");
     let model_path = cache.path().join("Enumeration.sysml");

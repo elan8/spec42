@@ -225,6 +225,15 @@ pub(super) fn build_from_package_body_element(
         PBE::ConstraintDef(c_node) => {
             calc_constraint_def::build_constraint_def(g, uri, container_prefix, parent_id, c_node);
         }
+        PBE::ConstraintUsage(c_node) => {
+            calc_constraint_def::build_constraint_usage(
+                g,
+                uri,
+                container_prefix,
+                parent_id,
+                c_node,
+            );
+        }
         PBE::CalcDef(c_node) => {
             calc_constraint_def::build_calc_def(g, uri, container_prefix, parent_id, c_node);
         }

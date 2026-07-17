@@ -5,7 +5,7 @@ use std::fs;
 
 use sysml_v2_parser::ast::{
     CalcDef, CalcDefBody, CalcDefBodyElement, ConstraintDef, ConstraintDefBody,
-    ConstraintDefBodyElement, InOut,
+    ConstraintDefBodyElement, ConstraintUsage, InOut,
 };
 use sysml_v2_parser::Node;
 use url::Url;
@@ -188,6 +188,62 @@ pub(super) fn build_constraint_def(
         container_prefix,
         c_node.value.specializes.as_deref(),
     );
+    let constraint_id = NodeId::new(uri, &qualified);
+    super::metadata_def::wire_constraint_body_metadata(
+        g,
+        uri,
+        container_prefix,
+        &constraint_id,
+        &c_node.value.body,
+    );
+}
+
+/// `constraint` usage: package-level only (`sysml-v2-parser` 0.40.0 added the `ConstraintUsage`
+/// AST node; see its doc comment for the real-library forms it covers). Mirrors
+/// [`build_constraint_def`]'s metadata extraction -- same `ConstraintDefBody` type -- but reads
+/// `ConstraintUsage`'s plain `name`/`type_name` fields (no `Identification`/short name, matching
+/// the parser struct) and wires a typing edge when `type_name` is present.
+pub(super) fn build_constraint_usage(
+    g: &mut SemanticGraph,
+    uri: &Url,
+    container_prefix: Option<&str>,
+    parent_id: Option<&NodeId>,
+    c_node: &Node<ConstraintUsage>,
+) {
+    let name = c_node.value.name.clone();
+    if name.is_empty() {
+        return;
+    }
+    let qualified = qualified_name_for_node(g, uri, container_prefix, &name, "constraint");
+    let (params, expression) = extract_constraint_metadata(uri, &c_node.value.body);
+    let mut attrs = HashMap::new();
+    attrs.insert(
+        "analysisKind".to_string(),
+        serde_json::json!("constraint_usage"),
+    );
+    attrs.insert(
+        "analysisParams".to_string(),
+        serde_json::Value::Array(params),
+    );
+    if let Some(expr) = expression {
+        attrs.insert("analysisExpression".to_string(), serde_json::json!(expr));
+    }
+    if let Some(ref t) = c_node.value.type_name {
+        attrs.insert("constraintType".to_string(), serde_json::json!(t));
+    }
+    add_node_and_recurse(
+        g,
+        uri,
+        &qualified,
+        "constraint",
+        name,
+        span_to_range(&c_node.span),
+        attrs,
+        parent_id,
+    );
+    if let Some(ref t) = c_node.value.type_name {
+        add_typing_edge_if_exists(g, uri, &qualified, t, container_prefix);
+    }
     let constraint_id = NodeId::new(uri, &qualified);
     super::metadata_def::wire_constraint_body_metadata(
         g,
