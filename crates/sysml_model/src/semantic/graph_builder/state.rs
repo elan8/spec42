@@ -1,9 +1,9 @@
 use std::collections::HashMap;
 
-use sysml_v2_parser::ast::{StateDefBody, StateDefBodyElement, TransitionEffect};
+use sysml_v2_parser::ast::{StateDefBody, StateDefBodyElement, TransitionAccept, TransitionEffect};
 use url::Url;
 
-use crate::semantic::ast_util::span_to_range;
+use crate::semantic::ast_util::{declared_expression, span_to_range};
 use crate::semantic::graph::SemanticGraph;
 use crate::semantic::model::{NodeId, RelationshipKind};
 use crate::semantic::relationships::{add_edge_if_both_exist, add_typing_edge_if_exists};
@@ -82,6 +82,108 @@ fn transition_effect_to_debug_string(effect: &TransitionEffect) -> String {
             expressions::expression_to_debug_string(rhs)
         ),
         TransitionEffect::Expression(expr) => expressions::expression_to_debug_string(expr),
+    }
+}
+
+/// Materializes a `transition` statement's `accept`/`if`/`do` clauses as addressable
+/// `TransitionTrigger`/`TransitionGuard`/`TransitionEffect` children owned via
+/// `TransitionFeatureMembership` (KerML 8.3.18.8). Baseline slice: trigger/effect get a
+/// simplified/uniform attribute representation (reusing the same rendering already used on the
+/// parent `transition` node); guard's real `Node<Expression>` is losslessly converted via
+/// `declared_expression` and exposed as an addressable `Expression` through
+/// `declared_facts.own_expression`. See docs/spec42-systems-modeling-api-gaps.md S42-003.
+#[allow(clippy::too_many_arguments)]
+fn materialize_transition_features(
+    g: &mut SemanticGraph,
+    uri: &Url,
+    transition_qualified: &str,
+    transition_id: &NodeId,
+    transition_range: crate::semantic::text_span::TextRange,
+    accept: Option<&TransitionAccept>,
+    guard: Option<&sysml_v2_parser::Node<sysml_v2_parser::Expression>>,
+    effect: Option<&TransitionEffect>,
+) {
+    if let Some(accept) = accept {
+        let mut attrs = HashMap::new();
+        attrs.insert(
+            "transitionFeatureKind".to_string(),
+            serde_json::json!("trigger"),
+        );
+        insert_transition_accept_attrs(&mut attrs, accept);
+        let qualified = qualified_name_for_node(
+            g,
+            uri,
+            Some(transition_qualified),
+            "trigger",
+            "transition trigger",
+        );
+        add_node_and_recurse(
+            g,
+            uri,
+            &qualified,
+            "transition trigger",
+            "trigger".to_string(),
+            transition_range,
+            attrs,
+            Some(transition_id),
+        );
+    }
+    if let Some(guard) = guard {
+        let mut attrs = HashMap::new();
+        attrs.insert(
+            "transitionFeatureKind".to_string(),
+            serde_json::json!("guard"),
+        );
+        let range = span_to_range(&guard.span);
+        let qualified = qualified_name_for_node(
+            g,
+            uri,
+            Some(transition_qualified),
+            "guard",
+            "transition guard",
+        );
+        add_node_and_recurse(
+            g,
+            uri,
+            &qualified,
+            "transition guard",
+            "guard".to_string(),
+            range,
+            attrs,
+            Some(transition_id),
+        );
+        let node_id = NodeId::new(uri, &qualified);
+        if let Some(node) = g.get_node_mut(&node_id) {
+            node.declared_facts.own_expression = Some(declared_expression(guard));
+        }
+    }
+    if let Some(effect) = effect {
+        let mut attrs = HashMap::new();
+        attrs.insert(
+            "transitionFeatureKind".to_string(),
+            serde_json::json!("effect"),
+        );
+        attrs.insert(
+            "effectExpression".to_string(),
+            serde_json::json!(transition_effect_to_debug_string(effect)),
+        );
+        let qualified = qualified_name_for_node(
+            g,
+            uri,
+            Some(transition_qualified),
+            "effect",
+            "transition effect",
+        );
+        add_node_and_recurse(
+            g,
+            uri,
+            &qualified,
+            "transition effect",
+            "effect".to_string(),
+            transition_range,
+            attrs,
+            Some(transition_id),
+        );
     }
 }
 
@@ -212,15 +314,27 @@ pub(super) fn build_from_state_body(
                     attrs.insert("targetIsDone".to_string(), serde_json::json!(true));
                     increment_state_def_counter(g, parent_id, "doneTransitionCount");
                 }
+                let transition_range = span_to_range(&transition_node.span);
                 add_node_and_recurse(
                     g,
                     uri,
                     &qualified,
                     "transition",
                     transition_name,
-                    span_to_range(&transition_node.span),
+                    transition_range,
                     attrs,
                     Some(parent_id),
+                );
+                let transition_id = NodeId::new(uri, &qualified);
+                materialize_transition_features(
+                    g,
+                    uri,
+                    &qualified,
+                    &transition_id,
+                    transition_range,
+                    t.accept.as_ref(),
+                    t.guard.as_ref(),
+                    t.effect.as_ref(),
                 );
                 add_edge_if_both_exist(g, uri, &src, &tgt, RelationshipKind::Transition);
                 let is_unnamed = t.name.as_deref().unwrap_or("").trim().is_empty();

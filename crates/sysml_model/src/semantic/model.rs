@@ -143,6 +143,18 @@ pub enum ElementKind {
     Enumeration,
     // Sub-elements / structural
     Transition,
+    /// KerML 8.3.18.8 `TransitionFeatureMembership` child: the `accept` trigger of a
+    /// `transition` statement. Baseline slice: a simplified/uniform structured
+    /// representation via attributes, not full `AcceptActionUsage` typing (deferred).
+    TransitionTrigger,
+    /// KerML 8.3.18.8 `TransitionFeatureMembership` child: the `if` guard of a `transition`
+    /// statement. Its content is the guard's real `Node<Expression>`, losslessly converted
+    /// and exposed as an addressable `Expression` via `HostElementFacts::content_expression_id`.
+    TransitionGuard,
+    /// KerML 8.3.18.8 `TransitionFeatureMembership` child: the `do` effect of a `transition`
+    /// statement. Baseline slice: a simplified/uniform structured representation via
+    /// attributes, not full `ActionUsage` typing (deferred).
+    TransitionEffect,
     FinalState,
     /// One named value inside an `enum def { ... }` body (e.g. `active;`). Owned by the
     /// enclosing `EnumDef`; not independently typed or specialized.
@@ -243,6 +255,9 @@ impl ElementKind {
             ElementKind::Calc => "calc",
             ElementKind::Enumeration => "enumeration",
             ElementKind::Transition => "transition",
+            ElementKind::TransitionTrigger => "transition trigger",
+            ElementKind::TransitionGuard => "transition guard",
+            ElementKind::TransitionEffect => "transition effect",
             ElementKind::FinalState => "final state",
             ElementKind::EnumeratedValue => "enumerated value",
             ElementKind::ForLoop => "for loop",
@@ -338,6 +353,9 @@ impl ElementKind {
             "calc" => ElementKind::Calc,
             "enumeration" => ElementKind::Enumeration,
             "transition" => ElementKind::Transition,
+            "transition trigger" => ElementKind::TransitionTrigger,
+            "transition guard" => ElementKind::TransitionGuard,
+            "transition effect" => ElementKind::TransitionEffect,
             "final state" => ElementKind::FinalState,
             "enumerated value" => ElementKind::EnumeratedValue,
             "for loop" => ElementKind::ForLoop,
@@ -572,6 +590,11 @@ pub struct DeclaredSemanticFacts {
     /// Absent for packages and other non-feature/definition nodes.
     #[serde(default)]
     pub feature_properties: Option<DeclaredFeatureProperties>,
+    /// Set when this node's own declared substance *is* an expression (e.g. a
+    /// `TransitionGuard` child), as opposed to `feature_value`, which represents "this
+    /// feature's value is X". Projected as `HostElementFacts::content_expression_id`.
+    #[serde(default)]
+    pub own_expression: Option<DeclaredExpression>,
 }
 
 /// Explicit feature/definition modifiers from the textual declaration.

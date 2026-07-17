@@ -156,6 +156,7 @@ pub(crate) fn project_host_semantic_model(
                             is_unique: properties.is_unique,
                         },
                     ),
+                    content_expression_id: None,
                 },
             });
         }
@@ -304,7 +305,7 @@ pub(crate) fn project_host_semantic_model(
     let mut expressions = Vec::new();
     let mut multiplicities = Vec::new();
     let mut feature_values = Vec::new();
-    for node in &nodes {
+    for node in &mut nodes {
         let Some(facts) = graph
             .node_ids_by_qualified_name
             .get(&node.qualified_name)
@@ -349,6 +350,11 @@ pub(crate) fn project_host_semantic_model(
                 range: value.range,
                 is_implied: false,
             });
+        }
+        if let Some(expression) = &facts.own_expression {
+            let expression_id =
+                project_expression(expression, &node.semantic_id, "content", &mut expressions);
+            node.facts.content_expression_id = Some(expression_id);
         }
     }
     // Connector ends for the binary `from ... to ...` case: derived directly from the
@@ -485,6 +491,11 @@ fn membership_kind(
         ElementKind::Stakeholder => HostMembershipKind::StakeholderMembership,
         ElementKind::Objective => HostMembershipKind::ObjectiveMembership,
         ElementKind::ViewRendering => HostMembershipKind::ViewRenderingMembership,
+        // KerML 8.3.18.8: the accept trigger / if guard / do effect of a `transition`
+        // statement, each owned by the `transition` node via TransitionFeatureMembership.
+        ElementKind::TransitionTrigger
+        | ElementKind::TransitionGuard
+        | ElementKind::TransitionEffect => HostMembershipKind::TransitionFeatureMembership,
         // `InOutDecl` is shared grammar: Action/Calc definition and usage bodies own genuine
         // Behavior parameters (ParameterMembership per KerML 8.3.19.2), but Port/PortDef bodies
         // reuse the same production for directed (in/out) features, which are ordinary
@@ -510,6 +521,9 @@ fn membership_kind(
         | ElementKind::Attribute
         | ElementKind::Action
         | ElementKind::State
+        // Was falling through to the OwningMembership default: a TransitionUsage owned by a
+        // state is ordinary FeatureMembership per KerML, same as Action/State.
+        | ElementKind::Transition
         | ElementKind::Requirement
         | ElementKind::UseCase
         | ElementKind::Concern
@@ -1137,6 +1151,11 @@ package Demo {
     rendering def Style {
         render diagram : Thing;
     }
+    state def Health {
+        state nominal;
+        state degraded;
+        transition to_degraded first nominal accept Fault if 1 < 2 do action recover then degraded;
+    }
 }
 "#;
         let target = std::path::PathBuf::from(if cfg!(windows) {
@@ -1302,6 +1321,68 @@ package Demo {
                 Some(HostMembershipKind::ViewRenderingMembership)
             ))
         );
+
+        // Regression guard: the `transition` node's own membership within its owning state used
+        // to default to OwningMembership (ElementKind::Transition was missing from the
+        // FeatureMembership arm) instead of the correct FeatureMembership.
+        let transition_node = projection
+            .nodes
+            .iter()
+            .find(|node| node.element_kind == sysml_model::ElementKind::Transition)
+            .expect("transition node");
+        assert_eq!(
+            membership_for(&transition_node.qualified_name),
+            Some((
+                HostRelationshipMetaclass::Membership,
+                Some(HostMembershipKind::FeatureMembership)
+            ))
+        );
+
+        // New: trigger/guard/effect materialize as addressable TransitionFeatureMembership
+        // children (KerML 8.3.18.8).
+        for suffix in ["::trigger", "::guard", "::effect"] {
+            let child = projection
+                .nodes
+                .iter()
+                .find(|node| {
+                    node.qualified_name
+                        .starts_with(&transition_node.qualified_name)
+                        && node.qualified_name.ends_with(suffix)
+                })
+                .unwrap_or_else(|| panic!("{suffix} child node"));
+            assert_eq!(
+                membership_for(&child.qualified_name),
+                Some((
+                    HostRelationshipMetaclass::Membership,
+                    Some(HostMembershipKind::TransitionFeatureMembership)
+                )),
+                "{suffix}"
+            );
+        }
+
+        // The guard's content is a real, addressable Expression (not a debug string, not a
+        // misused FeatureValue) — reusing the unmodified `declared_expression()` converter.
+        let guard_node = projection
+            .nodes
+            .iter()
+            .find(|node| {
+                node.qualified_name
+                    .starts_with(&transition_node.qualified_name)
+                    && node.qualified_name.ends_with("::guard")
+            })
+            .expect("guard node");
+        let guard_expression_id = guard_node
+            .facts
+            .content_expression_id
+            .as_deref()
+            .expect("guard node has content_expression_id");
+        let guard_expression = projection
+            .expressions
+            .iter()
+            .find(|expression| expression.semantic_id == guard_expression_id)
+            .expect("guard expression is projected");
+        assert_eq!(guard_expression.operator.as_deref(), Some("<"));
+        assert_eq!(guard_expression.operand_ids.len(), 2);
     }
 
     #[test]

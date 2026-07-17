@@ -5,8 +5,8 @@ use sysml_model::{SysmlDocument, SysmlDocumentProvider, SysmlDocumentSourceKind}
 use tempfile::tempdir;
 use url::Url;
 use workspace::{
-    ChangesetDocumentProvider, EngineBuilder, HostContext, HostRelationshipMetaclass,
-    InMemoryDocumentProvider, Spec42Engine, WorkspaceLoadRequest,
+    ChangesetDocumentProvider, EngineBuilder, HostContext, HostMembershipKind,
+    HostRelationshipMetaclass, InMemoryDocumentProvider, Spec42Engine, WorkspaceLoadRequest,
 };
 
 struct CountingProvider {
@@ -450,4 +450,169 @@ package Demo {
         }),
         "expected a resolved typing edge from ::current to ::Status"
     );
+}
+
+#[test]
+fn snapshot_projects_transition_trigger_guard_effect_as_addressable_children() {
+    let cache = tempdir().expect("tempdir");
+    let model_path = cache.path().join("Transition.sysml");
+    let content = r#"
+package Demo {
+    item def Fault;
+    state def Health {
+        state nominal;
+        state degraded;
+        state critical;
+        transition t1 first nominal accept sig : Fault if 1 < 2 do assign x := 1 then degraded;
+        transition t2 first degraded do action recover then critical;
+    }
+}
+"#;
+    std::fs::write(&model_path, content).expect("write model");
+
+    let engine = test_engine(&cache);
+    let snapshot = engine
+        .load_workspace(
+            InMemoryDocumentProvider::new(vec![file_document(&model_path, content)]),
+            WorkspaceLoadRequest::single_target(model_path),
+            HostContext::default(),
+        )
+        .expect("snapshot");
+    let projection = snapshot.semantic_projection();
+
+    let t1 = projection
+        .nodes
+        .iter()
+        .find(|node| node.qualified_name.ends_with("::t1"))
+        .expect("t1 transition");
+    let t2 = projection
+        .nodes
+        .iter()
+        .find(|node| node.qualified_name.ends_with("::t2"))
+        .expect("t2 transition");
+
+    // t1 has trigger, guard, and effect; t2 has only effect (no accept, no if).
+    for (transition, expected_children) in
+        [(t1, &["trigger", "guard", "effect"][..]), (t2, &["effect"])]
+    {
+        let children: Vec<_> = projection
+            .nodes
+            .iter()
+            .filter(|node| node.parent.as_deref() == Some(transition.qualified_name.as_str()))
+            .collect();
+        assert_eq!(
+            children.len(),
+            expected_children.len(),
+            "unexpected children for {}",
+            transition.qualified_name
+        );
+        for suffix in expected_children {
+            let child = children
+                .iter()
+                .find(|child| child.qualified_name.ends_with(&format!("::{suffix}")))
+                .unwrap_or_else(|| panic!("{suffix} child of {}", transition.qualified_name));
+            let membership = projection
+                .relationships
+                .iter()
+                .find(|relationship| relationship.target_id == child.semantic_id)
+                .unwrap_or_else(|| panic!("membership relationship for {}", child.qualified_name));
+            assert_eq!(
+                membership.membership_kind,
+                Some(HostMembershipKind::TransitionFeatureMembership),
+                "{}",
+                child.qualified_name
+            );
+        }
+    }
+
+    // Trigger: `accept sig : Fault` is a typed payload clause, carried on attributes (baseline
+    // slice — not yet a resolved AcceptActionUsage), not via content_expression_id.
+    let trigger = projection
+        .nodes
+        .iter()
+        .find(|node| {
+            node.parent.as_deref() == Some(t1.qualified_name.as_str())
+                && node.qualified_name.ends_with("::trigger")
+        })
+        .expect("t1 trigger");
+    assert_eq!(
+        trigger
+            .attributes
+            .get("payloadName")
+            .and_then(|v| v.as_str()),
+        Some("sig")
+    );
+    assert_eq!(
+        trigger
+            .attributes
+            .get("payloadType")
+            .and_then(|v| v.as_str()),
+        Some("Fault")
+    );
+    assert!(trigger.facts.content_expression_id.is_none());
+
+    // Guard: `1 < 2` round-trips through the unmodified `declared_expression()` converter into a
+    // real, addressable Expression — not a debug string.
+    let guard = projection
+        .nodes
+        .iter()
+        .find(|node| {
+            node.parent.as_deref() == Some(t1.qualified_name.as_str())
+                && node.qualified_name.ends_with("::guard")
+        })
+        .expect("t1 guard");
+    let guard_expression_id = guard
+        .facts
+        .content_expression_id
+        .as_deref()
+        .expect("guard has content_expression_id");
+    let guard_expression = projection
+        .expressions
+        .iter()
+        .find(|expression| expression.semantic_id == guard_expression_id)
+        .expect("guard expression is projected");
+    assert_eq!(guard_expression.kind, "binary");
+    assert_eq!(guard_expression.operator.as_deref(), Some("<"));
+    assert_eq!(guard_expression.operand_ids.len(), 2);
+    let left = projection
+        .expressions
+        .iter()
+        .find(|expression| expression.semantic_id == guard_expression.operand_ids[0])
+        .expect("left operand projected");
+    assert_eq!(left.kind, "integerLiteral");
+
+    // Effect: t1's `assign x := 1` and t2's `action recover` (the no-span `Perform` case) both
+    // materialize without panicking, falling back to the owning transition's own range.
+    let t1_effect = projection
+        .nodes
+        .iter()
+        .find(|node| {
+            node.parent.as_deref() == Some(t1.qualified_name.as_str())
+                && node.qualified_name.ends_with("::effect")
+        })
+        .expect("t1 effect");
+    assert_eq!(
+        t1_effect
+            .attributes
+            .get("effectExpression")
+            .and_then(|v| v.as_str()),
+        Some("assign x := 1")
+    );
+
+    let t2_effect = projection
+        .nodes
+        .iter()
+        .find(|node| {
+            node.parent.as_deref() == Some(t2.qualified_name.as_str())
+                && node.qualified_name.ends_with("::effect")
+        })
+        .expect("t2 effect");
+    assert_eq!(
+        t2_effect
+            .attributes
+            .get("effectExpression")
+            .and_then(|v| v.as_str()),
+        Some("action recover")
+    );
+    assert_eq!(t2_effect.range, t2.range);
 }

@@ -56,6 +56,7 @@ pub enum HostMembershipKind {
     ObjectiveMembership,
     ParameterMembership,
     ViewRenderingMembership,
+    TransitionFeatureMembership,
 }
 
 /// Typed, API-oriented identity and ownership facts for a semantic element.
@@ -81,6 +82,13 @@ pub struct HostElementFacts {
     /// that retained typed parser properties.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub feature_properties: Option<HostFeatureProperties>,
+    /// Semantic ID of this element's own addressable `Expression` content (in
+    /// [`HostSemanticProjection::expressions`]), when the element itself directly *is* an
+    /// expression (for example a `TransitionGuard`) rather than merely having one attached via
+    /// a `FeatureValue`. Distinct from [`HostFeatureValue::expression_id`], which represents
+    /// "this feature's value is X"; this represents "this element's substance is X".
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub content_expression_id: Option<String>,
 }
 
 /// Explicit feature/definition modifiers projected from declared semantic facts.

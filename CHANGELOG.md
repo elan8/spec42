@@ -7,6 +7,47 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.44.0] - 2026-07-17
+
+- **`TransitionFeatureMembership` baseline (S42-003)** — a `transition` statement's `accept`
+  trigger, `if` guard, and `do` effect now materialize as real, addressable child graph nodes
+  (`ElementKind::TransitionTrigger`/`TransitionGuard`/`TransitionEffect`) owned via a new
+  `HostMembershipKind::TransitionFeatureMembership`, mirroring how every other owned node gets a
+  `Membership` automatically via `membership_kind()` (`crates/workspace/src/snapshot/facts.rs`).
+  Trigger and effect use a simplified/uniform attribute representation this round (reusing the
+  same rendering already used on the parent `transition` node), not full
+  `AcceptActionUsage`/`ActionUsage` typing (deferred). Guard is different: its content is the
+  real `Node<Expression>` from the parser AST, so it's projected losslessly via the existing
+  `ast_util::declared_expression()` converter (unmodified) into a genuine addressable
+  `Expression`, referenced from the new `HostElementFacts::content_expression_id` field
+  (`crates/sysml_model/src/semantic/graph_builder/state.rs`,
+  `crates/workspace/src/snapshot/facts.rs`).
+  **Design note — a `FeatureValue`-reuse approach was considered and rejected:** an earlier draft
+  planned to attach guard/trigger/effect content by reusing `HostFeatureValue`
+  (`DeclaredFeatureValueKind`) to avoid a schema bump, but `HostFeatureValue` normatively means
+  "this feature's value is X" (a KerML value-assignment) — none of guard/trigger/effect are
+  value-assignments, so that would have shipped an incorrect `@type: FeatureValue` label on the
+  consuming API. `content_expression_id` instead represents "this element's substance is X",
+  a distinct, correctly-scoped concept.
+- **Fix: the `transition` node's own membership was `OwningMembership`, should be
+  `FeatureMembership`** — `ElementKind::Transition` was missing from `membership_kind()`'s
+  `FeatureMembership` arm (documented as a known gap in 0.43.2). Fixed alongside the above since
+  both required touching the same function.
+- All existing flattened string attributes on the `transition` node (`source`, `target`,
+  `guardExpression`, `conditionIsBoolean`, `exprClass`, `effectExpression`, `actionKind`,
+  `payloadType`, `acceptType`, `acceptName`, …) are unchanged — purely additive; zero changes
+  required in `behavior_conformance.rs` or `state_views/graph_extractor.rs`.
+- **`PROJECTION_SCHEMA_VERSION` bump: 10 → 11.** Unlike 0.43.1/0.43.2's pure enum widening (no
+  bump needed, since `Option<HostMembershipKind>` and `HostFeatureValue.kind: String` were
+  already open wire fields), this release adds a genuinely new field
+  (`HostElementFacts::content_expression_id`) to a core wire struct — closer in kind to the
+  `feature_properties: Option<HostFeatureProperties>` addition that bumped v5→v6, so bumped for
+  consistency and to force reprojection of cached artifacts.
+  **Deferred, not in scope:** `transitionLinkSource`/`payload` `ParameterMembership`s, `Succession`
+  as an addressable owned `Feature`, `BindingConnector`s, and full `AcceptActionUsage`/
+  `ActionUsage` typing of trigger/effect remain open — see spec42-systems-modeling-api-gaps.md
+  (babel42-v2) S42-003.
+
 ## [0.43.2] - 2026-07-17
 
 - **Specialized memberships: Parameter/ViewRendering (S42-003)** — `HostMembershipKind` gains
