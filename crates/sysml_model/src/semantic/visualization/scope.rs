@@ -15,7 +15,7 @@ use crate::SemanticGraph;
 ///   `redefines` case, matching a member inherited from a supertype) — mirroring how the
 ///   `unresolved_redefines_target`/`incompatible_subset_redefine_kind` diagnostics already resolve
 ///   the same attribute (`diagnostics/checks/kind_compatibility.rs`).
-/// Both are tried since either shape is legal SysML and the attribute alone doesn't say which.
+///   Both are tried since either shape is legal SysML and the attribute alone doesn't say which.
 fn resolve_redefines_or_subsets_targets<'a>(
     semantic_graph: &'a SemanticGraph,
     owner: &crate::SemanticNode,

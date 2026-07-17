@@ -1,4 +1,8 @@
 //! Shared helpers for integration tests that mutate process-global env vars.
+//!
+//! Included (via `#[path]`) into every sibling integration-test binary under `tests/`; each
+//! binary only exercises a subset, so unused-in-this-binary is expected.
+#![allow(dead_code)]
 
 /// Reason string for `#[ignore]` on slow agent/API/MCP integration tests.
 ///

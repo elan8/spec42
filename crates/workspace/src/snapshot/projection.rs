@@ -14,7 +14,7 @@ use sysml_model::{
 };
 
 /// Normative metaclass selected for an addressable projected relationship.
-#[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(Debug, Default, Clone, Copy, Serialize, Deserialize, PartialEq, Eq, PartialOrd, Ord)]
 #[serde(rename_all = "camelCase")]
 pub enum HostRelationshipMetaclass {
     Membership,
@@ -36,6 +36,7 @@ pub enum HostRelationshipMetaclass {
     Satisfy,
     /// Requirement/case `subject` relationship.
     Subject,
+    #[default]
     Relationship,
 }
 
@@ -118,12 +119,6 @@ pub struct HostFeatureProperties {
     pub is_ordered: Option<bool>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub is_unique: Option<bool>,
-}
-
-impl Default for HostRelationshipMetaclass {
-    fn default() -> Self {
-        Self::Relationship
-    }
 }
 
 /// A node in the semantic model — maps 1:1 to [`sysml_model::SemanticNode`].

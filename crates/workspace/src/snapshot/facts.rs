@@ -703,8 +703,8 @@ package Pkg {
         let (graph, _docs) = build_semantic_graph_with_provider(&provider).expect("graph");
 
         let target = std::path::PathBuf::from("/workspace/pkg.sysml");
-        let projection =
-            project_host_semantic_model(&graph, &[target.clone()], &[]).expect("projection");
+        let projection = project_host_semantic_model(&graph, std::slice::from_ref(&target), &[])
+            .expect("projection");
 
         assert!(
             projection

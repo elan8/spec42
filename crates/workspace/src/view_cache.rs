@@ -178,6 +178,11 @@ impl ViewRenderCache {
             .clone())
     }
 
+    // Mirrors the snapshot-identifying parameters `ensure_snapshot`/`model_explorer_bundle`
+    // already take above, plus the view-selection pair `ViewCacheKey` bundles a few lines below;
+    // grouping either would ripple into every call site in this file, out of scope for a
+    // lint-only cleanup.
+    #[allow(clippy::too_many_arguments)]
     pub fn build_visualization(
         &mut self,
         graph: &SemanticGraph,

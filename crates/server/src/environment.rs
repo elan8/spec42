@@ -498,7 +498,6 @@ fn resolve_domain_libraries_config(
 #[cfg(test)]
 struct StdlibResolution {
     path: Option<PathBuf>,
-    roots: Vec<PathBuf>,
     source: Option<String>,
     used_legacy_vscode_fallback: bool,
 }
@@ -536,7 +535,6 @@ fn resolve_stdlib_path(
         .map_err(|error| error.to_string())?;
     Ok(StdlibResolution {
         path: component.path,
-        roots: component.roots,
         source: component.source,
         used_legacy_vscode_fallback: component.used_legacy_vscode_fallback,
     })

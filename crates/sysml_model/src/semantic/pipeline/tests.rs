@@ -340,12 +340,13 @@ fn parallel_build_evaluates_expressions_like_sequential_build() {
     assert_eq!(sequential_value, Some(serde_json::json!(28)));
 }
 
-/// Equivalence for the Tier 2 unified-incremental-engine Phase 4 extraction:
-/// `link_parsed_documents_parallel` (fed pre-parsed documents, skipping the parse step)
-/// must produce the same graph as `build_and_link_graph_parallel` (which parses
-/// internally) for the same inputs. This is what lets `workspace::IncrementalWorkspace`
-/// build from already-parsed documents (e.g. served by a parse cache) without
-/// duplicating the merge/link sequence a second time.
+// Equivalence for the Tier 2 unified-incremental-engine Phase 4 extraction:
+// `link_parsed_documents_parallel` (fed pre-parsed documents, skipping the parse step)
+// must produce the same graph as `build_and_link_graph_parallel` (which parses
+// internally) for the same inputs. This is what lets `workspace::IncrementalWorkspace`
+// build from already-parsed documents (e.g. served by a parse cache) without
+// duplicating the merge/link sequence a second time.
+//
 // --- Track B Phase 1: relationship-linking frontier differential tests ---
 //
 // These compare `patch_graph_for_document_scoped` (frontier-scoped relink) against a full

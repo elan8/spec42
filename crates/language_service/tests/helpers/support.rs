@@ -1,3 +1,7 @@
+// Shared support helpers included (via `#[path]`) into every sibling integration-test binary
+// under `tests/`; each binary only exercises a subset, so unused-in-this-binary is expected.
+#![allow(dead_code)]
+
 use language_service::{complete, dto::SourceLocation, InMemoryWorkspace};
 use sysml_model::{SysmlDocument, SysmlDocumentSourceKind, TextPosition};
 
