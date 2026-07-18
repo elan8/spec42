@@ -7,6 +7,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.44.5] - 2026-07-18
+
+- **`terminate`/`while`/`if` control nodes materialized.** `ActionDefBodyElement::TerminateStmt`/
+  `::WhileStmt`/`::IfStmt` and their `ActionUsageBodyElement` counterparts previously matched a
+  silent no-op arm in both `build_from_action_def_body` and `build_from_action_usage_body`
+  (`crates/sysml_model/src/semantic/graph_builder/action.rs`) and were dropped from the graph
+  entirely, unlike their sibling control statements (`perform`/`merge`/`decide`/`join`/`fork`/
+  `for`/`assign`, all already materialized). New `ElementKind::Terminate`/`::While`/`::If`
+  (kind-strings `"terminate"`/`"while"`/`"if"`) plus `add_terminate_stmt`/`add_while_stmt`/
+  `add_if_stmt` close the gap: `terminate` records an optional `terminateTarget` debug-text
+  attribute (mirroring `merge`/`decide`/`join`/`fork`'s existing text-only target pattern);
+  `while` records a `whileCondition` debug-text attribute and walks its body as children via the
+  existing `build_from_action_def_body`; `if` records an `ifCondition` attribute plus a
+  `hasElse: bool` flag and walks only its `then` branch as children this round. The `else` branch
+  body, when present, is flagged by `hasElse` but not yet walked -- materializing it needs a
+  design decision on how to scope a second child branch, deferred as a follow-up. No
+  `PROJECTION_SCHEMA_VERSION` bump: new `ElementKind` values plus the existing generic node/attrs
+  shape, same class as the pre-existing `merge`/`decide`/`join`/`fork` additions. Regression
+  coverage: `crates/workspace/tests/snapshot_single_build.rs`'s
+  `snapshot_materializes_terminate_while_and_if_control_nodes`.
+
 ## [0.44.4] - 2026-07-18
 
 - **`ConcernDefinition`/`ConcernUsage` classification.** `sysml-v2-parser` 0.41.0 added

@@ -4,8 +4,8 @@ use std::collections::HashMap;
 
 use sysml_v2_parser::ast::{
     ActionBodyDecl, ActionDefBody, ActionDefBodyElement, ActionUsage, ActionUsageBody,
-    ActionUsageBodyElement, AssignStmt, ForLoop, InOut, Perform, RefBody, RefDecl, StateDefBody,
-    StateUsage, ThenAction,
+    ActionUsageBodyElement, AssignStmt, ForLoop, IfStmt, InOut, Perform, RefBody, RefDecl,
+    StateDefBody, StateUsage, TerminateStmt, ThenAction, WhileStmt,
 };
 use url::Url;
 
@@ -308,6 +308,102 @@ fn add_for_loop(
     }
 }
 
+fn add_terminate_stmt(
+    g: &mut SemanticGraph,
+    uri: &Url,
+    container_prefix: Option<&str>,
+    parent_id: &NodeId,
+    terminate: &sysml_v2_parser::Node<TerminateStmt>,
+) {
+    let qualified = qualified_name_for_node(g, uri, container_prefix, "_terminate", "terminate");
+    let mut attrs = HashMap::new();
+    if let Some(ref target) = terminate.value.target {
+        attrs.insert(
+            "terminateTarget".to_string(),
+            serde_json::json!(expressions::expression_to_debug_string(target)),
+        );
+    }
+    add_node_and_recurse(
+        g,
+        uri,
+        &qualified,
+        "terminate",
+        "terminate".to_string(),
+        span_to_range(&terminate.span),
+        attrs,
+        Some(parent_id),
+    );
+}
+
+fn add_while_stmt(
+    g: &mut SemanticGraph,
+    uri: &Url,
+    container_prefix: Option<&str>,
+    parent_id: &NodeId,
+    while_stmt: &sysml_v2_parser::Node<WhileStmt>,
+) {
+    let qualified = qualified_name_for_node(g, uri, container_prefix, "_while", "while");
+    let mut attrs = HashMap::new();
+    attrs.insert(
+        "whileCondition".to_string(),
+        serde_json::json!(expressions::expression_to_debug_string(
+            &while_stmt.value.condition
+        )),
+    );
+    add_node_and_recurse(
+        g,
+        uri,
+        &qualified,
+        "while",
+        "while".to_string(),
+        span_to_range(&while_stmt.span),
+        attrs,
+        Some(parent_id),
+    );
+    let while_id = NodeId::new(uri, &qualified);
+    if let ActionDefBody::Brace { elements } = &while_stmt.value.body {
+        build_from_action_def_body(elements, uri, Some(qualified.as_str()), &while_id, g);
+    }
+}
+
+fn add_if_stmt(
+    g: &mut SemanticGraph,
+    uri: &Url,
+    container_prefix: Option<&str>,
+    parent_id: &NodeId,
+    if_stmt: &sysml_v2_parser::Node<IfStmt>,
+) {
+    let qualified = qualified_name_for_node(g, uri, container_prefix, "_if", "if");
+    let mut attrs = HashMap::new();
+    attrs.insert(
+        "ifCondition".to_string(),
+        serde_json::json!(expressions::expression_to_debug_string(
+            &if_stmt.value.condition
+        )),
+    );
+    attrs.insert(
+        "hasElse".to_string(),
+        serde_json::json!(if_stmt.value.else_body.is_some()),
+    );
+    add_node_and_recurse(
+        g,
+        uri,
+        &qualified,
+        "if",
+        "if".to_string(),
+        span_to_range(&if_stmt.span),
+        attrs,
+        Some(parent_id),
+    );
+    let if_id = NodeId::new(uri, &qualified);
+    // Only the `then` branch's body is walked as children this round; the `else` branch (when
+    // present) is flagged via `hasElse` but its body is not yet projected -- see
+    // spec42-systems-modeling-api-gaps.md "Behavior" for the tracked follow-up.
+    if let ActionDefBody::Brace { elements } = &if_stmt.value.then_body {
+        build_from_action_def_body(elements, uri, Some(qualified.as_str()), &if_id, g);
+    }
+}
+
 fn add_action_body_decl(
     g: &mut SemanticGraph,
     uri: &Url,
@@ -558,10 +654,15 @@ pub(super) fn build_from_action_def_body(
                 super::attach_doc_comment(g, parent_id, &doc.value.text);
             }
             ActionDefBodyElement::Error(_) | ActionDefBodyElement::Annotation(_) => {}
-            // Not yet modeled in the semantic graph.
-            ActionDefBodyElement::TerminateStmt(_)
-            | ActionDefBodyElement::WhileStmt(_)
-            | ActionDefBodyElement::IfStmt(_) => {}
+            ActionDefBodyElement::TerminateStmt(terminate) => {
+                add_terminate_stmt(g, uri, container_prefix, parent_id, terminate);
+            }
+            ActionDefBodyElement::WhileStmt(while_stmt) => {
+                add_while_stmt(g, uri, container_prefix, parent_id, while_stmt);
+            }
+            ActionDefBodyElement::IfStmt(if_stmt) => {
+                add_if_stmt(g, uri, container_prefix, parent_id, if_stmt);
+            }
         }
     }
 }
@@ -729,10 +830,15 @@ pub(super) fn build_from_action_usage_body(
                 super::attach_doc_comment(g, parent_id, &doc.value.text);
             }
             ActionUsageBodyElement::Error(_) | ActionUsageBodyElement::Annotation(_) => {}
-            // Not yet modeled in the semantic graph.
-            ActionUsageBodyElement::TerminateStmt(_)
-            | ActionUsageBodyElement::WhileStmt(_)
-            | ActionUsageBodyElement::IfStmt(_) => {}
+            ActionUsageBodyElement::TerminateStmt(terminate) => {
+                add_terminate_stmt(g, uri, container_prefix, parent_id, terminate);
+            }
+            ActionUsageBodyElement::WhileStmt(while_stmt) => {
+                add_while_stmt(g, uri, container_prefix, parent_id, while_stmt);
+            }
+            ActionUsageBodyElement::IfStmt(if_stmt) => {
+                add_if_stmt(g, uri, container_prefix, parent_id, if_stmt);
+            }
         }
     }
 }

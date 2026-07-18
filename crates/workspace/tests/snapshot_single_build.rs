@@ -345,6 +345,77 @@ package Demo {
 }
 
 #[test]
+fn snapshot_materializes_terminate_while_and_if_control_nodes() {
+    let cache = tempdir().expect("tempdir");
+    let model_path = cache.path().join("ControlNodes.sysml");
+    let content = r#"
+package Demo {
+    action def Cleanup;
+    action def Recover;
+    action def Routine {
+        while true {
+            action step : Cleanup;
+        }
+        if true {
+            perform action recoveryStep : Recover;
+        }
+        terminate;
+    }
+}
+"#;
+    std::fs::write(&model_path, content).expect("write model");
+
+    let engine = test_engine(&cache);
+    let snapshot = engine
+        .load_workspace(
+            InMemoryDocumentProvider::new(vec![file_document(&model_path, content)]),
+            WorkspaceLoadRequest::single_target(model_path),
+            HostContext::default(),
+        )
+        .expect("snapshot");
+    let projection = snapshot.semantic_projection();
+
+    // Regression guard: TerminateStmt/WhileStmt/IfStmt previously matched a silent no-op arm in
+    // both build_from_action_def_body and build_from_action_usage_body and were dropped from the
+    // graph entirely.
+    let while_node = projection
+        .nodes
+        .iter()
+        .find(|node| node.element_kind.as_str() == "while")
+        .expect("while node materialized");
+    assert!(
+        projection.nodes.iter().any(|node| node.parent.as_deref()
+            == Some(while_node.qualified_name.as_str())
+            && node.qualified_name.ends_with("::step")),
+        "while body's nested action is a child of the while node"
+    );
+
+    let if_node = projection
+        .nodes
+        .iter()
+        .find(|node| node.element_kind.as_str() == "if")
+        .expect("if node materialized");
+    assert_eq!(
+        if_node.attributes.get("hasElse"),
+        Some(&serde_json::json!(false))
+    );
+    assert!(
+        projection.nodes.iter().any(|node| node.parent.as_deref()
+            == Some(if_node.qualified_name.as_str())
+            && node.qualified_name.ends_with("::recoveryStep")),
+        "if then-body's nested action is a child of the if node"
+    );
+
+    assert!(
+        projection
+            .nodes
+            .iter()
+            .any(|node| node.element_kind.as_str() == "terminate"),
+        "terminate node materialized"
+    );
+}
+
+#[test]
 fn snapshot_classifies_concern_def_separately_from_concern_usage() {
     let cache = tempdir().expect("tempdir");
     let model_path = cache.path().join("Concern.sysml");
