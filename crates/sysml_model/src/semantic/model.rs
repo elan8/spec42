@@ -177,6 +177,7 @@ pub enum ElementKind {
     Terminate,
     While,
     If,
+    Else,
     Filter,
     Import,
     /// Addressable `doc /* … */` documentation element.
@@ -282,6 +283,7 @@ impl ElementKind {
             ElementKind::Terminate => "terminate",
             ElementKind::While => "while",
             ElementKind::If => "if",
+            ElementKind::Else => "else",
             ElementKind::Filter => "filter",
             ElementKind::Import => "import",
             ElementKind::Documentation => "documentation",
@@ -384,6 +386,7 @@ impl ElementKind {
             "terminate" => ElementKind::Terminate,
             "while" => ElementKind::While,
             "if" => ElementKind::If,
+            "else" => ElementKind::Else,
             "filter" => ElementKind::Filter,
             "import" => ElementKind::Import,
             "documentation" => ElementKind::Documentation,

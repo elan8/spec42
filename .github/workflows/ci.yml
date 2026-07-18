@@ -30,6 +30,9 @@ jobs:
       - name: Cache cargo
         uses: Swatinem/rust-cache@v2
 
+      - name: cargo fmt --check
+        run: cargo fmt --all -- --check
+
       - name: Standard library config is current
         run: node scripts/sync-standard-library-config.mjs --check
 
@@ -105,11 +108,7 @@ jobs:
           cargo test -p server --lib
 
       - name: cargo clippy
-        run: cargo clippy --workspace --all-targets -- -W clippy::all
-
-      - name: cargo clippy strict core debt trend (non-blocking)
-        continue-on-error: true
-        run: cargo clippy -p sysml_model -p lsp_server --all-targets -- -D warnings
+        run: cargo clippy --workspace --all-targets --all-features -- -D warnings
 
   rust-surfaces:
     name: Rust agent/API surfaces

@@ -670,6 +670,25 @@ fn collect_host_document_diagnostics(
     diagnostics
 }
 
+fn summarize_host_documents(documents: &[HostValidatedDocument]) -> HostValidationSummary {
+    let mut summary = HostValidationSummary {
+        document_count: documents.len(),
+        ..HostValidationSummary::default()
+    };
+    for document in documents {
+        for diagnostic in &document.diagnostics {
+            match diagnostic.severity {
+                DiagnosticSeverity::Error => summary.error_count += 1,
+                DiagnosticSeverity::Warning => summary.warning_count += 1,
+                DiagnosticSeverity::Information | DiagnosticSeverity::Hint => {
+                    summary.information_count += 1
+                }
+            }
+        }
+    }
+    summary
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -1560,23 +1579,4 @@ package LibPkg {
             "nodes under library URLs should set is_library_element"
         );
     }
-}
-
-fn summarize_host_documents(documents: &[HostValidatedDocument]) -> HostValidationSummary {
-    let mut summary = HostValidationSummary {
-        document_count: documents.len(),
-        ..HostValidationSummary::default()
-    };
-    for document in documents {
-        for diagnostic in &document.diagnostics {
-            match diagnostic.severity {
-                DiagnosticSeverity::Error => summary.error_count += 1,
-                DiagnosticSeverity::Warning => summary.warning_count += 1,
-                DiagnosticSeverity::Information | DiagnosticSeverity::Hint => {
-                    summary.information_count += 1
-                }
-            }
-        }
-    }
-    summary
 }

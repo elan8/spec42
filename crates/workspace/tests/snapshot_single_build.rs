@@ -585,8 +585,13 @@ package Demo {
         while true {
             action step : Cleanup;
         }
+        for i in 1..3 {
+            action loopStep : Cleanup;
+        }
         if true {
             perform action recoveryStep : Recover;
+        } else {
+            perform action fallbackStep : Recover;
         }
         terminate;
     }
@@ -619,6 +624,27 @@ package Demo {
         "while body's nested action is a child of the while node"
     );
 
+    // Regression guard: add_for_loop previously recursed with the outer container_prefix
+    // instead of its own qualified name (unlike while/if), so a nested action's qualified name
+    // did not reflect the loop's nesting -- only its `parent` field did.
+    let for_loop_node = projection
+        .nodes
+        .iter()
+        .find(|node| node.element_kind.as_str() == "for loop")
+        .expect("for loop node materialized");
+    assert!(
+        projection.nodes.iter().any(|node| node
+            .qualified_name
+            .starts_with(&format!("{}::", for_loop_node.qualified_name))
+            && node.qualified_name.ends_with("::loopStep")),
+        "for-loop body's nested action's qualified name nests under the loop node, got: {:?}",
+        projection
+            .nodes
+            .iter()
+            .map(|node| &node.qualified_name)
+            .collect::<Vec<_>>()
+    );
+
     let if_node = projection
         .nodes
         .iter()
@@ -626,13 +652,31 @@ package Demo {
         .expect("if node materialized");
     assert_eq!(
         if_node.attributes.get("hasElse"),
-        Some(&serde_json::json!(false))
+        Some(&serde_json::json!(true))
     );
     assert!(
         projection.nodes.iter().any(|node| node.parent.as_deref()
             == Some(if_node.qualified_name.as_str())
             && node.qualified_name.ends_with("::recoveryStep")),
         "if then-body's nested action is a child of the if node"
+    );
+
+    // Regression guard: the else branch previously was not walked at all, only flagged via
+    // hasElse.
+    let else_node = projection
+        .nodes
+        .iter()
+        .find(|node| node.element_kind.as_str() == "else")
+        .expect("else node materialized");
+    assert_eq!(
+        else_node.parent.as_deref(),
+        Some(if_node.qualified_name.as_str())
+    );
+    assert!(
+        projection.nodes.iter().any(|node| node.parent.as_deref()
+            == Some(else_node.qualified_name.as_str())
+            && node.qualified_name.ends_with("::fallbackStep")),
+        "if else-body's nested action is a child of the else node"
     );
 
     assert!(

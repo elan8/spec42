@@ -304,7 +304,7 @@ fn add_for_loop(
     );
     let loop_id = NodeId::new(uri, &qualified);
     if let ActionDefBody::Brace { elements } = &fl.body {
-        build_from_action_def_body(elements, uri, container_prefix, &loop_id, g);
+        build_from_action_def_body(elements, uri, Some(qualified.as_str()), &loop_id, g);
     }
 }
 
@@ -396,11 +396,31 @@ fn add_if_stmt(
         Some(parent_id),
     );
     let if_id = NodeId::new(uri, &qualified);
-    // Only the `then` branch's body is walked as children this round; the `else` branch (when
-    // present) is flagged via `hasElse` but its body is not yet projected -- see
-    // spec42-systems-modeling-api-gaps.md "Behavior" for the tracked follow-up.
+    // The `then` branch's body walks as direct children of the `if` node (same convention as
+    // `while`/`for`'s single body). The `else` branch, when present, needs its own scope --
+    // unlike `then`, mixing its children in flat with `then`'s would make the two branches
+    // indistinguishable -- so it gets a nested "else" child node (mirroring the "for loop"
+    // wrapper pattern) whose own children are the else-body elements.
     if let ActionDefBody::Brace { elements } = &if_stmt.value.then_body {
         build_from_action_def_body(elements, uri, Some(qualified.as_str()), &if_id, g);
+    }
+    if let Some(else_body) = &if_stmt.value.else_body {
+        let else_qualified =
+            qualified_name_for_node(g, uri, Some(qualified.as_str()), "_else", "else");
+        add_node_and_recurse(
+            g,
+            uri,
+            &else_qualified,
+            "else",
+            "else".to_string(),
+            span_to_range(&if_stmt.span),
+            HashMap::new(),
+            Some(&if_id),
+        );
+        let else_id = NodeId::new(uri, &else_qualified);
+        if let ActionDefBody::Brace { elements } = else_body {
+            build_from_action_def_body(elements, uri, Some(else_qualified.as_str()), &else_id, g);
+        }
     }
 }
 

@@ -7,6 +7,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.44.10] - 2026-07-18
+
+- **`if`'s `else` branch materialized; `add_for_loop` nesting bug fixed.** `add_if_stmt`
+  (`crates/sysml_model/src/semantic/graph_builder/action.rs`) previously flagged `hasElse` but
+  never walked the else body (deferred in 0.44.5). It now materializes a nested `"else"`-kind
+  child node under the `if` node when an else branch is present, whose own children are the else
+  body's elements -- mirroring the existing `for`/`while` body-wrapper pattern rather than
+  flattening then/else children into one list. New `ElementKind::Else` (kind-string `"else"`). No
+  `PROJECTION_SCHEMA_VERSION` bump: new `ElementKind` value plus the existing generic node/attrs
+  shape, same class as the 0.44.5 `Terminate`/`While`/`If` additions. Separately, `add_for_loop`
+  was passing the outer `container_prefix` instead of the loop's own qualified name as the
+  `container_prefix` for its body recursion -- the only control-flow body materializer with this
+  bug (`while`/`if` already passed their own qualified name correctly) -- so nested actions inside
+  a `for` loop did not have qualified names reflecting the loop's nesting. Fixed to pass
+  `Some(qualified.as_str())`. Regression coverage: `crates/workspace/tests/snapshot_single_build.rs`'s
+  `snapshot_materializes_terminate_while_and_if_control_nodes`, extended with a `for` loop fixture
+  asserting nested qualified-name scoping and an `else` branch fixture asserting the new `"else"`
+  node, its `parent`, and its child.
+
 ## [0.44.9] - 2026-07-18
 
 - **`isPortion`/`portionKind` added to declared feature properties (S42-008).** `DeclaredFeatureProperties`
