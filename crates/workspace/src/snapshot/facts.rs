@@ -146,6 +146,8 @@ pub(crate) fn project_host_semantic_model(
                             is_conjugated: properties.is_conjugated,
                             is_ordered: properties.is_ordered,
                             is_unique: properties.is_unique,
+                            is_portion: properties.is_portion,
+                            portion_kind: properties.portion_kind.clone(),
                         },
                     ),
                     content_expression_id: None,

@@ -7,6 +7,30 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.44.9] - 2026-07-18
+
+- **`isPortion`/`portionKind` added to declared feature properties (S42-008).** `DeclaredFeatureProperties`
+  and `HostFeatureProperties` gain `is_portion: bool` and `portion_kind: Option<String>`.
+  `occurrence_usage_feature_properties` (`ast_util.rs`) now populates both from
+  `OccurrenceUsage::portion_kind` (already set by the `snapshot`/`timeslice`/`then timeslice`
+  parser forms, unchanged this round) — previously only the raw `"portionKind"` debug attribute
+  existed, with no slot in the typed feature-properties system Babel42's `isPortion`/`portionKind`
+  DTO fields actually read. All other `*_feature_properties` builders (`part`/`attribute`/`port`/
+  `item`/`definition`) explicitly set `is_portion: false, portion_kind: None`, since only
+  occurrences have portion semantics. `PROJECTION_SCHEMA_VERSION` bumped `11` → `12`: new
+  `HostFeatureProperties` fields, same class as the 0.44.0 `content_expression_id` addition.
+  Regression coverage: `crates/workspace/tests/snapshot_single_build.rs`'s
+  `snapshot_populates_occurrence_def_and_usage_facts`, extended with `is_portion`/`portion_kind`
+  assertions for `snapshot`/`timeslice`/plain `occurrence` usages.
+- **`isReadOnly`/`isSufficient`/`isVariable`/`mayTimeVary` confirmed out of scope.** Exhaustive
+  search of `sysml-v2-parser`'s grammar found no `readonly`, `variable`, `sufficient`, or
+  time-varying keyword production anywhere — `readonly`/`variable` were already documented as
+  deliberately out of scope (not SysML textual keywords, "Modifier completeness audit"); this
+  extends the same finding to `sufficient` and time-varying, none of which have a textual BNF
+  production either. Babel42's hardcoded `null` for these four properties is therefore not a gap
+  to close via keyword wiring — see spec42-systems-modeling-api-gaps.md S42-008 for the
+  reclassification.
+
 ## [0.44.8] - 2026-07-18
 
 - **`expose` materializes as a real Import.** `annotate_view_usage_body`

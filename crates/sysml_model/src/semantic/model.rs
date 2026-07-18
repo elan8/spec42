@@ -645,6 +645,10 @@ pub struct DeclaredFeatureProperties {
     pub is_ordered: Option<bool>,
     #[serde(default)]
     pub is_unique: Option<bool>,
+    #[serde(default)]
+    pub is_portion: bool,
+    #[serde(default)]
+    pub portion_kind: Option<String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]

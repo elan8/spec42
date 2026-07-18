@@ -55,6 +55,8 @@ pub fn part_usage_feature_properties(
         is_conjugated: false,
         is_ordered: Some(usage.ordered),
         is_unique: None,
+        is_portion: false,
+        portion_kind: None,
     }
 }
 
@@ -76,6 +78,8 @@ pub fn attribute_usage_feature_properties(
         is_conjugated: false,
         is_ordered: Some(usage.ordered),
         is_unique: Some(!usage.nonunique),
+        is_portion: false,
+        portion_kind: None,
     }
 }
 
@@ -101,6 +105,8 @@ pub fn port_usage_feature_properties(
         is_conjugated: conjugated,
         is_ordered: None,
         is_unique: None,
+        is_portion: false,
+        portion_kind: None,
     }
 }
 
@@ -122,6 +128,8 @@ pub fn item_usage_feature_properties(
         is_conjugated: false,
         is_ordered: None,
         is_unique: None,
+        is_portion: false,
+        portion_kind: None,
     }
 }
 
@@ -143,6 +151,8 @@ pub fn occurrence_usage_feature_properties(
         is_conjugated: false,
         is_ordered: None,
         is_unique: None,
+        is_portion: usage.portion_kind.is_some(),
+        portion_kind: usage.portion_kind.clone(),
     }
 }
 
@@ -174,6 +184,8 @@ pub fn definition_feature_properties(
         is_conjugated: false,
         is_ordered: None,
         is_unique: None,
+        is_portion: false,
+        portion_kind: None,
     }
 }
 

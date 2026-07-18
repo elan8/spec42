@@ -119,6 +119,10 @@ pub struct HostFeatureProperties {
     pub is_ordered: Option<bool>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub is_unique: Option<bool>,
+    #[serde(default)]
+    pub is_portion: bool,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub portion_kind: Option<String>,
 }
 
 /// A node in the semantic model — maps 1:1 to [`sysml_model::SemanticNode`].

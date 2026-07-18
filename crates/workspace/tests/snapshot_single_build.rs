@@ -409,6 +409,19 @@ package Demo {
         snapshot_node.attributes.get("portionKind"),
         Some(&serde_json::json!("snapshot"))
     );
+    // Regression guard (S42-008): `portionKind`/`isPortion` previously only existed as this raw
+    // debug attribute; `DeclaredFeatureProperties`/`HostFeatureProperties` had no slot for them
+    // at all, so Babel42's `isPortion` DTO field was permanently hardcoded to `null`.
+    let snapshot_properties = snapshot_node
+        .facts
+        .feature_properties
+        .as_ref()
+        .expect("snapshot usage has declared feature properties");
+    assert!(snapshot_properties.is_portion);
+    assert_eq!(
+        snapshot_properties.portion_kind.as_deref(),
+        Some("snapshot")
+    );
 
     let timeslice_node = projection
         .nodes
@@ -418,6 +431,16 @@ package Demo {
     assert_eq!(
         timeslice_node.attributes.get("portionKind"),
         Some(&serde_json::json!("timeslice"))
+    );
+    let timeslice_properties = timeslice_node
+        .facts
+        .feature_properties
+        .as_ref()
+        .expect("timeslice usage has declared feature properties");
+    assert!(timeslice_properties.is_portion);
+    assert_eq!(
+        timeslice_properties.portion_kind.as_deref(),
+        Some("timeslice")
     );
 
     let happening_node = projection
@@ -432,6 +455,15 @@ package Demo {
             .as_ref()
             .map(|p| p.is_individual),
         Some(false)
+    );
+    assert!(
+        !happening_node
+            .facts
+            .feature_properties
+            .as_ref()
+            .expect("plain usage has declared feature properties")
+            .is_portion,
+        "a plain `occurrence` usage (no snapshot/timeslice keyword) is not a portion"
     );
 }
 
