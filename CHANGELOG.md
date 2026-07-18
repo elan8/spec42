@@ -7,6 +7,38 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.44.8] - 2026-07-18
+
+- **`expose` materializes as a real Import.** `annotate_view_usage_body`
+  (`crates/sysml_model/src/semantic/graph_builder/view_def.rs`) previously only recorded
+  `hasExpose`/`exposeTargets` text attributes on the owning view node -- no addressable element
+  or relationship existed for an `expose` member at all. `expose` is normatively an Import per
+  `ExposeMember`'s own BNF doc comment; new `materialize_expose_member` (using
+  `sysml-v2-parser` 0.42.0's `ExposeMember::is_import_all`/`::is_recursive`) creates a real
+  `"import"`-kind child node with the exact same attribute shape `materialize_import` already
+  uses for ordinary `import` statements (`importTarget`/`importAll`/`recursive`). This reuses
+  the existing `membership_kind`/`membership_relationship_metaclass` pipeline entirely --
+  `HostMembershipKind::Import` already classifies further into
+  `HostRelationshipMetaclass::NamespaceImport`/`::MembershipImport` based on the `importAll`
+  attribute -- so `expose` publishes as a concrete `NamespaceImport`/`MembershipImport`
+  relationship with zero new classification logic. The old `hasExpose`/`exposeTargets` summary
+  attributes are left in place alongside the new node.
+- **`filter`'s condition is now a real addressable `Expression`.** Both `add_view_filter_node`
+  and `build_filter_member` (`view_def.rs`) previously only stored a debug-text `"condition"`
+  attribute. Both now also set `declared_facts.own_expression` (mirroring
+  `TransitionGuard`'s 0.44.0 `content_expression_id` fix, S42-003), so `filter`'s condition is
+  the real parsed `Expression`, not rendered text.
+- No `PROJECTION_SCHEMA_VERSION` bump: both changes reuse existing `HostSemanticProjection`
+  shape (generic node/attrs, and the pre-existing `content_expression_id` mechanism). Regression
+  coverage: `crates/workspace/tests/snapshot_single_build.rs`'s
+  `snapshot_classifies_expose_as_namespace_or_membership_import` and
+  `snapshot_projects_filter_condition_as_an_addressable_expression`.
+- **Deliberately still open:** `filter`'s own node kind (`ElementKind::Filter`) and a `view
+  rendering` member (`ElementKind::ViewRendering`) remain without their own confirmed Systems
+  Modeling API concrete resource shape at the Babel42 layer (tracked as a Babel42-side follow-up,
+  not a Spec42 gap); `expose`'s optional bracket-filter form (`expose X [ expr ];`) still skips
+  its filter expression's content entirely, same as before this round.
+
 ## [0.44.7] - 2026-07-18
 
 - **`OccurrenceDef.isAbstract` fix.** 0.44.6 set a raw `"isAbstract"` attribute on `occurrence

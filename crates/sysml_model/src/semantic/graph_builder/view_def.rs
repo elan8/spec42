@@ -3,19 +3,21 @@
 use std::collections::HashMap;
 
 use sysml_v2_parser::ast::{
-    FilterMember, RenderingDef, RenderingDefBody, RenderingDefBodyElement, RequirementDefBody,
-    ViewBody, ViewBodyElement, ViewDef, ViewDefBody, ViewDefBodyElement, ViewRenderingUsage,
-    ViewUsage, ViewpointDef, ViewpointUsage,
+    ExposeMember, FilterMember, RenderingDef, RenderingDefBody, RenderingDefBodyElement,
+    RequirementDefBody, ViewBody, ViewBodyElement, ViewDef, ViewDefBody, ViewDefBodyElement,
+    ViewRenderingUsage, ViewUsage, ViewpointDef, ViewpointUsage,
 };
 use sysml_v2_parser::Node;
 use url::Url;
 
-use super::requirement_body::walk_requirement_def_body;
+use super::requirement_body::{import_member_label, walk_requirement_def_body};
 use super::{
     add_node_and_recurse, insert_def_specialization_attr, qualified_name_for_node,
     wire_def_specialization_edge,
 };
-use crate::semantic::ast_util::{attach_short_name_attribute, identification_name, span_to_range};
+use crate::semantic::ast_util::{
+    attach_short_name_attribute, declared_expression, identification_name, span_to_range,
+};
 use crate::semantic::graph::SemanticGraph;
 use crate::semantic::graph_builder::expressions;
 use crate::semantic::model::NodeId;
@@ -72,6 +74,10 @@ pub(super) fn add_view_filter_node(
         attrs,
         Some(parent_id),
     );
+    let node_id = NodeId::new(uri, &qualified);
+    if let Some(node) = g.get_node_mut(&node_id) {
+        node.declared_facts.own_expression = Some(declared_expression(&filter.value.condition));
+    }
 }
 
 pub(super) fn add_view_rendering_node(
@@ -141,6 +147,45 @@ fn annotate_rendering_def_body(
     }
 }
 
+/// Materializes an `expose` member as a real `import`-kind node, reusing the exact attribute
+/// shape `materialize_import` uses for ordinary `import` statements (`importTarget`/`importAll`/
+/// `recursive`) -- `expose` is normatively an Import per `ExposeMember`'s own BNF doc comment
+/// (`MembershipImport = QualifiedName (::**)?`, `NamespaceImport = QualifiedName :: * (::**)?`).
+/// Reusing the "import" kind string means the node automatically flows through the existing
+/// `membership_kind`/`membership_relationship_metaclass` pipeline
+/// (`HostMembershipKind::Import` -> `HostRelationshipMetaclass::NamespaceImport`/
+/// `::MembershipImport` based on the `importAll` attribute) with no new classification logic.
+pub(super) fn materialize_expose_member(
+    g: &mut SemanticGraph,
+    uri: &Url,
+    parent_id: &NodeId,
+    expose: &Node<ExposeMember>,
+) {
+    let v = &expose.value;
+    let name = import_member_label(&v.target);
+    let qualified = qualified_name_for_node(
+        g,
+        uri,
+        Some(parent_id.qualified_name.as_str()),
+        &name,
+        "import",
+    );
+    let mut attrs = HashMap::new();
+    attrs.insert("importTarget".to_string(), serde_json::json!(&v.target));
+    attrs.insert("importAll".to_string(), serde_json::json!(v.is_import_all));
+    attrs.insert("recursive".to_string(), serde_json::json!(v.is_recursive));
+    add_node_and_recurse(
+        g,
+        uri,
+        &qualified,
+        "import",
+        name,
+        span_to_range(&expose.span),
+        attrs,
+        Some(parent_id),
+    );
+}
+
 fn annotate_view_usage_body(g: &mut SemanticGraph, view_id: &NodeId, body: &ViewBody, uri: &Url) {
     let ViewBody::Brace { elements } = body else {
         return;
@@ -157,11 +202,12 @@ fn annotate_view_usage_body(g: &mut SemanticGraph, view_id: &NodeId, body: &View
             ViewBodyElement::Expose(expose) => {
                 has_expose = true;
                 expose_targets.push(serde_json::json!({
-                    "target": expose.target,
+                    "target": expose.value.target,
                     "range": crate::semantic::ast_util::text_range_to_json(
                         crate::semantic::ast_util::span_to_range(&element.span),
                     ),
                 }));
+                materialize_expose_member(g, uri, view_id, expose);
             }
             ViewBodyElement::ViewRendering(rendering) => {
                 add_view_rendering_node(g, uri, view_id, rendering);
@@ -470,4 +516,8 @@ pub(super) fn build_filter_member(
         attrs,
         Some(pid),
     );
+    let node_id = NodeId::new(uri, &qualified);
+    if let Some(node) = g.get_node_mut(&node_id) {
+        node.declared_facts.own_expression = Some(declared_expression(&f.value.condition));
+    }
 }

@@ -436,6 +436,112 @@ package Demo {
 }
 
 #[test]
+fn snapshot_classifies_expose_as_namespace_or_membership_import() {
+    let cache = tempdir().expect("tempdir");
+    let model_path = cache.path().join("Expose.sysml");
+    let content = r#"
+package Demo {
+    part def Vehicle {
+        part engine : Engine;
+    }
+    part def Engine;
+    view v : GeneralView {
+        expose Vehicle::engine;
+        expose Vehicle::*;
+    }
+}
+"#;
+    std::fs::write(&model_path, content).expect("write model");
+
+    let engine = test_engine(&cache);
+    let snapshot = engine
+        .load_workspace(
+            InMemoryDocumentProvider::new(vec![file_document(&model_path, content)]),
+            WorkspaceLoadRequest::single_target(model_path),
+            HostContext::default(),
+        )
+        .expect("snapshot");
+    let projection = snapshot.semantic_projection();
+
+    // Regression guard: `expose` previously only recorded hasExpose/exposeTargets text
+    // attributes on the owning view node -- no addressable element or relationship existed for
+    // it at all. `expose` is normatively an Import per its own BNF, so it should classify the
+    // same way ordinary `import` statements already do.
+    let membership_import = projection
+        .relationships
+        .iter()
+        .find(|relationship| {
+            relationship.metaclass == HostRelationshipMetaclass::MembershipImport
+                && relationship.target.ends_with("::engine")
+        })
+        .expect("expose Vehicle::engine classifies as MembershipImport");
+    assert!(membership_import.target.ends_with("::engine"));
+
+    let namespace_import = projection
+        .relationships
+        .iter()
+        .find(|relationship| relationship.metaclass == HostRelationshipMetaclass::NamespaceImport)
+        .expect("expose Vehicle::* classifies as NamespaceImport");
+    let namespace_import_node = projection
+        .nodes
+        .iter()
+        .find(|node| node.semantic_id == namespace_import.target_id)
+        .expect("namespace import node projected");
+    assert_eq!(
+        namespace_import_node.attributes.get("importTarget"),
+        Some(&serde_json::json!("Vehicle::*"))
+    );
+}
+
+#[test]
+fn snapshot_projects_filter_condition_as_an_addressable_expression() {
+    let cache = tempdir().expect("tempdir");
+    let model_path = cache.path().join("Filter.sysml");
+    let content = r#"
+package Demo {
+    part def Sensor {
+        attribute active : Boolean;
+    }
+    view v : GeneralView {
+        filter active;
+    }
+}
+"#;
+    std::fs::write(&model_path, content).expect("write model");
+
+    let engine = test_engine(&cache);
+    let snapshot = engine
+        .load_workspace(
+            InMemoryDocumentProvider::new(vec![file_document(&model_path, content)]),
+            WorkspaceLoadRequest::single_target(model_path),
+            HostContext::default(),
+        )
+        .expect("snapshot");
+    let projection = snapshot.semantic_projection();
+
+    // Regression guard: `filter`'s condition was previously only a debug-text "condition"
+    // attribute; neither `add_view_filter_node` nor `build_filter_member` ever set
+    // `declared_facts.own_expression`, so no addressable Expression existed for it.
+    let filter_node = projection
+        .nodes
+        .iter()
+        .find(|node| node.element_kind.as_str() == "filter")
+        .expect("filter node materialized");
+    let expression_id = filter_node
+        .facts
+        .content_expression_id
+        .as_ref()
+        .expect("filter node has content_expression_id");
+    assert!(
+        projection
+            .expressions
+            .iter()
+            .any(|expression| &expression.semantic_id == expression_id),
+        "filter condition is a real projected Expression"
+    );
+}
+
+#[test]
 fn snapshot_materializes_terminate_while_and_if_control_nodes() {
     let cache = tempdir().expect("tempdir");
     let model_path = cache.path().join("ControlNodes.sysml");
