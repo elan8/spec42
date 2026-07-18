@@ -399,7 +399,16 @@ pub(super) fn materialize_concern_usage(
     cu_node: &Node<ConcernUsage>,
 ) {
     let name = &cu_node.name;
-    let qualified = qualified_name_for_node(g, uri, container_prefix, name, "concern");
+    // `concern_usage` (sysml-v2-parser) parses both `concern` and `concern def` into the same
+    // `ConcernUsage` struct, distinguished only by `is_definition` -- there is no separate
+    // `ConcernDef` AST node (see that field's doc comment). Classify accordingly, the same way
+    // `case`/`case def` already do via two distinct materializers.
+    let kind = if cu_node.is_definition {
+        "concern def"
+    } else {
+        "concern"
+    };
+    let qualified = qualified_name_for_node(g, uri, container_prefix, name, kind);
     let range = span_to_range(&cu_node.span);
     let mut attrs = HashMap::new();
     if let Some(ref t) = cu_node.type_name {
@@ -409,7 +418,7 @@ pub(super) fn materialize_concern_usage(
         g,
         uri,
         &qualified,
-        "concern",
+        kind,
         name.clone(),
         range,
         attrs,

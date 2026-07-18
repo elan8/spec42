@@ -345,6 +345,51 @@ package Demo {
 }
 
 #[test]
+fn snapshot_classifies_concern_def_separately_from_concern_usage() {
+    let cache = tempdir().expect("tempdir");
+    let model_path = cache.path().join("Concern.sysml");
+    let content = r#"
+package Demo {
+    concern def SafetyConcern;
+    concern c1 : SafetyConcern;
+}
+"#;
+    std::fs::write(&model_path, content).expect("write model");
+
+    let engine = test_engine(&cache);
+    let snapshot = engine
+        .load_workspace(
+            InMemoryDocumentProvider::new(vec![file_document(&model_path, content)]),
+            WorkspaceLoadRequest::single_target(model_path),
+            HostContext::default(),
+        )
+        .expect("snapshot");
+    let projection = snapshot.semantic_projection();
+
+    // Regression guard: `concern_usage` (sysml-v2-parser) parses both `concern` and
+    // `concern def` into the same AST struct; materialize_concern_usage previously always
+    // tagged the resulting node "concern", so a `concern def` declaration was indistinguishable
+    // from a bare `concern` usage in the graph.
+    let def_node = projection
+        .nodes
+        .iter()
+        .find(|node| node.qualified_name.ends_with("::SafetyConcern"))
+        .expect("concern def node materialized");
+    assert_eq!(
+        def_node.element_kind.as_str(),
+        "concern def",
+        "concern def classifies as its own kind, not the usage kind"
+    );
+
+    let usage_node = projection
+        .nodes
+        .iter()
+        .find(|node| node.qualified_name.ends_with("::c1"))
+        .expect("concern usage node materialized");
+    assert_eq!(usage_node.element_kind.as_str(), "concern");
+}
+
+#[test]
 fn snapshot_resolves_typing_for_calc_constraint_and_case_usages() {
     let cache = tempdir().expect("tempdir");
     let model_path = cache.path().join("TypingTargets.sysml");

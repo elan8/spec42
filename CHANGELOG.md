@@ -7,6 +7,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.44.4] - 2026-07-18
+
+- **`ConcernDefinition`/`ConcernUsage` classification.** `sysml-v2-parser` 0.41.0 added
+  `ConcernUsage::is_definition` (previously the parser matched the optional `concern def` keyword
+  but discarded whether it was present, since `concern_usage` handles both textual forms via one
+  AST struct -- no separate `ConcernDef` node exists, unlike `case`/`case def`).
+  `materialize_concern_usage` (`crates/sysml_model/src/semantic/graph_builder/package_body/materialize.rs`)
+  now branches on that flag to materialize kind-string `"concern def"` (`ElementKind::ConcernDef`)
+  or `"concern"` (`ElementKind::Concern`) instead of always tagging `"concern"`. `ElementKind::ConcernDef`
+  was already in `is_definition()` and the typing/specializes allowlists (`kinds.rs`), so
+  `membership_kind()`'s generic `kind.is_definition() => OwningMembership` rule and the existing
+  `ElementKind::Concern => FeatureMembership` arm now classify both forms correctly with no
+  further change. `concern` usages are only legal at package level (no `PartDefBodyElement`
+  variant exists), so there is no nested-in-`part def` dispatch gap to fix here, unlike the
+  `case`/`use case`/`analysis`/`verification` family. No `PROJECTION_SCHEMA_VERSION` bump: pure
+  classification, same class as the 0.44.1 `CaseUsage` fix. Regression coverage:
+  `crates/workspace/tests/snapshot_single_build.rs`'s
+  `snapshot_classifies_concern_def_separately_from_concern_usage`.
+
 ## [0.44.3] - 2026-07-17
 
 - **Nested `use case`/`analysis`/`verification` def and usage support in `part def` bodies.**
