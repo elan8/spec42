@@ -745,6 +745,10 @@ pub(super) fn materialize_occurrence_def(
     let mut attrs = HashMap::new();
     attach_short_name_attribute(&mut attrs, &occ_node.identification);
     insert_def_specialization_attr(&mut attrs, occ_node.specializes.as_deref());
+    attrs.insert(
+        "isAbstract".to_string(),
+        serde_json::json!(occ_node.is_abstract),
+    );
     add_node_and_recurse(
         g,
         uri,

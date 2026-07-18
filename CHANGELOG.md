@@ -7,6 +7,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.44.6] - 2026-07-18
+
+- **Occurrence definition/usage facts enriched.** `materialize_occurrence_def`
+  (`crates/sysml_model/src/semantic/graph_builder/package_body/materialize.rs`)
+  never set `isAbstract`, unlike its `requirement def`/`case def` siblings.
+  `materialize_occurrence_usage`
+  (`crates/sysml_model/src/semantic/graph_builder/usage_builders.rs`) never
+  called `attach_feature_properties` at all (so `is_individual` was silently
+  discarded) and never surfaced `portionKind`/`isThen`/the `subsets`/
+  `redefines`/`references`/`crosses` subsetting-clause targets already
+  parsed onto `OccurrenceUsage` — all four AST fields existed, unlike
+  `AttributeUsage`'s identical shape, which already projects them. Both
+  gaps closed: `occurrence def` now sets `isAbstract`; `occurrence`/
+  `individual`/`snapshot`/`timeslice`/`then timeslice` usages now attach
+  `occurrence_usage_feature_properties` (new `ast_util.rs` helper, mirroring
+  `item_usage_feature_properties`, populating `is_individual` from
+  `OccurrenceUsage::is_individual`) and the same four subsetting-clause
+  attributes `AttributeUsage` already sets. No `PROJECTION_SCHEMA_VERSION`
+  bump: existing `HostFeatureProperties`/attribute shape, no new fields.
+  Regression coverage: `crates/workspace/tests/snapshot_single_build.rs`'s
+  `snapshot_populates_occurrence_def_and_usage_facts`.
+
 ## [0.44.5] - 2026-07-18
 
 - **`terminate`/`while`/`if` control nodes materialized.** `ActionDefBodyElement::TerminateStmt`/

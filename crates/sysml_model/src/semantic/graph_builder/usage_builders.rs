@@ -12,8 +12,9 @@ use url::Url;
 
 use crate::semantic::ast_util::{
     attribute_usage_feature_properties, declared_feature_value, declared_multiplicity,
-    item_usage_feature_properties, part_usage_feature_properties, span_to_range, subsetting_target,
-    subsetting_target_display, typing_target,
+    item_usage_feature_properties, occurrence_usage_feature_properties,
+    part_usage_feature_properties, span_to_range, subsetting_target, subsetting_target_display,
+    typing_target,
 };
 use crate::semantic::graph::SemanticGraph;
 use crate::semantic::model::{ElementKind, NodeId};
@@ -202,6 +203,24 @@ pub(super) fn materialize_occurrence_usage(
     if let Some(ref t) = n.type_name {
         attrs.insert("occurrenceType".to_string(), serde_json::json!(t));
     }
+    if let Some(ref portion_kind) = n.portion_kind {
+        attrs.insert("portionKind".to_string(), serde_json::json!(portion_kind));
+    }
+    if n.is_then {
+        attrs.insert("isThen".to_string(), serde_json::json!(true));
+    }
+    if let Some(s) = subsetting_target(n.subsets.as_deref()) {
+        attrs.insert("subsetsFeature".to_string(), serde_json::json!(s));
+    }
+    if let Some(r) = subsetting_target(n.references.as_deref()) {
+        attrs.insert("referencesFeature".to_string(), serde_json::json!(r));
+    }
+    if let Some(c) = subsetting_target(n.crosses.as_deref()) {
+        attrs.insert("crossesFeature".to_string(), serde_json::json!(c));
+    }
+    if let Some(r) = subsetting_target(n.redefines.as_deref()) {
+        attrs.insert("redefines".to_string(), serde_json::json!(r));
+    }
     add_node_and_recurse(
         g,
         uri,
@@ -216,6 +235,7 @@ pub(super) fn materialize_occurrence_usage(
         add_typing_edge_if_exists(g, uri, &qualified, t, container_prefix);
     }
     let node_id = NodeId::new(uri, &qualified);
+    attach_feature_properties(g, &node_id, occurrence_usage_feature_properties(&n.value));
     if let sysml_v2_parser::ast::OccurrenceUsageBody::Brace { elements } = &n.body {
         for child in elements {
             occurrence_body::build_from_occurrence_body_element(

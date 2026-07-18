@@ -345,6 +345,93 @@ package Demo {
 }
 
 #[test]
+fn snapshot_populates_occurrence_def_and_usage_facts() {
+    let cache = tempdir().expect("tempdir");
+    let model_path = cache.path().join("Occurrence.sysml");
+    let content = r#"
+package Demo {
+    abstract occurrence def Event;
+    occurrence happening : Event;
+    individual specificEvent : Event;
+    snapshot momentSnap : Event;
+    timeslice windowSlice : Event;
+}
+"#;
+    std::fs::write(&model_path, content).expect("write model");
+
+    let engine = test_engine(&cache);
+    let snapshot = engine
+        .load_workspace(
+            InMemoryDocumentProvider::new(vec![file_document(&model_path, content)]),
+            WorkspaceLoadRequest::single_target(model_path),
+            HostContext::default(),
+        )
+        .expect("snapshot");
+    let projection = snapshot.semantic_projection();
+
+    // Regression guard: materialize_occurrence_def never set isAbstract; materialize_occurrence_usage
+    // never set is_individual/portionKind or attach_feature_properties at all.
+    let event_def = projection
+        .nodes
+        .iter()
+        .find(|node| node.qualified_name.ends_with("::Event"))
+        .expect("occurrence def node materialized");
+    assert_eq!(
+        event_def.attributes.get("isAbstract"),
+        Some(&serde_json::json!(true))
+    );
+
+    let individual_node = projection
+        .nodes
+        .iter()
+        .find(|node| node.qualified_name.ends_with("::specificEvent"))
+        .expect("individual occurrence usage materialized");
+    assert_eq!(
+        individual_node
+            .facts
+            .feature_properties
+            .as_ref()
+            .map(|p| p.is_individual),
+        Some(true),
+        "`individual` usage sets is_individual on declared feature properties"
+    );
+
+    let snapshot_node = projection
+        .nodes
+        .iter()
+        .find(|node| node.qualified_name.ends_with("::momentSnap"))
+        .expect("snapshot occurrence usage materialized");
+    assert_eq!(
+        snapshot_node.attributes.get("portionKind"),
+        Some(&serde_json::json!("snapshot"))
+    );
+
+    let timeslice_node = projection
+        .nodes
+        .iter()
+        .find(|node| node.qualified_name.ends_with("::windowSlice"))
+        .expect("timeslice occurrence usage materialized");
+    assert_eq!(
+        timeslice_node.attributes.get("portionKind"),
+        Some(&serde_json::json!("timeslice"))
+    );
+
+    let happening_node = projection
+        .nodes
+        .iter()
+        .find(|node| node.qualified_name.ends_with("::happening"))
+        .expect("plain occurrence usage materialized");
+    assert_eq!(
+        happening_node
+            .facts
+            .feature_properties
+            .as_ref()
+            .map(|p| p.is_individual),
+        Some(false)
+    );
+}
+
+#[test]
 fn snapshot_materializes_terminate_while_and_if_control_nodes() {
     let cache = tempdir().expect("tempdir");
     let model_path = cache.path().join("ControlNodes.sysml");

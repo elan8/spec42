@@ -125,6 +125,27 @@ pub fn item_usage_feature_properties(
     }
 }
 
+/// Builds declared feature properties for an occurrence usage.
+pub fn occurrence_usage_feature_properties(
+    usage: &sysml_v2_parser::ast::OccurrenceUsage,
+) -> DeclaredFeatureProperties {
+    let (is_composite, is_reference) = composite_usage_ownership();
+    DeclaredFeatureProperties {
+        direction: None,
+        is_abstract: false,
+        is_variation: false,
+        is_individual: usage.is_individual,
+        is_derived: false,
+        is_constant: false,
+        is_end: false,
+        is_composite,
+        is_reference,
+        is_conjugated: false,
+        is_ordered: None,
+        is_unique: None,
+    }
+}
+
 /// Builds declared properties for a `ref` declaration (`RefDecl`).
 pub fn ref_decl_feature_properties() -> DeclaredFeatureProperties {
     DeclaredFeatureProperties {
