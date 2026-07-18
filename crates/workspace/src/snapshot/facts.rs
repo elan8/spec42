@@ -266,7 +266,15 @@ pub(crate) fn project_host_semantic_model(
                 target: tgt_id.qualified_name,
                 kind: edge.kind,
                 connect: edge.connect,
-                flow: edge.flow,
+                // `payload_type_id` arrives from the graph builder as the resolved payload
+                // type's qualified name; translate it into the same semantic-ID space as
+                // `source_id`/`target_id` before exposing it.
+                flow: edge.flow.map(|mut detail| {
+                    detail.payload_type_id = detail
+                        .payload_type_id
+                        .and_then(|qualified_name| semantic_ids.get(&qualified_name).cloned());
+                    detail
+                }),
             });
         }
     }

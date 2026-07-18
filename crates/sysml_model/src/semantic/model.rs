@@ -182,6 +182,8 @@ pub enum ElementKind {
     Import,
     /// Addressable `doc /* … */` documentation element.
     Documentation,
+    /// Addressable `rep <name>? language "..." { ... }` textual representation.
+    TextualRepresentation,
     DerivationConnection,
     InterfaceEnd,
     InOutParameter,
@@ -287,6 +289,7 @@ impl ElementKind {
             ElementKind::Filter => "filter",
             ElementKind::Import => "import",
             ElementKind::Documentation => "documentation",
+            ElementKind::TextualRepresentation => "textualRep",
             ElementKind::DerivationConnection => "derivation connection",
             ElementKind::InterfaceEnd => "interface end",
             ElementKind::InOutParameter => "in out parameter",
@@ -390,6 +393,7 @@ impl ElementKind {
             "filter" => ElementKind::Filter,
             "import" => ElementKind::Import,
             "documentation" => ElementKind::Documentation,
+            "textualRep" => ElementKind::TextualRepresentation,
             "derivation connection" => ElementKind::DerivationConnection,
             "interface end" => ElementKind::InterfaceEnd,
             "in out parameter" => ElementKind::InOutParameter,
@@ -510,6 +514,13 @@ pub struct FlowStatementDetail {
     pub payload_expression: Option<String>,
     pub source_expression: Option<String>,
     pub target_expression: Option<String>,
+    /// The payload's resolved type (the `of Payload` reference), when it names a real type in
+    /// the workspace. Holds the target's *qualified name* at this graph-builder layer -- the
+    /// `workspace` crate's projection step translates it into a semantic ID, the same
+    /// two-step handoff `source_id`/`target_id` already use for edge endpoints.
+    /// `payload_expression` remains the raw text for the unresolved case.
+    #[serde(default)]
+    pub payload_type_id: Option<String>,
 }
 
 /// Edge weight in the semantic graph: relationship kind plus optional connect/flow metadata.

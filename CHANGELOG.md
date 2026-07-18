@@ -7,6 +7,37 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.44.11] - 2026-07-18
+
+- **Flow payload resolves to a real type; `TextualRepresentation` is addressable.**
+  `FlowStatementDetail` (the `Flow`/`SuccessionFlow` edge detail attached to a resolved
+  `succession flow dataFlow of Payload from a to b;`) gains `payload_type_id: Option<String>`:
+  `of Payload` previously stayed raw debug text (`payload_expression`) with no resolved
+  reference, unlike `source`/`target`, whose edge endpoints were already resolved to real
+  feature IDs. `add_flow_edge_if_both_exist` (`graph_builder/flow_usage.rs`) now resolves the
+  payload the same way `add_typing_edge_if_exists` resolves any type reference (it names a
+  type, not a feature path, so it goes through `resolve_type_target_in_workspace` +
+  `TYPING_TARGET_KINDS`, not the feature-path resolver used for `from`/`to`). The
+  graph-builder layer stores the resolved qualified name; `workspace`'s `project_host_semantic_model`
+  translates it into the same semantic-ID space as `source_id`/`target_id` before exposing it,
+  mirroring the existing two-step handoff. New `ElementKind::TextualRepresentation`
+  (kind-string `"textualRep"`, unchanged) gives `rep <name>? language "..." { ... }` nodes —
+  already fully materialized by `materialize_textual_rep`/`requirement_body.rs` with
+  `language`/`text` attributes, just previously falling into `Unknown("textualRep")` — a
+  distinct, addressable classification instead. `PROJECTION_SCHEMA_VERSION` bumped `12` → `13`:
+  new `FlowStatementDetail` field, same class as the 0.44.9 `isPortion`/`portionKind` addition.
+  Regression coverage: `crates/workspace/tests/snapshot_single_build.rs`'s
+  `snapshot_projects_flow_detail_with_payload_and_succession_kind` (extended) and new
+  `snapshot_materializes_textual_representation_as_addressable_node`.
+- **S42-009 (conjugated ports) status clarified.** `isConjugated` was already fully wired and
+  tested (a `port p : ~P` usage already reports `isConjugated: true` via `HostFeatureProperties`).
+  The remaining gap — synthesizing implicit `ConjugatedPortDefinition`/`ConjugatedPortTyping`
+  elements per the KerML metamodel, so `p`'s typing points at the conjugated definition rather
+  than directly at `P` — is deliberately deferred: it would be the first "implicit node not
+  present in source text" pattern in this codebase, a genuine architectural decision on the
+  same footing as S42-004/S42-005, not a small fix. See
+  spec42-systems-modeling-api-gaps.md S42-009 for the updated status.
+
 ## [0.44.10] - 2026-07-18
 
 - **`if`'s `else` branch materialized; `add_for_loop` nesting bug fixed.** `add_if_stmt`

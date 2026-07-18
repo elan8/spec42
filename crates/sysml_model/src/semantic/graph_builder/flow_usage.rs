@@ -7,8 +7,11 @@ use url::Url;
 
 use crate::semantic::ast_util::span_to_range;
 use crate::semantic::graph::SemanticGraph;
+use crate::semantic::kinds::TYPING_TARGET_KINDS;
 use crate::semantic::model::{FlowStatementDetail, NodeId, RelationshipKind, SemanticEdge};
-use crate::semantic::relationships::{add_semantic_edge_once, add_typing_edge_if_exists};
+use crate::semantic::relationships::{
+    add_semantic_edge_once, add_typing_edge_if_exists, resolve_type_target_in_workspace,
+};
 
 use super::definition_body;
 use super::expressions::{self, expression_to_debug_string};
@@ -76,7 +79,7 @@ pub(super) fn materialize_flow_usage(
         definition_body::build_from_definition_body(&flow.body, uri, Some(&qualified), &node_id, g);
     }
 
-    add_flow_edge_if_both_exist(g, uri, container_prefix, flow);
+    add_flow_edge_if_both_exist(g, uri, container_prefix, parent_id, flow);
 }
 
 /// `RelationshipKind` for a resolved flow edge: `SuccessionFlow` gets its own kind (it implies an
@@ -100,6 +103,7 @@ fn add_flow_edge_if_both_exist(
     g: &mut SemanticGraph,
     uri: &Url,
     container_prefix: Option<&str>,
+    parent_id: &NodeId,
     flow: &FlowUsage,
 ) {
     let (Some(from), Some(to)) = (&flow.from, &flow.to) else {
@@ -120,12 +124,29 @@ fn add_flow_edge_if_both_exist(
     else {
         return;
     };
+    // `of Payload` names a type, not a feature path, so it resolves through the same
+    // workspace type-target lookup `add_typing_edge_if_exists` uses rather than the
+    // feature-path resolver used for `from`/`to` above. This slot carries the resolved node's
+    // qualified name at the graph-builder layer; `workspace`'s projection step (which owns the
+    // semantic-ID hashing scheme) translates it into the final `payload_type_id` semantic ID
+    // exposed to the API, the same two-step handoff `source_id`/`target_id` already use.
+    let payload_type_id = flow.payload.as_ref().and_then(|payload| {
+        let payload_str = expressions::expr_node_to_qualified_string(payload);
+        if payload_str.is_empty() {
+            return None;
+        }
+        let context_node = g.get_node(parent_id)?;
+        let target_id =
+            resolve_type_target_in_workspace(g, context_node, &payload_str, TYPING_TARGET_KINDS)?;
+        Some(target_id.qualified_name.clone())
+    });
     let detail = FlowStatementDetail {
         declaring_uri: uri.clone(),
         range: span_to_range(&from.span),
         payload_expression: flow.payload.as_ref().map(expression_to_debug_string),
         source_expression: Some(from_str),
         target_expression: Some(to_str),
+        payload_type_id,
     };
     add_semantic_edge_once(
         g,

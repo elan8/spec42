@@ -253,6 +253,70 @@ package Demo {
     assert_eq!(detail.payload_expression.as_deref(), Some("Payload"));
     assert!(detail.source_expression.is_some());
     assert!(detail.target_expression.is_some());
+
+    let payload_def = projection
+        .nodes
+        .iter()
+        .find(|node| node.qualified_name == "Demo::Payload")
+        .expect("Payload attribute def is projected");
+    assert_eq!(
+        detail.payload_type_id.as_deref(),
+        Some(payload_def.semantic_id.as_str()),
+        "`of Payload` resolves to the real Payload attribute def, not raw text"
+    );
+}
+
+#[test]
+fn snapshot_materializes_textual_representation_as_addressable_node() {
+    let cache = tempdir().expect("tempdir");
+    let model_path = cache.path().join("TextualRep.sysml");
+    let content = r#"
+package Demo {
+    rep language "sysml" /* package body text */
+    requirement def Spec {
+        rep docRep language "markdown" /* requirement body text */
+    }
+}
+"#;
+    std::fs::write(&model_path, content).expect("write model");
+
+    let engine = test_engine(&cache);
+    let snapshot = engine
+        .load_workspace(
+            InMemoryDocumentProvider::new(vec![file_document(&model_path, content)]),
+            WorkspaceLoadRequest::single_target(model_path),
+            HostContext::default(),
+        )
+        .expect("snapshot");
+    let projection = snapshot.semantic_projection();
+
+    let package_rep = projection
+        .nodes
+        .iter()
+        .find(|node| {
+            node.element_kind.as_str() == "textualRep" && node.parent.as_deref() == Some("Demo")
+        })
+        .expect("package-level textual representation is projected");
+    assert_eq!(
+        package_rep.attributes.get("language"),
+        Some(&serde_json::json!("sysml"))
+    );
+    assert!(package_rep
+        .attributes
+        .get("text")
+        .and_then(|v| v.as_str())
+        .is_some_and(|text| text.contains("package body text")));
+
+    let requirement_rep = projection
+        .nodes
+        .iter()
+        .find(|node| node.qualified_name == "Demo::Spec::docRep")
+        .expect("named requirement-body textual representation is projected");
+    assert_eq!(requirement_rep.element_kind.as_str(), "textualRep");
+    assert_eq!(
+        requirement_rep.attributes.get("language"),
+        Some(&serde_json::json!("markdown"))
+    );
 }
 
 #[test]
