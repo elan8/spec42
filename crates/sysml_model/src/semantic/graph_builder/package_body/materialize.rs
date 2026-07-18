@@ -1,4 +1,5 @@
 use super::*;
+use crate::semantic::model::DeclaredFeatureProperties;
 
 pub(super) fn materialize_part_def(
     g: &mut SemanticGraph,
@@ -745,10 +746,6 @@ pub(super) fn materialize_occurrence_def(
     let mut attrs = HashMap::new();
     attach_short_name_attribute(&mut attrs, &occ_node.identification);
     insert_def_specialization_attr(&mut attrs, occ_node.specializes.as_deref());
-    attrs.insert(
-        "isAbstract".to_string(),
-        serde_json::json!(occ_node.is_abstract),
-    );
     add_node_and_recurse(
         g,
         uri,
@@ -759,6 +756,21 @@ pub(super) fn materialize_occurrence_def(
         attrs,
         parent_id,
     );
+    let node_id = NodeId::new(uri, &qualified);
+    // `OccurrenceDef` has a plain `is_abstract: bool`, not the `DefinitionPrefix` enum
+    // `definition_feature_properties` expects (that helper is for the `PartDef`-family shape),
+    // so build declared properties directly -- `attach_feature_properties` is the mechanism
+    // Babel42's `isAbstract` DTO field actually reads (`insert_definition_feature_properties`
+    // falls back to a `definitionPrefix` string attribute otherwise, which occurrence never
+    // sets); a raw `isAbstract` attribute alone is not consumed.
+    attach_feature_properties(
+        g,
+        &node_id,
+        DeclaredFeatureProperties {
+            is_abstract: occ_node.is_abstract,
+            ..DeclaredFeatureProperties::default()
+        },
+    );
     wire_def_specialization_edge(
         g,
         uri,
@@ -766,7 +778,6 @@ pub(super) fn materialize_occurrence_def(
         container_prefix,
         occ_node.specializes.as_deref(),
     );
-    let node_id = NodeId::new(uri, &qualified);
     definition_body::build_from_definition_body(&occ_node.body, uri, Some(&qualified), &node_id, g);
 }
 

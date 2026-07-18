@@ -377,8 +377,12 @@ package Demo {
         .find(|node| node.qualified_name.ends_with("::Event"))
         .expect("occurrence def node materialized");
     assert_eq!(
-        event_def.attributes.get("isAbstract"),
-        Some(&serde_json::json!(true))
+        event_def
+            .facts
+            .feature_properties
+            .as_ref()
+            .map(|p| p.is_abstract),
+        Some(true)
     );
 
     let individual_node = projection
