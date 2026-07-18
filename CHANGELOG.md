@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.44.7] - 2026-07-18
+
+- **`OccurrenceDef.isAbstract` fix.** 0.44.6 set a raw `"isAbstract"` attribute on `occurrence
+  def` nodes, but Babel42's `isAbstract` DTO field only reads
+  `node.facts.feature_properties.is_abstract` or a `"definitionPrefix"` string attribute (the
+  `PartDef`-only convention) — a raw attribute alone was silently dropped.
+  `materialize_occurrence_def` now builds `DeclaredFeatureProperties` directly (`OccurrenceDef`
+  has a plain `is_abstract: bool`, not the `DefinitionPrefix` enum
+  `definition_feature_properties` expects) and attaches it the same way `PartDef` does. Caught
+  by the downstream Babel42 contract test before this shipped anywhere.
+
 ## [0.44.6] - 2026-07-18
 
 - **Occurrence definition/usage facts enriched.** `materialize_occurrence_def`
