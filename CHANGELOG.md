@@ -7,6 +7,42 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.44.12] - 2026-07-19
+
+- **S42-009: conjugated port definitions synthesized (KerML 8.3.12.2-8.3.12.4, SysML v2
+  8.2.2.12/8.4.8.1-8.4.8.2).** `port p : ~P;` previously discarded the `~` during type
+  resolution -- `p`'s typing edge pointed straight at `P`. Per spec, `~P` denotes an implicit
+  `ConjugatedPortDefinition`, nested as a real `ownedMember` of `P` (not a sibling, not
+  ownerless -- confirmed directly against the OMG spec text, correcting an earlier draft of
+  this work), linked back via a `PortConjugation` relationship (a `Conjugation`, not a
+  `Typing`/`Specializes` edge). `materialize_port_def`
+  (`graph_builder/package_body/materialize.rs`) now eagerly materializes this conjugate
+  alongside every non-conjugated port def -- matching the spec's own eager-parsing semantics,
+  not lazily on first `~`-typed usage -- so usage-time resolution
+  (`add_typing_edge_for_node`, `relationships.rs`) is a pure lookup (resolve `P`, then find its
+  already-materialized conjugate child), never node creation, eliminating an entire class of
+  find-or-create raciness. New `ElementKind::ConjugatedPortDefinition` and
+  `RelationshipKind::PortConjugation`; both added to the relevant typing-target allowlists
+  (`kinds.rs`) to avoid a spurious `incompatible_type_kind` diagnostic regression.
+  `effective_port_features`/`port_definition_qualified_name` (`diagnostics/helpers.rs`) now
+  follow the conjugate's `PortConjugation` edge to find the real `PortDef` for feature/name
+  lookups, fixing a silent regression the conjugate redirect would otherwise have introduced in
+  `connection_conformance.rs`'s `port_compatibility_mismatch` check (previously untested for
+  conjugated ports). Two independent typing-resolution engines needed the same conjugation-aware
+  fix -- `add_typing_edge_for_node` (`relationships.rs`, the immediate per-document and deferred
+  `link_workspace_relationships` paths) and `resolve_typing_edge_cross_document_inner`
+  (`relationships/cross_document.rs`, the parallel full-build and scoped-incremental paths) --
+  discovered by a test failure showing both a correct and an incorrect typing edge coexisting
+  from the same usage; fixing only one silently left the other producing the pre-fix (direct-to-
+  `P`) edge. No `PROJECTION_SCHEMA_VERSION` bump: new enum variants only, same class as the
+  `Else`/`Terminate`/`While`/`If` additions. Deliberately out of scope this round: the
+  conjugate's own features (the in/out-reversed mirror of `P`'s owned features) are not
+  independently materialized as child nodes -- comparable in size to the already-deferred S42-004
+  implied-typing work. Regression coverage:
+  `crates/workspace/tests/snapshot_single_build.rs`'s
+  `snapshot_materializes_conjugated_port_definition_eagerly` and
+  `snapshot_conjugated_port_structural_mismatch_uses_feature_check_not_fallback`.
+
 ## [0.44.11] - 2026-07-18
 
 - **Flow payload resolves to a real type; `TextualRepresentation` is addressable.**

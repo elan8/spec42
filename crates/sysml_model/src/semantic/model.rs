@@ -64,6 +64,10 @@ pub enum RelationshipKind {
     InitialState,
     /// Metadata usage annotates a model element (`annotatedElement` per SysML §7.27).
     Annotation,
+    /// KerML 8.3.12.4 `PortConjugation`: a kind of `Conjugation` connecting a
+    /// `ConjugatedPortDefinition` (source) back to its `originalPortDefinition` (target) --
+    /// distinct from `Typing`/`Specializes`, not a FeatureTyping-family relationship.
+    PortConjugation,
 }
 
 /// SysML v2 element kinds (node classification in the semantic graph).
@@ -184,6 +188,10 @@ pub enum ElementKind {
     Documentation,
     /// Addressable `rep <name>? language "..." { ... }` textual representation.
     TextualRepresentation,
+    /// KerML 8.3.12.2 `ConjugatedPortDefinition`: the implicit conjugate of a `port def`,
+    /// materialized eagerly as a nested member whenever the port definition itself is
+    /// materialized (SysML v2 8.2.2.12 Note 1) -- not lazily on first `~`-typed usage.
+    ConjugatedPortDefinition,
     DerivationConnection,
     InterfaceEnd,
     InOutParameter,
@@ -290,6 +298,7 @@ impl ElementKind {
             ElementKind::Import => "import",
             ElementKind::Documentation => "documentation",
             ElementKind::TextualRepresentation => "textualRep",
+            ElementKind::ConjugatedPortDefinition => "conjugated port definition",
             ElementKind::DerivationConnection => "derivation connection",
             ElementKind::InterfaceEnd => "interface end",
             ElementKind::InOutParameter => "in out parameter",
@@ -394,6 +403,7 @@ impl ElementKind {
             "import" => ElementKind::Import,
             "documentation" => ElementKind::Documentation,
             "textualRep" => ElementKind::TextualRepresentation,
+            "conjugated port definition" => ElementKind::ConjugatedPortDefinition,
             "derivation connection" => ElementKind::DerivationConnection,
             "interface end" => ElementKind::InterfaceEnd,
             "in out parameter" => ElementKind::InOutParameter,
@@ -440,6 +450,7 @@ impl ElementKind {
                 | ElementKind::CaseDef
                 | ElementKind::IndividualDef
                 | ElementKind::ConnectionDef
+                | ElementKind::ConjugatedPortDefinition
         )
     }
 }
@@ -580,6 +591,7 @@ impl RelationshipKind {
             RelationshipKind::Transition => "transition",
             RelationshipKind::InitialState => "initialState",
             RelationshipKind::Annotation => "annotation",
+            RelationshipKind::PortConjugation => "portConjugation",
         }
     }
 
@@ -602,6 +614,7 @@ impl RelationshipKind {
             "derivation" => Some(RelationshipKind::Derivation),
             "transition" | "initialstate" => Some(RelationshipKind::Transition),
             "annotation" => Some(RelationshipKind::Annotation),
+            "portconjugation" => Some(RelationshipKind::PortConjugation),
             _ => None,
         }
     }

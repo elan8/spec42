@@ -320,6 +320,153 @@ package Demo {
 }
 
 #[test]
+fn snapshot_materializes_conjugated_port_definition_eagerly() {
+    let cache = tempdir().expect("tempdir");
+    let model_path = cache.path().join("ConjugatedPort.sysml");
+    let content = r#"
+package Demo {
+    port def PowerPort {
+        in enabled : Boolean;
+    }
+    port def UnusedPort;
+    part def Sensor {
+        port p1 : ~PowerPort;
+        port p2 : ~PowerPort;
+    }
+}
+"#;
+    std::fs::write(&model_path, content).expect("write model");
+
+    let engine = test_engine(&cache);
+    let snapshot = engine
+        .load_workspace(
+            InMemoryDocumentProvider::new(vec![file_document(&model_path, content)]),
+            WorkspaceLoadRequest::single_target(model_path),
+            HostContext::default(),
+        )
+        .expect("snapshot");
+    let projection = snapshot.semantic_projection();
+
+    // Eager creation (KerML 8.3.12.2 / SysML v2 8.2.2.12 Note 1): every non-conjugated port def
+    // gets exactly one conjugate, including PowerPort's own declaration and UnusedPort, which is
+    // never referenced with `~` anywhere -- proving this doesn't depend on usage resolution.
+    let power_port = projection
+        .nodes
+        .iter()
+        .find(|node| node.qualified_name == "Demo::PowerPort")
+        .expect("PowerPort def");
+    let unused_port = projection
+        .nodes
+        .iter()
+        .find(|node| node.qualified_name == "Demo::UnusedPort")
+        .expect("UnusedPort def");
+    for base in [power_port, unused_port] {
+        let conjugates: Vec<_> = projection
+            .nodes
+            .iter()
+            .filter(|node| {
+                node.element_kind.as_str() == "conjugated port definition"
+                    && node.parent.as_deref() == Some(base.qualified_name.as_str())
+            })
+            .collect();
+        assert_eq!(
+            conjugates.len(),
+            1,
+            "{} should have exactly one conjugate",
+            base.qualified_name
+        );
+    }
+
+    let power_conjugate = projection
+        .nodes
+        .iter()
+        .find(|node| node.qualified_name == "Demo::PowerPort::~PowerPort")
+        .expect("PowerPort's conjugate at the spec's own qualified-name convention (8.4.8.2)");
+    assert_eq!(power_conjugate.name, "~PowerPort");
+    assert_eq!(power_conjugate.parent.as_deref(), Some("Demo::PowerPort"));
+
+    let conjugation = projection
+        .relationships
+        .iter()
+        .find(|relationship| relationship.kind.as_str() == "portConjugation")
+        .expect("PortConjugation relationship (8.3.12.4)");
+    assert_eq!(conjugation.source, power_conjugate.qualified_name);
+    assert_eq!(conjugation.target, power_port.qualified_name);
+
+    // Both `~PowerPort`-typed usages are typed by the conjugate, not PowerPort directly.
+    for usage_name in ["Demo::Sensor::p1", "Demo::Sensor::p2"] {
+        let usage = projection
+            .nodes
+            .iter()
+            .find(|node| node.qualified_name == usage_name)
+            .unwrap_or_else(|| panic!("{usage_name} usage"));
+        let typing = projection
+            .relationships
+            .iter()
+            .find(|relationship| {
+                relationship.kind.as_str() == "typing"
+                    && relationship.source == usage.qualified_name
+            })
+            .unwrap_or_else(|| panic!("{usage_name} typing relationship"));
+        assert_eq!(
+            typing.target, power_conjugate.qualified_name,
+            "{usage_name} should be typed by the conjugate, not PowerPort directly"
+        );
+    }
+}
+
+#[test]
+fn snapshot_conjugated_port_structural_mismatch_uses_feature_check_not_fallback() {
+    let cache = tempdir().expect("tempdir");
+    let model_path = cache.path().join("ConjugatedMismatch.sysml");
+    let content = r#"
+package Demo {
+    port def PowerPort {
+        in enabled : Boolean;
+    }
+    part def Sensor {
+        port cmd : ~PowerPort;
+    }
+    part def System {
+        part sensorA : Sensor;
+        part sensorB : Sensor;
+        connect sensorA.cmd to sensorB.cmd;
+    }
+}
+"#;
+    std::fs::write(&model_path, content).expect("write model");
+
+    let engine = test_engine(&cache);
+    let snapshot = engine
+        .load_workspace(
+            InMemoryDocumentProvider::new(vec![file_document(&model_path, content)]),
+            WorkspaceLoadRequest::single_target(model_path),
+            HostContext::default(),
+        )
+        .expect("snapshot");
+
+    // Connecting two ~PowerPort-typed ports (same conjugation on both sides) mirrors the same
+    // "in" direction on both -- structurally incompatible. Before the fix in this round,
+    // `effective_port_features` returned empty for any conjugated port (it only matched
+    // ElementKind::PortDef targets, and conjugated usages are now typed by the
+    // ConjugatedPortDefinition instead), so this diagnostic only fired via the coarse
+    // text-based "same conjugation" fallback (`conjugated_port_inconsistent`). After the fix,
+    // the structural feature-direction check (which correctly follows the conjugate to the real
+    // PortDef's children) fires first with the more precise code.
+    let diagnostics = &snapshot.validation().documents[0].diagnostics;
+    let mismatch = diagnostics
+        .iter()
+        .find(|d| {
+            d.code == "flow_direction_incompatible" || d.code == "conjugated_port_inconsistent"
+        })
+        .expect("connecting two ~PowerPort ports should be flagged incompatible");
+    assert_eq!(
+        mismatch.code, "flow_direction_incompatible",
+        "structural feature check should fire for conjugated ports, not just the coarse fallback"
+    );
+}
+
+#[test]
 fn snapshot_classifies_satisfy_and_subject_as_their_own_metaclass() {
     let cache = tempdir().expect("tempdir");
     let model_path = cache.path().join("SatisfySubject.sysml");

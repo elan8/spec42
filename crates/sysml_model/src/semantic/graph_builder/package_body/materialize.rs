@@ -1,5 +1,7 @@
 use super::*;
-use crate::semantic::model::DeclaredFeatureProperties;
+use crate::semantic::model::{DeclaredFeatureProperties, SemanticEdge};
+use crate::semantic::relationships::add_semantic_edge_once;
+use crate::semantic::text_span::TextRange;
 
 pub(super) fn materialize_part_def(
     g: &mut SemanticGraph,
@@ -165,6 +167,54 @@ pub(crate) fn materialize_port_def(
             port_def::build_from_port_def_body_element(child, uri, Some(&qualified), &node_id, g);
         }
     }
+    if !name.starts_with('~') {
+        materialize_conjugated_port_definition(g, uri, &qualified, &node_id, &name, range);
+    }
+}
+
+/// KerML 8.3.12.2 / SysML v2 8.2.2.12 Note 1: every non-conjugated `PortDefinition` is parsed as
+/// implicitly containing exactly one nested `ConjugatedPortDefinition`, whose `effectiveName` is
+/// the original's name with `~` prepended, linked back via a `PortConjugation` relationship
+/// (8.3.12.4). Materialized eagerly here -- once per port def -- rather than lazily on first
+/// `~`-typed usage, matching the spec's eager-parsing semantics and avoiding any find-or-create
+/// raciness at usage-resolution time (`port_def::materialize_port_usage` only ever looks this up,
+/// per 8.2.2.12 Note 2's sanctioned "resolve to the PortDefinition, then use its
+/// conjugatedPortDefinition" strategy).
+fn materialize_conjugated_port_definition(
+    g: &mut SemanticGraph,
+    uri: &Url,
+    base_qualified: &str,
+    base_id: &NodeId,
+    base_name: &str,
+    base_range: TextRange,
+) {
+    let conjugate_name = format!("~{base_name}");
+    let conjugate_qualified = qualified_name_for_node(
+        g,
+        uri,
+        Some(base_qualified),
+        &conjugate_name,
+        "conjugated port definition",
+    );
+    let mut attrs = HashMap::new();
+    attrs.insert("synthetic".to_string(), serde_json::json!(true));
+    add_node_and_recurse(
+        g,
+        uri,
+        &conjugate_qualified,
+        "conjugated port definition",
+        conjugate_name,
+        base_range,
+        attrs,
+        Some(base_id),
+    );
+    let conjugate_id = NodeId::new(uri, &conjugate_qualified);
+    add_semantic_edge_once(
+        g,
+        &conjugate_id,
+        base_id,
+        SemanticEdge::plain(RelationshipKind::PortConjugation),
+    );
 }
 
 pub(super) fn materialize_interface_def(

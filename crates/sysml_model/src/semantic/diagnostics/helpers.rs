@@ -1,6 +1,8 @@
 use crate::semantic::diagnostics::types::{DiagnosticSeverity, SemanticDiagnostic};
 
-use crate::{ElementKind, NodeId, SemanticGraph, SemanticNode, TextPosition, TextRange};
+use crate::{
+    ElementKind, NodeId, RelationshipKind, SemanticGraph, SemanticNode, TextPosition, TextRange,
+};
 
 use crate::semantic::ibd;
 
@@ -277,11 +279,31 @@ pub(super) fn connection_duplicate_key(
     format!("node:{}|{}", left.qualified_name, right.qualified_name)
 }
 
+/// Resolves a typing/specializes target to the real `PortDef` it denotes: itself if it already
+/// is one, or -- for a conjugated port usage, whose typing edge now points at the
+/// `ConjugatedPortDefinition` rather than the original (see `port_def::materialize_port_usage`)
+/// -- the `originalPortDefinition` found by following its `PortConjugation` edge (KerML 8.3.12.4).
+/// The conjugate doesn't independently redeclare mirrored features, so feature/qualified-name
+/// lookups always resolve through to the original either way.
+fn resolve_typed_port_def<'a>(
+    graph: &'a SemanticGraph,
+    target: &'a SemanticNode,
+) -> Option<&'a SemanticNode> {
+    match target.element_kind {
+        ElementKind::PortDef => Some(target),
+        ElementKind::ConjugatedPortDefinition => graph
+            .outgoing_targets_by_kind(target, RelationshipKind::PortConjugation)
+            .into_iter()
+            .find(|node| node.element_kind == ElementKind::PortDef),
+        _ => None,
+    }
+}
+
 fn port_definition_qualified_name(graph: &SemanticGraph, port: &SemanticNode) -> Option<String> {
     graph
         .outgoing_typing_or_specializes_targets(port)
         .iter()
-        .find(|node| node.element_kind == ElementKind::PortDef)
+        .find_map(|node| resolve_typed_port_def(graph, node))
         .map(|node| node.id.qualified_name.clone())
 }
 
@@ -357,9 +379,9 @@ fn effective_port_features(
 ) -> Vec<PortFeature> {
     let mut features = Vec::new();
     for typed in graph.outgoing_typing_or_specializes_targets(port) {
-        if typed.element_kind != ElementKind::PortDef {
+        let Some(typed) = resolve_typed_port_def(graph, typed) else {
             continue;
-        }
+        };
         for child in graph.children_of(typed) {
             if let Some(mut feature) = port_feature_from_child(child) {
                 if conjugated {

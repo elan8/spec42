@@ -73,6 +73,7 @@ pub const TYPING_TARGET_KINDS: &[ElementKind] = &[
     ElementKind::ConstraintDef,
     ElementKind::CalcDef,
     ElementKind::CaseDef,
+    ElementKind::ConjugatedPortDefinition,
 ];
 
 pub const SPECIALIZES_TARGET_KINDS: &[ElementKind] = &[
@@ -314,7 +315,7 @@ pub fn allowed_typing_target_kinds(usage_kind: &ElementKind) -> &'static [Elemen
             ElementKind::ItemDef,
             ElementKind::OccurrenceDef,
         ],
-        ElementKind::Port => &[ElementKind::PortDef],
+        ElementKind::Port => &[ElementKind::PortDef, ElementKind::ConjugatedPortDefinition],
         ElementKind::Item => &[ElementKind::ItemDef, ElementKind::PartDef],
         ElementKind::Attribute => &[ElementKind::AttributeDef, ElementKind::EnumDef],
         ElementKind::Action => &[ElementKind::ActionDef],

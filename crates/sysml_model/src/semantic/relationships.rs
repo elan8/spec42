@@ -404,6 +404,39 @@ pub fn add_typing_edge_for_node(g: &mut SemanticGraph, source_id: &NodeId, type_
     let Some(source_node) = g.get_node(source_id).cloned() else {
         return;
     };
+    // `~P` (port conjugation, KerML 8.3.12.3 / SysML v2 8.4.8.2: `port p : ~Pd;` is equivalent
+    // to `port p : Pd::'~Pd';`) resolves through the `ConjugatedPortDefinition` nested in `P`,
+    // not `P` itself. Handled here, centrally, so both callers get it: the immediate
+    // per-document resolution in `graph_builder/port_def.rs` AND the deferred cross-document
+    // `link_workspace_relationships` pass (which re-resolves every node's `portType` attribute
+    // through this same function) -- a bespoke fix at only one call site would have been
+    // silently overwritten by the other.
+    if let Some(base_ref) = type_ref.trim().strip_prefix('~') {
+        let conjugate_target_id = resolve_type_target_in_workspace(
+            g,
+            &source_node,
+            base_ref.trim(),
+            &[ElementKind::PortDef],
+        )
+        .and_then(|id| g.get_node(&id).cloned())
+        .and_then(|base_node| {
+            g.children_of(&base_node)
+                .into_iter()
+                .find(|child| child.element_kind == ElementKind::ConjugatedPortDefinition)
+                .map(|child| child.id.clone())
+        });
+        if let Some(target_id) = conjugate_target_id {
+            add_semantic_edge_once(
+                g,
+                source_id,
+                &target_id,
+                SemanticEdge::plain(RelationshipKind::Typing),
+            );
+            return;
+        }
+        // Base not resolvable yet (e.g. cross-document forward reference) -- fall through to
+        // the generic path below, matching pre-existing behavior for unresolvable references.
+    }
     let Some(target_id) =
         resolve_type_target_in_workspace(g, &source_node, type_ref, TYPING_TARGET_KINDS)
     else {

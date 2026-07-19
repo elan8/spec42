@@ -441,6 +441,35 @@ fn resolve_typing_edge_cross_document_inner(
     container_prefix: Option<&str>,
     kind: RelationshipKind,
 ) -> Option<NodeId> {
+    // `~P` (port conjugation, KerML 8.3.12.3 / SysML v2 8.4.8.2) resolves through the
+    // ConjugatedPortDefinition nested in P, not P itself -- see the identical handling (and
+    // its full rationale) in `add_typing_edge_for_node` (relationships.rs). This is a second,
+    // independently-implemented cross-document resolution engine (used by the parallel
+    // full-build and scoped-incremental paths, per this file's own module doc), so it needs
+    // the same fix applied here too, or `~P` usages in those paths silently resolve straight
+    // to `P` again once `link_workspace_relationships`'s redundant re-resolution is skipped.
+    if kind == RelationshipKind::Typing {
+        if let Some(base_ref) = type_ref.trim().strip_prefix('~') {
+            let conjugate_target = resolve_type_target_in_workspace(
+                g,
+                src_node,
+                base_ref.trim(),
+                &[ElementKind::PortDef],
+            )
+            .and_then(|id| g.get_node(&id).cloned())
+            .and_then(|base_node| {
+                g.children_of(&base_node)
+                    .into_iter()
+                    .find(|child| child.element_kind == ElementKind::ConjugatedPortDefinition)
+                    .map(|child| child.id.clone())
+            });
+            if conjugate_target.is_some() {
+                return conjugate_target;
+            }
+            // Base not resolvable yet -- fall through to the generic path below, matching
+            // pre-existing behavior for unresolvable references.
+        }
+    }
     let normalized_type_ref = normalize_declared_type_ref(type_ref);
     if normalized_type_ref.is_empty() {
         return None;
