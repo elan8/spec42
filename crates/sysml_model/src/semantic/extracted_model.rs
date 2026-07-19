@@ -41,6 +41,19 @@ fn flow_guard_for_usage(kind: FlowUsageKind) -> &'static str {
     }
 }
 
+/// Readable summary of a flow's `PayloadFeature` for diagram-extraction display purposes --
+/// mirrors `graph_builder::flow_usage::payload_feature_debug_string`'s formatting, kept as a
+/// separate local helper since this module already keeps its own `expr_to_string` rather than
+/// reusing `graph_builder`'s expression-formatting helpers.
+pub(super) fn payload_feature_to_string(payload: &sysml_v2_parser::ast::PayloadFeature) -> String {
+    match (&payload.name, &payload.type_name) {
+        (Some(name), Some(type_name)) => format!("{name} : {type_name}"),
+        (Some(name), None) => name.clone(),
+        (None, Some(type_name)) => type_name.clone(),
+        (None, None) => String::new(),
+    }
+}
+
 fn expr_to_string(n: &sysml_v2_parser::Node<sysml_v2_parser::Expression>) -> String {
     use sysml_v2_parser::Expression;
     match &n.value {

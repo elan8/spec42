@@ -192,6 +192,9 @@ pub enum ElementKind {
     /// materialized eagerly as a nested member whenever the port definition itself is
     /// materialized (SysML v2 8.2.2.12 Note 1) -- not lazily on first `~`-typed usage.
     ConjugatedPortDefinition,
+    /// SysML v2 8.2.2.16 `PayloadFeature`: the `of X` clause on a named flow usage, an
+    /// optionally-named `Feature` typed by (and/or given a multiplicity by) `X`.
+    FlowPayload,
     DerivationConnection,
     InterfaceEnd,
     InOutParameter,
@@ -299,6 +302,7 @@ impl ElementKind {
             ElementKind::Documentation => "documentation",
             ElementKind::TextualRepresentation => "textualRep",
             ElementKind::ConjugatedPortDefinition => "conjugated port definition",
+            ElementKind::FlowPayload => "flow payload",
             ElementKind::DerivationConnection => "derivation connection",
             ElementKind::InterfaceEnd => "interface end",
             ElementKind::InOutParameter => "in out parameter",
@@ -404,6 +408,7 @@ impl ElementKind {
             "documentation" => ElementKind::Documentation,
             "textualRep" => ElementKind::TextualRepresentation,
             "conjugated port definition" => ElementKind::ConjugatedPortDefinition,
+            "flow payload" => ElementKind::FlowPayload,
             "derivation connection" => ElementKind::DerivationConnection,
             "interface end" => ElementKind::InterfaceEnd,
             "in out parameter" => ElementKind::InOutParameter,

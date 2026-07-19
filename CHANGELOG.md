@@ -7,6 +7,43 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.44.13] - 2026-07-19
+
+- **`of X` payload feature on named flows now materializes as a real child node (SysML v2
+  8.2.2.16 `PayloadFeature`).** An audit of this session's work against the OMG spec text found
+  that `of qty : Payload[1..3]` (a *named* payload feature) was a hard parser failure -- the
+  whole flow statement dropped into error recovery -- because `FlowUsage::payload` was parsed as
+  a bare `Expression` (`optional_payload`, `sysml-v2-parser/src/parser/flow.rs`), which only
+  happened to work for the bare-type-reference form (`of Payload`). Per spec, `of X` is a real
+  owned `FeatureMembership` (`PayloadFeature : Feature = Identification? PayloadFeatureSpecializationPart
+  ValuePart?`), not a value reference. Fixed upstream in `sysml-v2-parser` 0.43.0: `FlowUsage::payload`
+  is now `Option<Node<PayloadFeature>>` (`name`/`type_name`/`multiplicity`), parsed by a new
+  `payload_feature` combinator accepting typing and multiplicity in either order (mirroring
+  `feature_usage_header`'s existing either-order handling, but retaining the multiplicity instead
+  of discarding it). New `ElementKind::FlowPayload` (kind-string `"flow payload"`).
+  `materialize_flow_usage` (`graph_builder/flow_usage.rs`) now materializes the payload as a real
+  child node of the flow for every *named* flow with a payload -- unconditionally on
+  `flow.payload.is_some()`, not gated on whether a name/multiplicity was actually written, since
+  `Identification?` only makes the *name* optional, not the feature itself; a bare `of Payload`
+  gets a synthetic `"_payload"` name, matching the existing `"_assign"`/`"_terminate"` convention
+  for unnamed control-flow children. Unnamed flows (`flow of Payload from a to b;`) have no node
+  to own the feature and keep only the existing edge-level `payload_type_id` scalar (deliberate
+  scope limit, not a regression -- avoids a second synthetic-containment precedent in the same
+  session). The new child node is additive: `add_flow_edge_if_both_exist`'s existing
+  `payload_type_id` resolution is unchanged (simplified to read the now-plain `type_name` field
+  instead of extracting it from an expression), so `FlowStatementDetail.payload_type_id` still
+  resolves for both named and unnamed flows. No `PROJECTION_SCHEMA_VERSION` bump: new enum
+  variant + additive node only, same class as the `Else`/`ConjugatedPortDefinition` additions.
+  Also fixed in the same audit: `TextualRepresentation` was missing its
+  `representedElement`/`documentedElement`-style back-reference (KerML `AnnotatingElement`) --
+  see `babel42-v2`'s changelog for that fix, which lives entirely on that side (DTO +
+  `openapi.json` only, no spec42 change needed). Regression coverage:
+  `crates/workspace/tests/snapshot_single_build.rs`'s extended
+  `snapshot_projects_flow_detail_with_payload_and_succession_kind` (bare `of Payload` still gets
+  a synthetic-name child node) and new
+  `snapshot_materializes_named_flow_payload_feature_with_multiplicity` (name/type/multiplicity
+  all correct, `payload_type_id` regression guard, real `Typing` edge to the resolved type).
+
 ## [0.44.12] - 2026-07-19
 
 - **S42-009: conjugated port definitions synthesized (KerML 8.3.12.2-8.3.12.4, SysML v2

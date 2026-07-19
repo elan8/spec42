@@ -264,6 +264,116 @@ package Demo {
         Some(payload_def.semantic_id.as_str()),
         "`of Payload` resolves to the real Payload attribute def, not raw text"
     );
+
+    // Bare `of Payload` (no explicit name/multiplicity) still materializes a real
+    // ElementKind::FlowPayload child node of the flow, with a synthetic name -- per SysML v2
+    // 8.2.2.16, `Identification?` only makes the *name* optional, the feature itself always
+    // exists.
+    let flow_node = projection
+        .nodes
+        .iter()
+        .find(|node| node.qualified_name == "Demo::System::dataFlow")
+        .expect("named flow node is projected");
+    let payload_feature = projection
+        .nodes
+        .iter()
+        .find(|node| node.element_kind.as_str() == "flow payload")
+        .expect("flow payload child feature is projected");
+    assert_eq!(
+        payload_feature.parent.as_deref(),
+        Some(flow_node.qualified_name.as_str())
+    );
+    assert_eq!(payload_feature.name, "_payload");
+}
+
+#[test]
+fn snapshot_materializes_named_flow_payload_feature_with_multiplicity() {
+    let cache = tempdir().expect("tempdir");
+    let model_path = cache.path().join("FlowPayloadFeature.sysml");
+    let content = r#"
+package Demo {
+    port def CmdPort;
+    part def Sensor {
+        port cmd : CmdPort;
+    }
+    attribute def Payload;
+    part def System {
+        part sensorA : Sensor;
+        part sensorB : Sensor;
+        succession flow dataFlow of qty : Payload[1..3] from sensorA.cmd to sensorB.cmd;
+    }
+}
+"#;
+    std::fs::write(&model_path, content).expect("write model");
+
+    let engine = test_engine(&cache);
+    let snapshot = engine
+        .load_workspace(
+            InMemoryDocumentProvider::new(vec![file_document(&model_path, content)]),
+            WorkspaceLoadRequest::single_target(model_path),
+            HostContext::default(),
+        )
+        .expect("snapshot");
+    let projection = snapshot.semantic_projection();
+
+    // The edge-level payload_type_id scalar still resolves (additive, not replaced by the new
+    // child node -- regression guard).
+    let flow = projection
+        .relationships
+        .iter()
+        .find(|relationship| relationship.flow.is_some())
+        .expect("Flow relationship with flow detail is projected");
+    let detail = flow.flow.as_ref().expect("flow detail present");
+    let payload_def = projection
+        .nodes
+        .iter()
+        .find(|node| node.qualified_name == "Demo::Payload")
+        .expect("Payload attribute def is projected");
+    assert_eq!(
+        detail.payload_type_id.as_deref(),
+        Some(payload_def.semantic_id.as_str())
+    );
+
+    // The named+typed+multiplicity payload feature materializes as a real child node of the
+    // flow, distinct from the synthetic-name bare-type case.
+    let flow_node = projection
+        .nodes
+        .iter()
+        .find(|node| node.qualified_name == "Demo::System::dataFlow")
+        .expect("named flow node is projected");
+    let payload_feature = projection
+        .nodes
+        .iter()
+        .find(|node| node.qualified_name == "Demo::System::dataFlow::qty")
+        .expect("named flow payload feature is projected");
+    assert_eq!(payload_feature.element_kind.as_str(), "flow payload");
+    assert_eq!(
+        payload_feature.parent.as_deref(),
+        Some(flow_node.qualified_name.as_str())
+    );
+    assert_eq!(
+        payload_feature.attributes.get("payloadType"),
+        Some(&serde_json::json!("Payload"))
+    );
+    let multiplicity = projection
+        .multiplicities
+        .iter()
+        .find(|m| m.owner_id == payload_feature.semantic_id)
+        .expect("multiplicity fact present");
+    assert!(multiplicity.lower_bound_id.is_some());
+    assert!(multiplicity.upper_bound_id.is_some());
+
+    // The payload feature is typed by the real Payload attribute def too, via an ordinary
+    // Typing relationship (not just the edge-level payload_type_id scalar).
+    let payload_typing = projection
+        .relationships
+        .iter()
+        .find(|relationship| {
+            relationship.kind.as_str() == "typing"
+                && relationship.source == payload_feature.qualified_name
+        })
+        .expect("payload feature typing relationship");
+    assert_eq!(payload_typing.target, payload_def.qualified_name);
 }
 
 #[test]
