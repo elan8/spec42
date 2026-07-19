@@ -1553,3 +1553,82 @@ package Demo {
     );
     assert_eq!(t2_effect.range, t2.range);
 }
+
+#[test]
+fn snapshot_materializes_every_target_of_a_multi_typed_attribute_and_specializes_clause() {
+    // SysML v2 allows a comma-separated multi-target typing/specialization clause --
+    // `attribute reading : Weight, Height;` is equivalent to `attribute reading defined by
+    // Weight defined by Height;`, and `part def Combined specializes BaseA, BaseB;` is two
+    // independent `Subclassification` relationships, not one. Regression guard for S42-004:
+    // both used to silently drop every target after the first.
+    let cache = tempdir().expect("tempdir");
+    let model_path = cache.path().join("MultiTyping.sysml");
+    let content = r#"
+package Demo {
+    attribute def Weight;
+    attribute def Height;
+    part def Sensor {
+        attribute reading : Weight, Height;
+    }
+    part def BaseA;
+    part def BaseB;
+    part def Combined specializes BaseA, BaseB;
+}
+"#;
+    std::fs::write(&model_path, content).expect("write model");
+
+    let engine = test_engine(&cache);
+    let snapshot = engine
+        .load_workspace(
+            InMemoryDocumentProvider::new(vec![file_document(&model_path, content)]),
+            WorkspaceLoadRequest::single_target(model_path),
+            HostContext::default(),
+        )
+        .expect("snapshot");
+    let projection = snapshot.semantic_projection();
+
+    for definition_suffix in ["::Weight", "::Height"] {
+        assert!(
+            projection.relationships.iter().any(|relationship| {
+                relationship.kind.as_str() == "typing"
+                    && relationship.source.ends_with("::Sensor::reading")
+                    && relationship.target.ends_with(definition_suffix)
+            }),
+            "expected a resolved typing edge from ::Sensor::reading to {definition_suffix}"
+        );
+    }
+    let typing_edge_count = projection
+        .relationships
+        .iter()
+        .filter(|relationship| {
+            relationship.kind.as_str() == "typing" && relationship.source.ends_with("::reading")
+        })
+        .count();
+    assert_eq!(
+        typing_edge_count, 2,
+        "reading should have exactly two typing edges, not a truncated one"
+    );
+
+    for definition_suffix in ["::BaseA", "::BaseB"] {
+        assert!(
+            projection.relationships.iter().any(|relationship| {
+                relationship.kind.as_str() == "specializes"
+                    && relationship.source.ends_with("::Combined")
+                    && relationship.target.ends_with(definition_suffix)
+            }),
+            "expected a resolved specializes edge from ::Combined to {definition_suffix}"
+        );
+    }
+    let specializes_edge_count = projection
+        .relationships
+        .iter()
+        .filter(|relationship| {
+            relationship.kind.as_str() == "specializes"
+                && relationship.source.ends_with("::Combined")
+        })
+        .count();
+    assert_eq!(
+        specializes_edge_count, 2,
+        "Combined should have exactly two specializes edges, not a truncated one"
+    );
+}

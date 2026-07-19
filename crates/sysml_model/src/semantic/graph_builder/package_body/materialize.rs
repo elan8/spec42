@@ -265,8 +265,12 @@ pub(crate) fn materialize_attribute_def(
     let qualified = qualified_name_for_node(g, uri, container_prefix, name, "attribute def");
     let range = span_to_range(&ad_node.span);
     let mut attrs = HashMap::new();
-    if let Some(t) = crate::semantic::ast_util::typing_target(value.typing.as_deref()) {
-        attrs.insert("attributeType".to_string(), serde_json::json!(t));
+    let typed_by = crate::semantic::ast_util::typing_targets(value.typing.as_deref());
+    if !typed_by.is_empty() {
+        attrs.insert(
+            "attributeType".to_string(),
+            serde_json::json!(typed_by.join(", ")),
+        );
     }
     unit_metadata::project_attribute_def_unit_metadata(&mut attrs, value);
     add_node_and_recurse(
@@ -295,8 +299,8 @@ pub(crate) fn materialize_attribute_def(
                 Some(crate::semantic::ast_util::declared_feature_value(value));
         }
     }
-    if let Some(t) = crate::semantic::ast_util::typing_target(value.typing.as_deref()) {
-        add_typing_edge_if_exists(g, uri, &qualified, t, container_prefix);
+    for target in crate::semantic::ast_util::typing_targets(value.typing.as_deref()) {
+        add_typing_edge_if_exists(g, uri, &qualified, target, container_prefix);
     }
 }
 

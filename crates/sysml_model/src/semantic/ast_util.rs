@@ -209,6 +209,22 @@ pub fn typing_target(relationship: Option<&TypingRelationship>) -> Option<&str> 
     relationship.and_then(typing_relationship_target)
 }
 
+/// Returns every source-level target of a typed typing or specialization relationship, not just
+/// the first. SysML v2 allows a comma-separated multi-target clause (e.g. `item x : A, B;` is
+/// equivalent to `item x defined by A defined by B;` -- each target is its own independent
+/// `FeatureTyping`/`Subclassification` relationship). [`typing_target`] intentionally keeps its
+/// single-target contract for callers that only ever see one target in practice; use this form
+/// wherever every declared target must become its own edge.
+pub fn typing_targets(relationship: Option<&TypingRelationship>) -> Vec<&str> {
+    relationship.map_or_else(Vec::new, |relationship| {
+        relationship
+            .target
+            .iter()
+            .filter_map(|target| target.value.local_name())
+            .collect()
+    })
+}
+
 /// Returns the complete source-level feature chain of a typed typing or
 /// specialization relationship. Resolution and dependency-closure consumers
 /// must use this form: reducing `OtherPkg::Base` to `Base` loses the package

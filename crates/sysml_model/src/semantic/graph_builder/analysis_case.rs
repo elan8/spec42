@@ -8,7 +8,7 @@ use super::{add_node_and_recurse, expressions, qualified_name_for_node};
 use crate::semantic::analysis_typing::{
     inherited_case_expression, inherited_case_result_qualified, strip_analysis_return_body,
 };
-use crate::semantic::ast_util::span_to_range;
+use crate::semantic::ast_util::{span_to_range, typing_targets};
 use crate::semantic::graph::SemanticGraph;
 use crate::semantic::model::{ElementKind, NodeId};
 use crate::semantic::relationships::add_typing_edge_if_exists;
@@ -193,8 +193,12 @@ pub(super) fn build_from_analysis_body(
                     "attribute def",
                 );
                 let mut attrs = HashMap::new();
-                if let Some(ref typing) = value.typing {
-                    attrs.insert("attributeType".to_string(), serde_json::json!(typing));
+                let typed_by = typing_targets(value.typing.as_deref());
+                if !typed_by.is_empty() {
+                    attrs.insert(
+                        "attributeType".to_string(),
+                        serde_json::json!(typed_by.join(", ")),
+                    );
                 }
                 if let Some(expr_node) = &value.value {
                     let rendered =
@@ -224,8 +228,8 @@ pub(super) fn build_from_analysis_body(
                     attrs,
                     Some(parent_id),
                 );
-                if let Some(ref typing) = value.typing {
-                    add_typing_edge_if_exists(g, uri, &qualified, typing, container_prefix);
+                for target in typing_targets(value.typing.as_deref()) {
+                    add_typing_edge_if_exists(g, uri, &qualified, target, container_prefix);
                 }
             }
             UseCaseDefBodyElement::Other(text) => {

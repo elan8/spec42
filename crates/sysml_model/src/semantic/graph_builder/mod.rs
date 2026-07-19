@@ -7,7 +7,7 @@ use sysml_v2_parser::ast::{RootElement, SubsettingRelationship, TypingRelationsh
 use sysml_v2_parser::RootNamespace;
 use url::Url;
 
-use crate::semantic::ast_util::{span_to_range, subsetting_target, typing_target};
+use crate::semantic::ast_util::{span_to_range, subsetting_target, typing_targets};
 use crate::semantic::graph::SemanticGraph;
 use crate::semantic::model::{
     DeclaredFeatureProperties, ElementKind, NodeId, RelationshipKind, SemanticEdge, SemanticNode,
@@ -273,17 +273,26 @@ pub(super) fn attach_doc_comment(g: &mut SemanticGraph, node_id: &NodeId, text: 
     );
 }
 
-/// Inserts a `specializes` attribute on a def-kind node's attribute map, if present.
+/// Inserts a `specializes` attribute on a def-kind node's attribute map, if present. SysML v2
+/// allows a comma-separated multi-target clause (`specializes A, B;`), so this joins every
+/// declared target for display -- the real per-target `Specializes` edges are wired separately by
+/// [`wire_def_specialization_edge`].
 pub(super) fn insert_def_specialization_attr(
     attrs: &mut HashMap<String, serde_json::Value>,
     specializes: Option<&TypingRelationship>,
 ) {
-    if let Some(s) = typing_target(specializes) {
-        attrs.insert("specializes".to_string(), serde_json::json!(s));
+    let targets = typing_targets(specializes);
+    if !targets.is_empty() {
+        attrs.insert(
+            "specializes".to_string(),
+            serde_json::json!(targets.join(", ")),
+        );
     }
 }
 
-/// Wires the `Specializes` edge for a def-kind node, if it declares a `specializes` target.
+/// Wires a `Specializes` edge for a def-kind node for every declared `specializes` target, not
+/// just the first -- `specializes A, B;` is two independent `Subclassification` relationships
+/// (SysML v2 comma-separated multi-target clause), not one.
 pub(super) fn wire_def_specialization_edge(
     g: &mut SemanticGraph,
     uri: &Url,
@@ -291,12 +300,12 @@ pub(super) fn wire_def_specialization_edge(
     container_prefix: Option<&str>,
     specializes: Option<&TypingRelationship>,
 ) {
-    if let Some(s) = typing_target(specializes) {
+    for target in typing_targets(specializes) {
         crate::semantic::relationships::add_specializes_edge_if_exists(
             g,
             uri,
             qualified,
-            s,
+            target,
             container_prefix,
         );
     }

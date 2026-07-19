@@ -518,8 +518,13 @@ pub(super) fn walk_requirement_def_body(
                     "attribute def",
                 );
                 let mut attrs = HashMap::new();
-                if let Some(ref typing) = attr_def.value.typing {
-                    attrs.insert("attributeType".to_string(), serde_json::json!(typing));
+                let typed_by =
+                    crate::semantic::ast_util::typing_targets(attr_def.value.typing.as_deref());
+                if !typed_by.is_empty() {
+                    attrs.insert(
+                        "attributeType".to_string(),
+                        serde_json::json!(typed_by.join(", ")),
+                    );
                 }
                 if let Some(value_expr) = &attr_def.value.value {
                     let rendered = expression_to_debug_string(&value_expr.value.expression);
@@ -542,8 +547,10 @@ pub(super) fn walk_requirement_def_body(
                     attrs,
                     Some(parent_id),
                 );
-                if let Some(ref typing) = attr_def.value.typing {
-                    add_typing_edge_if_exists(g, uri, &qualified, typing, type_resolution_prefix);
+                for target in
+                    crate::semantic::ast_util::typing_targets(attr_def.value.typing.as_deref())
+                {
+                    add_typing_edge_if_exists(g, uri, &qualified, target, type_resolution_prefix);
                 }
             }
             RequirementDefBodyElement::AttributeUsage(attr_usage) => {
@@ -559,10 +566,13 @@ pub(super) fn walk_requirement_def_body(
                     "attribute",
                 );
                 let mut attrs = HashMap::new();
-                if let Some(typing) =
-                    crate::semantic::ast_util::typing_target(attr_usage.value.typing.as_deref())
-                {
-                    attrs.insert("attributeType".to_string(), serde_json::json!(typing));
+                let typed_by =
+                    crate::semantic::ast_util::typing_targets(attr_usage.value.typing.as_deref());
+                if !typed_by.is_empty() {
+                    attrs.insert(
+                        "attributeType".to_string(),
+                        serde_json::json!(typed_by.join(", ")),
+                    );
                 }
                 if let Some(redefines) = crate::semantic::ast_util::subsetting_target(
                     attr_usage.value.redefines.as_deref(),
@@ -585,10 +595,10 @@ pub(super) fn walk_requirement_def_body(
                     attrs,
                     Some(parent_id),
                 );
-                if let Some(typing) =
-                    crate::semantic::ast_util::typing_target(attr_usage.value.typing.as_deref())
+                for target in
+                    crate::semantic::ast_util::typing_targets(attr_usage.value.typing.as_deref())
                 {
-                    add_typing_edge_if_exists(g, uri, &qualified, typing, type_resolution_prefix);
+                    add_typing_edge_if_exists(g, uri, &qualified, target, type_resolution_prefix);
                 }
             }
             RequirementDefBodyElement::MetadataKeywordUsage(mk_node) => {

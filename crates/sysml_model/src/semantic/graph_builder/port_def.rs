@@ -8,7 +8,7 @@ use url::Url;
 
 use crate::semantic::ast_util::{
     declared_multiplicity, direction_name, item_usage_feature_properties,
-    port_usage_feature_properties, span_to_range, subsetting_target, typing_target,
+    port_usage_feature_properties, span_to_range, subsetting_target, typing_targets,
 };
 use crate::semantic::graph::SemanticGraph;
 use crate::semantic::model::{DeclaredFeatureProperties, NodeId};
@@ -171,8 +171,12 @@ pub(super) fn build_from_port_def_body_element(
                 qualified_name_for_node(g, uri, container_prefix, name, "attribute def");
             let range = span_to_range(&n.span);
             let mut attrs = HashMap::new();
-            if let Some(t) = typing_target(n.typing.as_deref()) {
-                attrs.insert("attributeType".to_string(), serde_json::json!(t));
+            let typed_by = typing_targets(n.typing.as_deref());
+            if !typed_by.is_empty() {
+                attrs.insert(
+                    "attributeType".to_string(),
+                    serde_json::json!(typed_by.join(", ")),
+                );
             }
             add_node_and_recurse(
                 g,
@@ -184,8 +188,8 @@ pub(super) fn build_from_port_def_body_element(
                 attrs,
                 Some(parent_id),
             );
-            if let Some(t) = typing_target(n.typing.as_deref()) {
-                add_typing_edge_if_exists(g, uri, &qualified, t, container_prefix);
+            for target in typing_targets(n.typing.as_deref()) {
+                add_typing_edge_if_exists(g, uri, &qualified, target, container_prefix);
             }
         }
         PDBE::AttributeUsage(n) => {
@@ -199,13 +203,18 @@ pub(super) fn build_from_port_def_body_element(
                     "direction".to_string(),
                     serde_json::json!(direction_name(direction)),
                 );
-                let parameter_type = typing_target(n.typing.as_deref())
-                    .or(subsetting_target(n.subsets.as_deref()))
-                    .unwrap_or_default();
-                if !parameter_type.is_empty() {
+                let typed_by = typing_targets(n.typing.as_deref());
+                let parameter_type_display = if typed_by.is_empty() {
+                    subsetting_target(n.subsets.as_deref())
+                        .unwrap_or_default()
+                        .to_string()
+                } else {
+                    typed_by.join(", ")
+                };
+                if !parameter_type_display.is_empty() {
                     attrs.insert(
                         "parameterType".to_string(),
-                        serde_json::json!(parameter_type),
+                        serde_json::json!(parameter_type_display),
                     );
                 }
                 if let Some(r) = subsetting_target(n.redefines.as_deref()) {
@@ -227,8 +236,14 @@ pub(super) fn build_from_port_def_body_element(
                     &node_id,
                     crate::semantic::ast_util::attribute_usage_feature_properties(&n.value),
                 );
-                if !parameter_type.is_empty() {
-                    add_typing_edge_if_exists(g, uri, &qualified, parameter_type, container_prefix);
+                if typed_by.is_empty() {
+                    if let Some(s) = subsetting_target(n.subsets.as_deref()) {
+                        add_typing_edge_if_exists(g, uri, &qualified, s, container_prefix);
+                    }
+                } else {
+                    for target in &typed_by {
+                        add_typing_edge_if_exists(g, uri, &qualified, *target, container_prefix);
+                    }
                 }
             } else {
                 super::usage_builders::materialize_attribute_usage(

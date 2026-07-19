@@ -910,11 +910,17 @@ pub(super) fn materialize_action_def(
     let action_id = NodeId::new(uri, &qualified);
     let mut attrs = HashMap::new();
     attach_short_name_attribute(&mut attrs, &ad_node.identification);
-    if let Some(spec) = specializes
-        .and_then(|spec| crate::semantic::ast_util::typing_target(Some(spec)))
+    let spec_targets: Vec<&str> = specializes
+        .map(|spec| crate::semantic::ast_util::typing_targets(Some(spec)))
+        .unwrap_or_default()
+        .into_iter()
         .filter(|target| !target.trim().is_empty())
-    {
-        attrs.insert("specializes".to_string(), serde_json::json!(spec));
+        .collect();
+    if !spec_targets.is_empty() {
+        attrs.insert(
+            "specializes".to_string(),
+            serde_json::json!(spec_targets.join(", ")),
+        );
     }
     add_node_and_recurse(
         g,

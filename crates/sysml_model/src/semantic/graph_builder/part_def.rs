@@ -7,7 +7,7 @@ use url::Url;
 
 use crate::semantic::ast_util::{
     attach_short_name_attribute, declared_multiplicity, definition_feature_properties,
-    identification_name, span_to_range,
+    identification_name, span_to_range, typing_targets,
 };
 use crate::semantic::graph::SemanticGraph;
 use crate::semantic::model::{DeclaredFeatureProperties, NodeId, RelationshipKind};
@@ -66,8 +66,8 @@ pub(super) fn build_from_part_def_body_element(
                     ..DeclaredFeatureProperties::default()
                 },
             );
-            if let Some(ref t) = n.typing {
-                add_typing_edge_if_exists(g, uri, &qualified, t, container_prefix);
+            for target in typing_targets(n.typing.as_deref()) {
+                add_typing_edge_if_exists(g, uri, &qualified, target, container_prefix);
             }
         }
         PDBE::AttributeUsage(n) => {
@@ -140,8 +140,8 @@ pub(super) fn build_from_part_def_body_element(
                     pd_node.is_individual,
                 ),
             );
-            if let Some(ref s) = pd_node.specializes {
-                add_specializes_edge_if_exists(g, uri, &qualified, s, container_prefix);
+            for target in typing_targets(pd_node.specializes.as_deref()) {
+                add_specializes_edge_if_exists(g, uri, &qualified, target, container_prefix);
             }
             if let PartDefBody::Brace { elements } = &pd_node.body {
                 for child in elements {
@@ -181,8 +181,8 @@ pub(super) fn build_from_part_def_body_element(
                     attrs,
                     Some(parent_id),
                 );
-                if let Some(ref s) = item_node.specializes {
-                    add_specializes_edge_if_exists(g, uri, &qualified, s, container_prefix);
+                for target in typing_targets(item_node.specializes.as_deref()) {
+                    add_specializes_edge_if_exists(g, uri, &qualified, target, container_prefix);
                 }
                 let node_id = NodeId::new(uri, &qualified);
                 attribute_body::build_from_attribute_body(

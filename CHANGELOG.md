@@ -7,6 +7,37 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.44.14] - 2026-07-19
+
+- **S42-004 slice: every explicit comma-separated typing/specialization target is now
+  materialized, not just the first.** SysML v2 allows a feature or definition to be typed/
+  specialized by multiple comma-separated targets (`attribute reading : Weight, Height;` is
+  equivalent to `attribute reading defined by Weight defined by Height;`; `part def Combined
+  specializes BaseA, BaseB;` is two independent `Subclassification` relationships). The parser
+  already retained this losslessly in `TypingRelationship.target: Vec<Node<RelationshipTarget>>`
+  (used by `AttributeDef`/`AttributeUsage.typing` and by `specializes` on every `xxxDef` struct),
+  but every spec42 consumer discarded everything after the first target -- `ast_util::typing_target`/
+  `typing_target_display` called `.first()`, and `TypeReferenceTarget for TypingRelationship`/
+  `for Node<TypingRelationship>` did the same when a builder passed the whole relationship struct
+  directly into `add_typing_edge_if_exists`/`add_specializes_edge_if_exists`. New
+  `ast_util::typing_targets` returns every target; `graph_builder::mod::insert_def_specialization_attr`/
+  `wire_def_specialization_edge` (the shared choke point for ~13 `xxxDef` materializers routed
+  through `package_body/materialize.rs`, `calc_constraint_def.rs`, `view_def.rs`) and every direct
+  `AttributeDef`/`AttributeUsage` typing consumer (`attribute_body.rs`, `usage_builders.rs`,
+  `part_def.rs`, `package_body/materialize.rs`, `occurrence_body.rs`, `port_def.rs`,
+  `requirement_body.rs`, `verification.rs`, `analysis_case.rs`) now loop over every target instead
+  of resolving one. Deliberately out of scope (unchanged from S42-004's existing deferral, now
+  documented explicitly): multi-target typing for usage kinds other than `AttributeDef`/
+  `AttributeUsage` (their AST only ever retained a flattened `type_name: Option<String>`, so
+  recovering multiple targets needs a parser AST change -- the actual "large, multi-release" part
+  of S42-004); implied/standard-library default typing; the `is_implied` flag (exists on both the
+  parser AST and the projection layer already, but nothing ever sets it `true`, so wiring it
+  through today would be a no-op); end-owning-type/cross-feature/feature-chain collections. No
+  `PROJECTION_SCHEMA_VERSION` bump: more edges of the already-existing `RelationshipKind::Typing`/
+  `Specializes` kinds, no new fields. Regression coverage:
+  `crates/workspace/tests/snapshot_single_build.rs`'s new
+  `snapshot_materializes_every_target_of_a_multi_typed_attribute_and_specializes_clause`.
+
 ## [0.44.13] - 2026-07-19
 
 - **`of X` payload feature on named flows now materializes as a real child node (SysML v2
