@@ -1,6 +1,6 @@
 //! Host validation and projection assembly from a built semantic graph.
 
-use std::collections::{BTreeSet, HashMap};
+use std::collections::{BTreeSet, HashMap, HashSet};
 
 use sha2::{Digest, Sha256};
 
@@ -74,6 +74,84 @@ pub(crate) fn collect_host_validation_report(
     })
 }
 
+/// Builds one projected node from a graph node. Shared by the main per-target-URI loop and the
+/// "library elements actually referenced by a workspace element" pass below (S42-005) so both
+/// produce identically-shaped nodes without duplicating this ~50-line conversion.
+fn build_host_semantic_model_node(
+    graph: &SemanticGraph,
+    node: &sysml_model::SemanticNode,
+    library_urls: &[Url],
+) -> HostSemanticModelNode {
+    let mut attributes = node.attributes.clone();
+    // Additive: resolve the usage's canonical type reference. Existing
+    // textual hints (`partType`, `type`, `typing`, ...) are left untouched.
+    if let Some(typed_by) = typed_by_reference(graph, node) {
+        if let Ok(value) = serde_json::to_value(&typed_by) {
+            attributes.insert("typedBy".to_string(), value);
+        }
+    }
+    let documentation = attributes
+        .get("doc")
+        .and_then(|value| value.as_str())
+        .map(str::to_owned);
+    let declared_short_name = attributes
+        .get("shortName")
+        .and_then(|value| value.as_str())
+        .map(str::to_owned);
+
+    HostSemanticModelNode {
+        semantic_id: semantic_element_id(
+            node.id.uri.as_str(),
+            &node.element_kind,
+            &node.id.qualified_name,
+        ),
+        uri: node.id.uri.to_string(),
+        qualified_name: node.id.qualified_name.clone(),
+        name: node.name.clone(),
+        element_kind: node.element_kind.clone(),
+        range: node.range,
+        parent: node
+            .parent_id
+            .as_ref()
+            .map(|parent| parent.qualified_name.clone()),
+        attributes,
+        facts: HostElementFacts {
+            declared_name: (!node.name.is_empty()).then(|| node.name.clone()),
+            effective_name: node.name.clone(),
+            owner_id: None,
+            owning_membership_id: None,
+            is_library_element: sysml_model::semantic::workspace_uri::uri_under_any_library(
+                &node.id.uri,
+                library_urls,
+            ),
+            documentation,
+            declared_short_name,
+            element_type: host_element_type(&node.element_kind),
+            feature_properties: node
+                .declared_facts
+                .feature_properties
+                .as_ref()
+                .map(|properties| HostFeatureProperties {
+                    direction: properties.direction.clone(),
+                    is_abstract: properties.is_abstract,
+                    is_variation: properties.is_variation,
+                    is_individual: properties.is_individual,
+                    is_derived: properties.is_derived,
+                    is_constant: properties.is_constant,
+                    is_end: properties.is_end,
+                    is_composite: properties.is_composite,
+                    is_reference: properties.is_reference,
+                    is_conjugated: properties.is_conjugated,
+                    is_ordered: properties.is_ordered,
+                    is_unique: properties.is_unique,
+                    is_portion: properties.is_portion,
+                    portion_kind: properties.portion_kind.clone(),
+                }),
+            content_expression_id: None,
+        },
+    }
+}
+
 pub(crate) fn project_host_semantic_model(
     graph: &SemanticGraph,
     target_files: &[std::path::PathBuf],
@@ -81,77 +159,49 @@ pub(crate) fn project_host_semantic_model(
 ) -> crate::error::WorkspaceResult<HostSemanticProjection> {
     let target_urls = target_file_urls(target_files)?;
     let mut nodes = Vec::new();
+    let mut included_ids: HashSet<sysml_model::NodeId> = HashSet::new();
     for uri in &target_urls {
         for node in graph.nodes_for_uri(uri) {
             if node.element_kind == sysml_model::ElementKind::Diagnostic {
                 continue;
             }
-            let mut attributes = node.attributes.clone();
-            // Additive: resolve the usage's canonical type reference. Existing
-            // textual hints (`partType`, `type`, `typing`, ...) are left untouched.
-            if let Some(typed_by) = typed_by_reference(graph, node) {
-                if let Ok(value) = serde_json::to_value(&typed_by) {
-                    attributes.insert("typedBy".to_string(), value);
-                }
+            included_ids.insert(node.id.clone());
+            nodes.push(build_host_semantic_model_node(graph, node, library_urls));
+        }
+    }
+    // S42-005: project the (one-hop) library elements a workspace element actually references,
+    // so a `Typing`/`Specializes`/`Subsetting`/etc. edge pointing outside the workspace resolves
+    // to a real, addressable node instead of silently degrading to an empty `target_id` below
+    // (`semantic_ids.get(...).unwrap_or_default()`). Deliberately narrower than projecting every
+    // node under every closure-loaded library package root: only nodes actually reached by a
+    // workspace-sourced edge are included, not the referenced library element's own further
+    // outgoing edges (its supertype chain) or its containing package/parent chain. Gated on
+    // `uri_under_any_library` (not merely "outside target_urls") so callers that pass an empty
+    // `library_urls` — e.g. the LSP validation path, which intentionally projects only the
+    // requested target documents — keep their existing exclude-everything-external behavior.
+    for uri in &target_urls {
+        for (_, target_id, _) in graph.edges_for_uri(uri) {
+            if included_ids.contains(&target_id) {
+                continue;
             }
-            let documentation = attributes
-                .get("doc")
-                .and_then(|value| value.as_str())
-                .map(str::to_owned);
-            let declared_short_name = attributes
-                .get("shortName")
-                .and_then(|value| value.as_str())
-                .map(str::to_owned);
-
-            nodes.push(HostSemanticModelNode {
-                semantic_id: semantic_element_id(
-                    node.id.uri.as_str(),
-                    &node.element_kind,
-                    &node.id.qualified_name,
-                ),
-                uri: node.id.uri.to_string(),
-                qualified_name: node.id.qualified_name.clone(),
-                name: node.name.clone(),
-                element_kind: node.element_kind.clone(),
-                range: node.range,
-                parent: node
-                    .parent_id
-                    .as_ref()
-                    .map(|parent| parent.qualified_name.clone()),
-                attributes,
-                facts: HostElementFacts {
-                    declared_name: (!node.name.is_empty()).then(|| node.name.clone()),
-                    effective_name: node.name.clone(),
-                    owner_id: None,
-                    owning_membership_id: None,
-                    is_library_element: sysml_model::semantic::workspace_uri::uri_under_any_library(
-                        &node.id.uri,
-                        library_urls,
-                    ),
-                    documentation,
-                    declared_short_name,
-                    element_type: host_element_type(&node.element_kind),
-                    feature_properties: node.declared_facts.feature_properties.as_ref().map(
-                        |properties| HostFeatureProperties {
-                            direction: properties.direction.clone(),
-                            is_abstract: properties.is_abstract,
-                            is_variation: properties.is_variation,
-                            is_individual: properties.is_individual,
-                            is_derived: properties.is_derived,
-                            is_constant: properties.is_constant,
-                            is_end: properties.is_end,
-                            is_composite: properties.is_composite,
-                            is_reference: properties.is_reference,
-                            is_conjugated: properties.is_conjugated,
-                            is_ordered: properties.is_ordered,
-                            is_unique: properties.is_unique,
-                            is_portion: properties.is_portion,
-                            portion_kind: properties.portion_kind.clone(),
-                        },
-                    ),
-                    content_expression_id: None,
-                },
-            });
+            if !sysml_model::semantic::workspace_uri::uri_under_any_library(
+                &target_id.uri,
+                library_urls,
+            ) {
+                continue;
+            }
+            let Some(target_node) = graph.get_node(&target_id) else {
+                continue;
+            };
+            if target_node.element_kind == sysml_model::ElementKind::Diagnostic {
+                continue;
+            }
+            included_ids.insert(target_id);
+            nodes.push(build_host_semantic_model_node(
+                graph,
+                target_node,
+                library_urls,
+            ));
         }
     }
     nodes.sort_by(|a, b| {
@@ -1617,6 +1667,98 @@ package LibPkg {
                 .iter()
                 .any(|node| node.facts.is_library_element),
             "nodes under library URLs should set is_library_element"
+        );
+    }
+
+    #[test]
+    fn projection_includes_library_element_referenced_by_workspace_typing() {
+        // S42-005: a workspace element typed against a library element (in a *separate*
+        // document, outside target_files) must still resolve to a real, addressable node —
+        // not silently degrade to an empty target_id because the library node was never
+        // projected (facts.rs's semantic_ids map is built solely from the projected `nodes`).
+        let lib_content = r#"
+package Lib {
+    attribute def LibMass;
+}
+"#;
+        let workspace_content = r#"
+package Demo {
+    part def Thing {
+        attribute m : Lib::LibMass;
+    }
+}
+"#;
+        let lib_path = std::path::PathBuf::from(if cfg!(windows) {
+            "c:/libs/std/lib.sysml"
+        } else {
+            "/libs/std/lib.sysml"
+        });
+        let library_root = std::path::PathBuf::from(if cfg!(windows) {
+            "c:/libs/std"
+        } else {
+            "/libs/std"
+        });
+        let workspace_path = std::path::PathBuf::from(if cfg!(windows) {
+            "c:/workspace/two_doc.sysml"
+        } else {
+            "/workspace/two_doc.sysml"
+        });
+
+        let lib_uri = path_to_file_url(lib_path.as_path()).expect("library uri");
+        let library_url = path_to_file_url(library_root.as_path()).expect("library root uri");
+        let workspace_uri = path_to_file_url(workspace_path.as_path()).expect("workspace uri");
+
+        let lib_doc = sysml_model::SysmlDocument {
+            uri: lib_uri,
+            content: lib_content.to_string(),
+            path_hint: None,
+            source_kind: sysml_model::SysmlDocumentSourceKind::Library,
+            sha256: None,
+            byte_size: None,
+        };
+        let workspace_doc = sysml_model::SysmlDocument {
+            uri: workspace_uri,
+            content: workspace_content.to_string(),
+            path_hint: None,
+            source_kind: sysml_model::SysmlDocumentSourceKind::Workspace,
+            sha256: None,
+            byte_size: None,
+        };
+        let provider = InMemoryDocumentProvider::new(vec![lib_doc, workspace_doc]);
+        let (graph, _) = build_semantic_graph_with_provider(&provider).expect("graph");
+
+        let projection = project_host_semantic_model(
+            &graph,
+            std::slice::from_ref(&workspace_path),
+            &[library_url],
+        )
+        .expect("projection");
+
+        let lib_mass = projection
+            .nodes
+            .iter()
+            .find(|node| node.qualified_name.ends_with("::LibMass"))
+            .expect("LibMass should be projected as a referenced library node");
+        assert!(
+            lib_mass.facts.is_library_element,
+            "LibMass should be marked as a library element"
+        );
+
+        let typing = projection
+            .relationships
+            .iter()
+            .find(|relationship| {
+                relationship.kind == sysml_model::RelationshipKind::Typing
+                    && relationship.source.ends_with("::m")
+            })
+            .expect("m's Typing relationship should be projected");
+        assert!(
+            !typing.target_id.is_empty(),
+            "target_id must not be empty for a resolvable library typing target"
+        );
+        assert_eq!(
+            typing.target_id, lib_mass.semantic_id,
+            "m's Typing relationship should resolve to LibMass's real semantic_id"
         );
     }
 }

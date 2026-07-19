@@ -376,8 +376,9 @@ pub fn validate_workspace(
 pub fn project_semantic_model(
     graph: &SemanticGraph,
     target_files: &[PathBuf],
+    library_urls: &[Url],
 ) -> WorkspaceResult<HostSemanticProjection> {
-    crate::snapshot::facts::project_host_semantic_model(graph, target_files, &[])
+    crate::snapshot::facts::project_host_semantic_model(graph, target_files, library_urls)
 }
 
 /// Build the view catalog for a graph's current state — the render-snapshot half of what
@@ -1007,7 +1008,7 @@ package AnalysisCases {
         engine.load(&documents);
         let target_files: Vec<PathBuf> = Vec::new();
 
-        let via_wrapper = project_semantic_model(&engine.graph(), &target_files)
+        let via_wrapper = project_semantic_model(&engine.graph(), &target_files, &[])
             .expect("project_semantic_model succeeds");
         let via_direct_call = crate::snapshot::facts::project_host_semantic_model(
             &engine.graph(),

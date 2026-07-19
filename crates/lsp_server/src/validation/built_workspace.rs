@@ -124,8 +124,9 @@ pub fn semantic_report_from_built_workspace(
     let documents = collect_target_documents(&state, &target_files, request.strict_diagnostics)?;
     let summary = summarize(&documents);
     let advice = build_advice(&documents, request.library_paths.is_empty());
-    let semantic_model = workspace::project_semantic_model(&state.semantic_graph, &target_files)
-        .map_err(|err| err.to_string())?;
+    let semantic_model =
+        workspace::project_semantic_model(&state.semantic_graph, &target_files, &[])
+            .map_err(|err| err.to_string())?;
 
     let mut report = ValidationReport {
         workspace_root: workspace_root.map(|path| path.display().to_string()),

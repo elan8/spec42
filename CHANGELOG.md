@@ -7,6 +7,47 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.44.17] - 2026-07-19
+
+- **S42-005 slice: workspace elements that reference a library type now
+  resolve to a real, addressable node instead of an empty `target_id`.**
+  `project_host_semantic_model` only ever projected nodes whose URI was in
+  `target_files` (workspace documents), even though `library_urls` was
+  already threaded in for the (correctly implemented, but previously
+  dead-in-practice) `is_library_element` marking. A workspace element's
+  `Typing`/`Specializes`/`Subsetting`/etc. edge to a library target was a
+  real graph edge, but since the library node was never projected, the
+  relationship-building loop's `semantic_ids.get(&tgt_id.qualified_name)
+  .unwrap_or_default()` silently produced an empty `target_id` -- worse
+  than a dangling reference, since there was no ID at all to report as
+  unresolved. Fixed with a deliberately narrow, one-hop policy: after
+  projecting workspace nodes, a second pass walks each workspace document's
+  outgoing edges and projects the specific target node only if it falls
+  under one of the caller's `library_urls` (via the existing
+  `uri_under_any_library` check), marking it `is_library_element: true`.
+  Not a full library-closure projection -- the referenced element's own
+  further outgoing edges (its supertype chain) and containing
+  package/parent chain are not pulled in this round, so `owner`/
+  `owningNamespace` stay unresolved for these nodes, matching the class of
+  limitation other "additive, not complete" fixes this session have
+  shipped. Node construction factored into `build_host_semantic_model_node`
+  so both passes share the same ~70-line conversion. `project_semantic_model`
+  (`crates/workspace/src/incremental.rs`) now takes `library_urls: &[Url]`
+  and forwards it instead of hardcoding `&[]`; its two non-babel42 callers
+  (its own test, `lsp_server`'s `built_workspace.rs`) pass `&[]` to
+  preserve today's LSP validation behavior exactly -- confirmed via a
+  regression test (`validate_paths_with_semantics_excludes_non_target_library_nodes`)
+  that a workspace element referencing something outside `target_files`
+  stays excluded when `library_urls` is empty, i.e. the new pass is gated
+  on genuine library membership, not merely "outside the workspace." New
+  test `projection_includes_library_element_referenced_by_workspace_typing`
+  uses a genuine two-document (library + workspace) fixture to exercise the
+  fix end-to-end. No `PROJECTION_SCHEMA_VERSION` bump: existing fields only,
+  more nodes and correctly-resolved `target_id`s. Deliberately out of scope
+  this round: whole-closure/`excludeUsed` query-parameter support,
+  recursive inclusion of a referenced library element's own further typing
+  chain, and projecting its containing package/parent chain.
+
 ## [0.44.16] - 2026-07-19
 
 - **S42-002 slice: `references`/`crosses` now materialize as real
