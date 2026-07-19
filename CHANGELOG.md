@@ -7,6 +7,41 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.44.16] - 2026-07-19
+
+- **S42-002 slice: `references`/`crosses` now materialize as real
+  `ReferenceSubsetting`/`CrossSubsetting` edges, not discarded text.** The
+  parser already fully parses `::>`/`references` and `=>`/`crosses` into
+  `references`/`crosses: Option<Node<SubsettingRelationship>>` AST fields,
+  and spec42 already read them -- but only into write-only display attributes
+  `referencesFeature`/`crossesFeature` that nothing ever read again, unlike
+  `subsetsFeature`/`redefines`. Same shape of bug as the S42-004 typing fix
+  earlier this session: data already parsed and present, just discarded
+  before becoming a real edge. Fixed: new `RelationshipKind::
+  ReferenceSubsetting`/`CrossSubsetting` (KerML 8.3.4.4/8.3.4.5, both
+  `Subsetting` specializations); `link_subsetting_and_redefinition_edges_for_node`
+  renamed to `link_subsetting_family_edges_for_node` and generalized to a
+  loop over all four subsetting-family attribute keys instead of two
+  hand-duplicated blocks, now also resolving `referencesFeature`/
+  `crossesFeature` to real targets via the same `resolve_subsets_or_redefines_target`
+  helper `subsetsFeature`/`redefines` already used. New
+  `HostRelationshipMetaclass::ReferenceSubsetting`/`CrossSubsetting`, mapped
+  in `relationship_metaclass` (`facts.rs`). No `PROJECTION_SCHEMA_VERSION`
+  bump: new enum variants only, matching this session's established
+  precedent. Everything else in S42-002's original backlog (`TypeFeaturing`,
+  `FeatureInverting`, `Unioning`, `Disjoining`, `Intersecting`,
+  `Differencing`, general non-port `Conjugation`) remains a genuine parser
+  gap -- confirmed via direct grep of `sysml-v2-parser`: no AST, no parser
+  functions for any of them (`Intersecting` is tokenized and explicitly
+  discarded by `skip_intersects_clause`). Also confirmed during this
+  investigation and worth recording: plain `Subsetting`/`Redefinition` and
+  imports/aliases (`NamespaceImport`/`MembershipImport`/`AliasMembership`,
+  shipped under S42-003) were *already* real addressable relationships --
+  the S42-002 doc prose predates that work and had gone stale. Regression
+  coverage: extended `crates/workspace/src/snapshot/facts.rs`'s
+  `projection_relationship_family_subset_redefine_specialize_annotation`
+  test with `references`/`crosses` fixtures.
+
 ## [0.44.15] - 2026-07-19
 
 - **S42-001 slice: `semanticId` no longer breaks on a position-shifting, non-renaming edit.**

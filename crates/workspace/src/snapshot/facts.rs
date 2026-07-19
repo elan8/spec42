@@ -461,6 +461,12 @@ fn relationship_metaclass(kind: &sysml_model::RelationshipKind) -> HostRelations
         sysml_model::RelationshipKind::Specializes => HostRelationshipMetaclass::Subclassification,
         sysml_model::RelationshipKind::Subsetting => HostRelationshipMetaclass::Subsetting,
         sysml_model::RelationshipKind::Redefinition => HostRelationshipMetaclass::Redefinition,
+        sysml_model::RelationshipKind::ReferenceSubsetting => {
+            HostRelationshipMetaclass::ReferenceSubsetting
+        }
+        sysml_model::RelationshipKind::CrossSubsetting => {
+            HostRelationshipMetaclass::CrossSubsetting
+        }
         sysml_model::RelationshipKind::Annotation => HostRelationshipMetaclass::Annotation,
         sysml_model::RelationshipKind::Satisfy => HostRelationshipMetaclass::Satisfy,
         sysml_model::RelationshipKind::Subject => HostRelationshipMetaclass::Subject,
@@ -1395,6 +1401,8 @@ package Demo {
     part def Child specializes Base {
         attribute payload subsets mass;
         port cmd redefines signal;
+        attribute refFeature references mass;
+        attribute crossFeature crosses mass;
         @Tag;
     }
 }
@@ -1435,6 +1443,29 @@ package Demo {
                     && relationship.metaclass == HostRelationshipMetaclass::Redefinition
             }),
             "redefines should project as Redefinition"
+        );
+        assert!(
+            projection.relationships.iter().any(|relationship| {
+                relationship.kind == sysml_model::RelationshipKind::ReferenceSubsetting
+                    && relationship.metaclass == HostRelationshipMetaclass::ReferenceSubsetting
+                    && relationship.source.ends_with("::refFeature")
+                    && relationship.target.ends_with("::mass")
+            }),
+            "references should project as ReferenceSubsetting (S42-002); relationships={:?}",
+            projection
+                .relationships
+                .iter()
+                .map(|r| (&r.kind, &r.metaclass, &r.source, &r.target))
+                .collect::<Vec<_>>()
+        );
+        assert!(
+            projection.relationships.iter().any(|relationship| {
+                relationship.kind == sysml_model::RelationshipKind::CrossSubsetting
+                    && relationship.metaclass == HostRelationshipMetaclass::CrossSubsetting
+                    && relationship.source.ends_with("::crossFeature")
+                    && relationship.target.ends_with("::mass")
+            }),
+            "crosses should project as CrossSubsetting (S42-002)"
         );
         assert!(
             projection.relationships.iter().any(|relationship| {

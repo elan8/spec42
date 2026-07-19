@@ -25,6 +25,10 @@ pub enum HostRelationshipMetaclass {
     Specialization,
     Subsetting,
     Redefinition,
+    /// KerML 8.3.4.4 `ReferenceSubsetting`: `references` / `::>`, a `Subsetting` specialization.
+    ReferenceSubsetting,
+    /// KerML 8.3.4.5 `CrossSubsetting`: `crosses` / `=>`, a `Subsetting` specialization.
+    CrossSubsetting,
     Annotation,
     /// Package `import Namespace::*;` / import-all form.
     NamespaceImport,

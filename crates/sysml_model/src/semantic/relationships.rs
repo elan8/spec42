@@ -137,7 +137,11 @@ fn resolve_subsets_or_redefines_target(
     }
 }
 
-fn link_subsetting_and_redefinition_edges_for_node(g: &mut SemanticGraph, node_id: &NodeId) {
+/// Wires every subsetting-family clause on a node to a real edge: `subsets`/`:>`, `redefines`/
+/// `:>>`, and -- KerML 8.3.4.4/8.3.4.5 `ReferenceSubsetting`/`CrossSubsetting`, S42-002 --
+/// `references`/`::>` and `crosses`/`=>`. All four resolve identically (same attribute-value ->
+/// target lookup), only the resulting `RelationshipKind` differs.
+fn link_subsetting_family_edges_for_node(g: &mut SemanticGraph, node_id: &NodeId) {
     let Some(node) = g.get_node(node_id).cloned() else {
         return;
     };
@@ -146,32 +150,20 @@ fn link_subsetting_and_redefinition_edges_for_node(g: &mut SemanticGraph, node_i
         .as_ref()
         .and_then(|pid| g.get_node(pid))
         .cloned();
-    if let Some(attr) = node
-        .attributes
-        .get("subsetsFeature")
-        .and_then(|value| value.as_str())
-    {
-        if let Some(target_id) = resolve_subsets_or_redefines_target(g, owner.as_ref(), attr) {
-            add_semantic_edge_once(
-                g,
-                node_id,
-                &target_id,
-                SemanticEdge::plain(RelationshipKind::Subsetting),
-            );
-        }
-    }
-    if let Some(attr) = node
-        .attributes
-        .get("redefines")
-        .and_then(|value| value.as_str())
-    {
-        if let Some(target_id) = resolve_subsets_or_redefines_target(g, owner.as_ref(), attr) {
-            add_semantic_edge_once(
-                g,
-                node_id,
-                &target_id,
-                SemanticEdge::plain(RelationshipKind::Redefinition),
-            );
+    for (attribute_key, kind) in [
+        ("subsetsFeature", RelationshipKind::Subsetting),
+        ("redefines", RelationshipKind::Redefinition),
+        ("referencesFeature", RelationshipKind::ReferenceSubsetting),
+        ("crossesFeature", RelationshipKind::CrossSubsetting),
+    ] {
+        if let Some(attr) = node
+            .attributes
+            .get(attribute_key)
+            .and_then(|value| value.as_str())
+        {
+            if let Some(target_id) = resolve_subsets_or_redefines_target(g, owner.as_ref(), attr) {
+                add_semantic_edge_once(g, node_id, &target_id, SemanticEdge::plain(kind));
+            }
         }
     }
 }
@@ -495,7 +487,7 @@ pub fn link_workspace_relationships(g: &mut SemanticGraph) {
         for specializes_ref in specializes_refs {
             add_specializes_edges_for_node(g, &node_id, &specializes_ref);
         }
-        link_subsetting_and_redefinition_edges_for_node(g, &node_id);
+        link_subsetting_family_edges_for_node(g, &node_id);
     }
 
     // Per-document graph build cannot see imported elements from other files; re-wire after merge.
@@ -546,6 +538,6 @@ pub fn link_workspace_derivations(g: &mut SemanticGraph) {
     // a whole-graph pass after merge (same shape as derivation rewiring).
     let node_ids: Vec<NodeId> = g.node_index_by_id.keys().cloned().collect();
     for node_id in node_ids {
-        link_subsetting_and_redefinition_edges_for_node(g, &node_id);
+        link_subsetting_family_edges_for_node(g, &node_id);
     }
 }

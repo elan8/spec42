@@ -45,6 +45,12 @@ pub enum RelationshipKind {
     Subsetting,
     /// Explicit `redefines` / `:>>` feature relationship on a usage.
     Redefinition,
+    /// KerML 8.3.4.4 `ReferenceSubsetting`: explicit `references` / `::>` feature relationship
+    /// on a usage -- a `Subsetting` specialization, distinct from plain `Subsetting`.
+    ReferenceSubsetting,
+    /// KerML 8.3.4.5 `CrossSubsetting`: explicit `crosses` / `=>` feature relationship on a
+    /// usage -- also a `Subsetting` specialization, distinct from plain `Subsetting`.
+    CrossSubsetting,
     Connection,
     Bind,
     /// Control/data flow relationship inside behaviors (e.g. `flow`, `first ... then ...`).
@@ -583,6 +589,8 @@ impl RelationshipKind {
             RelationshipKind::Specializes => "specializes",
             RelationshipKind::Subsetting => "subsetting",
             RelationshipKind::Redefinition => "redefinition",
+            RelationshipKind::ReferenceSubsetting => "referenceSubsetting",
+            RelationshipKind::CrossSubsetting => "crossSubsetting",
             RelationshipKind::Connection => "connection",
             RelationshipKind::Bind => "bind",
             RelationshipKind::Flow => "flow",
@@ -607,6 +615,8 @@ impl RelationshipKind {
             "specializes" => Some(RelationshipKind::Specializes),
             "subsetting" => Some(RelationshipKind::Subsetting),
             "redefinition" => Some(RelationshipKind::Redefinition),
+            "referencesubsetting" => Some(RelationshipKind::ReferenceSubsetting),
+            "crosssubsetting" => Some(RelationshipKind::CrossSubsetting),
             "connection" => Some(RelationshipKind::Connection),
             "bind" => Some(RelationshipKind::Bind),
             "flow" => Some(RelationshipKind::Flow),
