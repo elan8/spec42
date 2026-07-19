@@ -7,6 +7,39 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.44.15] - 2026-07-19
+
+- **S42-001 slice: `semanticId` no longer breaks on a position-shifting, non-renaming edit.**
+  `semantic_element_id` (`crates/workspace/src/snapshot/facts.rs`) hashed
+  `(uri, kind, declaration_range.start.line, declaration_range.start.character)` -- not
+  `qualified_name` at all -- so *any* edit that shifted a declaration's line/column (an unrelated
+  sibling inserted above it, reordering, reformatting) silently reassigned its ID, even though the
+  element and its qualified name were completely untouched. This was strictly worse than "renames
+  break identity": almost any edit anywhere in a file could reshuffle every downstream element's
+  ID. Fixed by hashing `qualified_name` instead of position: `NodeId`
+  (`crates/sysml_model/src/semantic/model.rs`), the graph's own primary key, is already
+  `(uri, qualified_name)`, and `qualified_name_for_node`'s `#kind`/`#kind2` disambiguation loop
+  already guarantees that pair is collision-free within a document -- `semantic_element_id` just
+  wasn't using it. `semantic_relationship_id` inherits the fix automatically for every
+  relationship kind except `Connection` (the only kind whose discriminator carried position, to
+  distinguish multiple connectors between the same endpoint pair); `edge_identity_discriminator`
+  now uses only `declaring_uri` + the endpoint expression text for that, dropping the position
+  component. Internal hash version tags bumped v2 -> v3 on both functions (hash-domain hygiene,
+  not a schema change). No `PROJECTION_SCHEMA_VERSION` bump: same opaque `s42e:`/`s42r:`-prefixed
+  string field, same shape, only the value-computation recipe changed. **Deliberately still
+  deferred** (S42-001's larger, harder remainder): true cross-commit rename tracking (needs a
+  real cross-snapshot matching heuristic or a persisted identity ledger -- `compare_elements` in
+  `crates/workspace/src/comparison/elements.rs` already matches by `(uri, qualified_name)` for
+  diffing, but isn't reachable from any babel42 HTTP endpoint); the narrow "same-name sibling
+  swap" case (two same-named-colliding siblings can still swap which one gets the `#kind`/
+  `#kind2` suffix, and therefore which ID, if their relative order changes); the separate
+  IBD/interconnection diagram ID scheme (already qualified-name/dot-path keyed, untouched here).
+  Regression coverage: new `crates/workspace/tests/semantic_id_stability.rs` (node ID stable
+  across a position shift; typing relationship ID stable likewise; a `Connection` edge stable when
+  its `connect` statement moves but endpoints don't change; an actual rename still changes the ID,
+  as expected; two distinct `Connection` edges between the same endpoint pair still get two
+  distinct IDs).
+
 ## [0.44.14] - 2026-07-19
 
 - **S42-004 slice: every explicit comma-separated typing/specialization target is now

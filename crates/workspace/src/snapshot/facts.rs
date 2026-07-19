@@ -107,8 +107,7 @@ pub(crate) fn project_host_semantic_model(
                 semantic_id: semantic_element_id(
                     node.id.uri.as_str(),
                     &node.element_kind,
-                    node.range.start.line,
-                    node.range.start.character,
+                    &node.id.qualified_name,
                 ),
                 uri: node.id.uri.to_string(),
                 qualified_name: node.id.qualified_name.clone(),
@@ -589,36 +588,38 @@ fn membership_visibility(node: &HostSemanticModelNode) -> Option<String> {
         .map(|value| value.trim_matches('"').to_owned())
 }
 
+/// Distinguishes multiple `Connection` edges between the same endpoint pair (the graph allows
+/// more than one -- e.g. two separate `connect A to B;` statements -- unlike every other
+/// relationship kind, which dedups to one edge per pair). Deliberately excludes declaration
+/// position: `declaring_uri` + the endpoint expression text is already enough to distinguish
+/// genuinely different connectors (two connects with identical endpoint text at the same source
+/// would be an ambiguous duplicate either way), so the discriminator no longer breaks identity on
+/// a position-shifting, non-renaming edit.
 fn edge_identity_discriminator(edge: &sysml_model::SemanticEdge) -> String {
     edge.connect
         .as_ref()
         .map(|detail| {
             format!(
-                "{}:{}:{}:{}:{}",
-                detail.declaring_uri,
-                detail.range.start.line,
-                detail.range.start.character,
-                detail.source_expression,
-                detail.target_expression
+                "{}:{}:{}",
+                detail.declaring_uri, detail.source_expression, detail.target_expression
             )
         })
         .unwrap_or_default()
 }
 
-fn semantic_element_id(
-    uri: &str,
-    kind: &sysml_model::ElementKind,
-    line: u32,
-    character: u32,
-) -> String {
+/// Hashes `(uri, kind, qualified_name)`, not declaration position: `qualified_name` is already
+/// the graph's own collision-free primary key within a document (`NodeId`, enforced by
+/// `qualified_name_for_node`'s `#kind`/`#kind2` disambiguation loop), so it's a stable-across-
+/// reformatting identity input that position never was -- moving a declaration (an extra blank
+/// line above it, reordering unrelated siblings) no longer changes its semantic ID.
+fn semantic_element_id(uri: &str, kind: &sysml_model::ElementKind, qualified_name: &str) -> String {
     let mut hasher = Sha256::new();
-    hasher.update(b"spec42-semantic-element-v2\0");
+    hasher.update(b"spec42-semantic-element-v3\0");
     hasher.update(uri.as_bytes());
     hasher.update([0]);
     hasher.update(kind.as_str().as_bytes());
     hasher.update([0]);
-    hasher.update(line.to_le_bytes());
-    hasher.update(character.to_le_bytes());
+    hasher.update(qualified_name.as_bytes());
     format!("s42e:{:x}", hasher.finalize())
 }
 
@@ -629,7 +630,7 @@ fn semantic_relationship_id(
     discriminator: String,
 ) -> String {
     let mut hasher = Sha256::new();
-    hasher.update(b"spec42-semantic-relationship-v2\0");
+    hasher.update(b"spec42-semantic-relationship-v3\0");
     hasher.update(kind.as_str().as_bytes());
     hasher.update([0]);
     hasher.update(source_id.as_bytes());
