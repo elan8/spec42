@@ -55,7 +55,15 @@ export function isPackageElementType(elementType: string): boolean {
 export function isNonDiagramSemanticElementType(elementType: string): boolean {
   const normalized = elementType.trim().toLowerCase();
   if (!normalized) return true;
-  return normalized === "import" || normalized === "diagnostic" || normalized.includes("diagnostic");
+  // Documentation/comments annotate their owner (SysML §7.4); Spec42 ships them as
+  // compartment text only — never as standalone General View boxes ("Unnamed").
+  return (
+    normalized === "import" ||
+    normalized === "documentation" ||
+    normalized === "comment" ||
+    normalized === "diagnostic" ||
+    normalized.includes("diagnostic")
+  );
 }
 
 export function isOverviewVisualElementType(elementType: string): boolean {

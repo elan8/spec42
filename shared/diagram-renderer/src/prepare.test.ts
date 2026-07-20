@@ -38,6 +38,36 @@ describe("shared prepareViewData", () => {
     expect(prepared.edges[0].edgeKind).toBe("typing");
   });
 
+  it("omits documentation and comment nodes from general-view diagrams", () => {
+    const prepared = prepareViewData({
+      view: "general-view",
+      selectedViewName: "Functional",
+      generalViewGraph: {
+        nodes: [
+          { id: "ControlMission", name: "ControlMission", type: "action def" },
+          { id: "ControlMission::_documentation", name: "", type: "documentation" },
+          { id: "SenseEnvironment::_comment", name: "", type: "comment" },
+        ],
+        edges: [
+          {
+            id: "owns-doc",
+            source: "ControlMission",
+            target: "ControlMission::_documentation",
+            type: "contains",
+          },
+          {
+            id: "annotates",
+            source: "ControlMission::_documentation",
+            target: "ControlMission",
+            type: "annotation",
+          },
+        ],
+      },
+    });
+    expect(prepared.nodes.map((n) => n.id)).toEqual(["ControlMission"]);
+    expect(prepared.edges).toHaveLength(0);
+  });
+
   it("builds package container groups for multi-package general graphs", () => {
     const prepared = prepareViewData({
       view: "general-view",

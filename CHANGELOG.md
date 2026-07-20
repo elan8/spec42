@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- **General View renderer also drops documentation/comment boxes.** Server-side
+  folding already excludes them from `generalViewGraph`, but cached projections
+  and any fallback to raw `graph` still showed `<documentation> Unnamed` nodes.
+  `isNonDiagramSemanticElementType` now treats `documentation`/`comment` like
+  imports (not diagram nodes), so Babel42 Explorer Views hide them immediately.
+  Coverage: `omits documentation and comment nodes from general-view diagrams`.
+
 - **General View no longer draws documentation/comment as standalone boxes.** SysML §7.4
   Documentation annotates its owning element; Spec42's notation inventory already marks
   `documentation-node` as not shipped and expects compartment text instead. Anonymous
