@@ -1,7 +1,7 @@
 use url::Url;
 
-use crate::semantic::graph::SemanticGraph;
-use crate::UnitRegistry;
+use sysml_model::semantic::graph::SemanticGraph;
+use sysml_model::UnitRegistry;
 
 use super::engine_impl::{
     compute_semantic_diagnostics, compute_semantic_diagnostics_with_unit_registry,
@@ -33,7 +33,7 @@ pub fn collect_diagnostics_from_graph_with_unit_registry(
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::build_graph_from_doc;
+    use sysml_model::build_graph_from_doc;
     use crate::DiagnosticSeverity;
 
     #[test]

@@ -1,7 +1,5 @@
-﻿use sysml_model::{
-    build_semantic_graph_from_documents, collect_diagnostics_from_graph, DiagnosticsOptions,
-    SysmlDocument, SysmlDocumentSourceKind,
-};
+﻿use sysml_diagnostics::{collect_diagnostics_from_graph, DiagnosticsOptions};
+use sysml_model::{build_semantic_graph_from_documents, SysmlDocument, SysmlDocumentSourceKind};
 
 fn workspace_doc(path: &str, content: &str) -> SysmlDocument {
     SysmlDocument::from_memory_path(
@@ -15,7 +13,7 @@ fn workspace_doc(path: &str, content: &str) -> SysmlDocument {
     .expect("workspace document")
 }
 
-fn has_code(diagnostics: &[sysml_model::SemanticDiagnostic], code: &str) -> bool {
+fn has_code(diagnostics: &[sysml_diagnostics::SemanticDiagnostic], code: &str) -> bool {
     diagnostics.iter().any(|diagnostic| diagnostic.code == code)
 }
 

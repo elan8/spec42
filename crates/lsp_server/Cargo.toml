@@ -16,6 +16,7 @@ default = []
 workspace = { path = "../workspace", default-features = false }
 workspace_session = { path = "../workspace_session" }
 language_service = { path = "../language_service" }
+sysml_diagnostics = { path = "../sysml_diagnostics" }
 sysml_model = { path = "../sysml_model" }
 sysml_tokens = { path = "../sysml_tokens" }
 sysml-v2-parser = { workspace = true }

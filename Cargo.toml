@@ -6,6 +6,7 @@ members = [
   "crates/lsp_server",
   "crates/kpar",
   "crates/server",
+  "crates/sysml_diagnostics",
   "crates/sysml_model",
   "crates/workspace",
   "crates/sysml_tokens",

@@ -123,10 +123,10 @@ fn verification_case_cross_package_verify_requirement_resolves_via_import() {
     let (graph, _parsed) =
         build_semantic_graph_from_documents(&[requirements, verification]).expect("semantic graph");
 
-    let diagnostics = sysml_model::collect_diagnostics_from_graph(
+    let diagnostics = sysml_diagnostics::collect_diagnostics_from_graph(
         &graph,
         &uri,
-        sysml_model::DiagnosticsOptions::default(),
+        sysml_diagnostics::DiagnosticsOptions::default(),
     );
     assert!(
         !diagnostics
@@ -187,10 +187,10 @@ fn cross_package_verify_requirement_resolves_via_import() {
     let (graph, _parsed) =
         build_semantic_graph_from_documents(&[requirements, verification]).expect("semantic graph");
 
-    let diagnostics = sysml_model::collect_diagnostics_from_graph(
+    let diagnostics = sysml_diagnostics::collect_diagnostics_from_graph(
         &graph,
         &uri,
-        sysml_model::DiagnosticsOptions::default(),
+        sysml_diagnostics::DiagnosticsOptions::default(),
     );
     assert!(
         !diagnostics

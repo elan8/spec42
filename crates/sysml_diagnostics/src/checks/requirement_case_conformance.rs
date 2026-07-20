@@ -2,18 +2,19 @@ use std::collections::HashSet;
 
 use url::Url;
 
-use crate::semantic::diagnostics::helpers::{diag, diagnostic_range, is_synthetic};
-use crate::semantic::diagnostics::types::DiagnosticSeverity;
-use crate::semantic::kinds::VERIFIED_REQUIREMENT_TARGET_KINDS;
-use crate::semantic::model::{ElementKind, RelationshipKind};
-use crate::semantic::reference_resolution::resolve_expression_endpoint_strict;
-use crate::{resolve_type_reference_targets, ResolveResult, SemanticDiagnostic, SemanticGraph};
+use crate::helpers::{diag, diagnostic_range, is_synthetic};
+use crate::types::DiagnosticSeverity;
+use sysml_model::semantic::kinds::VERIFIED_REQUIREMENT_TARGET_KINDS;
+use sysml_model::semantic::model::{ElementKind, RelationshipKind};
+use sysml_model::semantic::reference_resolution::resolve_expression_endpoint_strict;
+use crate::SemanticDiagnostic;
+use sysml_model::{resolve_type_reference_targets, ResolveResult, SemanticGraph};
 
-fn is_requirement_kind(kind: &crate::ElementKind) -> bool {
+fn is_requirement_kind(kind: &sysml_model::ElementKind) -> bool {
     matches!(kind, ElementKind::Requirement | ElementKind::RequirementDef)
 }
 
-fn is_requirement_satisfy_target_kind(kind: &crate::ElementKind) -> bool {
+fn is_requirement_satisfy_target_kind(kind: &sysml_model::ElementKind) -> bool {
     matches!(
         kind,
         ElementKind::Requirement
@@ -37,26 +38,26 @@ fn is_requirement_satisfy_target_kind(kind: &crate::ElementKind) -> bool {
     )
 }
 
-fn is_use_case_kind(kind: &crate::ElementKind) -> bool {
+fn is_use_case_kind(kind: &sysml_model::ElementKind) -> bool {
     matches!(kind, ElementKind::UseCase | ElementKind::UseCaseDef)
 }
 
-fn is_view_kind(kind: &crate::ElementKind) -> bool {
+fn is_view_kind(kind: &sysml_model::ElementKind) -> bool {
     matches!(kind, ElementKind::View | ElementKind::ViewDef)
 }
 
-fn is_viewpoint_kind(kind: &crate::ElementKind) -> bool {
+fn is_viewpoint_kind(kind: &sysml_model::ElementKind) -> bool {
     matches!(kind, ElementKind::Viewpoint | ElementKind::ViewpointDef)
 }
 
-fn container_prefix_for(node: &crate::SemanticNode) -> Option<&str> {
+fn container_prefix_for(node: &sysml_model::SemanticNode) -> Option<&str> {
     node.id
         .qualified_name
         .rsplit_once("::")
         .map(|(prefix, _)| prefix)
 }
 
-pub(in crate::semantic::diagnostics) fn collect_requirement_case_conformance_diagnostics(
+pub(crate) fn collect_requirement_case_conformance_diagnostics(
     graph: &SemanticGraph,
     uri: &Url,
 ) -> Vec<SemanticDiagnostic> {
@@ -67,8 +68,8 @@ pub(in crate::semantic::diagnostics) fn collect_requirement_case_conformance_dia
         if kind != RelationshipKind::Satisfy {
             continue;
         }
-        let source_id = crate::NodeId::new(uri, source_qn.clone());
-        let target_id = crate::NodeId::new(uri, target_qn.clone());
+        let source_id = sysml_model::NodeId::new(uri, source_qn.clone());
+        let target_id = sysml_model::NodeId::new(uri, target_qn.clone());
         let (Some(source_node), Some(target_node)) =
             (graph.get_node(&source_id), graph.get_node(&target_id))
         else {

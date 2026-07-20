@@ -2,32 +2,33 @@ use std::collections::{HashMap, HashSet};
 
 use url::Url;
 
-use crate::semantic::diagnostics::helpers::{
+use crate::helpers::{
     condition_expression_is_boolean, diag, diagnostic_range, is_synthetic,
     normalize_declared_type_ref,
 };
-use crate::semantic::diagnostics::kind_rules::{allowed_typing_target_kinds, is_compatible_kind};
-use crate::semantic::diagnostics::types::DiagnosticSeverity;
-use crate::semantic::model::RelationshipKind;
-use crate::semantic::reference_resolution::resolve_expression_endpoint_strict;
-use crate::semantic::relationships::{resolve_type_target_in_workspace, TYPING_TARGET_KINDS};
-use crate::{ResolveResult, SemanticDiagnostic, SemanticGraph, SemanticNode};
+use crate::kind_rules::{allowed_typing_target_kinds, is_compatible_kind};
+use crate::types::DiagnosticSeverity;
+use sysml_model::semantic::model::RelationshipKind;
+use sysml_model::semantic::reference_resolution::resolve_expression_endpoint_strict;
+use sysml_model::semantic::relationships::{resolve_type_target_in_workspace, TYPING_TARGET_KINDS};
+use crate::SemanticDiagnostic;
+use sysml_model::{ResolveResult, SemanticGraph, SemanticNode};
 
-fn is_action_like(kind: &crate::ElementKind) -> bool {
+fn is_action_like(kind: &sysml_model::ElementKind) -> bool {
     matches!(
         kind,
-        crate::ElementKind::Action
-            | crate::ElementKind::ActionDef
-            | crate::ElementKind::Perform
-            | crate::ElementKind::Merge
-            | crate::ElementKind::Verdict
+        sysml_model::ElementKind::Action
+            | sysml_model::ElementKind::ActionDef
+            | sysml_model::ElementKind::Perform
+            | sysml_model::ElementKind::Merge
+            | sysml_model::ElementKind::Verdict
     )
 }
 
-fn is_state_like(kind: &crate::ElementKind) -> bool {
+fn is_state_like(kind: &sysml_model::ElementKind) -> bool {
     matches!(
         kind,
-        crate::ElementKind::State | crate::ElementKind::StateDef
+        sysml_model::ElementKind::State | sysml_model::ElementKind::StateDef
     )
 }
 
@@ -60,7 +61,7 @@ fn state_def_has_initial_transition(
             *kind == RelationshipKind::InitialState
                 && (source == state_def_qn
                     || graph
-                        .get_node(&crate::NodeId::new(uri, source.clone()))
+                        .get_node(&sysml_model::NodeId::new(uri, source.clone()))
                         .and_then(|source_node| state_def_ancestor(graph, source_node))
                         .as_ref()
                         == Some(&state_def.id.qualified_name))
@@ -69,7 +70,7 @@ fn state_def_has_initial_transition(
         return true;
     }
     graph.nodes_for_uri(uri).into_iter().any(|node| {
-        node.element_kind == crate::ElementKind::Transition
+        node.element_kind == sysml_model::ElementKind::Transition
             && !is_synthetic(node)
             && node
                 .attributes
@@ -101,13 +102,13 @@ fn state_def_has_final_indicator(graph: &SemanticGraph, state_def: &SemanticNode
     graph
         .children_of(state_def)
         .into_iter()
-        .any(|child| child.element_kind == crate::ElementKind::FinalState)
+        .any(|child| child.element_kind == sysml_model::ElementKind::FinalState)
 }
 
 fn state_def_is_cyclic(graph: &SemanticGraph, state_def: &SemanticNode) -> bool {
     let mut adjacency: HashMap<String, Vec<String>> = HashMap::new();
     for child in graph.children_of(state_def) {
-        if child.element_kind != crate::ElementKind::Transition || is_synthetic(child) {
+        if child.element_kind != sysml_model::ElementKind::Transition || is_synthetic(child) {
             continue;
         }
         let Some(source) = child
@@ -179,7 +180,7 @@ fn state_def_ancestor(graph: &SemanticGraph, node: &SemanticNode) -> Option<Stri
     let mut current = node.parent_id.as_ref()?;
     loop {
         let parent = graph.get_node(current)?;
-        if parent.element_kind == crate::ElementKind::StateDef {
+        if parent.element_kind == sysml_model::ElementKind::StateDef {
             return Some(parent.id.qualified_name.clone());
         }
         current = parent.parent_id.as_ref()?;
@@ -208,7 +209,7 @@ fn resolve_qualified_endpoint(
     }
 }
 
-pub(in crate::semantic::diagnostics) fn collect_behavior_conformance_diagnostics(
+pub(crate) fn collect_behavior_conformance_diagnostics(
     graph: &SemanticGraph,
     uri: &Url,
 ) -> Vec<SemanticDiagnostic> {
@@ -219,7 +220,7 @@ pub(in crate::semantic::diagnostics) fn collect_behavior_conformance_diagnostics
         if kind != RelationshipKind::Perform {
             continue;
         }
-        let target_id = crate::NodeId::new(uri, target_qn.clone());
+        let target_id = sysml_model::NodeId::new(uri, target_qn.clone());
         let Some(target_node) = graph.get_node(&target_id) else {
             continue;
         };
@@ -230,7 +231,7 @@ pub(in crate::semantic::diagnostics) fn collect_behavior_conformance_diagnostics
         if !seen.insert(key) {
             continue;
         }
-        let source_id = crate::NodeId::new(uri, source_qn.clone());
+        let source_id = sysml_model::NodeId::new(uri, source_qn.clone());
         let source_node = graph.get_node(&source_id);
         diagnostics.push(diag(
             uri,
@@ -246,7 +247,7 @@ pub(in crate::semantic::diagnostics) fn collect_behavior_conformance_diagnostics
     }
 
     for node in graph.nodes_for_uri(uri) {
-        if node.element_kind != crate::ElementKind::Transition || is_synthetic(node) {
+        if node.element_kind != sysml_model::ElementKind::Transition || is_synthetic(node) {
             continue;
         }
         let Some(source_ref) = node.attributes.get("source").and_then(|v| v.as_str()) else {
@@ -302,7 +303,7 @@ pub(in crate::semantic::diagnostics) fn collect_behavior_conformance_diagnostics
         if kind != RelationshipKind::InitialState {
             continue;
         }
-        let target_id = crate::NodeId::new(uri, target_qn.clone());
+        let target_id = sysml_model::NodeId::new(uri, target_qn.clone());
         let Some(target_node) = graph.get_node(&target_id) else {
             continue;
         };
@@ -313,7 +314,7 @@ pub(in crate::semantic::diagnostics) fn collect_behavior_conformance_diagnostics
         if !seen.insert(key) {
             continue;
         }
-        let source_id = crate::NodeId::new(uri, source_qn.clone());
+        let source_id = sysml_model::NodeId::new(uri, source_qn.clone());
         let source_node = graph.get_node(&source_id);
         diagnostics.push(diag(
             uri,
@@ -332,8 +333,8 @@ pub(in crate::semantic::diagnostics) fn collect_behavior_conformance_diagnostics
         if kind != RelationshipKind::Flow {
             continue;
         }
-        let source_id = crate::NodeId::new(uri, source_qn.clone());
-        let target_id = crate::NodeId::new(uri, target_qn.clone());
+        let source_id = sysml_model::NodeId::new(uri, source_qn.clone());
+        let target_id = sysml_model::NodeId::new(uri, target_qn.clone());
         let (Some(source_node), Some(target_node)) =
             (graph.get_node(&source_id), graph.get_node(&target_id))
         else {
@@ -341,10 +342,10 @@ pub(in crate::semantic::diagnostics) fn collect_behavior_conformance_diagnostics
         };
         let in_action_context = matches!(
             source_node.element_kind,
-            crate::ElementKind::ActionDef
-                | crate::ElementKind::Action
-                | crate::ElementKind::Perform
-                | crate::ElementKind::Merge
+            sysml_model::ElementKind::ActionDef
+                | sysml_model::ElementKind::Action
+                | sysml_model::ElementKind::Perform
+                | sysml_model::ElementKind::Merge
         ) || source_node
             .parent_id
             .as_ref()
@@ -352,10 +353,10 @@ pub(in crate::semantic::diagnostics) fn collect_behavior_conformance_diagnostics
             .is_some_and(|parent| {
                 matches!(
                     parent.element_kind,
-                    crate::ElementKind::ActionDef
-                        | crate::ElementKind::Action
-                        | crate::ElementKind::VerificationDef
-                        | crate::ElementKind::Verification
+                    sysml_model::ElementKind::ActionDef
+                        | sysml_model::ElementKind::Action
+                        | sysml_model::ElementKind::VerificationDef
+                        | sysml_model::ElementKind::Verification
                 )
             });
         if !in_action_context {
@@ -385,7 +386,7 @@ pub(in crate::semantic::diagnostics) fn collect_behavior_conformance_diagnostics
     }
 
     for node in graph.nodes_for_uri(uri) {
-        if node.element_kind != crate::ElementKind::Transition || is_synthetic(node) {
+        if node.element_kind != sysml_model::ElementKind::Transition || is_synthetic(node) {
             continue;
         }
         let Some(guard) = node
@@ -422,7 +423,7 @@ pub(in crate::semantic::diagnostics) fn collect_behavior_conformance_diagnostics
         if kind != RelationshipKind::InitialState {
             continue;
         }
-        let source_id = crate::NodeId::new(uri, source_qn.clone());
+        let source_id = sysml_model::NodeId::new(uri, source_qn.clone());
         let container = graph
             .get_node(&source_id)
             .and_then(|node| state_def_ancestor(graph, node))
@@ -437,7 +438,7 @@ pub(in crate::semantic::diagnostics) fn collect_behavior_conformance_diagnostics
         if !seen.insert(key) {
             continue;
         }
-        let Some(container_node) = graph.get_node(&crate::NodeId::new(uri, container.clone()))
+        let Some(container_node) = graph.get_node(&sysml_model::NodeId::new(uri, container.clone()))
         else {
             continue;
         };
@@ -455,13 +456,13 @@ pub(in crate::semantic::diagnostics) fn collect_behavior_conformance_diagnostics
     }
 
     for node in graph.nodes_for_uri(uri) {
-        if node.element_kind != crate::ElementKind::StateDef || is_synthetic(node) {
+        if node.element_kind != sysml_model::ElementKind::StateDef || is_synthetic(node) {
             continue;
         }
         let has_state_children = graph
             .children_of(node)
             .into_iter()
-            .any(|child| child.element_kind == crate::ElementKind::State);
+            .any(|child| child.element_kind == sysml_model::ElementKind::State);
         if !has_state_children {
             continue;
         }
@@ -486,13 +487,13 @@ pub(in crate::semantic::diagnostics) fn collect_behavior_conformance_diagnostics
     }
 
     for node in graph.nodes_for_uri(uri) {
-        if node.element_kind != crate::ElementKind::StateDef || is_synthetic(node) {
+        if node.element_kind != sysml_model::ElementKind::StateDef || is_synthetic(node) {
             continue;
         }
         let has_state_children = graph
             .children_of(node)
             .into_iter()
-            .any(|child| child.element_kind == crate::ElementKind::State);
+            .any(|child| child.element_kind == sysml_model::ElementKind::State);
         if !has_state_children {
             continue;
         }
@@ -523,8 +524,8 @@ pub(in crate::semantic::diagnostics) fn collect_behavior_conformance_diagnostics
         if is_synthetic(node) {
             continue;
         }
-        let is_action = node.element_kind == crate::ElementKind::Action;
-        let is_transition = node.element_kind == crate::ElementKind::Transition;
+        let is_action = node.element_kind == sysml_model::ElementKind::Action;
+        let is_transition = node.element_kind == sysml_model::ElementKind::Transition;
         if !is_action && !is_transition {
             continue;
         }
@@ -551,7 +552,7 @@ pub(in crate::semantic::diagnostics) fn collect_behavior_conformance_diagnostics
         } else {
             "accept_payload_incompatible"
         };
-        let allowed = allowed_typing_target_kinds(&crate::ElementKind::Action);
+        let allowed = allowed_typing_target_kinds(&sysml_model::ElementKind::Action);
         let Some(target_id) =
             resolve_type_target_in_workspace(graph, node, payload_type, TYPING_TARGET_KINDS)
         else {
@@ -592,7 +593,7 @@ pub(in crate::semantic::diagnostics) fn collect_behavior_conformance_diagnostics
 
     let mut final_states_by_container: HashMap<String, usize> = HashMap::new();
     for node in graph.nodes_for_uri(uri) {
-        if node.element_kind != crate::ElementKind::FinalState || is_synthetic(node) {
+        if node.element_kind != sysml_model::ElementKind::FinalState || is_synthetic(node) {
             continue;
         }
         let container = node
@@ -614,7 +615,7 @@ pub(in crate::semantic::diagnostics) fn collect_behavior_conformance_diagnostics
         if !seen.insert(key) {
             continue;
         }
-        let Some(container_node) = graph.get_node(&crate::NodeId::new(uri, container.clone()))
+        let Some(container_node) = graph.get_node(&sysml_model::NodeId::new(uri, container.clone()))
         else {
             continue;
         };

@@ -1,7 +1,5 @@
-﻿use sysml_model::{
-    build_semantic_graph_from_documents, collect_diagnostics_from_graph, DiagnosticsOptions,
-    SysmlDocument, SysmlDocumentSourceKind,
-};
+﻿use sysml_diagnostics::{collect_diagnostics_from_graph, DiagnosticsOptions};
+use sysml_model::{build_semantic_graph_from_documents, SysmlDocument, SysmlDocumentSourceKind};
 
 const LIBRARY_SYSML: &str = r#"
 package GridAnalysis {
@@ -40,7 +38,7 @@ package AnalysisCases {
 }
 "#;
 
-fn diags_for_documents(docs: &[SysmlDocument]) -> Vec<sysml_model::SemanticDiagnostic> {
+fn diags_for_documents(docs: &[SysmlDocument]) -> Vec<sysml_diagnostics::SemanticDiagnostic> {
     let (graph, _) = build_semantic_graph_from_documents(docs).expect("semantic graph");
     let uri = docs
         .last()
@@ -49,7 +47,7 @@ fn diags_for_documents(docs: &[SysmlDocument]) -> Vec<sysml_model::SemanticDiagn
     collect_diagnostics_from_graph(&graph, &uri, DiagnosticsOptions::default())
 }
 
-fn has_code(diags: &[sysml_model::SemanticDiagnostic], code: &str) -> bool {
+fn has_code(diags: &[sysml_diagnostics::SemanticDiagnostic], code: &str) -> bool {
     diags.iter().any(|d| d.code == code)
 }
 

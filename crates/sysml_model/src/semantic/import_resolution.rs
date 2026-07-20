@@ -16,7 +16,7 @@ fn import_visibility(import: &SemanticNode) -> String {
         .unwrap_or_else(|| "private".to_string())
 }
 
-pub(crate) fn import_target(import: &SemanticNode) -> Option<&str> {
+pub fn import_target(import: &SemanticNode) -> Option<&str> {
     import
         .attributes
         .get("importTarget")

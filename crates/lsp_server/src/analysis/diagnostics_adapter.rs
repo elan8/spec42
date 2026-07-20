@@ -1,4 +1,4 @@
-use sysml_model::{DiagnosticRelatedInfo, DiagnosticSeverity as CoreSeverity, SemanticDiagnostic};
+use sysml_diagnostics::{DiagnosticRelatedInfo, DiagnosticSeverity as CoreSeverity, SemanticDiagnostic};
 use tower_lsp::lsp_types::{
     Diagnostic, DiagnosticRelatedInformation, DiagnosticSeverity, Location, NumberOrString,
 };
@@ -47,9 +47,8 @@ fn map_related_information(
 #[cfg(test)]
 mod tests {
     use super::*;
-    use sysml_model::{
-        DiagnosticSeverity as CoreSeverity, SemanticDiagnostic, TextPosition, TextRange,
-    };
+    use sysml_diagnostics::{DiagnosticSeverity as CoreSeverity, SemanticDiagnostic};
+    use sysml_model::{TextPosition, TextRange};
     use tower_lsp::lsp_types::DiagnosticSeverity as LspSeverity;
     use url::Url;
 

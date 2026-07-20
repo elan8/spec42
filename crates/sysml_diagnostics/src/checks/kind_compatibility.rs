@@ -2,25 +2,26 @@ use std::collections::HashSet;
 
 use url::Url;
 
-use crate::semantic::diagnostics::helpers::{
+use crate::helpers::{
     attribute_value_is_string_literal, declared_specializes_refs, declared_type_ref, diag,
     diagnostic_range, is_builtin_type_ref, is_synthetic, multiplicity_issue_message,
     normalize_declared_type_ref, parse_non_negative_bound, reference_token_range,
     resolves_to_enum_def, unresolved_type_diagnostic_range,
 };
-use crate::semantic::diagnostics::kind_rules::{
+use crate::kind_rules::{
     allowed_subset_redefine_target_kinds, allowed_typing_target_kinds,
     expected_typing_definition_label, is_compatible_kind, is_compatible_specializes_target,
 };
-use crate::semantic::diagnostics::types::DiagnosticSeverity;
-use crate::semantic::kinds::{
+use crate::types::DiagnosticSeverity;
+use sysml_model::semantic::kinds::{
     is_metadata_restriction_attribute, is_reflective_sysml_usage_type,
     is_semantic_metadata_base_type_redefine,
 };
-use crate::semantic::relationships::SPECIALIZES_TARGET_KINDS;
-use crate::{
+use sysml_model::semantic::relationships::SPECIALIZES_TARGET_KINDS;
+use crate::SemanticDiagnostic;
+use sysml_model::{
     resolve_inherited_member_via_type, resolve_type_reference_targets, ResolveResult,
-    SemanticDiagnostic, SemanticGraph,
+    SemanticGraph,
 };
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -88,11 +89,11 @@ fn collect_specialization_cycles(graph: &SemanticGraph, uri: &Url) -> Vec<Semant
         }
 
         fn dfs(
-            current_id: &crate::NodeId,
-            origin: &crate::NodeId,
-            stack: &mut Vec<crate::NodeId>,
-            visiting: &mut HashSet<crate::NodeId>,
-            visited: &mut HashSet<crate::NodeId>,
+            current_id: &sysml_model::NodeId,
+            origin: &sysml_model::NodeId,
+            stack: &mut Vec<sysml_model::NodeId>,
+            visiting: &mut HashSet<sysml_model::NodeId>,
+            visited: &mut HashSet<sysml_model::NodeId>,
             ctx: &mut CycleDfsContext<'_>,
         ) {
             if !visiting.insert(current_id.clone()) {
@@ -156,7 +157,7 @@ fn collect_specialization_cycles(graph: &SemanticGraph, uri: &Url) -> Vec<Semant
     diagnostics
 }
 
-pub(in crate::semantic::diagnostics) fn collect_kind_compatibility_diagnostics(
+pub(crate) fn collect_kind_compatibility_diagnostics(
     graph: &SemanticGraph,
     uri: &Url,
 ) -> Vec<SemanticDiagnostic> {
@@ -173,7 +174,7 @@ pub(in crate::semantic::diagnostics) fn collect_kind_compatibility_diagnostics(
             if !is_builtin_type_ref(&normalized)
                 && !matches!(
                     node.element_kind,
-                    crate::ElementKind::Subject | crate::ElementKind::Ref
+                    sysml_model::ElementKind::Subject | sysml_model::ElementKind::Ref
                 )
                 && !is_metadata_restriction_attribute(node)
             {
@@ -336,7 +337,7 @@ pub(in crate::semantic::diagnostics) fn collect_kind_compatibility_diagnostics(
                             }
                         }
 
-                        if node.element_kind == crate::ElementKind::Attribute {
+                        if node.element_kind == sysml_model::ElementKind::Attribute {
                             if let Some(value) =
                                 node.attributes.get("value").and_then(|v| v.as_str())
                             {

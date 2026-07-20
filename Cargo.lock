@@ -1169,6 +1169,7 @@ dependencies = [
  "serde_json",
  "server",
  "sysml-v2-parser",
+ "sysml_diagnostics",
  "sysml_model",
  "sysml_tokens",
  "tempfile",
@@ -2112,6 +2113,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "sysml_diagnostics"
+version = "0.44.17"
+dependencies = [
+ "serde_json",
+ "sysml-v2-parser",
+ "sysml_model",
+ "url",
+]
+
+[[package]]
 name = "sysml_model"
 version = "0.44.17"
 dependencies = [
@@ -2120,6 +2131,7 @@ dependencies = [
  "serde",
  "serde_json",
  "sysml-v2-parser",
+ "sysml_diagnostics",
  "tempfile",
  "ts-rs",
  "url",
@@ -3256,6 +3268,7 @@ dependencies = [
  "serde_json",
  "sha2",
  "sysml-v2-parser",
+ "sysml_diagnostics",
  "sysml_model",
  "tempfile",
  "thiserror 2.0.18",

@@ -2,7 +2,6 @@ pub mod activity_graph;
 pub mod analysis_typing;
 pub mod ast_util;
 pub mod component_view;
-pub mod diagnostics;
 pub mod dto;
 pub(crate) mod element_kind_classify;
 pub mod evaluation;

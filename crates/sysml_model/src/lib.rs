@@ -6,12 +6,6 @@ pub use semantic::component_view::{
     expand_part_definition, expand_part_usage, has_materialized_shape, inherited_ports,
     typed_by_reference, ExpandedPart, ExpandedPort, ResolvedSourceLocation, TypedByRef,
 };
-pub use semantic::diagnostics::{
-    collect_diagnostics_from_graph, collect_diagnostics_from_graph_with_unit_registry,
-    collect_document_diagnostics, collect_untyped_part_usage_diagnostics,
-    missing_library_context_diagnostic, DiagnosticRelatedInfo, DiagnosticSeverity,
-    DiagnosticsOptions, SemanticDiagnostic,
-};
 pub use semantic::dto::{
     range_to_dto, visualization_model_not_ready, GraphEdgeDto, GraphNodeDto, PositionDto, RangeDto,
     RelationshipDto, SysmlElementDto, SysmlGraphDto, SysmlModelStatsDto,

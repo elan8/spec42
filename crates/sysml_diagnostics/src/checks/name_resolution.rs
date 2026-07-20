@@ -2,42 +2,43 @@ use std::collections::{HashMap, HashSet};
 
 use url::Url;
 
-use crate::semantic::diagnostics::checks::import_resolution::has_import_in_scope;
-use crate::semantic::diagnostics::helpers::{
+use crate::checks::import_resolution::has_import_in_scope;
+use crate::helpers::{
     declared_specializes_refs, declared_type_ref, diag, diagnostic_range, is_builtin_type_ref,
     is_synthetic, normalize_declared_type_ref, unresolved_type_diagnostic_range,
 };
-use crate::semantic::diagnostics::types::DiagnosticSeverity;
-use crate::semantic::import_resolution::resolve_imported_node_ids_for_simple_name;
-use crate::semantic::kinds::{
+use crate::types::DiagnosticSeverity;
+use sysml_model::semantic::import_resolution::resolve_imported_node_ids_for_simple_name;
+use sysml_model::semantic::kinds::{
     is_metadata_restriction_attribute, is_namespace, RULE6_ALLOWED_KINDS,
 };
-use crate::semantic::model::node_matches_simple_name;
-use crate::semantic::relationships::SPECIALIZES_TARGET_KINDS;
-use crate::{
-    resolve_type_reference_targets, ElementKind, SemanticDiagnostic, SemanticGraph, SemanticNode,
+use sysml_model::semantic::model::node_matches_simple_name;
+use sysml_model::semantic::relationships::SPECIALIZES_TARGET_KINDS;
+use crate::SemanticDiagnostic;
+use sysml_model::{
+    resolve_type_reference_targets, ElementKind, SemanticGraph, SemanticNode,
 };
 
-fn is_def_or_usage_kind(kind: &crate::ElementKind) -> bool {
+fn is_def_or_usage_kind(kind: &sysml_model::ElementKind) -> bool {
     matches!(
         kind,
-        crate::ElementKind::PartDef
-            | crate::ElementKind::PortDef
-            | crate::ElementKind::ItemDef
-            | crate::ElementKind::AttributeDef
-            | crate::ElementKind::ActionDef
-            | crate::ElementKind::StateDef
-            | crate::ElementKind::RequirementDef
-            | crate::ElementKind::UseCaseDef
-            | crate::ElementKind::AnalysisDef
-            | crate::ElementKind::VerificationDef
-            | crate::ElementKind::ViewDef
-            | crate::ElementKind::ViewpointDef
-            | crate::ElementKind::ConcernDef
-            | crate::ElementKind::EnumDef
-            | crate::ElementKind::MetadataDef
-            | crate::ElementKind::InterfaceDef
-            | crate::ElementKind::Package
+        sysml_model::ElementKind::PartDef
+            | sysml_model::ElementKind::PortDef
+            | sysml_model::ElementKind::ItemDef
+            | sysml_model::ElementKind::AttributeDef
+            | sysml_model::ElementKind::ActionDef
+            | sysml_model::ElementKind::StateDef
+            | sysml_model::ElementKind::RequirementDef
+            | sysml_model::ElementKind::UseCaseDef
+            | sysml_model::ElementKind::AnalysisDef
+            | sysml_model::ElementKind::VerificationDef
+            | sysml_model::ElementKind::ViewDef
+            | sysml_model::ElementKind::ViewpointDef
+            | sysml_model::ElementKind::ConcernDef
+            | sysml_model::ElementKind::EnumDef
+            | sysml_model::ElementKind::MetadataDef
+            | sysml_model::ElementKind::InterfaceDef
+            | sysml_model::ElementKind::Package
     )
 }
 
@@ -122,10 +123,10 @@ fn collect_duplicate_namespace_members(
     for node in graph.nodes_for_uri(uri) {
         if !matches!(
             node.element_kind,
-            crate::ElementKind::Package
-                | crate::ElementKind::PartDef
-                | crate::ElementKind::RequirementDef
-                | crate::ElementKind::UseCaseDef
+            sysml_model::ElementKind::Package
+                | sysml_model::ElementKind::PartDef
+                | sysml_model::ElementKind::RequirementDef
+                | sysml_model::ElementKind::UseCaseDef
         ) {
             continue;
         }
@@ -133,9 +134,9 @@ fn collect_duplicate_namespace_members(
         for child in graph.children_of(node) {
             if matches!(
                 child.element_kind,
-                crate::ElementKind::Import
-                    | crate::ElementKind::Diagnostic
-                    | crate::ElementKind::Filter
+                sysml_model::ElementKind::Import
+                    | sysml_model::ElementKind::Diagnostic
+                    | sysml_model::ElementKind::Filter
             ) || matches!(child.element_kind.as_str(), "doc" | "comment")
             {
                 continue;
@@ -143,7 +144,7 @@ fn collect_duplicate_namespace_members(
             if child.name.trim().is_empty() || child.name.starts_with('_') {
                 continue;
             }
-            if child.element_kind == crate::ElementKind::Alias {
+            if child.element_kind == sysml_model::ElementKind::Alias {
                 continue;
             }
             *counts
@@ -173,7 +174,7 @@ fn collect_duplicate_namespace_members(
     }
 }
 
-pub(in crate::semantic::diagnostics) fn collect_name_resolution_diagnostics(
+pub(crate) fn collect_name_resolution_diagnostics(
     graph: &SemanticGraph,
     uri: &Url,
 ) -> Vec<SemanticDiagnostic> {

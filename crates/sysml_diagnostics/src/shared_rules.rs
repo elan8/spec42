@@ -1,9 +1,9 @@
 use url::Url;
 
-use crate::semantic::diagnostics::types::{
+use crate::types::{
     DiagnosticRelatedInfo, DiagnosticSeverity, SemanticDiagnostic,
 };
-use crate::semantic::text_span::{TextPosition, TextRange};
+use sysml_model::semantic::text_span::{TextPosition, TextRange};
 
 fn utf16_len(s: &str) -> u32 {
     s.encode_utf16().count() as u32

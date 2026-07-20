@@ -2,7 +2,7 @@
 
 use std::collections::{BTreeMap, BTreeSet};
 
-use sysml_model::{DiagnosticSeverity, SemanticDiagnostic};
+use sysml_diagnostics::{DiagnosticSeverity, SemanticDiagnostic};
 
 use crate::snapshot::HostValidationReport;
 

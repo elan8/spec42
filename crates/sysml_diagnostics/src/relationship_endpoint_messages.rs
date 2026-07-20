@@ -2,8 +2,8 @@
 
 use url::Url;
 
-use crate::semantic::reference_resolution::resolve_expression_endpoint_workspace;
-use crate::{
+use sysml_model::semantic::reference_resolution::resolve_expression_endpoint_workspace;
+use sysml_model::{
     resolve_expression_endpoint_strict, resolve_member_via_type, ResolveResult, SemanticGraph,
     SemanticNode,
 };
@@ -46,7 +46,7 @@ fn relationship_kind_from_code(code: &str) -> Option<(RelationshipKindHint, Endp
     }
 }
 
-fn is_definitional_element_kind(kind: &crate::ElementKind) -> bool {
+fn is_definitional_element_kind(kind: &sysml_model::ElementKind) -> bool {
     kind.is_definition()
 }
 
@@ -119,7 +119,7 @@ fn resolve_endpoint_reference(
 
 fn classify_resolved_node(
     graph: &SemanticGraph,
-    id: crate::semantic::model::NodeId,
+    id: sysml_model::semantic::model::NodeId,
 ) -> EndpointResolveOutcome {
     let Some(node) = graph.get_node(&id).cloned() else {
         return EndpointResolveOutcome::Unresolved;
@@ -136,7 +136,7 @@ fn find_case_alternate_part_usage(graph: &SemanticGraph, uri: &Url, name: &str) 
         .nodes_for_uri(uri)
         .into_iter()
         .find(|node| {
-            node.element_kind == crate::ElementKind::Part
+            node.element_kind == sysml_model::ElementKind::Part
                 && node.name != name
                 && node.name.eq_ignore_ascii_case(name)
         })
@@ -272,8 +272,8 @@ fn extract_single_quoted_value(message: &str) -> Option<String> {
 #[cfg(test)]
 mod tests {
     use crate::collect_diagnostics_from_graph;
-    use crate::semantic::source::{SysmlDocument, SysmlDocumentSourceKind};
-    use crate::semantic::workspace_graph::build_semantic_graph_from_documents;
+    use sysml_model::semantic::source::{SysmlDocument, SysmlDocumentSourceKind};
+    use sysml_model::semantic::workspace_graph::build_semantic_graph_from_documents;
     use crate::DiagnosticsOptions;
 
     #[test]

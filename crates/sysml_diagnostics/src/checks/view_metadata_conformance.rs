@@ -2,19 +2,20 @@ use std::collections::{HashMap, HashSet};
 
 use url::Url;
 
-use crate::semantic::diagnostics::checks::import_resolution::import_target_resolves;
-use crate::semantic::diagnostics::helpers::{
+use crate::checks::import_resolution::import_target_resolves;
+use crate::helpers::{
     diag, diagnostic_range, is_synthetic, is_unknown_range, parse_attribute_text_range,
 };
-use crate::semantic::diagnostics::types::DiagnosticSeverity;
-use crate::semantic::model::{ElementKind, RelationshipKind};
-use crate::semantic::reference_resolution::{resolve_expose_target, ExposeTargetResolution};
-use crate::semantic::relationships::{
+use crate::types::DiagnosticSeverity;
+use sysml_model::semantic::model::{ElementKind, RelationshipKind};
+use sysml_model::semantic::reference_resolution::{resolve_expose_target, ExposeTargetResolution};
+use sysml_model::semantic::relationships::{
     resolve_type_target_in_workspace, ANNOTATED_ELEMENT_TARGET_KINDS,
 };
-use crate::semantic::standard_views::is_non_standard_explicit_view_type;
-use crate::semantic::text_span::TextRange;
-use crate::{SemanticDiagnostic, SemanticGraph};
+use sysml_model::semantic::standard_views::is_non_standard_explicit_view_type;
+use sysml_model::semantic::text_span::TextRange;
+use crate::SemanticDiagnostic;
+use sysml_model::SemanticGraph;
 
 const BUILTIN_MODELED_DECL_KEYWORDS: &[&str] = &[
     "feature",
@@ -29,7 +30,7 @@ fn is_user_defined_modeled_keyword(keyword: &str) -> bool {
     !BUILTIN_MODELED_DECL_KEYWORDS.contains(&keyword)
 }
 
-pub(in crate::semantic::diagnostics) fn collect_view_metadata_conformance_diagnostics(
+pub(crate) fn collect_view_metadata_conformance_diagnostics(
     graph: &SemanticGraph,
     uri: &Url,
 ) -> Vec<SemanticDiagnostic> {
@@ -445,7 +446,7 @@ pub(in crate::semantic::diagnostics) fn collect_view_metadata_conformance_diagno
         if !seen.insert(key) {
             continue;
         }
-        let Some(first) = graph.get_node(&crate::NodeId::new(uri, qualified_names[0].clone()))
+        let Some(first) = graph.get_node(&sysml_model::NodeId::new(uri, qualified_names[0].clone()))
         else {
             continue;
         };
@@ -640,7 +641,7 @@ pub(in crate::semantic::diagnostics) fn collect_view_metadata_conformance_diagno
 }
 
 fn annotated_element_restriction_type(
-    child: &crate::semantic::model::SemanticNode,
+    child: &sysml_model::semantic::model::SemanticNode,
 ) -> Option<String> {
     if child.element_kind != ElementKind::Attribute {
         return None;
@@ -667,7 +668,7 @@ fn annotated_element_restriction_type(
 }
 
 fn expose_target_entry_range(
-    node: &crate::semantic::model::SemanticNode,
+    node: &sysml_model::semantic::model::SemanticNode,
     entry: &serde_json::Value,
 ) -> TextRange {
     if let Some(range) = entry.get("range") {
@@ -681,11 +682,11 @@ fn expose_target_entry_range(
                 end.get("character").and_then(|v| v.as_u64()),
             ) {
                 return TextRange {
-                    start: crate::semantic::text_span::TextPosition::new(
+                    start: sysml_model::semantic::text_span::TextPosition::new(
                         start_line as u32,
                         start_character as u32,
                     ),
-                    end: crate::semantic::text_span::TextPosition::new(
+                    end: sysml_model::semantic::text_span::TextPosition::new(
                         end_line as u32,
                         end_character as u32,
                     ),
@@ -697,7 +698,7 @@ fn expose_target_entry_range(
 }
 
 fn annotated_element_matches_restriction(
-    element_kind: &crate::ElementKind,
+    element_kind: &sysml_model::ElementKind,
     restriction: &str,
 ) -> bool {
     let element_kind = element_kind.as_str();

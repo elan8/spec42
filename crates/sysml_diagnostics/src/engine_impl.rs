@@ -6,27 +6,28 @@
 use std::{collections::HashSet, time::Instant};
 use url::Url;
 
-use crate::semantic::diagnostics::checks::{
+use crate::checks::{
     behavior_conformance, connection_conformance, expression_conformance, import_conformance,
     kind_compatibility, name_resolution, requirement_case_conformance, view_metadata_conformance,
 };
-use crate::semantic::diagnostics::helpers::*;
-use crate::semantic::diagnostics::relationship_endpoint_messages::builder_relationship_diagnostic_to_emit;
-use crate::semantic::diagnostics::types::DiagnosticsOptions;
-use crate::semantic::diagnostics::types::{DiagnosticRelatedInfo, DiagnosticSeverity};
-use crate::{
-    resolve_inherited_member_via_type, RelationshipKind, ResolveResult, SemanticDiagnostic,
-    SemanticGraph, UnitRegistry,
+use crate::helpers::*;
+use crate::relationship_endpoint_messages::builder_relationship_diagnostic_to_emit;
+use crate::types::DiagnosticsOptions;
+use crate::types::{DiagnosticRelatedInfo, DiagnosticSeverity};
+use crate::SemanticDiagnostic;
+use sysml_model::{
+    resolve_inherited_member_via_type, RelationshipKind, ResolveResult, SemanticGraph,
+    UnitRegistry,
 };
 
-fn is_view_kind(kind: &crate::ElementKind) -> bool {
-    matches!(kind, crate::ElementKind::View | crate::ElementKind::ViewDef)
+fn is_view_kind(kind: &sysml_model::ElementKind) -> bool {
+    matches!(kind, sysml_model::ElementKind::View | sysml_model::ElementKind::ViewDef)
 }
 
-fn is_viewpoint_kind(kind: &crate::ElementKind) -> bool {
+fn is_viewpoint_kind(kind: &sysml_model::ElementKind) -> bool {
     matches!(
         kind,
-        crate::ElementKind::Viewpoint | crate::ElementKind::ViewpointDef
+        sysml_model::ElementKind::Viewpoint | sysml_model::ElementKind::ViewpointDef
     )
 }
 
@@ -60,7 +61,7 @@ pub fn compute_semantic_diagnostics_with_unit_registry(
     let t0 = Instant::now();
     let d0 = diagnostics.len();
     for node in &nodes {
-        if node.element_kind != crate::ElementKind::Diagnostic {
+        if node.element_kind != sysml_model::ElementKind::Diagnostic {
             continue;
         }
         let code = node
@@ -169,7 +170,7 @@ pub fn compute_semantic_diagnostics_with_unit_registry(
 
     for node in &nodes {
         if is_port_like(&node.element_kind)
-            && node.element_kind == crate::ElementKind::Port
+            && node.element_kind == sysml_model::ElementKind::Port
             && !is_synthetic(node)
             && is_declaration_port(graph, node)
             && !node.attributes.contains_key("redefines")
@@ -320,7 +321,7 @@ pub fn compute_semantic_diagnostics_with_unit_registry(
     let t9 = Instant::now();
     let d9 = diagnostics.len();
     for node in &nodes {
-        if node.element_kind == crate::ElementKind::Ref {
+        if node.element_kind == sysml_model::ElementKind::Ref {
             continue;
         }
         if !node.attributes.contains_key("value") || node.attributes.contains_key("redefines") {
@@ -332,7 +333,7 @@ pub fn compute_semantic_diagnostics_with_unit_registry(
         let Some(owner) = graph.get_node(owner_id) else {
             continue;
         };
-        if owner.element_kind == crate::ElementKind::MetadataUsage {
+        if owner.element_kind == sysml_model::ElementKind::MetadataUsage {
             continue;
         }
         let feature_name = node.name.trim();
@@ -371,7 +372,7 @@ pub fn compute_semantic_diagnostics_with_unit_registry(
     let t9b = Instant::now();
     let d9b = diagnostics.len();
     for node in &nodes {
-        if node.element_kind != crate::ElementKind::Attribute {
+        if node.element_kind != sysml_model::ElementKind::Attribute {
             continue;
         }
         let Some(value) = node.attributes.get("value").and_then(|v| v.as_str()) else {
@@ -431,14 +432,14 @@ pub fn compute_semantic_diagnostics_with_unit_registry(
     let t10 = Instant::now();
     let d10 = diagnostics.len();
     for node in &nodes {
-        if node.element_kind != crate::ElementKind::Allocation {
+        if node.element_kind != sysml_model::ElementKind::Allocation {
             continue;
         }
         if node.attributes.contains_key("allocationType")
             && graph
                 .outgoing_targets_by_kind(node, RelationshipKind::Typing)
                 .iter()
-                .any(|target| target.element_kind != crate::ElementKind::AllocationDef)
+                .any(|target| target.element_kind != sysml_model::ElementKind::AllocationDef)
         {
             diagnostics.push(diag(
                 uri,
@@ -488,8 +489,8 @@ pub fn compute_semantic_diagnostics_with_unit_registry(
         if kind != RelationshipKind::Satisfy {
             continue;
         }
-        let source_id = crate::NodeId::new(uri, source_qn.clone());
-        let target_id = crate::NodeId::new(uri, target_qn.clone());
+        let source_id = sysml_model::NodeId::new(uri, source_qn.clone());
+        let target_id = sysml_model::NodeId::new(uri, target_qn.clone());
         let Some(source_node) = graph.get_node(&source_id) else {
             continue;
         };
@@ -528,7 +529,7 @@ pub fn compute_semantic_diagnostics_with_unit_registry(
         // can carry inline `require constraint` analysis on the same node.
         let is_analysis_template_def = matches!(
             node.element_kind,
-            crate::ElementKind::ConstraintDef | crate::ElementKind::CalcDef
+            sysml_model::ElementKind::ConstraintDef | sysml_model::ElementKind::CalcDef
         );
         if let Some(status) = node
             .attributes
@@ -586,7 +587,7 @@ pub fn compute_semantic_diagnostics_with_unit_registry(
     let t12 = Instant::now();
     let d12 = diagnostics.len();
     for node in &nodes {
-        if node.element_kind != crate::ElementKind::Verdict {
+        if node.element_kind != sysml_model::ElementKind::Verdict {
             continue;
         }
         let Some(raw_token) = node
@@ -626,7 +627,7 @@ pub fn compute_semantic_diagnostics_with_unit_registry(
     let t13 = Instant::now();
     let d13 = diagnostics.len();
     for node in &nodes {
-        if node.element_kind != crate::ElementKind::Objective {
+        if node.element_kind != sysml_model::ElementKind::Objective {
             continue;
         }
         let Some(binding_kind) = node
@@ -766,13 +767,13 @@ fn extract_single_quoted_value(message: &str) -> Option<String> {
 
 fn resolved_endpoint_related_information(
     graph: &SemanticGraph,
-    diagnostic_node: &crate::SemanticNode,
+    diagnostic_node: &sysml_model::SemanticNode,
 ) -> Option<DiagnosticRelatedInfo> {
     let qn = diagnostic_node
         .attributes
         .get("resolvedEndpoint")
         .and_then(|value| value.as_str())?;
-    let id = crate::NodeId::new(&diagnostic_node.id.uri, qn);
+    let id = sysml_model::NodeId::new(&diagnostic_node.id.uri, qn);
     let node = graph.get_node(&id)?;
     Some(DiagnosticRelatedInfo {
         uri: node.id.uri.clone(),

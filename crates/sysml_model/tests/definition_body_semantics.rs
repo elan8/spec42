@@ -1,7 +1,5 @@
-﻿use sysml_model::{
-    build_semantic_graph_from_documents, collect_diagnostics_from_graph, DiagnosticsOptions,
-    RelationshipKind, SysmlDocument, SysmlDocumentSourceKind,
-};
+﻿use sysml_diagnostics::{collect_diagnostics_from_graph, DiagnosticsOptions};
+use sysml_model::{build_semantic_graph_from_documents, RelationshipKind, SysmlDocument, SysmlDocumentSourceKind};
 
 fn workspace_doc(path: &str, content: &str) -> SysmlDocument {
     SysmlDocument::from_memory_path(

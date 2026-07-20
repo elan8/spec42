@@ -4,10 +4,8 @@ use std::collections::{BTreeSet, HashMap, HashSet};
 
 use sha2::{Digest, Sha256};
 
-use sysml_model::{
-    typed_by_reference, DiagnosticSeverity, SemanticDiagnostic, SemanticGraph, SysmlDocument,
-    UnitRegistry,
-};
+use sysml_diagnostics::{DiagnosticSeverity, SemanticDiagnostic};
+use sysml_model::{typed_by_reference, SemanticGraph, SysmlDocument, UnitRegistry};
 use url::Url;
 
 use super::discovery::path_to_file_url;
@@ -714,7 +712,7 @@ fn collect_host_document_diagnostics(
     text: &str,
     strict_diagnostics: bool,
 ) -> Vec<SemanticDiagnostic> {
-    let mut diagnostics = sysml_model::collect_document_diagnostics(
+    let mut diagnostics = sysml_diagnostics::collect_document_diagnostics(
         graph,
         unit_registry,
         !library_urls.is_empty(),

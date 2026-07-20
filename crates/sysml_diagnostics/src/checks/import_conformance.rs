@@ -2,24 +2,25 @@ use std::collections::HashSet;
 
 use url::Url;
 
-use crate::semantic::diagnostics::checks::import_resolution::{
+use crate::checks::import_resolution::{
     import_target, import_target_resolves,
 };
-use crate::semantic::diagnostics::helpers::{
+use crate::helpers::{
     condition_expression_is_boolean, diag, diagnostic_range, reference_token_range,
 };
-use crate::semantic::diagnostics::types::DiagnosticSeverity;
-use crate::semantic::kinds::is_namespace;
-use crate::{SemanticDiagnostic, SemanticGraph};
+use crate::types::DiagnosticSeverity;
+use sysml_model::semantic::kinds::is_namespace;
+use crate::SemanticDiagnostic;
+use sysml_model::SemanticGraph;
 
-fn import_is_all(node: &crate::SemanticNode) -> bool {
+fn import_is_all(node: &sysml_model::SemanticNode) -> bool {
     node.attributes
         .get("importAll")
         .and_then(|value| value.as_bool())
         .unwrap_or(false)
 }
 
-fn import_is_recursive(node: &crate::SemanticNode) -> bool {
+fn import_is_recursive(node: &sysml_model::SemanticNode) -> bool {
     node.attributes
         .get("recursive")
         .and_then(|value| value.as_bool())
@@ -37,8 +38,8 @@ fn normalized_namespace_target(target: &str) -> String {
 
 fn resolve_import_target_kind(
     graph: &SemanticGraph,
-    import_node: &crate::SemanticNode,
-) -> Option<crate::ElementKind> {
+    import_node: &sysml_model::SemanticNode,
+) -> Option<sysml_model::ElementKind> {
     let target = import_target(import_node)?;
     let lookup = if import_is_all(import_node) {
         normalized_namespace_target(target)
@@ -54,7 +55,7 @@ fn resolve_import_target_kind(
         .map(|node| node.element_kind.clone())
 }
 
-pub(in crate::semantic::diagnostics) fn collect_import_conformance_diagnostics(
+pub(crate) fn collect_import_conformance_diagnostics(
     graph: &SemanticGraph,
     uri: &Url,
 ) -> Vec<SemanticDiagnostic> {
@@ -62,7 +63,7 @@ pub(in crate::semantic::diagnostics) fn collect_import_conformance_diagnostics(
     let mut seen = HashSet::new();
 
     for node in graph.nodes_for_uri(uri) {
-        if node.element_kind != crate::ElementKind::Import {
+        if node.element_kind != sysml_model::ElementKind::Import {
             continue;
         }
         let Some(target) = import_target(node) else {
@@ -145,7 +146,7 @@ pub(in crate::semantic::diagnostics) fn collect_import_conformance_diagnostics(
     }
 
     for node in graph.nodes_for_uri(uri) {
-        if node.element_kind != crate::ElementKind::Filter {
+        if node.element_kind != sysml_model::ElementKind::Filter {
             continue;
         }
         let owner_kind = node

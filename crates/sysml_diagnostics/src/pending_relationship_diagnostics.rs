@@ -2,16 +2,17 @@
 
 use url::Url;
 
-use crate::semantic::diagnostics::helpers::diag;
-use crate::semantic::diagnostics::types::DiagnosticSeverity;
-use crate::semantic::graph::SemanticGraph;
-use crate::semantic::text_span::{TextPosition, TextRange};
-use crate::{RelationshipKind, SemanticDiagnostic};
+use crate::helpers::diag;
+use crate::types::DiagnosticSeverity;
+use sysml_model::semantic::graph::SemanticGraph;
+use sysml_model::semantic::text_span::{TextPosition, TextRange};
+use crate::SemanticDiagnostic;
+use sysml_model::RelationshipKind;
 
 /// Append error diagnostics for pending relationships on `uri` that could not be resolved.
 ///
-/// Call after [`crate::resolve_workspace_pending_relationships`] (as in
-/// [`crate::build_semantic_graph_from_documents`]).
+/// Call after [`sysml_model::resolve_workspace_pending_relationships`] (as in
+/// [`sysml_model::build_semantic_graph_from_documents`]).
 pub fn append_unresolved_pending_relationship_diagnostics(
     graph: &SemanticGraph,
     uri: &Url,
@@ -74,9 +75,10 @@ pub fn append_unresolved_pending_relationship_diagnostics(
 #[cfg(test)]
 mod tests {
     use crate::collect_diagnostics_from_graph;
-    use crate::semantic::graph::{PendingExpressionRelationship, PendingRelationship};
-    use crate::semantic::text_span::{TextPosition, TextRange};
-    use crate::{DiagnosticsOptions, RelationshipKind, SemanticGraph};
+    use sysml_model::semantic::graph::{PendingExpressionRelationship, PendingRelationship};
+    use sysml_model::semantic::text_span::{TextPosition, TextRange};
+    use crate::DiagnosticsOptions;
+    use sysml_model::{RelationshipKind, SemanticGraph};
     use url::Url;
 
     #[test]

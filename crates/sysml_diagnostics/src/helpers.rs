@@ -1,10 +1,10 @@
-use crate::semantic::diagnostics::types::{DiagnosticSeverity, SemanticDiagnostic};
+use crate::types::{DiagnosticSeverity, SemanticDiagnostic};
 
-use crate::{
+use sysml_model::{
     ElementKind, NodeId, RelationshipKind, SemanticGraph, SemanticNode, TextPosition, TextRange,
 };
 
-use crate::semantic::kinds;
+use sysml_model::semantic::kinds;
 
 pub(super) fn is_port_like(kind: &ElementKind) -> bool {
     kinds::is_port_like(kind)
@@ -473,14 +473,14 @@ pub(super) fn parse_port_type(s: &str) -> (String, bool) {
 }
 
 pub(super) fn normalize_declared_type_ref(type_ref: &str) -> String {
-    crate::semantic::resolution::naming::normalize_declared_type_ref(type_ref)
+    sysml_model::semantic::resolution::naming::normalize_declared_type_ref(type_ref)
 }
 
 pub(super) fn is_builtin_type_ref(type_ref: &str) -> bool {
     if matches!(type_ref, "String") {
         return true;
     }
-    crate::semantic::standard_views::is_standard_view_type(type_ref)
+    sysml_model::semantic::standard_views::is_standard_view_type(type_ref)
 }
 
 pub(super) fn attribute_value_is_string_literal(value: &str) -> bool {
@@ -489,12 +489,12 @@ pub(super) fn attribute_value_is_string_literal(value: &str) -> bool {
 }
 
 pub(super) fn resolves_to_enum_def(
-    graph: &crate::SemanticGraph,
-    context_node: &crate::SemanticNode,
+    graph: &sysml_model::SemanticGraph,
+    context_node: &sysml_model::SemanticNode,
     type_ref: &str,
 ) -> bool {
-    use crate::resolve_type_reference_targets;
-    use crate::ElementKind;
+    use sysml_model::resolve_type_reference_targets;
+    use sysml_model::ElementKind;
     !resolve_type_reference_targets(graph, context_node, type_ref, &[ElementKind::EnumDef])
         .is_empty()
 }
@@ -685,7 +685,7 @@ Check the case definition body: required clauses must appear before the objectiv
 mod connection_duplicate_key_tests {
     use url::Url;
 
-    use crate::semantic::model::NodeId;
+    use sysml_model::semantic::model::NodeId;
 
     use super::connection_duplicate_key;
 

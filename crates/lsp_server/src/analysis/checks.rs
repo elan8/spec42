@@ -6,10 +6,10 @@ use crate::semantic::SemanticGraph;
 /// Returns LSP diagnostics for semantic rules in the given document.
 /// Semantic rule evaluation is owned by sysml_model.
 pub fn compute_semantic_diagnostics(graph: &SemanticGraph, uri: &Url) -> Vec<Diagnostic> {
-    sysml_model::collect_diagnostics_from_graph(
+    sysml_diagnostics::collect_diagnostics_from_graph(
         graph,
         uri,
-        sysml_model::DiagnosticsOptions {
+        sysml_diagnostics::DiagnosticsOptions {
             include_hints: false,
         },
     )

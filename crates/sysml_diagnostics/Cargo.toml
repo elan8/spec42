@@ -1,0 +1,13 @@
+[package]
+name = "sysml_diagnostics"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
+description = "Semantic diagnostics engine for Spec42"
+
+[dependencies]
+sysml_model = { path = "../sysml_model" }
+sysml-v2-parser = { workspace = true }
+serde_json = { workspace = true }
+url = { version = "2", features = ["serde"] }

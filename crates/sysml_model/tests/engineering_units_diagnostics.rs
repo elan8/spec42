@@ -1,10 +1,8 @@
 //! Regression: engineering SI-prefixed unit literals with QUDV catalog sources.
 
 use std::path::{Path, PathBuf};
-use sysml_model::{
-    build_semantic_graph_from_documents, collect_diagnostics_from_graph, DiagnosticsOptions,
-    SysmlDocument, SysmlDocumentSourceKind, UnitRegistry,
-};
+use sysml_diagnostics::{collect_diagnostics_from_graph, DiagnosticsOptions};
+use sysml_model::{build_semantic_graph_from_documents, SysmlDocument, SysmlDocumentSourceKind, UnitRegistry};
 use url::Url;
 
 const SI_CATALOG_EXCERPT: &str = r#"

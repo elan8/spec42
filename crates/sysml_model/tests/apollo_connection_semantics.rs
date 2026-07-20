@@ -1,9 +1,6 @@
 ﻿use sysml_model::semantic::source::{SysmlDocument, SysmlDocumentSourceKind};
-use sysml_model::{
-    build_semantic_graph_from_documents, collect_diagnostics_from_graph,
-    resolve_expression_endpoint_strict, resolve_workspace_pending_relationships,
-    DiagnosticsOptions, ResolveResult,
-};
+use sysml_diagnostics::{collect_diagnostics_from_graph, DiagnosticsOptions};
+use sysml_model::{build_semantic_graph_from_documents, resolve_expression_endpoint_strict, resolve_workspace_pending_relationships, ResolveResult};
 use url::Url;
 
 fn workspace_doc(path: &str, content: &str) -> SysmlDocument {

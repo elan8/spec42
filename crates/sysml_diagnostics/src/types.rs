@@ -1,4 +1,4 @@
-use crate::semantic::text_span::{TextPosition, TextRange};
+use sysml_model::semantic::text_span::{TextPosition, TextRange};
 use url::Url;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]

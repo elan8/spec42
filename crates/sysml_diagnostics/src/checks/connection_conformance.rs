@@ -2,14 +2,15 @@ use std::collections::HashSet;
 
 use url::Url;
 
-use crate::semantic::diagnostics::helpers::{
+use crate::helpers::{
     diag, diagnostic_range, is_part_like, is_port_like, parse_port_type,
     port_compatibility_mismatch,
 };
-use crate::semantic::diagnostics::types::DiagnosticSeverity;
-use crate::semantic::model::RelationshipKind;
-use crate::semantic::reference_resolution::resolve_expression_endpoint_strict;
-use crate::{ResolveResult, SemanticDiagnostic, SemanticGraph};
+use crate::types::DiagnosticSeverity;
+use sysml_model::semantic::model::RelationshipKind;
+use sysml_model::semantic::reference_resolution::resolve_expression_endpoint_strict;
+use crate::SemanticDiagnostic;
+use sysml_model::{ResolveResult, SemanticGraph};
 
 fn first_unresolved_connection_segment(
     graph: &SemanticGraph,
@@ -40,7 +41,7 @@ fn first_unresolved_connection_segment(
                 let Some(owner) = graph.get_node(&current_id) else {
                     return Some((*segment).to_string());
                 };
-                match crate::resolve_member_via_type(graph, owner, segment) {
+                match sysml_model::resolve_member_via_type(graph, owner, segment) {
                     ResolveResult::Resolved(next) => current_id = next,
                     ResolveResult::Unresolved => return Some((*segment).to_string()),
                     ResolveResult::Ambiguous => return None,
@@ -63,7 +64,7 @@ fn port_mismatch_code(message: &str) -> Option<&'static str> {
     }
 }
 
-pub(in crate::semantic::diagnostics) fn collect_connection_conformance_diagnostics(
+pub(crate) fn collect_connection_conformance_diagnostics(
     graph: &SemanticGraph,
     uri: &Url,
 ) -> Vec<SemanticDiagnostic> {
@@ -153,7 +154,7 @@ pub(in crate::semantic::diagnostics) fn collect_connection_conformance_diagnosti
     }
 
     for node in graph.nodes_for_uri(uri) {
-        if node.element_kind != crate::ElementKind::InterfaceEnd {
+        if node.element_kind != sysml_model::ElementKind::InterfaceEnd {
             continue;
         }
         let Some(port_type) = node
@@ -194,7 +195,7 @@ pub(in crate::semantic::diagnostics) fn collect_connection_conformance_diagnosti
     }
 
     for node in graph.nodes_for_uri(uri) {
-        if node.element_kind != crate::ElementKind::Binding {
+        if node.element_kind != sysml_model::ElementKind::Binding {
             continue;
         }
         let endpoints: Vec<String> = graph
@@ -206,12 +207,12 @@ pub(in crate::semantic::diagnostics) fn collect_connection_conformance_diagnosti
             .map(|(_, target, _, _)| target)
             .collect();
         if endpoints.len() == 2 {
-            let left_id = crate::NodeId::new(uri, &endpoints[0]);
-            let right_id = crate::NodeId::new(uri, &endpoints[1]);
+            let left_id = sysml_model::NodeId::new(uri, &endpoints[0]);
+            let right_id = sysml_model::NodeId::new(uri, &endpoints[1]);
             if let (Some(left), Some(right)) = (graph.get_node(&left_id), graph.get_node(&right_id))
             {
-                if left.element_kind == crate::ElementKind::Attribute
-                    && right.element_kind == crate::ElementKind::Attribute
+                if left.element_kind == sysml_model::ElementKind::Attribute
+                    && right.element_kind == sysml_model::ElementKind::Attribute
                 {
                     let left_type = left
                         .attributes

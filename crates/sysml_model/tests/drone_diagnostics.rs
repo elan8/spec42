@@ -1,9 +1,7 @@
 ﻿//! Regression tests for drone-example diagnostics (SysML v2 spec alignment).
 
-use sysml_model::{
-    build_semantic_graph_from_documents, collect_diagnostics_from_graph, DiagnosticsOptions,
-    SysmlDocument, SysmlDocumentSourceKind,
-};
+use sysml_diagnostics::{collect_diagnostics_from_graph, DiagnosticsOptions};
+use sysml_model::{build_semantic_graph_from_documents, SysmlDocument, SysmlDocumentSourceKind};
 
 fn workspace_doc(name: &str, content: &str) -> SysmlDocument {
     SysmlDocument::from_memory_path(
@@ -17,7 +15,7 @@ fn workspace_doc(name: &str, content: &str) -> SysmlDocument {
     .expect("workspace document")
 }
 
-fn has_code(diags: &[sysml_model::SemanticDiagnostic], code: &str) -> bool {
+fn has_code(diags: &[sysml_diagnostics::SemanticDiagnostic], code: &str) -> bool {
     diags.iter().any(|d| d.code == code)
 }
 

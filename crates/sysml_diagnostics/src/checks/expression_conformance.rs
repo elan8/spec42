@@ -2,26 +2,25 @@ use std::collections::HashSet;
 
 use url::Url;
 
-use crate::semantic::diagnostics::helpers::{
+use crate::helpers::{
     attribute_value_is_string_literal, condition_expression_is_boolean, declared_type_ref, diag,
     diagnostic_range, is_boolean_literal_value, is_synthetic, normalize_declared_type_ref,
     resolves_to_enum_def,
 };
-use crate::semantic::diagnostics::types::DiagnosticSeverity;
-use crate::semantic::reference_resolution::resolve_expression_endpoint_strict;
-use crate::semantic::units::{
+use crate::types::DiagnosticSeverity;
+use sysml_model::semantic::reference_resolution::resolve_expression_endpoint_strict;
+use sysml_model::semantic::units::{
     is_measurement_unit_compatible, quantity_value_to_unit_type_name,
     unit_type_for_quantity_type_name,
 };
-use crate::ResolveResult;
-use crate::UnitRegistry;
-use crate::{SemanticDiagnostic, SemanticGraph};
+use crate::SemanticDiagnostic;
+use sysml_model::{ResolveResult, SemanticGraph, UnitRegistry};
 
 fn is_boolean_literal(value: &str) -> bool {
     matches!(value.trim().to_ascii_lowercase().as_str(), "true" | "false")
 }
 
-fn resolved_scalar_kind(graph: &SemanticGraph, node: &crate::SemanticNode) -> Option<&'static str> {
+fn resolved_scalar_kind(graph: &SemanticGraph, node: &sysml_model::SemanticNode) -> Option<&'static str> {
     let mut candidates = Vec::new();
     if let Some(type_ref) = declared_type_ref(node) {
         candidates.push(normalize_declared_type_ref(type_ref));
@@ -52,7 +51,7 @@ fn enum_contains_value(graph: &SemanticGraph, enum_type_ref: &str, literal: &str
     graph
         .nodes_named(&normalized)
         .into_iter()
-        .filter(|node| node.element_kind == crate::ElementKind::EnumDef)
+        .filter(|node| node.element_kind == sysml_model::ElementKind::EnumDef)
         .flat_map(|node| graph.children_of(node))
         .any(|child| child.name == literal || child.name.ends_with(&format!("::{literal}")))
 }
@@ -64,7 +63,7 @@ fn expected_unit_dimension_for_type(graph: &SemanticGraph, type_name: &str) -> O
 
 fn quantity_type_names_for_attribute(
     graph: &SemanticGraph,
-    node: &crate::SemanticNode,
+    node: &sysml_model::SemanticNode,
 ) -> Vec<String> {
     let mut names = Vec::new();
     if let Some(type_ref) = declared_type_ref(node) {
@@ -83,7 +82,7 @@ fn unit_dimensions_compatible(graph: &SemanticGraph, expected: &str, actual: &st
     is_measurement_unit_compatible(graph, expected, actual)
 }
 
-pub(in crate::semantic::diagnostics) fn collect_expression_conformance_diagnostics(
+pub(crate) fn collect_expression_conformance_diagnostics(
     graph: &SemanticGraph,
     uri: &Url,
     units: &UnitRegistry,
@@ -96,7 +95,7 @@ pub(in crate::semantic::diagnostics) fn collect_expression_conformance_diagnosti
             continue;
         }
 
-        if node.element_kind == crate::ElementKind::Attribute {
+        if node.element_kind == sysml_model::ElementKind::Attribute {
             let Some(value) = node.attributes.get("value").and_then(|v| v.as_str()) else {
                 continue;
             };
@@ -210,7 +209,7 @@ pub(in crate::semantic::diagnostics) fn collect_expression_conformance_diagnosti
 
         if matches!(
             node.element_kind,
-            crate::ElementKind::ConstraintDef | crate::ElementKind::Assert
+            sysml_model::ElementKind::ConstraintDef | sysml_model::ElementKind::Assert
         ) {
             if let Some(status) = node
                 .attributes
@@ -242,7 +241,7 @@ pub(in crate::semantic::diagnostics) fn collect_expression_conformance_diagnosti
             }
         }
 
-        if node.element_kind == crate::ElementKind::Filter {
+        if node.element_kind == sysml_model::ElementKind::Filter {
             let owner_kind = node
                 .attributes
                 .get("filterOwnerKind")
@@ -273,7 +272,7 @@ pub(in crate::semantic::diagnostics) fn collect_expression_conformance_diagnosti
             }
         }
 
-        if node.element_kind == crate::ElementKind::Verify {
+        if node.element_kind == sysml_model::ElementKind::Verify {
             let Some(lhs) = node.attributes.get("lhs").and_then(|v| v.as_str()) else {
                 continue;
             };
@@ -325,13 +324,13 @@ pub(in crate::semantic::diagnostics) fn collect_expression_conformance_diagnosti
             }
         }
 
-        if node.element_kind == crate::ElementKind::CalcDef
-            || node.element_kind == crate::ElementKind::Calc
+        if node.element_kind == sysml_model::ElementKind::CalcDef
+            || node.element_kind == sysml_model::ElementKind::Calc
         {
             let param_count = graph
                 .children_of(node)
                 .into_iter()
-                .filter(|child| child.element_kind == crate::ElementKind::InOutParameter)
+                .filter(|child| child.element_kind == sysml_model::ElementKind::InOutParameter)
                 .count();
             if let Some(arg_count) = node
                 .attributes

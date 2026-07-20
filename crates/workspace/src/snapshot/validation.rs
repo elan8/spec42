@@ -1,6 +1,6 @@
 ﻿//! Host-facing validation report (portable, tower-lsp-free).
 
-use sysml_model::SemanticDiagnostic;
+use sysml_diagnostics::SemanticDiagnostic;
 
 #[derive(Debug, Clone)]
 pub struct HostValidatedDocument {

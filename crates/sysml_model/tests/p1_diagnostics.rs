@@ -1,16 +1,17 @@
 ﻿//! P1 diagnostic regression tests.
 
-use sysml_model::{build_graph_from_doc, collect_diagnostics_from_graph, DiagnosticsOptions};
+use sysml_diagnostics::{collect_diagnostics_from_graph, DiagnosticsOptions};
+use sysml_model::build_graph_from_doc;
 use url::Url;
 
-fn diags_for(input: &str) -> Vec<sysml_model::SemanticDiagnostic> {
+fn diags_for(input: &str) -> Vec<sysml_diagnostics::SemanticDiagnostic> {
     let parsed = sysml_v2_parser::parse(input).expect("parse");
     let uri = Url::parse("file:///p1.sysml").expect("uri");
     let graph = build_graph_from_doc(&parsed, &uri);
     collect_diagnostics_from_graph(&graph, &uri, DiagnosticsOptions::default())
 }
 
-fn has_code(diags: &[sysml_model::SemanticDiagnostic], code: &str) -> bool {
+fn has_code(diags: &[sysml_diagnostics::SemanticDiagnostic], code: &str) -> bool {
     diags.iter().any(|d| d.code == code)
 }
 
