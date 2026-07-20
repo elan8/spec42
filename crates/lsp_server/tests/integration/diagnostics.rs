@@ -474,7 +474,7 @@ fn print_diagnostics_for_real_sysml_examples_surveillance_drone() {
                         || (nsl + 1) == 403
                         || (nsl + 1) == 427)
                 {
-                    let dbg = format!("{:?}", &node.value);
+                    let dbg = format!("{:?}", node.value);
                     let snippet_len = dbg.len().min(240);
                     eprintln!("  debug: {}", &dbg[..snippet_len]);
                 }
