@@ -8,16 +8,14 @@ use crate::helpers::{
     is_synthetic, normalize_declared_type_ref, unresolved_type_diagnostic_range,
 };
 use crate::types::DiagnosticSeverity;
+use crate::SemanticDiagnostic;
 use sysml_model::semantic::import_resolution::resolve_imported_node_ids_for_simple_name;
 use sysml_model::semantic::kinds::{
     is_metadata_restriction_attribute, is_namespace, RULE6_ALLOWED_KINDS,
 };
 use sysml_model::semantic::model::node_matches_simple_name;
 use sysml_model::semantic::relationships::SPECIALIZES_TARGET_KINDS;
-use crate::SemanticDiagnostic;
-use sysml_model::{
-    resolve_type_reference_targets, ElementKind, SemanticGraph, SemanticNode,
-};
+use sysml_model::{resolve_type_reference_targets, ElementKind, SemanticGraph, SemanticNode};
 
 fn is_def_or_usage_kind(kind: &sysml_model::ElementKind) -> bool {
     matches!(

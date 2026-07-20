@@ -1,5 +1,7 @@
-﻿use sysml_diagnostics::{collect_diagnostics_from_graph, DiagnosticsOptions};
-use sysml_model::{build_semantic_graph_from_documents, RelationshipKind, SysmlDocument, SysmlDocumentSourceKind};
+use sysml_diagnostics::{collect_diagnostics_from_graph, DiagnosticsOptions};
+use sysml_model::{
+    build_semantic_graph_from_documents, RelationshipKind, SysmlDocument, SysmlDocumentSourceKind,
+};
 
 const METADATA_DESIGN_DECISION_SYSML: &str = r#"
 package DesignDecisions {

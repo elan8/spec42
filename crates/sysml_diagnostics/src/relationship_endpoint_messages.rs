@@ -272,9 +272,9 @@ fn extract_single_quoted_value(message: &str) -> Option<String> {
 #[cfg(test)]
 mod tests {
     use crate::collect_diagnostics_from_graph;
+    use crate::DiagnosticsOptions;
     use sysml_model::semantic::source::{SysmlDocument, SysmlDocumentSourceKind};
     use sysml_model::semantic::workspace_graph::build_semantic_graph_from_documents;
-    use crate::DiagnosticsOptions;
 
     #[test]
     fn allocate_part_def_endpoint_reports_prefers_usage_diagnostic() {

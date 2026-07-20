@@ -8,19 +8,22 @@ use crate::helpers::{
     resolves_to_enum_def,
 };
 use crate::types::DiagnosticSeverity;
+use crate::SemanticDiagnostic;
 use sysml_model::semantic::reference_resolution::resolve_expression_endpoint_strict;
 use sysml_model::semantic::units::{
     is_measurement_unit_compatible, quantity_value_to_unit_type_name,
     unit_type_for_quantity_type_name,
 };
-use crate::SemanticDiagnostic;
 use sysml_model::{ResolveResult, SemanticGraph, UnitRegistry};
 
 fn is_boolean_literal(value: &str) -> bool {
     matches!(value.trim().to_ascii_lowercase().as_str(), "true" | "false")
 }
 
-fn resolved_scalar_kind(graph: &SemanticGraph, node: &sysml_model::SemanticNode) -> Option<&'static str> {
+fn resolved_scalar_kind(
+    graph: &SemanticGraph,
+    node: &sysml_model::SemanticNode,
+) -> Option<&'static str> {
     let mut candidates = Vec::new();
     if let Some(type_ref) = declared_type_ref(node) {
         candidates.push(normalize_declared_type_ref(type_ref));

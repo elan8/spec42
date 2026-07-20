@@ -8,10 +8,10 @@ use crate::helpers::{
 };
 use crate::kind_rules::{allowed_typing_target_kinds, is_compatible_kind};
 use crate::types::DiagnosticSeverity;
+use crate::SemanticDiagnostic;
 use sysml_model::semantic::model::RelationshipKind;
 use sysml_model::semantic::reference_resolution::resolve_expression_endpoint_strict;
 use sysml_model::semantic::relationships::{resolve_type_target_in_workspace, TYPING_TARGET_KINDS};
-use crate::SemanticDiagnostic;
 use sysml_model::{ResolveResult, SemanticGraph, SemanticNode};
 
 fn is_action_like(kind: &sysml_model::ElementKind) -> bool {
@@ -438,7 +438,8 @@ pub(crate) fn collect_behavior_conformance_diagnostics(
         if !seen.insert(key) {
             continue;
         }
-        let Some(container_node) = graph.get_node(&sysml_model::NodeId::new(uri, container.clone()))
+        let Some(container_node) =
+            graph.get_node(&sysml_model::NodeId::new(uri, container.clone()))
         else {
             continue;
         };
@@ -615,7 +616,8 @@ pub(crate) fn collect_behavior_conformance_diagnostics(
         if !seen.insert(key) {
             continue;
         }
-        let Some(container_node) = graph.get_node(&sysml_model::NodeId::new(uri, container.clone()))
+        let Some(container_node) =
+            graph.get_node(&sysml_model::NodeId::new(uri, container.clone()))
         else {
             continue;
         };

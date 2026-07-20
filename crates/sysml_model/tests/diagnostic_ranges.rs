@@ -1,5 +1,7 @@
-﻿use sysml_diagnostics::{collect_diagnostics_from_graph, DiagnosticsOptions};
-use sysml_model::{build_semantic_graph_from_documents, SysmlDocument, SysmlDocumentSourceKind, TextRange};
+use sysml_diagnostics::{collect_diagnostics_from_graph, DiagnosticsOptions};
+use sysml_model::{
+    build_semantic_graph_from_documents, SysmlDocument, SysmlDocumentSourceKind, TextRange,
+};
 use tempfile::tempdir;
 use url::Url;
 

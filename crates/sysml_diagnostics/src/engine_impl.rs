@@ -1,4 +1,4 @@
-﻿//! Semantic validation beyond syntax: port connectivity, type compatibility, etc.
+//! Semantic validation beyond syntax: port connectivity, type compatibility, etc.
 //!
 //! These checks use the semantic graph (parts, ports, connections) to report
 //! diagnostics such as: unconnected ports, connection to non-port, port type mismatch.
@@ -16,12 +16,14 @@ use crate::types::DiagnosticsOptions;
 use crate::types::{DiagnosticRelatedInfo, DiagnosticSeverity};
 use crate::SemanticDiagnostic;
 use sysml_model::{
-    resolve_inherited_member_via_type, RelationshipKind, ResolveResult, SemanticGraph,
-    UnitRegistry,
+    resolve_inherited_member_via_type, RelationshipKind, ResolveResult, SemanticGraph, UnitRegistry,
 };
 
 fn is_view_kind(kind: &sysml_model::ElementKind) -> bool {
-    matches!(kind, sysml_model::ElementKind::View | sysml_model::ElementKind::ViewDef)
+    matches!(
+        kind,
+        sysml_model::ElementKind::View | sysml_model::ElementKind::ViewDef
+    )
 }
 
 fn is_viewpoint_kind(kind: &sysml_model::ElementKind) -> bool {

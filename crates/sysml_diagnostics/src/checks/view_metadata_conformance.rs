@@ -7,6 +7,7 @@ use crate::helpers::{
     diag, diagnostic_range, is_synthetic, is_unknown_range, parse_attribute_text_range,
 };
 use crate::types::DiagnosticSeverity;
+use crate::SemanticDiagnostic;
 use sysml_model::semantic::model::{ElementKind, RelationshipKind};
 use sysml_model::semantic::reference_resolution::{resolve_expose_target, ExposeTargetResolution};
 use sysml_model::semantic::relationships::{
@@ -14,7 +15,6 @@ use sysml_model::semantic::relationships::{
 };
 use sysml_model::semantic::standard_views::is_non_standard_explicit_view_type;
 use sysml_model::semantic::text_span::TextRange;
-use crate::SemanticDiagnostic;
 use sysml_model::SemanticGraph;
 
 const BUILTIN_MODELED_DECL_KEYWORDS: &[&str] = &[
@@ -446,7 +446,8 @@ pub(crate) fn collect_view_metadata_conformance_diagnostics(
         if !seen.insert(key) {
             continue;
         }
-        let Some(first) = graph.get_node(&sysml_model::NodeId::new(uri, qualified_names[0].clone()))
+        let Some(first) =
+            graph.get_node(&sysml_model::NodeId::new(uri, qualified_names[0].clone()))
         else {
             continue;
         };

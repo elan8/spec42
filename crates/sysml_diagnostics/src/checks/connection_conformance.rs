@@ -7,9 +7,9 @@ use crate::helpers::{
     port_compatibility_mismatch,
 };
 use crate::types::DiagnosticSeverity;
+use crate::SemanticDiagnostic;
 use sysml_model::semantic::model::RelationshipKind;
 use sysml_model::semantic::reference_resolution::resolve_expression_endpoint_strict;
-use crate::SemanticDiagnostic;
 use sysml_model::{ResolveResult, SemanticGraph};
 
 fn first_unresolved_connection_segment(

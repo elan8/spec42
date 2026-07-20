@@ -1,4 +1,6 @@
-use sysml_diagnostics::{DiagnosticRelatedInfo, DiagnosticSeverity as CoreSeverity, SemanticDiagnostic};
+use sysml_diagnostics::{
+    DiagnosticRelatedInfo, DiagnosticSeverity as CoreSeverity, SemanticDiagnostic,
+};
 use tower_lsp::lsp_types::{
     Diagnostic, DiagnosticRelatedInformation, DiagnosticSeverity, Location, NumberOrString,
 };

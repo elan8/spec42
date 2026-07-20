@@ -1,9 +1,9 @@
 #[cfg(test)]
 mod tests {
     use crate::collect_diagnostics_from_graph;
+    use crate::DiagnosticsOptions;
     use sysml_model::semantic::source::{SysmlDocument, SysmlDocumentSourceKind};
     use sysml_model::semantic::workspace_graph::build_semantic_graph_from_documents;
-    use crate::DiagnosticsOptions;
 
     #[test]
     fn suppresses_unresolved_satisfy_target_for_typed_part_member() {

@@ -13,15 +13,14 @@ use crate::kind_rules::{
     expected_typing_definition_label, is_compatible_kind, is_compatible_specializes_target,
 };
 use crate::types::DiagnosticSeverity;
+use crate::SemanticDiagnostic;
 use sysml_model::semantic::kinds::{
     is_metadata_restriction_attribute, is_reflective_sysml_usage_type,
     is_semantic_metadata_base_type_redefine,
 };
 use sysml_model::semantic::relationships::SPECIALIZES_TARGET_KINDS;
-use crate::SemanticDiagnostic;
 use sysml_model::{
-    resolve_inherited_member_via_type, resolve_type_reference_targets, ResolveResult,
-    SemanticGraph,
+    resolve_inherited_member_via_type, resolve_type_reference_targets, ResolveResult, SemanticGraph,
 };
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]

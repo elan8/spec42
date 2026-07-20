@@ -1,5 +1,8 @@
-﻿use sysml_diagnostics::{collect_diagnostics_from_graph, DiagnosticsOptions};
-use sysml_model::{build_semantic_graph_from_documents, evaluate_expressions, SysmlDocument, SysmlDocumentSourceKind};
+use sysml_diagnostics::{collect_diagnostics_from_graph, DiagnosticsOptions};
+use sysml_model::{
+    build_semantic_graph_from_documents, evaluate_expressions, SysmlDocument,
+    SysmlDocumentSourceKind,
+};
 
 const PASSING_ASSERT_SYSML: &str = r#"
 package Grid {
@@ -72,7 +75,9 @@ fn node_attr(graph: &sysml_model::SemanticGraph, qualified: &str, key: &str) -> 
         })
 }
 
-fn diagnostics_for(graph: &sysml_model::SemanticGraph) -> Vec<sysml_diagnostics::SemanticDiagnostic> {
+fn diagnostics_for(
+    graph: &sysml_model::SemanticGraph,
+) -> Vec<sysml_diagnostics::SemanticDiagnostic> {
     let uri = graph
         .node_ids_by_qualified_name
         .keys()

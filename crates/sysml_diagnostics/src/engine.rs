@@ -33,8 +33,8 @@ pub fn collect_diagnostics_from_graph_with_unit_registry(
 #[cfg(test)]
 mod tests {
     use super::*;
-    use sysml_model::build_graph_from_doc;
     use crate::DiagnosticSeverity;
+    use sysml_model::build_graph_from_doc;
 
     #[test]
     fn collect_diagnostics_from_graph_emits_implicit_redefinition_without_operator() {

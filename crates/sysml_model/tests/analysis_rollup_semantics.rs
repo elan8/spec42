@@ -1,5 +1,8 @@
-﻿use sysml_diagnostics::{collect_diagnostics_from_graph, DiagnosticsOptions};
-use sysml_model::{build_semantic_graph_from_documents, evaluate_expressions, RelationshipKind, SysmlDocument, SysmlDocumentSourceKind};
+use sysml_diagnostics::{collect_diagnostics_from_graph, DiagnosticsOptions};
+use sysml_model::{
+    build_semantic_graph_from_documents, evaluate_expressions, RelationshipKind, SysmlDocument,
+    SysmlDocumentSourceKind,
+};
 
 const ANALYSIS_ROLLUP_SYSML: &str = r#"
 package Demo {

@@ -1,7 +1,11 @@
-﻿use std::path::Path;
+use std::path::Path;
 
 use sysml_diagnostics::{collect_diagnostics_from_graph, DiagnosticsOptions};
-use sysml_model::{build_semantic_graph_from_documents, build_view_catalog, build_workspace_graph_dto_for_uris, evaluate_views, resolve_expose_target, resolve_library_closure, ExposeTargetResolution, LibraryClosureOptions, SysmlDocument, SysmlDocumentSourceKind, WorkspaceSource};
+use sysml_model::{
+    build_semantic_graph_from_documents, build_view_catalog, build_workspace_graph_dto_for_uris,
+    evaluate_views, resolve_expose_target, resolve_library_closure, ExposeTargetResolution,
+    LibraryClosureOptions, SysmlDocument, SysmlDocumentSourceKind, WorkspaceSource,
+};
 
 const WEBSHOP_FILES: &[&str] = &[
     "webshop.sysml",

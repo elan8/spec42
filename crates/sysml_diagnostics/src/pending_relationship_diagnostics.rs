@@ -4,9 +4,9 @@ use url::Url;
 
 use crate::helpers::diag;
 use crate::types::DiagnosticSeverity;
+use crate::SemanticDiagnostic;
 use sysml_model::semantic::graph::SemanticGraph;
 use sysml_model::semantic::text_span::{TextPosition, TextRange};
-use crate::SemanticDiagnostic;
 use sysml_model::RelationshipKind;
 
 /// Append error diagnostics for pending relationships on `uri` that could not be resolved.
@@ -75,9 +75,9 @@ pub fn append_unresolved_pending_relationship_diagnostics(
 #[cfg(test)]
 mod tests {
     use crate::collect_diagnostics_from_graph;
+    use crate::DiagnosticsOptions;
     use sysml_model::semantic::graph::{PendingExpressionRelationship, PendingRelationship};
     use sysml_model::semantic::text_span::{TextPosition, TextRange};
-    use crate::DiagnosticsOptions;
     use sysml_model::{RelationshipKind, SemanticGraph};
     use url::Url;
 

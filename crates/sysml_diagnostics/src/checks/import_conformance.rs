@@ -2,15 +2,13 @@ use std::collections::HashSet;
 
 use url::Url;
 
-use crate::checks::import_resolution::{
-    import_target, import_target_resolves,
-};
+use crate::checks::import_resolution::{import_target, import_target_resolves};
 use crate::helpers::{
     condition_expression_is_boolean, diag, diagnostic_range, reference_token_range,
 };
 use crate::types::DiagnosticSeverity;
-use sysml_model::semantic::kinds::is_namespace;
 use crate::SemanticDiagnostic;
+use sysml_model::semantic::kinds::is_namespace;
 use sysml_model::SemanticGraph;
 
 fn import_is_all(node: &sysml_model::SemanticNode) -> bool {

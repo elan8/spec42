@@ -4,10 +4,10 @@ use url::Url;
 
 use crate::helpers::{diag, diagnostic_range, is_synthetic};
 use crate::types::DiagnosticSeverity;
+use crate::SemanticDiagnostic;
 use sysml_model::semantic::kinds::VERIFIED_REQUIREMENT_TARGET_KINDS;
 use sysml_model::semantic::model::{ElementKind, RelationshipKind};
 use sysml_model::semantic::reference_resolution::resolve_expression_endpoint_strict;
-use crate::SemanticDiagnostic;
 use sysml_model::{resolve_type_reference_targets, ResolveResult, SemanticGraph};
 
 fn is_requirement_kind(kind: &sysml_model::ElementKind) -> bool {

@@ -1,8 +1,6 @@
 use url::Url;
 
-use crate::types::{
-    DiagnosticRelatedInfo, DiagnosticSeverity, SemanticDiagnostic,
-};
+use crate::types::{DiagnosticRelatedInfo, DiagnosticSeverity, SemanticDiagnostic};
 use sysml_model::semantic::text_span::{TextPosition, TextRange};
 
 fn utf16_len(s: &str) -> u32 {

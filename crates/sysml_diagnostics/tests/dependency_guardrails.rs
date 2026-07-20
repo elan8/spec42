@@ -22,12 +22,11 @@ fn sysml_diagnostics_depends_on_sysml_model_but_not_protocol_or_runtime_crates()
         );
     }
 
-    for required in ["sysml_model"] {
-        assert!(
-            cargo_toml.contains(&format!("{required} =")),
-            "sysml_diagnostics must depend on {required}"
-        );
-    }
+    let required = "sysml_model";
+    assert!(
+        cargo_toml.contains(&format!("{required} =")),
+        "sysml_diagnostics must depend on {required}"
+    );
 }
 
 /// Locks in the boundary the `kinds.rs` classifier consolidation established: diagnostics
