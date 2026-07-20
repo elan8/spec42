@@ -220,9 +220,28 @@ pub fn is_part_like(element_kind: &ElementKind) -> bool {
     ) || matches!(element_kind, ElementKind::Unknown(s) if s.contains("part"))
 }
 
+/// Canonical `element_type`-string form of [`is_part_like`], for callers holding only a
+/// projected `element_type: String` (DTOs) rather than a [`SemanticNode`]/[`ElementKind`].
+/// Round-trips losslessly through [`ElementKind::parse`]/[`ElementKind::as_str`] for every
+/// known spelling; unrecognized strings fall back to [`ElementKind::Unknown`]'s substring match.
+pub fn is_part_like_str(element_type: &str) -> bool {
+    is_part_like(&ElementKind::parse(element_type))
+}
+
+/// `ConjugatedPortDefinition` (KerML 8.3.12.2, the implicit conjugate materialized alongside
+/// every `port def`) is port-like: [`allowed_typing_target_kinds`] already accepts it as a valid
+/// typing target for a `port` usage, and `diagnostics::helpers::resolve_typed_port_def` treats it
+/// as resolving to a real port definition, not a distinct kind.
 pub fn is_port_like(element_kind: &ElementKind) -> bool {
-    matches!(element_kind, ElementKind::Port | ElementKind::PortDef)
-        || matches!(element_kind, ElementKind::Unknown(s) if s.contains("port"))
+    matches!(
+        element_kind,
+        ElementKind::Port | ElementKind::PortDef | ElementKind::ConjugatedPortDefinition
+    ) || matches!(element_kind, ElementKind::Unknown(s) if s.contains("port"))
+}
+
+/// String-based form of [`is_port_like`] — see [`is_part_like_str`].
+pub fn is_port_like_str(element_type: &str) -> bool {
+    is_port_like(&ElementKind::parse(element_type))
 }
 
 pub fn is_requirement(element_kind: &ElementKind) -> bool {
@@ -461,5 +480,69 @@ pub fn expected_typing_definition_label(usage_kind: &ElementKind) -> String {
     match usage_kind {
         ElementKind::Actor | ElementKind::Stakeholder => "part or item".to_string(),
         _ => usage_kind.as_str().trim_end_matches(" def").to_string(),
+    }
+}
+
+#[cfg(test)]
+mod part_port_classification_tests {
+    //! Regression tests pinning `is_part_like`/`is_port_like` for the element kinds that
+    //! previously diverged across the (now-removed) duplicate string-based classifiers in
+    //! `element_kind_classify.rs` and `ibd/extract_impl/kind_classify.rs`.
+    use super::*;
+
+    #[test]
+    fn item_def_is_part_like() {
+        assert!(is_part_like(&ElementKind::ItemDef));
+        assert!(is_part_like_str("item def"));
+    }
+
+    #[test]
+    fn occurrence_def_is_part_like() {
+        assert!(is_part_like(&ElementKind::OccurrenceDef));
+        assert!(is_part_like_str("occurrence def"));
+    }
+
+    #[test]
+    fn conjugated_port_definition_is_port_like() {
+        assert!(is_port_like(&ElementKind::ConjugatedPortDefinition));
+        assert!(is_port_like_str("conjugated port definition"));
+    }
+
+    #[test]
+    fn conjugated_port_definition_is_not_part_like() {
+        assert!(!is_part_like(&ElementKind::ConjugatedPortDefinition));
+    }
+
+    #[test]
+    fn item_def_and_occurrence_def_are_not_port_like() {
+        assert!(!is_port_like(&ElementKind::ItemDef));
+        assert!(!is_port_like(&ElementKind::OccurrenceDef));
+    }
+
+    #[test]
+    fn plain_part_and_port_kinds_still_classify() {
+        assert!(is_part_like(&ElementKind::Part));
+        assert!(is_part_like(&ElementKind::PartDef));
+        assert!(is_port_like(&ElementKind::Port));
+        assert!(is_port_like(&ElementKind::PortDef));
+    }
+
+    #[test]
+    fn str_wrappers_round_trip_through_parse() {
+        assert_eq!(
+            is_part_like_str(ElementKind::ItemDef.as_str()),
+            is_part_like(&ElementKind::ItemDef)
+        );
+        assert_eq!(
+            is_port_like_str(ElementKind::ConjugatedPortDefinition.as_str()),
+            is_port_like(&ElementKind::ConjugatedPortDefinition)
+        );
+    }
+
+    #[test]
+    fn unknown_kind_falls_back_to_substring_match() {
+        assert!(is_part_like_str("some future part variant"));
+        assert!(is_port_like_str("some future port variant"));
+        assert!(!is_part_like_str("totally unrelated kind"));
     }
 }

@@ -1,8 +1,7 @@
 use super::*;
 
 pub(crate) fn is_part_like(kind: &str) -> bool {
-    let k = kind.to_lowercase();
-    k.contains("part def") || k == "part" || (k.contains("part") && !k.contains("def"))
+    crate::semantic::kinds::is_part_like_str(kind)
 }
 
 /// BNF interconnection-element: part usage or part-ref (not definitions).

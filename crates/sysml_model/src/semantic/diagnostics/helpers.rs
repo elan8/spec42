@@ -4,14 +4,14 @@ use crate::{
     ElementKind, NodeId, RelationshipKind, SemanticGraph, SemanticNode, TextPosition, TextRange,
 };
 
-use crate::semantic::ibd;
+use crate::semantic::kinds;
 
 pub(super) fn is_port_like(kind: &ElementKind) -> bool {
-    ibd::is_port_like(kind.as_str())
+    kinds::is_port_like(kind)
 }
 
 pub(super) fn is_part_like(kind: &ElementKind) -> bool {
-    ibd::is_part_like(kind.as_str())
+    kinds::is_part_like(kind)
 }
 
 pub(super) fn diag(

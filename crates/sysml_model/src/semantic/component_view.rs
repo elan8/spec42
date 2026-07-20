@@ -12,11 +12,11 @@ use std::collections::{HashMap, HashSet};
 use url::Url;
 
 use crate::semantic::graph::SemanticGraph;
-use crate::semantic::ibd::is_part_like;
+use crate::semantic::kinds::is_part_like;
 use crate::semantic::model::{NodeId, SemanticNode};
 
-// Re-export the str-based port predicate for consumers of this module.
-pub use crate::semantic::ibd::is_port_like;
+// Re-export the canonical port predicate for consumers of this module.
+pub use crate::semantic::kinds::is_port_like;
 
 // ---------------------------------------------------------------------------
 // Output types
@@ -209,14 +209,15 @@ fn compute_has_materialized_shape(
     if !visiting.insert(def_node.id.clone()) {
         return false;
     }
-    let has_direct = graph.children_of(def_node).iter().any(|child| {
-        is_part_like(child.element_kind.as_str()) || is_port_like(child.element_kind.as_str())
-    });
+    let has_direct = graph
+        .children_of(def_node)
+        .iter()
+        .any(|child| is_part_like(&child.element_kind) || is_port_like(&child.element_kind));
     let result = has_direct
         || graph
             .outgoing_typing_or_specializes_targets(def_node)
             .into_iter()
-            .filter(|g| is_part_like(g.element_kind.as_str()))
+            .filter(|g| is_part_like(&g.element_kind))
             .any(|generalization| compute_has_materialized_shape(graph, generalization, visiting));
     visiting.remove(&def_node.id);
     graph.set_cached_shape(&def_node.id, result);
@@ -231,7 +232,7 @@ pub(crate) fn first_typed_definition_with_shape<'a>(
     graph
         .outgoing_typing_or_specializes_targets(node)
         .into_iter()
-        .find(|def| is_part_like(def.element_kind.as_str()) && has_materialized_shape(graph, def))
+        .find(|def| is_part_like(&def.element_kind) && has_materialized_shape(graph, def))
 }
 
 fn collect_inherited_ports(
@@ -247,13 +248,13 @@ fn collect_inherited_ports(
     }
     // Recurse into generalizations first so more-specific ports win on dedup.
     for generalization in graph.outgoing_typing_or_specializes_targets(def_node) {
-        if is_part_like(generalization.element_kind.as_str()) {
+        if is_part_like(&generalization.element_kind) {
             collect_inherited_ports(graph, generalization, parent_path, out, seen, visiting);
         }
     }
     // Direct ports of this definition.
     for child in graph.children_of(def_node) {
-        if !is_port_like(child.element_kind.as_str()) {
+        if !is_port_like(&child.element_kind) {
             continue;
         }
         let key = (parent_path.to_string(), child.name.clone());
@@ -296,7 +297,7 @@ fn expand_def_subtree(
     let can_recurse = max_depth.is_none_or(|max| current_depth < max);
 
     for part_child in graph.children_of(def_node) {
-        if !is_part_like(part_child.element_kind.as_str()) {
+        if !is_part_like(&part_child.element_kind) {
             continue;
         }
         let child_path = format!("{parent_path}.{}", part_child.name);
@@ -375,7 +376,7 @@ fn expand_usage_children(
     existing_paths: &mut HashSet<String>,
 ) {
     for part_child in graph.children_of(usage_node) {
-        if !is_part_like(part_child.element_kind.as_str()) {
+        if !is_part_like(&part_child.element_kind) {
             continue;
         }
         let child_path = format!("{parent_path}.{}", part_child.name);

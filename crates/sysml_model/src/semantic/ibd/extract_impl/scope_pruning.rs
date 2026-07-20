@@ -93,7 +93,7 @@ pub(crate) fn resolve_endpoint_anchor_node<'a>(
     loop {
         let node_id = NodeId::new(uri, &candidate);
         if let Some(node) = graph.get_node(&node_id) {
-            if is_port_like(node.element_kind.as_str()) {
+            if kinds::is_port_like(&node.element_kind) {
                 if let Some(parent_id) = &node.parent_id {
                     if let Some(parent) = graph.get_node(parent_id) {
                         return Some(parent);

@@ -15,6 +15,7 @@ use super::dto::{
     DefInstanceMappingDto, IbdConnectorDto, IbdContainerGroupDto, IbdDataDto, IbdPartDto,
     IbdPortDto, IbdRootViewDto,
 };
+use crate::semantic::kinds;
 use crate::{ElementKind, NodeId, RelationshipKind, SemanticGraph, SemanticNode};
 
 mod container_groups;
@@ -62,12 +63,6 @@ pub(crate) fn prune_interconnection_definition_parts(
     (normalized_parts, ports, connectors)
 }
 
-/// True if the element kind represents a port (port def or port usage). Public for semantic_checks.
-pub fn is_port_like(kind: &str) -> bool {
-    let k = kind.to_lowercase();
-    k.contains("port def") || k == "port"
-}
-
 /// Count of part nodes in the subtree (direct + recursive). Uses typing to follow part def structure.
 fn part_tree_size(graph: &SemanticGraph, node: &SemanticNode, _uri: &Url) -> usize {
     let mut visiting_defs: std::collections::HashSet<String> = std::collections::HashSet::new();
@@ -83,7 +78,7 @@ fn part_tree_size_inner(
     let children = graph.children_of(node);
     let part_children: Vec<_> = children
         .iter()
-        .filter(|c| is_part_like(c.element_kind.as_str()))
+        .filter(|c| kinds::is_part_like(&c.element_kind))
         .collect();
     part_children
         .iter()
@@ -91,7 +86,7 @@ fn part_tree_size_inner(
             let typed = graph.outgoing_typing_or_specializes_targets(c);
             let def = typed.into_iter().next();
             if let Some(def_node) = def {
-                if is_part_like(def_node.element_kind.as_str()) {
+                if kinds::is_part_like(&def_node.element_kind) {
                     let def_key = def_node.id.qualified_name.clone();
                     if !visiting_defs.insert(def_key.clone()) {
                         // Break recursive type cycles (A -> B -> A).
@@ -179,7 +174,7 @@ pub fn build_ibd_for_uri(graph: &SemanticGraph, uri: &Url) -> IbdDataDto {
                 attributes: node.attributes.clone(),
                 range: Some(crate::semantic::dto::range_to_dto(node.range)),
             });
-        } else if is_port_like(node.element_kind.as_str()) {
+        } else if kinds::is_port_like(&node.element_kind) {
             let parent_id = parent_qualified
                 .as_ref()
                 .map(|pq| qualified_name_to_dot(pq))
@@ -449,7 +444,7 @@ pub fn build_ibd_for_uri(graph: &SemanticGraph, uri: &Url) -> IbdDataDto {
         let colon = prefix.replace('.', "::");
         graph
             .get_node(&NodeId::new(uri, &colon))
-            .map(|node| !is_part_like(node.element_kind.as_str()))
+            .map(|node| !kinds::is_part_like(&node.element_kind))
             .unwrap_or(false)
     });
 

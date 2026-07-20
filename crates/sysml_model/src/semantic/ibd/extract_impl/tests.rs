@@ -904,3 +904,52 @@ fn prune_interconnection_definition_parts_normalizes_reference_metadata() {
         Some(&serde_json::json!(false))
     );
 }
+
+/// Regression test for the `kinds`/`ibd` `is_part_like` consolidation: a `part` usage typed by an
+/// `item def` (rather than a `part def`) is now expanded into its nested structure during IBD
+/// extraction, since `kinds::is_part_like` (see `kinds::part_port_classification_tests`) treats
+/// `ItemDef`/`OccurrenceDef` as valid part-definition targets and IBD extraction now shares that
+/// classifier instead of its own stricter, `ibd`-local string classifiers. `item def` bodies can
+/// only hold attribute members in this crate's grammar support, so `Payload` specializes a
+/// `part def` to pick up a materialized port -- before the consolidation, `payload`'s ports would
+/// not surface at all because `first_typed_definition_with_shape` rejected the `item def` typing
+/// target outright, regardless of what it specialized.
+#[test]
+fn build_ibd_expands_part_usage_typed_by_item_def() {
+    let doc = SysmlDocument::from_memory_path(
+        "workspace",
+        "model.sysml",
+        r#"package Architecture {
+  part def PortHolder {
+    port dataOut;
+  }
+  item def Payload :> PortHolder;
+  part def Drone {
+    part payload : Payload;
+  }
+  part myDrone : Drone;
+}"#
+        .to_string(),
+        SysmlDocumentSourceKind::Workspace,
+        None,
+        None,
+    )
+    .expect("workspace doc");
+    let (graph, _parsed) = build_semantic_graph_from_documents(&[doc]).expect("graph");
+    let uri = Url::parse("memory://workspace/model.sysml").expect("uri");
+    let ibd = build_ibd_for_uri(&graph, &uri);
+    assert!(
+        ibd.parts
+            .iter()
+            .any(|part| part.qualified_name == "Architecture.myDrone.payload"),
+        "expected item-def-typed part usage to be expanded into the IBD: {:?}",
+        ibd.parts
+    );
+    assert!(
+        ibd.ports
+            .iter()
+            .any(|port| port.parent_id == "Architecture.myDrone.payload" && port.name == "dataOut"),
+        "expected port nested inside the item def to surface on the expanded part: {:?}",
+        ibd.ports
+    );
+}

@@ -10,8 +10,9 @@
 use std::collections::{HashMap, HashSet};
 
 use crate::semantic::dto::{GraphEdgeDto, GraphNodeDto, SysmlGraphDto};
-use crate::semantic::element_kind_classify::{is_action_like, is_part_like};
+use crate::semantic::element_kind_classify::is_action_like;
 use crate::semantic::explicit_views::{node_matches_all_filters, EvaluatedView, FilterExpr};
+use crate::semantic::kinds::is_part_like_str as is_part_like;
 use crate::semantic::standard_view_defaults::grid_subtype_for_filters;
 
 /// Which relationship edges belong in the projected graph.

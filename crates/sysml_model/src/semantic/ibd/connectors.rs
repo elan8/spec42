@@ -4,13 +4,14 @@ use std::collections::HashMap;
 
 use url::Url;
 
+use crate::semantic::kinds;
 use crate::semantic::model::{RelationshipKind, SemanticNode};
 use crate::SemanticGraph;
 
 use super::dto::{IbdConnectorDto, IbdDataDto, IbdPartDto, IbdPortDto};
 use super::extract_impl::{
-    expand_relative_endpoint_to_part_path, graph_node_for_ibd_part, is_part_like,
-    qualified_name_to_dot, qualify_occurrence_endpoint, qualify_pending_connection_endpoint,
+    expand_relative_endpoint_to_part_path, graph_node_for_ibd_part, qualified_name_to_dot,
+    qualify_occurrence_endpoint, qualify_pending_connection_endpoint,
     resolve_owner_part_qn_for_endpoint, resolve_port_id_for_endpoint,
 };
 
@@ -51,7 +52,7 @@ fn collect_instance_def_mappings(
         }
     }
     for node in graph.nodes_for_uri(uri) {
-        if !is_part_like(node.element_kind.as_str())
+        if !kinds::is_part_like(&node.element_kind)
             || node
                 .element_kind
                 .as_str()
@@ -70,7 +71,7 @@ fn collect_instance_def_mappings(
         if let Some(def_node) = graph
             .outgoing_typing_or_specializes_targets(node)
             .into_iter()
-            .find(|target| is_part_like(target.element_kind.as_str()))
+            .find(|target| kinds::is_part_like(&target.element_kind))
         {
             let def_dot = qualified_name_to_dot(&def_node.id.qualified_name);
             mappings.push((def_dot, usage_dot));
@@ -107,7 +108,7 @@ fn build_workspace_instance_def_mappings(
             }
         }
         for node in graph.nodes_for_uri(uri) {
-            if !is_part_like(node.element_kind.as_str())
+            if !kinds::is_part_like(&node.element_kind)
                 || node
                     .element_kind
                     .as_str()
@@ -126,7 +127,7 @@ fn build_workspace_instance_def_mappings(
             if let Some(def_node) = graph
                 .outgoing_typing_or_specializes_targets(node)
                 .into_iter()
-                .find(|target| is_part_like(target.element_kind.as_str()))
+                .find(|target| kinds::is_part_like(&target.element_kind))
             {
                 let def_dot = qualified_name_to_dot(&def_node.id.qualified_name);
                 mappings.push((def_dot, usage_dot));
@@ -162,7 +163,7 @@ fn instance_def_mapping_for_part(
     let def_node = graph
         .outgoing_typing_or_specializes_targets(node)
         .into_iter()
-        .find(|target| is_part_like(target.element_kind.as_str()))?;
+        .find(|target| kinds::is_part_like(&target.element_kind))?;
     Some((
         qualified_name_to_dot(&def_node.id.qualified_name),
         part.qualified_name.clone(),
@@ -188,7 +189,7 @@ fn extend_instance_def_mappings_with_specializations(
                 graph.incoming_typing_or_specializes_sources(def_node);
             let mut visited: std::collections::HashSet<String> = std::collections::HashSet::new();
             while let Some(source) = stack.pop() {
-                if !is_part_like(source.element_kind.as_str())
+                if !kinds::is_part_like(&source.element_kind)
                     || !source
                         .element_kind
                         .as_str()

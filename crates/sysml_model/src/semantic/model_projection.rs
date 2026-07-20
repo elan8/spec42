@@ -4,8 +4,9 @@ use serde_json::{json, Value};
 use url::Url;
 
 use crate::semantic::dto::{range_to_dto, GraphEdgeDto, GraphNodeDto, SysmlGraphDto};
-use crate::semantic::element_kind_classify::{is_attribute_like, is_parameter_like, is_port_like};
+use crate::semantic::element_kind_classify::{is_attribute_like, is_parameter_like};
 use crate::semantic::graph::SemanticGraph;
+use crate::semantic::kinds::is_port_like_str as is_port_like;
 
 pub fn canonical_general_view_graph(
     graph: &SysmlGraphDto,
