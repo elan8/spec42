@@ -14,6 +14,44 @@ fn workspace_doc(path: &str, content: &str) -> SysmlDocument {
 }
 
 #[test]
+fn part_usage_multi_target_typing_emits_an_edge_per_target() {
+    // S42-004: `sysml-v2-parser` 0.45.0 stopped collapsing a comma-separated `:` typing clause
+    // on `PartUsage` to a single joined display string (`PartUsage.typing` now carries every
+    // target). Confirms spec42 wires a typing edge for each one, not just the first, mirroring
+    // `AttributeDef`/`AttributeUsage`'s existing `typing_targets` consumption -- real usage
+    // confirmed in the vendored SysML v2 examples (`part vehicle : Vehicle, SpatialItem { ...
+    // }`, `Geometry Examples/VehicleGeometryAndCoordinateFrames.sysml`).
+    let doc = workspace_doc(
+        "part_usage_multi_target.sysml",
+        r#"package P {
+  part def Vehicle;
+  part def SpatialItem;
+  part vehicle : Vehicle, SpatialItem;
+}"#,
+    );
+    let (graph, _parsed) = build_semantic_graph_from_documents(&[doc]).expect("graph");
+    let vehicle = graph
+        .nodes_named("vehicle")
+        .into_iter()
+        .find(|node| node.element_kind == "part")
+        .expect("part usage node");
+    let typing_targets = graph.outgoing_typing_or_specializes_targets(vehicle);
+
+    for expected in ["Vehicle", "SpatialItem"] {
+        assert!(
+            typing_targets
+                .iter()
+                .any(|target| target.name == expected && target.element_kind == "part def"),
+            "expected typing edge to {expected}, got targets: {:?}",
+            typing_targets
+                .iter()
+                .map(|target| (&target.id.qualified_name, &target.element_kind))
+                .collect::<Vec<_>>()
+        );
+    }
+}
+
+#[test]
 fn part_def_enum_usage_materializes_inner_attribute() {
     let doc = workspace_doc(
         "enum.sysml",

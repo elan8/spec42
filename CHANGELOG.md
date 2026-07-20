@@ -7,6 +7,36 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.44.18] - 2026-07-20
+
+- **S42-004 slice: `PartUsage`/`RefDecl` multi-target typing now wired, plus the
+  `Actions.sysml` redefines-then-typing data-loss bug closed.** `sysml-v2-parser` 0.45.0 stopped
+  collapsing a comma-separated `:` typing clause on `PartUsage`/`RefDecl` to a single joined
+  display string (`typing: Option<Node<TypingRelationship>>` now carries every target, and
+  `RefDecl.redefines` carries the `:>>` target that previously vanished entirely once
+  `action_ref_decl` saw `:>>` -- see Systems Library `Actions.sysml`'s `SendAction.sentMessage`/
+  `AcceptMessageAction.acceptedMessage`). Both graph-builder consumers only ever read the old
+  flattened `type_name: String` for edge resolution -- `usage_builders::materialize_part_usage`
+  and the shared `ref_decl::materialize_ref_decl` (used by every `ref`-declaration context:
+  action bodies, connection/interface def bodies, part def/usage bodies) -- so a workspace
+  element's typing edge to the second (or later) comma-separated target, and the `Actions.sysml`
+  redefines target, were never real graph edges even though the parser now retains them
+  losslessly. Fixed by looping over `typing_targets(n.typing.as_deref())` (the same helper
+  `AttributeDef`/`AttributeUsage`/every `xxxDef` specializes clause already use) instead of
+  passing the joined string as a single target, and setting the existing generic `"redefines"`
+  node attribute from `n.redefines` so the already-generic `link_subsetting_family_edges_for_node`
+  pass wires it, same as `PartUsage.redefines` already does -- no new edge-wiring mechanism
+  needed either way. No `PROJECTION_SCHEMA_VERSION` bump: this corrects which edges/attributes
+  the existing open-ended `HashMap<String, Value>` attribute system produces, not
+  `HostSemanticProjection`'s typed shape. Regression coverage:
+  `crates/sysml_model/tests/part_def_body_semantics.rs`'s
+  `part_usage_multi_target_typing_emits_an_edge_per_target`, and
+  `crates/sysml_model/tests/ref_relationship_semantics.rs`'s
+  `multi_target_ref_typing_emits_an_edge_per_target` /
+  `action_ref_redefines_then_multi_target_typing_wires_both` (the latter mirrors the exact
+  `Actions.sysml` shape). Babel42-side DTO consumption not yet done -- see
+  `babel42-v2/docs/spec42-systems-modeling-api-gaps.md` S42-004.
+
 ## [0.44.17] - 2026-07-19
 
 - **S42-005 slice: workspace elements that reference a library type now

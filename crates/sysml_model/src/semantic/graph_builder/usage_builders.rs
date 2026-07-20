@@ -99,7 +99,9 @@ pub(super) fn materialize_part_usage(
             node.declared_facts.feature_value = Some(declared_feature_value(value));
         }
     }
-    add_typing_edge_if_exists(g, uri, &qualified, &n.type_name, container_prefix);
+    for target in typing_targets(n.typing.as_deref()) {
+        add_typing_edge_if_exists(g, uri, &qualified, target, container_prefix);
+    }
     if let PartUsageBody::Brace { elements } = &n.body {
         for child in elements {
             part_usage::build_from_part_usage_body_element(

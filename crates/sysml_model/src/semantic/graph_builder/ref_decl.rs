@@ -7,7 +7,8 @@ use sysml_v2_parser::Node;
 use url::Url;
 
 use crate::semantic::ast_util::{
-    declared_feature_value, ref_decl_feature_properties, span_to_range,
+    declared_feature_value, ref_decl_feature_properties, span_to_range, subsetting_target,
+    typing_targets,
 };
 use crate::semantic::graph::SemanticGraph;
 use crate::semantic::model::{NodeId, RelationshipKind};
@@ -38,6 +39,9 @@ pub(super) fn materialize_ref_decl(
     let range = span_to_range(&wrap.span);
     let mut attrs = HashMap::new();
     attrs.insert("refType".to_string(), serde_json::json!(&n.type_name));
+    if let Some(r) = subsetting_target(n.redefines.as_deref()) {
+        attrs.insert("redefines".to_string(), serde_json::json!(r));
+    }
     let value_expression = n
         .value
         .as_ref()
@@ -62,7 +66,9 @@ pub(super) fn materialize_ref_decl(
             node.declared_facts.feature_value = Some(declared_feature_value(value));
         }
     }
-    add_typing_edge_if_exists(g, uri, &qualified, &n.type_name, container_prefix);
+    for target in typing_targets(n.typing.as_deref()) {
+        add_typing_edge_if_exists(g, uri, &qualified, target, container_prefix);
+    }
     if options.wire_value_reference {
         if let Some(value_expression) = value_expression.as_deref() {
             if let Some(target) = expressions::resolve_expression_endpoint_legacy(
