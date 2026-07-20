@@ -232,6 +232,24 @@ pub fn semantic_tokens_full(
     )
 }
 
+/// Parse text and return Spec42 semantic tokens with AST refinement.
+///
+/// Hosts (LSP, Babel42, WASM) should call this instead of depending on
+/// `sysml-v2-parser` directly. Uses a partial/editor parse when possible so
+/// highlighting still works on incomplete documents; falls back to lexer-only
+/// classification when the AST contributes no ranges.
+#[must_use]
+pub fn semantic_tokens_for_text(text: &str) -> SemanticTokensDto {
+    let parsed = sysml_v2_parser::parse_for_editor(text);
+    let ranges = ast_semantic_ranges(&parsed.root, text);
+    let (dto, _) = if ranges.is_empty() {
+        semantic_tokens_full(text, None)
+    } else {
+        semantic_tokens_full(text, Some(&ranges))
+    };
+    dto
+}
+
 fn block_comment_state_after_line(lines: &[&str], through_line: u32) -> bool {
     let mut in_block = false;
     for (line_index, line) in lines.iter().take(through_line as usize + 1).enumerate() {
@@ -335,5 +353,19 @@ mod tests {
         let (tokens, _) = semantic_tokens_full(text, None);
         assert!(!tokens.data.is_empty());
         assert_eq!(tokens.data.len() % 5, 0);
+    }
+
+    #[test]
+    fn semantic_tokens_for_text_applies_ast_ranges() {
+        let text = "package Demo {\n  part def Vehicle;\n}\n";
+        let tokens = semantic_tokens_for_text(text);
+        assert!(!tokens.data.is_empty());
+        assert_eq!(tokens.data.len() % 5, 0);
+        // AST path should classify declaration names beyond bare lexer keywords.
+        let lexer_only = semantic_tokens_full(text, None).0;
+        assert_ne!(
+            tokens.data, lexer_only.data,
+            "AST refinement should change token classification for part def names"
+        );
     }
 }
