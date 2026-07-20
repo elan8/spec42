@@ -224,10 +224,7 @@ pub(crate) fn project_host_semantic_model(
         else {
             continue;
         };
-        loop {
-            let Some(candidate) = graph.get_node(&candidate_id) else {
-                break;
-            };
+        while let Some(candidate) = graph.get_node(&candidate_id) {
             if included_ids.insert(candidate_id.clone()) {
                 nodes.push(build_host_semantic_model_node(
                     graph,
