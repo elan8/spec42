@@ -124,9 +124,19 @@ pub(crate) fn is_general_view_inline_detail(node: &GraphNodeDto) -> bool {
         || is_attribute_like(&lower)
         || is_parameter_like(&lower)
         || lower == "require constraint"
+        // Documentation/comments annotate their owner (SysML §7.4). Spec42 notation
+        // inventory keeps them as compartment text only — never standalone General
+        // View boxes (which otherwise render as "Unnamed" with dual membership +
+        // Annotation edges).
+        || is_documentation_or_comment(&lower)
         // Anonymous redefinition stubs like `part :>> engines[5] = (...)` should not
         // surface as standalone structure nodes in General View.
         || is_anonymous_redefinition_stub(node)
+}
+
+pub(crate) fn is_documentation_or_comment(element_type: &str) -> bool {
+    let lower = element_type.to_lowercase();
+    lower == "documentation" || lower == "comment"
 }
 
 pub(crate) fn is_anonymous_redefinition_stub(node: &GraphNodeDto) -> bool {

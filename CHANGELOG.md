@@ -7,6 +7,31 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- **General View no longer draws documentation/comment as standalone boxes.** SysML §7.4
+  Documentation annotates its owning element; Spec42's notation inventory already marks
+  `documentation-node` as not shipped and expects compartment text instead. Anonymous
+  `documentation` children (empty name → renderer "Unnamed") plus membership + Annotation
+  edges were appearing as dual-arrow boxes under action defs in General View. They are now
+  filtered like parameters/require-constraints in `is_general_view_inline_detail`, while the
+  owner's `doc` attribute remains. Coverage:
+  `canonical_general_view_graph_filters_documentation_nodes`.
+
+- **Owned metadata / parameter qualified names now nest under the owning element.** Body
+  `@annotations` already recorded membership/`parent_id` on the annotated owner, but
+  `add_metadata_annotation_node` built the usage QN from the caller's type-resolution
+  prefix. Requirement (and concern/view) bodies deliberately keep that prefix as the
+  enclosing package so typing of `subject`/`actor`/etc. resolves siblings — which made
+  `@RequirementRole` appear as `Pkg::RequirementRole` instead of `Pkg::Req::RequirementRole`.
+  The same helper mismatch also affected nested owners when the body walker passed an
+  outer container (e.g. metadata inside a `calc def`). Fixed by always nesting the usage QN
+  under `parent_id` while keeping the separate prefix only for typing edges (same split
+  `#keyword` metadata already used). Applied the same ownership/typing split to
+  `add_in_out_decl` and calc `return` parameters so Outline/tree UIs that nest by QN
+  ancestry match graph ownership. Coverage:
+  `requirement_body_metadata_annotation_materializes_on_graph`,
+  `calc_def_metadata_annotation_qn_nests_under_calc`, and a QN assert on the existing
+  part-body metadata test.
+
 ## [0.44.18] - 2026-07-20
 
 - **S42-004 slice: `PartUsage`/`RefDecl` multi-target typing now wired, plus the

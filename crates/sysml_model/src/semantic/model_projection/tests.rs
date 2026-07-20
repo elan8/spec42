@@ -779,6 +779,83 @@ fn canonical_general_view_graph_moves_redefined_attributes_into_direct_attribute
 }
 
 #[test]
+fn canonical_general_view_graph_filters_documentation_nodes() {
+    let graph = SysmlGraphDto {
+        nodes: vec![
+            GraphNodeDto {
+                id: "Pkg::ControlMission".to_string(),
+                element_type: "action def".to_string(),
+                name: "ControlMission".to_string(),
+                uri: None,
+                parent_id: None,
+                range: range(),
+                attributes: serde_json::json!({ "doc": "Plan and execute the mission." })
+                    .as_object()
+                    .unwrap()
+                    .iter()
+                    .map(|(k, v)| (k.clone(), v.clone()))
+                    .collect(),
+            },
+            GraphNodeDto {
+                id: "Pkg::ControlMission::_documentation".to_string(),
+                element_type: "documentation".to_string(),
+                name: String::new(),
+                uri: None,
+                parent_id: Some("Pkg::ControlMission".to_string()),
+                range: range(),
+                attributes: serde_json::json!({ "body": "Plan and execute the mission." })
+                    .as_object()
+                    .unwrap()
+                    .iter()
+                    .map(|(k, v)| (k.clone(), v.clone()))
+                    .collect(),
+            },
+        ],
+        edges: vec![
+            GraphEdgeDto {
+                source: "Pkg::ControlMission".to_string(),
+                target: "Pkg::ControlMission::_documentation".to_string(),
+                rel_type: "contains".to_string(),
+                name: None,
+            },
+            GraphEdgeDto {
+                source: "Pkg::ControlMission::_documentation".to_string(),
+                target: "Pkg::ControlMission".to_string(),
+                rel_type: "annotation".to_string(),
+                name: None,
+            },
+        ],
+    };
+
+    let canonical = canonical_general_view_graph(&graph, false);
+    assert_eq!(
+        canonical.nodes.len(),
+        1,
+        "documentation children should be filtered from General View"
+    );
+    assert_eq!(canonical.nodes[0].id, "Pkg::ControlMission");
+    assert_eq!(
+        canonical.nodes[0]
+            .attributes
+            .get("doc")
+            .and_then(|value| value.as_str()),
+        Some("Plan and execute the mission."),
+        "owner should keep its doc attribute for Info/compartment consumers"
+    );
+    assert!(
+        canonical.edges.is_empty(),
+        "membership and annotation edges to documentation boxes should be removed"
+    );
+    assert!(
+        canonical
+            .nodes
+            .iter()
+            .all(|node| !node.element_type.eq_ignore_ascii_case("documentation")),
+        "documentation nodes must not remain in generalViewGraph"
+    );
+}
+
+#[test]
 fn canonical_general_view_graph_filters_parameter_nodes() {
     let graph = SysmlGraphDto {
         nodes: vec![

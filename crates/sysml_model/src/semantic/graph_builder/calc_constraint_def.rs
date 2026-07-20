@@ -301,7 +301,7 @@ pub(super) fn build_calc_def(
                     let ret_qualified = qualified_name_for_node(
                         g,
                         uri,
-                        container_prefix,
+                        Some(calc_id.qualified_name.as_str()),
                         &ret.value.name,
                         "return parameter",
                     );

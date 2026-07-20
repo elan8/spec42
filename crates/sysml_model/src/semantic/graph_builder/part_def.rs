@@ -377,7 +377,7 @@ pub(super) fn build_from_part_def_body_element(
                             let ret_qualified = qualified_name_for_node(
                                 g,
                                 uri,
-                                container_prefix,
+                                Some(calc_node_id.qualified_name.as_str()),
                                 &ret.value.name,
                                 "return parameter",
                             );

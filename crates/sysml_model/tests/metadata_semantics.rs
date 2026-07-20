@@ -97,12 +97,22 @@ fn requirement_body_metadata_annotation_materializes_on_graph() {
         .into_iter()
         .find(|node| node.element_kind == "requirement def")
         .expect("requirement def");
+    let annotation = graph
+        .children_of(requirement)
+        .into_iter()
+        .find(|child| child.element_kind == "metadata usage" && child.name == "reviewTag")
+        .expect("expected metadata usage under requirement def body");
+    assert_eq!(
+        annotation.id.qualified_name,
+        format!("{}::reviewTag", requirement.id.qualified_name),
+        "metadata usage QN must nest under the owning requirement (not the package)"
+    );
     assert!(
         graph
-            .children_of(requirement)
+            .outgoing_targets_by_kind(annotation, RelationshipKind::Annotation)
             .iter()
-            .any(|child| child.element_kind == "metadata usage" && child.name == "reviewTag"),
-        "expected metadata usage under requirement def body"
+            .any(|target| target.id == requirement.id),
+        "expected annotation edge from metadata usage to owning requirement"
     );
 }
 
@@ -135,6 +145,16 @@ fn part_def_metadata_annotation_brace_body_projects_attribute_children() {
         .into_iter()
         .find(|node| node.element_kind == "metadata usage")
         .expect("metadata usage");
+    let design = graph
+        .nodes_named("Design")
+        .into_iter()
+        .find(|node| node.element_kind == "part def")
+        .expect("part def");
+    assert_eq!(
+        annotation.id.qualified_name,
+        format!("{}::ApprovalAnnotation", design.id.qualified_name),
+        "part-body metadata usage QN must nest under the owning part def"
+    );
     let bindings: Vec<_> = graph
         .children_of(annotation)
         .into_iter()
@@ -143,6 +163,41 @@ fn part_def_metadata_annotation_brace_body_projects_attribute_children() {
         .collect();
     assert!(bindings.contains(&"approved"));
     assert!(bindings.contains(&"approver"));
+}
+
+#[test]
+fn calc_def_metadata_annotation_qn_nests_under_calc() {
+    let doc = SysmlDocument::from_memory_path(
+        "metadata-calc",
+        "calc_metadata.sysml",
+        r#"package P {
+  metadata def Tag;
+  calc def Score {
+    @tag : Tag;
+  }
+}"#
+        .to_string(),
+        SysmlDocumentSourceKind::Workspace,
+        None,
+        None,
+    )
+    .expect("document uri");
+    let (graph, _parsed) = build_semantic_graph_from_documents(&[doc]).expect("graph");
+    let calc = graph
+        .nodes_named("Score")
+        .into_iter()
+        .find(|node| node.element_kind == "calc def")
+        .expect("calc def");
+    let annotation = graph
+        .children_of(calc)
+        .into_iter()
+        .find(|child| child.element_kind == "metadata usage" && child.name == "tag")
+        .expect("metadata usage under calc def");
+    assert_eq!(
+        annotation.id.qualified_name,
+        format!("{}::tag", calc.id.qualified_name),
+        "metadata on a calc def must nest under the calc, not the enclosing package"
+    );
 }
 
 #[test]

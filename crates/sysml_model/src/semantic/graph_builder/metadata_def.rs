@@ -44,12 +44,14 @@ fn project_metadata_usage_body(
 pub(super) fn add_package_metadata_usage_node(
     g: &mut SemanticGraph,
     uri: &Url,
-    container_prefix: Option<&str>,
+    type_resolution_prefix: Option<&str>,
     parent_id: &NodeId,
     mu: &MetadataUsage,
     span: &sysml_v2_parser::Span,
 ) {
-    let qualified = qualified_name_for_node(g, uri, container_prefix, &mu.name, "metadata usage");
+    // Ownership QN follows the owning namespace/element; typing may resolve from an outer prefix.
+    let ownership_prefix = Some(parent_id.qualified_name.as_str());
+    let qualified = qualified_name_for_node(g, uri, ownership_prefix, &mu.name, "metadata usage");
     let mut attrs = HashMap::new();
     insert_metadata_usage_attrs(
         &mut attrs,
@@ -68,22 +70,27 @@ pub(super) fn add_package_metadata_usage_node(
         Some(parent_id),
     );
     if let Some(ref t) = mu.type_name {
-        add_typing_edge_if_exists(g, uri, &qualified, t, container_prefix);
+        add_typing_edge_if_exists(g, uri, &qualified, t, type_resolution_prefix);
     }
-    project_metadata_usage_body(g, uri, container_prefix, &qualified, &mu.body);
+    project_metadata_usage_body(g, uri, ownership_prefix, &qualified, &mu.body);
     let metadata_id = NodeId::new(uri, &qualified);
     wire_metadata_annotated_elements(g, uri, &metadata_id, parent_id, &mu.about_targets);
 }
 
+/// Materializes a `@Name` / `#keyword`-style metadata annotation as a `metadata usage` child of
+/// `parent_id`. Qualified names always nest under the owner (matching subject/actor/attribute
+/// nesting), while `type_resolution_prefix` is only used for typing edges — important for
+/// requirement bodies, which keep the enclosing package as the type-resolution prefix.
 pub(super) fn add_metadata_annotation_node(
     g: &mut SemanticGraph,
     uri: &Url,
-    container_prefix: Option<&str>,
+    type_resolution_prefix: Option<&str>,
     parent_id: &NodeId,
     meta: &MetadataAnnotation,
     span: &sysml_v2_parser::Span,
 ) {
-    let qualified = qualified_name_for_node(g, uri, container_prefix, &meta.name, "metadata usage");
+    let ownership_prefix = Some(parent_id.qualified_name.as_str());
+    let qualified = qualified_name_for_node(g, uri, ownership_prefix, &meta.name, "metadata usage");
     let mut attrs = HashMap::new();
     insert_metadata_usage_attrs(
         &mut attrs,
@@ -102,9 +109,9 @@ pub(super) fn add_metadata_annotation_node(
         Some(parent_id),
     );
     if let Some(ref t) = meta.type_name {
-        add_typing_edge_if_exists(g, uri, &qualified, t, container_prefix);
+        add_typing_edge_if_exists(g, uri, &qualified, t, type_resolution_prefix);
     }
-    project_metadata_usage_body(g, uri, container_prefix, &qualified, &meta.body);
+    project_metadata_usage_body(g, uri, ownership_prefix, &qualified, &meta.body);
     let metadata_id = NodeId::new(uri, &qualified);
     wire_metadata_annotated_elements(g, uri, &metadata_id, parent_id, &meta.about_targets);
 }

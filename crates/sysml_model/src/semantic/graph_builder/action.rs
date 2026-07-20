@@ -95,15 +95,17 @@ impl ThenActionChain {
 pub(super) fn add_in_out_decl(
     g: &mut SemanticGraph,
     uri: &Url,
-    container_prefix: Option<&str>,
+    type_resolution_prefix: Option<&str>,
     parent_id: &NodeId,
     in_out: &sysml_v2_parser::Node<sysml_v2_parser::ast::InOutDecl>,
 ) {
     let parameter = &in_out.value;
+    // Nest under the owning action/calc; keep the caller's prefix for typing only.
+    let ownership_prefix = Some(parent_id.qualified_name.as_str());
     let child_qualified = qualified_name_for_node(
         g,
         uri,
-        container_prefix,
+        ownership_prefix,
         &parameter.name,
         "in out parameter",
     );
@@ -141,7 +143,7 @@ pub(super) fn add_in_out_decl(
         uri,
         &child_qualified,
         &parameter.type_name,
-        container_prefix,
+        type_resolution_prefix,
     );
 }
 
