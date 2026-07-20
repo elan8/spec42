@@ -1,4 +1,4 @@
-﻿//! Filesystem-backed workspace provider wired to a resolved engine catalog.
+//! Filesystem-backed workspace provider wired to a resolved engine catalog.
 
 use std::path::{Path, PathBuf};
 
@@ -16,11 +16,39 @@ impl HostFilesystemProvider {
         workspace_root: Option<PathBuf>,
         library_paths: &[PathBuf],
     ) -> Self {
+        const IMPLIED_SEMANTIC_PACKAGES: &[&str] = &[
+            "Base",
+            "Occurrences",
+            "Items",
+            "Parts",
+            "Ports",
+            "Connections",
+            "Interfaces",
+            "Allocations",
+            "Flows",
+            "Actions",
+            "States",
+            "Calculations",
+            "Constraints",
+            "Requirements",
+            "Cases",
+            "AnalysisCases",
+            "VerificationCases",
+            "UseCases",
+            "Views",
+            "Metadata",
+        ];
         Self {
             inner: FileSystemDocumentProvider::new(
                 target.into(),
                 workspace_root,
                 library_paths.to_vec(),
+            )
+            .with_library_seed_packages(
+                IMPLIED_SEMANTIC_PACKAGES
+                    .iter()
+                    .map(|package| (*package).to_owned())
+                    .collect(),
             ),
         }
     }

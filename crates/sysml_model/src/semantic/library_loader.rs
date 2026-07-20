@@ -54,6 +54,9 @@ pub struct LibraryClosureOptions {
     pub bootstrap_sysml_namespace: bool,
     /// Seed closure from part/port/attribute type references and `:>` specializations in workspace text.
     pub bootstrap_typing_references: bool,
+    /// Additional package names that must seed the closure even when workspace
+    /// text does not reference them explicitly.
+    pub seed_packages: Vec<String>,
 }
 
 impl Default for LibraryClosureOptions {
@@ -61,6 +64,7 @@ impl Default for LibraryClosureOptions {
         Self {
             bootstrap_sysml_namespace: true,
             bootstrap_typing_references: true,
+            seed_packages: Vec::new(),
         }
     }
 }
@@ -77,6 +81,7 @@ pub fn resolve_library_closure(
     let index = build_package_index(library_roots)?;
     let workspace_declared_packages = workspace_declared_packages(workspace);
     let mut seeds = HashSet::<PackageKey>::new();
+    seeds.extend(options.seed_packages.iter().cloned().map(PackageKey));
     let mut wants_sysml_bootstrap = false;
     for source in workspace {
         if options.bootstrap_sysml_namespace && source.content.contains("SysML::") {
@@ -489,6 +494,7 @@ package Views {
         let options = LibraryClosureOptions {
             bootstrap_sysml_namespace: true,
             bootstrap_typing_references: false,
+            seed_packages: Vec::new(),
         };
         let loaded = resolve_library_closure(&workspace, &roots, &options).expect("closure");
         assert!(

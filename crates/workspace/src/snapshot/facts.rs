@@ -202,6 +202,51 @@ pub(crate) fn project_host_semantic_model(
             ));
         }
     }
+    // Include the exact Systems/Kernel Library elements required by SysML's
+    // semantic specialization constraints, plus their namespace ancestry.
+    let implied_targets = nodes
+        .iter()
+        .filter(|node| !node.facts.is_library_element)
+        .filter_map(|node| implied_library_specialization(&node.element_kind))
+        .collect::<BTreeSet<_>>();
+    for qualified_name in implied_targets {
+        let Some(mut candidate_id) = graph
+            .node_ids_for_qualified_name(qualified_name)
+            .and_then(|ids| {
+                ids.iter().find(|id| {
+                    sysml_model::semantic::workspace_uri::uri_under_any_library(
+                        &id.uri,
+                        library_urls,
+                    )
+                })
+            })
+            .cloned()
+        else {
+            continue;
+        };
+        loop {
+            let Some(candidate) = graph.get_node(&candidate_id) else {
+                break;
+            };
+            if included_ids.insert(candidate_id.clone()) {
+                nodes.push(build_host_semantic_model_node(
+                    graph,
+                    candidate,
+                    library_urls,
+                ));
+            }
+            let Some(parent_id) = candidate.parent_id.clone() else {
+                break;
+            };
+            if !sysml_model::semantic::workspace_uri::uri_under_any_library(
+                &parent_id.uri,
+                library_urls,
+            ) {
+                break;
+            }
+            candidate_id = parent_id;
+        }
+    }
     nodes.sort_by(|a, b| {
         a.uri
             .cmp(&b.uri)
@@ -324,6 +369,89 @@ pub(crate) fn project_host_semantic_model(
                 }),
             });
         }
+    }
+    // Materialize a normative implied specialization only when its library
+    // target was actually resolved; deployments without the standard library
+    // do not receive guessed IDs or placeholder elements.
+    for node in &nodes {
+        if node.facts.is_library_element {
+            continue;
+        }
+        let Some(target_name) = implied_library_specialization(&node.element_kind) else {
+            continue;
+        };
+        let Some(target_id) = semantic_ids.get(target_name) else {
+            continue;
+        };
+        let (kind, metaclass) = if node.element_kind.is_definition() {
+            (
+                sysml_model::RelationshipKind::Specializes,
+                HostRelationshipMetaclass::Subclassification,
+            )
+        } else {
+            (
+                sysml_model::RelationshipKind::Subsetting,
+                HostRelationshipMetaclass::Subsetting,
+            )
+        };
+        relationships.push(HostSemanticModelRelationship {
+            semantic_id: semantic_relationship_id(
+                &kind,
+                &node.semantic_id,
+                target_id,
+                "implied-library-specialization".to_owned(),
+            ),
+            source_id: node.semantic_id.clone(),
+            target_id: target_id.clone(),
+            owner_id: Some(node.semantic_id.clone()),
+            related_element_ids: vec![node.semantic_id.clone(), target_id.clone()],
+            range: None,
+            is_implied: true,
+            metaclass,
+            membership_kind: None,
+            visibility: None,
+            source: node.qualified_name.clone(),
+            target: target_name.to_owned(),
+            kind,
+            connect: None,
+            flow: None,
+        });
+    }
+    // An enumerated value is normatively an EnumerationUsage typed by its
+    // owning EnumerationDefinition (SysML v2 8.3.8.2-8.3.8.3).
+    for node in &nodes {
+        if node.element_kind != sysml_model::ElementKind::EnumeratedValue {
+            continue;
+        }
+        let Some(parent_name) = node.parent.as_deref() else {
+            continue;
+        };
+        let Some(parent_id) = semantic_ids.get(parent_name) else {
+            continue;
+        };
+        let kind = sysml_model::RelationshipKind::Typing;
+        relationships.push(HostSemanticModelRelationship {
+            semantic_id: semantic_relationship_id(
+                &kind,
+                &node.semantic_id,
+                parent_id,
+                "implied-enumeration-typing".to_owned(),
+            ),
+            source_id: node.semantic_id.clone(),
+            target_id: parent_id.clone(),
+            owner_id: Some(node.semantic_id.clone()),
+            related_element_ids: vec![node.semantic_id.clone(), parent_id.clone()],
+            range: None,
+            is_implied: true,
+            metaclass: HostRelationshipMetaclass::FeatureTyping,
+            membership_kind: None,
+            visibility: None,
+            source: node.qualified_name.clone(),
+            target: parent_name.to_owned(),
+            kind,
+            connect: None,
+            flow: None,
+        });
     }
     fn connect_sort_key(c: &HostSemanticModelRelationship) -> Option<(&str, &str, u32, u32)> {
         c.connect.as_ref().map(|detail| {
@@ -519,6 +647,79 @@ fn relationship_metaclass(kind: &sysml_model::RelationshipKind) -> HostRelations
         sysml_model::RelationshipKind::Satisfy => HostRelationshipMetaclass::Satisfy,
         sysml_model::RelationshipKind::Subject => HostRelationshipMetaclass::Subject,
         _ => HostRelationshipMetaclass::Relationship,
+    }
+}
+
+/// Universal semantic-library specialization required for a concrete SysML
+/// kind. Context-specific constraints are additive to these base semantics.
+fn implied_library_specialization(kind: &sysml_model::ElementKind) -> Option<&'static str> {
+    use sysml_model::ElementKind;
+    match kind {
+        ElementKind::AttributeDef | ElementKind::EnumDef => Some("Base::DataValue"),
+        ElementKind::Attribute | ElementKind::Enumeration | ElementKind::EnumeratedValue => {
+            Some("Base::dataValues")
+        }
+        ElementKind::OccurrenceDef => None,
+        ElementKind::IndividualDef => Some("Occurrences::Life"),
+        ElementKind::Occurrence | ElementKind::Individual => Some("Occurrences::occurrences"),
+        ElementKind::ItemDef => Some("Items::Item"),
+        ElementKind::Item => Some("Items::items"),
+        ElementKind::PartDef => Some("Parts::Part"),
+        ElementKind::Part | ElementKind::Actor | ElementKind::Stakeholder => Some("Parts::parts"),
+        ElementKind::PortDef | ElementKind::ConjugatedPortDefinition => Some("Ports::Port"),
+        ElementKind::Port => Some("Ports::ports"),
+        ElementKind::ConnectionDef => Some("Connections::Connection"),
+        ElementKind::Connection => Some("Connections::connections"),
+        ElementKind::InterfaceDef => Some("Interfaces::Interface"),
+        ElementKind::Interface => Some("Interfaces::interfaces"),
+        ElementKind::AllocationDef => Some("Allocations::Allocation"),
+        ElementKind::Allocation => Some("Allocations::allocations"),
+        ElementKind::FlowDef => Some("Flows::MessageAction"),
+        ElementKind::Flow => Some("Flows::messages"),
+        ElementKind::ActionDef => Some("Actions::Action"),
+        ElementKind::Action | ElementKind::Perform => Some("Actions::actions"),
+        ElementKind::Assign => Some("Actions::assignmentActions"),
+        ElementKind::ForLoop => Some("Actions::forLoopActions"),
+        ElementKind::Terminate => Some("Actions::terminateActions"),
+        ElementKind::While => Some("Actions::whileLoopActions"),
+        ElementKind::If | ElementKind::Else => Some("Actions::ifThenActions"),
+        ElementKind::Transition => Some("Actions::transitionActions"),
+        ElementKind::TransitionTrigger => Some("Actions::acceptActions"),
+        ElementKind::TransitionEffect => Some("Actions::actions"),
+        ElementKind::StateDef => Some("States::StateAction"),
+        ElementKind::State | ElementKind::FinalState => Some("States::stateActions"),
+        ElementKind::CalcDef => Some("Calculations::Calculation"),
+        ElementKind::Calc => Some("Calculations::calculations"),
+        ElementKind::ConstraintDef => Some("Constraints::ConstraintCheck"),
+        ElementKind::Constraint
+        | ElementKind::Assert
+        | ElementKind::AssertConstraint
+        | ElementKind::RequireConstraint => Some("Constraints::constraintChecks"),
+        ElementKind::RequirementDef => Some("Requirements::RequirementCheck"),
+        ElementKind::Requirement | ElementKind::VerifiedRequirement | ElementKind::Objective => {
+            Some("Requirements::requirementChecks")
+        }
+        ElementKind::ConcernDef => Some("Requirements::ConcernCheck"),
+        ElementKind::Concern => Some("Requirements::concernChecks"),
+        ElementKind::CaseDef => Some("Cases::Case"),
+        ElementKind::Case => Some("Cases::cases"),
+        ElementKind::AnalysisDef => Some("AnalysisCases::AnalysisCase"),
+        ElementKind::Analysis => Some("AnalysisCases::analysisCases"),
+        ElementKind::VerificationDef => Some("VerificationCases::VerificationCase"),
+        ElementKind::Verification => Some("VerificationCases::verificationCases"),
+        ElementKind::UseCaseDef => Some("UseCases::UseCase"),
+        ElementKind::UseCase | ElementKind::IncludeUseCase => Some("UseCases::useCases"),
+        ElementKind::RenderingDef => Some("Views::Rendering"),
+        ElementKind::Rendering | ElementKind::ViewRendering => Some("Views::renderings"),
+        ElementKind::ViewDef => Some("Views::View"),
+        ElementKind::View => Some("Views::views"),
+        ElementKind::ViewpointDef => Some("Views::Viewpoint"),
+        ElementKind::Viewpoint => Some("Views::viewpoints"),
+        ElementKind::MetadataDef => Some("Metadata::MetadataItem"),
+        ElementKind::MetadataUsage | ElementKind::MetadataKeyword => {
+            Some("Metadata::metadataItems")
+        }
+        _ => None,
     }
 }
 
@@ -1758,5 +1959,93 @@ package Demo {
             typing.target_id, lib_mass.semantic_id,
             "m's Typing relationship should resolve to LibMass's real semantic_id"
         );
+    }
+
+    #[test]
+    fn projection_materializes_implied_system_library_specializations() {
+        let lib_content = r#"
+package Parts {
+    part def Part;
+    part parts;
+}
+"#;
+        let workspace_content = r#"
+package Demo {
+    part def Vehicle;
+    part vehicle;
+}
+"#;
+        let lib_path = std::path::PathBuf::from(if cfg!(windows) {
+            "c:/libs/std/Parts.sysml"
+        } else {
+            "/libs/std/Parts.sysml"
+        });
+        let library_root = std::path::PathBuf::from(if cfg!(windows) {
+            "c:/libs/std"
+        } else {
+            "/libs/std"
+        });
+        let workspace_path = std::path::PathBuf::from(if cfg!(windows) {
+            "c:/workspace/implied.sysml"
+        } else {
+            "/workspace/implied.sysml"
+        });
+        let lib_uri = path_to_file_url(&lib_path).expect("library uri");
+        let workspace_uri = path_to_file_url(&workspace_path).expect("workspace uri");
+        let library_url = path_to_file_url(&library_root).expect("library root uri");
+        let provider = InMemoryDocumentProvider::new(vec![
+            sysml_model::SysmlDocument {
+                uri: lib_uri,
+                content: lib_content.to_owned(),
+                path_hint: None,
+                source_kind: sysml_model::SysmlDocumentSourceKind::Library,
+                sha256: None,
+                byte_size: None,
+            },
+            sysml_model::SysmlDocument {
+                uri: workspace_uri,
+                content: workspace_content.to_owned(),
+                path_hint: None,
+                source_kind: sysml_model::SysmlDocumentSourceKind::Workspace,
+                sha256: None,
+                byte_size: None,
+            },
+        ]);
+        let (graph, _) = build_semantic_graph_with_provider(&provider).expect("graph");
+        let projection = project_host_semantic_model(
+            &graph,
+            std::slice::from_ref(&workspace_path),
+            &[library_url],
+        )
+        .expect("projection");
+
+        for (source_suffix, target_name, metaclass) in [
+            (
+                "::Vehicle",
+                "Parts::Part",
+                HostRelationshipMetaclass::Subclassification,
+            ),
+            (
+                "::vehicle",
+                "Parts::parts",
+                HostRelationshipMetaclass::Subsetting,
+            ),
+        ] {
+            let relationship = projection
+                .relationships
+                .iter()
+                .find(|relationship| {
+                    relationship.source.ends_with(source_suffix)
+                        && relationship.target == target_name
+                        && relationship.is_implied
+                })
+                .unwrap_or_else(|| panic!("implied specialization for {source_suffix}"));
+            assert_eq!(relationship.metaclass, metaclass);
+            assert!(!relationship.target_id.is_empty());
+        }
+        assert!(projection
+            .nodes
+            .iter()
+            .any(|node| { node.qualified_name == "Parts" && node.facts.is_library_element }));
     }
 }

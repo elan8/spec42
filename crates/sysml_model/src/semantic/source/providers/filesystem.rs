@@ -15,6 +15,7 @@ pub struct FileSystemDocumentProvider {
     workspace_root: Option<PathBuf>,
     library_paths: Vec<PathBuf>,
     full_library_scan: bool,
+    library_seed_packages: Vec<String>,
 }
 
 impl FileSystemDocumentProvider {
@@ -28,6 +29,7 @@ impl FileSystemDocumentProvider {
             workspace_root,
             library_paths,
             full_library_scan: false,
+            library_seed_packages: Vec::new(),
         }
     }
 
@@ -35,6 +37,12 @@ impl FileSystemDocumentProvider {
     /// instead of only the files reachable from the workspace's import closure.
     pub fn with_full_library_scan(mut self, enabled: bool) -> Self {
         self.full_library_scan = enabled;
+        self
+    }
+
+    /// Adds package names that seed the otherwise reference-scoped library closure.
+    pub fn with_library_seed_packages(mut self, packages: Vec<String>) -> Self {
+        self.library_seed_packages = packages;
         self
     }
 }
@@ -122,11 +130,11 @@ impl SysmlDocumentProvider for FileSystemDocumentProvider {
                         content: content.as_str(),
                     })
                     .collect();
-                let loaded = resolve_library_closure(
-                    &workspace_sources,
-                    &library_roots,
-                    &LibraryClosureOptions::default(),
-                )?;
+                let options = LibraryClosureOptions {
+                    seed_packages: self.library_seed_packages.clone(),
+                    ..LibraryClosureOptions::default()
+                };
+                let loaded = resolve_library_closure(&workspace_sources, &library_roots, &options)?;
                 for file in loaded {
                     let path = PathBuf::from(&file.root).join(&file.path);
                     let uri = path_to_url(&path)?;
