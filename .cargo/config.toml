@@ -5,5 +5,5 @@
 # Local dev: build against the sibling sysml-v2-parser checkout instead of the
 # published crates.io version pinned in Cargo.toml. See DEVELOPMENT.md
 # "Parser Dependency Policy". Comment out before running the CI/pinned build.
-[patch.crates-io]
-sysml-v2-parser = { path = "../sysml-v2-parser" }
+# [patch.crates-io]
+# sysml-v2-parser = { path = "../sysml-v2-parser" }
