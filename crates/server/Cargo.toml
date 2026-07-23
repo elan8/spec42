@@ -1,6 +1,6 @@
 ﻿[package]
 name = "server"
-version = "0.38.0"
+version.workspace = true
 edition = "2021"
 description = "Language server for SysML v2 (LSP over stdio)"
 
