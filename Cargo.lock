@@ -450,7 +450,7 @@ dependencies = [
 
 [[package]]
 name = "diagram"
-version = "0.44.18"
+version = "0.44.19"
 dependencies = [
  "serde",
 ]
@@ -1058,7 +1058,7 @@ dependencies = [
 
 [[package]]
 name = "kpar"
-version = "0.44.18"
+version = "0.44.19"
 dependencies = [
  "chrono",
  "clap",
@@ -1073,7 +1073,7 @@ dependencies = [
 
 [[package]]
 name = "language_service"
-version = "0.44.18"
+version = "0.44.19"
 dependencies = [
  "serde",
  "serde_json",
@@ -1158,7 +1158,7 @@ dependencies = [
 
 [[package]]
 name = "lsp_server"
-version = "0.44.18"
+version = "0.44.19"
 dependencies = [
  "clap",
  "glob",
@@ -1960,7 +1960,7 @@ dependencies = [
 
 [[package]]
 name = "server"
-version = "0.44.18"
+version = "0.44.19"
 dependencies = [
  "anyhow",
  "axum",
@@ -2104,9 +2104,9 @@ dependencies = [
 
 [[package]]
 name = "sysml-v2-parser"
-version = "0.45.0"
+version = "0.45.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "48334b989d75feca63ae9752e34d6be0e1d9fc3efd5cdc0276e48b4bd67bbe72"
+checksum = "30062f24a72fde9cfc4f72be8a93779cf64f9f9dcd1b6a4a839c4bec7ba95092"
 dependencies = [
  "log",
  "nom",
@@ -2116,7 +2116,7 @@ dependencies = [
 
 [[package]]
 name = "sysml_diagnostics"
-version = "0.44.18"
+version = "0.44.19"
 dependencies = [
  "serde_json",
  "sysml-v2-parser",
@@ -2126,7 +2126,7 @@ dependencies = [
 
 [[package]]
 name = "sysml_model"
-version = "0.44.18"
+version = "0.44.19"
 dependencies = [
  "petgraph",
  "rayon",
@@ -2142,7 +2142,7 @@ dependencies = [
 
 [[package]]
 name = "sysml_tokens"
-version = "0.44.18"
+version = "0.44.19"
 dependencies = [
  "serde",
  "sysml-v2-parser",
@@ -3257,7 +3257,7 @@ dependencies = [
 
 [[package]]
 name = "workspace"
-version = "0.44.18"
+version = "0.44.19"
 dependencies = [
  "bincode",
  "directories",
@@ -3283,7 +3283,7 @@ dependencies = [
 
 [[package]]
 name = "workspace_session"
-version = "0.44.18"
+version = "0.44.19"
 dependencies = [
  "thiserror 2.0.18",
  "tokio",

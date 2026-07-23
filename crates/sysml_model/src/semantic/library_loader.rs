@@ -75,6 +75,27 @@ pub fn resolve_library_closure(
     library_roots: &[String],
     options: &LibraryClosureOptions,
 ) -> Result<Vec<LoadedLibraryFile>, String> {
+    const LIBRARY_CLOSURE_STACK_SIZE: usize = 2 * 1024 * 1024;
+
+    std::thread::scope(|scope| {
+        let worker = std::thread::Builder::new()
+            .name("spec42-library-closure".into())
+            .stack_size(LIBRARY_CLOSURE_STACK_SIZE)
+            .spawn_scoped(scope, || {
+                resolve_library_closure_inner(workspace, library_roots, options)
+            })
+            .map_err(|error| format!("failed to start library closure worker: {error}"))?;
+        worker
+            .join()
+            .map_err(|_| "library closure worker panicked".to_string())?
+    })
+}
+
+fn resolve_library_closure_inner(
+    workspace: &[WorkspaceSource<'_>],
+    library_roots: &[String],
+    options: &LibraryClosureOptions,
+) -> Result<Vec<LoadedLibraryFile>, String> {
     if library_roots.is_empty() {
         return Ok(Vec::new());
     }
@@ -192,6 +213,46 @@ pub(crate) use type_refs::*;
 mod tests {
     use super::*;
     use std::fs;
+
+    #[test]
+    fn closure_parsing_does_not_inherit_the_callers_small_stack() {
+        let temp = tempfile::tempdir().expect("tempdir");
+        let lib = temp.path().join("lib");
+        fs::create_dir_all(&lib).expect("lib dir");
+        fs::write(
+            lib.join("ScalarValues.sysml"),
+            "package ScalarValues { attribute def Real; }",
+        )
+        .expect("scalar values");
+        let root = lib.to_string_lossy().replace('\\', "/");
+        let mut source =
+            String::from("package ArchitectureCommon { private import ScalarValues::*;\n");
+        for index in 0..100 {
+            source.push_str(&format!(
+                "item def Telemetry{index} {{ attribute value : Real; }}\n"
+            ));
+        }
+        source.push_str("}\n");
+
+        let worker = std::thread::Builder::new()
+            .name("small-stack-library-caller".into())
+            .stack_size(256 * 1024)
+            .spawn(move || {
+                let workspace = [WorkspaceSource {
+                    path: "ArchitectureCommon.sysml",
+                    content: &source,
+                }];
+                resolve_library_closure(&workspace, &[root], &LibraryClosureOptions::default())
+            })
+            .expect("small-stack caller");
+        let loaded = worker
+            .join()
+            .expect("caller must not overflow")
+            .expect("library closure");
+        assert!(loaded
+            .iter()
+            .any(|file| file.path.ends_with("ScalarValues.sysml")));
+    }
 
     #[test]
     fn closure_loads_transitive_library_package() {

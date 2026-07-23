@@ -197,6 +197,27 @@ pub(super) fn collect_target_documents(
     target_files: &[std::path::PathBuf],
     strict_diagnostics: bool,
 ) -> Result<Vec<ValidatedDocument>, String> {
+    const DIAGNOSTICS_STACK_SIZE: usize = 2 * 1024 * 1024;
+
+    std::thread::scope(|scope| {
+        let worker = std::thread::Builder::new()
+            .name("spec42-batch-diagnostics".into())
+            .stack_size(DIAGNOSTICS_STACK_SIZE)
+            .spawn_scoped(scope, || {
+                collect_target_documents_inner(state, target_files, strict_diagnostics)
+            })
+            .map_err(|error| format!("failed to start diagnostics worker: {error}"))?;
+        worker
+            .join()
+            .map_err(|_| "diagnostics worker panicked".to_string())?
+    })
+}
+
+fn collect_target_documents_inner(
+    state: &ServerState,
+    target_files: &[std::path::PathBuf],
+    strict_diagnostics: bool,
+) -> Result<Vec<ValidatedDocument>, String> {
     let target_urls = target_file_urls(target_files)?;
 
     Ok(target_urls
@@ -246,6 +267,41 @@ mod tests {
             .library_paths(library_paths)
             .build()
             .expect("engine")
+    }
+
+    #[test]
+    fn batch_diagnostics_do_not_inherit_the_callers_small_stack() {
+        let temp = tempfile::tempdir().expect("tempdir");
+        let model = temp.path().join("Wide.sysml");
+        let mut source = String::from("package Wide {\n");
+        for index in 0..100 {
+            source.push_str(&format!("attribute value{index} : Real;\n"));
+        }
+        source.push_str("}\n");
+        std::fs::write(&model, &source).expect("model");
+
+        let uri = path_to_file_url(&model).expect("model URI");
+        let mut state = ServerState::default();
+        state.index.insert(
+            uri,
+            IndexEntry {
+                content: source,
+                parsed: None,
+                parse_metadata: ParseMetadata::default(),
+                include_in_semantic_graph: true,
+            },
+        );
+
+        let worker = std::thread::Builder::new()
+            .name("small-stack-diagnostics-caller".into())
+            .stack_size(256 * 1024)
+            .spawn(move || collect_target_documents(&state, &[model], false))
+            .expect("small-stack caller");
+        let documents = worker
+            .join()
+            .expect("caller must not overflow")
+            .expect("diagnostics");
+        assert_eq!(documents.len(), 1);
     }
 
     #[test]

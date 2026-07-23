@@ -7,6 +7,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.44.19] - 2026-07-23
+
+- **One release version across Cargo, VS Code, and Zed.** The VS Code package manifest and lock,
+  Zed extension manifest, and Zed crate manifest/lock now match the Cargo workspace version.
+  `scripts/sync-workspace-version.mjs` derives these values from `[workspace.package]`, and the
+  release preflight rejects version drift.
+
+- **Bounded parser stack consumption.** Parser-heavy library-closure loading and batch
+  diagnostics now run on named workers with a known 2 MiB stack instead of inheriting an
+  arbitrary caller's remaining stack. The temporary 32 MiB stack around the entire CLI has
+  been removed. Together with `sysml-v2-parser` 0.45.1, deeply nested input now produces a
+  `nesting_too_deep` diagnostic before recursive descent, while wide models remain unrestricted.
+  Regression coverage exercises both entry points from a 256 KiB caller stack and parses a
+  10,000-member flat package.
+
 - **General View renderer also drops documentation/comment boxes.** Server-side
   folding already excludes them from `generalViewGraph`, but cached projections
   and any fallback to raw `graph` still showed `<documentation> Unnamed` nodes.
