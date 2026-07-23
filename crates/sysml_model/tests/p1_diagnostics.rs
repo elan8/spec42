@@ -77,6 +77,31 @@ fn part_typed_by_item_def_does_not_emit_incompatible_type_kind() {
 }
 
 #[test]
+fn attribute_typed_by_kerml_datatype_does_not_emit_incompatible_type_kind() {
+    let input = r#"
+        package ScalarValues {
+            datatype Real;
+            datatype Boolean;
+        }
+        package P {
+            private import ScalarValues::*;
+            attribute ratio : Real;
+            attribute enabled : Boolean;
+        }
+    "#;
+    let diags = diags_for(input);
+    assert!(
+        !has_code(&diags, "incompatible_type_kind"),
+        "KerML datatypes are valid attribute typing targets, got {:?}",
+        diags
+            .iter()
+            .filter(|d| d.code == "incompatible_type_kind")
+            .map(|d| &d.message)
+            .collect::<Vec<_>>()
+    );
+}
+
+#[test]
 fn subject_typed_by_resolved_analysis_def_does_not_emit_incompatible_type_kind() {
     let input = r#"
         package P {
@@ -291,6 +316,41 @@ fn specialized_part_local_typed_attributes_do_not_emit_unresolved_redefines_targ
         diags
             .iter()
             .filter(|d| d.code == "unresolved_redefines_target")
+            .map(|d| &d.message)
+            .collect::<Vec<_>>()
+    );
+}
+
+#[test]
+fn package_connection_usage_resolves_redefined_features_from_its_type() {
+    let input = r#"
+        package Contracts {
+            connection def DataFlowContract {
+                attribute producerFeature : String;
+                attribute consumerFeature : String;
+            }
+            connection lidarScanToSlamContract : DataFlowContract {
+                attribute :>> producerFeature = "lidar.scan";
+                attribute :>> consumerFeature = "slam.scan";
+            }
+        }
+    "#;
+    let diags = diags_for(input);
+    assert!(
+        !has_code(&diags, "unresolved_redefines_target"),
+        "typed package connection features should resolve through DataFlowContract, got {:?}",
+        diags
+            .iter()
+            .filter(|d| d.code == "unresolved_redefines_target")
+            .map(|d| &d.message)
+            .collect::<Vec<_>>()
+    );
+    assert!(
+        !has_code(&diags, "incompatible_type_kind"),
+        "connection usage should be compatible with connection def, got {:?}",
+        diags
+            .iter()
+            .filter(|d| d.code == "incompatible_type_kind")
             .map(|d| &d.message)
             .collect::<Vec<_>>()
     );

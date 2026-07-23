@@ -174,6 +174,7 @@ pub(super) fn materialize_expose_member(
     attrs.insert("importTarget".to_string(), serde_json::json!(&v.target));
     attrs.insert("importAll".to_string(), serde_json::json!(v.is_import_all));
     attrs.insert("recursive".to_string(), serde_json::json!(v.is_recursive));
+    attrs.insert("isExpose".to_string(), serde_json::json!(true));
     add_node_and_recurse(
         g,
         uri,

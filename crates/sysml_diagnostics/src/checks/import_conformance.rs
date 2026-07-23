@@ -9,7 +9,7 @@ use crate::helpers::{
 use crate::types::DiagnosticSeverity;
 use crate::SemanticDiagnostic;
 use sysml_model::semantic::kinds::is_namespace;
-use sysml_model::SemanticGraph;
+use sysml_model::{resolve_expose_target, ExposeTargetResolution, SemanticGraph};
 
 fn import_is_all(node: &sysml_model::SemanticNode) -> bool {
     node.attributes
@@ -23,6 +23,33 @@ fn import_is_recursive(node: &sysml_model::SemanticNode) -> bool {
         .get("recursive")
         .and_then(|value| value.as_bool())
         .unwrap_or(false)
+}
+
+fn import_target_is_resolved(
+    graph: &SemanticGraph,
+    uri: &Url,
+    node: &sysml_model::SemanticNode,
+    target: &str,
+) -> bool {
+    if node
+        .attributes
+        .get("isExpose")
+        .and_then(|value| value.as_bool())
+        .unwrap_or(false)
+    {
+        return matches!(
+            resolve_expose_target(
+                graph,
+                Some(uri),
+                node.parent_id
+                    .as_ref()
+                    .map(|parent| parent.qualified_name.as_str()),
+                target,
+            ),
+            ExposeTargetResolution::Resolved(_)
+        );
+    }
+    import_target_resolves(graph, node)
 }
 
 fn normalized_namespace_target(target: &str) -> String {
@@ -70,7 +97,7 @@ pub(crate) fn collect_import_conformance_diagnostics(
         let range = reference_token_range(node, target)
             .unwrap_or_else(|| diagnostic_range(graph, node, None));
 
-        if !import_target_resolves(graph, node) {
+        if !import_target_is_resolved(graph, uri, node, target) {
             let key = format!("unresolved|{}", target);
             if seen.insert(key) {
                 diagnostics.push(diag(

@@ -6,18 +6,20 @@
 
 use std::collections::HashMap;
 
-use sysml_v2_parser::ast::{DefinitionPrefix, PartUsageBody};
+use sysml_v2_parser::ast::{
+    ConnectionDefBody, ConnectionUsageMember, DefinitionPrefix, PartUsageBody,
+};
 use sysml_v2_parser::Node;
 use url::Url;
 
 use crate::semantic::ast_util::{
-    attribute_usage_feature_properties, declared_feature_value, declared_multiplicity,
-    item_usage_feature_properties, occurrence_usage_feature_properties,
+    attribute_usage_feature_properties, connection_end_expression, declared_feature_value,
+    declared_multiplicity, item_usage_feature_properties, occurrence_usage_feature_properties,
     part_usage_feature_properties, span_to_range, subsetting_target, subsetting_target_display,
     typing_targets,
 };
 use crate::semantic::graph::SemanticGraph;
-use crate::semantic::model::{ElementKind, NodeId};
+use crate::semantic::model::{ElementKind, NodeId, RelationshipKind};
 use crate::semantic::reference_resolution::{resolve_member_via_type, ResolveResult};
 use crate::semantic::relationships::add_typing_edge_if_exists;
 
@@ -338,6 +340,85 @@ pub(super) fn materialize_item_usage(
         add_typing_edge_if_exists(g, uri, &qualified, t, container_prefix);
     }
     super::attribute_body::build_from_attribute_body(&n.body, uri, Some(&qualified), &node_id, g);
+    node_id
+}
+
+/// Builds a typed `connection` usage in any owning body and preserves its owned members.
+///
+/// Package-level connection usages used to be dropped entirely, while part-definition bodies
+/// carried a private partial implementation. Inherited feature lookup (`attribute :>> feature`)
+/// depends on the usage's typing edge, so both contexts must share the same materialization.
+pub(super) fn materialize_connection_usage(
+    n: &Node<ConnectionUsageMember>,
+    uri: &Url,
+    container_prefix: Option<&str>,
+    parent_id: Option<&NodeId>,
+    g: &mut SemanticGraph,
+) -> NodeId {
+    let declared_name = n
+        .name
+        .as_deref()
+        .map(str::trim)
+        .filter(|name| !name.is_empty());
+    let redefine_target = subsetting_target(n.redefines.as_deref());
+    let name = declared_name.or(redefine_target).unwrap_or("_connection");
+    let qualified = qualified_name_for_node(g, uri, container_prefix, name, "connection");
+    let mut attrs = HashMap::new();
+    if let Some(type_name) = &n.type_name {
+        attrs.insert("connectionType".to_string(), serde_json::json!(type_name));
+    }
+    if let Some(subsets) = subsetting_target(n.subsets.as_deref()) {
+        attrs.insert("subsetsFeature".to_string(), serde_json::json!(subsets));
+    }
+    if let Some(redefines) = redefine_target {
+        attrs.insert("redefines".to_string(), serde_json::json!(redefines));
+    }
+    add_node_and_recurse(
+        g,
+        uri,
+        &qualified,
+        "connection",
+        name.to_string(),
+        span_to_range(&n.span),
+        attrs,
+        parent_id,
+    );
+    if let Some(type_name) = &n.type_name {
+        add_typing_edge_if_exists(g, uri, &qualified, type_name, container_prefix);
+    }
+    let node_id = NodeId::new(uri, &qualified);
+
+    if let (Some(from), Some(to)) = (&n.connect_from, &n.connect_to) {
+        let from_expr = connection_end_expression(from);
+        expressions::add_expression_edge_if_both_exist(
+            g,
+            uri,
+            container_prefix,
+            from_expr,
+            connection_end_expression(to),
+            RelationshipKind::Connection,
+        );
+        for extra in &n.connect_extra_ends {
+            expressions::add_expression_edge_if_both_exist(
+                g,
+                uri,
+                container_prefix,
+                from_expr,
+                connection_end_expression(extra),
+                RelationshipKind::Connection,
+            );
+        }
+    }
+
+    if let ConnectionDefBody::Brace { elements } = &n.body {
+        super::interface_def::build_from_connection_def_body(
+            elements,
+            uri,
+            Some(&qualified),
+            &node_id,
+            g,
+        );
+    }
     node_id
 }
 

@@ -88,6 +88,7 @@ pub const TYPE_REFERENCE_ATTR_KEYS: &[&str] = &[
     "subjectType",
     "analysisType",
     "verificationType",
+    "connectionType",
     "metadataType",
     "keywordType",
 ];

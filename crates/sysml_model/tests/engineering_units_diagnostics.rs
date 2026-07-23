@@ -20,6 +20,12 @@ package SI {
     attribute <A> ampere : ElectricCurrentUnit;
     attribute <h> hour: DurationUnit { :>> unitConversion: ConversionByConvention { :>> referenceUnit = s; :>> conversionFactor = 3600; } }
     attribute <s> second : DurationUnit;
+    attribute <kV> kilovolt : ElectricPotentialUnit { :>> unitConversion: ConversionByPrefix { :>> prefix = kilo; :>> referenceUnit = V; } }
+    attribute <MW> megawatt : PowerUnit { :>> unitConversion: ConversionByPrefix { :>> prefix = mega; :>> referenceUnit = W; } }
+    attribute <VA> voltAmpere : ApparentPowerUnit = V * A;
+    attribute <MVA> megavoltAmpere : ApparentPowerUnit { :>> unitConversion: ConversionByPrefix { :>> prefix = mega; :>> referenceUnit = VA; } }
+    attribute <Wh> wattHour : EnergyUnit = W * h;
+    attribute <MWh> megawattHour : EnergyUnit { :>> unitConversion: ConversionByPrefix { :>> prefix = mega; :>> referenceUnit = Wh; } }
     attribute <km> kilometre : LengthUnit { :>> unitConversion: ConversionByPrefix { :>> prefix = kilo; :>> referenceUnit = m; } }
 }
 "#;

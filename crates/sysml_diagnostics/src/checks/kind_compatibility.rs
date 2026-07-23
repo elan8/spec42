@@ -11,6 +11,7 @@ use crate::helpers::{
 use crate::kind_rules::{
     allowed_subset_redefine_target_kinds, allowed_typing_target_kinds,
     expected_typing_definition_label, is_compatible_kind, is_compatible_specializes_target,
+    is_compatible_typing_target,
 };
 use crate::types::DiagnosticSeverity;
 use crate::SemanticDiagnostic;
@@ -183,13 +184,14 @@ pub(crate) fn collect_kind_compatibility_diagnostics(
                     && !allowed.is_empty()
                     && edge_targets
                         .iter()
-                        .any(|target| is_compatible_kind(&target.element_kind, allowed));
+                        .any(|target| is_compatible_typing_target(&node.element_kind, target));
                 if !edge_first_ok {
                     for target in edge_targets {
                         if is_reflective_sysml_usage_type(type_ref, target) {
                             continue;
                         }
-                        if !allowed.is_empty() && !is_compatible_kind(&target.element_kind, allowed)
+                        if !allowed.is_empty()
+                            && !is_compatible_typing_target(&node.element_kind, target)
                         {
                             let key = format!(
                                 "type|{}|{}|{}",

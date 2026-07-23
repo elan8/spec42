@@ -15,6 +15,12 @@ package SI {
     attribute <V> volt : ElectricPotentialUnit;
     attribute <W> watt : PowerUnit;
     attribute <s> second : DurationUnit;
+    attribute <kV> kilovolt : ElectricPotentialUnit {
+        :>> unitConversion: ConversionByPrefix { :>> prefix = kilo; :>> referenceUnit = V; }
+    }
+    attribute <MW> megawatt : PowerUnit {
+        :>> unitConversion: ConversionByPrefix { :>> prefix = mega; :>> referenceUnit = W; }
+    }
     attribute <km> kilometre : LengthUnit {
         :>> unitConversion: ConversionByPrefix { :>> prefix = kilo; :>> referenceUnit = m; }
     }

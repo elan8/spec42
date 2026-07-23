@@ -1,4 +1,5 @@
-﻿use sysml_model::{
+use sysml_diagnostics::{collect_diagnostics_from_graph, DiagnosticsOptions};
+use sysml_model::{
     build_semantic_graph_from_documents, build_view_catalog, build_workspace_graph_dto_for_uris,
     evaluate_views, project_ids_for_renderer, SysmlDocument, SysmlDocumentSourceKind,
 };
@@ -33,6 +34,13 @@ fn expose_feature_chain_resolves_nested_usage_in_view_projection() {
     let uri = doc.uri.clone();
     let (graph, parsed) =
         build_semantic_graph_from_documents(&[doc]).expect("semantic graph should build");
+    let diagnostics = collect_diagnostics_from_graph(&graph, &uri, DiagnosticsOptions::default());
+    assert!(
+        diagnostics
+            .iter()
+            .all(|diagnostic| diagnostic.code != "unresolved_import_target"),
+        "typed feature-chain expose must not be diagnosed as an unresolved import: {diagnostics:?}"
+    );
     let parsed_doc = parsed
         .into_iter()
         .find(|entry| entry.uri == uri)

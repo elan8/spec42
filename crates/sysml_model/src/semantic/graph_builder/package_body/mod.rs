@@ -316,6 +316,15 @@ pub(super) fn build_from_package_body_element(
         PBE::EnumerationUsage(enum_node) => {
             materialize_enum_usage(g, uri, container_prefix, parent_id, enum_node)
         }
-        PBE::ItemUsage(_) | PBE::ConnectionUsage(_) | PBE::InterfaceUsage(_) => {}
+        PBE::ConnectionUsage(connection) => {
+            usage_builders::materialize_connection_usage(
+                connection,
+                uri,
+                container_prefix,
+                parent_id,
+                g,
+            );
+        }
+        PBE::ItemUsage(_) | PBE::InterfaceUsage(_) => {}
     }
 }

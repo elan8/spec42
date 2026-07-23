@@ -12,6 +12,12 @@ package SIPrefixes {
 }
 package SI {
     attribute <W> watt : PowerUnit;
+    attribute <MW> megawatt : PowerUnit {
+        :>> unitConversion: ConversionByPrefix {
+            :>> prefix = mega;
+            :>> referenceUnit = W;
+        }
+    }
 }
 "#;
 

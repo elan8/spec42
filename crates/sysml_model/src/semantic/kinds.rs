@@ -74,6 +74,7 @@ pub const TYPING_TARGET_KINDS: &[ElementKind] = &[
     ElementKind::CalcDef,
     ElementKind::CaseDef,
     ElementKind::ConjugatedPortDefinition,
+    ElementKind::ConnectionDef,
 ];
 
 pub const SPECIALIZES_TARGET_KINDS: &[ElementKind] = &[
@@ -130,6 +131,7 @@ pub const RULE6_ALLOWED_KINDS: &[ElementKind] = &[
     ElementKind::ViewpointDef,
     ElementKind::MetadataDef,
     ElementKind::RenderingDef,
+    ElementKind::ConnectionDef,
 ];
 
 pub const SUBJECT_TYPE_TARGET_KINDS: &[ElementKind] = &[
@@ -326,6 +328,22 @@ pub fn is_compatible_specializes_target(def_kind: &ElementKind, target: &Semanti
     *def_kind == ElementKind::MetadataDef && is_kerml_metadata_supertype(target)
 }
 
+pub fn is_kerml_datatype(target: &SemanticNode) -> bool {
+    target.element_kind == ElementKind::KermlDecl
+        && target
+            .attributes
+            .get("bnfProduction")
+            .and_then(|value| value.as_str())
+            .is_some_and(|production| production.eq_ignore_ascii_case("datatype"))
+}
+
+pub fn is_compatible_typing_target(usage_kind: &ElementKind, target: &SemanticNode) -> bool {
+    is_compatible_kind(
+        &target.element_kind,
+        allowed_typing_target_kinds(usage_kind),
+    ) || (*usage_kind == ElementKind::Attribute && is_kerml_datatype(target))
+}
+
 /// Per-usage typing compatibility (diagnostics layer).
 pub fn allowed_typing_target_kinds(usage_kind: &ElementKind) -> &'static [ElementKind] {
     match usage_kind {
@@ -354,6 +372,7 @@ pub fn allowed_typing_target_kinds(usage_kind: &ElementKind) -> &'static [Elemen
         ElementKind::Flow => &[ElementKind::FlowDef],
         ElementKind::Allocation => &[ElementKind::AllocationDef],
         ElementKind::Interface => &[ElementKind::InterfaceDef],
+        ElementKind::Connection => &[ElementKind::ConnectionDef],
         ElementKind::MetadataUsage => &[ElementKind::MetadataDef],
         ElementKind::MetadataKeyword => &[ElementKind::MetadataDef],
         ElementKind::Rendering => &[ElementKind::RenderingDef],

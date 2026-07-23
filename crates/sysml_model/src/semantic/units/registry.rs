@@ -283,9 +283,7 @@ impl UnitRegistry {
     }
 
     fn finalize_ingest(&mut self) {
-        self.register_well_known_compound_units();
         self.resolve_algebraic_unit_definitions();
-        self.derive_si_prefixed_units();
     }
 
     fn resolve_algebraic_unit_definitions(&mut self) {
@@ -322,73 +320,6 @@ impl UnitRegistry {
             });
         }
     }
-
-    fn register_well_known_compound_units(&mut self) {
-        const COMPOUNDS: &[(&str, &str, &str, &[&str])] = &[
-            ("Wh", "EnergyUnit", "W*h", &["W", "h"]),
-            ("VA", "ApparentPowerUnit", "V*A", &["V", "A"]),
-        ];
-        for (symbol, dimension, reference_unit, factors) in COMPOUNDS {
-            if self.has_symbol(symbol) {
-                continue;
-            }
-            if !factors.iter().all(|factor| self.has_symbol(factor)) {
-                continue;
-            }
-            self.upsert_unit_def(UnitDef {
-                symbol: symbol.to_string(),
-                dimension: dimension.to_string(),
-                reference_unit: Some(reference_unit.to_string()),
-                conversion_factor: 1.0,
-                conversion_offset: 0.0,
-                algebraic_expr: None,
-            });
-        }
-    }
-
-    fn derive_si_prefixed_units(&mut self) {
-        // Only derive from root library units (no referenceUnit). Prefixed units such as
-        // `km` already carry a reference and must not seed further prefix combinations.
-        let base_symbols: Vec<String> = self
-            .by_symbol
-            .iter()
-            .filter(|(symbol, def)| {
-                !self.conflicted_symbols.contains(*symbol)
-                    && (def.reference_unit.is_none() || is_prefixable_compound_symbol(symbol))
-            })
-            .map(|(symbol, _)| symbol.clone())
-            .collect();
-        let mut prefix_symbols: Vec<(String, f64)> = self
-            .prefixes_by_symbol
-            .iter()
-            .map(|(symbol, factor)| (symbol.clone(), *factor))
-            .collect();
-        prefix_symbols.sort_by_key(|symbol| std::cmp::Reverse(symbol.0.len()));
-
-        for (prefix_symbol, prefix_factor) in &prefix_symbols {
-            for base in &base_symbols {
-                let derived = format!("{prefix_symbol}{base}");
-                if self.has_symbol(&derived) {
-                    continue;
-                }
-                let Some(base_def) = self.by_symbol.get(base) else {
-                    continue;
-                };
-                self.upsert_unit_def(UnitDef {
-                    symbol: derived,
-                    dimension: base_def.dimension.clone(),
-                    reference_unit: Some(base.clone()),
-                    conversion_factor: *prefix_factor,
-                    conversion_offset: 0.0,
-                    algebraic_expr: None,
-                });
-            }
-        }
-    }
-}
-
-fn is_prefixable_compound_symbol(symbol: &str) -> bool {
-    matches!(symbol, "Wh" | "VA")
 }
 
 fn parse_unit_expression(raw: &str) -> Result<Vec<(String, i32)>, UnitError> {
@@ -563,17 +494,17 @@ package SIPrefixes {
     }
 
     #[test]
-    fn derives_kv_from_graph_prefixes() {
+    fn prefix_metadata_does_not_declare_combined_unit_symbols() {
         let registry = registry_from_sysml(&with_prefixes(
             "attribute <V> volt : ElectricPotentialUnit;",
         ));
         assert!(registry.prefix_factor_by_name("kilo").is_some());
         assert!(registry.has_symbol("V"), "volt shortName should index as V");
         assert!(
-            registry.has_symbol("kV"),
-            "derive_si_prefixed_units should add kV"
+            !registry.has_symbol("kV"),
+            "a prefix and base unit do not implicitly declare an atomic kV model element"
         );
-        assert!(registry.is_recognized_unit_expression("kV"));
+        assert!(!registry.is_recognized_unit_expression("kV"));
     }
 
     #[test]
@@ -705,7 +636,7 @@ package SIPrefixes {
     }
 
     #[test]
-    fn derives_engineering_prefixed_units() {
+    fn undeclared_engineering_unit_symbols_are_rejected() {
         let registry = registry_from_sysml(&with_prefixes(
             r#"
             attribute <V> volt : ElectricPotentialUnit;
@@ -718,21 +649,19 @@ package SIPrefixes {
         ));
         for unit in ["kV", "MW", "MVA", "MWh", "km"] {
             assert!(
-                registry.is_recognized_unit_expression(unit),
-                "expected derived unit {unit}"
+                !registry.is_recognized_unit_expression(unit),
+                "undeclared atomic unit {unit} must not be synthesized"
             );
         }
     }
 
     #[test]
-    fn well_known_compound_units_have_explicit_dimensions() {
+    fn declared_algebraic_compound_unit_has_explicit_dimension() {
         let registry = registry_from_sysml(&with_prefixes(
             r#"
-            attribute <V> volt : ElectricPotentialUnit;
             attribute <W> watt : PowerUnit;
-            attribute <A> ampere : ElectricCurrentUnit;
             attribute <h> hour: DurationUnit;
-            attribute <s> second : DurationUnit;
+            attribute <Wh> wattHour : EnergyUnit = W * h;
             "#,
         ));
 
@@ -740,18 +669,8 @@ package SIPrefixes {
             registry.unit_expression_dimension("Wh").as_deref(),
             Some("EnergyUnit")
         );
-        assert_eq!(
-            registry.unit_expression_dimension("MWh").as_deref(),
-            Some("EnergyUnit")
-        );
-        assert_eq!(
-            registry.unit_expression_dimension("VA").as_deref(),
-            Some("ApparentPowerUnit")
-        );
-        assert_eq!(
-            registry.unit_expression_dimension("MVA").as_deref(),
-            Some("ApparentPowerUnit")
-        );
+        assert!(!registry.is_recognized_unit_expression("MWh"));
+        assert!(!registry.is_recognized_unit_expression("VA"));
     }
 
     #[test]
@@ -765,7 +684,7 @@ package SIPrefixes {
     }
 
     #[test]
-    fn qualified_unit_prefix_type_is_normalized() {
+    fn qualified_unit_prefix_type_is_ingested_without_synthesizing_symbols() {
         let registry = registry_from_sysml(
             r#"
             package SI {
@@ -776,11 +695,7 @@ package SIPrefixes {
         );
 
         assert!(registry.prefix_factor_by_name("kilo").is_some());
-        assert!(registry.is_recognized_unit_expression("kV"));
-        assert_eq!(
-            registry.unit_expression_dimension("kV").as_deref(),
-            Some("ElectricPotentialUnit")
-        );
+        assert!(!registry.is_recognized_unit_expression("kV"));
     }
 
     #[test]
@@ -808,10 +723,10 @@ package SIPrefixes {
             "attribute <V> volt : ElectricPotentialUnit;",
         ));
         let md = registry
-            .hover_markdown_for_unit_literal("kV")
-            .expect("kV hover");
+            .hover_markdown_for_unit_literal("V")
+            .expect("V hover");
         assert!(md.contains("Unit literal"));
-        assert!(md.contains("kV"));
+        assert!(md.contains('V'));
     }
 
     #[test]

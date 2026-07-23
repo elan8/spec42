@@ -300,43 +300,13 @@ pub(super) fn build_from_part_def_body_element(
             }
         }
         PDBE::Connection(connection_usage) => {
-            let connection = &connection_usage.value;
-            let name = connection
-                .name
-                .as_deref()
-                .filter(|value| !value.trim().is_empty())
-                .unwrap_or("_connection");
-            let qualified = qualified_name_for_node(g, uri, container_prefix, name, "connection");
-            let mut attrs = HashMap::new();
-            if let Some(ref subsets) = connection.subsets {
-                attrs.insert("subsetsFeature".to_string(), serde_json::json!(subsets));
-            }
-            if let Some(ref redefines) = connection.redefines {
-                attrs.insert("redefines".to_string(), serde_json::json!(redefines));
-            }
-            add_node_and_recurse(
-                g,
+            usage_builders::materialize_connection_usage(
+                connection_usage,
                 uri,
-                &qualified,
-                "connection",
-                name.to_string(),
-                span_to_range(&connection_usage.span),
-                attrs,
+                container_prefix,
                 Some(parent_id),
+                g,
             );
-            if let Some(ref type_name) = connection.type_name {
-                add_typing_edge_if_exists(g, uri, &qualified, type_name, container_prefix);
-            }
-            let connection_node_id = NodeId::new(uri, &qualified);
-            if let sysml_v2_parser::ast::ConnectionDefBody::Brace { elements } = &connection.body {
-                super::interface_def::build_from_connection_def_body(
-                    elements,
-                    uri,
-                    Some(&qualified),
-                    &connection_node_id,
-                    g,
-                );
-            }
         }
         PDBE::CalcUsage(calc_node) => {
             let name = identification_name(&calc_node.value.identification);

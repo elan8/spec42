@@ -82,7 +82,19 @@ fn quantity_type_names_for_attribute(
 }
 
 fn unit_dimensions_compatible(graph: &SemanticGraph, expected: &str, actual: &str) -> bool {
-    is_measurement_unit_compatible(graph, expected, actual)
+    expected
+        .split(',')
+        .map(str::trim)
+        .filter(|dimension| !dimension.is_empty())
+        .any(|expected_dimension| {
+            actual
+                .split(',')
+                .map(str::trim)
+                .filter(|dimension| !dimension.is_empty())
+                .any(|actual_dimension| {
+                    is_measurement_unit_compatible(graph, expected_dimension, actual_dimension)
+                })
+        })
 }
 
 pub(crate) fn collect_expression_conformance_diagnostics(

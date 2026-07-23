@@ -302,6 +302,7 @@ pub(crate) fn materialize_attribute_def(
     for target in crate::semantic::ast_util::typing_targets(value.typing.as_deref()) {
         add_typing_edge_if_exists(g, uri, &qualified, target, container_prefix);
     }
+    attribute_body::build_from_attribute_body(&value.body, uri, Some(&qualified), &node_id, g);
 }
 
 pub(super) fn materialize_alias_def(

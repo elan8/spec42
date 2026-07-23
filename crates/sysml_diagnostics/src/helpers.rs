@@ -534,6 +534,7 @@ pub(super) fn declared_type_ref(node: &SemanticNode) -> Option<&str> {
         "subjectType",
         "analysisType",
         "verificationType",
+        "connectionType",
         "metadataType",
         "objectiveType",
     ]

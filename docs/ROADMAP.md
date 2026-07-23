@@ -1,6 +1,6 @@
 # Spec42 Roadmap
 
-**Current version:** 0.33.x (2026-06-29)  
+**Current version:** 0.44.19 (2026-07-23)
 **Target:** 1.0.0
 
 This document describes what needs to be true for Spec42 1.0, tracks the remaining work, and lists what is deliberately deferred beyond 1.0. It is the single authoritative planning reference; engineering detail lives in the linked documents.
@@ -25,7 +25,7 @@ The 1.0 bar is:
 
 ---
 
-## Current state (as of 0.35.0)
+## Current state (as of 0.44.19)
 
 The table below shows what is **already complete** and will ship in 1.0 without additional work.
 
@@ -59,6 +59,12 @@ The table below shows what is **already complete** and will ship in 1.0 without 
 | Diagnostic catalog with stable codes | complete |
 | SARIF output | complete |
 | Cascade suppression and deduplication | complete |
+
+The public robot-vacuum showcase completes without errors or crashes. The 188 Spec42-owned false
+positives found in the 0.44.19 baseline have been eliminated. Strict declaration-based unit
+validation now reports 68 model-owned `unknown_unit_symbol` warnings: 65 uses of undeclared `ms`
+and three loaded uses of undeclared `mAh`. The model repository must declare those units before the
+roadmap's zero-unexpected-warning gate can be enabled.
 
 ### Diagram views
 
@@ -158,19 +164,44 @@ Affected files (see individual update notes below):
 
 ### R7 — sysml-v2-parser alignment
 
-Track the OMG SysML v2 specification release cycle. The parser is currently at **0.28.0** (pinned 2026-06-29). Before 1.0:
+Track the OMG SysML v2 specification release cycle. The parser is currently at **0.45.1**
+(locked 2026-07-23), with the bundled OMG library baseline at **2026-04**. Before 1.0:
 
-- Confirm the pinned parser covers the OMG submission being targeted (currently aligned with 0.32 / 2026-06-22 spec).
-- Update graph builders for any new AST body/member enums introduced in parser releases between 0.27.0 and the 1.0 release pin.
-- Run the full OMG validation suite (`cargo test --no-default-features`) and triage any new informational failures.
+- Confirm the final parser pin covers the OMG submission/library baseline targeted by Spec42 1.0.
+- Update graph builders for any new AST body/member enums introduced after 0.45.1.
+- Run the parser's full OMG validation suite (`cargo test --test validation -- --include-ignored`)
+  and triage any new informational failures after every parser bump.
 
 See [AST-SEMANTIC-COVERAGE.md](engineering/AST-SEMANTIC-COVERAGE.md) for the current AST-to-graph coverage matrix.
 
 ### R8 — Release version and changelog
 
-- Bump workspace version from `0.33.x` to `1.0.0` across all crates.
+- Bump workspace version from the final `0.x` release to `1.0.0`; synchronize the VS Code and
+  Zed manifests from `[workspace.package]` with `scripts/sync-workspace-version.mjs`.
 - Write a `CHANGELOG.md` (or `RELEASE-NOTES.md`) covering the major 0.x milestones for users upgrading from earlier versions.
 - Tag the release in git and publish the GitHub Action at `elan8/spec42@v1`.
+
+### R9 — Eliminate robot-vacuum diagnostic false positives (target 0.45.0)
+
+The 0.44.19 baseline contained 191 warnings:
+
+| Baseline count | Diagnostic | Resolution |
+|---------------:|------------|------------|
+| 80 | `incompatible_type_kind` | Fixed: KerML `datatype` declarations are valid attribute typing targets without hard-coded built-in names. |
+| 63 | `unresolved_redefines_target` | Fixed: package- and part-level `ConnectionUsage` elements share a complete builder and cross-document connection typing. |
+| 35 | `incompatible_unit_dimension` | Fixed: quantity resolution prefers the specific declared/local `mRef`; multi-dimension units such as kelvin match any compatible declared dimension. |
+| 10 | `unresolved_import_target` | Fixed: expose diagnostics use the typed-feature-chain resolver used by view evaluation. |
+| 3 | `unknown_unit_symbol` | Correct diagnostic: `mAh` is undeclared by the standard library and must be declared by the model. |
+
+The same work removed Spec42's implicit creation of prefixed and familiar compound symbols.
+Prefix metadata and base units do not declare a new atomic unit: `ms`, `mAh`, `Wh`, and similar
+symbols resolve only when a loaded standard or model library declares them.
+
+Remaining before the zero-warning CI gate:
+
+- Add project-defined `ms`, `Ah`, and `mAh` units to the robot-vacuum repository.
+- Enable the robot-vacuum integration fixture in CI after the model repository reaches zero
+  unexpected errors and warnings.
 
 ---
 
@@ -197,7 +228,7 @@ The following capabilities are explicitly out of scope for 1.0. They may appear 
 
 `sysml-v2-parser` is an external crate (crates.io primary, `.cargo/config.toml` patch for pre-publish testing). Spec42's semantic quality is directly coupled to parser coverage.
 
-**Current pin:** `0.28.0`
+**Current manifest requirement / lock:** `0.45.1`
 
 **Coupling policy:**
 

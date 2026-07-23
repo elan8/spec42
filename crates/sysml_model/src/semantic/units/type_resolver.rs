@@ -49,18 +49,22 @@ pub fn unit_type_for_quantity_value<'a>(
     }
     for child in graph.children_of(quantity_node) {
         if child.name == "mRef" || child.name.ends_with("::mRef") {
-            for target in graph.outgoing_typing_or_specializes_targets(child) {
-                if is_unit_type_name(&target.name) {
-                    return Some(target);
-                }
-            }
+            // A redefinition's explicitly declared type is more specific than an inherited
+            // typing edge. Standard quantity values use `attribute :>> mRef: PowerUnit`, etc.
             if let Some(type_ref) = child
                 .attributes
                 .get("attributeType")
                 .and_then(|v| v.as_str())
             {
                 if is_unit_type_name(type_ref) {
-                    return graph.nodes_named(type_ref).into_iter().next();
+                    if let Some(unit) = graph.nodes_named(type_ref).into_iter().next() {
+                        return Some(unit);
+                    }
+                }
+            }
+            for target in graph.outgoing_typing_or_specializes_targets(child) {
+                if is_unit_type_name(&target.name) {
+                    return Some(target);
                 }
             }
         }
@@ -219,5 +223,32 @@ package ElectricalQuantities {
             &graph,
             "Measurement::CustomMeasure"
         ));
+    }
+
+    #[test]
+    fn quantity_value_prefers_local_mref_redefinition() {
+        let uri = Url::parse("file:///test/power.sysml").expect("uri");
+        let parsed = parse(
+            r#"
+            package Measurement {
+                attribute def ScalarQuantityUnit;
+                attribute def PowerUnit;
+                attribute def ScalarQuantityValue {
+                    attribute mRef : ScalarQuantityUnit;
+                }
+                attribute def PowerValue :> ScalarQuantityValue {
+                    attribute :>> mRef : PowerUnit;
+                }
+            }
+            "#,
+        )
+        .expect("parse");
+        let mut graph = build_graph_from_doc(&parsed, &uri);
+        link_workspace_relationships(&mut graph);
+
+        assert_eq!(
+            unit_type_for_quantity_type_name(&graph, "PowerValue").as_deref(),
+            Some("PowerUnit")
+        );
     }
 }
