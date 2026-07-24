@@ -9,7 +9,11 @@ use sysml_v2_parser::ast::{
 };
 use url::Url;
 
-use crate::semantic::ast_util::{attach_short_name_attribute, span_to_range};
+use crate::semantic::ast_util::{
+    action_usage_feature_properties, attach_short_name_attribute, declared_multiplicity,
+    span_to_range, state_usage_feature_properties, subsetting_target, subsetting_targets,
+    typing_targets,
+};
 use crate::semantic::graph::SemanticGraph;
 use crate::semantic::model::{NodeId, RelationshipKind};
 use crate::semantic::relationships::{add_edge_if_both_exist, add_typing_edge_if_exists};
@@ -17,7 +21,7 @@ use crate::semantic::relationships::{add_edge_if_both_exist, add_typing_edge_if_
 use super::expressions;
 use super::payload::insert_action_payload_attrs;
 use super::state;
-use super::{add_node_and_recurse, qualified_name_for_node};
+use super::{add_node_and_recurse, attach_feature_properties, qualified_name_for_node};
 
 struct ThenActionChain {
     previous: Option<String>,
@@ -250,10 +254,7 @@ fn add_state_usage(
 ) {
     let name = &su_node.value.name;
     let qualified = qualified_name_for_node(g, uri, container_prefix, name, "state");
-    let mut attrs = HashMap::new();
-    if let Some(ref t) = su_node.value.type_name {
-        attrs.insert("stateType".to_string(), serde_json::json!(t));
-    }
+    let attrs = state_usage_graph_attrs(&su_node.value);
     add_node_and_recurse(
         g,
         uri,
@@ -265,9 +266,8 @@ fn add_state_usage(
         Some(parent_id),
     );
     let state_id = NodeId::new(uri, &qualified);
-    if let Some(ref t) = su_node.value.type_name {
-        add_typing_edge_if_exists(g, uri, &qualified, t, container_prefix);
-    }
+    attach_state_usage_facts(g, &state_id, &su_node.value);
+    wire_state_usage_typing(g, uri, &qualified, &su_node.value, container_prefix);
     if let StateDefBody::Brace { elements } = &su_node.value.body {
         state::build_from_state_body(elements, uri, Some(&qualified), &state_id, g);
     }
@@ -466,11 +466,7 @@ fn materialize_nested_action_usage(
 ) -> String {
     let name = &au_node.name;
     let child_qualified = qualified_name_for_node(g, uri, container_prefix, name, "action");
-    let mut attrs = HashMap::new();
-    attrs.insert(
-        "actionType".to_string(),
-        serde_json::json!(&au_node.type_name),
-    );
+    let mut attrs = action_usage_graph_attrs(au_node);
     insert_action_payload_attrs(&mut attrs, au_node);
     add_node_and_recurse(
         g,
@@ -482,13 +478,9 @@ fn materialize_nested_action_usage(
         attrs,
         Some(parent_id),
     );
-    add_typing_edge_if_exists(
-        g,
-        uri,
-        &child_qualified,
-        &au_node.type_name,
-        container_prefix,
-    );
+    let action_id = NodeId::new(uri, &child_qualified);
+    attach_action_usage_facts(g, &action_id, au_node);
+    wire_action_usage_typing(g, uri, &child_qualified, au_node, container_prefix);
     if link_perform_from_parent {
         add_edge_if_both_exist(
             g,
@@ -503,11 +495,124 @@ fn materialize_nested_action_usage(
             elements,
             uri,
             Some(child_qualified.as_str()),
-            &NodeId::new(uri, &child_qualified),
+            &action_id,
             g,
         );
     }
     child_qualified
+}
+
+fn action_usage_graph_attrs(usage: &ActionUsage) -> HashMap<String, serde_json::Value> {
+    let mut attrs = HashMap::new();
+    attrs.insert(
+        "actionType".to_string(),
+        serde_json::json!(&usage.type_name),
+    );
+    if usage.is_abstract {
+        attrs.insert("isAbstract".to_string(), serde_json::json!(true));
+    }
+    if usage.is_reference {
+        attrs.insert("isReference".to_string(), serde_json::json!(true));
+    }
+    if let Some(ref m) = usage.multiplicity {
+        attrs.insert("multiplicity".to_string(), serde_json::json!(m));
+    }
+    let subset_targets = subsetting_targets(usage.subsets.as_deref());
+    if !subset_targets.is_empty() {
+        attrs.insert(
+            "subsetsFeature".to_string(),
+            serde_json::json!(subset_targets.join(", ")),
+        );
+    }
+    if let Some(r) = subsetting_target(usage.redefines.as_deref()) {
+        attrs.insert("redefines".to_string(), serde_json::json!(r));
+    }
+    attrs
+}
+
+fn attach_action_usage_facts(g: &mut SemanticGraph, node_id: &NodeId, usage: &ActionUsage) {
+    attach_feature_properties(g, node_id, action_usage_feature_properties(usage));
+    if let Some(multiplicity) = &usage.multiplicity {
+        if let Some(node) = g.get_node_mut(node_id) {
+            node.declared_facts.multiplicity = Some(declared_multiplicity(multiplicity, false));
+        }
+    }
+}
+
+fn wire_action_usage_typing(
+    g: &mut SemanticGraph,
+    uri: &Url,
+    qualified: &str,
+    usage: &ActionUsage,
+    container_prefix: Option<&str>,
+) {
+    let mut targets = typing_targets(usage.typing.as_deref());
+    if targets.is_empty() && !usage.type_name.trim().is_empty() {
+        targets.push(usage.type_name.as_str());
+    }
+    for target in targets {
+        add_typing_edge_if_exists(g, uri, qualified, target, container_prefix);
+    }
+}
+
+pub(super) fn state_usage_graph_attrs(usage: &StateUsage) -> HashMap<String, serde_json::Value> {
+    let mut attrs = HashMap::new();
+    if let Some(ref t) = usage.type_name {
+        attrs.insert("stateType".to_string(), serde_json::json!(t));
+    }
+    if usage.is_abstract {
+        attrs.insert("isAbstract".to_string(), serde_json::json!(true));
+    }
+    if usage.is_reference {
+        attrs.insert("isReference".to_string(), serde_json::json!(true));
+    }
+    if let Some(ref m) = usage.multiplicity {
+        attrs.insert("multiplicity".to_string(), serde_json::json!(m));
+    }
+    let subset_targets = subsetting_targets(usage.subsets.as_deref());
+    if !subset_targets.is_empty() {
+        attrs.insert(
+            "subsetsFeature".to_string(),
+            serde_json::json!(subset_targets.join(", ")),
+        );
+    }
+    if let Some(r) = subsetting_target(usage.redefines.as_deref()) {
+        attrs.insert("redefines".to_string(), serde_json::json!(r));
+    }
+    attrs
+}
+
+pub(super) fn attach_state_usage_facts(
+    g: &mut SemanticGraph,
+    node_id: &NodeId,
+    usage: &StateUsage,
+) {
+    attach_feature_properties(g, node_id, state_usage_feature_properties(usage));
+    if let Some(multiplicity) = &usage.multiplicity {
+        if let Some(node) = g.get_node_mut(node_id) {
+            node.declared_facts.multiplicity = Some(declared_multiplicity(multiplicity, false));
+        }
+    }
+}
+
+pub(super) fn wire_state_usage_typing(
+    g: &mut SemanticGraph,
+    uri: &Url,
+    qualified: &str,
+    usage: &StateUsage,
+    container_prefix: Option<&str>,
+) {
+    let mut targets = typing_targets(usage.typing.as_deref());
+    if targets.is_empty() {
+        if let Some(ref t) = usage.type_name {
+            if !t.trim().is_empty() {
+                targets.push(t.as_str());
+            }
+        }
+    }
+    for target in targets {
+        add_typing_edge_if_exists(g, uri, qualified, target, container_prefix);
+    }
 }
 
 pub(super) fn build_from_action_def_body(
@@ -875,11 +980,7 @@ pub(super) fn materialize_top_level_action_usage(
     let usage = &au_node.value;
     let name = &usage.name;
     let qualified = qualified_name_for_node(g, uri, container_prefix, name, "action");
-    let mut attrs = HashMap::new();
-    attrs.insert(
-        "actionType".to_string(),
-        serde_json::json!(&usage.type_name),
-    );
+    let mut attrs = action_usage_graph_attrs(usage);
     insert_action_payload_attrs(&mut attrs, usage);
     add_node_and_recurse(
         g,
@@ -891,9 +992,10 @@ pub(super) fn materialize_top_level_action_usage(
         attrs,
         parent_id,
     );
-    add_typing_edge_if_exists(g, uri, &qualified, &usage.type_name, container_prefix);
+    let action_id = NodeId::new(uri, &qualified);
+    attach_action_usage_facts(g, &action_id, usage);
+    wire_action_usage_typing(g, uri, &qualified, usage, container_prefix);
     if let ActionUsageBody::Brace { elements } = &usage.body {
-        let action_id = NodeId::new(uri, &qualified);
         build_from_action_usage_body(elements, uri, Some(&qualified), &action_id, g);
     }
     qualified

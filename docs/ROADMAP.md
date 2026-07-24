@@ -60,11 +60,10 @@ The table below shows what is **already complete** and will ship in 1.0 without 
 | SARIF output | complete |
 | Cascade suppression and deduplication | complete |
 
-The public robot-vacuum showcase completes without errors or crashes. The 188 Spec42-owned false
-positives found in the 0.44.19 baseline have been eliminated. Strict declaration-based unit
-validation now reports 68 model-owned `unknown_unit_symbol` warnings: 65 uses of undeclared `ms`
-and three loaded uses of undeclared `mAh`. The model repository must declare those units before the
-roadmap's zero-unexpected-warning gate can be enabled.
+The public robot-vacuum showcase completes without errors or crashes. The Spec42-owned false
+positives found in the 0.44.19 baseline have been eliminated. Project-declared units (`Ah`,
+`mAh`, `ms` via `VacuumCleanerQuantitiesAndUnits`) land in the pinned showcase commit; CI runs
+the zero-unexpected-warning gate (`robot_vacuum_snapshot`).
 
 ### Diagram views
 
@@ -164,13 +163,17 @@ Affected files (see individual update notes below):
 
 ### R7 — sysml-v2-parser alignment
 
-Track the OMG SysML v2 specification release cycle. The parser is currently at **0.45.1**
-(locked 2026-07-23), with the bundled OMG library baseline at **2026-04**. Before 1.0:
+Track the OMG SysML v2 specification release cycle. The parser is currently at **0.46.0**
+(crates.io; locked 2026-07-24), with the bundled OMG library baseline at **2026-04**. Before 1.0:
 
 - Confirm the final parser pin covers the OMG submission/library baseline targeted by Spec42 1.0.
-- Update graph builders for any new AST body/member enums introduced after 0.45.1.
+- Update graph builders for any new AST body/member enums introduced after 0.46.0.
 - Run the parser's full OMG validation suite (`cargo test --test validation -- --include-ignored`)
   and triage any new informational failures after every parser bump.
+
+**0.46.0 slice (done):** part-body `ref action` / `ref state` / nested action·state are real
+graph nodes with reference ownership — not `opaque member`. Full P5+ unified definition/usage
+rewrite remains deferred.
 
 See [AST-SEMANTIC-COVERAGE.md](engineering/AST-SEMANTIC-COVERAGE.md) for the current AST-to-graph coverage matrix.
 
@@ -181,7 +184,7 @@ See [AST-SEMANTIC-COVERAGE.md](engineering/AST-SEMANTIC-COVERAGE.md) for the cur
 - Write a `CHANGELOG.md` (or `RELEASE-NOTES.md`) covering the major 0.x milestones for users upgrading from earlier versions.
 - Tag the release in git and publish the GitHub Action at `elan8/spec42@v1`.
 
-### R9 — Eliminate robot-vacuum diagnostic false positives (target 0.45.0)
+### ~~R9 — Eliminate robot-vacuum diagnostic false positives~~ ✓ done (0.45.0)
 
 The 0.44.19 baseline contained 191 warnings:
 
@@ -193,15 +196,11 @@ The 0.44.19 baseline contained 191 warnings:
 | 10 | `unresolved_import_target` | Fixed: expose diagnostics use the typed-feature-chain resolver used by view evaluation. |
 | 3 | `unknown_unit_symbol` | Correct diagnostic: `mAh` is undeclared by the standard library and must be declared by the model. |
 
-The same work removed Spec42's implicit creation of prefixed and familiar compound symbols.
-Prefix metadata and base units do not declare a new atomic unit: `ms`, `mAh`, `Wh`, and similar
-symbols resolve only when a loaded standard or model library declares them.
-
-Remaining before the zero-warning CI gate:
-
-- Add project-defined `ms`, `Ah`, and `mAh` units to the robot-vacuum repository.
-- Enable the robot-vacuum integration fixture in CI after the model repository reaches zero
-  unexpected errors and warnings.
+Spec42 no longer synthesizes prefixed compound unit symbols. The showcase model declares
+`Ah` / `mAh` / `ms` in `VacuumCleanerQuantitiesAndUnits`. Pin:
+`config/robot-vacuum-cleaner.json` → `2a08e9007319a45ef5a4c65c78423eab18e4fe5e`. CI fetches the
+pin and asserts zero errors / zero warnings via `perform_check` (`robot_vacuum_check`, same path
+as `spec42 check`).
 
 ---
 
@@ -228,7 +227,7 @@ The following capabilities are explicitly out of scope for 1.0. They may appear 
 
 `sysml-v2-parser` is an external crate (crates.io primary, `.cargo/config.toml` patch for pre-publish testing). Spec42's semantic quality is directly coupled to parser coverage.
 
-**Current manifest requirement / lock:** `0.45.1`
+**Current manifest requirement / lock:** `0.46.0`
 
 **Coupling policy:**
 

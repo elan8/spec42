@@ -516,6 +516,24 @@ pub(super) fn build_from_part_def_body_element(
                 },
             );
         }
+        PDBE::ActionUsage(au) => {
+            super::action::materialize_top_level_action_usage(
+                g,
+                uri,
+                container_prefix,
+                Some(parent_id),
+                au.as_ref(),
+            );
+        }
+        PDBE::StateUsage(su) => {
+            super::package_body::materialize_state_usage(
+                g,
+                uri,
+                container_prefix,
+                Some(parent_id),
+                su,
+            );
+        }
         PDBE::MetadataKeywordUsage(mk_node) => {
             super::metadata_keyword::add_metadata_keyword_node(
                 g,

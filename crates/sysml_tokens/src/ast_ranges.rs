@@ -988,6 +988,10 @@ fn collect_semantic_ranges_part_def_body_element(
             out.push((span_to_source_range(&flow.span), TYPE_PROPERTY));
             collect_semantic_ranges_definition_body(ctx, &flow.value.body, out);
         }
+        PDBE::ActionUsage(usage) => collect_semantic_ranges_action_usage(ctx, usage.as_ref(), out),
+        PDBE::StateUsage(state_usage) => {
+            collect_semantic_ranges_state_usage(ctx, state_usage, out)
+        }
         PDBE::Connect(_)
         | PDBE::InterfaceUsage(_)
         | PDBE::Allocate(_)
@@ -1047,6 +1051,10 @@ fn collect_semantic_ranges_part_usage_body_element(
             if let Some(ref s) = n.value.type_ref_span {
                 out.push((span_to_source_range(s), TYPE_TYPE));
             }
+        }
+        PUBE::ActionUsage(usage) => collect_semantic_ranges_action_usage(ctx, usage.as_ref(), out),
+        PUBE::StateUsage(state_usage) => {
+            collect_semantic_ranges_state_usage(ctx, state_usage, out)
         }
         _ => {}
     }

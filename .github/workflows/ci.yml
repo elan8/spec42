@@ -110,6 +110,15 @@ jobs:
           cargo test -p lsp_server --test lsp_integration -- --test-threads=1
           cargo test -p server --lib
 
+      - name: Fetch robot-vacuum showcase pin
+        run: bash scripts/fetch-robot-vacuum-cleaner.sh
+
+      - name: Robot-vacuum zero-warning gate (R9)
+        run: cargo test -p server --test robot_vacuum_check -- --ignored --nocapture
+
+      - name: Robot-vacuum view smoke
+        run: cargo test -p workspace --test robot_vacuum_snapshot -- --ignored --nocapture
+
       - name: cargo clippy
         run: cargo clippy --workspace --all-targets --all-features -- -D warnings
 

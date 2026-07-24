@@ -303,6 +303,70 @@ fn package_named_flow_emits_flow_edge() {
 }
 
 #[test]
+fn part_def_ref_action_materializes_as_reference_action_not_opaque() {
+    // Systems Library Parts.sysml shape: `abstract ref action performedActions … :> …`
+    // must be a real action node with reference ownership — not `opaque member`.
+    let doc = workspace_doc(
+        "performed_actions.sysml",
+        r#"package P {
+  action def Action;
+  part def Performer {
+    abstract ref action performedActions: Action[0..*] :> actions, enactedPerformances;
+    ref state nestedStates: State[0..*];
+  }
+}"#,
+    );
+    let (graph, _parsed) = build_semantic_graph_from_documents(&[doc]).expect("graph");
+    let performer = graph
+        .nodes_named("Performer")
+        .into_iter()
+        .find(|node| node.element_kind == "part def")
+        .expect("part def Performer");
+    let children = graph.children_of(performer);
+    assert!(
+        children
+            .iter()
+            .all(|child| child.element_kind != "opaque member"),
+        "ref action/state must not materialize as opaque member; got {:?}",
+        children
+            .iter()
+            .map(|c| (&c.name, &c.element_kind))
+            .collect::<Vec<_>>()
+    );
+    let performed = children
+        .iter()
+        .find(|child| child.element_kind == "action" && child.name == "performedActions")
+        .expect("performedActions action node");
+    let facts = performed
+        .declared_facts
+        .feature_properties
+        .as_ref()
+        .expect("feature properties");
+    assert_eq!(facts.is_reference, Some(true));
+    assert_eq!(facts.is_composite, Some(false));
+    assert!(facts.is_abstract);
+    assert_eq!(
+        performed
+            .attributes
+            .get("subsetsFeature")
+            .and_then(|v| v.as_str()),
+        Some("actions, enactedPerformances")
+    );
+    let nested_state = children
+        .iter()
+        .find(|child| child.element_kind == "state" && child.name == "nestedStates")
+        .expect("nestedStates state node");
+    assert_eq!(
+        nested_state
+            .declared_facts
+            .feature_properties
+            .as_ref()
+            .and_then(|p| p.is_reference),
+        Some(true)
+    );
+}
+
+#[test]
 fn robot_vacuum_style_nested_feature_flow_builds_graph() {
     let doc = workspace_doc(
         "robot_flow.sysml",

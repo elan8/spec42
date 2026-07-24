@@ -1,16 +1,12 @@
-use std::collections::HashMap;
-
-use sysml_v2_parser::ast::StateDefBody;
 use url::Url;
 
 use crate::semantic::ast_util::{connection_end_expression, span_to_range};
 use crate::semantic::graph::SemanticGraph;
 use crate::semantic::model::{NodeId, RelationshipKind};
-use crate::semantic::relationships::{add_edge_if_both_exist, add_typing_edge_if_exists};
+use crate::semantic::relationships::add_edge_if_both_exist;
 
 use super::expressions;
 use super::port_def::materialize_port_usage;
-use super::{add_node_and_recurse, qualified_name_for_node};
 
 pub(super) fn build_from_part_usage_body_element(
     node: &sysml_v2_parser::Node<sysml_v2_parser::ast::PartUsageBodyElement>,
@@ -139,31 +135,23 @@ pub(super) fn build_from_part_usage_body_element(
                 },
             );
         }
-        PUBE::StateUsage(state_node) => {
-            let name = &state_node.name;
-            let qualified = qualified_name_for_node(g, uri, container_prefix, name, "state");
-            let range = span_to_range(&state_node.span);
-            let mut attrs = HashMap::new();
-            if let Some(ref t) = state_node.type_name {
-                attrs.insert("stateType".to_string(), serde_json::json!(t));
-            }
-            add_node_and_recurse(
+        PUBE::ActionUsage(au) => {
+            super::action::materialize_top_level_action_usage(
                 g,
                 uri,
-                &qualified,
-                "state",
-                name.clone(),
-                range,
-                attrs,
+                container_prefix,
                 Some(parent_id),
+                au.as_ref(),
             );
-            let state_id = NodeId::new(uri, &qualified);
-            if let Some(ref t) = state_node.type_name {
-                add_typing_edge_if_exists(g, uri, &qualified, t, container_prefix);
-            }
-            if let StateDefBody::Brace { elements } = &state_node.body {
-                super::state::build_from_state_body(elements, uri, Some(&qualified), &state_id, g);
-            }
+        }
+        PUBE::StateUsage(state_node) => {
+            super::package_body::materialize_state_usage(
+                g,
+                uri,
+                container_prefix,
+                Some(parent_id),
+                state_node,
+            );
         }
         PUBE::MetadataAnnotation(meta) => {
             super::metadata_def::add_metadata_annotation_node(

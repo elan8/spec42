@@ -39,6 +39,12 @@ pub(super) fn materialize_ref_decl(
     let range = span_to_range(&wrap.span);
     let mut attrs = HashMap::new();
     attrs.insert("refType".to_string(), serde_json::json!(&n.type_name));
+    if let Some(vis) = &n.membership.visibility {
+        attrs.insert(
+            "visibility".to_string(),
+            serde_json::json!(format!("{vis:?}")),
+        );
+    }
     if let Some(r) = subsetting_target(n.redefines.as_deref()) {
         attrs.insert("redefines".to_string(), serde_json::json!(r));
     }

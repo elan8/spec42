@@ -94,7 +94,7 @@ pub fn port_usage_feature_properties(
         .is_some_and(|type_name| type_name.trim_start().starts_with('~'));
     DeclaredFeatureProperties {
         direction: usage.direction.map(direction_name).map(str::to_owned),
-        is_abstract: false,
+        is_abstract: usage.is_abstract,
         is_variation: false,
         is_individual: false,
         is_derived: usage.is_derived,
@@ -103,6 +103,61 @@ pub fn port_usage_feature_properties(
         is_composite,
         is_reference,
         is_conjugated: conjugated,
+        is_ordered: None,
+        is_unique: None,
+        is_portion: false,
+        portion_kind: None,
+    }
+}
+
+/// Ownership for an `action` / `state` usage: `ref` keywords flip composite → reference.
+fn usage_ownership_from_ref_flag(is_reference: bool) -> (Option<bool>, Option<bool>) {
+    if is_reference {
+        (Some(false), Some(true))
+    } else {
+        composite_usage_ownership()
+    }
+}
+
+/// Builds declared feature properties for an action usage (including `ref action`).
+pub fn action_usage_feature_properties(
+    usage: &sysml_v2_parser::ast::ActionUsage,
+) -> DeclaredFeatureProperties {
+    let (is_composite, is_reference) = usage_ownership_from_ref_flag(usage.is_reference);
+    DeclaredFeatureProperties {
+        direction: None,
+        is_abstract: usage.is_abstract,
+        is_variation: false,
+        is_individual: false,
+        is_derived: false,
+        is_constant: false,
+        is_end: false,
+        is_composite,
+        is_reference,
+        is_conjugated: false,
+        is_ordered: None,
+        is_unique: None,
+        is_portion: false,
+        portion_kind: None,
+    }
+}
+
+/// Builds declared feature properties for a state usage (including `ref state`).
+pub fn state_usage_feature_properties(
+    usage: &sysml_v2_parser::ast::StateUsage,
+) -> DeclaredFeatureProperties {
+    let (is_composite, is_reference) = usage_ownership_from_ref_flag(usage.is_reference);
+    DeclaredFeatureProperties {
+        direction: None,
+        is_abstract: usage.is_abstract,
+        is_variation: false,
+        is_individual: false,
+        is_derived: false,
+        is_constant: false,
+        is_end: false,
+        is_composite,
+        is_reference,
+        is_conjugated: false,
         is_ordered: None,
         is_unique: None,
         is_portion: false,
@@ -241,6 +296,17 @@ pub fn typing_target_display(relationship: Option<&TypingRelationship>) -> Optio
 /// Returns the source-level target of a typed subsetting-family relationship.
 pub fn subsetting_target(relationship: Option<&SubsettingRelationship>) -> Option<&str> {
     relationship.and_then(subsetting_relationship_target)
+}
+
+/// Returns every source-level target of a subsetting-family relationship (multi-target `:>`).
+pub fn subsetting_targets(relationship: Option<&SubsettingRelationship>) -> Vec<&str> {
+    relationship.map_or_else(Vec::new, |relationship| {
+        relationship
+            .target
+            .iter()
+            .filter_map(|target| target.value.local_name())
+            .collect()
+    })
 }
 
 /// Returns the complete source-level feature chain of a subsetting-family

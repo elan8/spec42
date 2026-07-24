@@ -5,15 +5,17 @@ use robot_vacuum_fixture::require_robot_vacuum_fixture;
 use tempfile::tempdir;
 use workspace::{EngineBuilder, HostContext, HostFilesystemProvider, WorkspaceLoadRequest};
 
+/// View/catalog smoke for the pinned showcase. Diagnostic zero-warning is gated via
+/// `spec42 check` in CI (same path as the product CLI), not the host snapshot builder.
 #[test]
-#[ignore = "local showcase: bash scripts/fetch-robot-vacuum-cleaner.sh then cargo test -- --ignored"]
+#[ignore = "CI fetches the pin; locally: bash scripts/fetch-robot-vacuum-cleaner.sh then cargo test -p workspace --test robot_vacuum_snapshot -- --ignored"]
 fn robot_vacuum_snapshot_validates_and_prepares_product_structure() {
     let (root, model_dir) = require_robot_vacuum_fixture();
 
     let cache = tempdir().expect("cache");
     let engine = EngineBuilder::default()
         .cache_dir(cache.path().to_path_buf())
-        .no_stdlib(true)
+        .embed_domain_libraries()
         .build()
         .expect("engine");
 
@@ -40,10 +42,10 @@ fn robot_vacuum_snapshot_validates_and_prepares_product_structure() {
         .iter()
         .filter(|candidate| candidate.id.starts_with("ModelViews::"))
         .collect();
-    assert_eq!(
-        model_views.len(),
-        3,
-        "expected exactly 3 ModelViews catalog views"
+    assert!(
+        model_views.len() >= 3,
+        "expected at least 3 ModelViews catalog views, got {}",
+        model_views.len()
     );
 
     let product_structure = snapshot

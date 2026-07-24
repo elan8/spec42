@@ -7,6 +7,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.45.0] - 2026-07-24
+
+- **Parser dependency `sysml-v2-parser` 0.46.0.** Part-body `ref action` / `ref state` /
+  nested `action`·`state` (Systems Library `Parts.sysml` `performedActions` shape) materialize
+  as real `action`/`state` nodes with reference ownership facts, typed headers, and
+  `subsetsFeature` — not `"opaque member"`. Plain `ref` visibility is projected. Token ranges
+  cover the new `PartDefBodyElement` / `PartUsageBodyElement` variants. Full P5+ unified
+  definition/usage rewrite remains deferred.
+
+- **R9 robot-vacuum zero-warning gate.** Showcase pin advanced to
+  `2a08e9007319a45ef5a4c65c78423eab18e4fe5e` (project `Ah` / `mAh` / `ms` units via
+  `VacuumCleanerQuantitiesAndUnits`). CI fetches the pin and runs `spec42 check` via
+  `robot_vacuum_check` (zero errors / zero warnings) plus the host view smoke
+  (`robot_vacuum_snapshot`).
+
 ## [0.44.19] - 2026-07-23
 
 - **One release version across Cargo, VS Code, and Zed.** The VS Code package manifest and lock,

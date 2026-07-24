@@ -259,7 +259,7 @@ The [sysml-robot-vacuum-cleaner](https://github.com/elan8/sysml-robot-vacuum-cle
 bash scripts/fetch-robot-vacuum-cleaner.sh
 ```
 
-Pinned version: `config/robot-vacuum-cleaner.json`. Override the checkout path with `SYSML_ROBOT_VACUUM_DIR` if needed.
+Pinned version: `config/robot-vacuum-cleaner.json` (commit SHA, tag, or branch). Override the checkout path with `SYSML_ROBOT_VACUUM_DIR` if needed. Re-fetch after a pin bump with `FORCE_ROBOT_VACUUM_FETCH=1 bash scripts/fetch-robot-vacuum-cleaner.sh`.
 
 These tests stay `#[ignore]` in CI (slow; ~1–2 minutes). Run locally with `--ignored`:
 

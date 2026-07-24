@@ -1292,7 +1292,7 @@ pub(super) fn materialize_state_def(
     }
 }
 
-pub(super) fn materialize_state_usage(
+pub(crate) fn materialize_state_usage(
     g: &mut SemanticGraph,
     uri: &Url,
     container_prefix: Option<&str>,
@@ -1302,10 +1302,7 @@ pub(super) fn materialize_state_usage(
     let name = &su_node.name;
     let qualified = qualified_name_for_node(g, uri, container_prefix, name, "state");
     let range = span_to_range(&su_node.span);
-    let mut attrs = HashMap::new();
-    if let Some(ref t) = su_node.type_name {
-        attrs.insert("stateType".to_string(), serde_json::json!(t));
-    }
+    let attrs = action::state_usage_graph_attrs(su_node);
     add_node_and_recurse(
         g,
         uri,
@@ -1317,9 +1314,8 @@ pub(super) fn materialize_state_usage(
         parent_id,
     );
     let node_id = NodeId::new(uri, &qualified);
-    if let Some(ref t) = su_node.type_name {
-        add_typing_edge_if_exists(g, uri, &qualified, t, container_prefix);
-    }
+    action::attach_state_usage_facts(g, &node_id, su_node);
+    action::wire_state_usage_typing(g, uri, &qualified, su_node, container_prefix);
     if let StateDefBody::Brace { elements } = &su_node.body {
         state::build_from_state_body(elements, uri, Some(&qualified), &node_id, g);
     }
