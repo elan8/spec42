@@ -2,6 +2,7 @@
 
 use std::collections::HashMap;
 
+use crate::semantic::expression_fold::{fold_expression, ExpressionAlgebra, FoldedChild};
 use crate::semantic::model::{
     DeclaredExpression, DeclaredExpressionArgument, DeclaredFeatureProperties,
     DeclaredFeatureValue, DeclaredFeatureValueKind, DeclaredMultiplicity,
@@ -331,159 +332,178 @@ pub fn argument_expression(argument: &Argument) -> &Node<Expression> {
     &argument.value
 }
 
-/// Normalize the parser expression AST into typed semantic facts. This never
-/// uses the debug renderer; structural children and named arguments remain
-/// explicit for later addressable projection.
-pub fn declared_expression(node: &Node<Expression>) -> DeclaredExpression {
-    use sysml_v2_parser::ast::Expression as Expr;
-    let mut expression = DeclaredExpression {
-        kind: String::new(),
-        range: span_to_range(&node.span),
-        literal: None,
-        reference: None,
-        operator: None,
-        children: Vec::new(),
-        arguments: Vec::new(),
-    };
-    match &node.value {
-        Expr::LiteralInteger(value) => {
-            expression.kind = "integerLiteral".into();
-            expression.literal = Some(serde_json::json!(value));
-        }
-        Expr::LiteralReal(value) => {
-            expression.kind = "realLiteral".into();
-            expression.literal = Some(serde_json::json!(value));
-        }
-        Expr::LiteralString(value) => {
-            expression.kind = "stringLiteral".into();
-            expression.literal = Some(serde_json::json!(value));
-        }
-        Expr::LiteralBoolean(value) => {
-            expression.kind = "booleanLiteral".into();
-            expression.literal = Some(serde_json::json!(value));
-        }
-        Expr::Null => expression.kind = "null".into(),
-        Expr::FeatureRef(value) => {
-            expression.kind = "featureReference".into();
-            expression.reference = Some(value.clone());
-        }
-        Expr::FeatureChainRef(value) => {
-            expression.kind = "featureChain".into();
-            expression.reference = Some(value.segments.join("."));
-        }
-        Expr::Classification { metaclass } => {
-            expression.kind = "classification".into();
-            expression.reference = Some(metaclass.clone());
-        }
-        Expr::MemberAccess(base, member) => {
-            expression.kind = "memberAccess".into();
-            expression.reference = Some(member.clone());
-            expression.children.push(declared_expression(base));
-        }
-        Expr::Select { base, selector } => {
-            expression.kind = "select".into();
-            expression.reference = Some(selector.clone());
-            expression.children.push(declared_expression(base));
-        }
-        Expr::Collect { base, selector } => {
-            expression.kind = "collect".into();
-            expression.reference = Some(selector.clone());
-            expression.children.push(declared_expression(base));
-        }
-        Expr::MetadataAccess(base) => {
-            expression.kind = "metadataAccess".into();
-            expression.children.push(declared_expression(base));
-        }
-        Expr::Parenthesized(inner) => {
-            expression.kind = "parenthesized".into();
-            expression.children.push(declared_expression(inner));
-        }
-        Expr::Bracket(inner) => {
-            expression.kind = "bracket".into();
-            expression.children.push(declared_expression(inner));
-        }
-        Expr::UnaryOp { op, operand } => {
-            expression.kind = "unary".into();
-            expression.operator = Some(op.as_str().into());
-            expression.children.push(declared_expression(operand));
-        }
-        Expr::BinaryOp { op, left, right } => {
-            expression.kind = "binary".into();
-            expression.operator = Some(op.as_str().into());
-            expression.children = vec![declared_expression(left), declared_expression(right)];
-        }
-        Expr::Index { base, index } => {
-            expression.kind = "index".into();
-            expression.children = vec![declared_expression(base), declared_expression(index)];
-        }
-        Expr::LiteralWithUnit { value, unit } => {
-            expression.kind = "literalWithUnit".into();
-            expression.children = vec![declared_expression(value), declared_expression(unit)];
-        }
-        Expr::Tuple(values) => {
-            expression.kind = "tuple".into();
-            expression.children = values.iter().map(declared_expression).collect();
-        }
-        Expr::Invocation { callee, args } => {
-            expression.kind = "invocation".into();
-            expression.children.push(declared_expression(callee));
-            expression.arguments = args
-                .iter()
-                .map(|arg| DeclaredExpressionArgument {
-                    name: arg.name.clone(),
-                    value: declared_expression(&arg.value),
-                })
-                .collect();
-        }
-        Expr::Constructor { type_name, args } => {
-            expression.kind = "constructor".into();
-            expression.reference = Some(type_name.clone());
-            expression.arguments = args
-                .iter()
-                .map(|arg| DeclaredExpressionArgument {
-                    name: arg.name.clone(),
-                    value: declared_expression(&arg.value),
-                })
-                .collect();
-        }
-        Expr::CollectionOp { op, base, args } => {
-            expression.kind = "collectionOperation".into();
-            expression.operator = Some(op.as_str().into());
-            expression.children.push(declared_expression(base));
-            expression.arguments = args
-                .iter()
-                .map(|arg| DeclaredExpressionArgument {
-                    name: arg.name.clone(),
-                    value: declared_expression(&arg.value),
-                })
-                .collect();
-        }
-        Expr::MetaCast { base, metaclass } => {
-            expression.kind = "metaCast".into();
-            expression.reference = Some(metaclass.clone());
-            expression.children.push(declared_expression(base));
-        }
-        Expr::TypeCheck {
-            kind,
-            operand,
-            type_name,
-        } => {
-            expression.kind = "typeCheck".into();
-            expression.operator = Some(
-                match kind {
-                    sysml_v2_parser::ast::TypeCheckKind::Istype => "istype",
-                    sysml_v2_parser::ast::TypeCheckKind::Hastype => "hastype",
-                    sysml_v2_parser::ast::TypeCheckKind::As => "as",
-                }
-                .into(),
-            );
-            expression.reference = Some(type_name.clone());
-            if let Some(value) = operand {
-                expression.children.push(declared_expression(value));
+/// Splits a fold step's already-built children back into plain sub-expressions (`children`) and
+/// named/positional invocation-style arguments (`arguments`), preserving each group's relative
+/// order -- the inverse of how [`crate::semantic::expression_fold::expression_children`] tagged
+/// them going in.
+fn split_children(
+    children: Vec<FoldedChild<DeclaredExpression>>,
+) -> (Vec<DeclaredExpression>, Vec<DeclaredExpressionArgument>) {
+    let mut subs = Vec::new();
+    let mut arguments = Vec::new();
+    for child in children {
+        match child {
+            FoldedChild::Sub(value) => subs.push(value),
+            FoldedChild::Argument { name, value } => {
+                arguments.push(DeclaredExpressionArgument { name, value })
             }
         }
     }
-    expression
+    (subs, arguments)
+}
+
+struct DeclaredExpressionAlgebra;
+
+impl ExpressionAlgebra for DeclaredExpressionAlgebra {
+    type Output = DeclaredExpression;
+
+    /// Mirrors the pre-0.47.0 recursive `declared_expression` exactly, one match arm per variant,
+    /// with each `declared_expression(child)` recursive call replaced by that child's
+    /// already-folded result from `subs`/`arguments` -- see the module doc on
+    /// [`crate::semantic::expression_fold`] for why.
+    fn build(
+        &mut self,
+        node: &Node<Expression>,
+        children: Vec<FoldedChild<DeclaredExpression>>,
+    ) -> DeclaredExpression {
+        use sysml_v2_parser::ast::Expression as Expr;
+        let (subs, arguments) = split_children(children);
+        let mut expression = DeclaredExpression {
+            kind: String::new(),
+            range: span_to_range(&node.span),
+            literal: None,
+            reference: None,
+            operator: None,
+            children: Vec::new(),
+            arguments: Vec::new(),
+        };
+        match &node.value {
+            Expr::LiteralInteger(value) => {
+                expression.kind = "integerLiteral".into();
+                expression.literal = Some(serde_json::json!(value));
+            }
+            Expr::LiteralReal(value) => {
+                expression.kind = "realLiteral".into();
+                expression.literal = Some(serde_json::json!(value));
+            }
+            Expr::LiteralString(value) => {
+                expression.kind = "stringLiteral".into();
+                expression.literal = Some(serde_json::json!(value));
+            }
+            Expr::LiteralBoolean(value) => {
+                expression.kind = "booleanLiteral".into();
+                expression.literal = Some(serde_json::json!(value));
+            }
+            Expr::Null => expression.kind = "null".into(),
+            Expr::FeatureRef(value) => {
+                expression.kind = "featureReference".into();
+                expression.reference = Some(value.clone());
+            }
+            Expr::FeatureChainRef(value) => {
+                expression.kind = "featureChain".into();
+                expression.reference = Some(value.segments.join("."));
+            }
+            Expr::Classification { metaclass } => {
+                expression.kind = "classification".into();
+                expression.reference = Some(metaclass.clone());
+            }
+            Expr::MemberAccess(_, member) => {
+                expression.kind = "memberAccess".into();
+                expression.reference = Some(member.clone());
+                expression.children = subs;
+            }
+            Expr::Select { selector, .. } => {
+                expression.kind = "select".into();
+                expression.reference = Some(selector.clone());
+                expression.children = subs;
+            }
+            Expr::Collect { selector, .. } => {
+                expression.kind = "collect".into();
+                expression.reference = Some(selector.clone());
+                expression.children = subs;
+            }
+            Expr::MetadataAccess(_) => {
+                expression.kind = "metadataAccess".into();
+                expression.children = subs;
+            }
+            Expr::Parenthesized(_) => {
+                expression.kind = "parenthesized".into();
+                expression.children = subs;
+            }
+            Expr::Bracket(_) => {
+                expression.kind = "bracket".into();
+                expression.children = subs;
+            }
+            Expr::UnaryOp { op, .. } => {
+                expression.kind = "unary".into();
+                expression.operator = Some(op.as_str().into());
+                expression.children = subs;
+            }
+            Expr::BinaryOp { op, .. } => {
+                expression.kind = "binary".into();
+                expression.operator = Some(op.as_str().into());
+                expression.children = subs;
+            }
+            Expr::Index { .. } => {
+                expression.kind = "index".into();
+                expression.children = subs;
+            }
+            Expr::LiteralWithUnit { .. } => {
+                expression.kind = "literalWithUnit".into();
+                expression.children = subs;
+            }
+            Expr::Tuple(_) => {
+                expression.kind = "tuple".into();
+                expression.children = subs;
+            }
+            Expr::Invocation { .. } => {
+                expression.kind = "invocation".into();
+                expression.children = subs;
+                expression.arguments = arguments;
+            }
+            Expr::Constructor { type_name, .. } => {
+                expression.kind = "constructor".into();
+                expression.reference = Some(type_name.clone());
+                expression.arguments = arguments;
+            }
+            Expr::CollectionOp { op, .. } => {
+                expression.kind = "collectionOperation".into();
+                expression.operator = Some(op.as_str().into());
+                expression.children = subs;
+                expression.arguments = arguments;
+            }
+            Expr::MetaCast { metaclass, .. } => {
+                expression.kind = "metaCast".into();
+                expression.reference = Some(metaclass.clone());
+                expression.children = subs;
+            }
+            Expr::TypeCheck {
+                kind, type_name, ..
+            } => {
+                expression.kind = "typeCheck".into();
+                expression.operator = Some(
+                    match kind {
+                        sysml_v2_parser::ast::TypeCheckKind::Istype => "istype",
+                        sysml_v2_parser::ast::TypeCheckKind::Hastype => "hastype",
+                        sysml_v2_parser::ast::TypeCheckKind::As => "as",
+                    }
+                    .into(),
+                );
+                expression.reference = Some(type_name.clone());
+                expression.children = subs;
+            }
+        }
+        expression
+    }
+}
+
+/// Normalize the parser expression AST into typed semantic facts. This never
+/// uses the debug renderer; structural children and named arguments remain
+/// explicit for later addressable projection.
+///
+/// Iterative, not recursive: see [`crate::semantic::expression_fold`] for why.
+pub fn declared_expression(node: &Node<Expression>) -> DeclaredExpression {
+    fold_expression(node, &mut DeclaredExpressionAlgebra)
 }
 
 pub fn declared_multiplicity(
@@ -612,5 +632,31 @@ mod tests {
         let mut attrs = HashMap::new();
         attach_short_name_attribute(&mut attrs, &ident);
         assert!(!attrs.contains_key("shortName"));
+    }
+
+    #[test]
+    fn declared_expression_handles_deeply_nested_parentheses_without_overflowing_the_stack() {
+        use sysml_v2_parser::ast::{Node, Span};
+
+        const DEPTH: usize = 200_000;
+        let mut tree = Node::new(Span::dummy(), Expression::LiteralInteger(1));
+        for _ in 0..DEPTH {
+            tree = Node::new(Span::dummy(), Expression::Parenthesized(Box::new(tree)));
+        }
+
+        let declared = declared_expression(&tree);
+        let mut depth = 0usize;
+        let mut current = &declared;
+        loop {
+            match current.kind.as_str() {
+                "parenthesized" => {
+                    depth += 1;
+                    current = &current.children[0];
+                }
+                "integerLiteral" => break,
+                other => panic!("unexpected kind at depth {depth}: {other}"),
+            }
+        }
+        assert_eq!(depth, DEPTH);
     }
 }

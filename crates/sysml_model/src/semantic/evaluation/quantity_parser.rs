@@ -47,105 +47,170 @@ where
         Some(ch)
     }
 
+    /// Iterative, not recursive. The original recursive-descent chain (`parse_expression` ->
+    /// `parse_term` -> `parse_factor` -> `parse_primary` -> `(`/`[` -> `parse_expression`, plus
+    /// `parse_factor`'s own self-recursion for chained unary `+`/`-`) cost one native stack frame
+    /// per nesting level with no bound -- the same class of bug fixed in `sysml-v2-parser` 0.47.0,
+    /// applied here to this crate's own small quantity-expression grammar. This keeps one explicit
+    /// `Vec`-based operand/operator stack (precedence climbing, matching the original two fixed
+    /// precedence levels: `*`/`/` bind tighter than `+`/`-`) plus a `Vec`-based frame stack that
+    /// suspends the current climb and starts fresh whenever `(` or `[` opens a new group, resuming
+    /// it when the matching `)`/`]` closes. Depth of input becomes `Vec` growth, not call-stack
+    /// growth.
     pub(crate) fn parse_expression(&mut self) -> Result<Quantity, EvalStatus> {
-        let mut left = self.parse_term()?;
-        loop {
-            self.skip_ws();
-            let Some(op) = self.peek_char() else {
-                return Ok(left);
-            };
-            if op != '+' && op != '-' {
-                return Ok(left);
-            }
-            self.eat_char();
-            let right = self.parse_term()?;
-            left = if op == '+' {
-                self.add_quantities(left, right)?
-            } else {
-                self.sub_quantities(left, right)?
-            };
+        struct PendingOp {
+            op: char,
+            prec: u8,
         }
-    }
 
-    pub(crate) fn parse_term(&mut self) -> Result<Quantity, EvalStatus> {
-        let mut left = self.parse_factor()?;
-        loop {
-            self.skip_ws();
-            let Some(op) = self.peek_char() else {
-                return Ok(left);
-            };
-            if op != '*' && op != '/' {
-                return Ok(left);
-            }
-            self.eat_char();
-            let right = self.parse_factor()?;
-            if op == '/' && right.value == 0.0 {
-                return Err(EvalStatus::DivByZero);
-            }
-            let composed = self.units.compose_product(
-                left.value,
-                left.unit.as_deref(),
-                right.value,
-                right.unit.as_deref(),
-                op == '/',
-            );
-            left = match composed {
-                Ok((value, unit)) => Quantity { value, unit },
-                Err(err) => return Err(map_unit_error(err)),
-            };
+        #[derive(Default)]
+        struct Climb {
+            operands: Vec<Quantity>,
+            ops: Vec<PendingOp>,
         }
-    }
 
-    pub(crate) fn parse_factor(&mut self) -> Result<Quantity, EvalStatus> {
-        self.skip_ws();
-        let Some(ch) = self.peek_char() else {
-            return Err(EvalStatus::Unsupported);
-        };
-        if ch == '+' || ch == '-' {
-            self.eat_char();
-            let mut inner = self.parse_factor()?;
-            if ch == '-' {
-                inner.value = -inner.value;
-            }
-            return Ok(inner);
+        fn reduce_one(units: &UnitRegistry, climb: &mut Climb) -> Result<(), EvalStatus> {
+            let pending = climb.ops.pop().ok_or(EvalStatus::Unsupported)?;
+            let right = climb.operands.pop().ok_or(EvalStatus::Unsupported)?;
+            let left = climb.operands.pop().ok_or(EvalStatus::Unsupported)?;
+            let result = match pending.op {
+                '+' => add_quantities_with_units(units, left, right)?,
+                '-' => add_quantities_with_units(
+                    units,
+                    left,
+                    Quantity {
+                        value: -right.value,
+                        unit: right.unit,
+                    },
+                )?,
+                _ => {
+                    if pending.op == '/' && right.value == 0.0 {
+                        return Err(EvalStatus::DivByZero);
+                    }
+                    match units.compose_product(
+                        left.value,
+                        left.unit.as_deref(),
+                        right.value,
+                        right.unit.as_deref(),
+                        pending.op == '/',
+                    ) {
+                        Ok((value, unit)) => Quantity { value, unit },
+                        Err(err) => return Err(map_unit_error(err)),
+                    }
+                }
+            };
+            climb.operands.push(result);
+            Ok(())
         }
-        self.parse_primary()
-    }
 
-    pub(crate) fn parse_primary(&mut self) -> Result<Quantity, EvalStatus> {
-        self.skip_ws();
-        let Some(ch) = self.peek_char() else {
-            return Err(EvalStatus::Unsupported);
-        };
-        if ch == '(' {
-            self.eat_char();
-            let value = self.parse_expression()?;
+        struct SuspendedFrame {
+            close: char,
+            climb: Climb,
+            sign: f64,
+        }
+
+        let mut stack: Vec<SuspendedFrame> = Vec::new();
+        let mut climb = Climb::default();
+        let mut pending_factor: Option<Quantity> = None;
+
+        'outer: loop {
+            let factor = match pending_factor.take() {
+                Some(factor) => factor,
+                None => {
+                    let mut sign = 1.0f64;
+                    loop {
+                        self.skip_ws();
+                        match self.peek_char() {
+                            Some('+') => {
+                                self.eat_char();
+                            }
+                            Some('-') => {
+                                self.eat_char();
+                                sign = -sign;
+                            }
+                            _ => break,
+                        }
+                    }
+                    self.skip_ws();
+                    match self.peek_char() {
+                        Some('(') => {
+                            self.eat_char();
+                            stack.push(SuspendedFrame {
+                                close: ')',
+                                climb: std::mem::take(&mut climb),
+                                sign,
+                            });
+                            continue 'outer;
+                        }
+                        Some('[') => {
+                            self.eat_char();
+                            stack.push(SuspendedFrame {
+                                close: ']',
+                                climb: std::mem::take(&mut climb),
+                                sign,
+                            });
+                            continue 'outer;
+                        }
+                        _ => {
+                            let mut factor = if let Some(identifier) = self.parse_identifier() {
+                                self.skip_ws();
+                                if self.peek_char() == Some('(') {
+                                    let args = self.parse_argument_slices()?;
+                                    (self.resolve_symbol)(identifier, Some(&args))?
+                                } else {
+                                    (self.resolve_symbol)(identifier, None)?
+                                }
+                            } else {
+                                let value = self.parse_numeric_literal()?;
+                                let unit = self.parse_unit_suffix();
+                                Quantity { value, unit }
+                            };
+                            factor.value *= sign;
+                            factor
+                        }
+                    }
+                }
+            };
+
+            climb.operands.push(factor);
             self.skip_ws();
-            if self.eat_char() != Some(')') {
+            let next_op = match self.peek_char() {
+                Some('+') => Some(('+', 0u8)),
+                Some('-') => Some(('-', 0u8)),
+                Some('*') => Some(('*', 1u8)),
+                Some('/') => Some(('/', 1u8)),
+                _ => None,
+            };
+            if let Some((op, prec)) = next_op {
+                self.eat_char();
+                while let Some(top) = climb.ops.last() {
+                    if top.prec < prec {
+                        break;
+                    }
+                    reduce_one(self.units, &mut climb)?;
+                }
+                climb.ops.push(PendingOp { op, prec });
+                continue 'outer;
+            }
+
+            while !climb.ops.is_empty() {
+                reduce_one(self.units, &mut climb)?;
+            }
+            let value = climb.operands.pop().ok_or(EvalStatus::Unsupported)?;
+
+            let Some(frame) = stack.pop() else {
+                return Ok(value);
+            };
+            self.skip_ws();
+            if self.eat_char() != Some(frame.close) {
                 return Err(EvalStatus::Unsupported);
             }
-            return Ok(value);
+            climb = frame.climb;
+            pending_factor = Some(Quantity {
+                value: value.value * frame.sign,
+                unit: value.unit,
+            });
         }
-        if ch == '[' {
-            self.eat_char();
-            let value = self.parse_expression()?;
-            self.skip_ws();
-            if self.eat_char() != Some(']') {
-                return Err(EvalStatus::Unsupported);
-            }
-            return Ok(value);
-        }
-        if let Some(identifier) = self.parse_identifier() {
-            self.skip_ws();
-            if self.peek_char() == Some('(') {
-                let args = self.parse_argument_slices()?;
-                return (self.resolve_symbol)(identifier, Some(&args));
-            }
-            return (self.resolve_symbol)(identifier, None);
-        }
-        let value = self.parse_numeric_literal()?;
-        let unit = self.parse_unit_suffix();
-        Ok(Quantity { value, unit })
     }
 
     pub(crate) fn parse_identifier(&mut self) -> Option<&'s str> {
@@ -291,45 +356,6 @@ where
         }
     }
 
-    pub(crate) fn add_quantities(
-        &self,
-        left: Quantity,
-        right: Quantity,
-    ) -> Result<Quantity, EvalStatus> {
-        match (&left.unit, &right.unit) {
-            (None, None) => Ok(Quantity::scalar(left.value + right.value)),
-            (Some(unit), None) | (None, Some(unit)) => {
-                if !self.units.has_symbol(unit) {
-                    return Err(EvalStatus::Unknown);
-                }
-                Err(EvalStatus::TypeError)
-            }
-            (Some(left_unit), Some(right_unit)) => {
-                let converted = self.units.convert_value(right.value, right_unit, left_unit);
-                match converted {
-                    Ok(v) => Ok(Quantity {
-                        value: left.value + v,
-                        unit: Some(left_unit.clone()),
-                    }),
-                    Err(err) => Err(map_unit_error(err)),
-                }
-            }
-        }
-    }
-
-    pub(crate) fn sub_quantities(
-        &self,
-        left: Quantity,
-        right: Quantity,
-    ) -> Result<Quantity, EvalStatus> {
-        self.add_quantities(
-            left,
-            Quantity {
-                value: -right.value,
-                unit: right.unit,
-            },
-        )
-    }
 }
 
 pub(crate) fn trim_quotes(value: &str) -> String {
@@ -375,5 +401,37 @@ pub(crate) fn add_quantities_with_units(
                 Err(err) => Err(map_unit_error(err)),
             }
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::semantic::graph::SemanticGraph;
+
+    #[test]
+    fn deeply_nested_parentheses_do_not_overflow_the_stack() {
+        const DEPTH: usize = 200_000;
+        let src = format!("{}1{}", "(".repeat(DEPTH), ")".repeat(DEPTH));
+        let graph = SemanticGraph::default();
+        let units = UnitRegistry::from_graph(&graph);
+        let mut parser = QuantityParser::new(&src, &units, |_, _| Err(EvalStatus::Unknown));
+        let result = parser.parse_expression().expect("parse deeply nested parens");
+        assert_eq!(result.value, 1.0);
+        assert!(result.unit.is_none());
+    }
+
+    #[test]
+    fn deeply_chained_unary_signs_do_not_overflow_the_stack() {
+        const DEPTH: usize = 200_000;
+        let src = format!("{}1", "-".repeat(DEPTH));
+        let graph = SemanticGraph::default();
+        let units = UnitRegistry::from_graph(&graph);
+        let mut parser = QuantityParser::new(&src, &units, |_, _| Err(EvalStatus::Unknown));
+        let result = parser
+            .parse_expression()
+            .expect("parse deeply chained unary signs");
+        // An even number of `-` signs cancels out to +1.
+        assert_eq!(result.value, if DEPTH.is_multiple_of(2) { 1.0 } else { -1.0 });
     }
 }

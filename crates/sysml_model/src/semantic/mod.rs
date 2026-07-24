@@ -7,6 +7,7 @@ pub(crate) mod element_kind_classify;
 pub mod evaluation;
 pub mod explicit_views;
 pub(crate) mod exposed_ids;
+pub(crate) mod expression_fold;
 pub mod extracted_model;
 pub mod graph;
 pub mod graph_builder;

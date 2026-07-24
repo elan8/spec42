@@ -127,36 +127,56 @@ pub(crate) fn evaluate_analysis_expression(
         ));
     }
     let mut parser = AnalysisExprParser::new(expr);
-    match parser.parse_expression() {
+    let parse_result = parser.parse_expression();
+    // `AnalysisExpr` now has a real (non-trivial) `Drop` impl (see `take_analysis_expr_children`
+    // below), which makes the borrow checker track its borrowed `'s` lifetime more strictly through
+    // temporary scopes than a type with no significant drop glue would need. Binding the match
+    // result to `result: Result<bool, AnalysisEvalError>` up front -- rather than returning
+    // directly from inside the match arms as a tail expression -- keeps every `AnalysisExpr`
+    // temporary's drop point clearly scoped to this match, well before `normalized` (which `expr`
+    // borrows from) goes out of scope at the end of the function.
+    let result: Result<bool, AnalysisEvalError> = match parse_result {
         Ok(parsed) => {
             parser.skip_ws();
             if !parser.is_eof() {
-                return Err(AnalysisEvalError::with_message(
+                Err(AnalysisEvalError::with_message(
                     EvalStatus::Unsupported,
                     "analysis expression contains unsupported trailing tokens",
-                ));
+                ))
+            } else {
+                evaluate_analysis_ast(engine, context_id, &parsed)
             }
-            evaluate_analysis_ast(engine, context_id, &parsed)
         }
         Err(_) => {
-            let flattened = flatten_parenthesized_arithmetic(expr);
-            if flattened != expr {
+            let retried = 'retry: {
+                let flattened = flatten_parenthesized_arithmetic(expr);
+                if flattened == expr {
+                    break 'retry None;
+                }
                 let mut retry = AnalysisExprParser::new(flattened.as_str());
-                if let Ok(parsed) = retry.parse_expression() {
-                    retry.skip_ws();
-                    if retry.is_eof() {
-                        return evaluate_analysis_ast(engine, context_id, &parsed);
-                    }
+                let Ok(parsed) = retry.parse_expression() else {
+                    break 'retry None;
+                };
+                retry.skip_ws();
+                if !retry.is_eof() {
+                    break 'retry None;
+                }
+                Some(evaluate_analysis_ast(engine, context_id, &parsed))
+            };
+            match retried {
+                Some(outcome) => outcome,
+                None => {
+                    // Backward-compatible fallback: accept numeric/quantity analysis expressions
+                    // as non-negative checks (common margin/headroom style predicates).
+                    engine
+                        .evaluate_quantity_expression(context_id, expr)
+                        .map(|quantity| quantity.value >= 0.0)
+                        .map_err(|status| AnalysisEvalError::from_status(status).with_expression(expr))
                 }
             }
-            // Backward-compatible fallback: accept numeric/quantity analysis expressions
-            // as non-negative checks (common margin/headroom style predicates).
-            let quantity = engine
-                .evaluate_quantity_expression(context_id, expr)
-                .map_err(|status| AnalysisEvalError::from_status(status).with_expression(expr))?;
-            Ok(quantity.value >= 0.0)
         }
-    }
+    };
+    result
 }
 
 pub(crate) fn normalize_broken_invocation_syntax(text: &str) -> String {
@@ -250,6 +270,41 @@ pub(crate) enum AnalysisExpr<'s> {
     Or(Box<AnalysisExpr<'s>>, Box<AnalysisExpr<'s>>),
 }
 
+/// `AnalysisExpr` is self-referential via `Not`/`And`/`Or`, and as of `sysml-v2-parser` 0.47.0
+/// upstream expression parsing no longer caps nesting depth -- and this crate's own
+/// `AnalysisExprParser` above was rewritten the same way, so a long chain of `not`/`!` prefixes or
+/// `and`/`or` operators can now produce an arbitrarily deep `AnalysisExpr` tree. Rust's default
+/// derived drop glue for a recursive type like this walks it via native call-stack recursion --
+/// exactly the class of bug `sysml_v2_parser::ast::Expression` and this crate's own
+/// `DeclaredExpression` (`semantic::model`) already had fixed via a custom iterative `Drop`. This
+/// mirrors that fix: unwind the tree through an explicit heap `Vec` instead of the call stack.
+fn take_analysis_expr_children<'s>(expr: &mut AnalysisExpr<'s>, out: &mut Vec<AnalysisExpr<'s>>) {
+    fn take_box<'s>(slot: &mut Box<AnalysisExpr<'s>>) -> AnalysisExpr<'s> {
+        *std::mem::replace(slot, Box::new(AnalysisExpr::BoolLiteral(false)))
+    }
+
+    match expr {
+        AnalysisExpr::Not(inner) => out.push(take_box(inner)),
+        AnalysisExpr::And(left, right) | AnalysisExpr::Or(left, right) => {
+            out.push(take_box(left));
+            out.push(take_box(right));
+        }
+        AnalysisExpr::BoolLiteral(_) | AnalysisExpr::Predicate(_) | AnalysisExpr::Comparison { .. } => {}
+    }
+}
+
+impl<'s> Drop for AnalysisExpr<'s> {
+    fn drop(&mut self) {
+        let mut pending: Vec<AnalysisExpr<'s>> = Vec::new();
+        take_analysis_expr_children(self, &mut pending);
+        while let Some(mut node) = pending.pop() {
+            take_analysis_expr_children(&mut node, &mut pending);
+            // `node` drops here: its children were already moved out above, so this is a
+            // shallow, non-recursive drop no matter how deep the original tree was.
+        }
+    }
+}
+
 pub(crate) struct AnalysisExprParser<'s> {
     src: &'s str,
     pos: usize,
@@ -284,66 +339,154 @@ impl<'s> AnalysisExprParser<'s> {
         Some(ch)
     }
 
+    /// Iterative, not recursive. The original recursive-descent chain (`parse_or` -> `parse_and`
+    /// -> `parse_not` -> `parse_primary` -> `(` -> `parse_expression`, plus `parse_not`'s own
+    /// self-recursion for chained `not`/`!` prefixes) cost one native stack frame per nesting
+    /// level with no bound -- the same class of bug fixed in `sysml-v2-parser` 0.47.0 and in this
+    /// crate's own `QuantityParser`. This keeps one explicit `Vec`-based operand/operator stack
+    /// (precedence climbing: `and` binds tighter than `or`, matching the original two-level
+    /// ladder) plus a `Vec`-based frame stack that suspends the current climb and starts fresh
+    /// whenever `(` opens a new group, resuming it when the matching `)` closes.
+    ///
+    /// One quirk of the original `parse_primary` carries over unchanged: after a `(...)` group
+    /// closes, if the following character looks like an arithmetic/comparison continuation (e.g.
+    /// `(a+b) > c`), the boolean-group parse is discarded and the whole `(...)`-prefixed clause is
+    /// re-scanned via `parse_comparison_or_bool_literal` instead -- `frame.group_start` remembers
+    /// where to rescan from, exactly like the original's `start`/`self.pos = start` reset.
     pub(crate) fn parse_expression(&mut self) -> Result<AnalysisExpr<'s>, String> {
-        self.parse_or()
-    }
+        struct PendingOp {
+            is_and: bool,
+            prec: u8,
+        }
 
-    pub(crate) fn parse_or(&mut self) -> Result<AnalysisExpr<'s>, String> {
-        let mut left = self.parse_and()?;
-        loop {
-            self.skip_ws();
-            if self.consume_symbol("||") || self.consume_keyword("or") {
-                let right = self.parse_and()?;
-                left = AnalysisExpr::Or(Box::new(left), Box::new(right));
-            } else {
-                return Ok(left);
+        struct Climb<'s> {
+            operands: Vec<AnalysisExpr<'s>>,
+            ops: Vec<PendingOp>,
+        }
+
+        impl<'s> Climb<'s> {
+            fn new() -> Self {
+                Self {
+                    operands: Vec::new(),
+                    ops: Vec::new(),
+                }
             }
         }
-    }
 
-    pub(crate) fn parse_and(&mut self) -> Result<AnalysisExpr<'s>, String> {
-        let mut left = self.parse_not()?;
-        loop {
-            self.skip_ws();
-            if self.consume_symbol("&&") || self.consume_keyword("and") {
-                let right = self.parse_not()?;
-                left = AnalysisExpr::And(Box::new(left), Box::new(right));
+        fn reduce_one(climb: &mut Climb<'_>) -> Result<(), String> {
+            let pending = climb
+                .ops
+                .pop()
+                .ok_or_else(|| "internal: empty operator stack".to_string())?;
+            let right = climb
+                .operands
+                .pop()
+                .ok_or_else(|| "internal: missing right operand".to_string())?;
+            let left = climb
+                .operands
+                .pop()
+                .ok_or_else(|| "internal: missing left operand".to_string())?;
+            climb.operands.push(if pending.is_and {
+                AnalysisExpr::And(Box::new(left), Box::new(right))
             } else {
-                return Ok(left);
+                AnalysisExpr::Or(Box::new(left), Box::new(right))
+            });
+            Ok(())
+        }
+
+        struct SuspendedFrame<'s> {
+            climb: Climb<'s>,
+            group_start: usize,
+            not_count: usize,
+        }
+
+        let mut stack: Vec<SuspendedFrame<'s>> = Vec::new();
+        let mut climb = Climb::new();
+        let mut pending_atom: Option<AnalysisExpr<'s>> = None;
+
+        'outer: loop {
+            let atom = match pending_atom.take() {
+                Some(atom) => atom,
+                None => {
+                    let mut not_count = 0usize;
+                    loop {
+                        self.skip_ws();
+                        if self.consume_symbol("!") || self.consume_keyword("not") {
+                            not_count += 1;
+                        } else {
+                            break;
+                        }
+                    }
+                    self.skip_ws();
+                    if self.peek_char() == Some('(') {
+                        let group_start = self.pos;
+                        self.consume_symbol("(");
+                        stack.push(SuspendedFrame {
+                            climb: std::mem::replace(&mut climb, Climb::new()),
+                            group_start,
+                            not_count,
+                        });
+                        continue 'outer;
+                    }
+                    let mut atom = self.parse_comparison_or_bool_literal()?;
+                    for _ in 0..not_count {
+                        atom = AnalysisExpr::Not(Box::new(atom));
+                    }
+                    atom
+                }
+            };
+
+            climb.operands.push(atom);
+            self.skip_ws();
+            let next_op = if self.consume_symbol("&&") || self.consume_keyword("and") {
+                Some((true, 1u8))
+            } else if self.consume_symbol("||") || self.consume_keyword("or") {
+                Some((false, 0u8))
+            } else {
+                None
+            };
+            if let Some((is_and, prec)) = next_op {
+                while let Some(top) = climb.ops.last() {
+                    if top.prec < prec {
+                        break;
+                    }
+                    reduce_one(&mut climb)?;
+                }
+                climb.ops.push(PendingOp { is_and, prec });
+                continue 'outer;
             }
-        }
-    }
 
-    pub(crate) fn parse_not(&mut self) -> Result<AnalysisExpr<'s>, String> {
-        self.skip_ws();
-        if self.consume_symbol("!") || self.consume_keyword("not") {
-            return Ok(AnalysisExpr::Not(Box::new(self.parse_not()?)));
-        }
-        self.parse_primary()
-    }
+            while !climb.ops.is_empty() {
+                reduce_one(&mut climb)?;
+            }
+            let value = climb
+                .operands
+                .pop()
+                .ok_or_else(|| "internal: climb produced no operand".to_string())?;
 
-    pub(crate) fn parse_primary(&mut self) -> Result<AnalysisExpr<'s>, String> {
-        self.skip_ws();
-        if self.peek_char() == Some('(') {
-            let start = self.pos;
-            self.consume_symbol("(");
-            let inner = self.parse_expression()?;
+            let Some(frame) = stack.pop() else {
+                return Ok(value);
+            };
             self.skip_ws();
             if !self.consume_symbol(")") {
                 return Err("analysis expression is missing ')'".to_string());
             }
             self.skip_ws();
-            if self
+            let mut result = if self
                 .peek_char()
                 .is_some_and(|ch| matches!(ch, '+' | '-' | '*' | '/' | '<' | '>' | '=' | '!'))
             {
-                // Parentheses are part of an arithmetic/comparison clause.
-                self.pos = start;
-                return self.parse_comparison_or_bool_literal();
+                self.pos = frame.group_start;
+                self.parse_comparison_or_bool_literal()?
+            } else {
+                value
+            };
+            for _ in 0..frame.not_count {
+                result = AnalysisExpr::Not(Box::new(result));
             }
-            return Ok(inner);
+            climb = frame.climb;
+            pending_atom = Some(result);
         }
-        self.parse_comparison_or_bool_literal()
     }
 
     pub(crate) fn parse_comparison_or_bool_literal(&mut self) -> Result<AnalysisExpr<'s>, String> {
@@ -686,4 +829,44 @@ pub(crate) fn prefer_analysis_error(
 
 pub(crate) fn is_identifier_char(ch: char) -> bool {
     ch.is_ascii_alphanumeric() || ch == '_'
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn deeply_nested_parentheses_do_not_overflow_the_stack() {
+        const DEPTH: usize = 200_000;
+        let src = format!("{}true{}", "(".repeat(DEPTH), ")".repeat(DEPTH));
+        let mut parser = AnalysisExprParser::new(&src);
+        let result = parser
+            .parse_expression()
+            .expect("parse deeply nested parens");
+        assert!(matches!(result, AnalysisExpr::BoolLiteral(true)));
+    }
+
+    #[test]
+    fn deeply_chained_not_prefixes_do_not_overflow_the_stack() {
+        const DEPTH: usize = 200_000;
+        let src = format!("{}true", "not ".repeat(DEPTH));
+        let mut parser = AnalysisExprParser::new(&src);
+        let result = parser
+            .parse_expression()
+            .expect("parse deeply chained not prefixes");
+        let mut depth = 0usize;
+        let mut current = &result;
+        loop {
+            match current {
+                AnalysisExpr::Not(inner) => {
+                    depth += 1;
+                    current = inner;
+                }
+                AnalysisExpr::BoolLiteral(true) => break,
+                other => panic!("unexpected node at depth {depth}: {other:?}"),
+            }
+        }
+        assert_eq!(depth, DEPTH);
+        drop(result);
+    }
 }

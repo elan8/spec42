@@ -4,6 +4,7 @@ use crate::semantic::text_span::TextRange;
 use url::Url;
 
 use crate::semantic::ast_util::span_to_range;
+use crate::semantic::expression_fold::{fold_expression, ExpressionAlgebra, FoldedChild};
 use crate::semantic::graph::SemanticGraph;
 use crate::semantic::model::{
     ConnectStatementDetail, ElementKind, NodeId, RelationshipKind, SemanticEdge,
@@ -345,78 +346,117 @@ impl ExprClass {
     }
 }
 
+fn is_booleanish(class: ExprClass) -> bool {
+    matches!(
+        class,
+        ExprClass::Boolean
+            | ExprClass::Classification
+            | ExprClass::TypeCheck
+            | ExprClass::Comparison
+            | ExprClass::Logical
+    )
+}
+
+/// Iterative, not recursive -- but unlike `expression_to_debug_string`/`declared_expression`, this
+/// only ever follows `UnaryOp`'s operand (and only when `op == "not"`), `BinaryOp`'s `left`/`right`
+/// (and only when the operator is neither comparison nor logical), and `Bracket`/`Parenthesized`'s
+/// inner value; every other variant is a leaf for this function's purposes. So it gets its own
+/// small dedicated stack machine instead of `expression_fold`'s shared "visit everything" engine
+/// (same reasoning as `expr_node_to_qualified_string` above) -- reusing that engine would make it
+/// walk subtrees (e.g. a large `Invocation`/`Tuple`) it currently never looks at.
 pub(super) fn classify_expression(
     n: &sysml_v2_parser::Node<sysml_v2_parser::Expression>,
 ) -> ExprClass {
     use sysml_v2_parser::Expression;
-    match &n.value {
-        Expression::LiteralBoolean(_) => ExprClass::Boolean,
-        Expression::Classification { .. } => ExprClass::Classification,
-        Expression::MetaCast { .. } => ExprClass::FeatureRef,
-        Expression::TypeCheck { .. } => ExprClass::TypeCheck,
-        Expression::UnaryOp { op, operand } => {
-            if op.as_str() == "not" {
-                let inner = classify_expression(operand);
-                if matches!(
-                    inner,
-                    ExprClass::Boolean
-                        | ExprClass::Classification
-                        | ExprClass::TypeCheck
-                        | ExprClass::Comparison
-                        | ExprClass::Logical
-                ) {
-                    return ExprClass::Boolean;
-                }
-            }
-            ExprClass::Unknown
-        }
-        Expression::BinaryOp { op, left, right } => {
-            if sysml_v2_parser::Expression::binary_op_is_comparison(op) {
-                return ExprClass::Comparison;
-            }
-            if sysml_v2_parser::Expression::binary_op_is_logical(op) {
-                return ExprClass::Logical;
-            }
-            let left_class = classify_expression(left);
-            let right_class = classify_expression(right);
-            if matches!(
-                left_class,
-                ExprClass::Boolean
-                    | ExprClass::Classification
-                    | ExprClass::TypeCheck
-                    | ExprClass::Comparison
-                    | ExprClass::Logical
-            ) || matches!(
-                right_class,
-                ExprClass::Boolean
-                    | ExprClass::Classification
-                    | ExprClass::TypeCheck
-                    | ExprClass::Comparison
-                    | ExprClass::Logical
-            ) {
-                return ExprClass::Boolean;
-            }
-            ExprClass::Unknown
-        }
-        Expression::FeatureRef(s) if feature_ref_is_classification(s) => ExprClass::Classification,
-        Expression::FeatureRef(_) => ExprClass::FeatureRef,
-        Expression::LiteralInteger(_)
-        | Expression::LiteralReal(_)
-        | Expression::LiteralString(_)
-        | Expression::LiteralWithUnit { .. } => ExprClass::Literal,
-        Expression::Bracket(inner) => classify_expression(inner),
-        Expression::Parenthesized(inner) => classify_expression(inner),
-        Expression::MetadataAccess(_) | Expression::FeatureChainRef(_) => ExprClass::FeatureRef,
-        Expression::MemberAccess(_, _)
-        | Expression::Index { .. }
-        | Expression::Invocation { .. }
-        | Expression::Tuple(_)
-        | Expression::Select { .. }
-        | Expression::Collect { .. }
-        | Expression::Constructor { .. }
-        | Expression::CollectionOp { .. }
-        | Expression::Null => ExprClass::Unknown,
+    use sysml_v2_parser::Node;
+
+    enum Frame<'a> {
+        Enter(&'a Node<Expression>),
+        AfterUnaryOperand,
+        AfterBinaryLeft { right: &'a Node<Expression> },
+        AfterBinaryBoth,
     }
+
+    let mut work = vec![Frame::Enter(n)];
+    let mut results: Vec<ExprClass> = Vec::new();
+
+    while let Some(frame) = work.pop() {
+        match frame {
+            Frame::Enter(node) => match &node.value {
+                Expression::LiteralBoolean(_) => results.push(ExprClass::Boolean),
+                Expression::Classification { .. } => results.push(ExprClass::Classification),
+                Expression::MetaCast { .. } => results.push(ExprClass::FeatureRef),
+                Expression::TypeCheck { .. } => results.push(ExprClass::TypeCheck),
+                Expression::UnaryOp { op, operand } if op.as_str() == "not" => {
+                    work.push(Frame::AfterUnaryOperand);
+                    work.push(Frame::Enter(operand));
+                }
+                Expression::UnaryOp { .. } => results.push(ExprClass::Unknown),
+                Expression::BinaryOp { op, .. }
+                    if sysml_v2_parser::Expression::binary_op_is_comparison(op) =>
+                {
+                    results.push(ExprClass::Comparison);
+                }
+                Expression::BinaryOp { op, .. }
+                    if sysml_v2_parser::Expression::binary_op_is_logical(op) =>
+                {
+                    results.push(ExprClass::Logical);
+                }
+                Expression::BinaryOp { left, right, .. } => {
+                    work.push(Frame::AfterBinaryLeft { right });
+                    work.push(Frame::Enter(left));
+                }
+                Expression::FeatureRef(s) if feature_ref_is_classification(s) => {
+                    results.push(ExprClass::Classification)
+                }
+                Expression::FeatureRef(_) => results.push(ExprClass::FeatureRef),
+                Expression::LiteralInteger(_)
+                | Expression::LiteralReal(_)
+                | Expression::LiteralString(_)
+                | Expression::LiteralWithUnit { .. } => results.push(ExprClass::Literal),
+                Expression::Bracket(inner) | Expression::Parenthesized(inner) => {
+                    work.push(Frame::Enter(inner));
+                }
+                Expression::MetadataAccess(_) | Expression::FeatureChainRef(_) => {
+                    results.push(ExprClass::FeatureRef)
+                }
+                Expression::MemberAccess(_, _)
+                | Expression::Index { .. }
+                | Expression::Invocation { .. }
+                | Expression::Tuple(_)
+                | Expression::Select { .. }
+                | Expression::Collect { .. }
+                | Expression::Constructor { .. }
+                | Expression::CollectionOp { .. }
+                | Expression::Null => results.push(ExprClass::Unknown),
+            },
+            Frame::AfterUnaryOperand => {
+                let inner = results.pop().unwrap_or(ExprClass::Unknown);
+                results.push(if is_booleanish(inner) {
+                    ExprClass::Boolean
+                } else {
+                    ExprClass::Unknown
+                });
+            }
+            Frame::AfterBinaryLeft { right } => {
+                let left_class = results.pop().unwrap_or(ExprClass::Unknown);
+                results.push(left_class);
+                work.push(Frame::AfterBinaryBoth);
+                work.push(Frame::Enter(right));
+            }
+            Frame::AfterBinaryBoth => {
+                let right_class = results.pop().unwrap_or(ExprClass::Unknown);
+                let left_class = results.pop().unwrap_or(ExprClass::Unknown);
+                results.push(if is_booleanish(left_class) || is_booleanish(right_class) {
+                    ExprClass::Boolean
+                } else {
+                    ExprClass::Unknown
+                });
+            }
+        }
+    }
+
+    results.pop().unwrap_or(ExprClass::Unknown)
 }
 
 /// Whether an expression is intended to evaluate to Boolean (conservative).
@@ -435,196 +475,199 @@ pub(super) fn expression_is_boolean_valued(
     }
 }
 
-/// Best-effort display of an expression for attributes and diagnostics (not a full SysML text serializer).
-pub(crate) fn expression_to_debug_string(
-    n: &sysml_v2_parser::Node<sysml_v2_parser::Expression>,
-) -> String {
-    use sysml_v2_parser::Expression;
-    match &n.value {
-        Expression::LiteralInteger(i) => i.to_string(),
-        Expression::LiteralReal(s) => s.clone(),
-        Expression::LiteralString(s) => format!("{s:?}"),
-        Expression::LiteralBoolean(b) => b.to_string(),
-        Expression::Classification { metaclass } => format!("@{metaclass}"),
-        Expression::MetaCast { base, metaclass } => {
-            format!("{} meta {metaclass}", expression_to_debug_string(base))
-        }
-        Expression::TypeCheck {
-            kind,
-            operand,
-            type_name,
-        } => {
-            let op = match kind {
-                sysml_v2_parser::TypeCheckKind::Istype => "istype",
-                sysml_v2_parser::TypeCheckKind::Hastype => "hastype",
-                sysml_v2_parser::TypeCheckKind::As => "as",
-            };
-            match operand {
-                Some(operand) => {
-                    format!("{} {op} {type_name}", expression_to_debug_string(operand))
-                }
-                None => format!("{op} {type_name}"),
-            }
-        }
-        Expression::Select { base, selector } => {
-            format!("{}.?{selector}", expression_to_debug_string(base))
-        }
-        Expression::Collect { base, selector } => {
-            format!("{}.**{selector}", expression_to_debug_string(base))
-        }
-        Expression::FeatureRef(s) => s.clone(),
-        Expression::MemberAccess(box_base, member) => {
-            format!("{}.{}", expression_to_debug_string(box_base), member)
-        }
-        Expression::Index { base, index } => {
-            format!(
-                "{}#({})",
-                expression_to_debug_string(base),
-                expression_to_debug_string(index)
-            )
-        }
-        Expression::Bracket(inner) => {
-            format!("[{}]", expression_to_debug_string(inner))
-        }
-        Expression::LiteralWithUnit { value, unit } => {
-            format!(
-                "{} [{}]",
-                expression_to_debug_string(value),
-                expression_to_unit_debug_string(unit)
-            )
-        }
-        Expression::BinaryOp { op, left, right } => {
-            format!(
-                "({} {} {})",
-                expression_to_debug_string(left),
-                op.as_str(),
-                expression_to_debug_string(right)
-            )
-        }
-        Expression::UnaryOp { op, operand } => {
-            format!("({}{})", op.as_str(), expression_to_debug_string(operand))
-        }
-        Expression::Invocation { callee, args } => {
-            let rendered = args
-                .iter()
-                .map(argument_to_debug_string)
-                .collect::<Vec<_>>()
-                .join(", ");
-            format!("{}({rendered})", expression_to_debug_string(callee))
-        }
-        Expression::Tuple(items) => {
-            let rendered = items
-                .iter()
-                .map(expression_to_debug_string)
-                .collect::<Vec<_>>()
-                .join(", ");
-            format!("({rendered})")
-        }
-        Expression::Parenthesized(inner) => format!("({})", expression_to_debug_string(inner)),
-        Expression::Constructor { type_name, args } => {
-            let rendered = args
-                .iter()
-                .map(argument_to_debug_string)
-                .collect::<Vec<_>>()
-                .join(", ");
-            format!("new {type_name}({rendered})")
-        }
-        Expression::FeatureChainRef(chain) => chain.segments.join("."),
-        Expression::CollectionOp { op, base, args } => {
-            let rendered = args
-                .iter()
-                .map(argument_to_debug_string)
-                .collect::<Vec<_>>()
-                .join(", ");
-            format!(
-                "{}->{}({rendered})",
-                expression_to_debug_string(base),
-                op.as_str()
-            )
-        }
-        Expression::MetadataAccess(base) => {
-            format!("{}.metadata", expression_to_debug_string(base))
-        }
-        Expression::Null => "()".to_string(),
+fn render_argument(name: &Option<String>, value: &str) -> String {
+    match name {
+        Some(name) => format!("{name} = {value}"),
+        None => value.to_string(),
     }
 }
 
-fn argument_to_debug_string(argument: &sysml_v2_parser::Argument) -> String {
-    let value =
-        expression_to_debug_string(crate::semantic::ast_util::argument_expression(argument));
-    argument
-        .name
-        .as_ref()
-        .map(|name| format!("{name} = {value}"))
-        .unwrap_or(value)
+struct DebugStringAlgebra;
+
+impl ExpressionAlgebra for DebugStringAlgebra {
+    type Output = String;
+
+    /// Mirrors the pre-0.47.0 recursive `expression_to_debug_string` exactly, with each recursive
+    /// call replaced by that child's already-folded string from `subs`/`arguments` -- see the
+    /// module doc on [`crate::semantic::expression_fold`] for why. The one exception is
+    /// `LiteralWithUnit`'s `unit` child: the original deliberately renders it through
+    /// `expression_to_unit_debug_string` (which strips one `Bracket` layer to avoid "[[m]]"), not
+    /// through this algebra's own generic `Bracket` handling -- so that arm ignores its folded
+    /// `unit` child and calls `expression_to_unit_debug_string` on the original AST node instead
+    /// (cheap and no longer recursion-risk, see that function).
+    fn build(&mut self, node: &sysml_v2_parser::Node<sysml_v2_parser::Expression>, children: Vec<FoldedChild<String>>) -> String {
+        use sysml_v2_parser::Expression;
+        let mut subs = Vec::new();
+        let mut arguments: Vec<(Option<String>, String)> = Vec::new();
+        for child in children {
+            match child {
+                FoldedChild::Sub(value) => subs.push(value),
+                FoldedChild::Argument { name, value } => arguments.push((name, value)),
+            }
+        }
+        let rendered_args = || {
+            arguments
+                .iter()
+                .map(|(name, value)| render_argument(name, value))
+                .collect::<Vec<_>>()
+                .join(", ")
+        };
+        match &node.value {
+            Expression::LiteralInteger(i) => i.to_string(),
+            Expression::LiteralReal(s) => s.clone(),
+            Expression::LiteralString(s) => format!("{s:?}"),
+            Expression::LiteralBoolean(b) => b.to_string(),
+            Expression::Classification { metaclass } => format!("@{metaclass}"),
+            Expression::MetaCast { metaclass, .. } => format!("{} meta {metaclass}", subs[0]),
+            Expression::TypeCheck {
+                kind, type_name, ..
+            } => {
+                let op = match kind {
+                    sysml_v2_parser::TypeCheckKind::Istype => "istype",
+                    sysml_v2_parser::TypeCheckKind::Hastype => "hastype",
+                    sysml_v2_parser::TypeCheckKind::As => "as",
+                };
+                match subs.first() {
+                    Some(operand) => format!("{operand} {op} {type_name}"),
+                    None => format!("{op} {type_name}"),
+                }
+            }
+            Expression::Select { selector, .. } => format!("{}.?{selector}", subs[0]),
+            Expression::Collect { selector, .. } => format!("{}.**{selector}", subs[0]),
+            Expression::FeatureRef(s) => s.clone(),
+            Expression::MemberAccess(_, member) => format!("{}.{}", subs[0], member),
+            Expression::Index { .. } => format!("{}#({})", subs[0], subs[1]),
+            Expression::Bracket(_) => format!("[{}]", subs[0]),
+            Expression::LiteralWithUnit { unit, .. } => {
+                format!("{} [{}]", subs[0], expression_to_unit_debug_string(unit))
+            }
+            Expression::BinaryOp { op, .. } => format!("({} {} {})", subs[0], op.as_str(), subs[1]),
+            Expression::UnaryOp { op, .. } => format!("({}{})", op.as_str(), subs[0]),
+            Expression::Invocation { .. } => format!("{}({})", subs[0], rendered_args()),
+            Expression::Tuple(_) => format!("({})", subs.join(", ")),
+            Expression::Parenthesized(_) => format!("({})", subs[0]),
+            Expression::Constructor { type_name, .. } => {
+                format!("new {type_name}({})", rendered_args())
+            }
+            Expression::FeatureChainRef(chain) => chain.segments.join("."),
+            Expression::CollectionOp { op, .. } => {
+                format!("{}->{}({})", subs[0], op.as_str(), rendered_args())
+            }
+            Expression::MetadataAccess(_) => format!("{}.metadata", subs[0]),
+            Expression::Null => "()".to_string(),
+        }
+    }
 }
 
+/// Best-effort display of an expression for attributes and diagnostics (not a full SysML text
+/// serializer). Iterative, not recursive: see [`crate::semantic::expression_fold`] for why.
+pub(crate) fn expression_to_debug_string(
+    n: &sysml_v2_parser::Node<sysml_v2_parser::Expression>,
+) -> String {
+    fold_expression(n, &mut DebugStringAlgebra)
+}
+
+/// Unit expressions are already bracket-delimited in source syntax, so unwrap here to avoid
+/// serializing as double brackets ("[[m]]"). A `while` loop, not recursion: the parser only ever
+/// constructs a `LiteralWithUnit.unit` as exactly one `Bracket` around a `FeatureRef`, but nothing
+/// stops this field from statically holding a deeper `Expression`, so this stays non-recursive on
+/// principle rather than relying on that always being true.
 fn expression_to_unit_debug_string(
     n: &sysml_v2_parser::Node<sysml_v2_parser::Expression>,
 ) -> String {
     use sysml_v2_parser::Expression;
-    match &n.value {
-        // Unit expressions are already bracket-delimited in source syntax,
-        // so unwrap here to avoid serializing as double brackets ("[[m]]").
-        Expression::Bracket(inner) => expression_to_unit_debug_string(inner),
-        _ => expression_to_debug_string(n),
+    let mut current = n;
+    while let Expression::Bracket(inner) = &current.value {
+        current = inner;
     }
+    expression_to_debug_string(current)
 }
 
 /// Path-like string for resolving connection/satisfy/transition endpoints where possible.
 /// Literals and general expressions return empty so callers skip edge creation.
+///
+/// Iterative, not recursive -- but unlike `expression_to_debug_string`/`declared_expression`, this
+/// function only ever follows a narrow subset of children (`MemberAccess`'s base, `Index`'s
+/// base/index, `Bracket`/`Parenthesized`/`MetadataAccess`'s inner, `LiteralWithUnit`'s value) and
+/// short-circuits on an empty base without even visiting `index`, so it gets its own small
+/// dedicated stack machine instead of `expression_fold`'s shared "visit everything" engine
+/// (matching `classify_expression`'s reasoning below) -- reusing that engine would make it walk
+/// subtrees (e.g. a large `Invocation`/`Tuple`) it currently skips entirely.
 pub(super) fn expr_node_to_qualified_string(
     n: &sysml_v2_parser::Node<sysml_v2_parser::Expression>,
 ) -> String {
     use sysml_v2_parser::Expression;
-    match &n.value {
-        Expression::FeatureRef(s) => s.clone(),
-        Expression::MemberAccess(box_base, member) => {
-            let base = expr_node_to_qualified_string(box_base);
-            if base.is_empty() {
-                return String::new();
-            }
-            format!("{}::{}", base, member)
-        }
-        Expression::Index { base, index } => {
-            let b = expr_node_to_qualified_string(base);
-            if b.is_empty() {
-                return String::new();
-            }
-            let i = expr_node_to_qualified_string(index);
-            if i.is_empty() {
-                let d = expression_to_debug_string(index);
-                if d.is_empty() {
-                    return String::new();
-                }
-                format!("{}#({})", b, d)
-            } else {
-                format!("{}#({})", b, i)
-            }
-        }
-        Expression::Bracket(inner) => expr_node_to_qualified_string(inner),
-        Expression::Parenthesized(inner) | Expression::MetadataAccess(inner) => {
-            expr_node_to_qualified_string(inner)
-        }
-        Expression::FeatureChainRef(chain) => chain.segments.join("::"),
-        Expression::LiteralWithUnit { value, .. } => expr_node_to_qualified_string(value),
-        Expression::LiteralInteger(_)
-        | Expression::LiteralReal(_)
-        | Expression::LiteralString(_)
-        | Expression::LiteralBoolean(_)
-        | Expression::BinaryOp { .. }
-        | Expression::UnaryOp { .. }
-        | Expression::Invocation { .. }
-        | Expression::Tuple(_)
-        | Expression::Classification { .. }
-        | Expression::MetaCast { .. }
-        | Expression::TypeCheck { .. }
-        | Expression::Select { .. }
-        | Expression::Collect { .. }
-        | Expression::Constructor { .. }
-        | Expression::CollectionOp { .. }
-        | Expression::Null => String::new(),
+    use sysml_v2_parser::Node;
+
+    enum Frame<'a> {
+        Enter(&'a Node<Expression>),
+        AfterMemberAccessBase { member: &'a str },
+        AfterIndexBase { index: &'a Node<Expression> },
+        AfterIndexBoth { index: &'a Node<Expression> },
     }
+
+    let mut work = vec![Frame::Enter(n)];
+    let mut results: Vec<String> = Vec::new();
+
+    while let Some(frame) = work.pop() {
+        match frame {
+            Frame::Enter(node) => match &node.value {
+                Expression::FeatureRef(s) => results.push(s.clone()),
+                Expression::FeatureChainRef(chain) => results.push(chain.segments.join("::")),
+                Expression::MemberAccess(base, member) => {
+                    work.push(Frame::AfterMemberAccessBase { member });
+                    work.push(Frame::Enter(base));
+                }
+                Expression::Index { base, index } => {
+                    work.push(Frame::AfterIndexBase { index });
+                    work.push(Frame::Enter(base));
+                }
+                Expression::Bracket(inner)
+                | Expression::Parenthesized(inner)
+                | Expression::MetadataAccess(inner) => {
+                    work.push(Frame::Enter(inner));
+                }
+                Expression::LiteralWithUnit { value, .. } => {
+                    work.push(Frame::Enter(value));
+                }
+                _ => results.push(String::new()),
+            },
+            Frame::AfterMemberAccessBase { member } => {
+                let base = results.pop().unwrap_or_default();
+                results.push(if base.is_empty() {
+                    String::new()
+                } else {
+                    format!("{base}::{member}")
+                });
+            }
+            Frame::AfterIndexBase { index } => {
+                let base = results.pop().unwrap_or_default();
+                if base.is_empty() {
+                    results.push(String::new());
+                } else {
+                    results.push(base);
+                    work.push(Frame::AfterIndexBoth { index });
+                    work.push(Frame::Enter(index));
+                }
+            }
+            Frame::AfterIndexBoth { index } => {
+                let index_str = results.pop().unwrap_or_default();
+                let base = results.pop().unwrap_or_default();
+                results.push(if !index_str.is_empty() {
+                    format!("{base}#({index_str})")
+                } else {
+                    let debug = expression_to_debug_string(index);
+                    if debug.is_empty() {
+                        String::new()
+                    } else {
+                        format!("{base}#({debug})")
+                    }
+                });
+            }
+        }
+    }
+
+    results.pop().unwrap_or_default()
 }
 
 pub(super) fn resolve_expression_endpoint_legacy(
@@ -691,8 +734,8 @@ fn add_diagnostic_node_with_attrs(
 #[cfg(test)]
 mod expr_string_tests {
     use super::{
-        expr_node_to_qualified_string, expression_to_debug_string,
-        resolve_expression_endpoint_legacy, resolve_expression_endpoint_strict,
+        classify_expression, expr_node_to_qualified_string, expression_to_debug_string,
+        resolve_expression_endpoint_legacy, resolve_expression_endpoint_strict, ExprClass,
     };
     use crate::semantic::relationships::add_cross_document_edges_for_uri;
     use crate::{build_graph_from_doc, ResolveResult};
@@ -870,5 +913,47 @@ mod expr_string_tests {
             resolved.as_deref(),
             Some("WebShopArchitecture::webshopSystem")
         );
+    }
+
+    fn deep_parenthesized_chain(depth: usize) -> Node<Expression> {
+        let mut tree = node(Expression::LiteralInteger(1));
+        for _ in 0..depth {
+            tree = node(Expression::Parenthesized(Box::new(tree)));
+        }
+        tree
+    }
+
+    #[test]
+    fn expression_to_debug_string_handles_deep_nesting_without_overflowing_the_stack() {
+        const DEPTH: usize = 200_000;
+        let tree = deep_parenthesized_chain(DEPTH);
+        let rendered = expression_to_debug_string(&tree);
+        let expected = format!("{}1{}", "(".repeat(DEPTH), ")".repeat(DEPTH));
+        assert_eq!(rendered, expected);
+    }
+
+    #[test]
+    fn qualified_string_handles_deep_bracket_nesting_without_overflowing_the_stack() {
+        // `expr_node_to_qualified_string` unwraps `Bracket`/`Parenthesized` transparently, so a
+        // deep chain of either collapses down to the innermost feature reference.
+        let mut tree = node(Expression::FeatureRef("x".into()));
+        for _ in 0..200_000 {
+            tree = node(Expression::Bracket(Box::new(tree)));
+        }
+        assert_eq!(expr_node_to_qualified_string(&tree), "x");
+    }
+
+    #[test]
+    fn classify_expression_handles_deep_unary_not_chain_without_overflowing_the_stack() {
+        use sysml_v2_parser::ast::UnaryOperator;
+
+        let mut tree = node(Expression::LiteralBoolean(true));
+        for _ in 0..200_000 {
+            tree = node(Expression::UnaryOp {
+                op: UnaryOperator::from_token("not"),
+                operand: Box::new(tree),
+            });
+        }
+        assert_eq!(classify_expression(&tree), ExprClass::Boolean);
     }
 }

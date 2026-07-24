@@ -1,5 +1,18 @@
-use super::extract_activity_diagrams;
+use super::{expr_to_string, extract_activity_diagrams};
+use sysml_v2_parser::ast::{Expression, Node, Span};
 use sysml_v2_parser::parse;
+
+#[test]
+fn expr_to_string_handles_deeply_nested_parentheses_without_overflowing_the_stack() {
+    const DEPTH: usize = 200_000;
+    let mut tree = Node::new(Span::dummy(), Expression::LiteralInteger(1));
+    for _ in 0..DEPTH {
+        tree = Node::new(Span::dummy(), Expression::Parenthesized(Box::new(tree)));
+    }
+    let rendered = expr_to_string(&tree);
+    let expected = format!("{}1{}", "(".repeat(DEPTH), ")".repeat(DEPTH));
+    assert_eq!(rendered, expected);
+}
 
 #[test]
 fn extract_activity_diagrams_exposes_in_out_as_interface_metadata() {

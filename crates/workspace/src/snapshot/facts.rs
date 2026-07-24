@@ -577,44 +577,102 @@ pub(crate) fn project_host_semantic_model(
     })
 }
 
+/// Iterative, not recursive: `sysml-v2-parser` 0.47.0 no longer caps expression nesting depth, so
+/// a `DeclaredExpression` tree built from real source can now be arbitrarily deep (see that
+/// crate's changelog, and `DeclaredExpression`'s own iterative `Drop` in
+/// `sysml_model::semantic::model` for the same fix applied to tearing one down). Each node's
+/// `semantic_id` is a pure hash of its owner's id plus its position (`derived_fact_id`), so unlike
+/// a bottom-up fold, a child's id never depends on anything computed *during* its own recursion --
+/// it can be computed the moment its parent's id is known, before descending. This still walks
+/// depth-first with an explicit heap `Vec` (not the native call stack) and pushes each node into
+/// `output` only after all of its operands and arguments have been pushed, in the same left-to-
+/// right order as the original recursive version, so `output`'s contents come out byte-for-byte
+/// identical.
 fn project_expression(
     expression: &sysml_model::DeclaredExpression,
     owner_id: &str,
     path: &str,
     output: &mut Vec<HostExpression>,
 ) -> String {
-    let id = derived_fact_id("expression", owner_id, path);
-    let operand_ids = expression
-        .children
-        .iter()
-        .enumerate()
-        .map(|(index, child)| project_expression(child, &id, &format!("operand-{index}"), output))
-        .collect();
-    let arguments = expression
-        .arguments
-        .iter()
-        .enumerate()
-        .map(|(index, argument)| HostExpressionArgument {
-            name: argument.name.clone(),
-            value_id: project_expression(
-                &argument.value,
-                &id,
-                &format!("argument-{index}"),
-                output,
-            ),
-        })
-        .collect();
-    output.push(HostExpression {
-        semantic_id: id.clone(),
-        kind: expression.kind.clone(),
-        range: expression.range,
-        literal: expression.literal.clone(),
-        reference: expression.reference.clone(),
-        operator: expression.operator.clone(),
-        operand_ids,
-        arguments,
-    });
-    id
+    enum Frame<'a> {
+        Enter {
+            node: &'a sysml_model::DeclaredExpression,
+            id: String,
+        },
+        Exit {
+            node: &'a sysml_model::DeclaredExpression,
+            id: String,
+            operand_ids: Vec<String>,
+            argument_ids: Vec<(Option<String>, String)>,
+        },
+    }
+
+    let root_id = derived_fact_id("expression", owner_id, path);
+    let mut work = vec![Frame::Enter {
+        node: expression,
+        id: root_id.clone(),
+    }];
+
+    while let Some(frame) = work.pop() {
+        match frame {
+            Frame::Enter { node, id } => {
+                let operand_ids: Vec<String> = (0..node.children.len())
+                    .map(|index| derived_fact_id("expression", &id, &format!("operand-{index}")))
+                    .collect();
+                let argument_ids: Vec<(Option<String>, String)> = node
+                    .arguments
+                    .iter()
+                    .enumerate()
+                    .map(|(index, argument)| {
+                        (
+                            argument.name.clone(),
+                            derived_fact_id("expression", &id, &format!("argument-{index}")),
+                        )
+                    })
+                    .collect();
+                work.push(Frame::Exit {
+                    node,
+                    id,
+                    operand_ids: operand_ids.clone(),
+                    argument_ids: argument_ids.clone(),
+                });
+                for (child, child_id) in node
+                    .arguments
+                    .iter()
+                    .map(|argument| &argument.value)
+                    .zip(argument_ids.into_iter().map(|(_, id)| id))
+                    .rev()
+                {
+                    work.push(Frame::Enter { node: child, id: child_id });
+                }
+                for (child, child_id) in node.children.iter().zip(operand_ids).rev() {
+                    work.push(Frame::Enter { node: child, id: child_id });
+                }
+            }
+            Frame::Exit {
+                node,
+                id,
+                operand_ids,
+                argument_ids,
+            } => {
+                output.push(HostExpression {
+                    semantic_id: id,
+                    kind: node.kind.clone(),
+                    range: node.range,
+                    literal: node.literal.clone(),
+                    reference: node.reference.clone(),
+                    operator: node.operator.clone(),
+                    operand_ids,
+                    arguments: argument_ids
+                        .into_iter()
+                        .map(|(name, value_id)| HostExpressionArgument { name, value_id })
+                        .collect(),
+                });
+            }
+        }
+    }
+
+    root_id
 }
 
 fn derived_fact_id(kind: &str, owner_id: &str, path: &str) -> String {
@@ -2044,5 +2102,52 @@ package Demo {
             .nodes
             .iter()
             .any(|node| { node.qualified_name == "Parts" && node.facts.is_library_element }));
+    }
+
+    #[test]
+    fn project_expression_handles_deeply_nested_declared_expression_without_overflowing_the_stack()
+    {
+        use sysml_model::{DeclaredExpression, TextPosition, TextRange};
+
+        const DEPTH: usize = 200_000;
+        let range = TextRange::new(TextPosition::new(0, 0), TextPosition::new(0, 1));
+        let mut tree = DeclaredExpression {
+            kind: "integerLiteral".to_string(),
+            range,
+            literal: Some(serde_json::json!(1)),
+            reference: None,
+            operator: None,
+            children: Vec::new(),
+            arguments: Vec::new(),
+        };
+        for _ in 0..DEPTH {
+            tree = DeclaredExpression {
+                kind: "parenthesized".to_string(),
+                range,
+                literal: None,
+                reference: None,
+                operator: None,
+                children: vec![tree],
+                arguments: Vec::new(),
+            };
+        }
+
+        let mut output = Vec::new();
+        let root_id = project_expression(&tree, "owner", "content", &mut output);
+
+        assert_eq!(output.len(), DEPTH + 1);
+        let by_id: HashMap<&str, &HostExpression> = output
+            .iter()
+            .map(|record| (record.semantic_id.as_str(), record))
+            .collect();
+        let mut current_id = root_id;
+        for _ in 0..DEPTH {
+            let record = *by_id.get(current_id.as_str()).expect("record for current id");
+            assert_eq!(record.kind, "parenthesized");
+            assert_eq!(record.operand_ids.len(), 1);
+            current_id = record.operand_ids[0].clone();
+        }
+        let leaf = *by_id.get(current_id.as_str()).expect("leaf record");
+        assert_eq!(leaf.kind, "integerLiteral");
     }
 }
