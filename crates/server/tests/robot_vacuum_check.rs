@@ -1,10 +1,10 @@
 //! R9 zero-warning gate: `perform_check` on the pinned robot-vacuum showcase
 //! (same engine path as `spec42 check`).
 
-#[path = "../../../tests/fixtures/robot_vacuum_fixture.rs"]
-mod robot_vacuum_fixture;
 #[path = "common/mod.rs"]
 mod common;
+#[path = "../../../tests/fixtures/robot_vacuum_fixture.rs"]
+mod robot_vacuum_fixture;
 
 use common::with_isolated_data_dir;
 use robot_vacuum_fixture::require_robot_vacuum_fixture;
@@ -41,7 +41,8 @@ fn robot_vacuum_check_has_zero_errors_and_warnings() {
             "expected validated documents"
         );
         assert_eq!(
-            report.summary.error_count, 0,
+            report.summary.error_count,
+            0,
             "robot-vacuum must have zero errors; summary={:?}, sample={:?}",
             report.summary,
             report
@@ -52,7 +53,8 @@ fn robot_vacuum_check_has_zero_errors_and_warnings() {
                 .collect::<Vec<_>>()
         );
         assert_eq!(
-            report.summary.warning_count, 0,
+            report.summary.warning_count,
+            0,
             "robot-vacuum must have zero warnings (R9); summary={:?}, sample={:?}",
             report.summary,
             report

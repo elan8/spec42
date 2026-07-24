@@ -989,9 +989,7 @@ fn collect_semantic_ranges_part_def_body_element(
             collect_semantic_ranges_definition_body(ctx, &flow.value.body, out);
         }
         PDBE::ActionUsage(usage) => collect_semantic_ranges_action_usage(ctx, usage.as_ref(), out),
-        PDBE::StateUsage(state_usage) => {
-            collect_semantic_ranges_state_usage(ctx, state_usage, out)
-        }
+        PDBE::StateUsage(state_usage) => collect_semantic_ranges_state_usage(ctx, state_usage, out),
         PDBE::Connect(_)
         | PDBE::InterfaceUsage(_)
         | PDBE::Allocate(_)
@@ -1053,9 +1051,7 @@ fn collect_semantic_ranges_part_usage_body_element(
             }
         }
         PUBE::ActionUsage(usage) => collect_semantic_ranges_action_usage(ctx, usage.as_ref(), out),
-        PUBE::StateUsage(state_usage) => {
-            collect_semantic_ranges_state_usage(ctx, state_usage, out)
-        }
+        PUBE::StateUsage(state_usage) => collect_semantic_ranges_state_usage(ctx, state_usage, out),
         _ => {}
     }
 }

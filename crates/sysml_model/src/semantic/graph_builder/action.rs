@@ -491,13 +491,7 @@ fn materialize_nested_action_usage(
         );
     }
     if let ActionUsageBody::Brace { elements } = &au_node.body {
-        build_from_action_usage_body(
-            elements,
-            uri,
-            Some(child_qualified.as_str()),
-            &action_id,
-            g,
-        );
+        build_from_action_usage_body(elements, uri, Some(child_qualified.as_str()), &action_id, g);
     }
     child_qualified
 }
