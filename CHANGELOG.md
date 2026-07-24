@@ -48,6 +48,32 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     `fs::read_dir` with no symlink-cycle guard now use `walkdir` with `follow_links(false)`,
     matching the existing safe pattern in `workspace::scan`.
 
+- **Fixes duplicated views and slow startup when a workspace has a gitignored `target/` (or
+  similar) directory containing stray `.sysml`/`.kerml` files** — e.g. leftover manual negative-test
+  fixtures or exported diagram artifacts. `lsp_server::workspace::scan::scan_sysml_files` previously
+  walked every file under a workspace root unconditionally (`walkdir::WalkDir`, no exclusions), so
+  such directories were scanned and merged into the live workspace model right alongside the real
+  source files, producing duplicate/triplicate entries for anything named the same across copies and
+  needlessly bloating startup time. Now uses `ignore::WalkBuilder` (`follow_links(false)`,
+  `require_git(false)` so `.gitignore` is honored even outside an actual git working tree) — the
+  same ignore-rule engine ripgrep and rust-analyzer use — so gitignored directories are skipped like
+  everywhere else in the project. Verified against the real `sysml-robot-vacuum-cleaner` project:
+  candidate files dropped from 84 to the real 28, with 0 remaining under `target/`.
+
+- **Fixes a stack-overflow crash on ordinary, valid edits** (e.g. opening/relinking
+  `PhysicalArchitecture.sysml` after the fixes above) that is unrelated to either of them: on
+  Windows, the OS gives a process's initial thread a 1 MiB stack by default (vs. 8 MiB typical on
+  Linux/macOS), while every other thread Rust spawns — including tokio's own worker and
+  blocking-pool threads — defaults to a larger stack. Debug builds don't inline nom's heavily-generic
+  combinator chains, so ordinary, only-a-few-levels-deep SysML constructs (a `part` nested inside a
+  `part def`, with a `port` inside that) can genuinely need more than 1 MiB of native stack to parse,
+  with no pathological nesting or unbounded recursion involved — confirmed by reproducing the crash
+  in complete isolation with a ~10-line file, and confirming it disappears entirely either in a
+  release build or by simply moving the same parse call onto any Rust-spawned thread. `spec42`'s
+  `main()` now spawns the actual server/CLI logic onto a dedicated thread with a 64 MiB stack instead
+  of running it on the OS-provided main thread, matching what every other thread in the process
+  already gets.
+
 ## [0.45.0] - 2026-07-24
 
 - **Parser dependency `sysml-v2-parser` 0.46.0.** Part-body `ref action` / `ref state` /
