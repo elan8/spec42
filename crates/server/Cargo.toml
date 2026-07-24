@@ -25,6 +25,7 @@ embed-domain-libraries = ["workspace/embed-domain-libraries"]
 workspace = { path = "../workspace", default-features = false }
 lsp_server = { path = "../lsp_server" }
 sysml_model = { path = "../sysml_model" }
+walkdir = "2"
 kpar = { path = "../kpar" }
 tokio = { version = "1", features = ["full"] }
 serde_json = { workspace = true }

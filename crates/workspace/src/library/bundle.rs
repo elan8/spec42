@@ -141,28 +141,23 @@ pub fn discover_library_roots(install_path: &Path) -> Vec<PathBuf> {
     roots
 }
 
+/// Uses `walkdir` rather than hand-rolled `fs::read_dir` recursion: `WalkDir`'s traversal is an
+/// explicit-stack iterator (not native call-stack recursion, so it can't overflow the stack on a
+/// deep tree) and `follow_links(false)` means a symlink cycle in the scanned directory can't cause
+/// unbounded traversal either.
 fn directory_contains_models(path: &Path) -> bool {
-    fn walk(path: &Path) -> bool {
-        let Ok(entries) = fs::read_dir(path) else {
-            return false;
-        };
-        for entry in entries.flatten() {
-            let entry_path = entry.path();
-            if entry_path.is_file()
-                && entry_path
+    walkdir::WalkDir::new(path)
+        .follow_links(false)
+        .into_iter()
+        .filter_map(Result::ok)
+        .any(|entry| {
+            entry.file_type().is_file()
+                && entry
+                    .path()
                     .extension()
                     .and_then(|ext| ext.to_str())
                     .is_some_and(|ext| ext == "sysml" || ext == "kerml")
-            {
-                return true;
-            }
-            if entry_path.is_dir() && walk(&entry_path) {
-                return true;
-            }
-        }
-        false
-    }
-    walk(path)
+        })
 }
 
 #[cfg(test)]

@@ -577,30 +577,31 @@ pub fn workspace_references_standard_library(path: &Path) -> bool {
             || content.contains("import SI")
     }
 
+    // Uses `walkdir` rather than hand-rolled `fs::read_dir` recursion: `WalkDir`'s traversal is an
+    // explicit-stack iterator, not native call-stack recursion, and `follow_links(false)` means a
+    // symlink cycle in the scanned directory can't cause unbounded traversal either.
     fn walk(dir: &Path, budget: &mut usize) -> bool {
-        if *budget == 0 {
-            return false;
-        }
-        let Ok(entries) = fs::read_dir(dir) else {
-            return false;
-        };
-        for entry in entries.flatten() {
+        for entry in walkdir::WalkDir::new(dir)
+            .follow_links(false)
+            .into_iter()
+            .filter_map(Result::ok)
+        {
             if *budget == 0 {
                 break;
             }
+            if !entry.file_type().is_file() {
+                continue;
+            }
             let path = entry.path();
-            if path.is_dir() {
-                if walk(&path, budget) {
-                    return true;
-                }
-            } else if path
+            if !path
                 .extension()
                 .is_some_and(|ext| ext == "sysml" || ext == "kerml")
             {
-                *budget = budget.saturating_sub(1);
-                if file_references_stdlib(&path) {
-                    return true;
-                }
+                continue;
+            }
+            *budget = budget.saturating_sub(1);
+            if file_references_stdlib(path) {
+                return true;
             }
         }
         false

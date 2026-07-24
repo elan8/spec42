@@ -1985,6 +1985,7 @@ dependencies = [
  "tower-http",
  "tower-lsp",
  "url",
+ "walkdir",
  "workspace",
  "zip",
 ]
@@ -2104,9 +2105,9 @@ dependencies = [
 
 [[package]]
 name = "sysml-v2-parser"
-version = "0.46.0"
+version = "0.47.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "8faa03de872ae3be1079c2d14e59aa3da724f25cb4a8a76e713835e967e222ff"
+checksum = "49c399fd3ecb99fc864eb3ab5bf2638ed73b673a142ed24f3957d9b864274214"
 dependencies = [
  "log",
  "nom",

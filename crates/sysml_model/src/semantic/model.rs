@@ -743,6 +743,29 @@ pub struct DeclaredExpressionArgument {
     pub value: DeclaredExpression,
 }
 
+/// `DeclaredExpression` is self-referential via `children`/`arguments`, and as of
+/// `sysml-v2-parser` 0.47.0 the parser no longer caps expression nesting depth (only structural
+/// brace nesting is bounded), so a pathologically deep source expression can now produce an
+/// equally deep `DeclaredExpression` tree. Rust's default derived drop glue for a recursive type
+/// like this walks it via native call-stack recursion -- one frame per nesting level, unbounded --
+/// which is exactly the class of bug `sysml_v2_parser::ast::Expression` had (and was fixed for) via
+/// a custom iterative `Drop`. This mirrors that fix: unwind the tree through an explicit heap `Vec`
+/// instead of the call stack, so dropping a `DeclaredExpression` tree can't overflow the stack no
+/// matter how deep it is.
+impl Drop for DeclaredExpression {
+    fn drop(&mut self) {
+        let mut pending: Vec<DeclaredExpression> = Vec::new();
+        pending.append(&mut self.children);
+        pending.extend(std::mem::take(&mut self.arguments).into_iter().map(|arg| arg.value));
+        while let Some(mut node) = pending.pop() {
+            pending.append(&mut node.children);
+            pending.extend(std::mem::take(&mut node.arguments).into_iter().map(|arg| arg.value));
+            // `node` drops here: its children/arguments were already moved out above, so this is
+            // a shallow, non-recursive drop no matter how deep the original tree was.
+        }
+    }
+}
+
 /// A node in the semantic graph representing a model element.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct SemanticNode {
