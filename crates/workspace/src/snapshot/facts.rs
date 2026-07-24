@@ -643,10 +643,16 @@ fn project_expression(
                     .zip(argument_ids.into_iter().map(|(_, id)| id))
                     .rev()
                 {
-                    work.push(Frame::Enter { node: child, id: child_id });
+                    work.push(Frame::Enter {
+                        node: child,
+                        id: child_id,
+                    });
                 }
                 for (child, child_id) in node.children.iter().zip(operand_ids).rev() {
-                    work.push(Frame::Enter { node: child, id: child_id });
+                    work.push(Frame::Enter {
+                        node: child,
+                        id: child_id,
+                    });
                 }
             }
             Frame::Exit {
@@ -2142,7 +2148,9 @@ package Demo {
             .collect();
         let mut current_id = root_id;
         for _ in 0..DEPTH {
-            let record = *by_id.get(current_id.as_str()).expect("record for current id");
+            let record = *by_id
+                .get(current_id.as_str())
+                .expect("record for current id");
             assert_eq!(record.kind, "parenthesized");
             assert_eq!(record.operand_ids.len(), 1);
             current_id = record.operand_ids[0].clone();

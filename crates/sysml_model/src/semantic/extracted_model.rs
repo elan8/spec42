@@ -67,7 +67,11 @@ impl ExpressionAlgebra for ExprToStringAlgebra {
     /// for the same reason the original kept its own recursive function: several variants render
     /// differently here (`MemberAccess`/`Index`/`LiteralWithUnit` special-case an empty child;
     /// `CollectionOp` args drop their names where `Invocation`/`Constructor` keep them).
-    fn build(&mut self, node: &sysml_v2_parser::Node<sysml_v2_parser::Expression>, children: Vec<FoldedChild<String>>) -> String {
+    fn build(
+        &mut self,
+        node: &sysml_v2_parser::Node<sysml_v2_parser::Expression>,
+        children: Vec<FoldedChild<String>>,
+    ) -> String {
         use sysml_v2_parser::Expression;
         let mut subs = Vec::new();
         let mut arguments: Vec<(Option<String>, String)> = Vec::new();

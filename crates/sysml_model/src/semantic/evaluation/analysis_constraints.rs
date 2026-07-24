@@ -171,7 +171,9 @@ pub(crate) fn evaluate_analysis_expression(
                     engine
                         .evaluate_quantity_expression(context_id, expr)
                         .map(|quantity| quantity.value >= 0.0)
-                        .map_err(|status| AnalysisEvalError::from_status(status).with_expression(expr))
+                        .map_err(|status| {
+                            AnalysisEvalError::from_status(status).with_expression(expr)
+                        })
                 }
             }
         }
@@ -289,7 +291,9 @@ fn take_analysis_expr_children<'s>(expr: &mut AnalysisExpr<'s>, out: &mut Vec<An
             out.push(take_box(left));
             out.push(take_box(right));
         }
-        AnalysisExpr::BoolLiteral(_) | AnalysisExpr::Predicate(_) | AnalysisExpr::Comparison { .. } => {}
+        AnalysisExpr::BoolLiteral(_)
+        | AnalysisExpr::Predicate(_)
+        | AnalysisExpr::Comparison { .. } => {}
     }
 }
 

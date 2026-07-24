@@ -7,6 +7,47 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.46.0] - 2026-07-24
+
+- **Fixes the stack-overflow crash on startup** originally reported against this workspace
+  (`thread 'main' has overflowed its stack`, exit code `STATUS_STACK_OVERFLOW`, during the initial
+  workspace scan/parse/relink). Root cause and fix:
+
+  - **Parser dependency `sysml-v2-parser` 0.47.0.** Expression parsing (parenthesized groups,
+    argument lists, postfix/feature chains) was recursive-descent with no depth limit; deeply
+    nested or pathological expressions could overflow the parser's native stack before the fix in
+    0.46.1, and 0.47.0 additionally fixes real, previously-silent misparses this surfaced while
+    hardening it: `notEmpty(x)` (Kernel Semantic Library, used ~16 times) was parsed as
+    `not Empty(x)`, and `newSeq` (Kernel Function Library) as `new Seq()` — both `Unsupported`
+    keyword-boundary bugs, not crashes, so nothing previously caught them. See that crate's own
+    changelog for full detail. `PARSE_AST_VERSION` moved `43` → `44`; both the parse cache and the
+    library graph cache (see below) invalidate automatically.
+
+  - **Spec42's own expression-tree code made stack-safe too.** The parser fix alone only moved the
+    risk downstream: this workspace has its own family of functions that walk the parsed
+    expression tree (semantic-fact normalization, attribute/diagnostic text rendering, the
+    quantity- and analysis-expression evaluators, host/API snapshot projection) using native
+    recursion with no depth limit of their own, previously safe only because the old parser
+    rejected pathologically deep input before any of this code ever saw it. All of them —
+    `sysml_model::semantic::ast_util::declared_expression`, `graph_builder::expressions::{
+    expression_to_debug_string, expr_node_to_qualified_string, classify_expression}`,
+    `extracted_model::expr_to_string`, the `QuantityParser` and `AnalysisExprParser` evaluators,
+    and `workspace::snapshot::facts::project_expression` — are now iterative (explicit heap-`Vec`
+    work stacks instead of call-stack recursion), verified output-identical against the full test
+    suite plus new 200,000-deep regression tests for each. `DeclaredExpression` and the analysis
+    evaluator's own `AnalysisExpr` also picked up custom iterative `Drop` impls, since Rust's
+    default derive walks a deeply nested recursive value's teardown the same unsafe way.
+
+  - **`library_graph_cache`'s version check now also covers the parser's AST schema
+    (`PARSE_AST_VERSION`)**, not just spec42's own version — previously a parser-only dependency
+    bump like this one could leave a stale, pre-fix library graph cached on disk until spec42's
+    own version next changed.
+
+  - Two directory walkers (`workspace::library::bundle::directory_contains_models`,
+    `server::environment::workspace_references_standard_library`) that recursed via
+    `fs::read_dir` with no symlink-cycle guard now use `walkdir` with `follow_links(false)`,
+    matching the existing safe pattern in `workspace::scan`.
+
 ## [0.45.0] - 2026-07-24
 
 - **Parser dependency `sysml-v2-parser` 0.46.0.** Part-body `ref action` / `ref state` /

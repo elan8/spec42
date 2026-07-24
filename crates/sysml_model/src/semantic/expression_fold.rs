@@ -120,7 +120,11 @@ pub(crate) enum FoldedChild<T> {
 /// [`fold_expression`].
 pub(crate) trait ExpressionAlgebra {
     type Output;
-    fn build(&mut self, node: &Node<Expression>, children: Vec<FoldedChild<Self::Output>>) -> Self::Output;
+    fn build(
+        &mut self,
+        node: &Node<Expression>,
+        children: Vec<FoldedChild<Self::Output>>,
+    ) -> Self::Output;
 }
 
 /// Iterative (non-recursive) post-order fold over an `Expression` tree.
@@ -130,7 +134,10 @@ pub(crate) trait ExpressionAlgebra {
 /// entries has already been popped, folded, and pushed onto `results` -- the standard two-phase
 /// (Enter/Exit) iterative post-order traversal. Depth of input becomes `Vec` growth, not
 /// call-stack growth.
-pub(crate) fn fold_expression<A: ExpressionAlgebra>(root: &Node<Expression>, algebra: &mut A) -> A::Output {
+pub(crate) fn fold_expression<A: ExpressionAlgebra>(
+    root: &Node<Expression>,
+    algebra: &mut A,
+) -> A::Output {
     enum ChildTag<'a> {
         Sub,
         Argument { name: Option<&'a str> },
@@ -155,7 +162,9 @@ pub(crate) fn fold_expression<A: ExpressionAlgebra>(root: &Node<Expression>, alg
                     .iter()
                     .map(|child| match child {
                         ExpressionChild::Sub(_) => ChildTag::Sub,
-                        ExpressionChild::Argument { name, .. } => ChildTag::Argument { name: *name },
+                        ExpressionChild::Argument { name, .. } => {
+                            ChildTag::Argument { name: *name }
+                        }
                     })
                     .collect();
                 work.push(Frame::Exit { node, tags });
@@ -181,7 +190,11 @@ pub(crate) fn fold_expression<A: ExpressionAlgebra>(root: &Node<Expression>, alg
         }
     }
 
-    debug_assert_eq!(results.len(), 1, "fold_expression must produce exactly one result");
+    debug_assert_eq!(
+        results.len(),
+        1,
+        "fold_expression must produce exactly one result"
+    );
     results.swap_remove(0)
 }
 
@@ -239,7 +252,11 @@ mod tests {
         struct DepthAlgebra;
         impl ExpressionAlgebra for DepthAlgebra {
             type Output = usize;
-            fn build(&mut self, node: &Node<Expression>, children: Vec<FoldedChild<usize>>) -> usize {
+            fn build(
+                &mut self,
+                node: &Node<Expression>,
+                children: Vec<FoldedChild<usize>>,
+            ) -> usize {
                 match &node.value {
                     Expression::LiteralInteger(_) => 0,
                     _ => {

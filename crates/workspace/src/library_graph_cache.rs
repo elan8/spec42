@@ -10,14 +10,15 @@
 //!
 //! ```text
 //! [magic:       4 bytes  "LGCX"]
-//! [version:    16 bytes  spec42 semver string, zero-padded]
+//! [version:    16 bytes  spec42 semver (12 bytes, zero-padded) + PARSE_AST_VERSION (4 bytes, le)]
 //! [payload:    remainder — bincode-encoded LibraryGraphCachePayload]
 //! ```
 //!
 //! # Invalidation (two-level)
 //!
 //! **Level 1 — filename key**: SHA-256 of sorted library path strings +
-//! `CARGO_PKG_VERSION`. Invalidates on path config changes or binary upgrades.
+//! `CARGO_PKG_VERSION` + `sysml_v2_parser::PARSE_AST_VERSION`. Invalidates on path config
+//! changes, spec42 binary upgrades, or a parser dependency bump that changes the AST schema.
 //!
 //! **Level 2 — file metadata fingerprint** (inside payload): sorted list of
 //! `(path, size_bytes, mtime_secs)` for every `.sysml`/`.kerml` file under each
@@ -39,10 +40,18 @@ const MAGIC: &[u8; 4] = b"LGCX";
 const VERSION_FIELD_LEN: usize = 16;
 
 fn version_field() -> [u8; VERSION_FIELD_LEN] {
+    // First 12 bytes: spec42 semver string; last 4 bytes: PARSE_AST_VERSION (le). Matches
+    // `parse_cache.rs`'s header layout -- incorporating the parser schema version invalidates
+    // this cache when the AST schema changes between parser releases, even within a single
+    // spec42 version. Without this, a parser-only dependency bump (e.g. sysml-v2-parser fixing a
+    // parse bug) would leave a stale, pre-fix library graph cached on disk until spec42's own
+    // version next changed, since this cache's only other invalidation trigger was
+    // `CARGO_PKG_VERSION`.
     let v = env!("CARGO_PKG_VERSION").as_bytes();
     let mut field = [0u8; VERSION_FIELD_LEN];
-    let len = v.len().min(VERSION_FIELD_LEN);
+    let len = v.len().min(12);
     field[..len].copy_from_slice(&v[..len]);
+    field[12..16].copy_from_slice(&sysml_v2_parser::PARSE_AST_VERSION.to_le_bytes());
     field
 }
 
@@ -183,10 +192,13 @@ pub fn evict_stale_entries() {
 // Internal helpers
 // ---------------------------------------------------------------------------
 
-/// Level-1 cache key: SHA-256 of sorted library paths + binary version.
+/// Level-1 cache key: SHA-256 of sorted library paths + binary version + parser AST schema
+/// version (so a parser-only dependency bump gets a fresh filename too, not just a header
+/// mismatch on an existing one -- see `version_field`).
 fn cache_key(library_paths: &[Url]) -> [u8; 32] {
     let mut hasher = Sha256::new();
     hasher.update(env!("CARGO_PKG_VERSION").as_bytes());
+    hasher.update(sysml_v2_parser::PARSE_AST_VERSION.to_le_bytes());
     let mut sorted: Vec<&str> = library_paths.iter().map(|u| u.as_str()).collect();
     sorted.sort_unstable();
     for path in sorted {

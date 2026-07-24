@@ -495,7 +495,11 @@ impl ExpressionAlgebra for DebugStringAlgebra {
     /// through this algebra's own generic `Bracket` handling -- so that arm ignores its folded
     /// `unit` child and calls `expression_to_unit_debug_string` on the original AST node instead
     /// (cheap and no longer recursion-risk, see that function).
-    fn build(&mut self, node: &sysml_v2_parser::Node<sysml_v2_parser::Expression>, children: Vec<FoldedChild<String>>) -> String {
+    fn build(
+        &mut self,
+        node: &sysml_v2_parser::Node<sysml_v2_parser::Expression>,
+        children: Vec<FoldedChild<String>>,
+    ) -> String {
         use sysml_v2_parser::Expression;
         let mut subs = Vec::new();
         let mut arguments: Vec<(Option<String>, String)> = Vec::new();

@@ -355,7 +355,6 @@ where
             Some(trim_quotes(raw))
         }
     }
-
 }
 
 pub(crate) fn trim_quotes(value: &str) -> String {
@@ -416,7 +415,9 @@ mod tests {
         let graph = SemanticGraph::default();
         let units = UnitRegistry::from_graph(&graph);
         let mut parser = QuantityParser::new(&src, &units, |_, _| Err(EvalStatus::Unknown));
-        let result = parser.parse_expression().expect("parse deeply nested parens");
+        let result = parser
+            .parse_expression()
+            .expect("parse deeply nested parens");
         assert_eq!(result.value, 1.0);
         assert!(result.unit.is_none());
     }
@@ -432,6 +433,9 @@ mod tests {
             .parse_expression()
             .expect("parse deeply chained unary signs");
         // An even number of `-` signs cancels out to +1.
-        assert_eq!(result.value, if DEPTH.is_multiple_of(2) { 1.0 } else { -1.0 });
+        assert_eq!(
+            result.value,
+            if DEPTH.is_multiple_of(2) { 1.0 } else { -1.0 }
+        );
     }
 }

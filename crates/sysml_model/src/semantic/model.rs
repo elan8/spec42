@@ -756,10 +756,18 @@ impl Drop for DeclaredExpression {
     fn drop(&mut self) {
         let mut pending: Vec<DeclaredExpression> = Vec::new();
         pending.append(&mut self.children);
-        pending.extend(std::mem::take(&mut self.arguments).into_iter().map(|arg| arg.value));
+        pending.extend(
+            std::mem::take(&mut self.arguments)
+                .into_iter()
+                .map(|arg| arg.value),
+        );
         while let Some(mut node) = pending.pop() {
             pending.append(&mut node.children);
-            pending.extend(std::mem::take(&mut node.arguments).into_iter().map(|arg| arg.value));
+            pending.extend(
+                std::mem::take(&mut node.arguments)
+                    .into_iter()
+                    .map(|arg| arg.value),
+            );
             // `node` drops here: its children/arguments were already moved out above, so this is
             // a shallow, non-recursive drop no matter how deep the original tree was.
         }
