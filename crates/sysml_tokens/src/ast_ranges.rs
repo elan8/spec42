@@ -3,13 +3,13 @@
 use sysml_v2_parser::ast::{
     ActionDefBody, ActionDefBodyElement, ActionUsage, ActionUsageBody, ActionUsageBodyElement,
     AttributeBody, AttributeBodyElement, CalcDefBody, ConnectionDefBody, ConnectionDefBodyElement,
-    ConstraintDefBodyElement, DefinitionBody, DefinitionBodyElement, FinalState, InterfaceDefBody,
-    InterfaceDefBodyElement, MetadataAnnotation, MetadataKeywordUsage, OccurrenceBodyElement,
-    OccurrenceUsageBody, PackageBody, PackageBodyElement, PartDefBody, PartDefBodyElement,
-    PartUsageBody, PartUsageBodyElement, PayloadClause, PortBody, PortBodyElement, PortDefBody,
-    PortDefBodyElement, RequireConstraintBody, RequirementDefBody, RequirementDefBodyElement,
-    RootElement, StateDefBody, StateDefBodyElement, StateUsage, ThenStmt, Transition,
-    TransitionAccept,
+    ConstraintDefBodyElement, DefinitionBody, DefinitionBodyElement, EnumerationBody, FinalState,
+    InterfaceDefBody, InterfaceDefBodyElement, MetadataAnnotation, MetadataKeywordUsage,
+    OccurrenceBodyElement, OccurrenceUsageBody, PackageBody, PackageBodyElement, PartDefBody,
+    PartDefBodyElement, PartUsageBody, PartUsageBodyElement, PayloadClause, PortBody,
+    PortBodyElement, PortDefBody, PortDefBodyElement, RequireConstraintBody, RequirementDefBody,
+    RequirementDefBodyElement, RootElement, StateDefBody, StateDefBodyElement, StateUsage,
+    ThenStmt, Transition, TransitionAccept,
 };
 use sysml_v2_parser::RootNamespace;
 
@@ -414,6 +414,16 @@ fn collect_semantic_ranges_package_body_element(
                 TYPE_CLASS,
                 out,
             );
+            // The enum's own name-vs-body narrowing (see `refine_declaration_ranges`) only
+            // stops the class color from bleeding onto the body; it doesn't give the literal
+            // members (`entry;`, `standard;`, ...) any color of their own. They read like named
+            // constants, same as `EnumerationUsage`'s own name elsewhere in this file, so give
+            // them the matching token instead of leaving them accidentally uncolored.
+            if let EnumerationBody::Brace { values } = &enum_node.value.body {
+                for value in values {
+                    out.push((span_to_source_range(&value.span), TYPE_PROPERTY));
+                }
+            }
         }
         PBE::UseCaseDef(uc_node) => {
             push_ident_definition_spans(

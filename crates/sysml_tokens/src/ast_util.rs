@@ -68,13 +68,22 @@ pub fn identification_name(ident: &Identification) -> String {
 ///
 /// Keeps `state` / `item` / `def` as lexer keywords while still classifying the
 /// definition name (e.g. `Idle`) with the AST token type.
+///
+/// The declared name always sits on the span's first line, right after the leading keyword(s),
+/// even when the declaration's body (and so the whole node's span) continues across further
+/// lines -- only that first line is searched, rather than giving up whenever the span isn't
+/// single-line. Without this, every character within a multi-line body -- e.g. each bare
+/// `entry;` / `standard;` literal inside a multi-line `enum def ProductTier { ... }` -- fell back
+/// to inheriting the wide, unnarrowed range's own token type (the enum's "class" color), instead
+/// of getting no color (or their own) at all.
 pub fn narrow_declaration_name_range(source: &str, range: &SourceRange) -> Option<SourceRange> {
-    if range.start_line != range.end_line {
-        return None;
-    }
     let line = source.lines().nth(range.start_line as usize)?;
     let start = range.start_character as usize;
-    let end = range.end_character as usize;
+    let end = if range.start_line == range.end_line {
+        range.end_character as usize
+    } else {
+        line.chars().count()
+    };
     if end <= start {
         return None;
     }
@@ -85,7 +94,7 @@ pub fn narrow_declaration_name_range(source: &str, range: &SourceRange) -> Optio
     Some(SourceRange {
         start_line: range.start_line,
         start_character: name_start as u32,
-        end_line: range.end_line,
+        end_line: range.start_line,
         end_character: name_end as u32,
     })
 }

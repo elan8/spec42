@@ -439,7 +439,7 @@ fn lsp_hover_resolves_requirement_subject_in_context_instead_of_showing_ambiguou
     );
     assert!(
         contents.contains("part communication : Communication;")
-            && contents.contains("*Container:* `DronePackage::Drone`"),
+            && contents.contains("**Container:** `DronePackage::Drone`"),
         "hover should still point at the local communication part with container context: {}",
         contents
     );
@@ -533,7 +533,7 @@ fn lsp_hover_returns_subject_declaration_hover_for_requirement_subject_name() {
         contents
     );
     assert!(
-        contents.contains("*Container:* `DronePackage::MaxAltitudeAGLReq`"),
+        contents.contains("**Container:** `DronePackage::MaxAltitudeAGLReq`"),
         "hover should include qualified parent context: {}",
         contents
     );

@@ -46,18 +46,21 @@ fn array_attr_lines(node: &SemanticNode, key: &str) -> Vec<String> {
         .unwrap_or_default()
 }
 
+/// Appends one field as a tightly-stacked line (hard line break via trailing double-space, not a
+/// full paragraph break) so a run of short facts reads as one compact block rather than a column
+/// of separately-spaced paragraphs.
 fn append_field(md: &mut String, label: &str, value: &str) {
     if value.trim().is_empty() {
         return;
     }
-    md.push_str(&format!("*{}:* `{}`\n\n", label, value));
+    md.push_str(&format!("**{}:** `{}`  \n", label, value));
 }
 
 fn append_plain_field(md: &mut String, label: &str, value: &str) {
     if value.trim().is_empty() {
         return;
     }
-    md.push_str(&format!("*{}:* {}\n\n", label, value));
+    md.push_str(&format!("**{}:** {}  \n", label, value));
 }
 
 fn declared_type(node: &SemanticNode) -> Option<&str> {
@@ -95,13 +98,13 @@ fn append_multiline_section(md: &mut String, title: &str, lines: &[String]) {
     if lines.is_empty() {
         return;
     }
-    md.push_str(&format!("*{}:*\n\n", title));
+    md.push_str(&format!("\n**{}:**\n\n", title));
     md.push_str("```text\n");
     for line in lines {
         md.push_str(line);
         md.push('\n');
     }
-    md.push_str("```\n\n");
+    md.push_str("```\n");
 }
 
 /// Builds a signature string from node attributes (partType, specializes, etc.).
@@ -303,49 +306,78 @@ pub fn hover_markdown_for_node(
         .unwrap_or_else(|| format!("{} {};", node.element_kind, node.name));
     md.push_str("```sysml\n");
     md.push_str(&code_block);
-    md.push_str("\n```\n\n");
+    md.push_str("\n```\n");
 
-    append_field(&mut md, "Kind", node.element_kind.as_str());
-    append_field(&mut md, "Qualified name", &node.id.qualified_name);
+    // Everything below the signature -- doc prose, then the compact fact block -- lives behind a
+    // single divider, matching rust-analyzer's code/rule/details layout instead of interleaving
+    // rule-separated bands per field.
+    let mut body = String::new();
+
+    if let Some(doc) = attr_str(node, "doc") {
+        let doc = doc.trim();
+        if !doc.is_empty() {
+            body.push_str(doc);
+            body.push_str("\n\n");
+        }
+    }
+
+    append_field(&mut body, "Kind", node.element_kind.as_str());
+    append_field(&mut body, "Qualified name", &node.id.qualified_name);
 
     if let Some(parent_id) = &node.parent_id {
         if let Some(parent) = graph.get_node(parent_id) {
             if !parent.id.qualified_name.trim().is_empty() {
-                append_field(&mut md, "Container", &parent.id.qualified_name);
+                append_field(&mut body, "Container", &parent.id.qualified_name);
             }
         }
     }
 
     if let Some(type_name) = declared_type(node) {
-        append_field(&mut md, "Declared type", type_name);
+        append_field(&mut body, "Declared type", type_name);
     }
 
     let typed_targets = graph.outgoing_typing_or_specializes_targets(node);
-    if let Some(target) = typed_targets.first() {
-        let should_show_target = match declared_type(node) {
-            Some(type_name) => type_name.trim() != target.name.trim(),
+    if let Some(first_target) = typed_targets.first() {
+        // Suppress only when every target is already spelled out verbatim in the declared-type
+        // text (the common single-target case, e.g. `: Foo` resolving to `Foo`) -- a multi-target
+        // `:> A, B` clause should still surface targets the declared-type text doesn't already
+        // name, instead of silently dropping everything past the first.
+        let should_show_targets = match declared_type(node) {
+            Some(type_name) => typed_targets
+                .iter()
+                .any(|target| type_name.trim() != target.name.trim()),
             None => true,
         };
-        if should_show_target {
-            let label = if target.element_kind.is_definition() {
+        if should_show_targets {
+            let label = if first_target.element_kind.is_definition() {
                 "Resolved type"
             } else {
                 "Resolves to"
             };
-            append_field(&mut md, label, &target.id.qualified_name);
+            let qualified_names: Vec<&str> = typed_targets
+                .iter()
+                .map(|target| target.id.qualified_name.as_str())
+                .collect();
+            append_field(&mut body, label, &qualified_names.join(", "));
         }
     }
 
-    append_attribute_value(&mut md, node, "Multiplicity", &["multiplicity"]);
-    append_attribute_value(&mut md, node, "Value", &["value", "defaultValue"]);
-    append_attribute_value(&mut md, node, "Evaluated value", &["evaluatedValue"]);
-    append_attribute_value(&mut md, node, "Unit", &["evaluatedUnit"]);
-
-    let constraint_lines = array_attr_lines(node, "requirementConstraints");
-    append_multiline_section(&mut md, "Constraint body", &constraint_lines);
+    append_attribute_value(&mut body, node, "Multiplicity", &["multiplicity"]);
+    append_attribute_value(&mut body, node, "Value", &["value", "defaultValue"]);
+    append_attribute_value(&mut body, node, "Evaluated value", &["evaluatedValue"]);
+    append_attribute_value(&mut body, node, "Unit", &["evaluatedUnit"]);
 
     if show_location {
-        append_plain_field(&mut md, "Defined in", node.id.uri.path());
+        append_plain_field(&mut body, "Defined in", node.id.uri.path());
+    }
+
+    let constraint_lines = array_attr_lines(node, "requirementConstraints");
+    append_multiline_section(&mut body, "Constraint body", &constraint_lines);
+
+    if !body.trim().is_empty() {
+        md.push_str("\n---\n\n");
+        md.push_str(body.trim_end());
+        md.push('\n');
     }
 
     md
@@ -370,6 +402,58 @@ mod tests {
             .into_iter()
             .find(|node| node.element_kind == kind && node.name == name)
             .unwrap_or_else(|| panic!("expected {kind} node named {name}"))
+    }
+
+    #[test]
+    fn hover_includes_doc_comment_text() {
+        let input = r#"package P {
+  part def Widget {
+    doc /* A widget that does widget things. */
+  }
+}"#;
+        let root = parse(input).expect("parse");
+        let uri = Url::parse("file:///w.sysml").expect("uri");
+        let graph = build_graph_from_doc(&root, &uri);
+        let widget = graph_node(&graph, &uri, "part def", "Widget");
+        let hover = hover_markdown_for_node(&graph, widget, false);
+        assert!(
+            hover.contains("A widget that does widget things."),
+            "hover should include the doc comment text: {hover}"
+        );
+    }
+
+    #[test]
+    fn hover_omits_doc_section_when_no_doc_comment_present() {
+        let input = r#"package P {
+  part def Widget;
+}"#;
+        let root = parse(input).expect("parse");
+        let uri = Url::parse("file:///w.sysml").expect("uri");
+        let graph = build_graph_from_doc(&root, &uri);
+        let widget = graph_node(&graph, &uri, "part def", "Widget");
+        let hover = hover_markdown_for_node(&graph, widget, false);
+        assert!(
+            hover.starts_with("```sysml"),
+            "hover with no doc comment should go straight from the signature block to fields: {hover}"
+        );
+    }
+
+    #[test]
+    fn hover_shows_all_specialization_targets_not_just_first() {
+        let input = r#"package P {
+  part def A;
+  part def B;
+  part def C :> A, B;
+}"#;
+        let root = parse(input).expect("parse");
+        let uri = Url::parse("file:///c.sysml").expect("uri");
+        let graph = build_graph_from_doc(&root, &uri);
+        let c = graph_node(&graph, &uri, "part def", "C");
+        let hover = hover_markdown_for_node(&graph, c, false);
+        assert!(
+            hover.contains("P::A") && hover.contains("P::B"),
+            "hover should list every specialization target, not just the first: {hover}"
+        );
     }
 
     #[test]

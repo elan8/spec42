@@ -117,7 +117,7 @@ fn hover_resolves_requirement_subject_in_context() {
     );
     assert!(
         result.contains("part communication : Communication;")
-            && result.contains("*Container:* `DronePackage::Drone`"),
+            && result.contains("**Container:** `DronePackage::Drone`"),
         "hover should show local communication part with container context: {result}"
     );
     assert!(
@@ -149,7 +149,7 @@ fn hover_returns_subject_declaration_for_requirement_subject_name() {
         "hover should describe the subject declaration itself: {result}"
     );
     assert!(
-        result.contains("*Container:* `DronePackage::MaxAltitudeAGLReq`"),
+        result.contains("**Container:** `DronePackage::MaxAltitudeAGLReq`"),
         "hover should include qualified parent context: {result}"
     );
 }
