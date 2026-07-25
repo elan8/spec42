@@ -104,6 +104,44 @@ export interface SysMLLibrarySearchResult {
   total: number;
 }
 
+/** Mirrors `crates/lsp_server/src/views/dto.rs`'s `SysmlFeatureInspector*Dto` types (hand-typed,
+ * like `SysMLLibrarySearchResult` above -- those DTOs aren't wired into the ts-rs codegen yet). */
+export interface FeatureInspectorElementRef {
+  id: string;
+  name: string;
+  qualifiedName: string;
+  type: string;
+  uri: string;
+  range: { start: PositionDTO; end: PositionDTO };
+}
+
+export interface FeatureInspectorResolution {
+  status: "resolved" | "unresolved" | "notApplicable";
+  targets: FeatureInspectorElementRef[];
+}
+
+export interface FeatureInspectorRelationship {
+  type: string;
+  peer: FeatureInspectorElementRef;
+  name?: string;
+}
+
+export interface FeatureInspectorElement extends FeatureInspectorElementRef {
+  parent?: FeatureInspectorElementRef;
+  attributes: Record<string, unknown>;
+  typing: FeatureInspectorResolution;
+  specialization: FeatureInspectorResolution;
+  incomingRelationships: FeatureInspectorRelationship[];
+  outgoingRelationships: FeatureInspectorRelationship[];
+}
+
+export interface FeatureInspectorResult {
+  version: number;
+  sourceUri: string;
+  requestedPosition: PositionDTO;
+  element: FeatureInspectorElement | null;
+}
+
 export type NormalizedScope = NonNullable<SysMLModelParams["scope"]>[number];
 
 export function hasWorkspaceFolder(): boolean {
@@ -579,6 +617,23 @@ export class LspModelProvider {
       );
     } catch (error) {
       logError("getVisualization failed", error);
+      throw error;
+    }
+  }
+
+  async getFeatureInspector(
+    uri: string,
+    position: PositionDTO,
+    token?: vscode.CancellationToken
+  ): Promise<FeatureInspectorResult> {
+    try {
+      return await this.client.sendRequest<FeatureInspectorResult>(
+        "sysml/featureInspector",
+        { textDocument: { uri }, position },
+        token
+      );
+    } catch (error) {
+      logError("getFeatureInspector failed", error);
       throw error;
     }
   }

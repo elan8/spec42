@@ -97,10 +97,23 @@ describe("LspModelProvider", () => {
   it("retries getModel when a joined in-flight request was cancelled", async () => {
     let requestCount = 0;
     const client = {
-      sendRequest: async () => {
+      sendRequest: async (
+        _method: string,
+        _params: unknown,
+        token?: vscode.CancellationToken
+      ) => {
         requestCount += 1;
-        await new Promise((resolve) => setTimeout(resolve, 50));
-        return createModelResult();
+        if (token?.isCancellationRequested) {
+          throw new vscode.CancellationError();
+        }
+        return await new Promise<SysMLModelResult>((resolve, reject) => {
+          const timer = setTimeout(() => resolve(createModelResult()), 50);
+          const subscription = token?.onCancellationRequested(() => {
+            clearTimeout(timer);
+            subscription?.dispose();
+            reject(new vscode.CancellationError());
+          });
+        });
       },
     } as any;
     const provider = new LspModelProvider(client, Promise.resolve());
@@ -134,6 +147,52 @@ describe("LspModelProvider", () => {
 
     assert.strictEqual(capturedToken, cts.token);
     cts.dispose();
+  });
+
+  it("getFeatureInspector sends the correct request shape and parses the response", async () => {
+    let capturedMethod: string | undefined;
+    let capturedParams: unknown;
+    const client = {
+      sendRequest: async (method: string, params: unknown) => {
+        capturedMethod = method;
+        capturedParams = params;
+        return {
+          version: 0,
+          sourceUri: "file:///drone.sysml",
+          requestedPosition: { line: 2, character: 7 },
+          element: {
+            id: "Drone::motor",
+            name: "motor",
+            qualifiedName: "Drone::motor",
+            type: "part",
+            uri: "file:///drone.sysml",
+            range: {
+              start: { line: 2, character: 2 },
+              end: { line: 2, character: 20 },
+            },
+            attributes: { doc: "The main drive motor." },
+            typing: { status: "resolved", targets: [] },
+            specialization: { status: "notApplicable", targets: [] },
+            incomingRelationships: [],
+            outgoingRelationships: [],
+          },
+        };
+      },
+    } as any;
+    const provider = new LspModelProvider(client, Promise.resolve());
+
+    const result = await provider.getFeatureInspector("file:///drone.sysml", {
+      line: 2,
+      character: 7,
+    });
+
+    assert.strictEqual(capturedMethod, "sysml/featureInspector");
+    assert.deepStrictEqual(capturedParams, {
+      textDocument: { uri: "file:///drone.sysml" },
+      position: { line: 2, character: 7 },
+    });
+    assert.strictEqual(result.element?.name, "motor");
+    assert.strictEqual(result.element?.attributes.doc, "The main drive motor.");
   });
 
   it("exposes workspace and document graph scope helpers", () => {

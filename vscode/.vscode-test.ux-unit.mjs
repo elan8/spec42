@@ -14,6 +14,7 @@ export default defineConfig({
     path.join(__dirname, testOut, "test/suite/workspaceLifecycle.test.js"),
     path.join(__dirname, testOut, "test/suite/workspaceDiagnostics.test.js"),
     path.join(__dirname, testOut, "test/suite/modelExplorerProvider.test.js"),
+    path.join(__dirname, testOut, "test/suite/lspModelProvider.test.js"),
     path.join(__dirname, testOut, "test/suite/baseVisualizationPanelController.test.js"),
     path.join(__dirname, testOut, "test/suite/updateFlow.test.js"),
     path.join(__dirname, testOut, "test/suite/visualizationGate.test.js"),

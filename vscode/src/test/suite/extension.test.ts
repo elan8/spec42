@@ -88,7 +88,27 @@ describe("Extension Test Suite", () => {
     assert.ok(commands.includes("sysml.showTypeHierarchy"));
     assert.ok(commands.includes("sysml.showCallHierarchy"));
     assert.ok(commands.includes("sysml.refreshModelTree"));
-    assert.ok(!commands.includes("sysml.featureInspector.refresh"));
+  });
+
+  it("Feature Inspector view should be registered and focusable", async () => {
+    const extension = vscode.extensions.all.find(
+      (candidate) => candidate.packageJSON?.name === "spec42"
+    );
+    assert.ok(extension, "Expected spec42 extension metadata");
+    const containers = extension.packageJSON?.contributes?.views?.sysmlVisualizerContainer as
+      | Array<{ id: string; name: string }>
+      | undefined;
+    assert.ok(
+      containers?.some((view) => view.id === "sysmlFeatureInspectorView"),
+      "Expected sysmlFeatureInspectorView to be contributed alongside the SysML Visualizer"
+    );
+    // VS Code auto-generates a `<viewId>.focus` command for every contributed view -- the same
+    // mechanism `spec42Library.focus` already relies on elsewhere in this codebase.
+    const commands = await vscode.commands.getCommands(true);
+    assert.ok(
+      commands.includes("sysmlFeatureInspectorView.focus"),
+      "Expected the auto-generated focus command for the Feature Inspector view"
+    );
   });
 
   it("Snippet pack exposes editing baseline scaffolds", () => {

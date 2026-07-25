@@ -550,6 +550,11 @@
           "type": "webview",
           "id": "sysmlVisualizerView",
           "name": "SysML Visualizer"
+        },
+        {
+          "type": "webview",
+          "id": "sysmlFeatureInspectorView",
+          "name": "Feature Inspector"
         }
       ]
     },

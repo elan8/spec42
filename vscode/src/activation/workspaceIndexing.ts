@@ -12,6 +12,7 @@ import type { GraphNodeDTO, SemanticIndexReadyParams } from "../providers/sysmlM
 import {
   ModelExplorerProvider,
 } from "../explorer/modelExplorerProvider";
+import type { FeatureInspectorViewProvider } from "../inspector/featureInspectorViewProvider";
 import { getLastVisualizerRender } from "../visualization/renderTracker";
 import { VisualizationPanel } from "../visualization/visualizationPanel";
 import { rangeContainsPosition, rangeSpanScore } from "../utils/range";
@@ -49,11 +50,13 @@ type WorkspaceLoadRun = {
 
 let extensionContext: vscode.ExtensionContext | undefined;
 let modelExplorerProvider: ModelExplorerProvider | undefined;
+let featureInspectorProvider: FeatureInspectorViewProvider | undefined;
 let lspModelProvider: LspModelProvider | undefined;
 let logStartupPhaseFn: ((phase: string, extra?: Record<string, unknown>) => void) | undefined;
 let logPerfFn: ((event: string, extra?: Record<string, unknown>) => void) | undefined;
 let sourceSelectionSyncTimer: ReturnType<typeof setTimeout> | undefined;
 let modelExplorerSelectionSyncTimer: ReturnType<typeof setTimeout> | undefined;
+let featureInspectorSelectionSyncTimer: ReturnType<typeof setTimeout> | undefined;
 let activeDocumentExplorerRefreshTimer: ReturnType<typeof setTimeout> | undefined;
 let activeDocumentExplorerRefreshUri: string | undefined;
 let activeDocumentExplorerRefreshGuardUntil = 0;
@@ -644,18 +647,80 @@ async function syncModelExplorerFromEditor(
   }
 }
 
+/**
+ * Pushes the element under `position` into the Feature Inspector panel. Unlike
+ * `syncModelExplorerFromEditor`/the diagram sync above, this doesn't need to fetch the whole
+ * document/workspace graph first -- `sysml/featureInspector` already does the "find deepest node
+ * at this position" work server-side, so it's a single cheap request.
+ */
+async function syncFeatureInspectorFromEditor(
+  editor: vscode.TextEditor,
+  position: vscode.Position,
+  logPerf: (event: string, extra?: Record<string, unknown>) => void
+): Promise<void> {
+  const panel = featureInspectorProvider;
+  if (!panel || !panel.isVisible() || panel.isPinned() || !lspModelProvider) {
+    return;
+  }
+  const doc = editor.document;
+  if (!isSysmlDoc(doc)) {
+    return;
+  }
+  if (!isLanguageClientReady() || !getLanguageClient()) {
+    return;
+  }
+  const syncStartedAt = Date.now();
+  try {
+    const result = await lspModelProvider.getFeatureInspector(doc.uri.toString(), {
+      line: position.line,
+      character: position.character,
+    });
+    panel.update(result);
+    logPerf("selectionSync:featureInspector", {
+      uri: doc.uri.toString(),
+      totalMs: Date.now() - syncStartedAt,
+      elementId: result.element?.id,
+    });
+  } catch (error) {
+    if (isClientNotRunningError(error)) {
+      logPerf("selectionSync:featureInspectorSkipped", {
+        uri: doc.uri.toString(),
+        totalMs: Date.now() - syncStartedAt,
+      });
+      return;
+    }
+    logError(`Source-to-feature-inspector sync failed for ${doc.uri.toString()}`, error);
+    logPerf("selectionSync:featureInspectorFailed", {
+      uri: doc.uri.toString(),
+      totalMs: Date.now() - syncStartedAt,
+      error: error instanceof Error ? error.message : String(error),
+    });
+  }
+}
+
 export function registerWorkspaceIndexing(
   context: vscode.ExtensionContext,
   handles: LspClientHandles,
   provider: ModelExplorerProvider,
+  inspectorProvider: FeatureInspectorViewProvider,
   logStartupPhase: (phase: string, extra?: Record<string, unknown>) => void,
   logPerf: (event: string, extra?: Record<string, unknown>) => void
 ): void {
   extensionContext = context;
   modelExplorerProvider = provider;
+  featureInspectorProvider = inspectorProvider;
   lspModelProvider = handles.lspModelProvider;
   logStartupPhaseFn = logStartupPhase;
   logPerfFn = logPerf;
+
+  context.subscriptions.push(
+    inspectorProvider.onResumeRequested(() => {
+      const editor = vscode.window.activeTextEditor;
+      if (editor && isSysmlDoc(editor.document)) {
+        void syncFeatureInspectorFromEditor(editor, editor.selection.active, logPerf);
+      }
+    })
+  );
 
   registerWorkspaceLifecycleSnapshotProvider(collectWorkspaceLifecycleInput);
   onWorkspaceLifecycleChanged(refreshWorkspaceLifecycleSurfaces);
@@ -710,6 +775,17 @@ export function registerWorkspaceIndexing(
         return;
       }
       scheduleModelExplorerSelectionSync(event);
+
+      if (featureInspectorSelectionSyncTimer) {
+        clearTimeout(featureInspectorSelectionSyncTimer);
+      }
+      const inspectorEditor = event.textEditor;
+      const inspectorPosition =
+        event.selections[0]?.active ?? event.textEditor.selection.active;
+      featureInspectorSelectionSyncTimer = setTimeout(() => {
+        featureInspectorSelectionSyncTimer = undefined;
+        void syncFeatureInspectorFromEditor(inspectorEditor, inspectorPosition, logPerf);
+      }, 150);
 
       const panel = VisualizationPanel.currentPanel;
       if (!panel || !panel.tracksUri(doc.uri) || panel.isNavigating()) {

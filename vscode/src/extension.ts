@@ -1,5 +1,6 @@
 import * as vscode from "vscode";
 import { ModelExplorerProvider } from "./explorer/modelExplorerProvider";
+import { FeatureInspectorViewProvider } from "./inspector/featureInspectorViewProvider";
 import { LibraryWebviewViewProvider } from "./library/libraryWebviewViewProvider";
 import { DOMAIN_LIBRARIES_DEFAULTS } from "./generated/domainLibrariesDefaults";
 import { STANDARD_LIBRARY_DEFAULTS } from "./generated/standardLibraryDefaults";
@@ -83,6 +84,10 @@ export function activate(context: vscode.ExtensionContext): void {
   registerStatusBar(context);
 
   const modelExplorerProvider = new ModelExplorerProvider(handles.lspModelProvider);
+  const featureInspectorProvider = new FeatureInspectorViewProvider(
+    context.extensionUri,
+    handles.lspModelProvider
+  );
   const examplesViewProvider = createExamplesViewProvider(context.extensionPath);
   const libraryWebviewProvider = new LibraryWebviewViewProvider(
     context.extensionUri,
@@ -107,6 +112,7 @@ export function activate(context: vscode.ExtensionContext): void {
     context,
     handles,
     modelExplorerProvider,
+    featureInspectorProvider,
     logStartupPhase,
     logPerf
   );
@@ -163,6 +169,14 @@ export function activate(context: vscode.ExtensionContext): void {
 
   context.subscriptions.push(
     vscode.window.registerWebviewViewProvider("spec42Library", libraryWebviewProvider)
+  );
+
+  context.subscriptions.push(
+    vscode.window.registerWebviewViewProvider(
+      "sysmlFeatureInspectorView",
+      featureInspectorProvider,
+      { webviewOptions: { retainContextWhenHidden: true } }
+    )
   );
 
   logStartupPhase("activate:complete");
