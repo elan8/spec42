@@ -91,12 +91,16 @@ fn render_shared_svg_inner(payload_json: &str) -> Result<String, String> {
                 },
                 function (err) {
                   globalThis.__spec42Done = "err";
-                  globalThis.__spec42Value = String(err && (err.stack || err.message) || err);
+                  globalThis.__spec42Value =
+                    String(err && (err.message || err) || err) +
+                    (err && err.stack ? "\n" + String(err.stack) : "");
                 }
               );
             } catch (err) {
               globalThis.__spec42Done = "err";
-              globalThis.__spec42Value = String(err && (err.stack || err.message) || err);
+              globalThis.__spec42Value =
+                String(err && (err.message || err) || err) +
+                (err && err.stack ? "\n" + String(err.stack) : "");
             }
             "#,
         )

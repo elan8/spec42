@@ -359,6 +359,66 @@ mod tests {
     }
 
     #[test]
+    fn public_svg_export_falls_back_for_large_hierarchical_general_view() {
+        let nodes = (0..96)
+            .map(|index| {
+                let mut attributes = HashMap::new();
+                attributes.insert(
+                    "qualifiedName".to_string(),
+                    serde_json::Value::String(format!("Package{}::part{}", index % 8, index)),
+                );
+                GraphNodeDto {
+                    id: format!("part{index}"),
+                    element_type: "part".to_string(),
+                    name: format!("part{index}"),
+                    uri: None,
+                    parent_id: None,
+                    range: zero_range(),
+                    attributes,
+                }
+            })
+            .collect();
+        let edges = (1..96)
+            .map(|index| GraphEdgeDto {
+                source: format!("part{}", index - 1),
+                target: format!("part{index}"),
+                rel_type: "dependency".to_string(),
+                name: None,
+            })
+            .collect();
+        let payload = SysmlVisualizationResultDto {
+            version: 1,
+            view: "general-view".to_string(),
+            workspace_root_uri: "file:///demo".to_string(),
+            model_ready: true,
+            view_candidates: Vec::new(),
+            selected_view: None,
+            selected_view_name: Some("Large General View".to_string()),
+            empty_state_message: None,
+            package_groups: None,
+            graph: Some(SysmlGraphDto { nodes, edges }),
+            general_view_graph: None,
+            workspace_model: None,
+            activity_diagrams: None,
+            activity_diagram_candidates: None,
+            sequence_diagrams: None,
+            sequence_diagram_candidates: None,
+            state_machines: None,
+            state_machine_candidates: None,
+            ibd: None,
+            interconnection_scene: None,
+            stats: None,
+            projection_hints: None,
+            prepared_view: None,
+        };
+
+        let (svg, _) =
+            render_diagram(&payload, DiagramExportFormat::Svg).expect("large General View SVG");
+        assert_eq!(svg.matches("data-node-id=").count(), 96);
+        assert!(svg.contains("general-package-frame"));
+    }
+
+    #[test]
     fn requested_renderer_views_rejects_unknown_view() {
         let err = requested_renderer_views("unknown").expect_err("unknown view should fail");
         assert!(err.contains("Unsupported export view"));

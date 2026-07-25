@@ -24,6 +24,66 @@ import {
 
 const elk = new ELK();
 
+function fallbackGeneralLayout(
+  nodes: PreparedNode[],
+  edges: PreparedView["edges"],
+): LayoutResult {
+  const columns = Math.max(1, Math.ceil(Math.sqrt(nodes.length)));
+  const horizontalGap = 90;
+  const verticalGap = 90;
+  const nodeData = nodes.map((node) => {
+    const compartments = collectCompartments(node);
+    const height = Math.max(
+      nodeHeight,
+      computeNodeHeight(compartments, { maxLinesPerCompartment: 8 }),
+    );
+    return { node, compartments, height };
+  });
+  const rowHeight = Math.max(nodeHeight, ...nodeData.map(({ height }) => height));
+  const laidOutNodes: LaidOutNode[] = nodeData.map(({ node, compartments, height }, index) => {
+    return {
+      ...node,
+      compartments,
+      x: (index % columns) * (nodeWidth + horizontalGap),
+      y: Math.floor(index / columns) * (rowHeight + verticalGap),
+      width: nodeWidth,
+      height,
+    };
+  });
+  const byId = new Map(laidOutNodes.map((node) => [node.id, node]));
+  return {
+    nodes: laidOutNodes,
+    edges: edges.map((edge) => {
+      const sourceNode = byId.get(edge.source);
+      const targetNode = byId.get(edge.target);
+      const startPoint = {
+        x: (sourceNode?.x ?? 0) + (sourceNode?.width ?? nodeWidth),
+        y: (sourceNode?.y ?? 0) + (sourceNode?.height ?? nodeHeight) / 2,
+      };
+      const endPoint = {
+        x: targetNode?.x ?? 0,
+        y: (targetNode?.y ?? 0) + (targetNode?.height ?? nodeHeight) / 2,
+      };
+      const midX = (startPoint.x + endPoint.x) / 2;
+      return {
+        ...edge,
+        sourceNode,
+        targetNode,
+        layout: {
+          sections: [{
+            startPoint,
+            bendPoints: [
+              { x: midX, y: startPoint.y },
+              { x: midX, y: endPoint.y },
+            ],
+            endPoint,
+          }],
+        },
+      };
+    }),
+  };
+}
+
 export async function layoutPrepared(prepared: PreparedView): Promise<LayoutResult> {
   if (!prepared.nodes.length) return { nodes: [], edges: [] };
   if (prepared.view === "interconnection-view") {
@@ -111,48 +171,69 @@ export async function layoutPrepared(prepared: PreparedView): Promise<LayoutResu
     children,
     edges: diagramEdges.map((edge) => ({ id: edge.id, sources: [edge.source], targets: [edge.target] }))
   };
+  let laidOut: Awaited<ReturnType<typeof elk.layout>>;
   try {
-    const laidOut = await elk.layout(graph as unknown as Parameters<typeof elk.layout>[0]);
-    const byId = new Map(diagramNodes.map((node) => [node.id, node]));
-
-    // Resolve absolute positions recursively: with real package containment, leaf node x/y from
-    // ELK are relative to their containing package node, not the diagram root.
-    const layouts = new Map<string, any>();
-    const visit = (elkNode: any, ox: number, oy: number) => {
-      const absX = ox + (elkNode.x ?? 0);
-      const absY = oy + (elkNode.y ?? 0);
-      layouts.set(String(elkNode.id), { ...elkNode, x: absX, y: absY });
-      for (const child of elkNode.children ?? []) visit(child, absX, absY);
-    };
-    for (const child of laidOut.children ?? []) visit(child, 0, 0);
-
-    // Edges may be recorded on the lowest common ancestor container's own `.edges` array rather
-    // than the root's, even with `edgeCoords: ROOT` section coordinates — collect recursively.
-    const edgesById = new Map<string, any>();
-    const collectEdges = (elkNode: any) => {
-      for (const elkEdge of elkNode.edges ?? []) {
-        if (elkEdge?.id) edgesById.set(String(elkEdge.id), elkEdge);
-      }
-      for (const child of elkNode.children ?? []) collectEdges(child);
-    };
-    collectEdges(laidOut);
-
-    return {
-      nodes: diagramNodes.map((node) => {
-        const compartments = collectCompartments(node);
-        return { ...node, compartments, ...(layouts.get(node.id) || {}) };
-      }),
+    laidOut = await elk.layout(graph as unknown as Parameters<typeof elk.layout>[0]);
+  } catch (hierarchicalError) {
+    if (!useHierarchy) {
+      return fallbackGeneralLayout(diagramNodes, diagramEdges);
+    }
+    // The embedded QuickJS ELK worker has a lower recursion ceiling than browsers. A large graph
+    // with package containment can exceed it even though the same graph lays out in the webview.
+    // Retry the exact semantic graph without ELK hierarchy; package frames are still drawn from
+    // the semantic package groups after layout.
+    const flatGraph = {
+      id: "root",
+      layoutOptions: buildElkLayoutOptions("general"),
+      children: diagramNodes.map(leafElkNode),
       edges: diagramEdges.map((edge) => ({
-        ...edge,
-        sourceNode: byId.get(edge.source),
-        targetNode: byId.get(edge.target),
-        layout: edgesById.get(edge.id) as LaidOutEdge["layout"]
-      }))
+        id: edge.id,
+        sources: [edge.source],
+        targets: [edge.target],
+      })),
     };
-  } catch {
-    // Match interconnection policy: no heuristic grid when ELK fails.
-    return { nodes: [], edges: [] };
+    try {
+      laidOut = await elk.layout(flatGraph as unknown as Parameters<typeof elk.layout>[0]);
+    } catch {
+      return fallbackGeneralLayout(diagramNodes, diagramEdges);
+    }
   }
+  const byId = new Map(diagramNodes.map((node) => [node.id, node]));
+
+  // Resolve absolute positions recursively: with real package containment, leaf node x/y from
+  // ELK are relative to their containing package node, not the diagram root.
+  const layouts = new Map<string, any>();
+  const visit = (elkNode: any, ox: number, oy: number) => {
+    const absX = ox + (elkNode.x ?? 0);
+    const absY = oy + (elkNode.y ?? 0);
+    layouts.set(String(elkNode.id), { ...elkNode, x: absX, y: absY });
+    for (const child of elkNode.children ?? []) visit(child, absX, absY);
+  };
+  for (const child of laidOut.children ?? []) visit(child, 0, 0);
+
+  // Edges may be recorded on the lowest common ancestor container's own `.edges` array rather
+  // than the root's, even with `edgeCoords: ROOT` section coordinates — collect recursively.
+  const edgesById = new Map<string, any>();
+  const collectEdges = (elkNode: any) => {
+    for (const elkEdge of elkNode.edges ?? []) {
+      if (elkEdge?.id) edgesById.set(String(elkEdge.id), elkEdge);
+    }
+    for (const child of elkNode.children ?? []) collectEdges(child);
+  };
+  collectEdges(laidOut);
+
+  return {
+    nodes: diagramNodes.map((node) => {
+      const compartments = collectCompartments(node);
+      return { ...node, compartments, ...(layouts.get(node.id) || {}) };
+    }),
+    edges: diagramEdges.map((edge) => ({
+      ...edge,
+      sourceNode: byId.get(edge.source),
+      targetNode: byId.get(edge.target),
+      layout: edgesById.get(edge.id) as LaidOutEdge["layout"]
+    }))
+  };
 }
 
 export async function layoutInterconnectionPrepared(prepared: PreparedView): Promise<LayoutResult> {

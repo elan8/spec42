@@ -157,7 +157,7 @@ var Spec42HeadlessRendererBundle = (() => {
   function isNonDiagramSemanticElementType(elementType) {
     const normalized = elementType.trim().toLowerCase();
     if (!normalized) return true;
-    return normalized === "import" || normalized === "diagnostic" || normalized.includes("diagnostic");
+    return normalized === "import" || normalized === "documentation" || normalized === "comment" || normalized === "diagnostic" || normalized.includes("diagnostic");
   }
   function isOverviewVisualElementType(elementType) {
     return !isPackageElementType(elementType) && !isNonDiagramSemanticElementType(elementType);
@@ -6331,6 +6331,62 @@ var Spec42HeadlessRendererBundle = (() => {
 
   // shared/diagram-renderer/src/render/layout.ts
   var elk = new HeadlessElk();
+  function fallbackGeneralLayout(nodes, edges) {
+    const columns = Math.max(1, Math.ceil(Math.sqrt(nodes.length)));
+    const horizontalGap = 90;
+    const verticalGap = 90;
+    const nodeData = nodes.map((node) => {
+      const compartments = collectCompartments(node);
+      const height = Math.max(
+        nodeHeight,
+        computeNodeHeight(compartments, { maxLinesPerCompartment: 8 })
+      );
+      return { node, compartments, height };
+    });
+    const rowHeight = Math.max(nodeHeight, ...nodeData.map(({ height }) => height));
+    const laidOutNodes = nodeData.map(({ node, compartments, height }, index) => {
+      return {
+        ...node,
+        compartments,
+        x: index % columns * (nodeWidth + horizontalGap),
+        y: Math.floor(index / columns) * (rowHeight + verticalGap),
+        width: nodeWidth,
+        height
+      };
+    });
+    const byId = new Map(laidOutNodes.map((node) => [node.id, node]));
+    return {
+      nodes: laidOutNodes,
+      edges: edges.map((edge) => {
+        const sourceNode = byId.get(edge.source);
+        const targetNode = byId.get(edge.target);
+        const startPoint = {
+          x: (sourceNode?.x ?? 0) + (sourceNode?.width ?? nodeWidth),
+          y: (sourceNode?.y ?? 0) + (sourceNode?.height ?? nodeHeight) / 2
+        };
+        const endPoint = {
+          x: targetNode?.x ?? 0,
+          y: (targetNode?.y ?? 0) + (targetNode?.height ?? nodeHeight) / 2
+        };
+        const midX = (startPoint.x + endPoint.x) / 2;
+        return {
+          ...edge,
+          sourceNode,
+          targetNode,
+          layout: {
+            sections: [{
+              startPoint,
+              bendPoints: [
+                { x: midX, y: startPoint.y },
+                { x: midX, y: endPoint.y }
+              ],
+              endPoint
+            }]
+          }
+        };
+      })
+    };
+  }
   async function layoutPrepared(prepared) {
     if (!prepared.nodes.length) return { nodes: [], edges: [] };
     if (prepared.view === "interconnection-view") {
@@ -6396,40 +6452,58 @@ var Spec42HeadlessRendererBundle = (() => {
       children: children2,
       edges: diagramEdges.map((edge) => ({ id: edge.id, sources: [edge.source], targets: [edge.target] }))
     };
+    let laidOut;
     try {
-      const laidOut = await elk.layout(graph);
-      const byId = new Map(diagramNodes.map((node) => [node.id, node]));
-      const layouts = /* @__PURE__ */ new Map();
-      const visit = (elkNode, ox, oy) => {
-        const absX = ox + (elkNode.x ?? 0);
-        const absY = oy + (elkNode.y ?? 0);
-        layouts.set(String(elkNode.id), { ...elkNode, x: absX, y: absY });
-        for (const child of elkNode.children ?? []) visit(child, absX, absY);
-      };
-      for (const child of laidOut.children ?? []) visit(child, 0, 0);
-      const edgesById = /* @__PURE__ */ new Map();
-      const collectEdges = (elkNode) => {
-        for (const elkEdge of elkNode.edges ?? []) {
-          if (elkEdge?.id) edgesById.set(String(elkEdge.id), elkEdge);
-        }
-        for (const child of elkNode.children ?? []) collectEdges(child);
-      };
-      collectEdges(laidOut);
-      return {
-        nodes: diagramNodes.map((node) => {
-          const compartments = collectCompartments(node);
-          return { ...node, compartments, ...layouts.get(node.id) || {} };
-        }),
+      laidOut = await elk.layout(graph);
+    } catch (hierarchicalError) {
+      if (!useHierarchy) {
+        return fallbackGeneralLayout(diagramNodes, diagramEdges);
+      }
+      const flatGraph = {
+        id: "root",
+        layoutOptions: buildElkLayoutOptions("general"),
+        children: diagramNodes.map(leafElkNode),
         edges: diagramEdges.map((edge) => ({
-          ...edge,
-          sourceNode: byId.get(edge.source),
-          targetNode: byId.get(edge.target),
-          layout: edgesById.get(edge.id)
+          id: edge.id,
+          sources: [edge.source],
+          targets: [edge.target]
         }))
       };
-    } catch {
-      return { nodes: [], edges: [] };
+      try {
+        laidOut = await elk.layout(flatGraph);
+      } catch {
+        return fallbackGeneralLayout(diagramNodes, diagramEdges);
+      }
     }
+    const byId = new Map(diagramNodes.map((node) => [node.id, node]));
+    const layouts = /* @__PURE__ */ new Map();
+    const visit = (elkNode, ox, oy) => {
+      const absX = ox + (elkNode.x ?? 0);
+      const absY = oy + (elkNode.y ?? 0);
+      layouts.set(String(elkNode.id), { ...elkNode, x: absX, y: absY });
+      for (const child of elkNode.children ?? []) visit(child, absX, absY);
+    };
+    for (const child of laidOut.children ?? []) visit(child, 0, 0);
+    const edgesById = /* @__PURE__ */ new Map();
+    const collectEdges = (elkNode) => {
+      for (const elkEdge of elkNode.edges ?? []) {
+        if (elkEdge?.id) edgesById.set(String(elkEdge.id), elkEdge);
+      }
+      for (const child of elkNode.children ?? []) collectEdges(child);
+    };
+    collectEdges(laidOut);
+    return {
+      nodes: diagramNodes.map((node) => {
+        const compartments = collectCompartments(node);
+        return { ...node, compartments, ...layouts.get(node.id) || {} };
+      }),
+      edges: diagramEdges.map((edge) => ({
+        ...edge,
+        sourceNode: byId.get(edge.source),
+        targetNode: byId.get(edge.target),
+        layout: edgesById.get(edge.id)
+      }))
+    };
   }
   async function layoutInterconnectionPrepared(prepared) {
     const interconnection = interconnectionPreparedForLayout(prepared);
