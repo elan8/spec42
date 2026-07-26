@@ -127,6 +127,8 @@ export interface FeatureInspectorRelationship {
 }
 
 export interface FeatureInspectorElement extends FeatureInspectorElementRef {
+  role: "definition" | "usage" | "relationship" | "namespace" | "other";
+  declaration: string;
   parent?: FeatureInspectorElementRef;
   attributes: Record<string, unknown>;
   typing: FeatureInspectorResolution;
@@ -135,12 +137,34 @@ export interface FeatureInspectorElement extends FeatureInspectorElementRef {
   outgoingRelationships: FeatureInspectorRelationship[];
 }
 
+export type FeatureInspectorSelectionKind =
+  | "keyword"
+  | "element"
+  | "reference"
+  | "value"
+  | "unit"
+  | "other";
+
+export interface FeatureInspectorSelection {
+  kind: FeatureInspectorSelectionKind;
+  text?: string;
+  range?: { start: PositionDTO; end: PositionDTO };
+}
+
+export interface FeatureInspectorLanguageHelp {
+  keyword: string;
+  description: string;
+  syntax?: string;
+}
+
 export interface FeatureInspectorResult {
   version: number;
   sourceUri: string;
   requestedPosition: PositionDTO;
-  contextualHelpMarkdown?: string;
-  element: FeatureInspectorElement | null;
+  selection: FeatureInspectorSelection;
+  languageHelp?: FeatureInspectorLanguageHelp;
+  containingElement?: FeatureInspectorElement;
+  referencedElement?: FeatureInspectorElement;
 }
 
 export type NormalizedScope = NonNullable<SysMLModelParams["scope"]>[number];
@@ -226,6 +250,21 @@ export class LspModelProvider {
   private nextRequestId(): string {
     this.nextModelRequestId += 1;
     return `model-${this.nextModelRequestId}`;
+  }
+
+  /**
+   * vscode-jsonrpc treats an explicitly passed `undefined` token as a second
+   * positional JSON-RPC parameter. Omit the argument entirely when absent so
+   * custom requests stay in the required by-name object shape.
+   */
+  private sendRequest<R>(
+    method: string,
+    params: unknown,
+    token?: vscode.CancellationToken
+  ): Promise<R> {
+    return token === undefined
+      ? this.client.sendRequest<R>(method, params)
+      : this.client.sendRequest<R>(method, params, token);
   }
 
   private findReusableCacheEntry(
@@ -456,7 +495,7 @@ export class LspModelProvider {
     };
     const requestKey = buildRequestKey(trimmed, normalizedScopes);
     const doRequest = () =>
-      this.client.sendRequest<SysMLModelResult>("sysml/model", params, token);
+      this.sendRequest<SysMLModelResult>("sysml/model", params, token);
 
     try {
       logPerf("lspModelProvider:getModelRequestStart", {
@@ -611,7 +650,7 @@ export class LspModelProvider {
       selectedView,
     };
     try {
-      return await this.client.sendRequest<SysMLVisualizationResult>(
+      return await this.sendRequest<SysMLVisualizationResult>(
         "sysml/visualization",
         params,
         token
@@ -627,10 +666,17 @@ export class LspModelProvider {
     position: PositionDTO,
     token?: vscode.CancellationToken
   ): Promise<FeatureInspectorResult> {
+    await this.whenReady;
     try {
-      return await this.client.sendRequest<FeatureInspectorResult>(
+      return await this.sendRequest<FeatureInspectorResult>(
         "sysml/featureInspector",
-        { textDocument: { uri }, position },
+        {
+          // `textDocument.uri` is canonical LSP. The flat URI keeps 0.46.1
+          // clients compatible with an older bundled or configured server binary.
+          textDocument: { uri },
+          uri,
+          position,
+        },
         token
       );
     } catch (error) {

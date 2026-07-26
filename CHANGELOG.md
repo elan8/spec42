@@ -25,18 +25,36 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - **Adds the VS Code Feature Inspector.** The Spec42 view container groups the
   Visualizer and Feature Inspector. The inspector accepts standard and legacy
-  request shapes, follows editor selection, buffers lazy-webview updates, opens
-  from diagram navigation, and combines semantic details with contextual SysML
-  v2 language help. VS Code 1.106 is now the minimum because that release made
+  request shapes, and the extension sends both URI representations during the
+  0.46.1 transition so packaged clients also interoperate with older server
+  binaries. Optional cancellation tokens are omitted correctly instead of becoming
+  a spurious positional JSON-RPC parameter; the server also tolerates that legacy
+  `[params, null]` transport artifact. Its selection-driven protocol now
+  distinguishes exact keywords, element names, resolved references, values, and
+  units. Keywords show only structured language help shared with hover;
+  references make the resolved target primary; values and units use a compact
+  value context; and model elements use one canonical declaration/identity/type/
+  value/relationship/source layout with server-supplied semantic roles. It
+  follows editor selection, buffers lazy-webview updates, and opens from diagram
+  navigation. VS Code 1.106 is now the minimum because that release made the
   secondary-sidebar view containers generally available.
 
 - **Improves diagram export reliability for large graphs.** Headless rendering
   now handles layout failures and oversized ELK graphs with a deterministic
   fallback instead of producing an empty or failed export.
 
-- **Improves hover and source navigation fidelity.** Hover Markdown is clearer,
-  enum/reserved-keyword token classification is more precise, and diagram
-  navigation can jump to the corresponding model element.
+- **Materializes standard dependency endpoints semantically.** A
+  `dependency name from client to supplier` now contributes a typed
+  client-to-supplier `dependency` edge, including across imported documents,
+  instead of projecting only an isolated relationship node. Dependencies owned
+  by a `part def` are accepted as standard definition members and retain their
+  nested qualified identity.
+
+- **Improves hover and source navigation fidelity.** Hover documentation for all
+  128 reserved words is audited against the OMG SysML 2.0 textual grammar and
+  protected by a normative keyword-set regression test. Enum/reserved-keyword
+  token classification is more precise, and diagram navigation can jump to the
+  corresponding model element.
 
 ## [0.46.0] - 2026-07-24
 

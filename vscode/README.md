@@ -56,16 +56,17 @@ The **Spec42** Secondary Side Bar container groups the **SysML Visualizer** and
 **Feature Inspector**. Open the inspector and place the cursor on a SysML/KerML
 declaration, its name, or one of its language keywords. It shows:
 
-- contextual SysML v2 language help for the token under the cursor;
-- the semantic definition or usage containing that token;
+- only structured SysML v2 language help when the exact token is a keyword;
+- one uniform model card when the token is an element name;
+- the resolved target as the primary card when the token is a reference;
+- a compact declared/evaluated value, unit and quantity context for values and units;
 - resolved typing and specialization targets;
-- values, multiplicity and direction when available;
 - incoming/outgoing semantic relationships and the source location.
 
 Selecting a diagram node opens and pins the inspector to that element. Choose
-**Resume following cursor** to return to live editor selection. The inspector
-explains a keyword in the context of its containing semantic construct; it is
-not a raw parser-token or metamodel-property browser.
+**Resume following cursor** to return to live editor selection. Selection is
+exact-token and case-sensitive: choosing `part` explains the language construct,
+while choosing `RobotLidar` inspects that model element.
 
 ## Extension Settings
 

@@ -38,8 +38,9 @@ pub use validation::{
 };
 pub use views::dto::{
     SysmlClearCacheResultDto, SysmlFeatureInspectorElementDto, SysmlFeatureInspectorElementRefDto,
-    SysmlFeatureInspectorParamsDto, SysmlFeatureInspectorRelationshipDto,
-    SysmlFeatureInspectorResolutionDto, SysmlFeatureInspectorResultDto, SysmlLibrarySearchItemDto,
+    SysmlFeatureInspectorLanguageHelpDto, SysmlFeatureInspectorParamsDto,
+    SysmlFeatureInspectorRelationshipDto, SysmlFeatureInspectorResolutionDto,
+    SysmlFeatureInspectorResultDto, SysmlFeatureInspectorSelectionDto, SysmlLibrarySearchItemDto,
     SysmlLibrarySearchPackageDto, SysmlLibrarySearchParamsDto, SysmlLibrarySearchResultDto,
     SysmlLibrarySearchSourceDto, SysmlModelResultDto, SysmlServerCachesDto, SysmlServerMemoryDto,
     SysmlServerStatsDto, SysmlVisualizationParamsDto, TextDocumentIdentifierDto,

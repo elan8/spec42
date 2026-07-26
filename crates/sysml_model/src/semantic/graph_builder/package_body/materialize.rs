@@ -978,7 +978,7 @@ pub(super) fn materialize_allocation_def(
     );
 }
 
-pub(super) fn materialize_dependency(
+pub(crate) fn materialize_dependency(
     g: &mut SemanticGraph,
     uri: &Url,
     container_prefix: Option<&str>,
@@ -996,16 +996,35 @@ pub(super) fn materialize_dependency(
     if let Some(ref ident) = dep_node.identification {
         attach_short_name_attribute(&mut attrs, ident);
     }
+    attrs.insert("clients".to_string(), serde_json::json!(dep_node.clients));
+    attrs.insert(
+        "suppliers".to_string(),
+        serde_json::json!(dep_node.suppliers),
+    );
+    let range = span_to_range(&dep_node.span);
     add_node_and_recurse(
         g,
         uri,
         &qualified,
         "dependency",
         name,
-        span_to_range(&dep_node.span),
+        range,
         attrs,
         parent_id,
     );
+    for client in &dep_node.clients {
+        for supplier in &dep_node.suppliers {
+            add_pending_expression_relationship(
+                g,
+                uri,
+                container_prefix,
+                client,
+                supplier,
+                RelationshipKind::Dependency,
+                range,
+            );
+        }
+    }
 }
 
 // `pub(crate)` rather than `pub(super)`: `part_def.rs`'s `PDBE::CaseDef`/`::CaseUsage` arms

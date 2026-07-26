@@ -69,7 +69,7 @@ pub fn hover_at_position(
                     hover_markdown_for_node(graph, target, target.id.uri != uri_norm)
                 }
                 None => unit_literal_hover_markdown(workspace, &text, position)
-                    .or_else(|| keyword_hover_markdown(&lookup_name.to_lowercase()))
+                    .or_else(|| keyword_hover_markdown(&lookup_name))
                     .unwrap_or_else(|| {
                         format!(
                             "**Unresolved reference** `{}`\n\nSpec42 could not resolve this name in the current scope, imports, or indexed workspace symbols.",
@@ -135,7 +135,7 @@ pub fn hover_at_position(
     // check whether it's a reserved keyword. Deliberately not tried earlier — checking by text
     // alone (with no position/grammar context) would otherwise hijack hover for any identifier
     // that happens to share spelling with a keyword (e.g. a part usage literally named `frame`).
-    if let Some(md) = keyword_hover_markdown(&lookup_name.to_lowercase()) {
+    if let Some(md) = keyword_hover_markdown(&lookup_name) {
         return Some(HoverResult {
             contents: md,
             range,

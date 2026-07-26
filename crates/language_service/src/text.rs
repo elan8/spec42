@@ -62,6 +62,15 @@ pub fn word_at_position(text: &str, line: u32, character: u32) -> Option<(u32, u
 /// Unit expression inside a value suffix `[...]` when the cursor is within the brackets and
 /// a numeric literal immediately precedes `[` on the same line (e.g. `10 [kV]`).
 pub fn unit_value_suffix_at_position(text: &str, line: u32, character: u32) -> Option<String> {
+    unit_value_suffix_selection_at_position(text, line, character).map(|(unit, _)| unit)
+}
+
+/// Unit expression and exact inner-token range inside a value suffix `[...]`.
+pub fn unit_value_suffix_selection_at_position(
+    text: &str,
+    line: u32,
+    character: u32,
+) -> Option<(String, sysml_model::TextRange)> {
     let line_str = text.lines().nth(line as usize)?;
     let chars: Vec<char> = line_str.chars().collect();
     let pos = character as usize;
@@ -94,11 +103,34 @@ pub fn unit_value_suffix_at_position(text: &str, line: u32, character: u32) -> O
         return None;
     }
     let inner_text: String = chars[inner_start..inner_end].iter().collect();
+    let leading = inner_text
+        .chars()
+        .take_while(|ch| ch.is_whitespace())
+        .count();
+    let trailing = inner_text
+        .chars()
+        .rev()
+        .take_while(|ch| ch.is_whitespace())
+        .count();
     let inner_text = inner_text.trim();
     if inner_text.is_empty() {
         return None;
     }
-    Some(inner_text.to_string())
+    let start = (inner_start + leading) as u32;
+    let end = (inner_end - trailing) as u32;
+    Some((
+        inner_text.to_string(),
+        sysml_model::TextRange {
+            start: sysml_model::TextPosition {
+                line,
+                character: start,
+            },
+            end: sysml_model::TextPosition {
+                line,
+                character: end,
+            },
+        },
+    ))
 }
 
 fn is_likely_unit_suffix_before_bracket(chars: &[char], open_idx: usize) -> bool {

@@ -35,7 +35,8 @@ pub use dto::{
 };
 pub use formatting::{format_document_text, FormatOptions};
 pub use keywords::{
-    is_reserved_keyword, keyword_doc, keyword_hover_markdown, sysml_keywords, RESERVED_KEYWORDS,
+    is_reserved_keyword, keyword_doc, keyword_help, keyword_hover_markdown, sysml_keywords,
+    KeywordHelp, RESERVED_KEYWORDS,
 };
 pub use navigation::{find_references, goto_definition, hover};
 pub use outline::{document_symbols, folding_ranges};
@@ -46,7 +47,7 @@ pub use symbol::{
 };
 pub use text::{
     completion_prefix, line_prefix_at_position, position_to_byte_offset,
-    unit_value_suffix_at_position, word_at_position,
+    unit_value_suffix_at_position, unit_value_suffix_selection_at_position, word_at_position,
 };
 pub use workspace::{InMemoryWorkspace, WorkspaceSnapshot};
 pub use workspace_symbols::search_workspace_symbols;

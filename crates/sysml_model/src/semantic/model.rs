@@ -60,6 +60,8 @@ pub enum RelationshipKind {
     SuccessionFlow,
     Perform,
     Allocate,
+    /// Explicit KerML/SysML `dependency ... from client to supplier` relationship.
+    Dependency,
     Satisfy,
     #[serde(alias = "verification")]
     Subject,
@@ -190,6 +192,7 @@ pub enum ElementKind {
     Else,
     Filter,
     Import,
+    Dependency,
     /// Addressable `doc /* … */` documentation element.
     Documentation,
     /// Addressable `rep <name>? language "..." { ... }` textual representation.
@@ -305,6 +308,7 @@ impl ElementKind {
             ElementKind::Else => "else",
             ElementKind::Filter => "filter",
             ElementKind::Import => "import",
+            ElementKind::Dependency => "dependency",
             ElementKind::Documentation => "documentation",
             ElementKind::TextualRepresentation => "textualRep",
             ElementKind::ConjugatedPortDefinition => "conjugated port definition",
@@ -411,6 +415,7 @@ impl ElementKind {
             "else" => ElementKind::Else,
             "filter" => ElementKind::Filter,
             "import" => ElementKind::Import,
+            "dependency" => ElementKind::Dependency,
             "documentation" => ElementKind::Documentation,
             "textualRep" => ElementKind::TextualRepresentation,
             "conjugated port definition" => ElementKind::ConjugatedPortDefinition,
@@ -597,6 +602,7 @@ impl RelationshipKind {
             RelationshipKind::SuccessionFlow => "successionFlow",
             RelationshipKind::Perform => "perform",
             RelationshipKind::Allocate => "allocate",
+            RelationshipKind::Dependency => "dependency",
             RelationshipKind::Satisfy => "satisfy",
             RelationshipKind::Subject => "subject",
             RelationshipKind::Reference => "reference",
@@ -623,6 +629,7 @@ impl RelationshipKind {
             "successionflow" => Some(RelationshipKind::SuccessionFlow),
             "perform" => Some(RelationshipKind::Perform),
             "allocate" => Some(RelationshipKind::Allocate),
+            "dependency" => Some(RelationshipKind::Dependency),
             "satisfy" => Some(RelationshipKind::Satisfy),
             "subject" | "verification" => Some(RelationshipKind::Subject),
             "reference" => Some(RelationshipKind::Reference),

@@ -149,22 +149,29 @@ describe("LspModelProvider", () => {
     cts.dispose();
   });
 
-  it("getFeatureInspector sends the correct request shape and parses the response", async () => {
+  it("getFeatureInspector sends canonical and transition URI shapes and parses the response", async () => {
     let capturedMethod: string | undefined;
     let capturedParams: unknown;
+    let capturedArgumentCount = 0;
     const client = {
-      sendRequest: async (method: string, params: unknown) => {
-        capturedMethod = method;
+      sendRequest: async (...args: unknown[]) => {
+        capturedArgumentCount = args.length;
+        const [method, params] = args;
+        assert.strictEqual(typeof method, "string");
+        capturedMethod = method as string;
         capturedParams = params;
         return {
-          version: 0,
+          version: 1,
           sourceUri: "file:///drone.sysml",
           requestedPosition: { line: 2, character: 7 },
-          element: {
+          selection: { kind: "element", text: "motor" },
+          containingElement: {
             id: "Drone::motor",
             name: "motor",
             qualifiedName: "Drone::motor",
             type: "part",
+            role: "usage",
+            declaration: "part motor : Engine;",
             uri: "file:///drone.sysml",
             range: {
               start: { line: 2, character: 2 },
@@ -187,12 +194,21 @@ describe("LspModelProvider", () => {
     });
 
     assert.strictEqual(capturedMethod, "sysml/featureInspector");
+    assert.strictEqual(
+      capturedArgumentCount,
+      2,
+      "an absent cancellation token must not become a second positional JSON-RPC parameter"
+    );
     assert.deepStrictEqual(capturedParams, {
       textDocument: { uri: "file:///drone.sysml" },
+      uri: "file:///drone.sysml",
       position: { line: 2, character: 7 },
     });
-    assert.strictEqual(result.element?.name, "motor");
-    assert.strictEqual(result.element?.attributes.doc, "The main drive motor.");
+    assert.strictEqual(result.containingElement?.name, "motor");
+    assert.strictEqual(
+      result.containingElement?.attributes.doc,
+      "The main drive motor."
+    );
   });
 
   it("exposes workspace and document graph scope helpers", () => {

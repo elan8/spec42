@@ -242,3 +242,19 @@ fn hover_returns_unresolved_reference_fallback() {
         "expected unresolved hover fallback: {result}"
     );
 }
+
+#[test]
+fn hover_does_not_treat_case_different_identifier_as_keyword() {
+    let content = r#"package Demo {
+    part vehicle : Part;
+}"#;
+    let ws = single_doc("hover-case-sensitive-keyword.sysml", content);
+    let pos = position_for_within(content, "vehicle : Part", "Part");
+    let result = hover(&ws, "hover-case-sensitive-keyword.sysml", pos)
+        .expect("hover")
+        .contents;
+    assert!(
+        result.contains("Unresolved reference") && result.contains("Part"),
+        "SysML keywords are case-sensitive; `Part` must remain an unresolved identifier: {result}"
+    );
+}

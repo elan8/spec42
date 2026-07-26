@@ -19,7 +19,9 @@ use crate::semantic::ast_util::{
 };
 use crate::semantic::graph::SemanticGraph;
 use crate::semantic::model::{ElementKind, NodeId, RelationshipKind};
-use crate::semantic::relationships::{add_typing_edge_if_exists, try_wire_derivation_connection};
+use crate::semantic::relationships::{
+    add_pending_expression_relationship, add_typing_edge_if_exists, try_wire_derivation_connection,
+};
 
 use super::action;
 use super::analysis_case;

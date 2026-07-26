@@ -679,7 +679,8 @@ async function syncFeatureInspectorFromEditor(
     logPerf("selectionSync:featureInspector", {
       uri: doc.uri.toString(),
       totalMs: Date.now() - syncStartedAt,
-      elementId: result.element?.id,
+      selectionKind: result.selection.kind,
+      elementId: (result.referencedElement ?? result.containingElement)?.id,
     });
   } catch (error) {
     if (isClientNotRunningError(error)) {

@@ -242,6 +242,15 @@ pub(super) fn build_from_part_def_body_element(
                 g,
             );
         }
+        PDBE::Dependency(dep_node) => {
+            super::package_body::materialize_dependency(
+                g,
+                uri,
+                container_prefix,
+                Some(parent_id),
+                dep_node,
+            );
+        }
         PDBE::Connect(c) => {
             expressions::add_expression_edge_if_both_exist(
                 g,

@@ -4,7 +4,10 @@ use crate::workspace::handle::WorkspaceHandle;
 use crate::workspace::state::DocumentStore;
 use crate::workspace::ServerState;
 use std::time::Instant;
-use sysml_model::{visualization_model_not_ready, SysmlVisualizationResultDto};
+use sysml_model::{
+    range_to_dto, visualization_model_not_ready, SysmlVisualizationResultDto, TextPosition,
+    TextRange,
+};
 use tower_lsp::jsonrpc::Result;
 use tower_lsp::lsp_types::{MessageType, Url};
 use tower_lsp::Client;
@@ -245,13 +248,88 @@ pub(crate) fn sysml_feature_inspector_result(
     let mut response =
         crate::views::build_sysml_feature_inspector_response(&state.semantic_graph, &uri, position);
     let snapshot = crate::workspace::snapshot::ServerStateSnapshot::new(state, false);
-    let path = snapshot.path_for_uri(&uri);
-    response.contextual_help_markdown = language_service::hover(
+    let core_position = crate::common::text_span::to_core_position(position);
+    let Some(text) = snapshot.document_text(&uri) else {
+        return Ok(response);
+    };
+
+    if let Some((unit, range)) = language_service::unit_value_suffix_selection_at_position(
+        text,
+        position.line,
+        position.character,
+    ) {
+        response.selection = dto::SysmlFeatureInspectorSelectionDto {
+            kind: "unit".to_string(),
+            text: Some(unit),
+            range: Some(range_to_dto(range)),
+        };
+        return Ok(response);
+    }
+
+    let Some((line, start, end, word)) =
+        language_service::word_at_position(text, position.line, position.character)
+    else {
+        return Ok(response);
+    };
+    let selection_range = TextRange {
+        start: TextPosition {
+            line,
+            character: start,
+        },
+        end: TextPosition {
+            line,
+            character: end,
+        },
+    };
+    response.selection.text = Some(word.clone());
+    response.selection.range = Some(range_to_dto(selection_range));
+
+    if language_service::is_reserved_keyword(&word) {
+        response.selection.kind = "keyword".to_string();
+        response.language_help = language_service::keyword_help(&word).map(|help| {
+            dto::SysmlFeatureInspectorLanguageHelpDto {
+                keyword: word,
+                description: help.description.to_string(),
+                syntax: help.syntax.map(str::to_string),
+            }
+        });
+        return Ok(response);
+    }
+
+    let containing_node = state
+        .semantic_graph
+        .find_deepest_node_at_position(&uri, core_position)
+        .filter(|node| node.id.uri == uri);
+    if let Some(target) = language_service::references::resolve_symbol_target_at_position(
         &snapshot,
-        &path,
-        crate::common::text_span::to_core_position(position),
-    )
-    .map(|hover| hover.contents);
+        &uri,
+        core_position,
+    ) {
+        let is_containing_element_name = containing_node
+            .map(|node| node.id == target.target_id && node.name == word)
+            .unwrap_or(false);
+        if !is_containing_element_name {
+            if let Some(target_node) = state.semantic_graph.get_node(&target.target_id) {
+                response.selection.kind = "reference".to_string();
+                response.selection.range = Some(range_to_dto(target.identifier_range));
+                response.referenced_element =
+                    Some(crate::views::feature_inspector::feature_inspector_element(
+                        &state.semantic_graph,
+                        target_node,
+                    ));
+                return Ok(response);
+            }
+        }
+    }
+
+    if containing_node
+        .map(|node| node.name == word || node.id.qualified_name == word)
+        .unwrap_or(false)
+    {
+        response.selection.kind = "element".to_string();
+    } else if word.parse::<f64>().is_ok() {
+        response.selection.kind = "value".to_string();
+    }
     Ok(response)
 }
 

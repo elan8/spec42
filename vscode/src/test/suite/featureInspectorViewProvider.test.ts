@@ -1,6 +1,7 @@
 import * as assert from "assert";
 import * as vscode from "vscode";
 import { FeatureInspectorViewProvider } from "../../inspector/featureInspectorViewProvider";
+import { buildFeatureInspectorViewModel } from "../../inspector/featureInspectorViewModel";
 import type {
   FeatureInspectorResult,
   LspModelProvider,
@@ -45,14 +46,17 @@ function fakeView(webview: FakeWebview): vscode.WebviewView {
 
 function inspectorResult(name: string): FeatureInspectorResult {
   return {
-    version: 0,
+    version: 1,
     sourceUri: "file:///model.sysml",
     requestedPosition: { line: 1, character: 2 },
-    element: {
+    selection: { kind: "element", text: name },
+    containingElement: {
       id: `P::${name}`,
       name,
       qualifiedName: `P::${name}`,
       type: "part",
+      role: "usage",
+      declaration: `part ${name};`,
       uri: "file:///model.sysml",
       range: {
         start: { line: 1, character: 2 },
@@ -87,7 +91,11 @@ describe("FeatureInspectorViewProvider", () => {
     await webview.fireMessage({ type: "ready" });
 
     assert.deepStrictEqual(webview.messages, [
-      { type: "update", payload: result, pinned: true },
+      {
+        type: "update",
+        payload: buildFeatureInspectorViewModel(result),
+        pinned: true,
+      },
     ]);
   });
 

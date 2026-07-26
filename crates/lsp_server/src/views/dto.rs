@@ -63,6 +63,8 @@ pub struct SysmlFeatureInspectorElementDto {
     pub qualified_name: String,
     #[serde(rename = "type")]
     pub element_type: String,
+    pub role: String,
+    pub declaration: String,
     pub uri: String,
     pub range: RangeDto,
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -76,13 +78,36 @@ pub struct SysmlFeatureInspectorElementDto {
 
 #[derive(Debug, Clone, Serialize)]
 #[serde(rename_all = "camelCase")]
+pub struct SysmlFeatureInspectorSelectionDto {
+    pub kind: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub text: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub range: Option<RangeDto>,
+}
+
+#[derive(Debug, Clone, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct SysmlFeatureInspectorLanguageHelpDto {
+    pub keyword: String,
+    pub description: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub syntax: Option<String>,
+}
+
+#[derive(Debug, Clone, Serialize)]
+#[serde(rename_all = "camelCase")]
 pub struct SysmlFeatureInspectorResultDto {
     pub version: u32,
     pub source_uri: String,
     pub requested_position: PositionDto,
+    pub selection: SysmlFeatureInspectorSelectionDto,
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub contextual_help_markdown: Option<String>,
-    pub element: Option<SysmlFeatureInspectorElementDto>,
+    pub language_help: Option<SysmlFeatureInspectorLanguageHelpDto>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub containing_element: Option<SysmlFeatureInspectorElementDto>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub referenced_element: Option<SysmlFeatureInspectorElementDto>,
 }
 
 #[derive(Debug, Clone, Deserialize)]

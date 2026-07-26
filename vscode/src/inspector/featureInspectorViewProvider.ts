@@ -4,6 +4,7 @@ import type {
   FeatureInspectorResult,
   LspModelProvider,
 } from "../providers/lspModelProvider";
+import { buildFeatureInspectorViewModel } from "./featureInspectorViewModel";
 
 export type FeatureInspectorRange = FeatureInspectorElementRef["range"];
 
@@ -49,7 +50,7 @@ export class FeatureInspectorViewProvider implements vscode.WebviewViewProvider 
         } else if (this.latestResult !== undefined) {
           this.post({
             type: "update",
-            payload: this.latestResult,
+            payload: buildFeatureInspectorViewModel(this.latestResult),
             pinned: this.pinned,
           });
         } else if (!this.pinned) {
@@ -100,7 +101,11 @@ export class FeatureInspectorViewProvider implements vscode.WebviewViewProvider 
     }
     this.latestResult = result ?? null;
     this.latestError = undefined;
-    this.post({ type: "update", payload: this.latestResult, pinned: false });
+    this.post({
+      type: "update",
+      payload: buildFeatureInspectorViewModel(this.latestResult),
+      pinned: false,
+    });
   }
 
   private async inspectTarget(target: FeatureInspectorElementRef): Promise<void> {
@@ -118,7 +123,11 @@ export class FeatureInspectorViewProvider implements vscode.WebviewViewProvider 
       const result = await this.lspModelProvider.getFeatureInspector(uri, position);
       this.latestResult = result ?? null;
       this.latestError = undefined;
-      this.post({ type: "update", payload: this.latestResult, pinned: true });
+      this.post({
+        type: "update",
+        payload: buildFeatureInspectorViewModel(this.latestResult),
+        pinned: true,
+      });
     } catch (error) {
       this.latestError = error instanceof Error ? error.message : String(error);
       this.post({
@@ -300,12 +309,6 @@ export class FeatureInspectorViewProvider implements vscode.WebviewViewProvider 
       nodes.push(section);
     }
 
-    function isDefinitionLike(element) {
-      if (element.typing && element.typing.status !== 'notApplicable') return 'Usage';
-      if (element.type && element.type.endsWith(' def')) return 'Definition';
-      return undefined;
-    }
-
     function renderPinnedBanner(nodes, pinned, name) {
       if (!pinned) return;
       const banner = el('div', 'pinned-banner');
@@ -316,79 +319,121 @@ export class FeatureInspectorViewProvider implements vscode.WebviewViewProvider 
       nodes.push(banner);
     }
 
-    function helpText(markdown) {
-      return String(markdown || '')
-        .replace(/\\*\\*/g, '')
-        .replace(/\`/g, '')
-        .replace(/\\n\\n\\*See SysML v2 specification for full syntax\\.\\*/g, '');
+    function field(container, label, value) {
+      if (value === undefined || value === null || value === '') return;
+      const row = el('div', 'field');
+      row.appendChild(el('span', 'label', label));
+      row.appendChild(el('span', 'value', String(value)));
+      container.appendChild(row);
     }
 
-    function render(payload, pinned) {
-      const nodes = [];
-      const element = payload ? payload.element : null;
-      if (!element) {
-        renderPinnedBanner(nodes, pinned, undefined);
-        if (payload?.contextualHelpMarkdown) {
-          const helpSection = el('div', 'section');
-          helpSection.appendChild(el('div', 'title', 'SysML v2 language help'));
-          helpSection.appendChild(el('div', 'doc', helpText(payload.contextualHelpMarkdown)));
-          nodes.push(helpSection);
-        } else {
-          nodes.push(el('div', 'placeholder', 'Place the cursor on a SysML/KerML declaration or keyword. The inspector shows language help, resolved semantics, relationships, and source.'));
-        }
-        root.replaceChildren(...nodes);
-        return;
+    function declarationSection(nodes, declaration) {
+      if (!declaration) return;
+      const section = el('div', 'section');
+      section.appendChild(el('div', 'title', 'Declaration'));
+      section.appendChild(el('div', 'qualified-name', declaration));
+      nodes.push(section);
+    }
+
+    function renderLanguage(nodes, help) {
+      const section = el('div', 'section');
+      section.appendChild(el('div', 'title', 'Language construct'));
+      section.appendChild(el('div', 'header-line', help.keyword));
+      section.appendChild(el('div', 'doc', help.description));
+      if (help.syntax) field(section, 'Syntax', help.syntax);
+      nodes.push(section);
+    }
+
+    function renderValue(nodes, viewModel) {
+      const element = viewModel.primaryElement;
+      const value = viewModel.value || {};
+      const section = el('div', 'section');
+      section.appendChild(el('div', 'title', 'Value'));
+      const header = el('div', 'header-line');
+      header.appendChild(el('span', '', element?.name || value.selectionText || ''));
+      if (element?.role) header.appendChild(pill(element.role, 'info'));
+      section.appendChild(header);
+      field(section, 'Declaration', value.declaration);
+      field(section, 'Declared', value.declaredValue);
+      field(section, 'Evaluated', value.evaluatedValue);
+      field(section, 'Unit', value.unit);
+      field(section, 'Quantity type', value.quantityType);
+      if (
+        value.selectionText &&
+        value.selectionText !== value.declaredValue &&
+        value.selectionText !== value.evaluatedValue &&
+        value.selectionText !== value.unit
+      ) {
+        field(section, value.selectionKind === 'unit' ? 'Selected unit' : 'Selected value', value.selectionText);
       }
+      nodes.push(section);
+    }
 
-      renderPinnedBanner(nodes, pinned, element.name);
-
+    function renderElement(nodes, viewModel) {
+      const element = viewModel.primaryElement;
       const header = el('div', 'section');
+      header.appendChild(el('div', 'title', 'Model element'));
       const headerLine = el('div', 'header-line');
-      headerLine.appendChild(el('span', 'title', (element.type || 'element') + ' ' + (element.name || '')));
-      const kindLabel = isDefinitionLike(element);
-      if (kindLabel) headerLine.appendChild(pill(kindLabel, kindLabel === 'Definition' ? 'ok' : 'info'));
+      headerLine.appendChild(el('span', '', element.name || '(unnamed)'));
+      headerLine.appendChild(pill(element.role || 'other', element.role === 'definition' ? 'ok' : 'info'));
       header.appendChild(headerLine);
       header.appendChild(el('div', 'qualified-name', element.qualifiedName || ''));
       nodes.push(header);
 
-      if (payload.contextualHelpMarkdown) {
-        const helpSection = el('div', 'section');
-        helpSection.appendChild(el('div', 'title', 'SysML v2 language help'));
-        helpSection.appendChild(el('div', 'doc', helpText(payload.contextualHelpMarkdown)));
-        nodes.push(helpSection);
+      declarationSection(nodes, element.declaration);
+
+      if (viewModel.referencedFrom) {
+        const source = viewModel.referencedFrom;
+        const sourceSection = el('div', 'section');
+        sourceSection.appendChild(el('div', 'title', 'Referenced from'));
+        const sourceRow = elementRefRow(source);
+        const declaration = source.declaration;
+        if (declaration) sourceRow.querySelector('.row-sub').textContent = declaration;
+        sourceSection.appendChild(sourceRow);
+        nodes.push(sourceSection);
       }
 
+      const identity = el('div', 'section');
+      identity.appendChild(el('div', 'title', 'Identity'));
+      field(identity, 'Kind', element.type);
+      field(identity, 'Container', element.parent?.qualifiedName);
+      field(identity, 'Multiplicity', attrText(element.attributes, 'multiplicity'));
+      field(identity, 'Direction', attrText(element.attributes, 'direction'));
       const doc = attrText(element.attributes, 'doc');
-      if (doc) {
-        const docSection = el('div', 'section');
-        docSection.appendChild(el('div', 'doc', doc));
-        nodes.push(docSection);
-      }
+      if (doc) identity.appendChild(el('div', 'doc', doc));
+      nodes.push(identity);
 
       resolutionSection(nodes, 'Declared type', element.typing);
       resolutionSection(nodes, 'Specializes', element.specialization);
 
       const attrFields = [
-        ['Multiplicity', attrText(element.attributes, 'multiplicity')],
-        ['Direction', attrText(element.attributes, 'direction')],
-        ['Value', attrText(element.attributes, 'value') || attrText(element.attributes, 'defaultValue')],
+        ['Declared', attrText(element.attributes, 'value') || attrText(element.attributes, 'defaultValue')],
         ['Evaluated', [attrText(element.attributes, 'evaluatedValue'), attrText(element.attributes, 'evaluatedUnit')].filter(Boolean).join(' ')],
       ].filter(([, value]) => value);
       if (attrFields.length) {
         const attrSection = el('div', 'section');
+        attrSection.appendChild(el('div', 'title', 'Value'));
         attrFields.forEach(([label, value]) => {
-          const field = el('div', 'field');
-          field.appendChild(el('span', 'label', label));
-          field.appendChild(el('span', 'value', value));
-          attrSection.appendChild(field);
+          field(attrSection, label, value);
         });
         nodes.push(attrSection);
       }
 
-      relationshipsSection(nodes, 'Incoming', element.incomingRelationships);
-      relationshipsSection(nodes, 'Outgoing', element.outgoingRelationships);
+      if (element.incomingRelationships?.length || element.outgoingRelationships?.length) {
+        const relationships = el('div', 'section');
+        relationships.appendChild(el('div', 'title', 'Relationships'));
+        const relationshipNodes = [];
+        relationshipsSection(relationshipNodes, 'Incoming', element.incomingRelationships);
+        relationshipsSection(relationshipNodes, 'Outgoing', element.outgoingRelationships);
+        relationshipNodes.forEach((node) => {
+          node.classList.remove('section');
+          relationships.appendChild(node);
+        });
+        nodes.push(relationships);
+      }
 
       const locationSection = el('div', 'section');
+      locationSection.appendChild(el('div', 'title', 'Source location'));
       const locationRow = el('div', 'row');
       locationRow.style.cursor = 'default';
       const locationMain = el('div', 'row-main');
@@ -400,6 +445,24 @@ export class FeatureInspectorViewProvider implements vscode.WebviewViewProvider 
       }));
       locationSection.appendChild(locationRow);
       nodes.push(locationSection);
+    }
+
+    function render(viewModel, pinned) {
+      const nodes = [];
+      const element = viewModel?.primaryElement;
+      renderPinnedBanner(nodes, pinned, element?.name);
+
+      if (!viewModel || viewModel.mode === 'empty') {
+        nodes.push(el('div', 'placeholder', 'Place the cursor on a SysML/KerML keyword, model element, reference, value, or unit.'));
+      } else if (viewModel.mode === 'language' && viewModel.languageHelp) {
+        renderLanguage(nodes, viewModel.languageHelp);
+      } else if (viewModel.mode === 'value') {
+        renderValue(nodes, viewModel);
+      } else if (element) {
+        renderElement(nodes, viewModel);
+      } else {
+        nodes.push(el('div', 'placeholder', 'No inspectable selection at this position.'));
+      }
 
       root.replaceChildren(...nodes);
     }
