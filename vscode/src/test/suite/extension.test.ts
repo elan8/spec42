@@ -102,6 +102,14 @@ describe("Extension Test Suite", () => {
       containers?.some((view) => view.id === "sysmlFeatureInspectorView"),
       "Expected sysmlFeatureInspectorView to be contributed alongside the SysML Visualizer"
     );
+    const secondaryContainers = extension.packageJSON?.contributes?.viewsContainers
+      ?.secondarySidebar as Array<{ id: string; title: string }> | undefined;
+    assert.strictEqual(
+      secondaryContainers?.find((container) => container.id === "sysmlVisualizerContainer")
+        ?.title,
+      "Spec42",
+      "Expected the shared Visualizer and Feature Inspector tab to be named Spec42"
+    );
     // VS Code auto-generates a `<viewId>.focus` command for every contributed view -- the same
     // mechanism `spec42Library.focus` already relies on elsewhere in this codebase.
     const commands = await vscode.commands.getCommands(true);

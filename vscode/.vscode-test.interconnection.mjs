@@ -3,7 +3,7 @@ import path from "path";
 import { fileURLToPath } from "url";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const vscodeTestVersion = process.env.VSCODE_TEST_VERSION || "1.99.0";
+const vscodeTestVersion = process.env.VSCODE_TEST_VERSION || "1.106.0";
 const mochaTimeout = process.env.CI ? 120000 : 60000;
 const serverBinary = path.resolve(
   __dirname,

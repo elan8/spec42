@@ -1,7 +1,6 @@
 //! SysML v2 reserved keywords and keyword documentation for completion/hover.
 
-/// SysML v2 / KerML reserved keywords (BNF 8.2.2.1.2 RESERVED_KEYWORD, plus grammar extensions:
-/// value, provides, requires).
+/// SysML v2 reserved keywords from Language Specification 2.0, 8.2.2.1.2.
 /// Single source of truth for semantic token fallback and keyword checks (goto-def, rename).
 /// Note: "position" is a contextual keyword (position_statement) only, not reserved—valid as identifier.
 pub const RESERVED_KEYWORDS: &[&str] = &[
@@ -95,7 +94,6 @@ pub const RESERVED_KEYWORDS: &[&str] = &[
     "port",
     "private",
     "protected",
-    "provides",
     "public",
     "redefines",
     "ref",
@@ -105,7 +103,6 @@ pub const RESERVED_KEYWORDS: &[&str] = &[
     "rep",
     "require",
     "requirement",
-    "requires",
     "return",
     "satisfy",
     "send",
@@ -125,7 +122,6 @@ pub const RESERVED_KEYWORDS: &[&str] = &[
     "true",
     "until",
     "use",
-    "value",
     "variant",
     "variation",
     "verification",
@@ -154,14 +150,11 @@ pub fn sysml_keywords() -> &'static [&'static str] {
         "connection",
         "interface",
         "item",
-        "value",
         "action",
         "requirement",
         "ref",
         "in",
         "out",
-        "provides",
-        "requires",
         "bind",
         "allocate",
         "abstract",
@@ -230,18 +223,21 @@ pub fn keyword_hover_markdown(keyword: &str) -> Option<String> {
             Some("`package name { }`"),
         ),
         "part" => (
-            "Structural element; can be definition (part def) or usage.",
-            Some("`part def Name : Type;` or `part name : Type;`"),
+            "Part definition or usage. A definition classifies reusable kinds of parts; a usage represents a part in a context.",
+            Some("`part def Vehicle :> BaseVehicle;` or `part vehicle : Vehicle;`"),
         ),
         "attribute" => (
-            "Property with optional type and default.",
-            Some("`attribute def name : Type;`"),
+            "Attribute definition or usage for data-valued features.",
+            Some("`attribute def Temperature :> ScalarValues::Real;` or `attribute temperature : Temperature;`"),
         ),
         "port" => (
-            "Interaction point (e.g. for connections).",
-            Some("`port def name : Interface;`"),
+            "Port definition or usage describing an interaction point. A usage can be typed by a port definition or its conjugate.",
+            Some("`port def FuelPort { in item fuel; }` or `port inlet : ~FuelPort;`"),
         ),
-        "connection" => ("Links between ports.", Some("`connection name (a, b);`")),
+        "connection" => (
+            "Connection definition or usage relating connector ends.",
+            Some("`connection def Link;` or `connection link connect a to b;`"),
+        ),
         "connect" => (
             "Statement form of a connection usage, binding two feature ends.",
             Some("`connect a to b;`"),
@@ -253,8 +249,8 @@ pub fn keyword_hover_markdown(keyword: &str) -> Option<String> {
             Some("`requirement def name;`"),
         ),
         "ref" => (
-            "Reference to an element (e.g. ref action, ref individual).",
-            Some("`ref name;`"),
+            "Makes a usage referential rather than owning/composite.",
+            Some("`ref part driver : Person;`"),
         ),
         "in" | "out" => (
             "Input or output (e.g. in action, in attribute).",
@@ -264,17 +260,9 @@ pub fn keyword_hover_markdown(keyword: &str) -> Option<String> {
             "Bidirectional parameter direction (both input and output).",
             Some("`inout name : Type;`"),
         ),
-        "provides" => (
-            "Part provides a capability.",
-            Some("`provides name = value;`"),
-        ),
-        "requires" => (
-            "Part requires a capability.",
-            Some("`requires name = value;`"),
-        ),
         "bind" => (
-            "Bind logical port to physical port.",
-            Some("`bind a to b;`"),
+            "Binding connector statement asserting that two features have the same value.",
+            Some("`bind a = b;`"),
         ),
         "binding" => (
             "Binding connector usage kind: asserts two features always have the same value.",
@@ -306,7 +294,7 @@ pub fn keyword_hover_markdown(keyword: &str) -> Option<String> {
             "Marks a library package as part of the standard (built-in) model library.",
             Some("`standard library package Name { }`"),
         ),
-        "value" | "item" => (keyword_doc(keyword)?, None),
+        "item" => (keyword_doc(keyword)?, None),
         "references" => (
             "Requirement/case reference: an element the requirement/case depends on but doesn't own.",
             Some("`references name : Type;`"),
@@ -324,8 +312,8 @@ pub fn keyword_hover_markdown(keyword: &str) -> Option<String> {
             Some("`exit action name;`"),
         ),
         "state" => (
-            "State definition or usage in a state machine.",
-            Some("`state name { }`"),
+            "State definition or usage. Its body can own entry, do, exit, and transition members.",
+            Some("`state def OperatingStates { state idle; }` or `state operating : OperatingStates;`"),
         ),
         "do" => (
             "Activity performed while in a state.",
@@ -339,7 +327,10 @@ pub fn keyword_hover_markdown(keyword: &str) -> Option<String> {
             "Transition between states.",
             Some("`transition event then target;`"),
         ),
-        "constraint" => ("Invariant or constraint block.", None),
+        "constraint" => (
+            "Constraint definition or usage whose body evaluates a Boolean expression.",
+            Some("`constraint def Limit { in actual : Real; actual <= 10 }`"),
+        ),
         "exhibit" => ("Exhibit state machine.", Some("`exhibit state name { }`")),
         "enum" => (
             "Enumeration definition: a variation whose values are its variants.",
@@ -367,7 +358,7 @@ pub fn keyword_hover_markdown(keyword: &str) -> Option<String> {
         ),
         "calc" => (
             "Calculation definition/usage: computes a return value from its parameters.",
-            Some("`calc def name(x : Type) : Type { return x; }`"),
+            Some("`calc def Identity { in x : Real; return : Real = x; }`"),
         ),
         "case" => (
             "Base kind shared by analysis/verification/use cases.",
@@ -379,7 +370,7 @@ pub fn keyword_hover_markdown(keyword: &str) -> Option<String> {
         ),
         "verification" => (
             "Verification case definition/usage: verifies that a requirement is satisfied.",
-            Some("`verification def Name;`"),
+            Some("`verification case def Name;`"),
         ),
         "verify" => (
             "Requirement verification usage inside a verification case.",
@@ -390,8 +381,8 @@ pub fn keyword_hover_markdown(keyword: &str) -> Option<String> {
             Some("`use case def Name;`"),
         ),
         "view" => (
-            "View definition/usage: renders a viewpoint over the model.",
-            Some("`view def Name;`"),
+            "View definition or usage selecting model elements to expose; an optional rendering determines presentation.",
+            Some("`view architecture { expose system::**; }`"),
         ),
         "viewpoint" => (
             "Viewpoint definition/usage: specifies stakeholder concerns a view must address.",
@@ -439,11 +430,11 @@ pub fn keyword_hover_markdown(keyword: &str) -> Option<String> {
         ),
         "include" => (
             "Use case inclusion: one use case includes another as part of its behavior.",
-            Some("`include useCase name;`"),
+            Some("`include use case includedCase;`"),
         ),
         "frame" => (
             "Requirement frame concern reference.",
-            Some("`frame name;`"),
+            Some("`frame concern maintainability;`"),
         ),
         "filter" => (
             "Import filter: restricts an imported namespace to members matching a condition.",
@@ -467,11 +458,11 @@ pub fn keyword_hover_markdown(keyword: &str) -> Option<String> {
         ),
         "flow" => (
             "Flow: item transfer between features over time.",
-            Some("`flow source to target;`"),
+            Some("`flow source to target;` or `flow of Payload from source to target;`"),
         ),
         "message" => (
             "Message: a flow of a payload that triggers a behavior at its target.",
-            Some("`message name from a to b;`"),
+            Some("`message command of Command from sender to receiver;`"),
         ),
         "succession" => (
             "Succession: an ordering relationship between occurrences.",
@@ -562,8 +553,8 @@ pub fn keyword_hover_markdown(keyword: &str) -> Option<String> {
             Some("`assume constraint { expr }`"),
         ),
         "satisfy" => (
-            "Asserts a usage satisfies a requirement.",
-            Some("`satisfy req by subject;`"),
+            "Requirement-satisfaction assertion relating a requirement usage to its subject.",
+            Some("`assert satisfy requirement req by subject;`"),
         ),
         "require" => (
             "Requirement's evaluable condition.",
@@ -607,7 +598,7 @@ pub fn keyword_hover_markdown(keyword: &str) -> Option<String> {
         ),
         "default" => (
             "Introduces a default (overridable) feature value, as opposed to a fixed `=` value.",
-            Some("`attribute name : Type default 0;`"),
+            Some("`attribute name : Type default = 0;`"),
         ),
         "end" => (
             "Marks a feature as an end (connection point) of a connector-like definition/usage.",
@@ -615,7 +606,7 @@ pub fn keyword_hover_markdown(keyword: &str) -> Option<String> {
         ),
         "parallel" => (
             "Marks a state as parallel: its substates execute concurrently with no transitions between them.",
-            Some("`state parallel Name { ... }`"),
+            Some("`state Name parallel { ... }`"),
         ),
         "as" => (
             "Introduces an alias name in an import, or casts an expression to a type.",
@@ -645,15 +636,15 @@ pub fn keyword_hover_markdown(keyword: &str) -> Option<String> {
         "null" => ("Literal representing the absence of a value.", None),
         "of" => (
             "Introduces the payload feature carried by a `flow` or `message`.",
-            Some("`flow source to target of payloadFeature;`"),
+            Some("`flow of Payload from source to target;`"),
         ),
         "to" => (
             "Introduces the target endpoint of a `flow`, `connect`, `allocate`, or `dependency`.",
             Some("`flow a to b;`"),
         ),
         "from" => (
-            "Introduces the source/client side of a `dependency`.",
-            Some("`dependency from a to b;`"),
+            "Introduces the source of a flow/message or the client side of a dependency.",
+            Some("`flow of Payload from a to b;` or `dependency from a to b;`"),
         ),
         "by" => (
             "Introduces the subject of a `satisfy`, or pairs with `defined`/`typed` (`defined by`, `typed by`).",
@@ -720,5 +711,13 @@ mod tests {
             missing.is_empty(),
             "reserved keywords missing hover markdown: {missing:?}"
         );
+    }
+
+    #[test]
+    fn ordinary_identifiers_are_not_treated_as_sysml_reserved_keywords() {
+        for identifier in ["value", "provides", "requires"] {
+            assert!(!is_reserved_keyword(identifier), "{identifier}");
+            assert!(keyword_hover_markdown(identifier).is_none(), "{identifier}");
+        }
     }
 }

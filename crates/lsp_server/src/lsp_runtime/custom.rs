@@ -229,6 +229,8 @@ pub(crate) fn sysml_feature_inspector_result(
     state: &ServerState,
     params: serde_json::Value,
 ) -> Result<dto::SysmlFeatureInspectorResultDto> {
+    use language_service::WorkspaceSnapshot;
+
     let (uri, position) = crate::views::parse_sysml_feature_inspector_params(&params)?;
     let Some(entry) = state.index.get(&uri) else {
         return Ok(crate::views::empty_feature_inspector_response(
@@ -240,11 +242,17 @@ pub(crate) fn sysml_feature_inspector_result(
             &uri, position,
         ));
     }
-    Ok(crate::views::build_sysml_feature_inspector_response(
-        &state.semantic_graph,
-        &uri,
-        position,
-    ))
+    let mut response =
+        crate::views::build_sysml_feature_inspector_response(&state.semantic_graph, &uri, position);
+    let snapshot = crate::workspace::snapshot::ServerStateSnapshot::new(state, false);
+    let path = snapshot.path_for_uri(&uri);
+    response.contextual_help_markdown = language_service::hover(
+        &snapshot,
+        &path,
+        crate::common::text_span::to_core_position(position),
+    )
+    .map(|hover| hover.contents);
+    Ok(response)
 }
 
 pub(crate) async fn sysml_visualization_result(

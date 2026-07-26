@@ -19,7 +19,10 @@ export type FeatureInspectorRange = FeatureInspectorElementRef["range"];
  */
 export class FeatureInspectorViewProvider implements vscode.WebviewViewProvider {
   private view: vscode.WebviewView | undefined;
+  private webviewReady = false;
   private pinned = false;
+  private latestResult: FeatureInspectorResult | null | undefined;
+  private latestError: string | undefined;
 
   private readonly _onResumeRequested = new vscode.EventEmitter<void>();
   /** Fires when the user clicks "resume following cursor", or when the panel becomes visible
@@ -33,11 +36,27 @@ export class FeatureInspectorViewProvider implements vscode.WebviewViewProvider 
 
   resolveWebviewView(webviewView: vscode.WebviewView): void {
     this.view = webviewView;
+    this.webviewReady = false;
     const webview = webviewView.webview;
     webview.options = { enableScripts: true };
     webview.html = this.getHtml(webview);
 
     webview.onDidReceiveMessage(async (message) => {
+      if (message?.type === "ready") {
+        this.webviewReady = true;
+        if (this.latestError) {
+          this.post({ type: "error", payload: this.latestError });
+        } else if (this.latestResult !== undefined) {
+          this.post({
+            type: "update",
+            payload: this.latestResult,
+            pinned: this.pinned,
+          });
+        } else if (!this.pinned) {
+          this._onResumeRequested.fire();
+        }
+        return;
+      }
       if (message?.type === "openRange") {
         await this.openRange(message.payload as { uri: string; range: FeatureInspectorRange });
         return;
@@ -58,6 +77,12 @@ export class FeatureInspectorViewProvider implements vscode.WebviewViewProvider 
         this._onResumeRequested.fire();
       }
     });
+    webviewView.onDidDispose(() => {
+      if (this.view === webviewView) {
+        this.view = undefined;
+        this.webviewReady = false;
+      }
+    });
   }
 
   isVisible(): boolean {
@@ -73,7 +98,9 @@ export class FeatureInspectorViewProvider implements vscode.WebviewViewProvider 
     if (this.pinned) {
       return;
     }
-    this.post({ type: "update", payload: result ?? null, pinned: false });
+    this.latestResult = result ?? null;
+    this.latestError = undefined;
+    this.post({ type: "update", payload: this.latestResult, pinned: false });
   }
 
   private async inspectTarget(target: FeatureInspectorElementRef): Promise<void> {
@@ -89,11 +116,14 @@ export class FeatureInspectorViewProvider implements vscode.WebviewViewProvider 
     this.pinned = true;
     try {
       const result = await this.lspModelProvider.getFeatureInspector(uri, position);
-      this.post({ type: "update", payload: result ?? null, pinned: true });
+      this.latestResult = result ?? null;
+      this.latestError = undefined;
+      this.post({ type: "update", payload: this.latestResult, pinned: true });
     } catch (error) {
+      this.latestError = error instanceof Error ? error.message : String(error);
       this.post({
         type: "error",
-        payload: error instanceof Error ? error.message : String(error),
+        payload: this.latestError,
       });
     }
   }
@@ -120,7 +150,9 @@ export class FeatureInspectorViewProvider implements vscode.WebviewViewProvider 
   }
 
   private post(message: unknown): void {
-    this.view?.webview.postMessage(message);
+    if (this.webviewReady) {
+      void this.view?.webview.postMessage(message);
+    }
   }
 
   private getHtml(webview: vscode.Webview): string {
@@ -168,7 +200,7 @@ export class FeatureInspectorViewProvider implements vscode.WebviewViewProvider 
   </style>
 </head>
 <body>
-  <div id="root"><div class="placeholder">Select an element to inspect.</div></div>
+  <div id="root"><div class="placeholder">Place the cursor on a SysML/KerML declaration or keyword. The inspector shows language help, resolved semantics, relationships, and source.</div></div>
 
   <script nonce="${nonce}">
     const vscode = acquireVsCodeApi();
@@ -284,12 +316,26 @@ export class FeatureInspectorViewProvider implements vscode.WebviewViewProvider 
       nodes.push(banner);
     }
 
+    function helpText(markdown) {
+      return String(markdown || '')
+        .replace(/\\*\\*/g, '')
+        .replace(/\`/g, '')
+        .replace(/\\n\\n\\*See SysML v2 specification for full syntax\\.\\*/g, '');
+    }
+
     function render(payload, pinned) {
       const nodes = [];
-      const element = payload;
+      const element = payload ? payload.element : null;
       if (!element) {
         renderPinnedBanner(nodes, pinned, undefined);
-        nodes.push(el('div', 'placeholder', 'Select an element to inspect.'));
+        if (payload?.contextualHelpMarkdown) {
+          const helpSection = el('div', 'section');
+          helpSection.appendChild(el('div', 'title', 'SysML v2 language help'));
+          helpSection.appendChild(el('div', 'doc', helpText(payload.contextualHelpMarkdown)));
+          nodes.push(helpSection);
+        } else {
+          nodes.push(el('div', 'placeholder', 'Place the cursor on a SysML/KerML declaration or keyword. The inspector shows language help, resolved semantics, relationships, and source.'));
+        }
         root.replaceChildren(...nodes);
         return;
       }
@@ -304,6 +350,13 @@ export class FeatureInspectorViewProvider implements vscode.WebviewViewProvider 
       header.appendChild(headerLine);
       header.appendChild(el('div', 'qualified-name', element.qualifiedName || ''));
       nodes.push(header);
+
+      if (payload.contextualHelpMarkdown) {
+        const helpSection = el('div', 'section');
+        helpSection.appendChild(el('div', 'title', 'SysML v2 language help'));
+        helpSection.appendChild(el('div', 'doc', helpText(payload.contextualHelpMarkdown)));
+        nodes.push(helpSection);
+      }
 
       const doc = attrText(element.attributes, 'doc');
       if (doc) {
@@ -354,7 +407,7 @@ export class FeatureInspectorViewProvider implements vscode.WebviewViewProvider 
     window.addEventListener('message', (event) => {
       const msg = event.data;
       if (msg?.type === 'update') {
-        render(msg.payload ? msg.payload.element : null, !!msg.pinned);
+        render(msg.payload || null, !!msg.pinned);
         return;
       }
       if (msg?.type === 'error') {
@@ -364,6 +417,7 @@ export class FeatureInspectorViewProvider implements vscode.WebviewViewProvider 
         root.replaceChildren(...nodes);
       }
     });
+    vscode.postMessage({ type: 'ready' });
   </script>
 </body>
 </html>`;

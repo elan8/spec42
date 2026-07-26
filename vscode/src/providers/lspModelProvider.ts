@@ -139,6 +139,7 @@ export interface FeatureInspectorResult {
   version: number;
   sourceUri: string;
   requestedPosition: PositionDTO;
+  contextualHelpMarkdown?: string;
   element: FeatureInspectorElement | null;
 }
 

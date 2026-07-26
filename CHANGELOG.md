@@ -23,9 +23,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `--workspace-root` points at a repository root. Public view catalogs no longer
   repeat a view when duplicated inputs reach candidate projection.
 
-- **Adds the VS Code Feature Inspector.** The new tree view uses the LSP model
-  provider, follows editor selection and visualization navigation, and exposes
-  semantic feature details without rebuilding a second client-side model.
+- **Adds the VS Code Feature Inspector.** The Spec42 view container groups the
+  Visualizer and Feature Inspector. The inspector accepts standard and legacy
+  request shapes, follows editor selection, buffers lazy-webview updates, opens
+  from diagram navigation, and combines semantic details with contextual SysML
+  v2 language help. VS Code 1.106 is now the minimum because that release made
+  secondary-sidebar view containers generally available.
 
 - **Improves diagram export reliability for large graphs.** Headless rendering
   now handles layout failures and oversized ELK graphs with a deterministic

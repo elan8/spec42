@@ -26,7 +26,7 @@
     "url": "https://github.com/elan8/spec42/issues"
   },
   "engines": {
-    "vscode": "^1.99.0"
+    "vscode": "^1.106.0"
   },
   "categories": [
     "Programming Languages",
@@ -519,7 +519,7 @@
       "secondarySidebar": [
         {
           "id": "sysmlVisualizerContainer",
-          "title": "SysML Visualizer",
+          "title": "Spec42",
           "icon": "design/logo.svg"
         }
       ]
@@ -769,7 +769,7 @@
     "@types/d3": "^7.4.3",
     "@types/mocha": "^10.0.0",
     "@types/node": "^22.0.0",
-    "@types/vscode": "^1.99.0",
+    "@types/vscode": "^1.106.0",
     "@vscode/codicons": "0.0.44",
     "@vscode/test-cli": "^0.0.11",
     "@vscode/test-electron": "^2.4.1",

@@ -3,7 +3,7 @@ import path from "path";
 import { fileURLToPath } from "url";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const vscodeTestVersion = process.env.VSCODE_TEST_VERSION || "1.99.0";
+const vscodeTestVersion = process.env.VSCODE_TEST_VERSION || "1.106.0";
 const testOut = process.env.SPEC42_VSCODE_TEST_OUT || "out";
 
 export default defineConfig({
@@ -15,6 +15,7 @@ export default defineConfig({
     path.join(__dirname, testOut, "test/suite/workspaceDiagnostics.test.js"),
     path.join(__dirname, testOut, "test/suite/modelExplorerProvider.test.js"),
     path.join(__dirname, testOut, "test/suite/lspModelProvider.test.js"),
+    path.join(__dirname, testOut, "test/suite/featureInspectorViewProvider.test.js"),
     path.join(__dirname, testOut, "test/suite/baseVisualizationPanelController.test.js"),
     path.join(__dirname, testOut, "test/suite/updateFlow.test.js"),
     path.join(__dirname, testOut, "test/suite/visualizationGate.test.js"),

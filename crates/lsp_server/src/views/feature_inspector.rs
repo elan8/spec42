@@ -35,7 +35,16 @@ const TYPING_ATTRIBUTE_KEYS: &[&str] = &[
 pub fn parse_sysml_feature_inspector_params(v: &serde_json::Value) -> Result<(Url, Position)> {
     let params: SysmlFeatureInspectorParamsDto = serde_json::from_value(v.clone())
         .map_err(|error| tower_lsp::jsonrpc::Error::invalid_params(error.to_string()))?;
-    let uri = Url::parse(&params.text_document.uri).map_err(|_| {
+    let uri_text = params
+        .text_document
+        .map(|document| document.uri)
+        .or(params.uri)
+        .ok_or_else(|| {
+            tower_lsp::jsonrpc::Error::invalid_params(
+                "sysml/featureInspector: expected textDocument.uri",
+            )
+        })?;
+    let uri = Url::parse(&uri_text).map_err(|_| {
         tower_lsp::jsonrpc::Error::invalid_params("sysml/featureInspector: invalid URI")
     })?;
     let uri = util::normalize_file_uri(&uri);
@@ -54,6 +63,7 @@ pub fn empty_feature_inspector_response(
             line: position.line,
             character: position.character,
         },
+        contextual_help_markdown: None,
         element: None,
     }
 }
@@ -172,6 +182,7 @@ pub fn build_sysml_feature_inspector_response(
         version: 0,
         source_uri: uri.to_string(),
         requested_position,
+        contextual_help_markdown: None,
         element,
     }
 }

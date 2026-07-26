@@ -13,6 +13,55 @@ fn inspect(session: &mut TestSession, uri: &str, line: u32, character: u32) -> s
 }
 
 #[test]
+fn lsp_feature_inspector_accepts_standard_and_legacy_uri_shapes() {
+    let mut session = TestSession::new();
+    let uri = "file:///feature_inspector_request_shape.sysml";
+    let content = "package P {\n  part def Engine;\n}\n";
+    session.initialize_default("feature_inspector_request_shape");
+    session.did_open(uri, content, 1);
+    session.barrier();
+
+    let standard = inspect(&mut session, uri, 1, 12);
+    assert_eq!(
+        standard["result"]["element"]["name"].as_str(),
+        Some("Engine")
+    );
+
+    let legacy = session.request(
+        "sysml/featureInspector",
+        serde_json::json!({
+            "uri": uri,
+            "position": { "line": 1, "character": 12 }
+        }),
+    );
+    assert_eq!(legacy["result"]["element"]["name"].as_str(), Some("Engine"));
+}
+
+#[test]
+fn lsp_feature_inspector_includes_contextual_language_help_for_keywords() {
+    let mut session = TestSession::new();
+    let uri = "file:///feature_inspector_keyword_help.sysml";
+    let content = "package P {\n  part def Engine;\n}\n";
+    session.initialize_default("feature_inspector_keyword_help");
+    session.did_open(uri, content, 1);
+    session.barrier();
+
+    let response = inspect(&mut session, uri, 1, 3);
+    let help = response["result"]["contextualHelpMarkdown"]
+        .as_str()
+        .expect("contextual language help");
+    assert!(
+        help.contains("**part**") && help.contains("part def"),
+        "expected contextual part help, got {help}"
+    );
+    assert_eq!(
+        response["result"]["element"]["name"].as_str(),
+        Some("Engine"),
+        "keyword help should complement, not replace, semantic element inspection"
+    );
+}
+
+#[test]
 fn lsp_feature_inspector_resolves_same_file_typing() {
     let mut session = TestSession::new();
     let uri = "file:///feature_inspector_same_file.sysml";

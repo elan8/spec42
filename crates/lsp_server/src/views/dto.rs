@@ -18,7 +18,11 @@ pub struct TextDocumentIdentifierDto {
 #[derive(Debug, Clone, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct SysmlFeatureInspectorParamsDto {
-    pub text_document: TextDocumentIdentifierDto,
+    #[serde(default)]
+    pub text_document: Option<TextDocumentIdentifierDto>,
+    /// Accepted for compatibility with early 0.46 clients that sent the document URI flat.
+    #[serde(default)]
+    pub uri: Option<String>,
     pub position: PositionDto,
 }
 
@@ -76,6 +80,8 @@ pub struct SysmlFeatureInspectorResultDto {
     pub version: u32,
     pub source_uri: String,
     pub requested_position: PositionDto,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub contextual_help_markdown: Option<String>,
     pub element: Option<SysmlFeatureInspectorElementDto>,
 }
 

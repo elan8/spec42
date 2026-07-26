@@ -50,6 +50,23 @@ The Spec42 sidebar also includes example and library views for opening recommend
 
 All visualizer views use the shared diagram renderer from `shared/diagram-renderer`. The legacy SysML renderer fallback has been removed.
 
+## Feature Inspector
+
+The **Spec42** Secondary Side Bar container groups the **SysML Visualizer** and
+**Feature Inspector**. Open the inspector and place the cursor on a SysML/KerML
+declaration, its name, or one of its language keywords. It shows:
+
+- contextual SysML v2 language help for the token under the cursor;
+- the semantic definition or usage containing that token;
+- resolved typing and specialization targets;
+- values, multiplicity and direction when available;
+- incoming/outgoing semantic relationships and the source location.
+
+Selecting a diagram node opens and pins the inspector to that element. Choose
+**Resume following cursor** to return to live editor selection. The inspector
+explains a keyword in the context of its containing semantic construct; it is
+not a raw parser-token or metamodel-property browser.
+
 ## Extension Settings
 
 Core settings:

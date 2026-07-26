@@ -117,9 +117,12 @@ export function activate(context: vscode.ExtensionContext): void {
     logPerf
   );
 
-  VisualizationPanel.register(context, handles.lspModelProvider, (uri, range) =>
-    void featureInspectorProvider.inspectAt(uri, range.start)
-  );
+  VisualizationPanel.register(context, handles.lspModelProvider, (uri, range) => {
+    // Pin before revealing the lazily-created view so its initial `ready` message cannot replace
+    // the diagram selection with the current editor cursor.
+    void featureInspectorProvider.inspectAt(uri, range.start);
+    void vscode.commands.executeCommand("sysmlFeatureInspectorView.focus");
+  });
   registerVisualizerCommands(context, handles);
   registerExplorerCommands(
     context,
