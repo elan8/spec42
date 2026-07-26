@@ -95,7 +95,7 @@ jobs:
     runs-on: ubuntu-latest
     continue-on-error: true
     env:
-      VSCODE_TEST_VERSION: "1.99.0"
+      VSCODE_TEST_VERSION: "1.106.0"
     steps:
       - uses: actions/checkout@v6
         with:

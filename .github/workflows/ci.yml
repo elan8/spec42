@@ -11,7 +11,7 @@ permissions:
   contents: read
 
 env:
-  VSCODE_TEST_VERSION: "1.99.0"
+  VSCODE_TEST_VERSION: "1.106.0"
 
 jobs:
   rust-core:

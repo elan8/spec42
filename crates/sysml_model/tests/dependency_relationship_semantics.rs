@@ -93,10 +93,7 @@ package Selection {
     let uri = Url::parse("file:///nested-dependency-selection.sysml").expect("fixture URI");
     let graph = build_graph_from_doc(&parsed, &uri);
 
-    let dependency_id = NodeId::new(
-        &uri,
-        "Selection::RequiredSensor::selectedImplementation",
-    );
+    let dependency_id = NodeId::new(&uri, "Selection::RequiredSensor::selectedImplementation");
     let dependency = graph
         .get_node(&dependency_id)
         .expect("nested dependency relationship node");
