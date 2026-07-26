@@ -206,7 +206,7 @@ mod tests {
     }
 
     /// Regression test for a real bug found against a real workspace (the
-    /// sysml-robot-vacuum-cleaner `firmwareDeployment` view): `IbdPartDto`/`IbdPortDto` and
+    /// sysml-robot-vacuum-cleaner `firmwareRuntime` view): `IbdPartDto`/`IbdPortDto` and
     /// `InterconnectionNodeDto`/`InterconnectionPortDto` carried correct `uri`/`range` end to
     /// end (verified by `scene_nodes_and_ports_carry_source_location_for_click_to_source` in
     /// `interconnection_scene.rs`), but `prepare_interconnection_prepared_view` — the final step

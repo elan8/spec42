@@ -140,3 +140,33 @@ fn action_def_flow_still_emits_succession_invalid_for_bad_target() {
             .collect::<Vec<_>>()
     );
 }
+
+#[test]
+fn action_item_flow_between_parameters_is_not_a_succession_error() {
+    let doc = workspace_doc(
+        "item_flow.sysml",
+        r#"package Demo {
+  item def Signal;
+  action def Produce { out signal : Signal; }
+  action def Consume { in signal : Signal; }
+  action def Pipeline {
+    action producer : Produce;
+    action consumer : Consume;
+    flow producer.signal to consumer.signal;
+  }
+}"#,
+    );
+    let uri = doc.uri.clone();
+    let (graph, _parsed) = build_semantic_graph_from_documents(&[doc]).expect("graph");
+    let diagnostics = collect_diagnostics_from_graph(&graph, &uri, DiagnosticsOptions::default());
+    assert!(
+        diagnostics
+            .iter()
+            .all(|d| d.code != "succession_endpoint_invalid"),
+        "plain item flow must not be diagnosed as an invalid succession: {:?}",
+        diagnostics
+            .iter()
+            .map(|d| (&d.code, &d.message))
+            .collect::<Vec<_>>()
+    );
+}

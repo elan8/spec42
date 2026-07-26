@@ -362,6 +362,14 @@ pub(crate) fn collect_behavior_conformance_diagnostics(
         if !in_action_context {
             continue;
         }
+        // A plain SysML `flow` may connect action parameters to carry items.
+        // Those endpoints are not succession endpoints and must not be checked
+        // as though the relationship sequenced action usages.
+        if source_node.element_kind == sysml_model::ElementKind::InOutParameter
+            && target_node.element_kind == sysml_model::ElementKind::InOutParameter
+        {
+            continue;
+        }
         if is_action_like(&source_node.element_kind) && is_action_like(&target_node.element_kind) {
             continue;
         }

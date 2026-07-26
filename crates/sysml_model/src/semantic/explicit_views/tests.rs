@@ -92,6 +92,28 @@ fn includes_unsupported_view_types_in_candidates() {
 }
 
 #[test]
+fn duplicate_evaluated_views_produce_one_candidate_per_semantic_id() {
+    let evaluated = EvaluatedView {
+        id: "Demo::productDecomposition".to_string(),
+        name: "productDecomposition".to_string(),
+        effective_view_type: Some("GeneralView".to_string()),
+        exposed_ids: HashSet::new(),
+        conforms_to: Vec::new(),
+        filters: Vec::new(),
+        visible_ids: HashSet::new(),
+        issues: Vec::new(),
+    };
+    let candidates = build_view_candidates(
+        &[evaluated.clone(), evaluated],
+        &HashMap::new(),
+        &HashMap::new(),
+    );
+
+    assert_eq!(candidates.len(), 1);
+    assert_eq!(candidates[0].id, "Demo::productDecomposition");
+}
+
+#[test]
 fn sequence_view_type_maps_to_sequence_renderer() {
     let evaluated_views = vec![EvaluatedView {
         id: "Demo::CheckoutSequence".to_string(),

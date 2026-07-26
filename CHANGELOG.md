@@ -7,6 +7,34 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.46.1] - 2026-07-26
+
+- **Accepts canonical item flows between action parameters without a false
+  `succession_endpoint_invalid` warning.** Plain `flow producer.signal to
+  consumer.signal` relationships carry items; they are not action-succession
+  relationships. Succession validation now skips parameter-to-parameter item
+  flows while retaining the existing diagnostic for flows from action usages
+  to invalid non-action targets.
+
+- **Keeps ignored model copies out of host/CLI workspaces and deduplicates view
+  candidates by semantic ID.** The graph-first filesystem provider now honors
+  `.gitignore`/`.ignore` with the same rules as the LSP scanner, preventing
+  generated `target/` fixtures from re-entering validation when
+  `--workspace-root` points at a repository root. Public view catalogs no longer
+  repeat a view when duplicated inputs reach candidate projection.
+
+- **Adds the VS Code Feature Inspector.** The new tree view uses the LSP model
+  provider, follows editor selection and visualization navigation, and exposes
+  semantic feature details without rebuilding a second client-side model.
+
+- **Improves diagram export reliability for large graphs.** Headless rendering
+  now handles layout failures and oversized ELK graphs with a deterministic
+  fallback instead of producing an empty or failed export.
+
+- **Improves hover and source navigation fidelity.** Hover Markdown is clearer,
+  enum/reserved-keyword token classification is more precise, and diagram
+  navigation can jump to the corresponding model element.
+
 ## [0.46.0] - 2026-07-24
 
 - **Fixes the stack-overflow crash on startup** originally reported against this workspace

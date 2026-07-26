@@ -185,6 +185,8 @@ pub fn build_view_candidates(
             .then_with(|| left.renderer_view.cmp(&right.renderer_view))
             .then_with(|| left.id.cmp(&right.id))
     });
+    let mut seen_ids = HashSet::new();
+    candidates.retain(|candidate| seen_ids.insert(candidate.id.clone()));
     candidates
 }
 

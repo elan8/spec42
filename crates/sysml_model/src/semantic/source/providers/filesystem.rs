@@ -1,8 +1,8 @@
 use std::fs;
 use std::path::{Path, PathBuf};
 
+use ignore::WalkBuilder;
 use url::Url;
-use walkdir::WalkDir;
 
 use crate::semantic::library_loader::{
     resolve_library_closure, LibraryClosureOptions, WorkspaceSource,
@@ -156,11 +156,19 @@ impl SysmlDocumentProvider for FileSystemDocumentProvider {
 
 fn collect_sysml_files(root: &Path) -> Result<Vec<PathBuf>, String> {
     let mut paths = Vec::new();
-    for entry in WalkDir::new(root).into_iter().filter_map(Result::ok) {
-        let path = entry.path();
-        if !entry.file_type().is_file() {
+    for entry in WalkBuilder::new(root)
+        .follow_links(false)
+        .require_git(false)
+        .build()
+        .filter_map(Result::ok)
+    {
+        if !entry
+            .file_type()
+            .is_some_and(|file_type| file_type.is_file())
+        {
             continue;
         }
+        let path = entry.path();
         if path
             .extension()
             .and_then(|ext| ext.to_str())
@@ -236,6 +244,30 @@ fn resolve_workspace_root(target: &Path, workspace_root: Option<&Path>) -> PathB
 mod tests {
     use super::*;
     use crate::build_semantic_graph_with_provider;
+
+    #[test]
+    fn provider_skips_gitignored_workspace_models() {
+        let temp = tempfile::tempdir().expect("tempdir");
+        let workspace = temp.path().join("workspace");
+        let ignored = workspace.join("target/scratch");
+        fs::create_dir_all(&ignored).expect("ignored fixture directory");
+        fs::write(workspace.join(".gitignore"), "target/\n").expect("gitignore");
+        fs::write(workspace.join("Real.sysml"), "package Real;").expect("real model");
+        fs::write(ignored.join("Duplicate.sysml"), "package Duplicate;").expect("ignored model");
+
+        let provider = FileSystemDocumentProvider::new(workspace.clone(), Some(workspace), vec![]);
+        let documents = provider.load_documents().expect("documents");
+        let paths: Vec<_> = documents
+            .iter()
+            .filter_map(|document| document.path_hint.as_deref())
+            .collect();
+
+        assert!(paths.iter().any(|path| path.ends_with("Real.sysml")));
+        assert!(
+            paths.iter().all(|path| !path.ends_with("Duplicate.sysml")),
+            "gitignored model copies must not enter the workspace: {paths:?}"
+        );
+    }
 
     #[test]
     fn provider_loads_libraries_only_through_import_closure() {

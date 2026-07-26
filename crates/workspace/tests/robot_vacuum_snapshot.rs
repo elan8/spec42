@@ -5,11 +5,11 @@ use robot_vacuum_fixture::require_robot_vacuum_fixture;
 use tempfile::tempdir;
 use workspace::{EngineBuilder, HostContext, HostFilesystemProvider, WorkspaceLoadRequest};
 
-/// View/catalog smoke for the pinned showcase. Diagnostic zero-warning is gated via
+/// Lean view-catalog smoke for the pinned showcase. Diagnostic zero-warning is gated via
 /// `spec42 check` in CI (same path as the product CLI), not the host snapshot builder.
 #[test]
 #[ignore = "CI fetches the pin; locally: bash scripts/fetch-robot-vacuum-cleaner.sh then cargo test -p workspace --test robot_vacuum_snapshot -- --ignored"]
-fn robot_vacuum_snapshot_validates_and_prepares_product_structure() {
+fn robot_vacuum_snapshot_validates_and_prepares_product_decomposition() {
     let (root, model_dir) = require_robot_vacuum_fixture();
 
     let cache = tempdir().expect("cache");
@@ -37,23 +37,34 @@ fn robot_vacuum_snapshot_validates_and_prepares_product_structure() {
     let probe = snapshot
         .prepare_view("general-view", None)
         .expect("general-view probe");
+    let expected_views = [
+        "productDecomposition",
+        "interconnections",
+        "firmwareRuntime",
+        "requirementsTraceability",
+        "cliffSafeStopGoldenThread",
+        "selectedParts",
+    ];
     let model_views: Vec<_> = probe
         .view_candidates
         .iter()
-        .filter(|candidate| candidate.id.starts_with("ModelViews::"))
+        .filter(|candidate| {
+            candidate.id.starts_with("ModelViews::")
+                && expected_views.contains(&candidate.name.as_str())
+        })
         .collect();
     assert!(
-        model_views.len() >= 3,
-        "expected at least 3 ModelViews catalog views, got {}",
+        model_views.len() == 6,
+        "expected the 6 public lean ModelViews catalog views, got {}",
         model_views.len()
     );
 
-    let product_structure = snapshot
-        .prepare_view("general-view", Some("productStructure"))
-        .expect("productStructure view");
+    let product_decomposition = snapshot
+        .prepare_view("general-view", Some("productDecomposition"))
+        .expect("productDecomposition view");
     assert!(
-        product_structure.empty_state_message.is_none(),
-        "productStructure should render: {:?}",
-        product_structure.empty_state_message
+        product_decomposition.empty_state_message.is_none(),
+        "productDecomposition should render: {:?}",
+        product_decomposition.empty_state_message
     );
 }
