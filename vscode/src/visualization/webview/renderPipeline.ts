@@ -4,7 +4,7 @@
 import { buildSharedRendererInput } from '../dtoAdapter';
 import { SYSML_ENABLED_VIEWS, VIEW_OPTIONS } from './constants';
 import { emptyStateTitleForData, resolveEmptyStateMessage } from './emptyStateHelpers';
-import { postJumpToElement, type JumpToElementPayload } from './jumpToElement';
+import { postJumpToElement, postInspectElement, type JumpToElementPayload } from './jumpToElement';
 import { renderVisualizationEmptyState } from './renderers/placeholder';
 import { prepareSharedViewData, renderSharedView, jumpPayloadFromNode } from './sharedRendererAdapter';
 import { clearVisualHighlights } from './selectionSync';
@@ -216,6 +216,10 @@ export async function renderVisualization(
                             skipCentering: true,
                         },
                     );
+                    postInspectElement((msg) => ctx.vscode.postMessage(msg), {
+                        uri: payload.uri,
+                        range: payload.range as JumpToElementPayload['range'],
+                    });
                 },
                 onPerformance: (event, data) => {
                     ctx.webviewPerf(`visualizer:${event}`, {

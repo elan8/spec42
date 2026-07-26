@@ -117,7 +117,9 @@ export function activate(context: vscode.ExtensionContext): void {
     logPerf
   );
 
-  VisualizationPanel.register(context, handles.lspModelProvider);
+  VisualizationPanel.register(context, handles.lspModelProvider, (uri, range) =>
+    void featureInspectorProvider.inspectAt(uri, range.start)
+  );
   registerVisualizerCommands(context, handles);
   registerExplorerCommands(
     context,

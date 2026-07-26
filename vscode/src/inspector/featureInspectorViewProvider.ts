@@ -80,12 +80,15 @@ export class FeatureInspectorViewProvider implements vscode.WebviewViewProvider 
     if (!target?.uri || !target.range) {
       return;
     }
+    await this.inspectAt(target.uri, target.range.start);
+  }
+
+  /** Pins the inspector to the element at `position` in `uri`. Used when the caller only has a
+   * source location (e.g. a diagram node click) rather than a full FeatureInspectorElementRef. */
+  async inspectAt(uri: string, position: FeatureInspectorRange["start"]): Promise<void> {
     this.pinned = true;
     try {
-      const result = await this.lspModelProvider.getFeatureInspector(
-        target.uri,
-        target.range.start
-      );
+      const result = await this.lspModelProvider.getFeatureInspector(uri, position);
       this.post({ type: "update", payload: result ?? null, pinned: true });
     } catch (error) {
       this.post({

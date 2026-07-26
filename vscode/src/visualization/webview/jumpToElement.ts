@@ -47,3 +47,21 @@ export function postJumpToElement(
     }
     postMessage(msg);
 }
+
+/**
+ * Post an inspectElement message so the Feature Inspector view can pin to the clicked node,
+ * independent of whether jumpToElement can also resolve a source location for it.
+ */
+export function postInspectElement(
+    postMessage: (msg: unknown) => void,
+    element: Pick<JumpToElementPayload, 'uri' | 'range'>
+): void {
+    if (!element.uri || !element.range) {
+        return;
+    }
+    postMessage({
+        command: 'inspectElement',
+        elementUri: element.uri,
+        elementRange: element.range,
+    });
+}

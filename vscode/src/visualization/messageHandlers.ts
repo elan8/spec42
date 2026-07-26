@@ -17,6 +17,7 @@ export interface MessageHandlerContext {
     setCurrentView: (view: string) => void;
     setSelectedView: (value?: string) => void;
     setLastContentHash: (hash: string) => void;
+    inspectElement?: (uri: string, range: { start: { line: number; character: number }; end: { line: number; character: number } }) => void;
 }
 
 export function createMessageDispatcher(ctx: MessageHandlerContext): (msg: unknown) => void {
@@ -49,6 +50,11 @@ export function createMessageDispatcher(ctx: MessageHandlerContext): (msg: unkno
                 break;
             case 'jumpToElement':
                 handlers.jumpToElement(message.elementName ?? '', message.skipCentering, message.parentContext, message.elementQualifiedName, message.elementUri, message.elementRange);
+                break;
+            case 'inspectElement':
+                if (message.elementUri && message.elementRange) {
+                    ctx.inspectElement?.(message.elementUri, message.elementRange);
+                }
                 break;
             case 'renameElement':
                 handlers.renameElement(message.oldName ?? '', message.newName ?? '');

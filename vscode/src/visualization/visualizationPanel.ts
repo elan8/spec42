@@ -29,8 +29,12 @@ export interface VisualizerRestoreState extends BaseVisualizerRestoreState {
     selectedView?: string;
 }
 
-function createVariantConfig(runtimeState: VisualizationPanelRuntimeState): VisualizationPanelVariantConfig<VisualizerRestoreState> {
+function createVariantConfig(
+    runtimeState: VisualizationPanelRuntimeState,
+    onInspectElement?: VisualizationPanelVariantConfig<VisualizerRestoreState>['onInspectElement'],
+): VisualizationPanelVariantConfig<VisualizerRestoreState> {
     return {
+        onInspectElement,
         panelTypeId: VISUALIZER_VIEW_ID,
         restoreStateKey: RESTORE_STATE_KEY,
         defaultTitle: 'SysML Visualizer',
@@ -79,21 +83,28 @@ export class VisualizationPanel implements vscode.WebviewViewProvider {
     private _runtimeState: VisualizationPanelRuntimeState | undefined;
     private _controller: BaseVisualizationPanelController<VisualizerRestoreState> | undefined;
     private _webviewView: vscode.WebviewView | undefined;
+    private _onInspectElement: VisualizationPanelVariantConfig<VisualizerRestoreState>['onInspectElement'];
 
     public static get isOpen(): boolean {
         return VisualizationPanel._contextIsOpen;
     }
 
-    private constructor(context: vscode.ExtensionContext, lspModelProvider: LspModelProvider) {
+    private constructor(
+        context: vscode.ExtensionContext,
+        lspModelProvider: LspModelProvider,
+        onInspectElement?: VisualizationPanelVariantConfig<VisualizerRestoreState>['onInspectElement'],
+    ) {
         this._extensionContext = context;
         this._lspModelProvider = lspModelProvider;
+        this._onInspectElement = onInspectElement;
     }
 
     public static register(
         context: vscode.ExtensionContext,
         lspModelProvider: LspModelProvider,
+        onInspectElement?: VisualizationPanelVariantConfig<VisualizerRestoreState>['onInspectElement'],
     ): VisualizationPanel {
-        const instance = new VisualizationPanel(context, lspModelProvider);
+        const instance = new VisualizationPanel(context, lspModelProvider, onInspectElement);
         VisualizationPanel.currentPanel = instance;
         context.subscriptions.push(
             vscode.window.registerWebviewViewProvider(VISUALIZER_VIEW_ID, instance, {
@@ -146,7 +157,7 @@ export class VisualizationPanel implements vscode.WebviewViewProvider {
             host,
             this._extensionContext.extensionUri,
             this._extensionContext,
-            createVariantConfig(this._runtimeState),
+            createVariantConfig(this._runtimeState, this._onInspectElement),
         );
 
         setVisualizerOpenContext(webviewView.visible);

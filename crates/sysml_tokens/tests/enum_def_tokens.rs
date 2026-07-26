@@ -101,6 +101,38 @@ fn multiline_enum_def_members_get_their_own_token() {
     );
 }
 
+/// Regression test: `entry`, `standard`, and `concern` are reserved keywords in other SysML
+/// contexts (`entry`/`exit` actions, `concern def`), so the lexer tags them TYPE_KEYWORD purely
+/// by spelling. When used as enum members or an attribute name, the AST pass correctly computes
+/// TYPE_PROPERTY for them, but the merge guard in `apply_ast_semantic_ranges` used to discard any
+/// AST override on a lexer-tagged keyword token, so these identifiers rendered as keywords
+/// instead of properties.
+#[test]
+fn keyword_lookalike_identifiers_are_classified_as_properties() {
+    let content = r#"package P {
+  enum def ProductTier {
+    entry;
+    standard;
+    premium;
+  }
+  part def VariantOption {
+    attribute concern : String;
+  }
+}"#;
+    let parsed = parse_for_editor(content);
+    let ranges = ast_semantic_ranges(&parsed.root, content);
+    let (tokens, _) = semantic_tokens_full(content, Some(&ranges));
+    let decoded = decode_semantic_tokens(&tokens.data);
+
+    for ident in ["entry", "standard", "concern"] {
+        assert_eq!(
+            token_type_for(content, &decoded, ident),
+            Some(TYPE_PROPERTY),
+            "`{ident}` is used here as an identifier, not a keyword, and must be colored as a property"
+        );
+    }
+}
+
 #[test]
 fn single_line_enum_def_still_narrows_correctly() {
     let content = "package P {\n  enum def Status { pending; released; }\n}";

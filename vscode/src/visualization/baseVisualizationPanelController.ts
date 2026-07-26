@@ -43,6 +43,7 @@ export interface VisualizationPanelVariantConfig<TRestoreState extends BaseVisua
         uri: vscode.Uri,
         options: { debounceMs: number; timeoutMs: number }
     ) => Promise<void>;
+    onInspectElement?: (uri: string, range: { start: { line: number; character: number }; end: { line: number; character: number } }) => void;
 }
 
 export function parseFileUri(value: string, label: string, logError: (message: string, error?: unknown) => void): vscode.Uri | undefined {
@@ -161,6 +162,7 @@ export class BaseVisualizationPanelController<TRestoreState extends BaseVisualiz
                 this.persistRestoreState();
             },
             setLastContentHash: (hash) => { this._lastContentHash = hash; },
+            inspectElement: this._config.onInspectElement,
         });
         this._host.webview.onDidReceiveMessage(dispatch, null, this._disposables);
 

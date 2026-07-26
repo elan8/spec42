@@ -85,6 +85,11 @@ export type WebviewToHostMessage =
         elementUri?: string;
         elementRange?: { start: { line: number; character: number }; end: { line: number; character: number } };
     }
+    | {
+        command: 'inspectElement';
+        elementUri?: string;
+        elementRange?: { start: { line: number; character: number }; end: { line: number; character: number } };
+    }
     | { command: 'renameElement'; oldName?: string; newName?: string }
     | { command: 'export'; format?: string; data?: unknown }
     | { command: 'viewChanged'; view?: string }

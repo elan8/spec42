@@ -129,7 +129,11 @@ fn apply_ast_semantic_ranges(
                 if *type_idx == TYPE_TYPE && ast_type == TYPE_PROPERTY {
                     continue;
                 }
-                if *type_idx == TYPE_KEYWORD && ast_type != TYPE_KEYWORD {
+                // Reserved-keyword text (e.g. `entry`, `standard`, `concern`) can also be a
+                // legal identifier (enum member, attribute name) elsewhere in the grammar.
+                // The lexer classifies purely by spelling, so only let the AST's precisely
+                // spanned identifier classification override it -- not looser AST guesses.
+                if *type_idx == TYPE_KEYWORD && ast_type != TYPE_KEYWORD && ast_type != TYPE_PROPERTY {
                     continue;
                 }
                 if let Some(log) = log_out.as_mut() {
