@@ -101,14 +101,14 @@ fn dto_roundtrip_serde_extended() {
         serde_json::from_str(&json).expect("deserialize workspace match");
     assert_eq!(workspace_match, parsed);
 
-    let suggestion = TextEditSuggestion {
-        title: "Wrap in package".to_string(),
-        edits: vec![TextEditDto {
+    let suggestion = TextEditSuggestion::new(
+        "Wrap in package",
+        vec![TextEditDto {
             path: "test.sysml".to_string(),
             range: TextRange::new(TextPosition::new(0, 0), TextPosition::new(0, 5)),
             replacement: "package P {}".to_string(),
         }],
-    };
+    );
     let json = serde_json::to_string(&suggestion).expect("serialize suggestion");
     let parsed: TextEditSuggestion = serde_json::from_str(&json).expect("deserialize suggestion");
     assert_eq!(suggestion, parsed);

@@ -5,9 +5,10 @@ use crate::common::text_span::{to_core_position, to_lsp_range};
 use crate::common::util;
 use crate::language::{
     collect_document_symbols, collect_folding_ranges, format_document,
-    suggest_create_definition_for_unresolved_type_quick_fix,
-    suggest_create_matching_part_def_quick_fix, suggest_explicit_redefinition_quick_fix,
-    suggest_manage_custom_libraries_quick_fix, suggest_open_library_view_quick_fix,
+    suggest_add_import_quick_fixes, suggest_create_definition_for_unresolved_type_quick_fix,
+    suggest_create_matching_part_def_quick_fix, suggest_create_verification_case,
+    suggest_explicit_redefinition_quick_fix, suggest_manage_custom_libraries_quick_fix,
+    suggest_open_library_view_quick_fix, suggest_qualify_ambiguous_name_quick_fixes,
     suggest_search_library_for_symbol_quick_fix, suggest_show_standard_library_info_quick_fix,
     suggest_wrap_in_package,
 };
@@ -248,6 +249,7 @@ fn workspace_symbol_kind(kind: &str) -> SymbolKind {
 pub(crate) fn code_action(
     state: &ServerState,
     uri: Url,
+    range: Range,
     diagnostics: &[Diagnostic],
 ) -> Result<Option<CodeActionResponse>> {
     let uri_norm = util::normalize_file_uri(&uri);
@@ -261,6 +263,9 @@ pub(crate) fn code_action(
     };
     let mut actions = Vec::new();
     if let Some(action) = suggest_wrap_in_package(&text, &uri) {
+        actions.push(CodeActionOrCommand::CodeAction(action));
+    }
+    if let Some(action) = suggest_create_verification_case(&text, &uri, range.start.line) {
         actions.push(CodeActionOrCommand::CodeAction(action));
     }
     for diagnostic in diagnostics {
@@ -284,15 +289,42 @@ pub(crate) fn code_action(
                 actions.push(CodeActionOrCommand::CodeAction(action));
             }
         }
+        let is_ambiguous_name_reference = matches!(
+            diagnostic.code.as_ref(),
+            Some(NumberOrString::String(code)) if code == "ambiguous_name_reference"
+        );
+        if is_ambiguous_name_reference {
+            for action in suggest_qualify_ambiguous_name_quick_fixes(
+                &text,
+                &uri,
+                diagnostic,
+                &state.semantic_graph,
+            ) {
+                actions.push(CodeActionOrCommand::CodeAction(action));
+            }
+        }
         let is_unresolved_type_reference = matches!(
             diagnostic.code.as_ref(),
             Some(NumberOrString::String(code))
                 if code == "unresolved_type_reference" || code == "unresolved_ref_type_reference"
         );
         if is_unresolved_type_reference {
-            if let Some(action) =
+            let import_actions = suggest_add_import_quick_fixes(
+                &text,
+                &uri,
+                diagnostic,
+                &state.semantic_graph,
+            );
+            let has_imports = !import_actions.is_empty();
+            for action in import_actions {
+                actions.push(CodeActionOrCommand::CodeAction(action));
+            }
+            if let Some(mut action) =
                 suggest_create_definition_for_unresolved_type_quick_fix(&text, &uri, diagnostic)
             {
+                if has_imports {
+                    action.is_preferred = Some(false);
+                }
                 actions.push(CodeActionOrCommand::CodeAction(action));
             }
         }

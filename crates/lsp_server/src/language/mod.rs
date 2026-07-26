@@ -61,6 +61,7 @@ fn suggestion_to_code_action(
     uri: &Url,
     diagnostic: Option<&Diagnostic>,
 ) -> CodeAction {
+    let is_preferred = suggestion.is_preferred;
     let edits: Vec<OneOf<TextEdit, tower_lsp::lsp_types::AnnotatedTextEdit>> = suggestion
         .edits
         .into_iter()
@@ -89,7 +90,7 @@ fn suggestion_to_code_action(
             change_annotations: None,
         }),
         command: None,
-        is_preferred: Some(true),
+        is_preferred: Some(is_preferred),
         disabled: None,
         data: None,
     }
@@ -201,6 +202,54 @@ pub fn suggest_explicit_redefinition_quick_fix(
         },
     )
     .map(|s| suggestion_to_code_action(s, uri, Some(diagnostic)))
+}
+
+pub fn suggest_create_verification_case(source: &str, uri: &Url, line: u32) -> Option<CodeAction> {
+    let path = uri.path().trim_start_matches('/').to_string();
+    language_service::suggest_create_verification_case(source, &path, line)
+        .map(|s| wrap_refactor_action(s, uri))
+}
+
+pub fn suggest_qualify_ambiguous_name_quick_fixes(
+    source: &str,
+    uri: &Url,
+    diagnostic: &Diagnostic,
+    graph: &sysml_model::SemanticGraph,
+) -> Vec<CodeAction> {
+    let path = uri.path().trim_start_matches('/').to_string();
+    language_service::suggest_qualify_ambiguous_name_quick_fixes(
+        source,
+        &path,
+        DiagnosticLine {
+            line: diagnostic.range.start.line,
+        },
+        graph,
+        uri,
+    )
+    .into_iter()
+    .map(|s| suggestion_to_code_action(s, uri, Some(diagnostic)))
+    .collect()
+}
+
+pub fn suggest_add_import_quick_fixes(
+    source: &str,
+    uri: &Url,
+    diagnostic: &Diagnostic,
+    graph: &sysml_model::SemanticGraph,
+) -> Vec<CodeAction> {
+    let path = uri.path().trim_start_matches('/').to_string();
+    language_service::suggest_add_import_quick_fixes(
+        source,
+        &path,
+        DiagnosticLine {
+            line: diagnostic.range.start.line,
+        },
+        graph,
+        uri,
+    )
+    .into_iter()
+    .map(|s| suggestion_to_code_action(s, uri, Some(diagnostic)))
+    .collect()
 }
 
 pub fn suggest_manage_custom_libraries_quick_fix(diagnostic: &Diagnostic) -> CodeAction {

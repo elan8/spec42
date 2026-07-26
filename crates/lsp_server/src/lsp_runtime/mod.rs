@@ -294,6 +294,7 @@ impl LanguageServer for Backend {
         features::code_action(
             &state,
             params.text_document.uri,
+            params.range,
             &params.context.diagnostics,
         )
     }

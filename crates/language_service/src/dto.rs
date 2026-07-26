@@ -130,4 +130,26 @@ pub struct TextEditDto {
 pub struct TextEditSuggestion {
     pub title: String,
     pub edits: Vec<TextEditDto>,
+    /// Whether the host should mark this action as preferred (LSP `isPreferred`).
+    #[serde(default = "default_true")]
+    pub is_preferred: bool,
+}
+
+fn default_true() -> bool {
+    true
+}
+
+impl TextEditSuggestion {
+    pub fn new(title: impl Into<String>, edits: Vec<TextEditDto>) -> Self {
+        Self {
+            title: title.into(),
+            edits,
+            is_preferred: true,
+        }
+    }
+
+    pub fn with_preferred(mut self, is_preferred: bool) -> Self {
+        self.is_preferred = is_preferred;
+        self
+    }
 }

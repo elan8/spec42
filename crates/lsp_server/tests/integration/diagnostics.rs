@@ -1928,6 +1928,365 @@ fn missing_library_context_offers_quick_fixes_for_stdlib_and_custom_libraries() 
 }
 
 #[test]
+fn ambiguous_name_reference_offers_qualify_quick_fixes() {
+    let mut child = spawn_server();
+    let mut stdin = child.stdin.take().expect("stdin");
+    let mut stdout = child.stdout.take().expect("stdout");
+
+    let uri = "file:///quickfix_ambiguous_qualify.sysml";
+    let content = "package Alpha {\n  part def Vehicle;\n}\npackage Beta {\n  part def Vehicle;\n}\npackage Consumer {\n  private import Alpha::*;\n  private import Beta::*;\n  part car : Vehicle;\n}\n";
+
+    let init_id = next_id();
+    send_message(
+        &mut stdin,
+        &serde_json::json!({
+            "jsonrpc": "2.0",
+            "id": init_id,
+            "method": "initialize",
+            "params": {
+                "processId": null,
+                "rootUri": null,
+                "capabilities": {},
+                "clientInfo": { "name": "test", "version": "0.1.0" }
+            }
+        })
+        .to_string(),
+    );
+    let _ = read_message(&mut stdout).expect("init response");
+    send_message(
+        &mut stdin,
+        &serde_json::json!({ "jsonrpc": "2.0", "method": "initialized", "params": {} }).to_string(),
+    );
+    send_message(
+        &mut stdin,
+        &serde_json::json!({
+            "jsonrpc": "2.0",
+            "method": "textDocument/didOpen",
+            "params": {
+                "textDocument": { "uri": uri, "languageId": "sysml", "version": 1, "text": content }
+            }
+        })
+        .to_string(),
+    );
+    std::thread::sleep(std::time::Duration::from_millis(250));
+
+    let code_action_id = next_id();
+    send_message(
+        &mut stdin,
+        &serde_json::json!({
+            "jsonrpc": "2.0",
+            "id": code_action_id,
+            "method": "textDocument/codeAction",
+            "params": {
+                "textDocument": { "uri": uri },
+                "range": {
+                    "start": { "line": 9, "character": 13 },
+                    "end": { "line": 9, "character": 20 }
+                },
+                "context": {
+                    "diagnostics": [
+                        {
+                            "range": {
+                                "start": { "line": 9, "character": 13 },
+                                "end": { "line": 9, "character": 20 }
+                            },
+                            "severity": 2,
+                            "code": "ambiguous_name_reference",
+                            "source": "sysml",
+                            "message": "Reference 'Vehicle' for 'car' is ambiguous in the current scope; use a qualified name."
+                        }
+                    ],
+                    "only": ["quickfix"]
+                }
+            }
+        })
+        .to_string(),
+    );
+
+    let mut found_alpha = false;
+    let mut found_beta = false;
+    loop {
+        let msg = read_message(&mut stdout).expect("expected codeAction response");
+        let json: serde_json::Value = serde_json::from_str(&msg).unwrap_or_default();
+        if json["id"].as_i64() != Some(code_action_id) {
+            continue;
+        }
+        let actions = json["result"].as_array().cloned().unwrap_or_default();
+        for action in actions {
+            let title = action["title"].as_str().unwrap_or_default();
+            if title.contains("Qualify as `Alpha::Vehicle`") {
+                found_alpha = true;
+            }
+            if title.contains("Qualify as `Beta::Vehicle`") {
+                found_beta = true;
+            }
+        }
+        break;
+    }
+
+    assert!(found_alpha, "expected Qualify as Alpha::Vehicle quick fix");
+    assert!(found_beta, "expected Qualify as Beta::Vehicle quick fix");
+
+    let _ = child.kill();
+}
+
+#[test]
+fn unresolved_type_offers_import_quick_fix_across_workspace_files() {
+    let temp = tempfile::tempdir().expect("temp dir");
+    let root = temp.path().canonicalize().expect("canonical root");
+    fs::write(
+        root.join("defs.sysml"),
+        "package Defs {\n  part def Vehicle;\n}\n",
+    )
+    .expect("write defs");
+    fs::write(
+        root.join("use.sysml"),
+        "package Use {\n  part car : Vehicle;\n}\n",
+    )
+    .expect("write use");
+
+    let root_uri = url::Url::from_file_path(&root).expect("root uri");
+    let use_uri = url::Url::from_file_path(root.join("use.sysml"))
+        .expect("use uri")
+        .to_string();
+    let use_content = fs::read_to_string(root.join("use.sysml")).expect("read use");
+
+    let mut child = spawn_server();
+    let mut stdin = child.stdin.take().expect("stdin");
+    let mut stdout = child.stdout.take().expect("stdout");
+
+    let init_id = next_id();
+    send_message(
+        &mut stdin,
+        &serde_json::json!({
+            "jsonrpc": "2.0",
+            "id": init_id,
+            "method": "initialize",
+            "params": {
+                "processId": null,
+                "rootUri": root_uri.as_str(),
+                "capabilities": {},
+                "clientInfo": { "name": "test", "version": "0.1.0" }
+            }
+        })
+        .to_string(),
+    );
+    let _ = read_message(&mut stdout).expect("init response");
+    send_message(
+        &mut stdin,
+        &serde_json::json!({ "jsonrpc": "2.0", "method": "initialized", "params": {} }).to_string(),
+    );
+    // Wait for workspace scan / semantic index.
+    std::thread::sleep(std::time::Duration::from_millis(600));
+    let barrier_id = next_id();
+    send_message(
+        &mut stdin,
+        &serde_json::json!({
+            "jsonrpc": "2.0",
+            "id": barrier_id,
+            "method": "workspace/symbol",
+            "params": { "query": "Vehicle" }
+        })
+        .to_string(),
+    );
+    loop {
+        let msg = read_message(&mut stdout).expect("barrier");
+        let json: serde_json::Value = serde_json::from_str(&msg).unwrap_or_default();
+        if json["id"].as_i64() == Some(barrier_id) {
+            break;
+        }
+    }
+
+    send_message(
+        &mut stdin,
+        &serde_json::json!({
+            "jsonrpc": "2.0",
+            "method": "textDocument/didOpen",
+            "params": {
+                "textDocument": {
+                    "uri": use_uri,
+                    "languageId": "sysml",
+                    "version": 1,
+                    "text": use_content
+                }
+            }
+        })
+        .to_string(),
+    );
+    std::thread::sleep(std::time::Duration::from_millis(250));
+
+    let code_action_id = next_id();
+    send_message(
+        &mut stdin,
+        &serde_json::json!({
+            "jsonrpc": "2.0",
+            "id": code_action_id,
+            "method": "textDocument/codeAction",
+            "params": {
+                "textDocument": { "uri": use_uri },
+                "range": {
+                    "start": { "line": 1, "character": 13 },
+                    "end": { "line": 1, "character": 20 }
+                },
+                "context": {
+                    "diagnostics": [
+                        {
+                            "range": {
+                                "start": { "line": 1, "character": 13 },
+                                "end": { "line": 1, "character": 20 }
+                            },
+                            "severity": 2,
+                            "code": "unresolved_type_reference",
+                            "source": "sysml",
+                            "message": "Unresolved type reference 'Vehicle' for 'car'."
+                        }
+                    ],
+                    "only": ["quickfix"]
+                }
+            }
+        })
+        .to_string(),
+    );
+
+    let mut found_import = false;
+    loop {
+        let msg = read_message(&mut stdout).expect("expected codeAction response");
+        let json: serde_json::Value = serde_json::from_str(&msg).unwrap_or_default();
+        if json["id"].as_i64() != Some(code_action_id) {
+            continue;
+        }
+        let actions = json["result"].as_array().cloned().unwrap_or_default();
+        for action in actions {
+            let title = action["title"].as_str().unwrap_or_default();
+            if !title.contains("Import `Defs::Vehicle`") {
+                continue;
+            }
+            let edits = action["edit"]["documentChanges"][0]["edits"]
+                .as_array()
+                .cloned()
+                .unwrap_or_default();
+            found_import = edits.iter().any(|edit| {
+                edit["newText"]
+                    .as_str()
+                    .map(|t| t.contains("private import Defs::Vehicle;"))
+                    .unwrap_or(false)
+            });
+        }
+        break;
+    }
+
+    assert!(
+        found_import,
+        "expected Import `Defs::Vehicle` quick fix with private import edit"
+    );
+
+    let _ = child.kill();
+}
+
+#[test]
+fn requirement_line_offers_create_verification_case_refactor() {
+    let mut child = spawn_server();
+    let mut stdin = child.stdin.take().expect("stdin");
+    let mut stdout = child.stdout.take().expect("stdout");
+
+    let uri = "file:///quickfix_verification_case.sysml";
+    let content = "package P {\n  requirement def BatteryRuntime {\n  }\n}\n";
+
+    let init_id = next_id();
+    send_message(
+        &mut stdin,
+        &serde_json::json!({
+            "jsonrpc": "2.0",
+            "id": init_id,
+            "method": "initialize",
+            "params": {
+                "processId": null,
+                "rootUri": null,
+                "capabilities": {},
+                "clientInfo": { "name": "test", "version": "0.1.0" }
+            }
+        })
+        .to_string(),
+    );
+    let _ = read_message(&mut stdout).expect("init response");
+    send_message(
+        &mut stdin,
+        &serde_json::json!({ "jsonrpc": "2.0", "method": "initialized", "params": {} }).to_string(),
+    );
+    send_message(
+        &mut stdin,
+        &serde_json::json!({
+            "jsonrpc": "2.0",
+            "method": "textDocument/didOpen",
+            "params": {
+                "textDocument": { "uri": uri, "languageId": "sysml", "version": 1, "text": content }
+            }
+        })
+        .to_string(),
+    );
+    std::thread::sleep(std::time::Duration::from_millis(250));
+
+    let code_action_id = next_id();
+    send_message(
+        &mut stdin,
+        &serde_json::json!({
+            "jsonrpc": "2.0",
+            "id": code_action_id,
+            "method": "textDocument/codeAction",
+            "params": {
+                "textDocument": { "uri": uri },
+                "range": {
+                    "start": { "line": 1, "character": 2 },
+                    "end": { "line": 1, "character": 30 }
+                },
+                "context": {
+                    "diagnostics": [],
+                    "only": ["refactor"]
+                }
+            }
+        })
+        .to_string(),
+    );
+
+    let mut found = false;
+    loop {
+        let msg = read_message(&mut stdout).expect("expected codeAction response");
+        let json: serde_json::Value = serde_json::from_str(&msg).unwrap_or_default();
+        if json["id"].as_i64() != Some(code_action_id) {
+            continue;
+        }
+        let actions = json["result"].as_array().cloned().unwrap_or_default();
+        for action in actions {
+            let title = action["title"].as_str().unwrap_or_default();
+            if !title.contains("Create verification case")
+                || !title.contains("VerifyBatteryRuntime")
+            {
+                continue;
+            }
+            let edits = action["edit"]["documentChanges"][0]["edits"]
+                .as_array()
+                .cloned()
+                .unwrap_or_default();
+            found = edits.iter().any(|edit| {
+                edit["newText"].as_str().map(|t| {
+                    t.contains("verification def VerifyBatteryRuntime")
+                        && t.contains("verify BatteryRuntime;")
+                })
+                .unwrap_or(false)
+            });
+        }
+        break;
+    }
+
+    assert!(
+        found,
+        "expected Create verification case refactor for requirement def"
+    );
+
+    let _ = child.kill();
+}
+
+#[test]
 fn workspace_scan_publishes_diagnostics_for_unopened_file() {
     let temp = tempfile::tempdir().expect("temp dir");
     let root = temp.path().canonicalize().expect("canonical root");

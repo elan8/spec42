@@ -1,8 +1,14 @@
 use language_service::{
-    suggest_create_definition_for_unresolved_type_quick_fix,
-    suggest_create_matching_part_def_quick_fix, suggest_explicit_redefinition_quick_fix,
-    suggest_wrap_in_package, DiagnosticLine,
+    suggest_add_import_quick_fixes, suggest_create_definition_for_unresolved_type_quick_fix,
+    suggest_create_matching_part_def_quick_fix, suggest_create_verification_case,
+    suggest_explicit_redefinition_quick_fix, suggest_qualify_ambiguous_name_quick_fixes,
+    suggest_wrap_in_package, DiagnosticLine, InMemoryWorkspace, WorkspaceSnapshot,
 };
+
+#[path = "../helpers/support.rs"]
+mod support;
+
+use support::{document, multi_doc};
 
 const PATH: &str = "test.sysml";
 
@@ -90,6 +96,39 @@ fn suggest_create_definition_for_unresolved_port_type() {
 }
 
 #[test]
+fn suggest_create_definition_for_unresolved_item_type() {
+    let source = "package P {\n  item cargo : Payload;\n}\n";
+    let suggestion =
+        suggest_create_definition_for_unresolved_type_quick_fix(source, PATH, diagnostic_line(1))
+            .expect("quick fix");
+    assert_eq!(suggestion.title, "Create `item def Payload`");
+    assert_eq!(suggestion.edits[0].replacement, "  item def Payload;\n");
+}
+
+#[test]
+fn suggest_create_definition_for_unresolved_requirement_type() {
+    let source = "package P {\n  requirement runtime : BatteryRuntime;\n}\n";
+    let suggestion =
+        suggest_create_definition_for_unresolved_type_quick_fix(source, PATH, diagnostic_line(1))
+            .expect("quick fix");
+    assert_eq!(suggestion.title, "Create `requirement def BatteryRuntime`");
+    assert_eq!(
+        suggestion.edits[0].replacement,
+        "  requirement def BatteryRuntime { }\n"
+    );
+}
+
+#[test]
+fn suggest_create_definition_for_unresolved_ref_type() {
+    let source = "package P {\n  ref sensor : SensorUnit;\n}\n";
+    let suggestion =
+        suggest_create_definition_for_unresolved_type_quick_fix(source, PATH, diagnostic_line(1))
+            .expect("quick fix");
+    assert_eq!(suggestion.title, "Create `part def SensorUnit`");
+    assert_eq!(suggestion.edits[0].replacement, "  part def SensorUnit { }\n");
+}
+
+#[test]
 fn suggest_explicit_redefinition_rewrites_line() {
     let source = "package P {\n  part def Child :> Base {\n    attribute mass = 1200;\n  }\n}\n";
     let suggestion = suggest_explicit_redefinition_quick_fix(source, PATH, diagnostic_line(2))
@@ -106,4 +145,123 @@ fn suggest_explicit_redefinition_noop_when_already_explicit() {
     let source =
         "package P {\n  part def Child :> Base {\n    attribute :>> mass = 1200;\n  }\n}\n";
     assert!(suggest_explicit_redefinition_quick_fix(source, PATH, diagnostic_line(2),).is_none());
+}
+
+#[test]
+fn suggest_create_verification_case_inserts_skeleton() {
+    let source = "package P {\n  requirement def BatteryRuntime {\n  }\n}\n";
+    let suggestion = suggest_create_verification_case(source, PATH, 1).expect("refactor");
+    assert!(suggestion.title.contains("VerifyBatteryRuntime"));
+    assert!(suggestion.edits[0]
+        .replacement
+        .contains("verification def VerifyBatteryRuntime"));
+    assert!(suggestion.edits[0]
+        .replacement
+        .contains("verify BatteryRuntime;"));
+}
+
+#[test]
+fn suggest_create_verification_case_noop_when_present() {
+    let source = "package P {\n  requirement def BatteryRuntime {\n  }\n  verification def VerifyBatteryRuntime {\n    objective {\n      verify BatteryRuntime;\n    }\n  }\n}\n";
+    assert!(suggest_create_verification_case(source, PATH, 1).is_none());
+}
+
+#[test]
+fn suggest_qualify_ambiguous_name_offers_candidates() {
+    let workspace = multi_doc(&[
+        (
+            "a.sysml",
+            "package Alpha {\n  part def Vehicle;\n}\n",
+        ),
+        (
+            "b.sysml",
+            "package Beta {\n  part def Vehicle;\n}\n",
+        ),
+        (
+            "c.sysml",
+            "package Consumer {\n  private import Alpha::*;\n  private import Beta::*;\n  part car : Vehicle;\n}\n",
+        ),
+    ]);
+    let uri = workspace.resolve_uri_for_path("c.sysml").expect("uri");
+    let source = workspace.document_text(&uri).expect("text").to_string();
+    let line = source
+        .lines()
+        .position(|l| l.contains("part car"))
+        .expect("usage line") as u32;
+    let suggestions = suggest_qualify_ambiguous_name_quick_fixes(
+        &source,
+        "c.sysml",
+        diagnostic_line(line),
+        workspace.semantic_graph(),
+        &uri,
+    );
+    let titles: Vec<_> = suggestions.iter().map(|s| s.title.as_str()).collect();
+    assert!(
+        titles.iter().any(|t| t.contains("Alpha::Vehicle")),
+        "titles={titles:?}"
+    );
+    assert!(
+        titles.iter().any(|t| t.contains("Beta::Vehicle")),
+        "titles={titles:?}"
+    );
+    let alpha = suggestions
+        .iter()
+        .find(|s| s.title.contains("Alpha::Vehicle"))
+        .expect("alpha");
+    assert!(alpha.edits[0]
+        .replacement
+        .contains("part car : Alpha::Vehicle;"));
+}
+
+#[test]
+fn suggest_add_import_for_cross_package_type() {
+    let workspace = multi_doc(&[
+        (
+            "defs.sysml",
+            "package Defs {\n  part def Vehicle;\n}\n",
+        ),
+        (
+            "use.sysml",
+            "package Use {\n  part car : Vehicle;\n}\n",
+        ),
+    ]);
+    let uri = workspace.resolve_uri_for_path("use.sysml").expect("uri");
+    let source = workspace.document_text(&uri).expect("text").to_string();
+    let line = source
+        .lines()
+        .position(|l| l.contains("part car"))
+        .expect("usage line") as u32;
+    let suggestions = suggest_add_import_quick_fixes(
+        &source,
+        "use.sysml",
+        diagnostic_line(line),
+        workspace.semantic_graph(),
+        &uri,
+    );
+    assert_eq!(suggestions.len(), 1, "suggestions={suggestions:?}");
+    assert_eq!(suggestions[0].title, "Import `Defs::Vehicle`");
+    assert!(suggestions[0].is_preferred);
+    assert_eq!(
+        suggestions[0].edits[0].replacement.trim(),
+        "private import Defs::Vehicle;"
+    );
+}
+
+#[test]
+fn suggest_add_import_empty_when_no_candidates() {
+    let workspace = InMemoryWorkspace::from_documents(vec![document(
+        "lonely.sysml",
+        "package Lonely {\n  part car : MissingType;\n}\n",
+    )])
+    .expect("workspace");
+    let uri = workspace.resolve_uri_for_path("lonely.sysml").expect("uri");
+    let source = workspace.document_text(&uri).expect("text").to_string();
+    let suggestions = suggest_add_import_quick_fixes(
+        &source,
+        "lonely.sysml",
+        diagnostic_line(1),
+        workspace.semantic_graph(),
+        &uri,
+    );
+    assert!(suggestions.is_empty(), "suggestions={suggestions:?}");
 }

@@ -17,7 +17,7 @@ const CATALOG: &[DiagnosticCatalogEntry] = &[
         meaning: "A type name on a usage or feature does not resolve to a known definition in the workspace or libraries.",
         typical_fix: "Add or import the missing definition, fix the qualified name, or configure library paths / standard library.",
         editor_quick_fixes: Some(&[
-            "create_matching_part_def",
+            "add_import",
             "create_definition_for_unresolved_type",
         ]),
     },
@@ -26,7 +26,7 @@ const CATALOG: &[DiagnosticCatalogEntry] = &[
         severity: "warning",
         meaning: "A type referenced after `ref` does not resolve.",
         typical_fix: "Ensure the referenced type exists and is visible via imports or namespace.",
-        editor_quick_fixes: Some(&["create_definition_for_unresolved_type"]),
+        editor_quick_fixes: Some(&["add_import", "create_definition_for_unresolved_type"]),
     },
     DiagnosticCatalogEntry {
         code: "unresolved_import_target",
@@ -239,7 +239,7 @@ const CATALOG: &[DiagnosticCatalogEntry] = &[
         severity: "warning",
         meaning: "A simple name resolves to multiple visible members in the current scope.",
         typical_fix: "Use a qualified name or disambiguate imports.",
-        editor_quick_fixes: None,
+        editor_quick_fixes: Some(&["qualify_ambiguous_name"]),
     },
     DiagnosticCatalogEntry {
         code: "invalid_qualified_name_segment",
