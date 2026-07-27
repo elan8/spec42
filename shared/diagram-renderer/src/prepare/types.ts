@@ -100,6 +100,13 @@ export interface InterconnectionLayoutPortAnchor {
   x: number;
   y: number;
   side: string;
+  label?: {
+    x: number;
+    y: number;
+    width: number;
+    height: number;
+    text: string;
+  };
 }
 
 export interface InterconnectionLayoutPortDrawOrder {

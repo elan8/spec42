@@ -33,7 +33,7 @@ export function recordInterconnectionLayoutNode(
     width: number;
     height: number;
   },
-  portAnchors: Record<string, { x: number; y: number; side: string }>,
+  portAnchors: InterconnectionLayoutNodeDto["portAnchors"],
   portDrawOrder: InterconnectionLayoutPortDrawOrder,
 ): void {
   state.nodes.set(node.id, {

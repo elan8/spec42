@@ -9,6 +9,10 @@ import { nodeSupportsSourceNavigation } from "../views/behavior-interaction";
 import { buildInterconnectionLayoutLookup, type InterconnectionLayoutLookup } from "./interconnection-layout-dto";
 import { resolveIbdRoutePoints } from "./ibd-route";
 import {
+  IBD_PORT_LABEL_FONT_SIZE,
+  ibdPortLabelText,
+} from "./ibd-port-label";
+import {
   ibdNodeHeight,
   ibdNodeWidth,
   nodeHeight,
@@ -342,6 +346,42 @@ export function drawNodes(
     .text((d: LaidOutNode) => formatCompartmentSummary(d.attributes));
 }
 
+export function drawInterconnectionPortOverlays(
+  root: d3.Selection<SVGGElement, unknown, null, undefined>,
+): void {
+  const overlayLayer = root
+    .append("g")
+    .attr("class", "viz-port-overlays")
+    .style("pointer-events", "none");
+  let overlayCount = 0;
+
+  root
+    .select<SVGGElement>(".viz-nodes")
+    .selectAll<SVGGElement, LaidOutNode>(".viz-node")
+    .each(function (node) {
+    const elements = Array.from(this.children).filter(
+      (element) => {
+        const classes = (element.getAttribute("class") ?? "").split(/\s+/);
+        return classes.includes("port-icon") || classes.includes("port-label");
+      },
+    );
+    if (elements.length === 0) return;
+
+    const overlay = overlayLayer
+      .append("g")
+      .attr("class", "viz-port-overlay")
+      .attr("data-node-id", node.id);
+    const transform = this.getAttribute("transform");
+    if (transform) overlay.attr("transform", transform);
+    for (const element of elements) {
+      overlay.node()?.appendChild(element);
+      overlayCount += 1;
+    }
+    });
+
+  if (overlayCount === 0) overlayLayer.remove();
+}
+
 function orderIbdNodesForPaint(nodes: LaidOutNode[]): LaidOutNode[] {
   return nodes.slice().sort((a, b) => {
     const aContainer = Boolean((a.attributes ?? {})._isLayoutContainer || (a.attributes ?? {}).isSyntheticContainer || (a.attributes ?? {}).isPackageContainer);
@@ -542,6 +582,8 @@ function drawIbdPorts(
     const x = anchor?.x ?? (resolvedSide === "WEST" ? 0 : width);
     const y = anchor?.y ?? (fallbackStartY + sideIndex * fallbackSpacing);
     const color = theme.nodeBorder;
+    const labelLayout = anchor?.label;
+    const labelText = labelLayout?.text || ibdPortLabelText(name, detail);
     group
       .append("rect")
       .attr("class", "port-icon")
@@ -556,11 +598,24 @@ function drawIbdPorts(
       .style("stroke-width", "1.8px");
     group
       .append("text")
-      .attr("x", resolvedSide === "WEST" ? Math.min(width - 10, x + 16) : Math.max(10, x - 16))
-      .attr("y", y + 3)
-      .attr("text-anchor", resolvedSide === "WEST" ? "start" : "end")
-      .text(truncate(formatIbdPortLabel(name, detail), 24))
-      .style("font-size", "8px")
+      .attr("class", "port-label")
+      .attr("data-port-name", name)
+      .attr("data-port-side", resolvedSide)
+      .attr("x", labelLayout?.x
+        ?? (resolvedSide === "WEST" ? Math.min(width - 10, x + 16) : Math.max(10, x - 16)))
+      .attr("y", labelLayout
+        ? labelLayout.y + labelLayout.height - 1
+        : y - 6)
+      .attr("text-anchor", labelLayout ? "start" : resolvedSide === "WEST" ? "start" : "end")
+      .attr("textLength", labelLayout?.width ?? null)
+      .attr("lengthAdjust", labelLayout ? "spacingAndGlyphs" : null)
+      .attr("paint-order", "stroke fill")
+      .attr("stroke", theme.canvasBackground)
+      .attr("stroke-width", 3)
+      .attr("stroke-linejoin", "round")
+      .text(labelText)
+      .style("font-family", "monospace")
+      .style("font-size", `${IBD_PORT_LABEL_FONT_SIZE}px`)
       .style("font-weight", "500")
       .style("fill", color);
   };
@@ -578,16 +633,6 @@ function drawIbdPorts(
       anchor?.side === "WEST" ? "WEST" : anchor?.side === "EAST" ? "EAST" : name.toLowerCase().startsWith("in") ? "WEST" : "EAST";
     drawPort(name, index, side);
   });
-}
-
-function formatIbdPortLabel(name: string, detail?: PreparedPort): string {
-  const direction = String(detail?.direction || "").trim();
-  const directionPrefix = direction ? `${direction} ` : "";
-  const type = String(detail?.portType || detail?.attributes?.portType || "").trim();
-  if (!type) return `${directionPrefix}${name}`;
-  const conjugated = type.startsWith("~");
-  const cleanType = type.replace(/^~/, "").split(/::|\./).pop() || type.replace(/^~/, "");
-  return `${directionPrefix}${name}: ${conjugated ? "~" : ""}${cleanType}`;
 }
 
 function formatCompartmentSummary(attributes: Record<string, unknown> | undefined): string {

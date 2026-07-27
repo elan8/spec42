@@ -5689,6 +5689,28 @@ var Spec42HeadlessRendererBundle = (() => {
     };
   }
 
+  // ../shared/diagram-renderer/src/render/ibd-port-label.ts
+  var IBD_PORT_LABEL_FONT_SIZE = 8;
+  var IBD_PORT_LABEL_HEIGHT = 10;
+  var IBD_PORT_LABEL_MAX_LENGTH = 24;
+  var IBD_PORT_LABEL_CHARACTER_WIDTH = 5;
+  function formatIbdPortLabel(name, detail) {
+    const direction = String(detail?.direction || "").trim();
+    const directionPrefix = direction ? `${direction} ` : "";
+    const type2 = String(detail?.portType || detail?.attributes?.portType || "").trim();
+    if (!type2) return `${directionPrefix}${name}`;
+    const conjugated = type2.startsWith("~");
+    const cleanType = type2.replace(/^~/, "").split(/::|\./).pop() || type2.replace(/^~/, "");
+    return `${directionPrefix}${name}: ${conjugated ? "~" : ""}${cleanType}`;
+  }
+  function ibdPortLabelText(name, detail) {
+    const label = formatIbdPortLabel(name, detail);
+    return label.length > IBD_PORT_LABEL_MAX_LENGTH ? `${label.slice(0, IBD_PORT_LABEL_MAX_LENGTH - 1)}...` : label;
+  }
+  function ibdPortLabelWidth(text) {
+    return Math.max(12, text.length * IBD_PORT_LABEL_CHARACTER_WIDTH);
+  }
+
   // ../shared/diagram-renderer/src/render/drawing.ts
   function truncate2(value, max2) {
     const text = String(value || "");
@@ -5864,6 +5886,27 @@ var Spec42HeadlessRendererBundle = (() => {
     groups.append("line").attr("x1", 10).attr("x2", (d) => (d.width || nodeWidth) - 10).attr("y1", 58).attr("y2", 58).attr("stroke", "var(--vscode-panel-border, #666)").attr("opacity", 0.5);
     groups.append("text").attr("class", "viz-node-attrs").attr("x", 12).attr("y", 74).attr("text-anchor", "start").attr("fill", "var(--vscode-descriptionForeground, #a8a8a8)").attr("font-size", 10).text((d) => formatCompartmentSummary(d.attributes));
   }
+  function drawInterconnectionPortOverlays(root2) {
+    const overlayLayer = root2.append("g").attr("class", "viz-port-overlays").style("pointer-events", "none");
+    let overlayCount = 0;
+    root2.select(".viz-nodes").selectAll(".viz-node").each(function(node) {
+      const elements = Array.from(this.children).filter(
+        (element) => {
+          const classes = (element.getAttribute("class") ?? "").split(/\s+/);
+          return classes.includes("port-icon") || classes.includes("port-label");
+        }
+      );
+      if (elements.length === 0) return;
+      const overlay = overlayLayer.append("g").attr("class", "viz-port-overlay").attr("data-node-id", node.id);
+      const transform2 = this.getAttribute("transform");
+      if (transform2) overlay.attr("transform", transform2);
+      for (const element of elements) {
+        overlay.node()?.appendChild(element);
+        overlayCount += 1;
+      }
+    });
+    if (overlayCount === 0) overlayLayer.remove();
+  }
   function orderIbdNodesForPaint(nodes) {
     return nodes.slice().sort((a, b) => {
       const aContainer = Boolean((a.attributes ?? {})._isLayoutContainer || (a.attributes ?? {}).isSyntheticContainer || (a.attributes ?? {}).isPackageContainer);
@@ -5977,8 +6020,10 @@ var Spec42HeadlessRendererBundle = (() => {
       const x2 = anchor?.x ?? (resolvedSide === "WEST" ? 0 : width);
       const y2 = anchor?.y ?? fallbackStartY + sideIndex * fallbackSpacing;
       const color2 = theme.nodeBorder;
+      const labelLayout = anchor?.label;
+      const labelText = labelLayout?.text || ibdPortLabelText(name, detail);
       group.append("rect").attr("class", "port-icon").attr("data-port-name", name).attr("data-port-side", resolvedSide).attr("x", x2 - portSize / 2).attr("y", y2 - portSize / 2).attr("width", portSize).attr("height", portSize).style("fill", "none").style("stroke", color2).style("stroke-width", "1.8px");
-      group.append("text").attr("x", resolvedSide === "WEST" ? Math.min(width - 10, x2 + 16) : Math.max(10, x2 - 16)).attr("y", y2 + 3).attr("text-anchor", resolvedSide === "WEST" ? "start" : "end").text(truncate2(formatIbdPortLabel(name, detail), 24)).style("font-size", "8px").style("font-weight", "500").style("fill", color2);
+      group.append("text").attr("class", "port-label").attr("data-port-name", name).attr("data-port-side", resolvedSide).attr("x", labelLayout?.x ?? (resolvedSide === "WEST" ? Math.min(width - 10, x2 + 16) : Math.max(10, x2 - 16))).attr("y", labelLayout ? labelLayout.y + labelLayout.height - 1 : y2 - 6).attr("text-anchor", labelLayout ? "start" : resolvedSide === "WEST" ? "start" : "end").attr("textLength", labelLayout?.width ?? null).attr("lengthAdjust", labelLayout ? "spacingAndGlyphs" : null).attr("paint-order", "stroke fill").attr("stroke", theme.canvasBackground).attr("stroke-width", 3).attr("stroke-linejoin", "round").text(labelText).style("font-family", "monospace").style("font-size", `${IBD_PORT_LABEL_FONT_SIZE}px`).style("font-weight", "500").style("fill", color2);
     };
     if (drawOrder) {
       (drawOrder.west ?? []).forEach((name, index) => drawPort(name, index, "WEST"));
@@ -5991,15 +6036,6 @@ var Spec42HeadlessRendererBundle = (() => {
       const side = anchor?.side === "WEST" ? "WEST" : anchor?.side === "EAST" ? "EAST" : name.toLowerCase().startsWith("in") ? "WEST" : "EAST";
       drawPort(name, index, side);
     });
-  }
-  function formatIbdPortLabel(name, detail) {
-    const direction = String(detail?.direction || "").trim();
-    const directionPrefix = direction ? `${direction} ` : "";
-    const type2 = String(detail?.portType || detail?.attributes?.portType || "").trim();
-    if (!type2) return `${directionPrefix}${name}`;
-    const conjugated = type2.startsWith("~");
-    const cleanType = type2.replace(/^~/, "").split(/::|\./).pop() || type2.replace(/^~/, "");
-    return `${directionPrefix}${name}: ${conjugated ? "~" : ""}${cleanType}`;
   }
   function formatCompartmentSummary(attributes) {
     if (!attributes) return "";
@@ -6300,15 +6336,34 @@ var Spec42HeadlessRendererBundle = (() => {
         width = isSyntheticPackage2 ? Math.max(width, Math.min(980, childWidthSum + children2.length * 44)) : Math.max(width, Math.min(1040, childWidthSum + children2.length * 72));
         height = isSyntheticPackage2 ? rootHeaderHeight + 72 : rootHeaderHeight + Math.max(72, Math.min(132, 58 + children2.length * 14));
       }
-      const buildElkPort = (port, side, index) => ({
-        id: portIdFor(node.id, port.name),
-        width: 10,
-        height: 10,
-        layoutOptions: {
-          "org.eclipse.elk.port.side": side,
-          "org.eclipse.elk.port.index": String(index)
-        }
-      });
+      const buildElkPort = (port, side, index) => {
+        const id2 = portIdFor(node.id, port.name);
+        const labelText = ibdPortLabelText(port.name, port);
+        return {
+          id: id2,
+          width: 10,
+          height: 10,
+          labels: [{
+            id: `${id2}__label`,
+            text: labelText,
+            width: ibdPortLabelWidth(labelText),
+            height: IBD_PORT_LABEL_HEIGHT
+          }],
+          layoutOptions: {
+            "org.eclipse.elk.port.side": side,
+            "org.eclipse.elk.port.index": String(index)
+          }
+        };
+      };
+      const nodeLayoutOptions = {
+        "org.eclipse.elk.portConstraints": "FIXED_ORDER",
+        "org.eclipse.elk.portAlignment.default": "CENTER",
+        "org.eclipse.elk.portLabels.placement": "INSIDE",
+        "org.eclipse.elk.spacing.labelPortHorizontal": "6",
+        "org.eclipse.elk.spacing.labelPortVertical": "4",
+        "org.eclipse.elk.nodeSize.constraints": "PORTS PORT_LABELS MINIMUM_SIZE",
+        "org.eclipse.elk.nodeSize.minimum": `(${width},${height})`
+      };
       return {
         id: registerElkId(node.id),
         width,
@@ -6321,12 +6376,8 @@ var Spec42HeadlessRendererBundle = (() => {
         layoutOptions: children2.length ? {
           "elk.padding": isSyntheticPackage2 ? `[top=${rootHeaderHeight + 12},left=16,bottom=16,right=16]` : `[top=${containerTopInset},left=24,bottom=24,right=24]`,
           "elk.direction": isSyntheticPackage2 ? "DOWN" : "RIGHT",
-          "org.eclipse.elk.portConstraints": "FIXED_ORDER",
-          "org.eclipse.elk.portAlignment.default": "CENTER"
-        } : {
-          "org.eclipse.elk.portConstraints": "FIXED_ORDER",
-          "org.eclipse.elk.portAlignment.default": "CENTER"
-        }
+          ...nodeLayoutOptions
+        } : nodeLayoutOptions
       };
     };
     const elkEdges = prepared.edges.map((edge) => {
@@ -6580,7 +6631,21 @@ var Spec42HeadlessRendererBundle = (() => {
           if (base) {
             const portName = String(port.id).split("__port__").pop() ?? String(port.id);
             const anchors = nodePortAnchors.get(base.id) ?? {};
-            anchors[portName] = { x: x2 - absX, y: y2 - absY, side: String(side || "") };
+            const label = port.labels?.[0];
+            anchors[portName] = {
+              x: x2 - absX,
+              y: y2 - absY,
+              side: String(side || ""),
+              ...label ? {
+                label: {
+                  x: (port.x ?? 0) + (label.x ?? 0),
+                  y: (port.y ?? 0) + (label.y ?? 0),
+                  width: label.width ?? 0,
+                  height: label.height ?? 0,
+                  text: String(label.text ?? "")
+                }
+              } : {}
+            };
             nodePortAnchors.set(base.id, anchors);
           }
         }
@@ -6767,6 +6832,7 @@ var Spec42HeadlessRendererBundle = (() => {
         drawInterconnectionContainers(root2, prepared, layout.nodes, theme, layout.interconnectionLayout);
         drawNodes(root2, layout.nodes, options, isInterconnectionView, theme, layout.interconnectionLayout);
         drawEdges(root2, layout.edges, isInterconnectionView, theme, layout.interconnectionLayout);
+        drawInterconnectionPortOverlays(root2);
       } else {
         drawGeneralPackageContainers(root2, prepared, layout.nodes, theme);
         drawEdges(root2, layout.edges, isInterconnectionView, theme);

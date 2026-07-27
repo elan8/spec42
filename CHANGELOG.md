@@ -17,6 +17,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Keeps interconnection labels legible in dense routing areas.** Connector paths are painted
   before a dedicated top label layer, labels prefer the longest horizontal route segment instead
   of crowded bend points, and a canvas-colored halo prevents crossing lines from obscuring text.
+  Port labels are now part of the ELK graph itself: ELK reserves node space, positions each label
+  inside its port boundary, and returns the coordinates used by the renderer instead of having
+  labels placed heuristically after connector routing.
 - **Expands deterministic SysML v2 code actions.** Unresolved and ambiguous references can now
   import or qualify matching symbols and create missing definitions; untyped part usages can
   create and apply a matching `part def`; implicit redefinitions can be made explicit with `:>>`;

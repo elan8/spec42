@@ -14,6 +14,7 @@ import {
 import {
   drawEdges,
   drawGeneralPackageContainers,
+  drawInterconnectionPortOverlays,
   drawIbdViewFrame,
   drawInterconnectionContainers,
   drawNodes,
@@ -149,6 +150,7 @@ export async function renderVisualization(
       drawInterconnectionContainers(root, prepared, layout.nodes, theme, layout.interconnectionLayout);
       drawNodes(root, layout.nodes, options, isInterconnectionView, theme, layout.interconnectionLayout);
       drawEdges(root, layout.edges, isInterconnectionView, theme, layout.interconnectionLayout);
+      drawInterconnectionPortOverlays(root);
     } else {
       drawGeneralPackageContainers(root, prepared, layout.nodes, theme);
       drawEdges(root, layout.edges, isInterconnectionView, theme);

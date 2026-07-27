@@ -12,6 +12,11 @@ import {
   splitIbdPortsBySide,
   type PreparedPort,
 } from "./types";
+import {
+  IBD_PORT_LABEL_HEIGHT,
+  ibdPortLabelText,
+  ibdPortLabelWidth,
+} from "./ibd-port-label";
 import { buildElkLayoutOptions } from "./elk-options";
 
 export interface InterconnectionElkEdgeSpec {
@@ -207,15 +212,34 @@ export function buildInterconnectionElkBuild(prepared: InterconnectionPreparedVi
         ? rootHeaderHeight + 72
         : rootHeaderHeight + Math.max(72, Math.min(132, 58 + children.length * 14));
     }
-    const buildElkPort = (port: PreparedPort, side: "WEST" | "EAST", index: number) => ({
-      id: portIdFor(node.id, port.name),
-      width: 10,
-      height: 10,
-      layoutOptions: {
-        "org.eclipse.elk.port.side": side,
-        "org.eclipse.elk.port.index": String(index),
-      },
-    });
+    const buildElkPort = (port: PreparedPort, side: "WEST" | "EAST", index: number) => {
+      const id = portIdFor(node.id, port.name);
+      const labelText = ibdPortLabelText(port.name, port);
+      return {
+        id,
+        width: 10,
+        height: 10,
+        labels: [{
+          id: `${id}__label`,
+          text: labelText,
+          width: ibdPortLabelWidth(labelText),
+          height: IBD_PORT_LABEL_HEIGHT,
+        }],
+        layoutOptions: {
+          "org.eclipse.elk.port.side": side,
+          "org.eclipse.elk.port.index": String(index),
+        },
+      };
+    };
+    const nodeLayoutOptions = {
+      "org.eclipse.elk.portConstraints": "FIXED_ORDER",
+      "org.eclipse.elk.portAlignment.default": "CENTER",
+      "org.eclipse.elk.portLabels.placement": "INSIDE",
+      "org.eclipse.elk.spacing.labelPortHorizontal": "6",
+      "org.eclipse.elk.spacing.labelPortVertical": "4",
+      "org.eclipse.elk.nodeSize.constraints": "PORTS PORT_LABELS MINIMUM_SIZE",
+      "org.eclipse.elk.nodeSize.minimum": `(${width},${height})`,
+    };
     return {
       id: registerElkId(node.id),
       width,
@@ -231,13 +255,9 @@ export function buildInterconnectionElkBuild(prepared: InterconnectionPreparedVi
               ? `[top=${rootHeaderHeight + 12},left=16,bottom=16,right=16]`
               : `[top=${containerTopInset},left=24,bottom=24,right=24]`,
             "elk.direction": isSyntheticPackage ? "DOWN" : "RIGHT",
-            "org.eclipse.elk.portConstraints": "FIXED_ORDER",
-            "org.eclipse.elk.portAlignment.default": "CENTER",
+            ...nodeLayoutOptions,
           }
-        : {
-            "org.eclipse.elk.portConstraints": "FIXED_ORDER",
-            "org.eclipse.elk.portAlignment.default": "CENTER",
-          },
+        : nodeLayoutOptions,
     };
   };
 

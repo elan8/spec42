@@ -8,7 +8,13 @@ import * as d3 from "d3";
 import { prepareViewData } from "../prepare";
 import { resolveDiagramTheme } from "../theme";
 import { buildInterconnectionLayoutLookup } from "./interconnection-layout-dto";
-import { drawEdges, interconnectionEdgeLabelAnchor, pathForIbdEdge } from "./drawing";
+import {
+  drawEdges,
+  drawInterconnectionPortOverlays,
+  drawNodes,
+  interconnectionEdgeLabelAnchor,
+  pathForIbdEdge,
+} from "./drawing";
 import { layoutPrepared } from "./layout";
 import type { LaidOutEdge, LaidOutNode } from "./types";
 
@@ -22,6 +28,18 @@ describe("interconnection drawing from layout DTO", () => {
     const layout = await layoutPrepared(prepared);
     const layoutDto = layout.interconnectionLayout;
     expect(layoutDto).toBeDefined();
+    const elkPortLabels = layoutDto!.nodes.flatMap((node) =>
+      Object.values(node.portAnchors)
+        .filter((anchor) => anchor.label)
+        .map((anchor) => ({ node, label: anchor.label! })),
+    );
+    expect(elkPortLabels.length).toBeGreaterThan(0);
+    for (const { node, label } of elkPortLabels) {
+      expect(label.text.length).toBeGreaterThan(0);
+      expect(label.width).toBeGreaterThan(0);
+      expect(label.x).toBeGreaterThanOrEqual(0);
+      expect(label.x + label.width).toBeLessThanOrEqual(node.width);
+    }
     const lookup = buildInterconnectionLayoutLookup(layoutDto!);
     const edge = layout.edges[0];
     expect(edge).toBeDefined();
@@ -135,5 +153,70 @@ describe("interconnection drawing from layout DTO", () => {
     expect(label?.getAttribute("paint-order")).toBe("stroke fill");
     expect(label?.getAttribute("stroke")).toBe(theme.canvasBackground);
     expect(label?.getAttribute("stroke-width")).toBe("4");
+  });
+
+  it("keeps port labels above connector lines in a dedicated overlay", () => {
+    const svg = d3.select(document.body).append("svg");
+    const root = svg.append("g");
+    const source: LaidOutNode = {
+      id: "source",
+      label: "source",
+      kind: "part",
+      x: 20,
+      y: 30,
+      width: 160,
+      height: 100,
+      attributes: {
+        ports: ["powerOut"],
+        portDetails: [{ name: "powerOut", portType: "PowerPort" }],
+      },
+    };
+    const target: LaidOutNode = {
+      id: "target",
+      label: "target",
+      kind: "part",
+      x: 260,
+      y: 30,
+      width: 160,
+      height: 100,
+      attributes: {
+        ports: ["powerIn"],
+        portDetails: [{ name: "powerIn", portType: "PowerPort" }],
+      },
+    };
+    const edge: LaidOutEdge = {
+      id: "power",
+      source: source.id,
+      target: target.id,
+      label: "connection",
+      edgeKind: "connection",
+      sourceNode: source,
+      targetNode: target,
+      layout: {
+        sections: [{
+          startPoint: { x: 180, y: 88 },
+          endPoint: { x: 260, y: 88 },
+        }],
+      },
+    };
+    const theme = resolveDiagramTheme({ colorScheme: "dark" });
+
+    drawNodes(root, [source, target], {}, true, theme);
+    drawEdges(root, [edge], true, theme);
+    drawInterconnectionPortOverlays(root);
+
+    const layers = Array.from(root.node()!.children);
+    expect(layers.map((layer) => layer.getAttribute("class"))).toEqual([
+      "viz-nodes",
+      "viz-edges",
+      "viz-port-overlays",
+    ]);
+    expect(root.select(".viz-nodes").selectAll(".port-label").size()).toBe(0);
+    expect(root.select(".viz-port-overlays").selectAll(".port-label").size()).toBe(2);
+    const label = root.select<SVGTextElement>(".viz-port-overlays .port-label").node();
+    expect(label?.getAttribute("paint-order")).toBe("stroke fill");
+    expect(label?.getAttribute("stroke")).toBe(theme.canvasBackground);
+    expect(label?.getAttribute("stroke-width")).toBe("3");
+    expect(label?.getAttribute("y")).toBe("52");
   });
 });

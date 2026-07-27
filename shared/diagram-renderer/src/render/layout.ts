@@ -1,7 +1,12 @@
 import ELK from "elkjs/lib/elk.bundled.js";
 import { isOverviewVisualElementType, normalizeEdgeKind } from "../graph-normalization";
 import { collectCompartments, computeNodeHeight } from "../sysml-node-builder";
-import { interconnectionPreparedForLayout, type PreparedNode, type PreparedView } from "../prepare";
+import {
+  interconnectionPreparedForLayout,
+  type PreparedNode,
+  type PreparedView,
+} from "../prepare";
+import type { InterconnectionLayoutNodeDto } from "../prepare/types";
 import { lcaOffsetForNodes } from "./ibd-route";
 import {
   createInterconnectionLayoutBuildState,
@@ -272,7 +277,7 @@ export async function layoutInterconnectionPrepared(prepared: PreparedView): Pro
     const laidOut = await elk.layout(elkGraphInput as unknown as Parameters<typeof elk.layout>[0]);
     const laidOutNodes = new Map<string, LaidOutNode>();
     const portCenters = new Map<string, { x: number; y: number }>();
-    const nodePortAnchors = new Map<string, Record<string, { x: number; y: number; side: string }>>();
+    const nodePortAnchors = new Map<string, InterconnectionLayoutNodeDto["portAnchors"]>();
 
     const visit = (elkNode: any, ox: number, oy: number, depth: number) => {
       const absX = ox + (elkNode.x ?? 0);
@@ -294,7 +299,23 @@ export async function layoutInterconnectionPrepared(prepared: PreparedView): Pro
         if (base) {
           const portName = String(port.id).split("__port__").pop() ?? String(port.id);
           const anchors = nodePortAnchors.get(base.id) ?? {};
-          anchors[portName] = { x: x - absX, y: y - absY, side: String(side || "") };
+          const label = port.labels?.[0];
+          anchors[portName] = {
+            x: x - absX,
+            y: y - absY,
+            side: String(side || ""),
+            ...(label
+              ? {
+                  label: {
+                    x: (port.x ?? 0) + (label.x ?? 0),
+                    y: (port.y ?? 0) + (label.y ?? 0),
+                    width: label.width ?? 0,
+                    height: label.height ?? 0,
+                    text: String(label.text ?? ""),
+                  },
+                }
+              : {}),
+          };
           nodePortAnchors.set(base.id, anchors);
         }
       }
