@@ -1,6 +1,6 @@
 //! Diagnostics integration tests.
 
-use super::harness::{next_id, read_message, send_message, spawn_server};
+use super::harness::{next_id, read_message, send_message, spawn_server, TestSession};
 use lsp_server::common::util;
 use lsp_server::{default_server_config, validate_paths, ValidationRequest};
 use std::fs;
@@ -2284,6 +2284,97 @@ fn requirement_line_offers_create_verification_case_refactor() {
     );
 
     let _ = child.kill();
+}
+
+#[test]
+fn case_without_subject_offers_add_subject_quick_fix() {
+    let uri = "file:///quickfix_case_subject.sysml";
+    let content = concat!(
+        "package P {\n",
+        "  requirement def RuntimeRequirement;\n",
+        "  verification def VerifyRuntime {\n",
+        "    objective {\n",
+        "      verify RuntimeRequirement;\n",
+        "    }\n",
+        "  }\n",
+        "}\n",
+    );
+    let diagnostics = validate_inline_sysml("quickfix_case_subject.sysml", content);
+    assert!(
+        has_diag_code(&diagnostics, "semantic", "case_subject_missing"),
+        "fixture must exercise case_subject_missing, got {diagnostics:#?}"
+    );
+
+    let mut session = TestSession::new();
+    session.initialize_default("quickfix_case_subject");
+    session.did_open(uri, content, 1);
+    session.barrier();
+    let response = session.request(
+        "textDocument/codeAction",
+        serde_json::json!({
+            "textDocument": { "uri": uri },
+            "range": {
+                "start": { "line": 2, "character": 2 },
+                "end": { "line": 6, "character": 3 }
+            },
+            "context": {
+                "diagnostics": [{
+                    "range": {
+                        "start": { "line": 2, "character": 2 },
+                        "end": { "line": 6, "character": 3 }
+                    },
+                    "severity": 2,
+                    "code": "case_subject_missing",
+                    "source": "semantic",
+                    "message": "Case 'VerifyRuntime' has objectives bound to a subject but no subject is declared."
+                }],
+                "only": ["quickfix"]
+            }
+        }),
+    );
+    let actions = response["result"].as_array().expect("code actions");
+    let action = actions
+        .iter()
+        .find(|action| action["title"].as_str() == Some("Add missing case subject"))
+        .expect("add subject quick fix");
+    assert_eq!(action["kind"].as_str(), Some("quickfix"));
+    assert_eq!(action["isPreferred"].as_bool(), Some(true));
+    assert_eq!(
+        action["edit"]["documentChanges"][0]["edits"][0]["newText"].as_str(),
+        Some("    subject subjectUnderVerification;\n")
+    );
+}
+
+#[test]
+fn definition_line_offers_create_typed_usage_refactor() {
+    let mut session = TestSession::new();
+    let uri = "file:///refactor_create_usage.sysml";
+    let content = "package P {\n  part def Engine {\n  }\n}\n";
+    session.initialize_default("refactor_create_usage");
+    session.did_open(uri, content, 1);
+    session.barrier();
+
+    let response = session.request(
+        "textDocument/codeAction",
+        serde_json::json!({
+            "textDocument": { "uri": uri },
+            "range": {
+                "start": { "line": 1, "character": 2 },
+                "end": { "line": 1, "character": 17 }
+            },
+            "context": { "diagnostics": [], "only": ["refactor"] }
+        }),
+    );
+    let actions = response["result"].as_array().expect("code actions");
+    let action = actions
+        .iter()
+        .find(|action| action["title"].as_str() == Some("Create `part engine : Engine`"))
+        .expect("create typed usage refactor");
+    assert_eq!(action["kind"].as_str(), Some("refactor"));
+    assert_eq!(
+        action["edit"]["documentChanges"][0]["edits"][0]["newText"].as_str(),
+        Some("  part engine : Engine;\n")
+    );
 }
 
 #[test]

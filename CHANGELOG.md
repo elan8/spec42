@@ -7,6 +7,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.47.0] - 2026-07-27
+
+- **Completes the Feature Inspector's resolved-semantics view.** Protocol v2 now exposes
+  declared and effective typing separately, specialization, subsetting and redefinition targets,
+  inherited features with their declaring definitions, multiplicity, direction, feature
+  modifiers, documentation and applied metadata. The VS Code inspector renders each semantic
+  concept as a navigable section while remaining compatible with 0.46 server responses.
+- **Expands deterministic SysML v2 code actions.** Unresolved and ambiguous references can now
+  import or qualify matching symbols and create missing definitions; untyped part usages can
+  create and apply a matching `part def`; implicit redefinitions can be made explicit with `:>>`;
+  and requirement declarations can generate a verification-case skeleton. Verification and
+  analysis cases that trigger `case_subject_missing` offer a preferred subject fix, while
+  definition declarations offer a refactor that creates a correctly typed usage with a derived
+  lower-camel name. Contextual library actions help when a symbol requires standard or custom
+  library configuration. The source edits preserve indentation and avoid duplicate declarations.
+
 ## [0.46.1] - 2026-07-26
 
 - **Accepts canonical item flows between action parameters without a false

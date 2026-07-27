@@ -197,6 +197,130 @@ fn lsp_feature_inspector_reports_specialization_targets() {
 }
 
 #[test]
+fn lsp_feature_inspector_exposes_effective_semantics_and_inherited_features() {
+    let mut session = TestSession::new();
+    let uri = "file:///feature_inspector_effective_semantics.sysml";
+    let content = concat!(
+        "package P {\n",
+        "  item def Signal;\n",
+        "  part def Wheel;\n",
+        "  part def Vehicle {\n",
+        "    doc /* A reusable vehicle definition. */\n",
+        "    part wheel[4] : Wheel;\n",
+        "    part spare[0..*] : Wheel;\n",
+        "  }\n",
+        "  part def Rover :> Vehicle {\n",
+        "    part :>> wheel[4];\n",
+        "  }\n",
+        "  part rover : Rover;\n",
+        "  action def Process {\n",
+        "    in command : Signal[0..*];\n",
+        "  }\n",
+        "}\n",
+    );
+    session.initialize_default("feature_inspector_effective_semantics");
+    session.did_open(uri, content, 1);
+    session.barrier();
+
+    let vehicle = inspect(&mut session, uri, 3, 12);
+    let vehicle_element = &vehicle["result"]["containingElement"];
+    assert_eq!(vehicle["result"]["version"].as_u64(), Some(2));
+    assert_eq!(
+        vehicle_element["documentation"].as_str(),
+        Some("A reusable vehicle definition.")
+    );
+
+    let command = inspect(&mut session, uri, 13, 9);
+    let command_element = &command["result"]["containingElement"];
+    assert_eq!(command_element["direction"].as_str(), Some("in"));
+
+    let base_wheel = inspect(&mut session, uri, 5, 11);
+    assert_eq!(
+        base_wheel["result"]["containingElement"]["multiplicity"].as_str(),
+        Some("4")
+    );
+    let spare = inspect(&mut session, uri, 6, 11);
+    assert_eq!(
+        spare["result"]["containingElement"]["multiplicity"].as_str(),
+        Some("0..*")
+    );
+
+    let rover_def = inspect(&mut session, uri, 8, 12);
+    let inherited = rover_def["result"]["containingElement"]["inheritedFeatures"]
+        .as_array()
+        .expect("Rover inherited features");
+    assert!(
+        inherited.iter().any(|entry| {
+            entry["feature"]["name"].as_str() == Some("spare")
+                && entry["declaredIn"]["name"].as_str() == Some("Vehicle")
+        }),
+        "expected Vehicle::spare as inherited feature, got {inherited:#?}"
+    );
+    assert!(
+        inherited
+            .iter()
+            .all(|entry| entry["feature"]["name"].as_str() != Some("wheel")),
+        "the local wheel redefinition must suppress the inherited wheel: {inherited:#?}"
+    );
+
+    let wheel = inspect(&mut session, uri, 9, 14);
+    let wheel_element = &wheel["result"]["containingElement"];
+    assert_eq!(
+        wheel_element["redefinition"]["status"].as_str(),
+        Some("resolved")
+    );
+    assert_eq!(
+        wheel_element["redefinition"]["targets"][0]["name"].as_str(),
+        Some("wheel")
+    );
+    assert_eq!(
+        wheel_element["effectiveTyping"]["status"].as_str(),
+        Some("resolved")
+    );
+    assert_eq!(
+        wheel_element["effectiveTyping"]["targets"][0]["name"].as_str(),
+        Some("Wheel")
+    );
+
+    let rover_usage = inspect(&mut session, uri, 11, 8);
+    let usage_inherited = rover_usage["result"]["containingElement"]["inheritedFeatures"]
+        .as_array()
+        .expect("rover usage effective features");
+    assert!(
+        usage_inherited.iter().any(|entry| {
+            entry["feature"]["name"].as_str() == Some("wheel")
+                && entry["declaredIn"]["name"].as_str() == Some("Rover")
+        }),
+        "typed usages should expose effective features from their definition: {usage_inherited:#?}"
+    );
+}
+
+#[test]
+fn lsp_feature_inspector_exposes_subsetting_as_a_resolved_semantic_relation() {
+    let mut session = TestSession::new();
+    let uri = "file:///feature_inspector_subsetting.sysml";
+    let content = concat!(
+        "package P {\n",
+        "  part def Sensor;\n",
+        "  part sensor : Sensor;\n",
+        "  part selectedSensor subsets P::sensor;\n",
+        "}\n",
+    );
+    session.initialize_default("feature_inspector_subsetting");
+    session.did_open(uri, content, 1);
+    session.barrier();
+
+    let response = inspect(&mut session, uri, 3, 9);
+    let subsetting = &response["result"]["containingElement"]["subsetting"];
+    assert_eq!(subsetting["status"].as_str(), Some("resolved"));
+    assert_eq!(subsetting["targets"][0]["name"].as_str(), Some("sensor"));
+    assert_eq!(
+        response["result"]["containingElement"]["effectiveTyping"]["targets"][0]["name"].as_str(),
+        Some("Sensor")
+    );
+}
+
+#[test]
 fn lsp_feature_inspector_uses_deepest_node_at_position() {
     let mut session = TestSession::new();
     let uri = "file:///feature_inspector_deepest.sysml";

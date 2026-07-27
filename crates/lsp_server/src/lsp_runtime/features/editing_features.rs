@@ -5,12 +5,13 @@ use crate::common::text_span::{to_core_position, to_lsp_range};
 use crate::common::util;
 use crate::language::{
     collect_document_symbols, collect_folding_ranges, format_document,
-    suggest_add_import_quick_fixes, suggest_create_definition_for_unresolved_type_quick_fix,
-    suggest_create_matching_part_def_quick_fix, suggest_create_verification_case,
-    suggest_explicit_redefinition_quick_fix, suggest_manage_custom_libraries_quick_fix,
-    suggest_open_library_view_quick_fix, suggest_qualify_ambiguous_name_quick_fixes,
-    suggest_search_library_for_symbol_quick_fix, suggest_show_standard_library_info_quick_fix,
-    suggest_wrap_in_package,
+    suggest_add_import_quick_fixes, suggest_add_missing_case_subject_quick_fix,
+    suggest_create_definition_for_unresolved_type_quick_fix,
+    suggest_create_matching_part_def_quick_fix, suggest_create_usage_from_definition,
+    suggest_create_verification_case, suggest_explicit_redefinition_quick_fix,
+    suggest_manage_custom_libraries_quick_fix, suggest_open_library_view_quick_fix,
+    suggest_qualify_ambiguous_name_quick_fixes, suggest_search_library_for_symbol_quick_fix,
+    suggest_show_standard_library_info_quick_fix, suggest_wrap_in_package,
 };
 use crate::workspace::snapshot::ServerStateSnapshot;
 use crate::workspace::ServerState;
@@ -268,6 +269,9 @@ pub(crate) fn code_action(
     if let Some(action) = suggest_create_verification_case(&text, &uri, range.start.line) {
         actions.push(CodeActionOrCommand::CodeAction(action));
     }
+    if let Some(action) = suggest_create_usage_from_definition(&text, &uri, range.start.line) {
+        actions.push(CodeActionOrCommand::CodeAction(action));
+    }
     for diagnostic in diagnostics {
         let is_untyped_part_usage = matches!(
             diagnostic.code.as_ref(),
@@ -286,6 +290,17 @@ pub(crate) fn code_action(
         );
         if is_implicit_redefinition_without_operator {
             if let Some(action) = suggest_explicit_redefinition_quick_fix(&text, &uri, diagnostic) {
+                actions.push(CodeActionOrCommand::CodeAction(action));
+            }
+        }
+        let is_case_subject_missing = matches!(
+            diagnostic.code.as_ref(),
+            Some(NumberOrString::String(code)) if code == "case_subject_missing"
+        );
+        if is_case_subject_missing {
+            if let Some(action) =
+                suggest_add_missing_case_subject_quick_fix(&text, &uri, diagnostic)
+            {
                 actions.push(CodeActionOrCommand::CodeAction(action));
             }
         }

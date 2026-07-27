@@ -20,10 +20,11 @@ pub mod workspace;
 pub mod workspace_symbols;
 
 pub use code_actions::{
-    suggest_add_import_quick_fixes, suggest_create_definition_for_unresolved_type_quick_fix,
-    suggest_create_matching_part_def_quick_fix, suggest_create_verification_case,
-    suggest_explicit_redefinition_quick_fix, suggest_qualify_ambiguous_name_quick_fixes,
-    suggest_wrap_in_package, DiagnosticLine,
+    suggest_add_import_quick_fixes, suggest_add_missing_case_subject_quick_fix,
+    suggest_create_definition_for_unresolved_type_quick_fix,
+    suggest_create_matching_part_def_quick_fix, suggest_create_usage_from_definition,
+    suggest_create_verification_case, suggest_explicit_redefinition_quick_fix,
+    suggest_qualify_ambiguous_name_quick_fixes, suggest_wrap_in_package, DiagnosticLine,
 };
 pub use completion::{
     complete, completion_edit_shape, detect_completion_context, CompletionContext,

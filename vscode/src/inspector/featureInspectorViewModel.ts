@@ -60,9 +60,28 @@ function elementSections(element: FeatureInspectorElement): string[] {
   sections.push("Identity");
   if (
     element.typing.status !== "notApplicable" ||
+    (element.effectiveTyping !== undefined &&
+      element.effectiveTyping.status !== "notApplicable") ||
     element.specialization.status !== "notApplicable"
   ) {
     sections.push("Type/specialization");
+  }
+  if (
+    (element.subsetting !== undefined &&
+      element.subsetting.status !== "notApplicable") ||
+    (element.redefinition !== undefined &&
+      element.redefinition.status !== "notApplicable")
+  ) {
+    sections.push("Subsetting/redefinition");
+  }
+  if (element.inheritedFeatures?.length) {
+    sections.push("Inherited features");
+  }
+  if (element.documentation) {
+    sections.push("Documentation");
+  }
+  if (element.metadata?.length) {
+    sections.push("Metadata");
   }
   if (
     attributeText(

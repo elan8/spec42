@@ -660,10 +660,8 @@ fn parse_requirement_name(raw_line: &str) -> Option<(String, bool)> {
     let trimmed = code_only.trim();
     let (rest, is_def) = if let Some(rest) = trimmed.strip_prefix("requirement def ") {
         (rest, true)
-    } else if let Some(rest) = trimmed.strip_prefix("requirement ") {
-        (rest, false)
     } else {
-        return None;
+        (trimmed.strip_prefix("requirement ")?, false)
     };
     let name = rest
         .split(|ch: char| ch == ';' || ch == '{' || ch == ':' || ch.is_whitespace())
@@ -686,7 +684,6 @@ fn suggest_create_verification_case_impl(
     let (req_name, _) = parse_requirement_name(raw_line)?;
     let verify_name = format!("Verify{}", to_pascal_case(&req_name));
     let (search_start, search_end) = find_package_context(&lines, target_line)
-        .map(|(s, e)| (s, e))
         .unwrap_or((0, lines.len().saturating_sub(1)));
     if has_matching_definition(&lines, search_start, search_end, "verification def", &verify_name)
     {
@@ -718,6 +715,156 @@ fn suggest_create_verification_case_impl(
             path: path.to_string(),
             range: line_insert_range(insert_line as u32),
             replacement: body,
+        }],
+    ))
+}
+
+fn parse_case_header(raw_line: &str) -> bool {
+    let trimmed = raw_line.split("//").next().unwrap_or("").trim_start();
+    [
+        "verification def ",
+        "verification ",
+        "analysis def ",
+        "analysis ",
+    ]
+    .iter()
+    .any(|prefix| trimmed.starts_with(prefix) && trimmed.contains('{'))
+}
+
+fn suggest_add_missing_case_subject_impl(
+    source: &str,
+    path: &str,
+    diagnostic: DiagnosticLine,
+) -> Option<TextEditSuggestion> {
+    let lines: Vec<&str> = source.lines().collect();
+    let case_line = diagnostic.line as usize;
+    let header = *lines.get(case_line)?;
+    if !parse_case_header(header) {
+        return None;
+    }
+    let block_end = find_block_end(&lines, case_line)?;
+    if lines
+        .iter()
+        .take(block_end)
+        .skip(case_line + 1)
+        .any(|line| line.trim_start().starts_with("subject "))
+    {
+        return None;
+    }
+    let indent = member_indent_in_range(&lines, case_line, block_end).unwrap_or_else(|| {
+        let header_indent = leading_indent(header);
+        let step = if header_indent.contains('\t') {
+            "\t"
+        } else {
+            "  "
+        };
+        format!("{header_indent}{step}")
+    });
+    Some(
+        TextEditSuggestion::new(
+            "Add missing case subject",
+            vec![TextEditDto {
+                path: path.to_string(),
+                range: line_insert_range(case_line as u32 + 1),
+                replacement: format!("{indent}subject subjectUnderVerification;\n"),
+            }],
+        )
+        .with_preferred(true),
+    )
+}
+
+fn lower_camel_case(name: &str) -> Option<String> {
+    let mut chars = name.chars();
+    let first = chars.next()?;
+    if !(first == '_' || first.is_ascii_alphabetic())
+        || !chars
+            .clone()
+            .all(|ch| ch == '_' || ch.is_ascii_alphanumeric())
+    {
+        return None;
+    }
+    Some(first.to_ascii_lowercase().to_string() + chars.as_str())
+}
+
+fn parse_definition_header(raw_line: &str) -> Option<(&'static str, String)> {
+    let trimmed = raw_line.split("//").next().unwrap_or("").trim();
+    for (definition_keyword, usage_keyword) in [
+        ("requirement def ", "requirement"),
+        ("verification def ", "verification"),
+        ("viewpoint def ", "viewpoint"),
+        ("constraint def ", "constraint"),
+        ("connection def ", "connection"),
+        ("interface def ", "interface"),
+        ("rendering def ", "rendering"),
+        ("occurrence def ", "occurrence"),
+        ("attribute def ", "attribute"),
+        ("analysis def ", "analysis"),
+        ("use case def ", "use case"),
+        ("action def ", "action"),
+        ("state def ", "state"),
+        ("part def ", "part"),
+        ("item def ", "item"),
+        ("port def ", "port"),
+        ("calc def ", "calc"),
+    ] {
+        let Some(rest) = trimmed.strip_prefix(definition_keyword) else {
+            continue;
+        };
+        let name = rest
+            .split(|ch: char| {
+                ch == ';' || ch == '{' || ch == ':' || ch == '[' || ch.is_whitespace()
+            })
+            .next()?
+            .trim();
+        if name.is_empty() || name.contains("::") || name.starts_with('\'') {
+            return None;
+        }
+        return Some((usage_keyword, name.to_string()));
+    }
+    None
+}
+
+fn suggest_create_usage_from_definition_impl(
+    source: &str,
+    path: &str,
+    line: u32,
+) -> Option<TextEditSuggestion> {
+    let lines: Vec<&str> = source.lines().collect();
+    let definition_line = line as usize;
+    let raw_line = *lines.get(definition_line)?;
+    let (usage_keyword, definition_name) = parse_definition_header(raw_line)?;
+    let usage_name = lower_camel_case(&definition_name)?;
+    let insert_line = if raw_line.contains('{') {
+        find_block_end(&lines, definition_line)?.saturating_add(1)
+    } else if raw_line.trim_end().ends_with(';') {
+        definition_line + 1
+    } else {
+        return None;
+    };
+    let (search_start, search_end) =
+        find_package_context(&lines, definition_line).unwrap_or((0, lines.len().saturating_sub(1)));
+    let existing_prefix = format!("{usage_keyword} {usage_name} ");
+    if lines
+        .iter()
+        .take(search_end + 1)
+        .skip(search_start)
+        .any(|line| {
+            let trimmed = line.trim_start();
+            trimmed.starts_with(&existing_prefix)
+                && trimmed
+                    .split_once(':')
+                    .is_some_and(|(_, target)| target.trim_start().starts_with(&definition_name))
+        })
+    {
+        return None;
+    }
+    let indent = leading_indent(raw_line);
+    Some(TextEditSuggestion::new(
+        format!("Create `{usage_keyword} {usage_name} : {definition_name}`"),
+        vec![TextEditDto {
+            path: path.to_string(),
+            range: line_insert_range(insert_line as u32),
+            replacement: format!("{indent}{usage_keyword} {usage_name} : {definition_name};\n"),
         }],
     ))
 }
@@ -792,6 +939,22 @@ pub fn suggest_create_verification_case(
     line: u32,
 ) -> Option<TextEditSuggestion> {
     suggest_create_verification_case_impl(source, path, line)
+}
+
+pub fn suggest_add_missing_case_subject_quick_fix(
+    source: &str,
+    path: &str,
+    diagnostic: DiagnosticLine,
+) -> Option<TextEditSuggestion> {
+    suggest_add_missing_case_subject_impl(source, path, diagnostic)
+}
+
+pub fn suggest_create_usage_from_definition(
+    source: &str,
+    path: &str,
+    line: u32,
+) -> Option<TextEditSuggestion> {
+    suggest_create_usage_from_definition_impl(source, path, line)
 }
 
 /// Qualify an ambiguous simple name with each candidate qualified name.

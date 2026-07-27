@@ -126,13 +126,28 @@ export interface FeatureInspectorRelationship {
   name?: string;
 }
 
+export interface FeatureInspectorInheritedFeature {
+  feature: FeatureInspectorElementRef;
+  declaredIn: FeatureInspectorElementRef;
+}
+
 export interface FeatureInspectorElement extends FeatureInspectorElementRef {
   role: "definition" | "usage" | "relationship" | "namespace" | "other";
   declaration: string;
   parent?: FeatureInspectorElementRef;
+  documentation?: string;
+  multiplicity?: string;
+  direction?: string;
+  modifiers?: string[];
   attributes: Record<string, unknown>;
   typing: FeatureInspectorResolution;
+  /** Added in protocol v2; optional so a 0.47 client can still inspect through a 0.46 server. */
+  effectiveTyping?: FeatureInspectorResolution;
   specialization: FeatureInspectorResolution;
+  subsetting?: FeatureInspectorResolution;
+  redefinition?: FeatureInspectorResolution;
+  inheritedFeatures?: FeatureInspectorInheritedFeature[];
+  metadata?: FeatureInspectorElementRef[];
   incomingRelationships: FeatureInspectorRelationship[];
   outgoingRelationships: FeatureInspectorRelationship[];
 }

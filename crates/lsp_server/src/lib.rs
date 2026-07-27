@@ -38,12 +38,13 @@ pub use validation::{
 };
 pub use views::dto::{
     SysmlClearCacheResultDto, SysmlFeatureInspectorElementDto, SysmlFeatureInspectorElementRefDto,
-    SysmlFeatureInspectorLanguageHelpDto, SysmlFeatureInspectorParamsDto,
-    SysmlFeatureInspectorRelationshipDto, SysmlFeatureInspectorResolutionDto,
-    SysmlFeatureInspectorResultDto, SysmlFeatureInspectorSelectionDto, SysmlLibrarySearchItemDto,
-    SysmlLibrarySearchPackageDto, SysmlLibrarySearchParamsDto, SysmlLibrarySearchResultDto,
-    SysmlLibrarySearchSourceDto, SysmlModelResultDto, SysmlServerCachesDto, SysmlServerMemoryDto,
-    SysmlServerStatsDto, SysmlVisualizationParamsDto, TextDocumentIdentifierDto,
+    SysmlFeatureInspectorInheritedFeatureDto, SysmlFeatureInspectorLanguageHelpDto,
+    SysmlFeatureInspectorParamsDto, SysmlFeatureInspectorRelationshipDto,
+    SysmlFeatureInspectorResolutionDto, SysmlFeatureInspectorResultDto,
+    SysmlFeatureInspectorSelectionDto, SysmlLibrarySearchItemDto, SysmlLibrarySearchPackageDto,
+    SysmlLibrarySearchParamsDto, SysmlLibrarySearchResultDto, SysmlLibrarySearchSourceDto,
+    SysmlModelResultDto, SysmlServerCachesDto, SysmlServerMemoryDto, SysmlServerStatsDto,
+    SysmlVisualizationParamsDto, TextDocumentIdentifierDto,
 };
 pub use views::{
     build_sysml_model_response, build_sysml_visualization_for_paths,

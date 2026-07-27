@@ -57,6 +57,13 @@ pub struct SysmlFeatureInspectorRelationshipDto {
 
 #[derive(Debug, Clone, Serialize)]
 #[serde(rename_all = "camelCase")]
+pub struct SysmlFeatureInspectorInheritedFeatureDto {
+    pub feature: SysmlFeatureInspectorElementRefDto,
+    pub declared_in: SysmlFeatureInspectorElementRefDto,
+}
+
+#[derive(Debug, Clone, Serialize)]
+#[serde(rename_all = "camelCase")]
 pub struct SysmlFeatureInspectorElementDto {
     pub id: String,
     pub name: String,
@@ -69,9 +76,21 @@ pub struct SysmlFeatureInspectorElementDto {
     pub range: RangeDto,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub parent: Option<SysmlFeatureInspectorElementRefDto>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub documentation: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub multiplicity: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub direction: Option<String>,
+    pub modifiers: Vec<String>,
     pub attributes: std::collections::HashMap<String, serde_json::Value>,
     pub typing: SysmlFeatureInspectorResolutionDto,
+    pub effective_typing: SysmlFeatureInspectorResolutionDto,
     pub specialization: SysmlFeatureInspectorResolutionDto,
+    pub subsetting: SysmlFeatureInspectorResolutionDto,
+    pub redefinition: SysmlFeatureInspectorResolutionDto,
+    pub inherited_features: Vec<SysmlFeatureInspectorInheritedFeatureDto>,
+    pub metadata: Vec<SysmlFeatureInspectorElementRefDto>,
     pub incoming_relationships: Vec<SysmlFeatureInspectorRelationshipDto>,
     pub outgoing_relationships: Vec<SysmlFeatureInspectorRelationshipDto>,
 }

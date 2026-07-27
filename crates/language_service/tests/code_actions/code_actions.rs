@@ -1,8 +1,10 @@
 use language_service::{
-    suggest_add_import_quick_fixes, suggest_create_definition_for_unresolved_type_quick_fix,
-    suggest_create_matching_part_def_quick_fix, suggest_create_verification_case,
-    suggest_explicit_redefinition_quick_fix, suggest_qualify_ambiguous_name_quick_fixes,
-    suggest_wrap_in_package, DiagnosticLine, InMemoryWorkspace, WorkspaceSnapshot,
+    suggest_add_import_quick_fixes, suggest_add_missing_case_subject_quick_fix,
+    suggest_create_definition_for_unresolved_type_quick_fix,
+    suggest_create_matching_part_def_quick_fix, suggest_create_usage_from_definition,
+    suggest_create_verification_case, suggest_explicit_redefinition_quick_fix,
+    suggest_qualify_ambiguous_name_quick_fixes, suggest_wrap_in_package, DiagnosticLine,
+    InMemoryWorkspace, WorkspaceSnapshot,
 };
 
 #[path = "../helpers/support.rs"]
@@ -164,6 +166,74 @@ fn suggest_create_verification_case_inserts_skeleton() {
 fn suggest_create_verification_case_noop_when_present() {
     let source = "package P {\n  requirement def BatteryRuntime {\n  }\n  verification def VerifyBatteryRuntime {\n    objective {\n      verify BatteryRuntime;\n    }\n  }\n}\n";
     assert!(suggest_create_verification_case(source, PATH, 1).is_none());
+}
+
+#[test]
+fn suggest_add_missing_case_subject_inserts_before_existing_members() {
+    let source = concat!(
+        "package P {\n",
+        "  verification def VerifyRuntime {\n",
+        "    objective {\n",
+        "      verify RuntimeRequirement;\n",
+        "    }\n",
+        "  }\n",
+        "}\n",
+    );
+    let suggestion = suggest_add_missing_case_subject_quick_fix(source, PATH, diagnostic_line(1))
+        .expect("quick fix");
+    assert_eq!(suggestion.title, "Add missing case subject");
+    assert!(suggestion.is_preferred);
+    assert_eq!(
+        suggestion.edits[0].replacement,
+        "    subject subjectUnderVerification;\n"
+    );
+    assert_eq!(suggestion.edits[0].range.start.line, 2);
+}
+
+#[test]
+fn suggest_add_missing_case_subject_noop_when_subject_exists() {
+    let source = concat!(
+        "package P {\n",
+        "  verification def VerifyRuntime {\n",
+        "    subject systemUnderVerification;\n",
+        "    objective { verify RuntimeRequirement; }\n",
+        "  }\n",
+        "}\n",
+    );
+    assert!(suggest_add_missing_case_subject_quick_fix(source, PATH, diagnostic_line(1)).is_none());
+}
+
+#[test]
+fn suggest_create_usage_from_braced_definition_inserts_after_definition() {
+    let source = concat!(
+        "package P {\n",
+        "  part def Engine {\n",
+        "    attribute power;\n",
+        "  }\n",
+        "}\n",
+    );
+    let suggestion =
+        suggest_create_usage_from_definition(source, PATH, 1).expect("create usage refactor");
+    assert_eq!(suggestion.title, "Create `part engine : Engine`");
+    assert_eq!(suggestion.edits[0].range.start.line, 4);
+    assert_eq!(suggestion.edits[0].replacement, "  part engine : Engine;\n");
+}
+
+#[test]
+fn suggest_create_usage_from_semicolon_definition_supports_requirement_pattern() {
+    let source = "package P {\n  requirement def RuntimeRequirement;\n}\n";
+    let suggestion =
+        suggest_create_usage_from_definition(source, PATH, 1).expect("create usage refactor");
+    assert_eq!(
+        suggestion.edits[0].replacement,
+        "  requirement runtimeRequirement : RuntimeRequirement;\n"
+    );
+}
+
+#[test]
+fn suggest_create_usage_from_definition_noop_when_matching_usage_exists() {
+    let source = "package P {\n  part def Engine;\n  part engine : Engine;\n}\n";
+    assert!(suggest_create_usage_from_definition(source, PATH, 1).is_none());
 }
 
 #[test]

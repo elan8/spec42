@@ -109,6 +109,32 @@ describe("FeatureInspectorViewModel", () => {
     ]);
   });
 
+  it("adds resolved semantic, inherited-feature, documentation, and metadata sections", () => {
+    const base = element("Vehicle", "definition");
+    const target = element("Rover", "definition", {
+      documentation: "A specialized vehicle.",
+      subsetting: { status: "notApplicable", targets: [] },
+      redefinition: { status: "resolved", targets: [base] },
+      inheritedFeatures: [{ feature: element("command", "usage"), declaredIn: base }],
+      metadata: [element("SafetyCritical", "usage")],
+    });
+
+    const viewModel = buildFeatureInspectorViewModel(
+      result({ kind: "element", text: "Rover" }, target)
+    );
+
+    assert.deepStrictEqual(viewModel.sections, [
+      "Model element",
+      "Declaration",
+      "Identity",
+      "Subsetting/redefinition",
+      "Inherited features",
+      "Documentation",
+      "Metadata",
+      "Source location",
+    ]);
+  });
+
   it("makes the resolved reference primary and preserves compact source context", () => {
     const source = element("RobotLidar", "definition", {
       declaration: "part def RobotLidar :> RPLIDARC1;",

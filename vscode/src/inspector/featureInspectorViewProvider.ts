@@ -293,6 +293,38 @@ export class FeatureInspectorViewProvider implements vscode.WebviewViewProvider 
       nodes.push(section);
     }
 
+    function sameResolution(left, right) {
+      if (!left || !right || left.status !== right.status) return false;
+      const leftIds = (left.targets || []).map((target) => target.id).sort();
+      const rightIds = (right.targets || []).map((target) => target.id).sort();
+      return leftIds.length === rightIds.length &&
+        leftIds.every((id, index) => id === rightIds[index]);
+    }
+
+    function inheritedFeaturesSection(nodes, inheritedFeatures) {
+      if (!inheritedFeatures || !inheritedFeatures.length) return;
+      const section = el('div', 'section');
+      section.appendChild(el('div', 'title', 'Inherited features'));
+      inheritedFeatures.forEach((inherited) => {
+        const row = elementRefRow(inherited.feature);
+        const subtitle = row.querySelector('.row-sub');
+        if (subtitle) {
+          subtitle.textContent = 'Declared in ' +
+            (inherited.declaredIn.qualifiedName || inherited.declaredIn.name || '');
+        }
+        section.appendChild(row);
+      });
+      nodes.push(section);
+    }
+
+    function elementRefsSection(nodes, title, targets) {
+      if (!targets || !targets.length) return;
+      const section = el('div', 'section');
+      section.appendChild(el('div', 'title', title));
+      targets.forEach((target) => section.appendChild(elementRefRow(target)));
+      nodes.push(section);
+    }
+
     function relationshipsSection(nodes, title, relationships) {
       if (!relationships || !relationships.length) return;
       const section = el('div', 'section');
@@ -397,14 +429,28 @@ export class FeatureInspectorViewProvider implements vscode.WebviewViewProvider 
       identity.appendChild(el('div', 'title', 'Identity'));
       field(identity, 'Kind', element.type);
       field(identity, 'Container', element.parent?.qualifiedName);
-      field(identity, 'Multiplicity', attrText(element.attributes, 'multiplicity'));
-      field(identity, 'Direction', attrText(element.attributes, 'direction'));
-      const doc = attrText(element.attributes, 'doc');
-      if (doc) identity.appendChild(el('div', 'doc', doc));
+      field(identity, 'Multiplicity', element.multiplicity || attrText(element.attributes, 'multiplicity'));
+      field(identity, 'Direction', element.direction || attrText(element.attributes, 'direction'));
+      field(identity, 'Modifiers', element.modifiers?.join(', '));
       nodes.push(identity);
 
       resolutionSection(nodes, 'Declared type', element.typing);
+      if (element.effectiveTyping && !sameResolution(element.typing, element.effectiveTyping)) {
+        resolutionSection(nodes, 'Effective type', element.effectiveTyping);
+      }
       resolutionSection(nodes, 'Specializes', element.specialization);
+      resolutionSection(nodes, 'Subsets', element.subsetting);
+      resolutionSection(nodes, 'Redefines', element.redefinition);
+      inheritedFeaturesSection(nodes, element.inheritedFeatures);
+
+      const doc = element.documentation || attrText(element.attributes, 'doc');
+      if (doc) {
+        const documentation = el('div', 'section');
+        documentation.appendChild(el('div', 'title', 'Documentation'));
+        documentation.appendChild(el('div', 'doc', doc));
+        nodes.push(documentation);
+      }
+      elementRefsSection(nodes, 'Metadata', element.metadata);
 
       const attrFields = [
         ['Declared', attrText(element.attributes, 'value') || attrText(element.attributes, 'defaultValue')],
