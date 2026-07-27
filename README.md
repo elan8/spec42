@@ -13,7 +13,7 @@ Spec42 is modern language tooling for [SysML v2](https://www.omg.org/sysml/sysml
 ## What Spec42 Provides
 
 - **Editor feedback for SysML v2 and KerML**: diagnostics, semantic highlighting, completion, hover, definitions, references, document symbols, and hierarchy navigation.
-- **Model exploration**: a Model Explorer for workspace structure and a Model Visualizer for graphical views of the same semantic model.
+- **Model exploration**: a Model Explorer for workspace structure, a Model Visualizer for graphical views, and a Feature Inspector for resolved semantics (declared vs. effective typing, specialization/subsetting/redefinition, inherited features, multiplicity, and applied metadata) of the same semantic model.
 - **Repeatable validation**: `spec42 check` for local use, scripted quality gates, SARIF output, and GitHub Code Scanning.
 - **Standard-library support**: bundled SysML library resolution plus `spec42 doctor` for environment and configuration diagnostics.
 - **Headless diagrams**: deterministic JSON and SVG export for supported views, suitable for CI artifacts and documentation pipelines.
@@ -122,9 +122,16 @@ spec42 doctor
 
 | Path | Contents |
 | --- | --- |
-| [`crates/kernel`](crates/kernel) | LSP runtime, workspace indexing, validation, and editor-facing services. |
-| [`crates/semantic_core`](crates/semantic_core) | Semantic graph construction, resolution, diagnostics, and model projection. |
-| [`crates/server`](crates/server) | CLI, HTTP API, MCP server, reports, and diagram export. |
+| [`crates/workspace`](crates/workspace) | Workspace build, snapshot, comparison, and library management. |
+| [`crates/sysml_model`](crates/sysml_model) | Reusable semantic model core. |
+| [`crates/sysml_diagnostics`](crates/sysml_diagnostics) | Semantic diagnostics engine. |
+| [`crates/language_service`](crates/language_service) | Protocol-neutral editor language services (hover, completion, code actions, etc.). |
+| [`crates/lsp_server`](crates/lsp_server) | LSP-facing semantic model, DTOs, and extension traits. |
+| [`crates/workspace_session`](crates/workspace_session) | Lock-free session concurrency wrapper shared by LSP and HTTP hosts. |
+| [`crates/server`](crates/server) | CLI, LSP server, HTTP API, MCP server, reports, and diagram export. |
+| [`crates/sysml_tokens`](crates/sysml_tokens) | Semantic tokenization for editor highlighting. |
+| [`crates/kpar`](crates/kpar) | KerML Project Archive (KPAR) read, pack, and validate. |
+| [`crates/diagram`](crates/diagram) | Shared diagram projection utilities. |
 | [`vscode`](vscode/README.md) | VS Code extension, webviews, packaging, and tests. |
 | [`zed`](zed/README.md) | Zed extension. |
 | [`shared/diagram-renderer`](shared/diagram-renderer/README.md) | Shared TypeScript diagram renderer used by editor and export workflows. |
