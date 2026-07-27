@@ -22,7 +22,7 @@ export const KPAR_LIBRARIES_DEFAULTS: readonly KparLibraryDefaults[] = [
   {
     "id": "method",
     "displayName": "Method libraries",
-    "version": "0.1.0",
+    "version": "0.1.1",
     "repo": "elan8/mbse-methodology",
     "format": "kpar",
     "artifact": "elan8-method-libraries-0.1.0.kpar",
