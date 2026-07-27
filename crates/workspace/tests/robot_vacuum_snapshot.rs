@@ -5,10 +5,10 @@ use robot_vacuum_fixture::require_robot_vacuum_fixture;
 use tempfile::tempdir;
 use workspace::{EngineBuilder, HostContext, HostFilesystemProvider, WorkspaceLoadRequest};
 
-/// Lean view-catalog smoke for the pinned showcase. Diagnostic zero-warning is gated via
-/// `spec42 check` in CI (same path as the product CLI), not the host snapshot builder.
+/// Lean view-catalog smoke for the pinned showcase (local only). Diagnostic zero-warning
+/// belongs in the showcase repo CI; this path exercises host snapshot / view prep.
 #[test]
-#[ignore = "CI fetches the pin; locally: bash scripts/fetch-robot-vacuum-cleaner.sh then cargo test -p workspace --test robot_vacuum_snapshot -- --ignored"]
+#[ignore = "local only: bash scripts/fetch-robot-vacuum-cleaner.sh then cargo test -p workspace --test robot_vacuum_snapshot -- --ignored"]
 fn robot_vacuum_snapshot_validates_and_prepares_product_decomposition() {
     let (root, model_dir) = require_robot_vacuum_fixture();
 

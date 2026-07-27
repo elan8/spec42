@@ -1,5 +1,6 @@
-//! R9 zero-warning gate: `perform_check` on the pinned robot-vacuum showcase
-//! (same engine path as `spec42 check`).
+//! Local R9 zero-warning gate: `perform_check` on the pinned robot-vacuum showcase
+//! (same engine path as `spec42 check`). Not run in Spec42 CI — the showcase repo
+//! owns Spec42 error/warning gates against released Spec42.
 
 #[path = "common/mod.rs"]
 mod common;
@@ -12,7 +13,7 @@ use spec42::cli::{CheckArgs, Cli, OutputFormat};
 use spec42::perform_check;
 
 #[test]
-#[ignore = "CI fetches the pin; locally: FORCE_ROBOT_VACUUM_FETCH=1 bash scripts/fetch-robot-vacuum-cleaner.sh && cargo test -p server --test robot_vacuum_check -- --ignored"]
+#[ignore = "local only: FORCE_ROBOT_VACUUM_FETCH=1 bash scripts/fetch-robot-vacuum-cleaner.sh && cargo test -p server --test robot_vacuum_check -- --ignored"]
 fn robot_vacuum_check_has_zero_errors_and_warnings() {
     with_isolated_data_dir(|| {
         let (root, model_dir) = require_robot_vacuum_fixture();
