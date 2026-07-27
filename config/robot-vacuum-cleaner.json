@@ -1,5 +1,5 @@
 {
-  "version": "4f9ad65fa388bd7e671b2b0ed3fcb9fbdc4e3085",
+  "version": "1fe6e90d78ea58cb4729981b8577e2f151e70e61",
   "repo": "elan8/sysml-robot-vacuum-cleaner",
   "checkoutPath": "third_party/sysml-robot-vacuum-cleaner",
   "sparsePaths": ["model"]
