@@ -39,10 +39,13 @@ impl PackOptions {
     }
 
     /// Pack `path` under `archive_prefix/` in the KPAR (e.g. method libraries as `method/`).
-    pub fn with_named_source_root(mut self, archive_prefix: impl Into<String>, path: PathBuf) -> Self {
+    pub fn with_named_source_root(
+        mut self,
+        archive_prefix: impl Into<String>,
+        path: PathBuf,
+    ) -> Self {
         if path.is_dir() {
-            self.named_source_roots
-                .push((archive_prefix.into(), path));
+            self.named_source_roots.push((archive_prefix.into(), path));
         }
         self
     }

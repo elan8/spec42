@@ -5,6 +5,12 @@
 #   bash scripts/fetch-kpar-libraries-bundle.sh            # all libraries
 #   bash scripts/fetch-kpar-libraries-bundle.sh domain     # one id
 #   bash scripts/fetch-kpar-libraries-bundle.sh domain method
+#
+# Resolution order per library:
+#   1. Existing usable .kpar at SPEC42_KPAR_LIBRARY_BUNDLE_<ID> or .cache/<artifact>
+#   2. GitHub release asset
+#   3. SPEC42_KPAR_LIBRARY_SOURCE_DIR_<ID>
+#   4. Sibling path from pack.siblingRelative
 
 set -euo pipefail
 
@@ -39,36 +45,39 @@ upper_id() {
 }
 
 list_library_ids() {
-  node - <<'NODE'
-const fs = require("fs");
-const path = require("path");
+  node --input-type=module -e '
+import fs from "node:fs";
+import path from "node:path";
 const dir = path.join(process.cwd(), "config", "libraries");
 for (const name of fs.readdirSync(dir).filter((n) => n.endsWith(".json")).sort()) {
   const raw = JSON.parse(fs.readFileSync(path.join(dir, name), "utf8"));
   const id = typeof raw.id === "string" && raw.id.trim() ? raw.id : path.basename(name, ".json");
   console.log(id);
 }
-NODE
+'
 }
 
-library_json() {
+library_field() {
   local id="$1"
-  node - <<NODE
-const fs = require("fs");
-const path = require("path");
+  local expr="$2"
+  node --input-type=module -e '
+import fs from "node:fs";
+import path from "node:path";
+const wanted = process.argv[1];
+const expr = process.argv[2];
 const dir = path.join(process.cwd(), "config", "libraries");
-const wanted = ${JSON.stringify("$id")};
 for (const name of fs.readdirSync(dir).filter((n) => n.endsWith(".json"))) {
   const file = path.join(dir, name);
   const raw = JSON.parse(fs.readFileSync(file, "utf8"));
   const id = typeof raw.id === "string" && raw.id.trim() ? raw.id : path.basename(name, ".json");
-  if (id === wanted) {
-    process.stdout.write(JSON.stringify(raw));
-    process.exit(0);
-  }
+  if (id !== wanted) continue;
+  const value = Function("c", `return (${expr});`)(raw);
+  if (value === undefined || value === null) process.exit(2);
+  process.stdout.write(String(value));
+  process.exit(0);
 }
 process.exit(1);
-NODE
+' "${id}" "${expr}"
 }
 
 pack_library() {
@@ -99,19 +108,16 @@ pack_library() {
 
 fetch_one() {
   local id="$1"
-  local raw
-  if ! raw="$(library_json "${id}")"; then
+  local version repo artifact kind sibling prefix
+  if ! version="$(library_field "${id}" "c.version")"; then
     echo "Unknown KPAR library id '${id}' (no matching config/libraries/*.json)" >&2
     exit 1
   fi
-
-  local version repo artifact kind sibling prefix
-  version="$(node -p "JSON.parse(process.argv[1]).version" "${raw}")"
-  repo="$(node -p "JSON.parse(process.argv[1]).repo" "${raw}")"
-  artifact="$(node -p "const c=JSON.parse(process.argv[1]); c.artifact || ('elan8-' + (c.id || '${id}') + '-libraries-' + c.version + '.kpar')" "${raw}")"
-  kind="$(node -p "JSON.parse(process.argv[1]).pack.kind" "${raw}")"
-  sibling="$(node -p "JSON.parse(process.argv[1]).pack.siblingRelative" "${raw}")"
-  prefix="$(node -p "const c=JSON.parse(process.argv[1]); c.pack.archivePrefix || c.id || '${id}'" "${raw}")"
+  repo="$(library_field "${id}" "c.repo")"
+  artifact="$(library_field "${id}" "c.artifact || ('elan8-' + (c.id || '${id}') + '-libraries-' + c.version + '.kpar')")"
+  kind="$(library_field "${id}" "c.pack.kind")"
+  sibling="$(library_field "${id}" "c.pack.siblingRelative")"
+  prefix="$(library_field "${id}" "c.pack.archivePrefix || c.id || '${id}'")"
 
   local env_bundle="SPEC42_KPAR_LIBRARY_BUNDLE_$(upper_id "${id}")"
   local env_source="SPEC42_KPAR_LIBRARY_SOURCE_DIR_$(upper_id "${id}")"
@@ -132,21 +138,18 @@ fetch_one() {
   rm -f "${out}"
 
   local source_dir=""
-  if [[ -n "${!env_source:-}" ]]; then
+  if [[ -n "${!env_source:-}" && -d "${!env_source}" ]]; then
     source_dir="${!env_source}"
   elif [[ -d "${repo_root}/${sibling}" ]]; then
     source_dir="${repo_root}/${sibling}"
+  else
+    echo "Failed to fetch or pack ${id} KPAR for ${repo}@${version}" >&2
+    echo "Set ${env_source}, place sibling ${sibling}, or publish release v${version} with asset ${artifact}" >&2
+    exit 1
   fi
 
-  if [[ -n "${source_dir}" && -d "${source_dir}" ]]; then
-    pack_library "${id}" "${version}" "${kind}" "${source_dir}" "${prefix}" "${out}"
-    echo "Packed ${id} KPAR locally"
-    return 0
-  fi
-
-  echo "Failed to fetch or pack ${id} KPAR for ${repo}@${version}" >&2
-  echo "Set ${env_source}, place sibling ${sibling}, or publish release v${version} with asset ${artifact}" >&2
-  exit 1
+  pack_library "${id}" "${version}" "${kind}" "${source_dir}" "${prefix}" "${out}"
+  echo "Packed ${id} KPAR locally at ${out}"
 }
 
 ids=("$@")

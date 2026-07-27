@@ -87,7 +87,8 @@ pub fn resolve_library_catalog(request: &HostLibraryRequest) -> WorkspaceResult<
         &kpar_libraries,
     );
 
-    let content_hash = hash_package_roots(&package_roots, &request.standard_library, &kpar_libraries);
+    let content_hash =
+        hash_package_roots(&package_roots, &request.standard_library, &kpar_libraries);
 
     Ok(LibraryCatalog {
         content_hash,
@@ -205,7 +206,9 @@ fn resolve_stdlib_component(
     })
 }
 
-fn resolve_kpar_libraries(request: &HostLibraryRequest) -> WorkspaceResult<Vec<KparLibraryComponent>> {
+fn resolve_kpar_libraries(
+    request: &HostLibraryRequest,
+) -> WorkspaceResult<Vec<KparLibraryComponent>> {
     let mut components = Vec::new();
     for config in registry_configs() {
         let paths = kpar_library_paths_from_data_dir(&request.cache_dir, &config.id);

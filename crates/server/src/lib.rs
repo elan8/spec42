@@ -368,36 +368,36 @@ fn run_diagrams(cli: &Cli, command: &DiagramsCommand) -> Result<ExitCode, String
 
 fn run_libraries(cli: &Cli, command: &LibrariesCommand) -> Result<ExitCode, String> {
     let environment = resolve_environment(cli)?;
-    let selected = |id: &Option<String>| -> Result<Vec<&workspace::catalog::KparLibraryComponent>, String> {
-        match id {
-            None => Ok(environment.kpar_libraries.iter().collect()),
-            Some(wanted) => {
-                let matches: Vec<_> = environment
-                    .kpar_libraries
-                    .iter()
-                    .filter(|library| library.id == *wanted)
-                    .collect();
-                if matches.is_empty() {
-                    return Err(format!(
-                        "Unknown KPAR library id '{wanted}'. Registered: {}",
-                        environment
-                            .kpar_libraries
-                            .iter()
-                            .map(|library| library.id.as_str())
-                            .collect::<Vec<_>>()
-                            .join(", ")
-                    ));
+    let selected =
+        |id: &Option<String>| -> Result<Vec<&workspace::catalog::KparLibraryComponent>, String> {
+            match id {
+                None => Ok(environment.kpar_libraries.iter().collect()),
+                Some(wanted) => {
+                    let matches: Vec<_> = environment
+                        .kpar_libraries
+                        .iter()
+                        .filter(|library| library.id == *wanted)
+                        .collect();
+                    if matches.is_empty() {
+                        return Err(format!(
+                            "Unknown KPAR library id '{wanted}'. Registered: {}",
+                            environment
+                                .kpar_libraries
+                                .iter()
+                                .map(|library| library.id.as_str())
+                                .collect::<Vec<_>>()
+                                .join(", ")
+                        ));
+                    }
+                    Ok(matches)
                 }
-                Ok(matches)
             }
-        }
-    };
+        };
 
     match command {
         LibrariesCommand::Status(args) => {
             for library in selected(&args.id)? {
-                let status =
-                    kpar_libraries::managed_status(&library.paths, &library.config)?;
+                let status = kpar_libraries::managed_status(&library.paths, &library.config)?;
                 println!("[{}] {}", library.id, library.display_name);
                 print_kpar_library_status(&status);
                 println!();
@@ -413,8 +413,7 @@ fn run_libraries(cli: &Cli, command: &LibrariesCommand) -> Result<ExitCode, Stri
                     }
                     continue;
                 }
-                let status =
-                    kpar_libraries::managed_status(&library.paths, &library.config)?;
+                let status = kpar_libraries::managed_status(&library.paths, &library.config)?;
                 if status.is_installed {
                     if let Some(path) = status.install_path {
                         if args.id.is_some() {

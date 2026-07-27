@@ -92,7 +92,11 @@ fn embed_stdlib() {
             return;
         }
         if let Some(cached_embedded_zip) = find_cached_embedded_zip(&out_zip) {
-            copy_file(&cached_embedded_zip, &out_zip, "cached embedded stdlib archive");
+            copy_file(
+                &cached_embedded_zip,
+                &out_zip,
+                "cached embedded stdlib archive",
+            );
             eprintln!(
                 "workspace build: reused cached embedded stdlib archive from {}",
                 cached_embedded_zip.display()
@@ -261,9 +265,10 @@ fn pack_or_copy_library(entry: &LibraryEntry, out_kpar: &Path) {
         return;
     }
 
-    let cache_name = entry.artifact.clone().unwrap_or_else(|| {
-        format!("elan8-{}-libraries-{}.kpar", entry.id, entry.version)
-    });
+    let cache_name = entry
+        .artifact
+        .clone()
+        .unwrap_or_else(|| format!("elan8-{}-libraries-{}.kpar", entry.id, entry.version));
     let env_bundle = format!(
         "SPEC42_KPAR_LIBRARY_BUNDLE_{}",
         entry.id.to_ascii_uppercase().replace('-', "_")
@@ -412,10 +417,7 @@ fn write_registry(path: &Path, entries: &[LibraryEntry], include_archives: bool)
     }
     out.push_str("];\n");
     fs::write(path, out).unwrap_or_else(|e| {
-        eprintln!(
-            "workspace build: failed to write {}: {e}",
-            path.display()
-        );
+        eprintln!("workspace build: failed to write {}: {e}", path.display());
         process::exit(1);
     });
 }

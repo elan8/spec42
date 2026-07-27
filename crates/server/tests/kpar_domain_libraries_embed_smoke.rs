@@ -1,4 +1,4 @@
-﻿//! Smoke tests: config-driven embedded KPAR libraries (domain + method).
+//! Smoke tests: config-driven embedded KPAR libraries (domain + method).
 
 mod common;
 
@@ -53,7 +53,10 @@ fn doctor_library<'a>(
     report: &'a spec42::DoctorReport,
     id: &str,
 ) -> Option<&'a spec42::environment::DoctorKparLibrary> {
-    report.kpar_libraries.iter().find(|library| library.id == id)
+    report
+        .kpar_libraries
+        .iter()
+        .find(|library| library.id == id)
 }
 
 #[cfg(feature = "embed-kpar-libraries")]
@@ -175,7 +178,9 @@ fn embedded_kpar_method_libraries_resolve_elan8_requirement_management() {
         let report = perform_check(&cli, &args).expect("check");
         let codes = diagnostic_codes(&report);
         assert!(
-            !codes.iter().any(|actual| actual == "unresolved_import_target"),
+            !codes
+                .iter()
+                .any(|actual| actual == "unresolved_import_target"),
             "Elan8RequirementManagement should resolve via embedded method KPAR: {codes:?}"
         );
         assert_eq!(

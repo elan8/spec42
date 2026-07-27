@@ -226,12 +226,14 @@ pub fn install_embedded_kpar_library(
     paths: &KparLibraryPaths,
     config: &KparLibraryConfig,
 ) -> Result<KparLibraryMetadata, String> {
-    let archive = embedded_archive(&config.id).filter(|bytes| !bytes.is_empty()).ok_or_else(|| {
-        format!(
-            "This spec42 binary was built without embedded {} (id={}).",
-            config.display_name, config.id
-        )
-    })?;
+    let archive = embedded_archive(&config.id)
+        .filter(|bytes| !bytes.is_empty())
+        .ok_or_else(|| {
+            format!(
+                "This spec42 binary was built without embedded {} (id={}).",
+                config.display_name, config.id
+            )
+        })?;
     let mut cfg = config.clone();
     cfg.repo = EMBEDDED_KPAR_LIBRARY_REPO.to_string();
     install_kpar_library_from_bytes(paths, &cfg, archive)
@@ -292,10 +294,7 @@ pub fn install_kpar_library_from_bytes(
     } else {
         staging_version_root.join(&normalized_content_path)
     };
-    ensure_directory_path(
-        &staging_install_path,
-        "Managed kpar-libraries staging path",
-    )?;
+    ensure_directory_path(&staging_install_path, "Managed kpar-libraries staging path")?;
 
     let project_name = if is_kpar_bytes(archive_bytes) {
         let materialized = materialize_kpar_bytes(archive_bytes, &staging_install_path)?;
@@ -491,6 +490,9 @@ mod tests {
             artifact: Some("elan8-domain-libraries-0.2.0.kpar".to_string()),
         };
         let install = managed_install_path(&paths, &config);
-        assert!(install.ends_with("kpar-libraries/domain/versions/0.2.0") || install.ends_with(r"kpar-libraries\domain\versions\0.2.0"));
+        assert!(
+            install.ends_with("kpar-libraries/domain/versions/0.2.0")
+                || install.ends_with(r"kpar-libraries\domain\versions\0.2.0")
+        );
     }
 }

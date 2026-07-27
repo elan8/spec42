@@ -1,4 +1,4 @@
-﻿use std::collections::{BTreeMap, BTreeSet};
+use std::collections::{BTreeMap, BTreeSet};
 use std::fs;
 use std::path::{Path, PathBuf};
 
@@ -11,9 +11,7 @@ use crate::stdlib::{
 };
 use crate::sysand::{dependency_roots_from_status, detect_sysand_status, SysandStatus};
 use workspace::catalog::{HostLibraryRequest, KparLibraryComponent};
-use workspace::library::managed::{
-    managed_status as kpar_managed_status, KparLibraryStatus,
-};
+use workspace::library::managed::{managed_status as kpar_managed_status, KparLibraryStatus};
 use workspace::{EngineBuilder, Spec42Engine};
 
 #[cfg(test)]
@@ -299,7 +297,10 @@ fn build_doctor_kpar_library(
 ) -> Result<DoctorKparLibrary, String> {
     let mut status = kpar_managed_status(&component.paths, &component.config)?;
     if status.install_path.is_none() {
-        status.install_path = component.path.as_ref().map(|path| path.display().to_string());
+        status.install_path = component
+            .path
+            .as_ref()
+            .map(|path| path.display().to_string());
     }
     if status.source.is_none() {
         status.source = component.source.clone();
@@ -314,7 +315,10 @@ fn build_doctor_kpar_library(
     Ok(DoctorKparLibrary {
         id: component.id.clone(),
         display_name: component.display_name.clone(),
-        path: component.path.as_ref().map(|path| path.display().to_string()),
+        path: component
+            .path
+            .as_ref()
+            .map(|path| path.display().to_string()),
         source: component.source.clone(),
         source_kind: kpar_library_source_kind(component.source.as_deref()),
         status,
@@ -400,9 +404,9 @@ fn parse_kpar_library_path_overrides(
 ) -> Result<BTreeMap<String, PathBuf>, String> {
     let mut overrides = BTreeMap::new();
     for entry in entries {
-        let (id, path) = entry.split_once('=').ok_or_else(|| {
-            format!("invalid --kpar-library-path '{entry}' (expected ID=PATH)")
-        })?;
+        let (id, path) = entry
+            .split_once('=')
+            .ok_or_else(|| format!("invalid --kpar-library-path '{entry}' (expected ID=PATH)"))?;
         let id = id.trim();
         let path = path.trim();
         if id.is_empty() || path.is_empty() {
@@ -619,11 +623,17 @@ mod tests {
 
     #[test]
     fn parse_kpar_library_path_overrides_accepts_id_path() {
-        let overrides =
-            parse_kpar_library_path_overrides(&["domain=C:/libs/domain".to_string()]).expect("parse");
+        let overrides = parse_kpar_library_path_overrides(&["domain=C:/libs/domain".to_string()])
+            .expect("parse");
         assert_eq!(
-            overrides.get("domain").map(|path| path.display().to_string()),
-            Some(canonicalize_lossy(Path::new("C:/libs/domain")).display().to_string())
+            overrides
+                .get("domain")
+                .map(|path| path.display().to_string()),
+            Some(
+                canonicalize_lossy(Path::new("C:/libs/domain"))
+                    .display()
+                    .to_string()
+            )
         );
     }
 
