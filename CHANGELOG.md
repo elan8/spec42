@@ -14,6 +14,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   inherited features with their declaring definitions, multiplicity, direction, feature
   modifiers, documentation and applied metadata. The VS Code inspector renders each semantic
   concept as a navigable section while remaining compatible with 0.46 server responses.
+- **Keeps interconnection labels legible in dense routing areas.** Connector paths are painted
+  before a dedicated top label layer, labels prefer the longest horizontal route segment instead
+  of crowded bend points, and a canvas-colored halo prevents crossing lines from obscuring text.
 - **Expands deterministic SysML v2 code actions.** Unresolved and ambiguous references can now
   import or qualify matching symbols and create missing definitions; untyped part usages can
   create and apply a matching `part def`; implicit redefinitions can be made explicit with `:>>`;

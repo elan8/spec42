@@ -34,7 +34,13 @@ export function drawEdges(
   layoutDto?: InterconnectionLayoutDto,
 ): void {
   const layoutLookup = layoutDto ? buildInterconnectionLayoutLookup(layoutDto) : undefined;
-  const group = root.append("g").attr("class", "viz-edges");
+  const edgeLayer = root.append("g").attr("class", "viz-edges");
+  const labels: Array<{
+    edge: LaidOutEdge;
+    edgeKind: string;
+    displayLabel: string;
+    anchor: EdgeLabelAnchor;
+  }> = [];
   for (const edge of edges) {
     if (!edge.sourceNode || !edge.targetNode) continue;
     const path = isInterconnectionView
@@ -45,7 +51,7 @@ export function drawEdges(
     const displayLabel = edgeDisplayLabel(edge, edgeKind, isInterconnectionView);
     const stroke = strokeColorForEdge(edgeKind, theme);
     const strokeWidth = edgeKind === "hierarchy" ? 1.4 : isInterconnectionView ? 2 : 1.8;
-    const pathSelection = group
+    const pathSelection = edgeLayer
       .append("path")
       .attr("class", `${isInterconnectionView ? "ibd-connector" : "general-connector"} viz-edge viz-edge--${edgeKind}`)
       .attr("d", path)
@@ -59,18 +65,38 @@ export function drawEdges(
       .style("opacity", 0.9);
     applyEdgeMarker(pathSelection, edgeKind, isInterconnectionView, theme);
     if (shouldRenderEdgeLabel(edge, edgeKind, isInterconnectionView)) {
-      const midpoint = edgeMidpoint(edge, isInterconnectionView, layoutLookup);
-      group
-        .append("text")
-        .attr("class", `viz-edge-label viz-edge-label--${edgeKind}`)
-        .attr("x", midpoint.x)
-        .attr("y", midpoint.y)
-        .attr("text-anchor", "middle")
-        .attr("dy", "-0.35em")
-        .attr("fill", theme.textPrimary)
-        .attr("font-size", 11)
-        .text(truncate(displayLabel, 18));
+      labels.push({
+        edge,
+        edgeKind,
+        displayLabel,
+        anchor: edgeLabelAnchor(edge, isInterconnectionView, layoutLookup),
+      });
     }
+  }
+  if (labels.length === 0) return;
+
+  // Keep labels in a dedicated top layer. Drawing a path and its label in the same loop allowed
+  // every later connector to paint over all earlier labels in dense interconnection diagrams.
+  const labelLayer = root
+    .append("g")
+    .attr("class", "viz-edge-labels")
+    .style("pointer-events", "none");
+  for (const { edge, edgeKind, displayLabel, anchor } of labels) {
+    labelLayer
+      .append("text")
+      .attr("class", `viz-edge-label viz-edge-label--${edgeKind}`)
+      .attr("data-connector-id", edge.id)
+      .attr("x", anchor.x)
+      .attr("y", anchor.y)
+      .attr("text-anchor", anchor.textAnchor)
+      .attr("dy", anchor.dy)
+      .attr("fill", theme.textPrimary)
+      .attr("font-size", 11)
+      .attr("paint-order", "stroke fill")
+      .attr("stroke", theme.canvasBackground)
+      .attr("stroke-width", 4)
+      .attr("stroke-linejoin", "round")
+      .text(truncate(displayLabel, 18));
   }
 }
 
@@ -771,20 +797,58 @@ export function pathForIbdEdge(
   return pointsToPathD(points);
 }
 
-function edgeMidpoint(
+export interface EdgeLabelAnchor {
+  x: number;
+  y: number;
+  textAnchor: "middle" | "start";
+  dy: string;
+}
+
+function routePointsForEdge(
+  edge: LaidOutEdge,
+  layoutLookup?: InterconnectionLayoutLookup,
+): Array<{ x: number; y: number }> {
+  const layoutEdge = layoutLookup?.edgesById.get(edge.id);
+  return layoutEdge?.routePoints?.length
+    ? layoutEdge.routePoints
+    : resolveIbdRoutePoints(edge) ?? [];
+}
+
+export function interconnectionEdgeLabelAnchor(
+  edge: LaidOutEdge,
+  layoutLookup?: InterconnectionLayoutLookup,
+): EdgeLabelAnchor | null {
+  const routePoints = routePointsForEdge(edge, layoutLookup);
+  if (routePoints.length < 2) return null;
+  const segments = routePoints.slice(0, -1).map((start, index) => {
+    const end = routePoints[index + 1];
+    return {
+      start,
+      end,
+      horizontal: Math.abs(start.y - end.y) < 1e-6,
+      length: Math.hypot(end.x - start.x, end.y - start.y),
+    };
+  });
+  const horizontal = segments
+    .filter((segment) => segment.horizontal && segment.length >= 24)
+    .sort((a, b) => b.length - a.length)[0];
+  const segment = horizontal ?? segments.sort((a, b) => b.length - a.length)[0];
+  if (!segment) return null;
+  const x = (segment.start.x + segment.end.x) / 2;
+  const y = (segment.start.y + segment.end.y) / 2;
+  return segment.horizontal
+    ? { x, y, textAnchor: "middle", dy: "-0.55em" }
+    : { x: x + 8, y, textAnchor: "start", dy: "0.35em" };
+}
+
+function edgeLabelAnchor(
   edge: LaidOutEdge,
   isInterconnectionView: boolean,
   layoutLookup?: InterconnectionLayoutLookup,
-): { x: number; y: number } {
+): EdgeLabelAnchor {
   if (isInterconnectionView) {
-    const layoutEdge = layoutLookup?.edgesById.get(edge.id);
-    const routePoints = layoutEdge?.routePoints?.length
-      ? layoutEdge.routePoints
-      : resolveIbdRoutePoints(edge);
-    if (routePoints && routePoints.length > 0) {
-      const index = Math.floor((routePoints.length - 1) / 2);
-      return routePoints[index];
-    }
+    const anchor = interconnectionEdgeLabelAnchor(edge, layoutLookup);
+    if (anchor) return anchor;
   } else {
     const section = edge.layout?.sections?.[0];
     if (section) {
@@ -794,7 +858,7 @@ function edgeMidpoint(
       }>;
       if (points.length > 0) {
         const index = Math.floor((points.length - 1) / 2);
-        return points[index];
+        return { ...points[index], textAnchor: "middle", dy: "-0.35em" };
       }
     }
   }
@@ -806,7 +870,9 @@ function edgeMidpoint(
     return {
       x: ((sourceNode.x || 0) + (targetNode.x || 0) + width) / 2,
       y: ((sourceNode.y || 0) + (targetNode.y || 0) + height) / 2,
+      textAnchor: "middle",
+      dy: "-0.35em",
     };
   }
-  return { x: 0, y: 0 };
+  return { x: 0, y: 0, textAnchor: "middle", dy: "-0.35em" };
 }

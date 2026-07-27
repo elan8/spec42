@@ -7,10 +7,7 @@ use language_service::{
     InMemoryWorkspace, WorkspaceSnapshot,
 };
 
-#[path = "../helpers/support.rs"]
-mod support;
-
-use support::{document, multi_doc};
+use crate::support::{document, multi_doc};
 
 const PATH: &str = "test.sysml";
 
