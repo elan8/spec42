@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- **Adds golden parity tests between the webview and headless diagram export paths.**
+  `shared/diagram-renderer` fixtures now render through both a real jsdom DOM (the same
+  path the VS Code webview uses) and the headless virtual DOM (`spec42 diagrams export` /
+  `POST /v1/diagrams/export`), and assert identical structural SVG markers (node classes,
+  edge classes, marker ids) against a checked-in golden fixture per view. A regression that
+  breaks parity between the two paths — for example a renderer change relying on a DOM API
+  the headless virtual DOM doesn't implement — now fails CI instead of silently shipping a
+  divergent CLI/API export. See `docs/engineering/DIAGRAM-EXPORT-QUALITY-ANALYSIS.md`.
+
 ## [0.47.1] - 2026-07-27
 
 - **Moves interconnection port labels into the ELK layout graph itself, with a dedicated overlay

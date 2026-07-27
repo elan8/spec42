@@ -1,0 +1,33 @@
+{
+  "classCounts": {
+    "graph-node-background": 2,
+    "ibd-connector": 1,
+    "ibd-part": 2,
+    "ibd-view-frame": 1,
+    "node-name-text": 2,
+    "port-icon": 2,
+    "port-label": 2,
+    "sysml-viz-svg": 1,
+    "viz-bg": 1,
+    "viz-edge": 1,
+    "viz-edge--flow": 1,
+    "viz-edges": 1,
+    "viz-node": 2,
+    "viz-node--usage": 2,
+    "viz-node-name": 2,
+    "viz-nodes": 1,
+    "viz-port-overlay": 2,
+    "viz-port-overlays": 1,
+    "viz-root": 1
+  },
+  "markerIds": [
+    "general-d3-arrow",
+    "general-d3-arrow-open",
+    "general-d3-diamond",
+    "general-d3-specializes",
+    "ibd-connection-dot",
+    "ibd-flow-arrow",
+    "ibd-interface-arrow",
+    "viz-arrow"
+  ]
+}

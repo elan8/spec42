@@ -184,8 +184,21 @@ Use these markers to verify shared-renderer output across VS Code, CLI, and HTTP
 | `diagrams.rs` unit tests | `render_diagram(...Svg)` invokes headless shared renderer and emits shared markers | Full workspace coverage |
 | `api_http` diagram export test | HTTP API SVG contains shared renderer markers and omits legacy layout marker | Visual pixel parity |
 | `interconnection_elk_layout_matches_typescript_golden` | Internal legacy layout probe | Public drawing path |
+| `renderer.golden-parity.test.ts` (jsdom) + `headless-export.golden-parity.test.ts` (headless virtual DOM) | Same fixture rendered through both export paths produces identical structural SVG markers (node/edge classes, marker ids) — see `src/test-support/` | Pixel-level visual parity |
 
-**Remaining gap:** no pixel-level CLI-vs-VS Code screenshot diff; current gates assert structural SVG parity markers.
+**Remaining gap:** no pixel-level CLI-vs-VS Code screenshot diff; gates assert structural SVG parity markers, now including a direct cross-path diff (2026-07-27) in addition to each path's own hardcoded expectations.
+
+**2026-07-27 investigation: known QuickJS-vs-V8 ELK routing divergence, not fixed.** Auditing the
+robot-vacuum `interconnections` view (the densest real IBD model available, 152 connect/port
+declarations) found 1 of 192 text elements (`bmsBus: I2cPort`) crossed by an edge segment — but
+only through the real CLI (`spec42 diagrams export`, which runs the headless bundle in QuickJS).
+The identical payload rendered through jsdom (V8, the VS Code-equivalent path) and through the
+same headless virtual DOM run under Node/V8 both produce zero overlaps. The divergence is
+therefore not a gap in the port-label overlay/halo logic (which is identical code on all three
+paths) — it's ELK producing a very slightly different route for this one edge specifically under
+QuickJS. Deliberately not patched with a defensive heuristic (e.g. a solid label background) since
+that would paper over an unexplained engine-level numerical difference rather than address it;
+revisit only if this recurs with real evidence of scope beyond this one case.
 
 ## Recommendations
 
@@ -238,7 +251,7 @@ Regenerate with `node scripts/generate-conformance-matrix.mjs`.
 | CLI General View hierarchical ELK input | Superseded | Headless shared renderer owns layout |
 | Headless shared-renderer SVG export | Done | True CLI/editor parity |
 | BNF long-tail notation in shared renderer | Ongoing | Closer to OMG figures |
-| CLI vs VS Code golden parity tests | Medium | Prevents regression |
+| CLI vs VS Code golden parity tests | Done (structural; pixel-level still open) | Prevents regression |
 
 ## References (code)
 
