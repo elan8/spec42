@@ -324,12 +324,8 @@ pub(crate) fn code_action(
                 if code == "unresolved_type_reference" || code == "unresolved_ref_type_reference"
         );
         if is_unresolved_type_reference {
-            let import_actions = suggest_add_import_quick_fixes(
-                &text,
-                &uri,
-                diagnostic,
-                &state.semantic_graph,
-            );
+            let import_actions =
+                suggest_add_import_quick_fixes(&text, &uri, diagnostic, &state.semantic_graph);
             let has_imports = !import_actions.is_empty();
             for action in import_actions {
                 actions.push(CodeActionOrCommand::CodeAction(action));

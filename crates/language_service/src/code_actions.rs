@@ -469,11 +469,17 @@ fn source_already_imports(lines: &[&str], qn: &str) -> bool {
     ];
     lines.iter().any(|line| {
         let trimmed = line.trim();
-        needles.iter().any(|needle| trimmed.contains(needle.as_str()))
+        needles
+            .iter()
+            .any(|needle| trimmed.contains(needle.as_str()))
     })
 }
 
-fn rewrite_line_replacing_simple_name(raw_line: &str, simple_name: &str, qualified: &str) -> Option<String> {
+fn rewrite_line_replacing_simple_name(
+    raw_line: &str,
+    simple_name: &str,
+    qualified: &str,
+) -> Option<String> {
     let code_only = raw_line.split("//").next().unwrap_or("");
     let comment_part = &raw_line[code_only.len()..];
     // Replace the type/specializes reference token, preferring the last whole-word match
@@ -590,9 +596,7 @@ fn rewrite_implicit_redefinition_line(raw_line: &str) -> Option<String> {
             if remainder.starts_with(":>>") {
                 return None;
             }
-            return Some(format!(
-                "{leading}{keyword} :>> {remainder}{comment_part}"
-            ));
+            return Some(format!("{leading}{keyword} :>> {remainder}{comment_part}"));
         }
     }
     None
@@ -622,7 +626,10 @@ fn suggest_create_matching_part_def_impl(
         edits.push(TextEditDto {
             path: path.to_string(),
             range: line_insert_range(insert_line as u32),
-            replacement: format!("{indent}part def {type_name} {{ }}\n", indent = insert_indent),
+            replacement: format!(
+                "{indent}part def {type_name} {{ }}\n",
+                indent = insert_indent
+            ),
         });
     }
     edits.push(TextEditDto {
@@ -683,10 +690,15 @@ fn suggest_create_verification_case_impl(
     let raw_line = *lines.get(target_line)?;
     let (req_name, _) = parse_requirement_name(raw_line)?;
     let verify_name = format!("Verify{}", to_pascal_case(&req_name));
-    let (search_start, search_end) = find_package_context(&lines, target_line)
-        .unwrap_or((0, lines.len().saturating_sub(1)));
-    if has_matching_definition(&lines, search_start, search_end, "verification def", &verify_name)
-    {
+    let (search_start, search_end) =
+        find_package_context(&lines, target_line).unwrap_or((0, lines.len().saturating_sub(1)));
+    if has_matching_definition(
+        &lines,
+        search_start,
+        search_end,
+        "verification def",
+        &verify_name,
+    ) {
         return None;
     }
     let insert_line = if raw_line.contains('{') {
@@ -1015,12 +1027,8 @@ pub fn suggest_add_import_quick_fixes(
     };
     let enclosing = context_node_at_line(graph, document_uri, diagnostic.line)
         .and_then(|node| enclosing_package_qn(graph, node));
-    let candidates = collect_import_candidate_qns(
-        graph,
-        document_uri,
-        &simple_name,
-        enclosing.as_deref(),
-    );
+    let candidates =
+        collect_import_candidate_qns(graph, document_uri, &simple_name, enclosing.as_deref());
     if candidates.is_empty() {
         return Vec::new();
     }

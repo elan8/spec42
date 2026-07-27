@@ -127,7 +127,10 @@ fn suggest_create_definition_for_unresolved_ref_type() {
         suggest_create_definition_for_unresolved_type_quick_fix(source, PATH, diagnostic_line(1))
             .expect("quick fix");
     assert_eq!(suggestion.title, "Create `part def SensorUnit`");
-    assert_eq!(suggestion.edits[0].replacement, "  part def SensorUnit { }\n");
+    assert_eq!(
+        suggestion.edits[0].replacement,
+        "  part def SensorUnit { }\n"
+    );
 }
 
 #[test]
@@ -286,14 +289,8 @@ fn suggest_qualify_ambiguous_name_offers_candidates() {
 #[test]
 fn suggest_add_import_for_cross_package_type() {
     let workspace = multi_doc(&[
-        (
-            "defs.sysml",
-            "package Defs {\n  part def Vehicle;\n}\n",
-        ),
-        (
-            "use.sysml",
-            "package Use {\n  part car : Vehicle;\n}\n",
-        ),
+        ("defs.sysml", "package Defs {\n  part def Vehicle;\n}\n"),
+        ("use.sysml", "package Use {\n  part car : Vehicle;\n}\n"),
     ]);
     let uri = workspace.resolve_uri_for_path("use.sysml").expect("uri");
     let source = workspace.document_text(&uri).expect("text").to_string();

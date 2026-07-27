@@ -2268,11 +2268,13 @@ fn requirement_line_offers_create_verification_case_refactor() {
                 .cloned()
                 .unwrap_or_default();
             found = edits.iter().any(|edit| {
-                edit["newText"].as_str().map(|t| {
-                    t.contains("verification def VerifyBatteryRuntime")
-                        && t.contains("verify BatteryRuntime;")
-                })
-                .unwrap_or(false)
+                edit["newText"]
+                    .as_str()
+                    .map(|t| {
+                        t.contains("verification def VerifyBatteryRuntime")
+                            && t.contains("verify BatteryRuntime;")
+                    })
+                    .unwrap_or(false)
             });
         }
         break;
