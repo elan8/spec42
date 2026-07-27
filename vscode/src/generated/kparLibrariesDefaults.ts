@@ -25,7 +25,7 @@ export const KPAR_LIBRARIES_DEFAULTS: readonly KparLibraryDefaults[] = [
     "version": "0.1.1",
     "repo": "elan8/mbse-methodology",
     "format": "kpar",
-    "artifact": "elan8-method-libraries-0.1.0.kpar",
+    "artifact": "elan8-method-libraries-0.1.1.kpar",
     "contentPath": ""
   }
 ] as const;
