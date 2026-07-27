@@ -30,6 +30,7 @@ fn minimal_domain_kpar(work: &std::path::Path) -> std::path::PathBuf {
     let options = PackOptions {
         project,
         source_roots: vec![lib],
+        named_source_roots: vec![],
         excludes: vec![],
     };
     build_kpar(&options, &kpar_path).expect("pack kpar");
@@ -72,7 +73,7 @@ fn install_root_uses_discovered_package_roots() {
 
     let engine = EngineBuilder::default()
         .cache_dir(temp.path().join("cache"))
-        .domain_libraries_path(root)
+        .kpar_library_path("domain", root)
         .no_stdlib(true)
         .build()
         .expect("build engine");

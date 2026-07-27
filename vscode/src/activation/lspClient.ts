@@ -39,9 +39,14 @@ type RawSysandStatus = {
   warnings?: string[];
 };
 
+type RawDoctorKparLibrary = {
+  id?: string;
+  path?: string;
+  source_kind?: string;
+};
+
 type RawDoctorReport = {
-  resolved_domain_libraries_path?: string;
-  domain_libraries_source_kind?: string;
+  kpar_libraries?: RawDoctorKparLibrary[];
 };
 
 export type LspClientHandles = {
@@ -287,9 +292,10 @@ export function startLanguageClient(
       ["doctor", "--format", "json"],
       workspaceRoot
     )) as RawDoctorReport;
+    const domain = report.kpar_libraries?.find((library) => library.id === "domain");
     return {
-      resolvedPath: report.resolved_domain_libraries_path,
-      sourceKind: report.domain_libraries_source_kind ?? "none",
+      resolvedPath: domain?.path,
+      sourceKind: domain?.source_kind ?? "none",
     };
   };
 

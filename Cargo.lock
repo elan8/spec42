@@ -460,7 +460,7 @@ dependencies = [
 
 [[package]]
 name = "diagram"
-version = "0.47.1"
+version = "0.47.2"
 dependencies = [
  "serde",
 ]
@@ -1097,7 +1097,7 @@ dependencies = [
 
 [[package]]
 name = "kpar"
-version = "0.47.1"
+version = "0.47.2"
 dependencies = [
  "chrono",
  "clap",
@@ -1112,7 +1112,7 @@ dependencies = [
 
 [[package]]
 name = "language_service"
-version = "0.47.1"
+version = "0.47.2"
 dependencies = [
  "serde",
  "serde_json",
@@ -1197,7 +1197,7 @@ dependencies = [
 
 [[package]]
 name = "lsp_server"
-version = "0.47.1"
+version = "0.47.2"
 dependencies = [
  "clap",
  "glob",
@@ -2000,7 +2000,7 @@ dependencies = [
 
 [[package]]
 name = "server"
-version = "0.47.1"
+version = "0.47.2"
 dependencies = [
  "anyhow",
  "axum",
@@ -2157,7 +2157,7 @@ dependencies = [
 
 [[package]]
 name = "sysml_diagnostics"
-version = "0.47.1"
+version = "0.47.2"
 dependencies = [
  "serde_json",
  "sysml-v2-parser",
@@ -2167,7 +2167,7 @@ dependencies = [
 
 [[package]]
 name = "sysml_model"
-version = "0.47.1"
+version = "0.47.2"
 dependencies = [
  "ignore",
  "petgraph",
@@ -2184,7 +2184,7 @@ dependencies = [
 
 [[package]]
 name = "sysml_tokens"
-version = "0.47.1"
+version = "0.47.2"
 dependencies = [
  "serde",
  "sysml-v2-parser",
@@ -3299,7 +3299,7 @@ dependencies = [
 
 [[package]]
 name = "workspace"
-version = "0.47.1"
+version = "0.47.2"
 dependencies = [
  "bincode",
  "directories",
@@ -3325,7 +3325,7 @@ dependencies = [
 
 [[package]]
 name = "workspace_session"
-version = "0.47.1"
+version = "0.47.2"
 dependencies = [
  "thiserror 2.0.18",
  "tokio",

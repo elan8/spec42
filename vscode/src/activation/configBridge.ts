@@ -1,5 +1,5 @@
 import * as vscode from "vscode";
-import { DOMAIN_LIBRARIES_DEFAULTS } from "../generated/domainLibrariesDefaults";
+import { kparLibraryDefaults } from "../generated/kparLibrariesDefaults";
 import { STANDARD_LIBRARY_DEFAULTS } from "../generated/standardLibraryDefaults";
 
 const CONFIG_SECTION = "spec42";
@@ -53,10 +53,14 @@ export function getStandardLibraryConfig(): StandardLibraryConfig {
 }
 
 export function getDomainLibrariesConfig(): DomainLibrariesConfig {
+  const domain = kparLibraryDefaults("domain");
+  if (!domain) {
+    throw new Error('Missing "domain" entry in kparLibrariesDefaults');
+  }
   return {
-    version: DOMAIN_LIBRARIES_DEFAULTS.version,
-    format: DOMAIN_LIBRARIES_DEFAULTS.format,
-    contentPath: DOMAIN_LIBRARIES_DEFAULTS.contentPath,
+    version: domain.version,
+    format: domain.format,
+    contentPath: domain.contentPath,
   };
 }
 

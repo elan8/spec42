@@ -98,7 +98,7 @@ Start with the examples if you are evaluating Spec42 or learning SysML v2:
 | [`examples/webshop`](examples/webshop/README.md) | Software architecture, interactions, requirements, and views. |
 | [`examples/drone`](examples/drone/README.md) | Broader system decomposition with mission behavior and requirements. |
 
-Reusable SysML v2 domain libraries from [elan8/sysml-domain-libraries](https://github.com/elan8/sysml-domain-libraries) are bundled inside the Spec42 server binary and materialized on first use (same as the OMG standard library).
+Reusable SysML v2 domain libraries from [elan8/sysml-domain-libraries](https://github.com/elan8/sysml-domain-libraries) and Elan8 MBSE method libraries from [elan8/mbse-methodology](https://github.com/elan8/mbse-methodology) are each bundled as separate KPAR archives inside the Spec42 server binary and materialized on first use (same as the OMG standard library). Availability does not require projects to import them.
 
 ## Installation
 
@@ -137,7 +137,8 @@ spec42 doctor
 | [`shared/diagram-renderer`](shared/diagram-renderer/README.md) | Shared TypeScript diagram renderer used by editor and export workflows. |
 | [`docs`](docs/README.md) | User, architecture, engineering, API, and reference documentation. |
 | [`examples`](examples/README.md) | Example SysML workspaces. |
-| [`config/domain-libraries.json`](config/domain-libraries.json) | Pinned revision of bundled Elan8 domain libraries. |
+| [`config/domain-libraries.json`](config/domain-libraries.json) | Pinned revision of the bundled Elan8 domain libraries KPAR. |
+| [`config/method-libraries.json`](config/method-libraries.json) | Pinned revision of the bundled Elan8 method libraries KPAR. |
 
 ## Building
 

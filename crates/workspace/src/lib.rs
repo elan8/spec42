@@ -33,9 +33,9 @@ pub use incremental::{
 };
 pub use library::{
     bundle::LibraryBundleConfig,
-    domain::{
-        domain_libraries_paths_from_data_dir, DomainLibrariesConfig, DomainLibrariesPaths,
-        DomainLibrariesStatus,
+    managed::{
+        kpar_library_paths_from_data_dir, registry_configs, KparLibraryConfig, KparLibraryPaths,
+        KparLibraryStatus,
     },
     resolve_explicit_library_path,
     stdlib::{

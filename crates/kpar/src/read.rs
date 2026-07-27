@@ -298,6 +298,7 @@ mod tests {
                     usage: vec![],
                 },
                 source_roots: vec![source.path().join("domain")],
+                named_source_roots: vec![],
                 excludes: vec![],
             },
             &kpar_path,

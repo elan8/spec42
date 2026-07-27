@@ -15,7 +15,7 @@ fn robot_vacuum_snapshot_validates_and_prepares_product_decomposition() {
     let cache = tempdir().expect("cache");
     let engine = EngineBuilder::default()
         .cache_dir(cache.path().to_path_buf())
-        .embed_domain_libraries()
+        .embed_kpar_libraries()
         .build()
         .expect("engine");
 

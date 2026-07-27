@@ -16,7 +16,10 @@ use crate::schema::{ChecksumEntry, Meta, Project, META_FILE, PROJECT_FILE};
 pub struct PackOptions {
     pub project: Project,
     /// Root directories whose files are included (e.g. domain/, technical/, generic/).
+    /// Archive paths use each directory's file name as the prefix.
     pub source_roots: Vec<PathBuf>,
+    /// Additional roots packed under an explicit archive prefix (e.g. `method` → `method/...`).
+    pub named_source_roots: Vec<(String, PathBuf)>,
     /// Path prefixes to exclude (e.g. "examples/", "scripts/").
     pub excludes: Vec<String>,
 }
@@ -30,8 +33,18 @@ impl PackOptions {
                 .map(|name| repo_root.join(name))
                 .filter(|p| p.is_dir())
                 .collect(),
+            named_source_roots: Vec::new(),
             excludes: default_domain_excludes(),
         }
+    }
+
+    /// Pack `path` under `archive_prefix/` in the KPAR (e.g. method libraries as `method/`).
+    pub fn with_named_source_root(mut self, archive_prefix: impl Into<String>, path: PathBuf) -> Self {
+        if path.is_dir() {
+            self.named_source_roots
+                .push((archive_prefix.into(), path));
+        }
+        self
     }
 }
 
@@ -53,6 +66,12 @@ pub fn build_kpar(options: &PackOptions, dest: &Path) -> Result<()> {
         }
         let root_name = root.file_name().and_then(|n| n.to_str()).unwrap_or("src");
         collect_sources(root, root, root_name, &options.excludes, &mut files)?;
+    }
+    for (prefix, root) in &options.named_source_roots {
+        if !root.is_dir() {
+            continue;
+        }
+        collect_sources(root, root, prefix, &options.excludes, &mut files)?;
     }
     if files.is_empty() {
         return Err(KparError::InvalidArchive(
@@ -340,5 +359,33 @@ mod tests {
         assert!(out
             .join("technical/software/duplicate/SoftwareCore.sysml")
             .is_file());
+    }
+
+    #[test]
+    fn named_source_root_packs_under_explicit_prefix() {
+        let repo = tempdir().expect("temp repo");
+        let domain = repo.path().join("domain").join("Core.sysml");
+        fs::create_dir_all(domain.parent().unwrap()).expect("domain dir");
+        fs::write(&domain, "package DomainCore {}").expect("write domain");
+
+        let method = tempdir().expect("method library");
+        let method_file = method.path().join("Elan8Method.sysml");
+        fs::write(&method_file, "library package Elan8Method {}").expect("write method");
+
+        let options = PackOptions::domain_libraries_defaults(test_project(), repo.path())
+            .with_named_source_root("method", method.path().to_path_buf());
+        let kpar_path = repo.path().join("bundle.kpar");
+        build_kpar(&options, &kpar_path).expect("pack");
+
+        let archive = open_kpar_path(&kpar_path).expect("open");
+        assert_eq!(
+            archive.meta.index.get("Elan8Method"),
+            Some(&"method/Elan8Method.sysml".to_string())
+        );
+
+        let out = repo.path().join("out");
+        materialize(&fs::read(&kpar_path).expect("read"), &out).expect("materialize");
+        assert!(out.join("method/Elan8Method.sysml").is_file());
+        assert!(out.join("domain/Core.sysml").is_file());
     }
 }

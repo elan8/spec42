@@ -1,5 +1,5 @@
 pub mod bundle;
-pub mod domain;
+pub mod managed;
 pub mod stdlib;
 pub mod types;
 

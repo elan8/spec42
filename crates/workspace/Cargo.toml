@@ -8,9 +8,9 @@ description = "Protocol-neutral workspace build, snapshot, comparison and librar
 build = "build.rs"
 
 [features]
-default = ["embed-stdlib", "embed-domain-libraries"]
+default = ["embed-stdlib", "embed-kpar-libraries"]
 embed-stdlib = []
-embed-domain-libraries = []
+embed-kpar-libraries = []
 
 [build-dependencies]
 serde = { workspace = true }

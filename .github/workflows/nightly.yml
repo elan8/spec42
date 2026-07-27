@@ -48,29 +48,36 @@ jobs:
           path: .cache/sysml-stdlib-kpar-${{ env.SPEC42_STDLIB_VERSION }}
           key: sysml-stdlib-${{ env.SPEC42_STDLIB_VERSION }}
 
-      - name: Prepare domain libraries bundle
+      - name: Prepare KPAR library bundles
         run: |
-          VERSION=$(node -p "require('./config/domain-libraries.json').version")
-          echo "SPEC42_DOMAIN_LIBRARIES_VERSION=${VERSION}" >> $GITHUB_ENV
-          echo "SPEC42_DOMAIN_LIBRARIES_BUNDLE_ZIP=${{ github.workspace }}/.cache/elan8-domain-libraries-${VERSION}.kpar" >> $GITHUB_ENV
+          DOMAIN_VERSION=$(node -p "require('./config/libraries/domain.json').version")
+          METHOD_VERSION=$(node -p "require('./config/libraries/method.json').version")
+          echo "SPEC42_DOMAIN_LIBRARIES_VERSION=${DOMAIN_VERSION}" >> $GITHUB_ENV
+          echo "SPEC42_METHOD_LIBRARIES_VERSION=${METHOD_VERSION}" >> $GITHUB_ENV
+          echo "SPEC42_KPAR_LIBRARY_BUNDLE_DOMAIN=${{ github.workspace }}/.cache/elan8-domain-libraries-${DOMAIN_VERSION}.kpar" >> $GITHUB_ENV
+          echo "SPEC42_KPAR_LIBRARY_BUNDLE_METHOD=${{ github.workspace }}/.cache/elan8-method-libraries-${METHOD_VERSION}.kpar" >> $GITHUB_ENV
 
-      - name: Restore domain libraries bundle cache
+      - name: Restore KPAR library bundles cache
         uses: actions/cache/restore@v4
-        id: domain-libraries-cache
+        id: kpar-libraries-cache
         with:
-          path: .cache/elan8-domain-libraries-${{ env.SPEC42_DOMAIN_LIBRARIES_VERSION }}.kpar
-          key: sysml-domain-libraries-${{ env.SPEC42_DOMAIN_LIBRARIES_VERSION }}
+          path: |
+            .cache/elan8-domain-libraries-${{ env.SPEC42_DOMAIN_LIBRARIES_VERSION }}.kpar
+            .cache/elan8-method-libraries-${{ env.SPEC42_METHOD_LIBRARIES_VERSION }}.kpar
+          key: kpar-libraries-domain-${{ env.SPEC42_DOMAIN_LIBRARIES_VERSION }}-method-${{ env.SPEC42_METHOD_LIBRARIES_VERSION }}
 
-      - name: Fetch domain libraries bundle
-        if: steps.domain-libraries-cache.outputs.cache-hit != 'true'
-        run: bash scripts/fetch-domain-libraries-bundle.sh
+      - name: Fetch KPAR library bundles
+        if: steps.kpar-libraries-cache.outputs.cache-hit != 'true'
+        run: bash scripts/fetch-kpar-libraries-bundle.sh
 
-      - name: Save domain libraries bundle cache
-        if: steps.domain-libraries-cache.outputs.cache-hit != 'true'
+      - name: Save KPAR library bundles cache
+        if: steps.kpar-libraries-cache.outputs.cache-hit != 'true'
         uses: actions/cache/save@v4
         with:
-          path: .cache/elan8-domain-libraries-${{ env.SPEC42_DOMAIN_LIBRARIES_VERSION }}.kpar
-          key: sysml-domain-libraries-${{ env.SPEC42_DOMAIN_LIBRARIES_VERSION }}
+          path: |
+            .cache/elan8-domain-libraries-${{ env.SPEC42_DOMAIN_LIBRARIES_VERSION }}.kpar
+            .cache/elan8-method-libraries-${{ env.SPEC42_METHOD_LIBRARIES_VERSION }}.kpar
+          key: kpar-libraries-domain-${{ env.SPEC42_DOMAIN_LIBRARIES_VERSION }}-method-${{ env.SPEC42_METHOD_LIBRARIES_VERSION }}
 
       - name: Clone SysML-v2-Release
         run: git clone --depth 1 https://github.com/Systems-Modeling/SysML-v2-Release.git sysml-v2-release
@@ -138,29 +145,36 @@ jobs:
           path: .cache/sysml-stdlib-kpar-${{ env.SPEC42_STDLIB_VERSION }}
           key: sysml-stdlib-${{ env.SPEC42_STDLIB_VERSION }}
 
-      - name: Prepare domain libraries bundle
+      - name: Prepare KPAR library bundles
         run: |
-          VERSION=$(node -p "require('./config/domain-libraries.json').version")
-          echo "SPEC42_DOMAIN_LIBRARIES_VERSION=${VERSION}" >> $GITHUB_ENV
-          echo "SPEC42_DOMAIN_LIBRARIES_BUNDLE_ZIP=${{ github.workspace }}/.cache/elan8-domain-libraries-${VERSION}.kpar" >> $GITHUB_ENV
+          DOMAIN_VERSION=$(node -p "require('./config/libraries/domain.json').version")
+          METHOD_VERSION=$(node -p "require('./config/libraries/method.json').version")
+          echo "SPEC42_DOMAIN_LIBRARIES_VERSION=${DOMAIN_VERSION}" >> $GITHUB_ENV
+          echo "SPEC42_METHOD_LIBRARIES_VERSION=${METHOD_VERSION}" >> $GITHUB_ENV
+          echo "SPEC42_KPAR_LIBRARY_BUNDLE_DOMAIN=${{ github.workspace }}/.cache/elan8-domain-libraries-${DOMAIN_VERSION}.kpar" >> $GITHUB_ENV
+          echo "SPEC42_KPAR_LIBRARY_BUNDLE_METHOD=${{ github.workspace }}/.cache/elan8-method-libraries-${METHOD_VERSION}.kpar" >> $GITHUB_ENV
 
-      - name: Restore domain libraries bundle cache
+      - name: Restore KPAR library bundles cache
         uses: actions/cache/restore@v4
-        id: domain-libraries-cache
+        id: kpar-libraries-cache
         with:
-          path: .cache/elan8-domain-libraries-${{ env.SPEC42_DOMAIN_LIBRARIES_VERSION }}.kpar
-          key: sysml-domain-libraries-${{ env.SPEC42_DOMAIN_LIBRARIES_VERSION }}
+          path: |
+            .cache/elan8-domain-libraries-${{ env.SPEC42_DOMAIN_LIBRARIES_VERSION }}.kpar
+            .cache/elan8-method-libraries-${{ env.SPEC42_METHOD_LIBRARIES_VERSION }}.kpar
+          key: kpar-libraries-domain-${{ env.SPEC42_DOMAIN_LIBRARIES_VERSION }}-method-${{ env.SPEC42_METHOD_LIBRARIES_VERSION }}
 
-      - name: Fetch domain libraries bundle
-        if: steps.domain-libraries-cache.outputs.cache-hit != 'true'
-        run: bash scripts/fetch-domain-libraries-bundle.sh
+      - name: Fetch KPAR library bundles
+        if: steps.kpar-libraries-cache.outputs.cache-hit != 'true'
+        run: bash scripts/fetch-kpar-libraries-bundle.sh
 
-      - name: Save domain libraries bundle cache
-        if: steps.domain-libraries-cache.outputs.cache-hit != 'true'
+      - name: Save KPAR library bundles cache
+        if: steps.kpar-libraries-cache.outputs.cache-hit != 'true'
         uses: actions/cache/save@v4
         with:
-          path: .cache/elan8-domain-libraries-${{ env.SPEC42_DOMAIN_LIBRARIES_VERSION }}.kpar
-          key: sysml-domain-libraries-${{ env.SPEC42_DOMAIN_LIBRARIES_VERSION }}
+          path: |
+            .cache/elan8-domain-libraries-${{ env.SPEC42_DOMAIN_LIBRARIES_VERSION }}.kpar
+            .cache/elan8-method-libraries-${{ env.SPEC42_METHOD_LIBRARIES_VERSION }}.kpar
+          key: kpar-libraries-domain-${{ env.SPEC42_DOMAIN_LIBRARIES_VERSION }}-method-${{ env.SPEC42_METHOD_LIBRARIES_VERSION }}
 
       - name: Build server (debug for visualization test host)
         run: cargo build -p server
@@ -233,29 +247,36 @@ jobs:
           path: .cache/sysml-stdlib-kpar-${{ env.SPEC42_STDLIB_VERSION }}
           key: sysml-stdlib-${{ env.SPEC42_STDLIB_VERSION }}
 
-      - name: Prepare domain libraries bundle
+      - name: Prepare KPAR library bundles
         run: |
-          VERSION=$(node -p "require('./config/domain-libraries.json').version")
-          echo "SPEC42_DOMAIN_LIBRARIES_VERSION=${VERSION}" >> $GITHUB_ENV
-          echo "SPEC42_DOMAIN_LIBRARIES_BUNDLE_ZIP=${{ github.workspace }}/.cache/elan8-domain-libraries-${VERSION}.kpar" >> $GITHUB_ENV
+          DOMAIN_VERSION=$(node -p "require('./config/libraries/domain.json').version")
+          METHOD_VERSION=$(node -p "require('./config/libraries/method.json').version")
+          echo "SPEC42_DOMAIN_LIBRARIES_VERSION=${DOMAIN_VERSION}" >> $GITHUB_ENV
+          echo "SPEC42_METHOD_LIBRARIES_VERSION=${METHOD_VERSION}" >> $GITHUB_ENV
+          echo "SPEC42_KPAR_LIBRARY_BUNDLE_DOMAIN=${{ github.workspace }}/.cache/elan8-domain-libraries-${DOMAIN_VERSION}.kpar" >> $GITHUB_ENV
+          echo "SPEC42_KPAR_LIBRARY_BUNDLE_METHOD=${{ github.workspace }}/.cache/elan8-method-libraries-${METHOD_VERSION}.kpar" >> $GITHUB_ENV
 
-      - name: Restore domain libraries bundle cache
+      - name: Restore KPAR library bundles cache
         uses: actions/cache/restore@v4
-        id: domain-libraries-cache
+        id: kpar-libraries-cache
         with:
-          path: .cache/elan8-domain-libraries-${{ env.SPEC42_DOMAIN_LIBRARIES_VERSION }}.kpar
-          key: sysml-domain-libraries-${{ env.SPEC42_DOMAIN_LIBRARIES_VERSION }}
+          path: |
+            .cache/elan8-domain-libraries-${{ env.SPEC42_DOMAIN_LIBRARIES_VERSION }}.kpar
+            .cache/elan8-method-libraries-${{ env.SPEC42_METHOD_LIBRARIES_VERSION }}.kpar
+          key: kpar-libraries-domain-${{ env.SPEC42_DOMAIN_LIBRARIES_VERSION }}-method-${{ env.SPEC42_METHOD_LIBRARIES_VERSION }}
 
-      - name: Fetch domain libraries bundle
-        if: steps.domain-libraries-cache.outputs.cache-hit != 'true'
-        run: bash scripts/fetch-domain-libraries-bundle.sh
+      - name: Fetch KPAR library bundles
+        if: steps.kpar-libraries-cache.outputs.cache-hit != 'true'
+        run: bash scripts/fetch-kpar-libraries-bundle.sh
 
-      - name: Save domain libraries bundle cache
-        if: steps.domain-libraries-cache.outputs.cache-hit != 'true'
+      - name: Save KPAR library bundles cache
+        if: steps.kpar-libraries-cache.outputs.cache-hit != 'true'
         uses: actions/cache/save@v4
         with:
-          path: .cache/elan8-domain-libraries-${{ env.SPEC42_DOMAIN_LIBRARIES_VERSION }}.kpar
-          key: sysml-domain-libraries-${{ env.SPEC42_DOMAIN_LIBRARIES_VERSION }}
+          path: |
+            .cache/elan8-domain-libraries-${{ env.SPEC42_DOMAIN_LIBRARIES_VERSION }}.kpar
+            .cache/elan8-method-libraries-${{ env.SPEC42_METHOD_LIBRARIES_VERSION }}.kpar
+          key: kpar-libraries-domain-${{ env.SPEC42_DOMAIN_LIBRARIES_VERSION }}-method-${{ env.SPEC42_METHOD_LIBRARIES_VERSION }}
 
       - name: Run drone interconnection performance report
         run: cargo test -p lsp_server --test lsp_integration integration::powersystems_performance::drone_interconnection_performance_smoke_report -- --nocapture

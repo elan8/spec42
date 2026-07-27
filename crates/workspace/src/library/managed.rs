@@ -1,3 +1,8 @@
+//! Config-driven managed KPAR libraries (domain, method, and future Elan8 bundles).
+//!
+//! Pins live in `config/libraries/*.json`. The build script embeds each archive and
+//! generates `kpar_libraries_registry.rs` included below.
+
 use std::fs;
 use std::io::{self, Write};
 use std::path::{Path, PathBuf};
@@ -9,56 +14,43 @@ use serde::{Deserialize, Serialize};
 use crate::library::bundle::{is_kpar_bytes, materialize_kpar_bytes, normalize_content_path};
 use crate::library::stdlib::install_path_is_ready;
 
-pub const DEFAULT_DOMAIN_LIBRARIES_VERSION: &str = env!("SPEC42_DOMAIN_LIBRARIES_VERSION");
-pub const DEFAULT_DOMAIN_LIBRARIES_REPO: &str = env!("SPEC42_DOMAIN_LIBRARIES_REPO");
-pub const DEFAULT_DOMAIN_LIBRARIES_CONTENT_PATH: &str =
-    env!("SPEC42_DOMAIN_LIBRARIES_CONTENT_PATH");
-pub const DEFAULT_DOMAIN_LIBRARIES_FORMAT: &str = env!("SPEC42_DOMAIN_LIBRARIES_FORMAT");
-pub const EMBEDDED_DOMAIN_LIBRARIES_REPO: &str = "embedded";
+include!(concat!(env!("OUT_DIR"), "/kpar_libraries_registry.rs"));
 
-#[cfg(feature = "embed-domain-libraries")]
-pub const EMBEDDED_DOMAIN_LIBRARIES_ARCHIVE: &[u8] =
-    include_bytes!(concat!(env!("OUT_DIR"), "/domain-libraries.embedded.kpar"));
+pub const EMBEDDED_KPAR_LIBRARY_REPO: &str = "embedded";
 
-#[cfg(not(feature = "embed-domain-libraries"))]
-pub const EMBEDDED_DOMAIN_LIBRARIES_ARCHIVE: &[u8] = &[];
-
-#[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct DomainLibrariesConfig {
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+pub struct KparLibraryConfig {
+    pub id: String,
+    pub display_name: String,
     pub version: String,
     pub repo: String,
     pub content_path: String,
-    #[serde(default = "default_domain_libraries_format")]
     pub format: String,
     #[serde(default)]
     pub artifact: Option<String>,
 }
 
-fn default_domain_libraries_format() -> String {
-    DEFAULT_DOMAIN_LIBRARIES_FORMAT.to_string()
-}
-
-impl DomainLibrariesConfig {
+impl KparLibraryConfig {
     pub fn is_kpar(&self) -> bool {
         self.format
             .eq_ignore_ascii_case(crate::library::bundle::FORMAT_KPAR)
     }
-}
 
-impl Default for DomainLibrariesConfig {
-    fn default() -> Self {
+    pub fn from_embedded(entry: &EmbeddedKparLibrary) -> Self {
         Self {
-            version: DEFAULT_DOMAIN_LIBRARIES_VERSION.to_string(),
-            repo: DEFAULT_DOMAIN_LIBRARIES_REPO.to_string(),
-            content_path: DEFAULT_DOMAIN_LIBRARIES_CONTENT_PATH.to_string(),
-            format: DEFAULT_DOMAIN_LIBRARIES_FORMAT.to_string(),
-            artifact: None,
+            id: entry.id.to_string(),
+            display_name: entry.display_name.to_string(),
+            version: entry.version.to_string(),
+            repo: entry.repo.to_string(),
+            content_path: entry.content_path.to_string(),
+            format: entry.format.to_string(),
+            artifact: entry.artifact.map(str::to_string),
         }
     }
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct DomainLibrariesMetadata {
+pub struct KparLibraryMetadata {
     pub installed_version: String,
     pub install_path: String,
     pub installed_at: String,
@@ -71,7 +63,9 @@ pub struct DomainLibrariesMetadata {
 }
 
 #[derive(Debug, Clone, Serialize)]
-pub struct DomainLibrariesStatus {
+pub struct KparLibraryStatus {
+    pub id: String,
+    pub display_name: String,
     pub pinned_version: String,
     pub installed_version: Option<String>,
     pub install_path: Option<String>,
@@ -84,24 +78,38 @@ pub struct DomainLibrariesStatus {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct DomainLibrariesPaths {
+pub struct KparLibraryPaths {
+    pub id: String,
     pub managed_root: PathBuf,
     pub metadata_path: PathBuf,
 }
 
-pub fn domain_libraries_paths_from_data_dir(data_dir: PathBuf) -> DomainLibrariesPaths {
-    let managed_root = data_dir.join("domain-libraries");
+pub fn registry_configs() -> Vec<KparLibraryConfig> {
+    EMBEDDED_KPAR_LIBRARIES
+        .iter()
+        .map(KparLibraryConfig::from_embedded)
+        .collect()
+}
+
+pub fn embedded_entry(id: &str) -> Option<&'static EmbeddedKparLibrary> {
+    EMBEDDED_KPAR_LIBRARIES.iter().find(|entry| entry.id == id)
+}
+
+pub fn embedded_archive(id: &str) -> Option<&'static [u8]> {
+    embedded_entry(id).map(|entry| entry.archive)
+}
+
+pub fn kpar_library_paths_from_data_dir(data_dir: &Path, id: &str) -> KparLibraryPaths {
+    let managed_root = data_dir.join("kpar-libraries").join(id);
     let metadata_path = managed_root.join("metadata.toml");
-    DomainLibrariesPaths {
+    KparLibraryPaths {
+        id: id.to_string(),
         managed_root,
         metadata_path,
     }
 }
 
-pub fn managed_install_path(
-    paths: &DomainLibrariesPaths,
-    config: &DomainLibrariesConfig,
-) -> PathBuf {
+pub fn managed_install_path(paths: &KparLibraryPaths, config: &KparLibraryConfig) -> PathBuf {
     let content = normalize_content_path(&config.content_path);
     let version_root = paths.managed_root.join("versions").join(&config.version);
     if content.is_empty() {
@@ -112,8 +120,8 @@ pub fn managed_install_path(
 }
 
 pub fn load_managed_metadata(
-    paths: &DomainLibrariesPaths,
-) -> Result<Option<DomainLibrariesMetadata>, String> {
+    paths: &KparLibraryPaths,
+) -> Result<Option<KparLibraryMetadata>, String> {
     if !paths.metadata_path.is_file() {
         return Ok(None);
     }
@@ -125,12 +133,12 @@ pub fn load_managed_metadata(
 }
 
 pub fn save_managed_metadata(
-    paths: &DomainLibrariesPaths,
-    metadata: &DomainLibrariesMetadata,
+    paths: &KparLibraryPaths,
+    metadata: &KparLibraryMetadata,
 ) -> Result<(), String> {
-    ensure_directory_path(&paths.managed_root, "Managed domain-libraries root")?;
+    ensure_directory_path(&paths.managed_root, "Managed kpar-libraries root")?;
     let raw = toml::to_string(metadata)
-        .map_err(|err| format!("Failed to serialize domain libraries metadata: {err}"))?;
+        .map_err(|err| format!("Failed to serialize kpar library metadata: {err}"))?;
     let temp_path = paths.metadata_path.with_extension("toml.tmp");
     fs::write(&temp_path, raw)
         .map_err(|err| format!("Failed to write {}: {err}", temp_path.display()))?;
@@ -143,7 +151,7 @@ pub fn save_managed_metadata(
     })
 }
 
-pub fn remove_managed_metadata(paths: &DomainLibrariesPaths) -> Result<(), String> {
+pub fn remove_managed_metadata(paths: &KparLibraryPaths) -> Result<(), String> {
     if paths.metadata_path.exists() {
         fs::remove_file(&paths.metadata_path)
             .map_err(|err| format!("Failed to remove {}: {err}", paths.metadata_path.display()))?;
@@ -152,9 +160,9 @@ pub fn remove_managed_metadata(paths: &DomainLibrariesPaths) -> Result<(), Strin
 }
 
 pub fn managed_status(
-    paths: &DomainLibrariesPaths,
-    config: &DomainLibrariesConfig,
-) -> Result<DomainLibrariesStatus, String> {
+    paths: &KparLibraryPaths,
+    config: &KparLibraryConfig,
+) -> Result<KparLibraryStatus, String> {
     let metadata = load_managed_metadata(paths)?;
     let expected_path = managed_install_path(paths, config);
     let version_matches = metadata
@@ -170,17 +178,18 @@ pub fn managed_status(
     let status_message = metadata.as_ref().and_then(|metadata| {
         if !path_ready {
             Some(format!(
-                "Managed domain libraries path is not readable: {}",
-                metadata.install_path
+                "Managed {} path is not readable: {}",
+                config.display_name, metadata.install_path
             ))
         } else if !version_matches {
             Some(format!(
-                "Managed domain libraries version {} is stale; pinned version is {}.",
-                metadata.installed_version, config.version
+                "Managed {} version {} is stale; pinned version is {}.",
+                config.display_name, metadata.installed_version, config.version
             ))
         } else if !path_matches {
             Some(format!(
-                "Managed domain libraries path {} does not match pinned path {}.",
+                "Managed {} path {} does not match pinned path {}.",
+                config.display_name,
                 metadata.install_path,
                 expected_path.display()
             ))
@@ -188,7 +197,9 @@ pub fn managed_status(
             None
         }
     });
-    Ok(DomainLibrariesStatus {
+    Ok(KparLibraryStatus {
+        id: config.id.clone(),
+        display_name: config.display_name.clone(),
         pinned_version: config.version.clone(),
         installed_version: metadata
             .as_ref()
@@ -198,7 +209,7 @@ pub fn managed_status(
             .map(|metadata| metadata.install_path.clone()),
         is_installed,
         source: metadata.as_ref().map(|m| {
-            if m.repo == EMBEDDED_DOMAIN_LIBRARIES_REPO {
+            if m.repo == EMBEDDED_KPAR_LIBRARY_REPO {
                 "bundled".to_string()
             } else {
                 "managed".to_string()
@@ -211,27 +222,29 @@ pub fn managed_status(
     })
 }
 
-pub fn install_embedded_domain_libraries(
-    paths: &DomainLibrariesPaths,
-    config: &DomainLibrariesConfig,
-) -> Result<DomainLibrariesMetadata, String> {
-    #[allow(clippy::const_is_empty)]
-    if EMBEDDED_DOMAIN_LIBRARIES_ARCHIVE.is_empty() {
-        return Err("This spec42 binary was built without embedded domain libraries.".to_string());
-    }
+pub fn install_embedded_kpar_library(
+    paths: &KparLibraryPaths,
+    config: &KparLibraryConfig,
+) -> Result<KparLibraryMetadata, String> {
+    let archive = embedded_archive(&config.id).filter(|bytes| !bytes.is_empty()).ok_or_else(|| {
+        format!(
+            "This spec42 binary was built without embedded {} (id={}).",
+            config.display_name, config.id
+        )
+    })?;
     let mut cfg = config.clone();
-    cfg.repo = EMBEDDED_DOMAIN_LIBRARIES_REPO.to_string();
-    install_domain_libraries_from_bytes(paths, &cfg, EMBEDDED_DOMAIN_LIBRARIES_ARCHIVE)
+    cfg.repo = EMBEDDED_KPAR_LIBRARY_REPO.to_string();
+    install_kpar_library_from_bytes(paths, &cfg, archive)
 }
 
-pub fn install_domain_libraries_from_bytes(
-    paths: &DomainLibrariesPaths,
-    config: &DomainLibrariesConfig,
+pub fn install_kpar_library_from_bytes(
+    paths: &KparLibraryPaths,
+    config: &KparLibraryConfig,
     archive_bytes: &[u8],
-) -> Result<DomainLibrariesMetadata, String> {
+) -> Result<KparLibraryMetadata, String> {
     let normalized_content_path = normalize_content_path(&config.content_path);
 
-    ensure_directory_path(&paths.managed_root, "Managed domain-libraries root")?;
+    ensure_directory_path(&paths.managed_root, "Managed kpar-libraries root")?;
 
     let install_path = managed_install_path(paths, config);
     if install_path_is_ready(&install_path) {
@@ -281,31 +294,35 @@ pub fn install_domain_libraries_from_bytes(
     };
     ensure_directory_path(
         &staging_install_path,
-        "Managed domain-libraries staging path",
+        "Managed kpar-libraries staging path",
     )?;
 
     let project_name = if is_kpar_bytes(archive_bytes) {
         let materialized = materialize_kpar_bytes(archive_bytes, &staging_install_path)?;
         Some(materialized.project.name)
     } else {
-        return Err("Expected a KPAR archive for domain libraries installation.".to_string());
+        return Err(format!(
+            "Expected a KPAR archive for {} installation.",
+            config.display_name
+        ));
     };
     if version_root.exists() {
         let remove_target = version_root.display().to_string();
         fs::remove_dir_all(&version_root).map_err(|err| {
             format!(
-                "Failed to replace corrupt managed domain libraries directory {}: {err}",
-                remove_target
+                "Failed to replace corrupt managed {} directory {}: {err}",
+                config.display_name, remove_target
             )
         })?;
     }
     if let Some(parent) = version_root.parent() {
-        ensure_directory_path(parent, "Managed domain-libraries versions root")?;
+        ensure_directory_path(parent, "Managed kpar-libraries versions root")?;
     }
     let rename_target = version_root.display().to_string();
     fs::rename(&staging_version_root, &version_root).map_err(|err| {
         format!(
-            "Failed replacing managed domain libraries version directory {} with {}: {err}",
+            "Failed replacing managed {} version directory {} with {}: {err}",
+            config.display_name,
             staging_version_root.display(),
             rename_target
         )
@@ -315,7 +332,8 @@ pub fn install_domain_libraries_from_bytes(
     }
     if !install_path_is_ready(&install_path) {
         return Err(format!(
-            "Managed domain libraries install at {} is not readable after extraction.",
+            "Managed {} install at {} is not readable after extraction.",
+            config.display_name,
             install_path.display()
         ));
     }
@@ -324,7 +342,7 @@ pub fn install_domain_libraries_from_bytes(
         .duration_since(UNIX_EPOCH)
         .map(|duration| duration.as_secs().to_string())
         .unwrap_or_else(|_| "0".to_string());
-    let metadata = DomainLibrariesMetadata {
+    let metadata = KparLibraryMetadata {
         installed_version: config.version.clone(),
         install_path: install_path.display().to_string(),
         installed_at,
@@ -337,7 +355,7 @@ pub fn install_domain_libraries_from_bytes(
     Ok(metadata)
 }
 
-pub fn remove_domain_libraries(paths: &DomainLibrariesPaths) -> Result<bool, String> {
+pub fn remove_kpar_library(paths: &KparLibraryPaths) -> Result<bool, String> {
     let metadata = load_managed_metadata(paths)?;
     let Some(metadata) = metadata else {
         return Ok(false);
@@ -383,8 +401,8 @@ impl Drop for InstallLockGuard {
     }
 }
 
-fn acquire_install_lock(paths: &DomainLibrariesPaths) -> Result<InstallLockGuard, String> {
-    ensure_directory_path(&paths.managed_root, "Managed domain-libraries root")?;
+fn acquire_install_lock(paths: &KparLibraryPaths) -> Result<InstallLockGuard, String> {
+    ensure_directory_path(&paths.managed_root, "Managed kpar-libraries root")?;
     let lock_path = paths.managed_root.join(INSTALL_LOCK_FILE);
     let deadline = Instant::now() + Duration::from_millis(INSTALL_LOCK_TIMEOUT_MS);
     loop {
@@ -403,7 +421,7 @@ fn acquire_install_lock(paths: &DomainLibrariesPaths) -> Result<InstallLockGuard
             Err(err) if err.kind() == io::ErrorKind::AlreadyExists => {
                 if Instant::now() >= deadline {
                     return Err(format!(
-                        "Timed out waiting for domain-libraries install lock at {}",
+                        "Timed out waiting for kpar-libraries install lock at {}",
                         lock_path.display()
                     ));
                 }
@@ -411,7 +429,7 @@ fn acquire_install_lock(paths: &DomainLibrariesPaths) -> Result<InstallLockGuard
             }
             Err(err) => {
                 return Err(format!(
-                    "Failed to acquire domain-libraries install lock at {}: {err}",
+                    "Failed to acquire kpar-libraries install lock at {}: {err}",
                     lock_path.display()
                 ));
             }
@@ -420,16 +438,16 @@ fn acquire_install_lock(paths: &DomainLibrariesPaths) -> Result<InstallLockGuard
 }
 
 fn metadata_for_ready_install(
-    paths: &DomainLibrariesPaths,
-    config: &DomainLibrariesConfig,
+    paths: &KparLibraryPaths,
+    config: &KparLibraryConfig,
     normalized_content_path: &str,
     install_path: &Path,
-) -> Result<DomainLibrariesMetadata, String> {
+) -> Result<KparLibraryMetadata, String> {
     let installed_at = SystemTime::now()
         .duration_since(UNIX_EPOCH)
         .map(|duration| duration.as_secs().to_string())
         .unwrap_or_else(|_| "0".to_string());
-    let metadata = DomainLibrariesMetadata {
+    let metadata = KparLibraryMetadata {
         installed_version: config.version.clone(),
         install_path: install_path.display().to_string(),
         installed_at,
@@ -462,15 +480,17 @@ mod tests {
 
     #[test]
     fn managed_install_path_uses_content_subdirectory() {
-        let paths = domain_libraries_paths_from_data_dir(PathBuf::from("/tmp/spec42-data"));
-        let config = DomainLibrariesConfig {
-            version: "0.1.0".to_string(),
+        let paths = kpar_library_paths_from_data_dir(Path::new("/tmp/spec42-data"), "domain");
+        let config = KparLibraryConfig {
+            id: "domain".to_string(),
+            display_name: "Domain libraries".to_string(),
+            version: "0.2.0".to_string(),
             repo: "elan8/sysml-domain-libraries".to_string(),
             content_path: String::new(),
             format: "kpar".to_string(),
-            artifact: Some("elan8-domain-libraries-0.1.0.kpar".to_string()),
+            artifact: Some("elan8-domain-libraries-0.2.0.kpar".to_string()),
         };
         let install = managed_install_path(&paths, &config);
-        assert!(install.ends_with("versions/0.1.0"));
+        assert!(install.ends_with("kpar-libraries/domain/versions/0.2.0") || install.ends_with(r"kpar-libraries\domain\versions\0.2.0"));
     }
 }

@@ -5,8 +5,10 @@ import {
   flattenLibrarySearchResults,
   summarizeLibrarySearch,
 } from "../../library/libraryStatusViewModel";
-import { DOMAIN_LIBRARIES_DEFAULTS } from "../../generated/domainLibrariesDefaults";
+import { kparLibraryDefaults } from "../../generated/kparLibrariesDefaults";
 import { STANDARD_LIBRARY_DEFAULTS } from "../../generated/standardLibraryDefaults";
+
+const DOMAIN_LIBRARIES_DEFAULTS = kparLibraryDefaults("domain")!;
 
 describe("libraryStatusViewModel", () => {
   it("summarizes standard, domain, and custom library packages", () => {

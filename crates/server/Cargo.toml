@@ -17,9 +17,9 @@ name = "spec42"
 path = "src/lib.rs"
 
 [features]
-default = ["embed-stdlib", "embed-domain-libraries"]
+default = ["embed-stdlib", "embed-kpar-libraries"]
 embed-stdlib = ["workspace/embed-stdlib"]
-embed-domain-libraries = ["workspace/embed-domain-libraries"]
+embed-kpar-libraries = ["workspace/embed-kpar-libraries"]
 
 [dependencies]
 workspace = { path = "../workspace", default-features = false }

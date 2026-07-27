@@ -4,12 +4,12 @@ pub mod ai_tools;
 pub mod api;
 pub mod cli;
 pub mod diagrams;
-pub mod domain_libraries;
 #[cfg(test)]
 pub mod elk_layout;
 pub mod environment;
 pub mod headless_renderer;
 pub mod host_snapshot;
+pub mod kpar_libraries;
 pub mod library_bundle;
 pub mod mcp;
 pub mod reports;
@@ -21,8 +21,8 @@ use std::sync::Arc;
 
 use ai_tools::{perform_explain_diagnostic, perform_model_summary};
 use cli::{
-    CheckArgs, Cli, Command, DiagramsCommand, DoctorArgs, DomainLibrariesCommand,
-    ExplainDiagnosticArgs, ModelSummaryArgs, OutputFormat, StdlibCommand, SysandCommand,
+    CheckArgs, Cli, Command, DiagramsCommand, DoctorArgs, ExplainDiagnosticArgs, LibrariesCommand,
+    ModelSummaryArgs, OutputFormat, StdlibCommand, SysandCommand,
 };
 pub use environment::DoctorReport;
 use environment::{build_doctor_report, build_engine, resolve_environment};
@@ -83,7 +83,7 @@ pub fn cli_from_global(global: &Spec42GlobalParams) -> Cli {
             .map(PathBuf::from)
             .collect(),
         stdlib_path: global.stdlib_path.as_ref().map(PathBuf::from),
-        domain_libraries_path: None,
+        kpar_library_paths: Vec::new(),
         no_stdlib: global.no_stdlib,
         stdio: false,
         command: None,
@@ -208,7 +208,7 @@ pub async fn run_cli(cli: Cli) -> Result<ExitCode, String> {
         Some(Command::ModelSummary(args)) => run_model_summary(&cli, args),
         Some(Command::Sysand { command }) => run_sysand(command),
         Some(Command::Stdlib { command }) => run_stdlib(&cli, command),
-        Some(Command::DomainLibraries { command }) => run_domain_libraries(&cli, command),
+        Some(Command::Libraries { command }) => run_libraries(&cli, command),
         Some(Command::Diagrams { command }) => run_diagrams(&cli, command),
         Some(Command::Api { .. }) => unreachable!("api command handled above"),
     }
@@ -366,59 +366,84 @@ fn run_diagrams(cli: &Cli, command: &DiagramsCommand) -> Result<ExitCode, String
     }
 }
 
-fn run_domain_libraries(cli: &Cli, command: &DomainLibrariesCommand) -> Result<ExitCode, String> {
+fn run_libraries(cli: &Cli, command: &LibrariesCommand) -> Result<ExitCode, String> {
     let environment = resolve_environment(cli)?;
-    let mut config = environment.domain_libraries.clone();
-    match command {
-        DomainLibrariesCommand::Status(args) => {
-            if let Some(version) = &args.version {
-                config.version = version.clone();
+    let selected = |id: &Option<String>| -> Result<Vec<&workspace::catalog::KparLibraryComponent>, String> {
+        match id {
+            None => Ok(environment.kpar_libraries.iter().collect()),
+            Some(wanted) => {
+                let matches: Vec<_> = environment
+                    .kpar_libraries
+                    .iter()
+                    .filter(|library| library.id == *wanted)
+                    .collect();
+                if matches.is_empty() {
+                    return Err(format!(
+                        "Unknown KPAR library id '{wanted}'. Registered: {}",
+                        environment
+                            .kpar_libraries
+                            .iter()
+                            .map(|library| library.id.as_str())
+                            .collect::<Vec<_>>()
+                            .join(", ")
+                    ));
+                }
+                Ok(matches)
             }
-            if let Some(repo) = &args.repo {
-                config.repo = repo.clone();
-            }
-            if let Some(content_path) = &args.content_path {
-                config.content_path = content_path.clone();
-            }
-            let status =
-                domain_libraries::managed_status(&environment.domain_libraries_paths, &config)?;
-            print_domain_libraries_status(&status);
         }
-        DomainLibrariesCommand::Path(args) => {
-            if let Some(version) = &args.version {
-                config.version = version.clone();
+    };
+
+    match command {
+        LibrariesCommand::Status(args) => {
+            for library in selected(&args.id)? {
+                let status =
+                    kpar_libraries::managed_status(&library.paths, &library.config)?;
+                println!("[{}] {}", library.id, library.display_name);
+                print_kpar_library_status(&status);
+                println!();
             }
-            if let Some(repo) = &args.repo {
-                config.repo = repo.clone();
+        }
+        LibrariesCommand::Path(args) => {
+            for library in selected(&args.id)? {
+                if let Some(path) = &library.path {
+                    if args.id.is_some() {
+                        println!("{}", path.display());
+                    } else {
+                        println!("{}={}", library.id, path.display());
+                    }
+                    continue;
+                }
+                let status =
+                    kpar_libraries::managed_status(&library.paths, &library.config)?;
+                if status.is_installed {
+                    if let Some(path) = status.install_path {
+                        if args.id.is_some() {
+                            println!("{path}");
+                        } else {
+                            println!("{}={path}", library.id);
+                        }
+                        continue;
+                    }
+                }
+                return Err(format!(
+                    "No path is currently configured or installed for KPAR library '{}'.",
+                    library.id
+                ));
             }
-            if let Some(content_path) = &args.content_path {
-                config.content_path = content_path.clone();
-            }
-            if let Some(path) = environment.domain_libraries_path.clone() {
-                println!("{}", path.display());
-                return Ok(ExitCode::SUCCESS);
-            }
-            let status =
-                domain_libraries::managed_status(&environment.domain_libraries_paths, &config)?;
-            if status.is_installed {
-                if let Some(path) = status.install_path {
-                    println!("{path}");
-                    return Ok(ExitCode::SUCCESS);
+        }
+        LibrariesCommand::ClearCache(args) => {
+            let mut cleared = 0usize;
+            for library in selected(&args.id)? {
+                if kpar_libraries::remove_kpar_library(&library.paths)? {
+                    cleared += 1;
+                    println!(
+                        "Cleared materialized {} data from the spec42 data directory.",
+                        library.display_name
+                    );
                 }
             }
-            return Err(
-                "No domain libraries path is currently configured or installed.".to_string(),
-            );
-        }
-        DomainLibrariesCommand::ClearCache => {
-            let removed =
-                domain_libraries::remove_domain_libraries(&environment.domain_libraries_paths)?;
-            if removed {
-                println!(
-                    "Cleared materialized domain libraries data from the spec42 data directory."
-                );
-            } else {
-                println!("No materialized domain libraries data was found.");
+            if cleared == 0 {
+                println!("No materialized KPAR library data was found.");
             }
         }
     }
@@ -513,34 +538,27 @@ fn print_doctor_report(report: &environment::DoctorReport) {
             "no"
         }
     );
-    println!(
-        "resolved domain libraries: {}",
-        report
-            .resolved_domain_libraries_path
-            .as_deref()
-            .unwrap_or("(none)")
-    );
-    println!(
-        "domain libraries source: {}",
-        report
-            .domain_libraries_source
-            .as_deref()
-            .unwrap_or("(none)")
-    );
-    println!(
-        "domain libraries source kind: {}",
-        report.domain_libraries_source_kind
-    );
-    println!(
-        "managed domain libraries ready: {}",
-        if report.domain_libraries_status.is_installed {
-            "yes"
-        } else {
-            "no"
+    if report.kpar_libraries.is_empty() {
+        println!("kpar libraries: (none)");
+    } else {
+        println!("kpar libraries:");
+        for library in &report.kpar_libraries {
+            println!(
+                "  - {} ({}) path={} source={} ready={}",
+                library.id,
+                library.display_name,
+                library.path.as_deref().unwrap_or("(none)"),
+                library.source_kind,
+                if library.status.is_installed {
+                    "yes"
+                } else {
+                    "no"
+                }
+            );
+            if let Some(message) = &library.status.status_message {
+                println!("      status: {message}");
+            }
         }
-    );
-    if let Some(message) = &report.domain_libraries_status.status_message {
-        println!("managed domain libraries status: {message}");
     }
     println!(
         "managed stdlib ready: {}",
@@ -574,20 +592,23 @@ fn print_doctor_report(report: &environment::DoctorReport) {
     }
 }
 
-fn print_domain_libraries_status(status: &domain_libraries::DomainLibrariesStatus) {
-    println!("pinned version: {}", status.pinned_version);
+fn print_kpar_library_status(status: &kpar_libraries::KparLibraryStatus) {
+    println!("  pinned version: {}", status.pinned_version);
     println!(
-        "installed version: {}",
+        "  installed version: {}",
         status.installed_version.as_deref().unwrap_or("(none)")
     );
     println!(
-        "install path: {}",
+        "  install path: {}",
         status.install_path.as_deref().unwrap_or("(none)")
     );
-    println!("ready: {}", if status.is_installed { "yes" } else { "no" });
-    println!("source: {}", status.source.as_deref().unwrap_or("(none)"));
     println!(
-        "canonical managed: {}",
+        "  ready: {}",
+        if status.is_installed { "yes" } else { "no" }
+    );
+    println!("  source: {}", status.source.as_deref().unwrap_or("(none)"));
+    println!(
+        "  canonical managed: {}",
         if status.is_canonical_managed {
             "yes"
         } else {
@@ -595,7 +616,7 @@ fn print_domain_libraries_status(status: &domain_libraries::DomainLibrariesStatu
         }
     );
     if let Some(message) = &status.status_message {
-        println!("status: {message}");
+        println!("  status: {message}");
     }
 }
 

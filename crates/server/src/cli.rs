@@ -11,8 +11,9 @@ pub struct Cli {
     pub library_paths: Vec<PathBuf>,
     #[arg(long = "stdlib-path", global = true)]
     pub stdlib_path: Option<PathBuf>,
-    #[arg(long = "domain-libraries-path", global = true)]
-    pub domain_libraries_path: Option<PathBuf>,
+    /// Override a managed KPAR library install path (repeatable): `--kpar-library-path domain=C:/libs/domain`.
+    #[arg(long = "kpar-library-path", global = true, value_name = "ID=PATH")]
+    pub kpar_library_paths: Vec<String>,
     #[arg(long = "no-stdlib", global = true, default_value_t = false)]
     pub no_stdlib: bool,
     #[arg(long = "stdio", global = true, hide = true, default_value_t = false)]
@@ -38,9 +39,10 @@ pub enum Command {
         #[command(subcommand)]
         command: StdlibCommand,
     },
-    DomainLibraries {
+    /// Manage config-driven managed KPAR libraries (domain, method, and future Elan8 bundles).
+    Libraries {
         #[command(subcommand)]
-        command: DomainLibrariesCommand,
+        command: LibrariesCommand,
     },
     Diagrams {
         #[command(subcommand)]
@@ -136,14 +138,21 @@ pub enum StdlibCommand {
     ClearCache,
 }
 
+#[derive(Debug, Clone, Args)]
+pub struct LibrariesIdArgs {
+    /// Restrict the command to a single library id (for example `domain` or `method`). Omit to target all registered libraries.
+    #[arg(long = "id")]
+    pub id: Option<String>,
+}
+
 #[derive(Debug, Clone, Subcommand)]
-pub enum DomainLibrariesCommand {
-    /// Show pinned vs installed domain libraries metadata.
-    Status(StdlibStatusArgs),
-    /// Print the resolved domain libraries directory path.
-    Path(StdlibStatusArgs),
-    /// Delete materialized domain-library files from the data directory (they are re-created from the embedded copy on next use).
-    ClearCache,
+pub enum LibrariesCommand {
+    /// Show pinned vs installed metadata for registered KPAR libraries.
+    Status(LibrariesIdArgs),
+    /// Print the resolved directory path for registered KPAR libraries.
+    Path(LibrariesIdArgs),
+    /// Delete materialized KPAR library files from the data directory (they are re-created from the embedded copy on next use).
+    ClearCache(LibrariesIdArgs),
 }
 
 #[derive(Debug, Clone, Subcommand)]
@@ -334,6 +343,57 @@ mod tests {
                 assert!(!args.allow_remote);
             }
             other => panic!("expected api serve command, got {other:?}"),
+        }
+    }
+
+    #[test]
+    fn kpar_library_path_flag_parses_repeatable_id_equals_path() {
+        let cli = Cli::parse_from([
+            "spec42",
+            "--kpar-library-path",
+            "domain=C:/libs/domain",
+            "--kpar-library-path",
+            "method=C:/libs/method",
+        ]);
+        assert_eq!(
+            cli.kpar_library_paths,
+            vec![
+                "domain=C:/libs/domain".to_string(),
+                "method=C:/libs/method".to_string(),
+            ]
+        );
+    }
+
+    #[test]
+    fn libraries_status_command_parses_optional_id() {
+        let cli = Cli::parse_from(["spec42", "libraries", "status", "--id", "domain"]);
+        match cli.command {
+            Some(Command::Libraries {
+                command: LibrariesCommand::Status(args),
+            }) => assert_eq!(args.id.as_deref(), Some("domain")),
+            other => panic!("expected libraries status command, got {other:?}"),
+        }
+    }
+
+    #[test]
+    fn libraries_path_command_parses_without_id() {
+        let cli = Cli::parse_from(["spec42", "libraries", "path"]);
+        match cli.command {
+            Some(Command::Libraries {
+                command: LibrariesCommand::Path(args),
+            }) => assert!(args.id.is_none()),
+            other => panic!("expected libraries path command, got {other:?}"),
+        }
+    }
+
+    #[test]
+    fn libraries_clear_cache_command_parses_with_id() {
+        let cli = Cli::parse_from(["spec42", "libraries", "clear-cache", "--id", "method"]);
+        match cli.command {
+            Some(Command::Libraries {
+                command: LibrariesCommand::ClearCache(args),
+            }) => assert_eq!(args.id.as_deref(), Some("method")),
+            other => panic!("expected libraries clear-cache command, got {other:?}"),
         }
     }
 

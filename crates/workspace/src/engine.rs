@@ -1,8 +1,9 @@
+use std::collections::BTreeMap;
 use std::path::{Path, PathBuf};
 
 use crate::catalog::{resolve_library_catalog, HostLibraryRequest, LibraryCatalog};
 use crate::error::{WorkspaceError, WorkspaceResult};
-use crate::library::{domain::DomainLibrariesConfig, stdlib::StandardLibraryConfig};
+use crate::library::stdlib::StandardLibraryConfig;
 use crate::snapshot::{HostContext, HostWorkspaceSnapshot, WorkspaceLoadRequest};
 use crate::version::HostSchemaVersions;
 use std::sync::Arc;
@@ -29,13 +30,12 @@ pub struct EngineBuilder {
     server_embedding_mode: bool,
     no_stdlib: bool,
     stdlib_path_override: Option<PathBuf>,
-    domain_libraries_path_override: Option<PathBuf>,
+    kpar_library_path_overrides: BTreeMap<String, PathBuf>,
     library_paths: Vec<PathBuf>,
     extra_library_paths: Vec<PathBuf>,
     standard_library: StandardLibraryConfig,
-    domain_libraries: DomainLibrariesConfig,
     use_embedded_stdlib: bool,
-    use_embedded_domain_libraries: bool,
+    use_embedded_kpar_libraries: bool,
     config_stdlib_path: Option<PathBuf>,
     config_no_stdlib: bool,
     experimental_incremental_updates: bool,
@@ -48,22 +48,14 @@ impl Default for EngineBuilder {
             server_embedding_mode: false,
             no_stdlib: false,
             stdlib_path_override: None,
-            domain_libraries_path_override: None,
+            kpar_library_path_overrides: BTreeMap::new(),
             library_paths: Vec::new(),
             extra_library_paths: Vec::new(),
             standard_library: StandardLibraryConfig::default(),
-            domain_libraries: DomainLibrariesConfig::default(),
             use_embedded_stdlib: false,
-            use_embedded_domain_libraries: false,
+            use_embedded_kpar_libraries: false,
             config_stdlib_path: None,
             config_no_stdlib: false,
-            // Default flipped from `false` to `true` once `try_incremental_update` had
-            // sufficient correctness coverage (parity + fallback tests in
-            // `workspace/tests/incremental_*.rs`). Note the measured performance win is not
-            // yet proven at the snapshot-assembly layer — see
-            // `docs/engineering/TIER2-UNIFIED-INCREMENTAL-ENGINE-DESIGN.md` — this default
-            // reflects "one correct code path" over "two paths that can drift," not a
-            // confirmed speedup. Still overridable via `.experimental_incremental_updates(false)`.
             experimental_incremental_updates: true,
         }
     }
@@ -119,8 +111,8 @@ impl Spec42Engine {
 }
 
 impl EngineBuilder {
-    pub fn cache_dir(mut self, cache_dir: impl Into<PathBuf>) -> Self {
-        self.cache_dir = Some(cache_dir.into());
+    pub fn cache_dir(mut self, path: impl Into<PathBuf>) -> Self {
+        self.cache_dir = Some(path.into());
         self
     }
 
@@ -139,8 +131,9 @@ impl EngineBuilder {
         self
     }
 
-    pub fn domain_libraries_path(mut self, path: impl Into<PathBuf>) -> Self {
-        self.domain_libraries_path_override = Some(path.into());
+    pub fn kpar_library_path(mut self, id: impl Into<String>, path: impl Into<PathBuf>) -> Self {
+        self.kpar_library_path_overrides
+            .insert(id.into(), path.into());
         self
     }
 
@@ -159,11 +152,6 @@ impl EngineBuilder {
         self
     }
 
-    pub fn domain_libraries_config(mut self, config: DomainLibrariesConfig) -> Self {
-        self.domain_libraries = config;
-        self
-    }
-
     pub fn config_stdlib_path(mut self, path: impl Into<PathBuf>) -> Self {
         self.config_stdlib_path = Some(path.into());
         self
@@ -179,8 +167,8 @@ impl EngineBuilder {
         self
     }
 
-    pub fn embed_domain_libraries(mut self) -> Self {
-        self.use_embedded_domain_libraries = true;
+    pub fn embed_kpar_libraries(mut self) -> Self {
+        self.use_embedded_kpar_libraries = true;
         self
     }
 
@@ -195,24 +183,16 @@ impl EngineBuilder {
                 "cache_dir is required to build a Spec42Engine",
             )
         })?;
-        if self.server_embedding_mode
-            && self.use_embedded_stdlib
-            && self.stdlib_path_override.is_none()
-        {
-            // Embedding hosts must either supply explicit library roots or opt into embedded bundles
-            // with an explicit cache directory. No implicit profile writes occur in this mode.
-        }
 
         let request = HostLibraryRequest {
             cache_dir: cache_dir.clone(),
             no_stdlib: self.no_stdlib,
             stdlib_path_override: self.stdlib_path_override,
-            domain_libraries_path_override: self.domain_libraries_path_override,
+            kpar_library_path_overrides: self.kpar_library_path_overrides,
             library_paths: self.library_paths,
             standard_library: self.standard_library,
-            domain_libraries: self.domain_libraries,
             use_embedded_stdlib: self.use_embedded_stdlib,
-            use_embedded_domain_libraries: self.use_embedded_domain_libraries,
+            use_embedded_kpar_libraries: self.use_embedded_kpar_libraries,
             config_stdlib_path: self.config_stdlib_path,
             config_no_stdlib: self.config_no_stdlib,
             extra_library_paths: self.extra_library_paths,
@@ -237,13 +217,10 @@ impl EngineBuilder {
             .config_no_stdlib(request.config_no_stdlib)
             .library_paths(request.library_paths)
             .extra_library_paths(request.extra_library_paths)
-            .standard_library_config(request.standard_library)
-            .domain_libraries_config(request.domain_libraries);
+            .standard_library_config(request.standard_library);
+        builder.kpar_library_path_overrides = request.kpar_library_path_overrides;
         if let Some(path) = request.stdlib_path_override {
             builder = builder.standard_library_path(path);
-        }
-        if let Some(path) = request.domain_libraries_path_override {
-            builder = builder.domain_libraries_path(path);
         }
         if let Some(path) = request.config_stdlib_path {
             builder = builder.config_stdlib_path(path);
@@ -251,8 +228,8 @@ impl EngineBuilder {
         if request.use_embedded_stdlib {
             builder = builder.embed_standard_library();
         }
-        if request.use_embedded_domain_libraries {
-            builder = builder.embed_domain_libraries();
+        if request.use_embedded_kpar_libraries {
+            builder = builder.embed_kpar_libraries();
         }
         builder
     }

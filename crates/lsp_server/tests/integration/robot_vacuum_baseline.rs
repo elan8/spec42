@@ -1,4 +1,4 @@
-﻿//! Optional regression against the sysml-robot-vacuum-cleaner showcase model.
+//! Optional regression against the sysml-robot-vacuum-cleaner showcase model.
 //!
 //! Default fixture: `third_party/sysml-robot-vacuum-cleaner` (see `scripts/fetch-robot-vacuum-cleaner.sh`).
 //! Override with `SYSML_ROBOT_VACUUM_DIR` pointing at a checkout root containing `model/`.
@@ -34,7 +34,7 @@ fn robot_vacuum_showcase_diagnostic_baseline() {
         config_path: None,
         library_paths: Vec::new(),
         stdlib_path: None,
-        domain_libraries_path: None,
+        kpar_library_paths: Vec::new(),
         no_stdlib: false,
         stdio: false,
         command: None,

@@ -1,4 +1,4 @@
-﻿//! Smoke test: embedded OMG KPAR stdlib materializes and resolves ScalarValues imports.
+//! Smoke test: embedded OMG KPAR stdlib materializes and resolves ScalarValues imports.
 
 mod common;
 
@@ -49,7 +49,7 @@ fn embedded_kpar_stdlib_resolves_scalar_values_import() {
             config_path: None,
             library_paths: vec![],
             stdlib_path: None,
-            domain_libraries_path: None,
+            kpar_library_paths: Vec::new(),
             no_stdlib: false,
             stdio: false,
             command: None,
@@ -111,7 +111,7 @@ fn scalar_values_import_unresolved_with_no_stdlib() {
             config_path: None,
             library_paths: vec![],
             stdlib_path: None,
-            domain_libraries_path: None,
+            kpar_library_paths: Vec::new(),
             no_stdlib: true,
             stdio: false,
             command: None,

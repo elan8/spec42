@@ -555,6 +555,7 @@ mod tests {
         let options = PackOptions {
             project,
             source_roots: vec![lib],
+            named_source_roots: vec![],
             excludes: vec![],
         };
         build_kpar(&options, &kpar_path).expect("pack kpar");

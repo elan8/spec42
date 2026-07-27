@@ -1,6 +1,6 @@
 //! Library catalog resolution for host embedding.
 
-use std::collections::BTreeSet;
+use std::collections::{BTreeMap, BTreeSet};
 use std::path::{Path, PathBuf};
 
 use serde::{Deserialize, Serialize};
@@ -8,11 +8,11 @@ use sha2::{Digest, Sha256};
 
 use crate::error::{WorkspaceError, WorkspaceResult};
 use crate::library::{
-    domain::{
-        domain_libraries_paths_from_data_dir, install_embedded_domain_libraries,
-        load_managed_metadata as load_domain_libraries_metadata,
-        managed_install_path as domain_managed_install_path, DomainLibrariesConfig,
-        DomainLibrariesPaths, EMBEDDED_DOMAIN_LIBRARIES_ARCHIVE, EMBEDDED_DOMAIN_LIBRARIES_REPO,
+    managed::{
+        install_embedded_kpar_library, kpar_library_paths_from_data_dir,
+        load_managed_metadata as load_kpar_library_metadata,
+        managed_install_path as kpar_managed_install_path, registry_configs, KparLibraryConfig,
+        KparLibraryPaths, EMBEDDED_KPAR_LIBRARY_REPO,
     },
     resolve_explicit_library_path,
     stdlib::{
@@ -37,12 +37,11 @@ pub struct HostLibraryRequest {
     pub cache_dir: PathBuf,
     pub no_stdlib: bool,
     pub stdlib_path_override: Option<PathBuf>,
-    pub domain_libraries_path_override: Option<PathBuf>,
+    pub kpar_library_path_overrides: BTreeMap<String, PathBuf>,
     pub library_paths: Vec<PathBuf>,
     pub standard_library: StandardLibraryConfig,
-    pub domain_libraries: DomainLibrariesConfig,
     pub use_embedded_stdlib: bool,
-    pub use_embedded_domain_libraries: bool,
+    pub use_embedded_kpar_libraries: bool,
     pub config_stdlib_path: Option<PathBuf>,
     pub config_no_stdlib: bool,
     pub extra_library_paths: Vec<PathBuf>,
@@ -57,9 +56,13 @@ pub struct StdlibComponent {
 }
 
 #[derive(Debug, Clone, Serialize)]
-pub struct DomainLibrariesComponent {
+pub struct KparLibraryComponent {
+    pub id: String,
+    pub display_name: String,
     pub path: Option<PathBuf>,
     pub source: Option<String>,
+    pub config: KparLibraryConfig,
+    pub paths: KparLibraryPaths,
 }
 
 #[derive(Debug, Clone, Serialize)]
@@ -67,42 +70,32 @@ pub struct LibraryCatalog {
     pub content_hash: String,
     pub package_roots: Vec<PathBuf>,
     pub stdlib: StdlibComponent,
-    pub domain_libraries: DomainLibrariesComponent,
+    pub kpar_libraries: Vec<KparLibraryComponent>,
     pub standard_library: StandardLibraryConfig,
-    pub domain_libraries_config: DomainLibrariesConfig,
     pub standard_library_paths: StandardLibraryPaths,
-    pub domain_libraries_paths: DomainLibrariesPaths,
 }
 
 pub fn resolve_library_catalog(request: &HostLibraryRequest) -> WorkspaceResult<LibraryCatalog> {
     let standard_library_paths = standard_library_paths_from_data_dir(request.cache_dir.clone());
-    let domain_libraries_paths = domain_libraries_paths_from_data_dir(request.cache_dir.clone());
-
     let stdlib = resolve_stdlib_component(request, &standard_library_paths)?;
-    let domain_libraries = resolve_domain_libraries_component(request, &domain_libraries_paths)?;
+    let kpar_libraries = resolve_kpar_libraries(request)?;
 
     let package_roots = merge_package_roots(
         &request.library_paths,
         &request.extra_library_paths,
         &stdlib.roots,
-        domain_libraries.path.as_ref(),
+        &kpar_libraries,
     );
 
-    let content_hash = hash_package_roots(
-        &package_roots,
-        &request.standard_library,
-        &request.domain_libraries,
-    );
+    let content_hash = hash_package_roots(&package_roots, &request.standard_library, &kpar_libraries);
 
     Ok(LibraryCatalog {
         content_hash,
         package_roots,
         stdlib,
-        domain_libraries,
+        kpar_libraries,
         standard_library: request.standard_library.clone(),
-        domain_libraries_config: request.domain_libraries.clone(),
         standard_library_paths,
-        domain_libraries_paths,
     })
 }
 
@@ -212,63 +205,96 @@ fn resolve_stdlib_component(
     })
 }
 
-fn resolve_domain_libraries_component(
+fn resolve_kpar_libraries(request: &HostLibraryRequest) -> WorkspaceResult<Vec<KparLibraryComponent>> {
+    let mut components = Vec::new();
+    for config in registry_configs() {
+        let paths = kpar_library_paths_from_data_dir(&request.cache_dir, &config.id);
+        let component = resolve_one_kpar_library(request, config, paths)?;
+        components.push(component);
+    }
+    Ok(components)
+}
+
+fn resolve_one_kpar_library(
     request: &HostLibraryRequest,
-    domain_libraries_paths: &DomainLibrariesPaths,
-) -> WorkspaceResult<DomainLibrariesComponent> {
-    if let Some(path) = request.domain_libraries_path_override.as_ref() {
-        let resolved = resolve_explicit_library_path(path, &request.cache_dir, "domain-libraries")
+    config: KparLibraryConfig,
+    paths: KparLibraryPaths,
+) -> WorkspaceResult<KparLibraryComponent> {
+    if let Some(path) = request.kpar_library_path_overrides.get(&config.id) {
+        let resolved = resolve_explicit_library_path(path, &request.cache_dir, &config.id)
             .map_err(WorkspaceError::unresolved_library_environment)?;
-        return Ok(DomainLibrariesComponent {
+        return Ok(KparLibraryComponent {
+            id: config.id.clone(),
+            display_name: config.display_name.clone(),
             path: Some(resolved.install_path),
             source: Some("flag".to_string()),
-        });
-    }
-    if let Some(value) = std::env::var_os("SPEC42_DOMAIN_LIBRARIES_PATH") {
-        let path = PathBuf::from(value);
-        let resolved = resolve_explicit_library_path(&path, &request.cache_dir, "domain-libraries")
-            .map_err(WorkspaceError::unresolved_library_environment)?;
-        return Ok(DomainLibrariesComponent {
-            path: Some(resolved.install_path),
-            source: Some("env".to_string()),
+            config,
+            paths,
         });
     }
 
-    if let Some(metadata) = load_domain_libraries_metadata(domain_libraries_paths)
+    let env_key = format!(
+        "SPEC42_KPAR_LIBRARY_PATH_{}",
+        config.id.to_ascii_uppercase().replace('-', "_")
+    );
+    if let Some(value) = std::env::var_os(&env_key) {
+        let path = PathBuf::from(value);
+        let resolved = resolve_explicit_library_path(&path, &request.cache_dir, &config.id)
+            .map_err(WorkspaceError::unresolved_library_environment)?;
+        return Ok(KparLibraryComponent {
+            id: config.id.clone(),
+            display_name: config.display_name.clone(),
+            path: Some(resolved.install_path),
+            source: Some("env".to_string()),
+            config,
+            paths,
+        });
+    }
+
+    if let Some(metadata) = load_kpar_library_metadata(&paths)
         .map_err(WorkspaceError::unresolved_library_environment)?
     {
         let managed_path = PathBuf::from(&metadata.install_path);
-        let expected_path =
-            domain_managed_install_path(domain_libraries_paths, &request.domain_libraries);
-        let metadata_is_current = metadata.installed_version == request.domain_libraries.version
+        let expected_path = kpar_managed_install_path(&paths, &config);
+        let metadata_is_current = metadata.installed_version == config.version
             && canonicalize_lossy(&managed_path) == canonicalize_lossy(&expected_path);
         if metadata_is_current && crate::library::stdlib::install_path_is_ready(&managed_path) {
-            let source = if metadata.repo == EMBEDDED_DOMAIN_LIBRARIES_REPO {
+            let source = if metadata.repo == EMBEDDED_KPAR_LIBRARY_REPO {
                 "bundled".to_string()
             } else {
                 "managed".to_string()
             };
-            return Ok(DomainLibrariesComponent {
+            return Ok(KparLibraryComponent {
+                id: config.id.clone(),
+                display_name: config.display_name.clone(),
                 path: Some(managed_path),
                 source: Some(source),
+                config,
+                paths,
             });
         }
     }
 
-    #[allow(clippy::const_is_empty)]
-    if request.use_embedded_domain_libraries && !EMBEDDED_DOMAIN_LIBRARIES_ARCHIVE.is_empty() {
-        let metadata =
-            install_embedded_domain_libraries(domain_libraries_paths, &request.domain_libraries)
-                .map_err(WorkspaceError::unresolved_library_environment)?;
-        return Ok(DomainLibrariesComponent {
-            path: Some(PathBuf::from(metadata.install_path)),
-            source: Some("bundled".to_string()),
-        });
+    if request.use_embedded_kpar_libraries {
+        if let Ok(metadata) = install_embedded_kpar_library(&paths, &config) {
+            return Ok(KparLibraryComponent {
+                id: config.id.clone(),
+                display_name: config.display_name.clone(),
+                path: Some(PathBuf::from(metadata.install_path)),
+                source: Some("bundled".to_string()),
+                config,
+                paths,
+            });
+        }
     }
 
-    Ok(DomainLibrariesComponent {
+    Ok(KparLibraryComponent {
+        id: config.id.clone(),
+        display_name: config.display_name.clone(),
         path: None,
         source: None,
+        config,
+        paths,
     })
 }
 
@@ -276,13 +302,15 @@ fn merge_package_roots(
     library_paths: &[PathBuf],
     extra_library_paths: &[PathBuf],
     stdlib_roots: &[PathBuf],
-    domain_libraries_path: Option<&PathBuf>,
+    kpar_libraries: &[KparLibraryComponent],
 ) -> Vec<PathBuf> {
     let mut paths = library_paths.to_vec();
     paths.extend(extra_library_paths.iter().cloned());
     paths.extend(stdlib_roots.iter().cloned());
-    if let Some(domain_libraries_path) = domain_libraries_path {
-        paths.push(domain_libraries_path.clone());
+    for library in kpar_libraries {
+        if let Some(path) = &library.path {
+            paths.push(path.clone());
+        }
     }
 
     let mut deduped = BTreeSet::new();
@@ -307,7 +335,7 @@ fn stdlib_resolution_roots(
 fn hash_package_roots(
     package_roots: &[PathBuf],
     standard_library: &StandardLibraryConfig,
-    domain_libraries: &DomainLibrariesConfig,
+    kpar_libraries: &[KparLibraryComponent],
 ) -> String {
     let mut hasher = Sha256::new();
     for root in package_roots {
@@ -316,7 +344,12 @@ fn hash_package_roots(
     }
     hasher.update(standard_library.version.as_bytes());
     hasher.update([0]);
-    hasher.update(domain_libraries.version.as_bytes());
+    for library in kpar_libraries {
+        hasher.update(library.id.as_bytes());
+        hasher.update([0]);
+        hasher.update(library.config.version.as_bytes());
+        hasher.update([0]);
+    }
     format!("{:x}", hasher.finalize())
 }
 
@@ -331,9 +364,8 @@ pub fn resolve_stdlib_component_for_test(
     resolve_stdlib_component(request, standard_library_paths)
 }
 
-pub fn resolve_domain_libraries_component_for_test(
+pub fn resolve_kpar_libraries_for_test(
     request: &HostLibraryRequest,
-    domain_libraries_paths: &DomainLibrariesPaths,
-) -> WorkspaceResult<DomainLibrariesComponent> {
-    resolve_domain_libraries_component(request, domain_libraries_paths)
+) -> WorkspaceResult<Vec<KparLibraryComponent>> {
+    resolve_kpar_libraries(request)
 }

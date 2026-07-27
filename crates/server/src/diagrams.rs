@@ -473,7 +473,7 @@ mod tests {
             config_path: None,
             library_paths: Vec::new(),
             stdlib_path: None,
-            domain_libraries_path: None,
+            kpar_library_paths: Vec::new(),
             no_stdlib: true,
             stdio: false,
             command: None,
