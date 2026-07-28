@@ -136,9 +136,10 @@ spec42 doctor
 | [`zed`](zed/README.md) | Zed extension. |
 | [`shared/diagram-renderer`](shared/diagram-renderer/README.md) | Shared TypeScript diagram renderer used by editor and export workflows. |
 | [`docs`](docs/README.md) | User, architecture, engineering, API, and reference documentation. |
+| [`docs-site`](docs-site) | VitePress user docs site (published to GitHub Pages on `v*` releases). |
 | [`examples`](examples/README.md) | Example SysML workspaces. |
-| [`config/domain-libraries.json`](config/domain-libraries.json) | Pinned revision of the bundled Elan8 domain libraries KPAR. |
-| [`config/method-libraries.json`](config/method-libraries.json) | Pinned revision of the bundled Elan8 method libraries KPAR. |
+| [`config/standard-library.json`](config/standard-library.json) | Pinned OMG SysML v2 standard library release. |
+| [`config/libraries/`](config/libraries) | Pinned Elan8 domain and method library KPAR configs. |
 
 ## Building
 
@@ -156,7 +157,8 @@ For contributor setup, test commands, packaging notes, and release checks, see [
 
 ## Documentation
 
-- [User documentation](docs/README.md)
+- [User documentation site](https://elan8.github.io/spec42/)
+- [In-repo user documentation](docs/README.md)
 - [VS Code extension guide](vscode/README.md)
 - [GitHub Action guide](docs/user/GITHUB-ACTION.md)
 - [Troubleshooting](docs/user/TROUBLESHOOTING.md)

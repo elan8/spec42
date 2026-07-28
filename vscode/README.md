@@ -14,8 +14,9 @@ Published Marketplace builds include the matching language server binary. Most u
 - Definitions, references, rename, document symbols, call hierarchy, and type hierarchy.
 - Workspace-first indexing for multi-file models and configured libraries.
 - Model Explorer for structural navigation.
-- Model Visualizer for supported SysML v2 graphical views.
-- Bundled SysML standard-library support through the `spec42` server.
+- Model Visualizer for supported SysML v2 graphical views (sidebar or editor tab).
+- Feature Inspector for resolved semantics of the selected model element or keyword.
+- Bundled SysML standard library plus Elan8 domain and method libraries through the `spec42` server.
 - Built-in Copilot Language Model Tools for validation and model inspection.
 
 ## Getting Started
@@ -30,12 +31,14 @@ Useful commands:
 
 - `SysML: Show SysML Model Explorer`
 - `SysML: Open SysML Visualizer`
+- `SysML: Move Visualizer to Editor`
+- `SysML: Move Visualizer to Secondary Side Bar`
 - `SysML: Refresh SysML Model Explorer`
 - `SysML: Refresh Visualization`
 - `SysML: Validate Model`
 - `SysML: Show SysML Output (Logs)`
 
-The Spec42 sidebar also includes example and library views for opening recommended sample workspaces and inspecting configured library state.
+The Spec42 sidebar also includes example and library views for opening recommended sample workspaces and inspecting configured library state. The Visualizer can move between the secondary sidebar and an editor tab (and from there into a separate window via VS Code's "Move into New Window").
 
 ## Supported Views
 
@@ -150,6 +153,7 @@ npm run build:webview
 
 ## Links
 
+- [User documentation site](https://elan8.github.io/spec42/)
 - [Source and releases](https://github.com/elan8/spec42)
 - [Issues](https://github.com/elan8/spec42/issues)
 - [Main README](https://github.com/elan8/spec42#readme)

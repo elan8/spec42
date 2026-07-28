@@ -1,13 +1,12 @@
+# Publish the VitePress docs site to GitHub Pages when a Spec42 version is released.
+# Docs track product pins (extension version, bundled KPARs), so deploy on v* tags
+# rather than on every docs-site change on main.
 name: Deploy Docs
 
 on:
   push:
-    branches: [main]
-    paths:
-      - "docs-site/**"
-      - "config/libraries/**"
-      - "config/standard-library.json"
-      - "vscode/package.json"
+    tags:
+      - "v*"
   workflow_dispatch:
 
 permissions:

@@ -76,8 +76,7 @@ impl LibraryStatusRpcProvider {
     }
 
     pub fn build_response(&self) -> Result<LibraryStatusResponse, String> {
-        let mut stdlib_status =
-            stdlib_managed_status(&self.stdlib_paths, &self.stdlib_config)?;
+        let mut stdlib_status = stdlib_managed_status(&self.stdlib_paths, &self.stdlib_config)?;
         if stdlib_status.install_path.is_none() {
             stdlib_status.install_path = self
                 .stdlib_path
@@ -242,7 +241,9 @@ mod tests {
         let component = KparLibraryComponent {
             id: "method".to_string(),
             display_name: "Method libraries".to_string(),
-            path: Some(std::path::PathBuf::from("/tmp/data/kpar-libraries/method/versions/0.1.1")),
+            path: Some(std::path::PathBuf::from(
+                "/tmp/data/kpar-libraries/method/versions/0.1.1",
+            )),
             source: Some("bundled".to_string()),
             config,
             paths,

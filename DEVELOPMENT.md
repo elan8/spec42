@@ -99,13 +99,14 @@ For normal embedded builds, fetch or place KPAR archives under the unified local
 .cache/
   sysml-stdlib-kpar-<version>/     # OMG .kpar files (one per library)
   elan8-domain-libraries-<version>.kpar
+  elan8-method-libraries-<version>.kpar
 ```
 
-Refresh the OMG stdlib archives with:
+Refresh the OMG stdlib and managed library archives with:
 
 ```bash
 bash scripts/fetch-stdlib-bundle.sh
-bash scripts/fetch-domain-libraries-bundle.sh
+bash scripts/fetch-kpar-libraries-bundle.sh
 ```
 
 Optional override for a custom stdlib cache directory:
@@ -410,21 +411,21 @@ Example workspaces are versioned as a Git submodule at the **repository root**:
 
 - `examples/` → [elan8/sysml-examples](https://github.com/elan8/sysml-examples)
 
-Elan8 domain libraries are **bundled inside the Spec42 server binary** as a **KPAR** (KerML Project Archive). The pinned version lives in `config/domain-libraries.json`. CI fetches or packs the archive with `scripts/fetch-domain-libraries-bundle.sh` before building.
+Elan8 domain and method libraries are **bundled inside the Spec42 server binary** as separate **KPAR** archives. Pins live in [`config/libraries/`](config/libraries) (`domain.json`, `method.json`). CI fetches or packs them with `scripts/fetch-kpar-libraries-bundle.sh` before building.
 
 The OMG standard library is bundled from `sysml.library.kpar` at the pinned SysML v2 Release tag (see `config/standard-library.json`). CI fetches only that directory via sparse git checkout in `scripts/fetch-stdlib-bundle.sh` before building.
 
-For local development, `build.rs` prefers, in order:
+For local development, `build.rs` prefers, in order (per managed library):
 
-1. `SPEC42_DOMAIN_LIBRARIES_BUNDLE_ZIP` (path to `.kpar`, CI/release)
-2. `SPEC42_DOMAIN_LIBRARIES_SOURCE_DIR` (pack on the fly with `kpar-pack`)
-3. A sibling checkout at `../sysml-domain-libraries` (packed to KPAR when no cached bundle exists)
-4. Cached `.cache/elan8-domain-libraries-{version}.kpar`
+1. `SPEC42_KPAR_LIBRARY_BUNDLE_<ID>` (path to `.kpar`, CI/release; legacy `SPEC42_DOMAIN_LIBRARIES_BUNDLE_ZIP` still maps to domain)
+2. `SPEC42_KPAR_LIBRARY_SOURCE_DIR_<ID>` (pack on the fly with `kpar-pack`)
+3. A sibling checkout from `pack.siblingRelative` in the library config (packed when no cached bundle exists)
+4. Cached `.cache/<artifact>` from the library pin
 
 Domain library releases are published from [elan8/sysml-domain-libraries](https://github.com/elan8/sysml-domain-libraries) via the `release-kpar` GitHub Action when a `v*` tag is pushed. Pack locally with:
 
 ```bash
-cargo run -p kpar --bin kpar-pack -- --root ../sysml-domain-libraries --version 0.1.0 --output elan8-domain-libraries-0.1.0.kpar
+cargo run -p kpar --bin kpar-pack -- --root ../sysml-domain-libraries --version 0.2.0 --output elan8-domain-libraries-0.2.0.kpar
 ```
 
 `vscode/.gitignore` ignores `vscode/examples` so duplicate checkouts under `vscode/` are not committed. If you see the same example folders twice in the Spec42 **Examples** view, remove the extra copy under `vscode/examples` and keep the root submodule.

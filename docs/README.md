@@ -2,6 +2,8 @@
 
 Use this index to find the right document for the job. Public compatibility pages still exist at the old top-level paths, but the maintained docs live in the folders below.
 
+The published user guide (getting started, Feature Inspector, libraries, What's Included) lives in [`docs-site/`](../docs-site/) and is deployed to [elan8.github.io/spec42](https://elan8.github.io/spec42/) on Spec42 `v*` releases.
+
 ## User Docs
 
 | Topic | Document |

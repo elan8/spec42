@@ -7,6 +7,33 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.48.0] - 2026-07-28
+
+- **Lets you move the Visualizer between the secondary sidebar and an editor tab.** Commands
+  `sysml.moveVisualizerToEditor` and `sysml.moveVisualizerToSidebar` keep the same webview
+  session; closing the editor tab returns the view to the sidebar. From the editor tab you can
+  use VS Code's "Move into New Window" for a separate window.
+- **Simplifies the Visualizer toolbar.** Home, Legend, Export, and layout direction are
+  icon-only actions with hover labels; the view dropdown still shows the selected view name.
+- **Serves Library dashboard status over LSP.** The extension asks the language server for
+  bundled, custom, and Sysand library status instead of reconstructing it only from local
+  config, so the Library view stays aligned with what the server actually loaded.
+- **Refreshes Spec42 user docs and keeps library overviews in sync with product pins.** New
+  guides cover Model Explorer and Feature Inspector; What's Included and domain/method library
+  pages are generated from `vscode/package.json`, `config/libraries/*.json`, and the bundled
+  KPAR artifacts (package/file trees). Help links to those pages, and the broken OMG SysML v2
+  language-spec URL is corrected to `https://www.omg.org/spec/SysML/2.0/`.
+
+## [0.47.3] - 2026-07-27
+
+- **Pins Elan8 method libraries to `0.1.1`.** Domain remains `0.2.0`; What's Included / Library
+  defaults follow `config/libraries/*.json`.
+
+## [0.47.2] - 2026-07-27
+
+- **Treats domain and method libraries as managed KPAR pins.** Config lives under
+  `config/libraries/`, fetch/pack scripts and workspace embedding load each pinned `.kpar`, and
+  the VS Code Library defaults are generated from those pins.
 - **Adds golden parity tests between the webview and headless diagram export paths.**
   `shared/diagram-renderer` fixtures now render through both a real jsdom DOM (the same
   path the VS Code webview uses) and the headless virtual DOM (`spec42 diagrams export` /
@@ -1710,6 +1737,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Parser is aligned with the SysML v2 Release validation suite; it does not claim full OMG spec compliance.
 - Some constructs may have incomplete semantic token or outline coverage.
 
+[0.48.0]: https://github.com/elan8/spec42/releases/tag/v0.48.0
+[0.47.3]: https://github.com/elan8/spec42/releases/tag/v0.47.3
+[0.47.2]: https://github.com/elan8/spec42/releases/tag/v0.47.2
+[0.47.1]: https://github.com/elan8/spec42/releases/tag/v0.47.1
+[0.47.0]: https://github.com/elan8/spec42/releases/tag/v0.47.0
+[0.46.1]: https://github.com/elan8/spec42/releases/tag/v0.46.1
+[0.46.0]: https://github.com/elan8/spec42/releases/tag/v0.46.0
 [0.33.0]: https://github.com/elan8/spec42/releases/tag/v0.33.0
 [0.32.0]: https://github.com/elan8/spec42/releases/tag/v0.32.0
 [0.31.0]: https://github.com/elan8/spec42/releases/tag/v0.31.0
