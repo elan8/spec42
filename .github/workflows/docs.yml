@@ -1,18 +1,22 @@
-# Publish the VitePress docs site to GitHub Pages when a Spec42 version is released.
-# Docs track product pins (extension version, bundled KPARs), so deploy on v* tags
-# rather than on every docs-site change on main.
+# Publish the VitePress docs site to GitHub Pages after a successful Spec42 release.
+# The github-pages environment only allows deployments from `main`, so this workflow
+# runs in that context (via workflow_run) and checks out the release commit for content.
+# Docs track product pins (extension version, bundled KPARs), so they publish with
+# each Spec42 release rather than on every docs-site change on main.
 name: Deploy Docs
 
 on:
-  push:
-    tags:
-      - "v*"
+  workflow_run:
+    workflows: ["Release"]
+    types:
+      - completed
   workflow_dispatch:
 
 permissions:
   contents: read
   pages: write
   id-token: write
+  actions: read
 
 concurrency:
   group: pages
@@ -20,12 +24,23 @@ concurrency:
 
 jobs:
   build:
+    if: github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success'
     runs-on: ubuntu-latest
     steps:
+      - name: Resolve docs source ref
+        id: source
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_run" ]; then
+            echo "ref=${{ github.event.workflow_run.head_sha }}" >> "$GITHUB_OUTPUT"
+          else
+            echo "ref=${{ github.sha }}" >> "$GITHUB_OUTPUT"
+          fi
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ steps.source.outputs.ref }}
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 24
           cache: npm
           cache-dependency-path: docs-site/package-lock.json
       - run: npm ci
@@ -38,6 +53,7 @@ jobs:
 
   deploy:
     needs: build
+    if: github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success'
     runs-on: ubuntu-latest
     environment:
       name: github-pages
