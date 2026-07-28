@@ -9,6 +9,14 @@ The Spec42 visualizer renders your SysML v2 model as an interactive diagram. It 
 
 The visualizer updates automatically as you edit your `.sysml` files.
 
+## Working with the Feature Inspector
+
+The visualizer is paired with the **Feature Inspector** in the secondary sidebar.
+
+- Clicking a diagram node pins the inspector to that element.
+- The inspector then shows resolved types, specialization/subsetting/redefinition, inherited features, relationships, values, and source location.
+- Use **Resume following cursor** in the inspector to switch back to live editor selection.
+
 ## Selecting a view
 
 Use the **Select SysML View** dropdown in the visualizer toolbar to pick which defined view to render. Views are defined in your model using `view def` and `expose`.
@@ -30,7 +38,7 @@ If no views are defined, the visualizer shows an empty state with a hint.
 | **Home** | Fit the diagram to the window. |
 | **LR / TB** | Toggle layout direction (left-to-right or top-to-bottom). |
 | **Legend** | Show a legend of diagram line styles and symbols. |
-| **Export** | Export the diagram as PNG (1×–4×), SVG, or JSON. |
+| **Export** | Export the diagram as PNG (1×-4×), SVG, or JSON. |
 
 ## Diagram legend
 

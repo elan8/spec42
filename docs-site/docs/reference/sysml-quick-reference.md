@@ -1,6 +1,6 @@
 # SysML v2 Quick Reference
 
-A concise reference for the most common SysML v2 constructs. For the full language specification, see the [OMG SysML v2 Language Specification](https://www.omg.org/spec/SysML/2.0/Language/).
+A concise reference for the most common SysML v2 constructs. For the full language specification, see the [OMG SysML v2 Language Specification](https://www.omg.org/spec/SysML/2.0/).
 
 ## Definitions
 

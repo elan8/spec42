@@ -53,7 +53,7 @@ export class SysmlReferencePanel {
 </head>
 <body>
 <h1>SysML v2 Quick Reference</h1>
-<p class="subtitle">Core concepts for Spec42 / SysML v2. See the <a href="https://elan8.github.io/spec42/" style="color: var(--vscode-textLink-foreground);">Spec42 docs</a> or the <a href="https://www.omg.org/spec/SysML/2.0/Language/" style="color: var(--vscode-textLink-foreground);">OMG SysML v2 Language Specification</a>.</p>
+<p class="subtitle">Core concepts for Spec42 / SysML v2. See the <a href="https://elan8.github.io/spec42/" style="color: var(--vscode-textLink-foreground);">Spec42 docs</a> or the <a href="https://www.omg.org/spec/SysML/2.0/" style="color: var(--vscode-textLink-foreground);">OMG SysML v2 Language Specification</a>.</p>
 
 <h2>Definitions</h2>
 <p class="note">Definitions declare reusable types. Usages instantiate them in context. Every usage keyword has a matching <code>def</code> form.</p>

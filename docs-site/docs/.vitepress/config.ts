@@ -11,7 +11,7 @@ export default defineConfig({
       { text: "Reference", link: "/reference/sysml-quick-reference" },
       {
         text: "SysML v2 Spec",
-        link: "https://www.omg.org/spec/SysML/2.0/Language/",
+        link: "https://www.omg.org/spec/SysML/2.0/",
       },
     ],
     sidebar: [
@@ -20,7 +20,9 @@ export default defineConfig({
         items: [
           { text: "Getting Started", link: "/guide/getting-started" },
           { text: "Examples", link: "/guide/examples" },
+          { text: "Model Explorer", link: "/guide/model-explorer" },
           { text: "Diagram Visualizer", link: "/guide/visualizer" },
+          { text: "Feature Inspector", link: "/guide/feature-inspector" },
           { text: "Library & Dependencies", link: "/guide/libraries" },
         ],
       },

@@ -36,6 +36,17 @@ package MyFirstModel {
 }
 ```
 
+## Exploring your model
+
+After opening a SysML workspace, the **Spec42** sidebar gives you four main tools:
+
+- **Model Explorer** for browsing packages and elements.
+- **Examples** for opening bundled sample workspaces.
+- **Help** for quick reference links and the quick-reference panel.
+- **Library** for searching the bundled standard/domain libraries and any custom libraries you add.
+
+The **Model Explorer** can switch between a semantic model view and a by-file view. Use it to reveal source locations, copy qualified names, and open package-level visualizations.
+
 ## Opening the visualizer
 
 The diagram visualizer lives in the **secondary sidebar** (right side of VS Code).
@@ -45,8 +56,19 @@ The diagram visualizer lives in the **secondary sidebar** (right side of VS Code
 
 Once open, select a view from the dropdown in the toolbar to render your model as a diagram.
 
+## Inspecting elements
+
+The **Feature Inspector** also lives in the secondary sidebar alongside the visualizer.
+
+- Place the cursor on a SysML/KerML keyword, element, reference, value, or unit.
+- The inspector follows the current selection and shows resolved semantics, relationships, source location, and language help.
+- Clicking a node in the visualizer pins the inspector to that element until you resume following the cursor.
+
 ## Next steps
 
 - [Browse the examples](./examples) to see what Spec42 can do.
+- [Learn the Model Explorer](./model-explorer) for navigating larger workspaces.
 - [Learn the visualizer](./visualizer) to get the most out of the diagrams.
+- [Learn the Feature Inspector](./feature-inspector) for resolved semantic details.
+- [Manage libraries and dependencies](./libraries) for standard, domain, custom, and Sysand-backed content.
 - [SysML v2 Quick Reference](../reference/sysml-quick-reference) for language syntax.

@@ -47,7 +47,7 @@ export class HelpViewProvider implements vscode.TreeDataProvider<HelpItem> {
       new HelpItem(
         "SysML v2 language specification",
         "link-external",
-        { command: "vscode.open", title: "Open SysML v2 Spec", arguments: [vscode.Uri.parse("https://www.omg.org/spec/SysML/2.0/Language/")] },
+        { command: "vscode.open", title: "Open SysML v2 Spec", arguments: [vscode.Uri.parse("https://www.omg.org/spec/SysML/2.0/")] },
         "link"
       ),
     ];
