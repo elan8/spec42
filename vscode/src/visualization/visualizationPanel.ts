@@ -5,7 +5,6 @@ import { LspModelProvider } from '../providers/lspModelProvider';
 import { fetchModelData, type FetchModelParams } from './modelFetcher';
 import type { GraphNodeDTO } from '../providers/sysmlModelTypes';
 import { SYSML_ENABLED_VIEWS } from './webview/constants';
-import { logError } from '../logger';
 import {
     BaseVisualizationPanelController,
     type BaseVisualizerRestoreState,
@@ -13,16 +12,25 @@ import {
     type VisualizationPanelVariantConfig,
 } from './baseVisualizationPanelController';
 import { getVisualizerLocalResourceRoots, configureVisualizerWebview, getWebviewHtml } from './htmlBuilder';
-import { createWebviewViewHost } from './visualizerHost';
+import { createWebviewPanelHost, createWebviewViewHost } from './visualizerHost';
 
 export const RESTORE_STATE_KEY = 'sysmlVisualizerRestoreState';
 export const VISUALIZER_VIEW_ID = 'sysmlVisualizerView';
+export const VISUALIZER_EDITOR_VIEW_TYPE = 'sysml.visualizerEditor';
 
 const VISUALIZER_OPEN_CONTEXT_KEY = 'sysml.visualizerOpen';
+const VISUALIZER_IN_EDITOR_CONTEXT_KEY = 'sysml.visualizerInEditor';
+
+type VisualizerHostMode = 'sidebar' | 'editor';
 
 function setVisualizerOpenContext(isOpen: boolean): void {
     VisualizationPanel._contextIsOpen = isOpen;
     void vscode.commands.executeCommand('setContext', VISUALIZER_OPEN_CONTEXT_KEY, isOpen);
+}
+
+function setVisualizerInEditorContext(inEditor: boolean): void {
+    VisualizationPanel._inEditor = inEditor;
+    void vscode.commands.executeCommand('setContext', VISUALIZER_IN_EDITOR_CONTEXT_KEY, inEditor);
 }
 
 export interface VisualizerRestoreState extends BaseVisualizerRestoreState {
@@ -71,22 +79,30 @@ function createVariantConfig(
 
 /**
  * WebviewView provider that registers the SysML Visualizer in the secondary sidebar.
- * VS Code calls resolveWebviewView once when the view becomes visible for the first time
- * and retains it (retainContextWhenHidden: true) so the diagram survives panel switches.
+ * The same controller can relocate into a WebviewPanel in the editor area; closing that
+ * editor tab returns the visualizer to the sidebar.
  */
 export class VisualizationPanel implements vscode.WebviewViewProvider {
     public static currentPanel: VisualizationPanel | undefined;
     public static _contextIsOpen: boolean = false;
+    public static _inEditor: boolean = false;
 
     private _extensionContext: vscode.ExtensionContext;
     private _lspModelProvider: LspModelProvider;
     private _runtimeState: VisualizationPanelRuntimeState | undefined;
     private _controller: BaseVisualizationPanelController<VisualizerRestoreState> | undefined;
     private _webviewView: vscode.WebviewView | undefined;
+    private _editorPanel: vscode.WebviewPanel | undefined;
+    private _mode: VisualizerHostMode = 'sidebar';
+    private _returningToSidebar = false;
     private _onInspectElement: VisualizationPanelVariantConfig<VisualizerRestoreState>['onInspectElement'];
 
     public static get isOpen(): boolean {
         return VisualizationPanel._contextIsOpen;
+    }
+
+    public static get isInEditor(): boolean {
+        return VisualizationPanel._inEditor;
     }
 
     private constructor(
@@ -141,39 +157,53 @@ export class VisualizationPanel implements vscode.WebviewViewProvider {
             return;
         }
 
-        const saved = this._extensionContext.workspaceState.get<VisualizerRestoreState>(RESTORE_STATE_KEY);
+        this.ensureRuntimeState(workspaceRootUri);
 
-        this._runtimeState = {
-            workspaceRootUri: workspaceRootUri.toString(),
-            currentView: saved?.currentView && new Set<string>(SYSML_ENABLED_VIEWS).has(saved.currentView)
-                ? saved.currentView
-                : 'general-view',
-            selectedView: saved?.selectedView,
-            lspModelProvider: this._lspModelProvider,
-        };
+        if (this._mode === 'editor') {
+            this.showSidebarPlaceholder();
+            setVisualizerOpenContext(true);
+            webviewView.onDidChangeVisibility(() => {
+                if (this._mode === 'editor') {
+                    setVisualizerOpenContext(true);
+                }
+            });
+            webviewView.onDidDispose(() => {
+                if (this._mode === 'sidebar') {
+                    setVisualizerOpenContext(false);
+                    this._controller = undefined;
+                    this._runtimeState = undefined;
+                }
+                this._webviewView = undefined;
+            });
+            return;
+        }
 
-        const host = createWebviewViewHost(webviewView);
-        this._controller = new BaseVisualizationPanelController(
-            host,
-            this._extensionContext.extensionUri,
-            this._extensionContext,
-            createVariantConfig(this._runtimeState, this._onInspectElement),
-        );
+        this.attachSidebarController();
 
         setVisualizerOpenContext(webviewView.visible);
         webviewView.onDidChangeVisibility(() => {
-            setVisualizerOpenContext(webviewView.visible);
+            if (this._mode === 'sidebar') {
+                setVisualizerOpenContext(webviewView.visible);
+            }
         });
         webviewView.onDidDispose(() => {
-            setVisualizerOpenContext(false);
-            this._controller = undefined;
-            this._runtimeState = undefined;
+            if (this._mode === 'sidebar') {
+                setVisualizerOpenContext(false);
+                this._controller?.detach();
+                this._controller = undefined;
+                this._runtimeState = undefined;
+            }
             this._webviewView = undefined;
         });
     }
 
-    /** Reveal the view in the secondary sidebar. */
+    /** Reveal the active visualizer host (editor panel or secondary sidebar). */
     public static reveal(): void {
+        const panel = VisualizationPanel.currentPanel;
+        if (panel?._mode === 'editor' && panel._editorPanel) {
+            panel._editorPanel.reveal(panel._editorPanel.viewColumn, false);
+            return;
+        }
         void vscode.commands.executeCommand(`${VISUALIZER_VIEW_ID}.focus`);
     }
 
@@ -190,6 +220,97 @@ export class VisualizationPanel implements vscode.WebviewViewProvider {
             VisualizationPanel.currentPanel._controller?.setLspModelProvider(lspModelProvider);
         }
         VisualizationPanel.reveal();
+    }
+
+    /** Move the visualizer from the secondary sidebar into an editor tab. */
+    public async moveToEditor(): Promise<void> {
+        if (this._mode === 'editor' && this._editorPanel) {
+            this._editorPanel.reveal(this._editorPanel.viewColumn, false);
+            return;
+        }
+
+        const workspaceRootUri = vscode.workspace.workspaceFolders?.[0]?.uri;
+        if (!workspaceRootUri) {
+            vscode.window.showWarningMessage('Open a workspace folder to use the SysML Visualizer.');
+            return;
+        }
+
+        this.ensureRuntimeState(workspaceRootUri);
+        this._controller?.persistRestoreState();
+        this._controller?.detach();
+        this._controller = undefined;
+
+        this._mode = 'editor';
+        setVisualizerInEditorContext(true);
+        this.showSidebarPlaceholder();
+
+        const panel = vscode.window.createWebviewPanel(
+            VISUALIZER_EDITOR_VIEW_TYPE,
+            'SysML Visualizer',
+            { viewColumn: vscode.ViewColumn.Beside, preserveFocus: false },
+            {
+                enableScripts: true,
+                retainContextWhenHidden: true,
+                localResourceRoots: getVisualizerLocalResourceRoots(this._extensionContext.extensionUri),
+            }
+        );
+        this._editorPanel = panel;
+
+        const host = createWebviewPanelHost(panel);
+        this._controller = new BaseVisualizationPanelController(
+            host,
+            this._extensionContext.extensionUri,
+            this._extensionContext,
+            createVariantConfig(this._runtimeState!, this._onInspectElement),
+        );
+        setVisualizerOpenContext(true);
+
+        panel.onDidDispose(() => {
+            this._editorPanel = undefined;
+            if (this._returningToSidebar) {
+                return;
+            }
+            if (this._mode === 'editor') {
+                void this.returnToSidebar();
+            }
+        });
+    }
+
+    /** Move the visualizer from the editor tab back to the secondary sidebar. */
+    public async returnToSidebar(): Promise<void> {
+        if (this._mode !== 'editor' && !this._editorPanel) {
+            VisualizationPanel.reveal();
+            return;
+        }
+
+        this._returningToSidebar = true;
+        try {
+            // When the editor tab was closed, the controller is already detached via host
+            // onDidDispose. Runtime state lives on this panel instance, so skip host title reads.
+            if (this._controller && !this._controller.isDetached()) {
+                this._controller.persistRestoreState();
+                this._controller.detach();
+            }
+            this._controller = undefined;
+
+            const editorPanel = this._editorPanel;
+            this._editorPanel = undefined;
+            editorPanel?.dispose();
+
+            this._mode = 'sidebar';
+            setVisualizerInEditorContext(false);
+
+            if (this._webviewView) {
+                this.attachSidebarController();
+                setVisualizerOpenContext(this._webviewView.visible);
+            } else {
+                setVisualizerOpenContext(false);
+            }
+
+            VisualizationPanel.reveal();
+        } finally {
+            this._returningToSidebar = false;
+        }
     }
 
     public exportVisualization(format: string, scale = 2): void {
@@ -277,19 +398,95 @@ export class VisualizationPanel implements vscode.WebviewViewProvider {
         this._controller.requestUpdate('testSeed');
     }
 
-    /** Close the secondary sidebar so VS Code destroys the WebviewView. */
+    /** Close the active visualizer host. */
     public dispose(): void {
-        this._controller?.clearRestoreState();
-        if (this._webviewView?.visible) {
-            // Closing the auxiliary bar triggers onDidDispose, which clears state and
-            // sets the context key. On next reveal, resolveWebviewView runs again.
-            void vscode.commands.executeCommand('workbench.action.toggleAuxiliaryBar');
-        } else {
+        this._returningToSidebar = true;
+        try {
+            this._mode = 'sidebar';
+            setVisualizerInEditorContext(false);
+            this._controller?.dispose();
             this._controller = undefined;
             this._runtimeState = undefined;
-            this._webviewView = undefined;
-            setVisualizerOpenContext(false);
+
+            if (this._editorPanel) {
+                this._editorPanel.dispose();
+                this._editorPanel = undefined;
+                setVisualizerOpenContext(false);
+                return;
+            }
+
+            if (this._webviewView?.visible) {
+                // Closing the auxiliary bar triggers onDidDispose, which clears state and
+                // sets the context key. On next reveal, resolveWebviewView runs again.
+                void vscode.commands.executeCommand('workbench.action.toggleAuxiliaryBar');
+            } else {
+                this._webviewView = undefined;
+                setVisualizerOpenContext(false);
+            }
+        } finally {
+            this._returningToSidebar = false;
         }
     }
-}
 
+    private ensureRuntimeState(workspaceRootUri: vscode.Uri): void {
+        if (this._runtimeState) {
+            this._runtimeState.lspModelProvider = this._lspModelProvider;
+            return;
+        }
+        const saved = this._extensionContext.workspaceState.get<VisualizerRestoreState>(RESTORE_STATE_KEY);
+        this._runtimeState = {
+            workspaceRootUri: workspaceRootUri.toString(),
+            currentView: saved?.currentView && new Set<string>(SYSML_ENABLED_VIEWS).has(saved.currentView)
+                ? saved.currentView
+                : 'general-view',
+            selectedView: saved?.selectedView,
+            lspModelProvider: this._lspModelProvider,
+        };
+    }
+
+    private attachSidebarController(): void {
+        if (!this._webviewView || !this._runtimeState) {
+            return;
+        }
+        this._controller?.detach();
+        const host = createWebviewViewHost(this._webviewView);
+        this._controller = new BaseVisualizationPanelController(
+            host,
+            this._extensionContext.extensionUri,
+            this._extensionContext,
+            createVariantConfig(this._runtimeState, this._onInspectElement),
+        );
+    }
+
+    private showSidebarPlaceholder(): void {
+        if (!this._webviewView) {
+            return;
+        }
+        const webview = this._webviewView.webview;
+        webview.html = `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    body {
+      margin: 0;
+      padding: 16px;
+      font-family: var(--vscode-font-family);
+      color: var(--vscode-foreground);
+      background: var(--vscode-sideBar-background);
+    }
+    .title { font-weight: 600; margin-bottom: 8px; }
+    .muted { color: var(--vscode-descriptionForeground); font-size: 12px; line-height: 1.45; }
+  </style>
+</head>
+<body>
+  <div class="title">Visualizer is open in the editor</div>
+  <p class="muted">
+    Close the SysML Visualizer editor tab to move it back here, or run
+    <strong>Move Visualizer to Secondary Side Bar</strong> from the Command Palette.
+  </p>
+</body>
+</html>`;
+    }
+}

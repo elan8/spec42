@@ -275,6 +275,18 @@
         "category": "SysML"
       },
       {
+        "command": "sysml.moveVisualizerToEditor",
+        "title": "Move Visualizer to Editor",
+        "icon": "$(window)",
+        "category": "SysML"
+      },
+      {
+        "command": "sysml.moveVisualizerToSidebar",
+        "title": "Move Visualizer to Secondary Side Bar",
+        "icon": "$(layout-sidebar-right)",
+        "category": "SysML"
+      },
+      {
         "command": "sysml.showTypeHierarchy",
         "title": "Show Type Hierarchy",
         "icon": "$(type-hierarchy)",
@@ -379,6 +391,11 @@
           "group": "navigation"
         },
         {
+          "command": "sysml.moveVisualizerToEditor",
+          "when": "view == sysmlVisualizerView && !sysml.visualizerInEditor",
+          "group": "navigation"
+        },
+        {
           "command": "sysml.library.refresh",
           "when": "view == spec42Library",
           "group": "navigation"
@@ -430,6 +447,11 @@
       ],
       "editor/title": [
         {
+          "command": "sysml.moveVisualizerToSidebar",
+          "when": "activeWebviewPanelId == 'sysml.visualizerEditor'",
+          "group": "navigation"
+        },
+        {
           "command": "sysml.showVisualizer",
           "when": "(resourceLangId == sysml || resourceLangId == kerml) && !sysml.visualizerOpen",
           "group": "navigation"
@@ -464,6 +486,14 @@
         {
           "command": "sysml.showVisualizerActive",
           "when": "false"
+        },
+        {
+          "command": "sysml.moveVisualizerToEditor",
+          "when": "!sysml.visualizerInEditor"
+        },
+        {
+          "command": "sysml.moveVisualizerToSidebar",
+          "when": "sysml.visualizerInEditor"
         },
         {
           "command": "sysml.showTypeHierarchy",

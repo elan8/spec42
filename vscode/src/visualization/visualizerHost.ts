@@ -28,3 +28,51 @@ export function createWebviewViewHost(view: vscode.WebviewView): VisualizerHost 
         set title(v: string) { view.title = v; },
     };
 }
+
+export function createWebviewPanelHost(panel: vscode.WebviewPanel): VisualizerHost {
+    let cachedTitle = panel.title;
+    return {
+        get webview() { return panel.webview; },
+        get visible() {
+            try {
+                return panel.visible;
+            } catch {
+                return false;
+            }
+        },
+        onDidDispose: (handler, thisArg, disposables) => panel.onDidDispose(handler, thisArg, disposables),
+        onVisibilityChange: (handler, disposables) => {
+            panel.onDidChangeViewState(() => handler(), null, disposables);
+        },
+        reveal: () => {
+            try {
+                panel.reveal(panel.viewColumn, false);
+            } catch {
+                // Panel may already be disposed.
+            }
+        },
+        dispose: () => {
+            try {
+                panel.dispose();
+            } catch {
+                // Already disposed.
+            }
+        },
+        get title() {
+            try {
+                cachedTitle = panel.title;
+            } catch {
+                // Panel may already be disposed during relocation.
+            }
+            return cachedTitle;
+        },
+        set title(v: string) {
+            cachedTitle = v;
+            try {
+                panel.title = v;
+            } catch {
+                // Panel may already be disposed.
+            }
+        },
+    };
+}

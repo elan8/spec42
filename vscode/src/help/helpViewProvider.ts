@@ -29,6 +29,11 @@ export class HelpViewProvider implements vscode.TreeDataProvider<HelpItem> {
         { command: "sysml.showVisualizer", title: "Open Visualizer" }
       ),
       new HelpItem(
+        "Move visualizer to editor",
+        "window",
+        { command: "sysml.moveVisualizerToEditor", title: "Move Visualizer to Editor" }
+      ),
+      new HelpItem(
         "Open recommended example",
         "star-full",
         { command: "spec42.examples.openRecommended", title: "Open Recommended Example" }

@@ -9,6 +9,21 @@ The Spec42 visualizer renders your SysML v2 model as an interactive diagram. It 
 
 The visualizer updates automatically as you edit your `.sysml` files.
 
+## Moving to the editor
+
+For more screen space, or to put the diagram on a second monitor, move the visualizer into the editor area:
+
+- Click the **Move Visualizer to Editor** button in the visualizer title bar, or
+- Run **SysML: Move Visualizer to Editor** from the Command Palette.
+
+While it is in the editor:
+
+- The secondary sidebar shows a short placeholder.
+- Closing the visualizer editor tab returns it to the secondary sidebar.
+- You can also run **SysML: Move Visualizer to Secondary Side Bar**.
+
+From the editor tab, you can use VS Code's normal editor actions such as **Move into New Window**.
+
 ## Working with the Feature Inspector
 
 The visualizer is paired with the **Feature Inspector** in the secondary sidebar.

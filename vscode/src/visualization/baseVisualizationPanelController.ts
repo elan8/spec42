@@ -86,7 +86,9 @@ export class BaseVisualizationPanelController<TRestoreState extends BaseVisualiz
         this._config = config;
         const extensionVersion = vscode.extensions.getExtension('Elan8.spec42')?.packageJSON?.version ?? '0.0.0';
 
-        this._host.onDidDispose(() => this.dispose(), null, this._disposables);
+        // Host disposal only detaches the controller. Callers that want a full teardown
+        // (including clearing restore state) should call dispose() explicitly.
+        this._host.onDidDispose(() => this.detach(), null, this._disposables);
         this._host.onVisibilityChange(() => {
             if (this._host.visible && this._needsUpdateWhenVisible) {
                 this._needsUpdateWhenVisible = false;
@@ -272,10 +274,16 @@ export class BaseVisualizationPanelController<TRestoreState extends BaseVisualiz
     }
 
     persistRestoreState(): void {
-        if (!this._context) {
+        if (!this._context || this._disposed) {
             return;
         }
-        const state = this._config.serializeRestoreState(this._config.getRuntimeState(), this._host.title);
+        let title = this._config.defaultTitle;
+        try {
+            title = this._host.title || this._config.defaultTitle;
+        } catch {
+            // Host webview may already be disposed during relocation.
+        }
+        const state = this._config.serializeRestoreState(this._config.getRuntimeState(), title);
         this._context.workspaceState.update(this._config.restoreStateKey, state);
     }
 
@@ -283,12 +291,21 @@ export class BaseVisualizationPanelController<TRestoreState extends BaseVisualiz
         this._context?.workspaceState.update(this._config.restoreStateKey, undefined);
     }
 
-    dispose(): void {
+    isDetached(): boolean {
+        return this._disposed;
+    }
+
+    /**
+     * Tear down timers and listeners without clearing restore state or disposing the host.
+     * Used when relocating the visualizer between sidebar and editor hosts.
+     */
+    detach(): void {
         if (this._disposed) {
             return;
         }
+        // Persist while we still can; title access is guarded inside persistRestoreState.
+        this.persistRestoreState();
         this._disposed = true;
-        this.clearRestoreState();
         resetVisualizerRenderTracker();
         setVisualizerBootstrapCompleted(false);
         if (this._requestCurrentViewTimer) {
@@ -307,11 +324,18 @@ export class BaseVisualizationPanelController<TRestoreState extends BaseVisualiz
             clearTimeout(this._lifecycleDebounceTimer);
             this._lifecycleDebounceTimer = undefined;
         }
-        this._host.dispose();
         while (this._disposables.length) {
             const disposable = this._disposables.pop();
             disposable?.dispose();
         }
+    }
+
+    dispose(): void {
+        if (!this._disposed) {
+            this.detach();
+        }
+        this.clearRestoreState();
+        this._host.dispose();
     }
 
     private getEnabledVisualizationViewIds(): Set<string> {

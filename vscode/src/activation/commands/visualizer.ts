@@ -57,6 +57,50 @@ export function registerVisualizerCommands(
   );
 
   context.subscriptions.push(
+    vscode.commands.registerCommand("sysml.moveVisualizerToEditor", async () => {
+      if (!getLanguageClient() || !isLanguageClientReady()) {
+        vscode.window.showErrorMessage("SysML language server is not running.");
+        return;
+      }
+      const panel = VisualizationPanel.currentPanel;
+      if (!panel) {
+        vscode.window.showWarningMessage("SysML Visualizer is not available.");
+        return;
+      }
+      try {
+        await panel.moveToEditor();
+      } catch (error) {
+        logError("sysml.moveVisualizerToEditor failed", error);
+        vscode.window.showErrorMessage(
+          `Failed to move visualizer to editor: ${error instanceof Error ? error.message : String(error)}`
+        );
+      }
+    })
+  );
+
+  context.subscriptions.push(
+    vscode.commands.registerCommand("sysml.moveVisualizerToSidebar", async () => {
+      if (!getLanguageClient() || !isLanguageClientReady()) {
+        vscode.window.showErrorMessage("SysML language server is not running.");
+        return;
+      }
+      const panel = VisualizationPanel.currentPanel;
+      if (!panel) {
+        vscode.window.showWarningMessage("SysML Visualizer is not available.");
+        return;
+      }
+      try {
+        await panel.returnToSidebar();
+      } catch (error) {
+        logError("sysml.moveVisualizerToSidebar failed", error);
+        vscode.window.showErrorMessage(
+          `Failed to move visualizer to sidebar: ${error instanceof Error ? error.message : String(error)}`
+        );
+      }
+    })
+  );
+
+  context.subscriptions.push(
     vscode.commands.registerCommand(
       "sysml.visualizeFolder",
       async (uri: vscode.Uri, selectedUris?: vscode.Uri[]) => {
