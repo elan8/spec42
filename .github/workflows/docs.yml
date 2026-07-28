@@ -5,6 +5,9 @@ on:
     branches: [main]
     paths:
       - "docs-site/**"
+      - "config/libraries/**"
+      - "config/standard-library.json"
+      - "vscode/package.json"
   workflow_dispatch:
 
 permissions:

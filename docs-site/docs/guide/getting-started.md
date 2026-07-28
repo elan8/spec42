@@ -71,4 +71,5 @@ The **Feature Inspector** also lives in the secondary sidebar alongside the visu
 - [Learn the visualizer](./visualizer) to get the most out of the diagrams.
 - [Learn the Feature Inspector](./feature-inspector) for resolved semantic details.
 - [Manage libraries and dependencies](./libraries) for standard, domain, custom, and Sysand-backed content.
+- [What's included](../reference/whats-included) for Spec42 and bundled library versions.
 - [SysML v2 Quick Reference](../reference/sysml-quick-reference) for language syntax.

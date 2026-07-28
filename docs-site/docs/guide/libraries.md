@@ -1,5 +1,7 @@
 # Library & Dependencies
 
+Spec42 bundles the SysML v2 standard library plus Elan8 domain and method libraries. For exact release pins, see [What's included](/reference/whats-included).
+
 ## Standard Library
 
 The SysML v2 standard library is bundled with Spec42 — no separate installation needed. It provides base definitions like `Part`, `AttributeValue`, `ScalarValue`, SI units, and more.
@@ -12,11 +14,19 @@ You can:
 - Browse indexed library content when you do not know the exact name yet.
 - Open a symbol definition directly in the editor.
 - Copy a qualified name or import statement from a result.
-- Open details for the standard library and bundled domain libraries.
+- Open details for the standard library and bundled domain / method libraries.
 
 ## Domain Libraries
 
-Elan8 domain libraries extend the standard library with domain-specific definitions (e.g., electrical, mechanical). These are also bundled and available automatically.
+Elan8 domain libraries extend the standard library with reusable vocabulary for domain and technical modeling (for example robotics, software, electronics, and communication). They are bundled and available automatically.
+
+See the [Domain libraries](/reference/domain-libraries) reference for the bundled version and library families.
+
+## Method Libraries
+
+Elan8 Method libraries provide SysML packages for requirements metadata, concerns, and viewpoints. They are bundled separately from domain vocabulary.
+
+See the [Method libraries](/reference/method-libraries) reference for the package list and version.
 
 ## Custom Libraries
 

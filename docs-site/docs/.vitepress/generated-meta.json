@@ -1,0 +1,27 @@
+{
+  "generatedAt": "2026-07-28T10:00:20.570Z",
+  "spec42Version": "0.47.3",
+  "standardLibrary": {
+    "version": "2026-04",
+    "repo": "Systems-Modeling/SysML-v2-Release",
+    "format": "kpar"
+  },
+  "libraries": [
+    {
+      "id": "domain",
+      "displayName": "Domain libraries",
+      "version": "0.2.0",
+      "repo": "elan8/sysml-domain-libraries",
+      "format": "kpar",
+      "artifact": "elan8-domain-libraries-0.2.0.kpar"
+    },
+    {
+      "id": "method",
+      "displayName": "Method libraries",
+      "version": "0.1.1",
+      "repo": "elan8/mbse-methodology",
+      "format": "kpar",
+      "artifact": "elan8-method-libraries-0.1.1.kpar"
+    }
+  ]
+}

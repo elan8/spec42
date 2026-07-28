@@ -50,6 +50,18 @@ export class HelpViewProvider implements vscode.TreeDataProvider<HelpItem> {
         "link"
       ),
       new HelpItem(
+        "What's included",
+        "link-external",
+        { command: "vscode.open", title: "Open What's Included", arguments: [vscode.Uri.parse("https://elan8.github.io/spec42/reference/whats-included")] },
+        "link"
+      ),
+      new HelpItem(
+        "Domain & method libraries",
+        "link-external",
+        { command: "vscode.open", title: "Open Domain Libraries", arguments: [vscode.Uri.parse("https://elan8.github.io/spec42/reference/domain-libraries")] },
+        "link"
+      ),
+      new HelpItem(
         "SysML v2 language specification",
         "link-external",
         { command: "vscode.open", title: "Open SysML v2 Spec", arguments: [vscode.Uri.parse("https://www.omg.org/spec/SysML/2.0/")] },
