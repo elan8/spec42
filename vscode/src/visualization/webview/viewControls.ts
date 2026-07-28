@@ -31,11 +31,12 @@ export function updateLayoutDirectionButton(ctx: VisualizerContext, activeView: 
             activeView === 'action-flow-view' ? ctx.activityLayoutDirection : ctx.layoutDirection;
         const iconClass = LAYOUT_DIRECTION_ICONS[effectiveDirection] || 'codicon-arrow-right';
         const label = LAYOUT_DIRECTION_LABELS[effectiveDirection] || 'Left → Right';
-        layoutBtn.innerHTML = '<span class="codicon ' + iconClass + '"></span> ' + label;
+        layoutBtn.innerHTML = '<span class="codicon ' + iconClass + '"></span>';
 
         const nextMode = getNextLayoutDirection(effectiveDirection);
         const nextLabel = LAYOUT_DIRECTION_LABELS[nextMode];
-        layoutBtn.title = 'Switch to ' + nextLabel;
+        layoutBtn.title = label + ' — click to switch to ' + nextLabel;
+        layoutBtn.setAttribute('aria-label', label);
 
         ctx.stateLayoutOrientation = ctx.layoutDirection === 'auto' ? 'force' : ctx.layoutDirection;
     }
@@ -163,25 +164,27 @@ export function updateActiveViewButton(ctx: VisualizerContext, activeView: strin
             dropdownButton.textContent = '';
             const chevron = document.createElement('span');
             chevron.className = 'codicon codicon-chevron-down';
-            chevron.style.marginRight = '2px';
             const label = document.createElement('span');
+            label.className = 'view-btn-label';
             label.textContent = selectedViewName;
             dropdownButton.appendChild(chevron);
             dropdownButton.appendChild(label);
             dropdownButton.title = dropdownConfig
                 ? `${selectedViewName} (${dropdownConfig.label})`
                 : selectedViewName;
+            dropdownButton.setAttribute('aria-label', selectedViewName);
         } else {
             dropdownButton.classList.remove('view-btn-active');
             dropdownButton.textContent = '';
             const chevron = document.createElement('span');
             chevron.className = 'codicon codicon-chevron-down';
-            chevron.style.marginRight = '2px';
             const label = document.createElement('span');
+            label.className = 'view-btn-label';
             label.textContent = 'Select SysML View';
             dropdownButton.appendChild(chevron);
             dropdownButton.appendChild(label);
             dropdownButton.title = 'Select a defined SysML view';
+            dropdownButton.setAttribute('aria-label', 'Select SysML view');
         }
     }
 

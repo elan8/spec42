@@ -35,6 +35,23 @@ export function getVisualizerStyles(): string {
         border: 1px solid var(--vscode-panel-border);
         border-radius: 4px;
     }
+    #controls .toolbar {
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 4px;
+        padding: 0;
+    }
+    #controls button {
+        margin-right: 0;
+    }
+    #controls .export-dropdown {
+        position: relative;
+        display: inline-block;
+    }
+    #controls .view-dropdown {
+        display: inline-flex;
+    }
     #view-status-banner {
         display: none;
         margin-bottom: 8px;
@@ -84,7 +101,8 @@ export function getVisualizerStyles(): string {
         color: var(--vscode-button-secondaryForeground, var(--vscode-foreground));
         border: 1px solid var(--vscode-input-border, var(--vscode-panel-border));
         font-weight: 500;
-        padding: 5px 10px;
+        min-height: 28px;
+        padding: 4px 8px;
     }
     .view-btn:hover {
         background: var(--vscode-button-secondaryHoverBackground, var(--vscode-list-hoverBackground));
@@ -256,7 +274,12 @@ export function getVisualizerStyles(): string {
         background: var(--vscode-button-secondaryBackground, var(--vscode-input-background));
         color: var(--vscode-button-secondaryForeground, var(--vscode-foreground));
         border: 1px solid var(--vscode-input-border, var(--vscode-panel-border));
-        padding: 4px 8px;
+        width: 28px;
+        min-width: 28px;
+        height: 28px;
+        min-height: 28px;
+        padding: 0;
+        justify-content: center;
         font-size: 11px;
     }
     .action-btn:hover {
