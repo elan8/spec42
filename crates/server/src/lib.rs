@@ -11,6 +11,7 @@ pub mod headless_renderer;
 pub mod host_snapshot;
 pub mod kpar_libraries;
 pub mod library_bundle;
+pub mod library_status_rpc;
 pub mod mcp;
 pub mod reports;
 pub mod stdlib;
@@ -227,7 +228,14 @@ async fn run_lsp(cli: &Cli) -> Result<ExitCode, String> {
     let environment = resolve_environment(cli)?;
     let config = Arc::new(
         lsp_server::default_server_config()
-            .with_default_library_paths(environment.library_paths.clone()),
+            .with_default_library_paths(environment.library_paths.clone())
+            .with_custom_rpc_provider(library_status_rpc::library_status_rpc_provider(
+                environment.standard_library.clone(),
+                environment.standard_library_paths.clone(),
+                environment.stdlib_source.clone(),
+                environment.stdlib_path.clone(),
+                environment.kpar_libraries.clone(),
+            )),
     );
     lsp_server::run_lsp(config, "spec42").await;
     Ok(ExitCode::SUCCESS)

@@ -2,7 +2,7 @@ import * as vscode from "vscode";
 import { ModelExplorerProvider } from "./explorer/modelExplorerProvider";
 import { FeatureInspectorViewProvider } from "./inspector/featureInspectorViewProvider";
 import { LibraryWebviewViewProvider } from "./library/libraryWebviewViewProvider";
-import { kparLibraryDefaults } from "./generated/kparLibrariesDefaults";
+import { KPAR_LIBRARIES_DEFAULTS } from "./generated/kparLibrariesDefaults";
 import { STANDARD_LIBRARY_DEFAULTS } from "./generated/standardLibraryDefaults";
 import { log, logPerfEvent, logStartupEvent } from "./logger";
 import {
@@ -97,17 +97,13 @@ export function activate(context: vscode.ExtensionContext): void {
         pinnedVersion: STANDARD_LIBRARY_DEFAULTS.version,
         format: STANDARD_LIBRARY_DEFAULTS.format,
       }),
-      getDomainLibrariesHeading: () => {
-        const domain = kparLibraryDefaults("domain");
-        if (!domain) {
-          throw new Error('Missing "domain" entry in kparLibrariesDefaults');
-        }
-        return {
-          pinnedVersion: domain.version,
-          format: domain.format,
-        };
-      },
-      getDomainLibrariesStatus: handles.readDomainLibrariesStatus,
+      getKparHeadings: () =>
+        KPAR_LIBRARIES_DEFAULTS.map((library) => ({
+          id: library.id,
+          displayName: library.displayName,
+          pinnedVersion: library.version,
+          format: library.format,
+        })),
       getConfiguredLibraryPaths: () => handles.libraryPaths,
       getMissingLibraryPaths: () => handles.missingLibraryPaths,
       getSysandStatus: handles.readSysandStatus,

@@ -30,23 +30,13 @@ import { setServerHealth } from "./statusBar";
 
 type RawSysandStatus = {
   installed?: boolean;
-  executablePath?: string;
-  version?: string;
-  projectRoot?: string;
+  version?: string | null;
+  executablePath?: string | null;
+  projectRoot?: string | null;
   manifestPresent?: boolean;
   lockPresent?: boolean;
   dependencyRoots?: string[];
   warnings?: string[];
-};
-
-type RawDoctorKparLibrary = {
-  id?: string;
-  path?: string;
-  source_kind?: string;
-};
-
-type RawDoctorReport = {
-  kpar_libraries?: RawDoctorKparLibrary[];
 };
 
 export type LspClientHandles = {
@@ -58,10 +48,6 @@ export type LspClientHandles = {
   missingLibraryPaths: string[];
   workspaceRoot: string;
   readSysandStatus: () => Promise<SysandStatusViewModel>;
-  readDomainLibrariesStatus: () => Promise<{
-    resolvedPath?: string;
-    sourceKind: string;
-  }>;
 };
 
 let client: LanguageClient | undefined;
@@ -205,9 +191,9 @@ function normalizeSysandStatus(
 ): SysandStatusViewModel {
   return {
     installed: !!status?.installed,
-    executablePath: status?.executablePath,
-    version: status?.version,
-    projectRoot: status?.projectRoot,
+    executablePath: status?.executablePath ?? undefined,
+    version: status?.version ?? undefined,
+    projectRoot: status?.projectRoot ?? undefined,
     manifestPresent: !!status?.manifestPresent,
     lockPresent: !!status?.lockPresent,
     dependencyRoots: Array.isArray(status?.dependencyRoots)
@@ -281,22 +267,6 @@ export function startLanguageClient(
       workspaceRoot
     )) as RawSysandStatus;
     return normalizeSysandStatus(status);
-  };
-
-  const readDomainLibrariesStatus = async (): Promise<{
-    resolvedPath?: string;
-    sourceKind: string;
-  }> => {
-    const report = (await runSpec42Json(
-      serverCommand,
-      ["doctor", "--format", "json"],
-      workspaceRoot
-    )) as RawDoctorReport;
-    const domain = report.kpar_libraries?.find((library) => library.id === "domain");
-    return {
-      resolvedPath: domain?.path,
-      sourceKind: domain?.source_kind ?? "none",
-    };
   };
 
   log("Server command:", serverCommand, "args:", serverArgs, "libraryPaths:", libraryPaths);
@@ -472,7 +442,6 @@ export function startLanguageClient(
     missingLibraryPaths,
     workspaceRoot,
     readSysandStatus,
-    readDomainLibrariesStatus,
   };
 }
 

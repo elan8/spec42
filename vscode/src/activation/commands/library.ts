@@ -1,12 +1,13 @@
 import * as vscode from "vscode";
 import { LibraryWebviewViewProvider } from "../../library/libraryWebviewViewProvider";
-import { getDomainLibrariesConfig, getStandardLibraryConfig } from "../configBridge";
+import { kparLibraryDefaults } from "../../generated/kparLibrariesDefaults";
+import { getStandardLibraryConfig } from "../configBridge";
 import type { LspClientHandles } from "../lspClient";
 
 export function registerLibraryCommands(
   context: vscode.ExtensionContext,
   libraryWebviewProvider: LibraryWebviewViewProvider,
-  handles: Pick<LspClientHandles, "readSysandStatus">
+  handles: Pick<LspClientHandles, "readSysandStatus" | "lspModelProvider">
 ): void {
   context.subscriptions.push(
     vscode.commands.registerCommand("sysml.library.refresh", () => {
@@ -39,11 +40,55 @@ export function registerLibraryCommands(
   );
 
   context.subscriptions.push(
+    vscode.commands.registerCommand(
+      "sysml.library.showKparLibraryStatus",
+      async (libraryId?: string) => {
+        const id = String(libraryId ?? "domain");
+        const defaults = kparLibraryDefaults(id);
+        try {
+          const status = await handles.lspModelProvider.getLibraryStatus();
+          const library =
+            status.kparLibraries.find((entry) => entry.id === id) ??
+            (defaults
+              ? {
+                  id,
+                  displayName: defaults.displayName,
+                  pinnedVersion: defaults.version,
+                  format: defaults.format,
+                  available: false,
+                  sourceKind: "none",
+                  versionMatches: false,
+                  isInstalled: false,
+                }
+              : undefined);
+          if (!library) {
+            void vscode.window.showWarningMessage(`Unknown managed library '${id}'.`);
+            return;
+          }
+          const version = library.installedVersion
+            ? `${library.pinnedVersion} (installed ${library.installedVersion})`
+            : library.pinnedVersion;
+          void vscode.window.showInformationMessage(
+            `${library.displayName} are bundled with Spec42 as ${library.format.toUpperCase()} (revision ${version}; source ${library.sourceKind}).`
+          );
+        } catch (error) {
+          if (defaults) {
+            void vscode.window.showInformationMessage(
+              `${defaults.displayName} are bundled with Spec42 as ${defaults.format.toUpperCase()} (revision ${defaults.version}).`
+            );
+            return;
+          }
+          void vscode.window.showErrorMessage(
+            `Unable to read library status: ${error instanceof Error ? error.message : String(error)}`
+          );
+        }
+      }
+    )
+  );
+
+  context.subscriptions.push(
     vscode.commands.registerCommand("sysml.library.showDomainLibrariesStatus", async () => {
-      const cfg = getDomainLibrariesConfig();
-      void vscode.window.showInformationMessage(
-        `Elan8 domain libraries are bundled with the Spec42 language server as ${cfg.format.toUpperCase()} (revision ${cfg.version}). They materialize under your Spec42 data directory on first use.`
-      );
+      await vscode.commands.executeCommand("sysml.library.showKparLibraryStatus", "domain");
     })
   );
 

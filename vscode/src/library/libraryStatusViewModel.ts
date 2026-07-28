@@ -40,14 +40,43 @@ export type SysandStatusViewModel = {
   warnings: string[];
 };
 
-export type DomainLibrariesStatusViewModel = {
+export type KparLibraryHeading = {
+  id: string;
+  displayName: string;
   pinnedVersion: string;
   format: string;
-  available: boolean;
+};
+
+export type KparLibraryRuntimeStatus = {
+  id: string;
+  displayName?: string;
   resolvedPath?: string;
   sourceKind: string;
-  packageCount: number;
-  symbolCount: number;
+  pinnedVersion?: string;
+  installedVersion?: string;
+  isInstalled?: boolean;
+  versionMatches?: boolean;
+};
+
+/** @deprecated Prefer {@link KparLibraryRuntimeStatus}. */
+export type KparLibraryDoctorStatus = KparLibraryRuntimeStatus;
+
+/** @deprecated Prefer {@link KparLibraryStatusViewModel}; kept for domain-specific callers. */
+export type DomainLibrariesStatusViewModel = KparLibraryStatusViewModel;
+
+export type KparLibraryStatusViewModel = {
+  id: string;
+  displayName: string;
+  pinnedVersion: string;
+  installedVersion?: string;
+  format: string;
+  available: boolean;
+  versionMatches: boolean;
+  resolvedPath?: string;
+  sourceKind: string;
+  /** Search-index counts only apply to the domain bucket today. */
+  packageCount?: number;
+  symbolCount?: number;
 };
 
 export type LibraryDashboardStatus = {
@@ -58,7 +87,9 @@ export type LibraryDashboardStatus = {
     packageCount: number;
     symbolCount: number;
   };
-  domain: DomainLibrariesStatusViewModel;
+  kparLibraries: KparLibraryStatusViewModel[];
+  /** Convenience alias for the `domain` KPAR entry (if present). */
+  domain: KparLibraryStatusViewModel;
   custom: {
     configuredPaths: string[];
     missingPaths: string[];
@@ -225,20 +256,80 @@ export function flattenLibrarySearchResults(
   });
 }
 
+export function buildKparLibraryStatusViewModel(
+  heading: KparLibraryHeading,
+  runtime?: KparLibraryRuntimeStatus
+): KparLibraryStatusViewModel {
+  const pinnedVersion = runtime?.pinnedVersion || heading.pinnedVersion;
+  const installedVersion = runtime?.installedVersion;
+  const sourceKind = runtime?.sourceKind ?? "none";
+  const resolvedPath = runtime?.resolvedPath;
+  const versionMatches =
+    runtime?.versionMatches ??
+    (!installedVersion || installedVersion === pinnedVersion);
+  const available =
+    runtime?.isInstalled === true ||
+    !!resolvedPath ||
+    sourceKind === "bundled" ||
+    sourceKind === "canonical-managed" ||
+    sourceKind === "override";
+
+  return {
+    id: heading.id,
+    displayName: runtime?.displayName || heading.displayName,
+    pinnedVersion,
+    installedVersion,
+    format: heading.format,
+    available,
+    versionMatches,
+    resolvedPath,
+    sourceKind,
+  };
+}
+
+function emptyDomainFallback(format: string): KparLibraryStatusViewModel {
+  return {
+    id: "domain",
+    displayName: "Domain libraries",
+    pinnedVersion: "unknown",
+    format,
+    available: false,
+    versionMatches: false,
+    sourceKind: "none",
+    packageCount: 0,
+    symbolCount: 0,
+  };
+}
+
 export function buildLibraryDashboardStatus(params: {
   pinnedVersion: string;
   format: string;
-  domainPinnedVersion: string;
-  domainFormat: string;
-  domainResolvedPath?: string;
-  domainSourceKind: string;
+  kparHeadings: KparLibraryHeading[];
+  kparStatuses: KparLibraryRuntimeStatus[];
   configuredPaths: string[];
   missingPaths: string[];
   summary: LibrarySummary;
   sysand: SysandStatusViewModel;
 }): LibraryDashboardStatus {
-  const domainAvailable =
-    !!params.domainResolvedPath || params.domainSourceKind === "bundled";
+  const statusById = new Map(
+    params.kparStatuses.map((status) => [status.id, status] as const)
+  );
+  const kparLibraries = params.kparHeadings.map((heading) => {
+    const status = buildKparLibraryStatusViewModel(heading, statusById.get(heading.id));
+    if (heading.id === "domain") {
+      return {
+        ...status,
+        packageCount: params.summary.domainPackages,
+        symbolCount: params.summary.domainSymbols,
+      };
+    }
+    return status;
+  });
+
+  const domain =
+    kparLibraries.find((library) => library.id === "domain") ??
+    emptyDomainFallback(params.format);
+
   return {
     stdlib: {
       pinnedVersion: params.pinnedVersion,
@@ -247,15 +338,8 @@ export function buildLibraryDashboardStatus(params: {
       packageCount: params.summary.standardPackages,
       symbolCount: params.summary.standardSymbols,
     },
-    domain: {
-      pinnedVersion: params.domainPinnedVersion,
-      format: params.domainFormat,
-      available: domainAvailable,
-      resolvedPath: params.domainResolvedPath,
-      sourceKind: params.domainSourceKind,
-      packageCount: params.summary.domainPackages,
-      symbolCount: params.summary.domainSymbols,
-    },
+    kparLibraries,
+    domain,
     custom: {
       configuredPaths: params.configuredPaths,
       missingPaths: params.missingPaths,

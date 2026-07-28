@@ -1,8 +1,14 @@
 import * as vscode from "vscode";
-import type { LspModelProvider, SysMLLibrarySearchResult } from "../providers/lspModelProvider";
+import type {
+  LspModelProvider,
+  SysMLLibrarySearchResult,
+  SysMLLibraryStatusResult,
+} from "../providers/lspModelProvider";
+import { KPAR_LIBRARIES_DEFAULTS } from "../generated/kparLibrariesDefaults";
 import {
   buildLibraryDashboardStatus,
   flattenLibrarySearchResults,
+  KparLibraryHeading,
   LibraryDashboardStatus,
   SysandStatusViewModel,
   summarizeLibrarySearch,
@@ -11,16 +17,6 @@ import {
 type StdlibHeading = {
   pinnedVersion: string;
   format: string;
-};
-
-type DomainLibrariesHeading = {
-  pinnedVersion: string;
-  format: string;
-};
-
-type DomainLibrariesDoctorStatus = {
-  resolvedPath?: string;
-  sourceKind: string;
 };
 
 type OpenRangeMessage = {
@@ -33,8 +29,7 @@ type OpenRangeMessage = {
 
 type LibraryWebviewOptions = {
   getStdlibHeading: () => StdlibHeading;
-  getDomainLibrariesHeading: () => DomainLibrariesHeading;
-  getDomainLibrariesStatus: () => Promise<DomainLibrariesDoctorStatus>;
+  getKparHeadings: () => KparLibraryHeading[];
   getConfiguredLibraryPaths: () => string[];
   getMissingLibraryPaths: () => string[];
   getSysandStatus: () => Promise<SysandStatusViewModel>;
@@ -103,8 +98,19 @@ export class LibraryWebviewViewProvider implements vscode.WebviewViewProvider {
         return;
       }
 
+      if (message?.type === "showKparLibraryInfo") {
+        await vscode.commands.executeCommand(
+          "sysml.library.showKparLibraryStatus",
+          String(message.id ?? "")
+        );
+        return;
+      }
+
       if (message?.type === "showDomainLibrariesInfo") {
-        await vscode.commands.executeCommand("sysml.library.showDomainLibrariesStatus");
+        await vscode.commands.executeCommand(
+          "sysml.library.showKparLibraryStatus",
+          "domain"
+        );
         return;
       }
 
@@ -155,12 +161,12 @@ export class LibraryWebviewViewProvider implements vscode.WebviewViewProvider {
   private async postDashboard(): Promise<void> {
     this.post({ type: "dashboardLoading" });
     try {
-      const [summaryResult, sysand, domainDoctor] = await Promise.all([
+      const [summaryResult, sysand, libraryStatus] = await Promise.all([
         this.lspModelProvider.searchLibraries("", 50),
         this.options.getSysandStatus(),
-        this.options.getDomainLibrariesStatus(),
+        this.lspModelProvider.getLibraryStatus(),
       ]);
-      const status = this.dashboardStatus(summaryResult, sysand, domainDoctor);
+      const status = this.dashboardStatus(summaryResult, sysand, libraryStatus);
       this.post({ type: "dashboard", payload: status });
     } catch (error) {
       this.post({
@@ -173,17 +179,34 @@ export class LibraryWebviewViewProvider implements vscode.WebviewViewProvider {
   private dashboardStatus(
     result: SysMLLibrarySearchResult,
     sysand: SysandStatusViewModel,
-    domainDoctor: DomainLibrariesDoctorStatus
+    libraryStatus: SysMLLibraryStatusResult
   ): LibraryDashboardStatus {
     const stdlibHeading = this.options.getStdlibHeading();
-    const domainHeading = this.options.getDomainLibrariesHeading();
+    const kparHeadings =
+      this.options.getKparHeadings().length > 0
+        ? this.options.getKparHeadings()
+        : KPAR_LIBRARIES_DEFAULTS.map((library) => ({
+            id: library.id,
+            displayName: library.displayName,
+            pinnedVersion: library.version,
+            format: library.format,
+          }));
+
     return buildLibraryDashboardStatus({
-      pinnedVersion: stdlibHeading.pinnedVersion,
-      format: stdlibHeading.format,
-      domainPinnedVersion: domainHeading.pinnedVersion,
-      domainFormat: domainHeading.format,
-      domainResolvedPath: domainDoctor.resolvedPath,
-      domainSourceKind: domainDoctor.sourceKind,
+      pinnedVersion:
+        libraryStatus.stdlib.pinnedVersion || stdlibHeading.pinnedVersion,
+      format: libraryStatus.stdlib.format || stdlibHeading.format,
+      kparHeadings,
+      kparStatuses: libraryStatus.kparLibraries.map((library) => ({
+        id: library.id,
+        displayName: library.displayName,
+        resolvedPath: library.resolvedPath,
+        sourceKind: library.sourceKind,
+        pinnedVersion: library.pinnedVersion,
+        installedVersion: library.installedVersion,
+        isInstalled: library.isInstalled,
+        versionMatches: library.versionMatches,
+      })),
       configuredPaths: this.options.getConfiguredLibraryPaths(),
       missingPaths: this.options.getMissingLibraryPaths(),
       summary: summarizeLibrarySearch(result),
@@ -220,88 +243,140 @@ export class LibraryWebviewViewProvider implements vscode.WebviewViewProvider {
     }
   }
 
-  private async openResult(message: OpenRangeMessage): Promise<void> {
-    if (!message?.uri || !message.range) {
+  private async openResult(payload: OpenRangeMessage): Promise<void> {
+    if (!payload?.uri) {
       return;
     }
-    const uri = vscode.Uri.parse(message.uri);
-    const doc = await vscode.workspace.openTextDocument(uri);
-    const editor = await vscode.window.showTextDocument(doc, {
-      preserveFocus: false,
-      preview: true,
-    });
-    const range = new vscode.Range(
-      new vscode.Position(message.range.start.line, message.range.start.character),
-      new vscode.Position(message.range.end.line, message.range.end.character)
-    );
-    editor.selection = new vscode.Selection(range.start, range.start);
-    editor.revealRange(range, vscode.TextEditorRevealType.InCenter);
+    const doc = await vscode.workspace.openTextDocument(vscode.Uri.parse(payload.uri));
+    const editor = await vscode.window.showTextDocument(doc, { preview: true });
+    if (payload.range?.start) {
+      const position = new vscode.Position(
+        payload.range.start.line,
+        payload.range.start.character
+      );
+      editor.selection = new vscode.Selection(position, position);
+      editor.revealRange(new vscode.Range(position, position));
+    }
   }
 
   private post(message: unknown): void {
-    this.view?.webview.postMessage(message);
+    void this.view?.webview.postMessage(message);
   }
 
   private getHtml(webview: vscode.Webview): string {
-    const nonce = getNonce();
-    const codiconsCss = webview
-      .asWebviewUri(
-        vscode.Uri.joinPath(this.extensionUri, "media", "codicons", "codicon.css")
-      )
-      .toString();
-    return `<!doctype html>
+    const nonce = String(Date.now());
+    const csp = [
+      "default-src 'none'",
+      `style-src ${webview.cspSource} 'unsafe-inline'`,
+      `script-src 'nonce-${nonce}'`,
+    ].join("; ");
+
+    return `<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src ${webview.cspSource} 'unsafe-inline'; font-src ${webview.cspSource}; script-src 'nonce-${nonce}';">
+  <meta http-equiv="Content-Security-Policy" content="${csp}" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link nonce="${nonce}" rel="stylesheet" href="${codiconsCss}">
+  <title>Spec42 Libraries</title>
   <style>
-    body { font-family: var(--vscode-font-family); color: var(--vscode-foreground); padding: 8px; }
-    .section { border-top: 1px solid var(--vscode-panel-border); padding: 4px 0; }
-    .section:first-child { border-top: none; padding-top: 0; }
-    .section-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
-    .title { font-weight: 600; }
+    :root {
+      color-scheme: light dark;
+      --gap: 8px;
+      --radius: 6px;
+    }
+    body {
+      margin: 0;
+      padding: 8px;
+      font-family: var(--vscode-font-family);
+      color: var(--vscode-foreground);
+      background: var(--vscode-sideBar-background);
+    }
+    .toolbar {
+      display: flex;
+      gap: 6px;
+      margin-bottom: 8px;
+    }
+    input[type="text"] {
+      flex: 1;
+      min-width: 0;
+      padding: 4px 8px;
+      border: 1px solid var(--vscode-input-border, transparent);
+      background: var(--vscode-input-background);
+      color: var(--vscode-input-foreground);
+      border-radius: var(--radius);
+    }
+    button.icon-btn {
+      border: none;
+      background: transparent;
+      color: var(--vscode-icon-foreground);
+      cursor: pointer;
+      padding: 2px 4px;
+      border-radius: 4px;
+    }
+    button.icon-btn:hover {
+      background: var(--vscode-toolbar-hoverBackground);
+    }
+    #dashboard { display: grid; gap: 6px; margin-bottom: 10px; }
+    .section {
+      border: 1px solid var(--vscode-widget-border, rgba(127,127,127,.35));
+      border-radius: var(--radius);
+      padding: 6px 8px;
+      background: var(--vscode-editor-background);
+    }
+    .section-head {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .title {
+      font-weight: 600;
+      flex: 1;
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .section-trail {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      margin-left: auto;
+      flex-shrink: 0;
+    }
+    .pill {
+      font-size: 11px;
+      padding: 1px 6px;
+      border-radius: 999px;
+      border: 1px solid transparent;
+      white-space: nowrap;
+      text-align: right;
+    }
+    .pill.ok { color: var(--vscode-testing-iconPassed); border-color: currentColor; }
+    .pill.warning { color: var(--vscode-editorWarning-foreground); border-color: currentColor; }
+    .pill.info { color: var(--vscode-descriptionForeground); border-color: currentColor; }
     .muted { color: var(--vscode-descriptionForeground); font-size: 12px; }
-    .detail { margin-top: 3px; color: var(--vscode-descriptionForeground); font-size: 12px; line-height: 1.35; word-break: break-word; }
-    .compact-row { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; margin-top: 5px; color: var(--vscode-descriptionForeground); font-size: 12px; }
-    .metric { color: var(--vscode-foreground); }
-    .path { font-family: var(--vscode-editor-font-family); font-size: 11px; }
-    .actions { display: flex; gap: 4px; flex-wrap: wrap; margin-top: 5px; }
-    .icon-btn { border: 1px solid var(--vscode-button-border, var(--vscode-panel-border)); background: transparent; color: var(--vscode-foreground); border-radius: 4px; min-width: 24px; height: 24px; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; padding: 0 6px; }
-    .icon-btn:hover { background: var(--vscode-toolbar-hoverBackground); }
-    .pill { font-size: 11px; border-radius: 3px; padding: 1px 5px; border: 1px solid var(--vscode-panel-border); }
-    .pill.ok { color: var(--vscode-testing-iconPassed); }
-    .pill.info { color: var(--vscode-descriptionForeground); }
-    .pill.warning { color: var(--vscode-testing-iconFailed); }
-    .warning-list { margin: 6px 0 0 16px; padding: 0; color: var(--vscode-testing-iconFailed); font-size: 12px; }
-    .search-row { display: flex; gap: 6px; margin: 8px 0; }
-    input { flex: 1; min-width: 0; padding: 6px; border: 1px solid var(--vscode-input-border); background: var(--vscode-input-background); color: var(--vscode-input-foreground); }
-    .result { border-top: 1px solid var(--vscode-panel-border); padding: 8px 0; }
-    .result-title { display: flex; justify-content: space-between; gap: 8px; }
-    .meta { font-size: 12px; color: var(--vscode-descriptionForeground); margin-top: 3px; display: flex; gap: 8px; flex-wrap: wrap; }
-    details { margin-top: 6px; }
-    summary { cursor: pointer; }
-    .tree-package { margin-left: 10px; }
+    .warning-list { margin: 6px 0 0; padding-left: 18px; color: var(--vscode-editorWarning-foreground); }
+    .actions { display: flex; gap: 4px; margin-top: 6px; flex-wrap: wrap; }
+    .result {
+      border: 1px solid var(--vscode-widget-border, rgba(127,127,127,.35));
+      border-radius: var(--radius);
+      padding: 6px 8px;
+      margin-bottom: 6px;
+      background: var(--vscode-editor-background);
+    }
+    .result-title { display: flex; gap: 6px; align-items: center; }
+    .meta { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 4px; font-size: 12px; color: var(--vscode-descriptionForeground); }
+    details.tree-package { margin-left: 8px; }
   </style>
 </head>
 <body>
-  <div id="dashboard">
-    <div class="section"><div class="muted">Loading library status...</div></div>
+  <div id="dashboard"></div>
+  <div class="toolbar">
+    <button id="btnBrowseAll" class="icon-btn" title="Browse all indexed library symbols">Browse</button>
+    <input id="query" type="text" placeholder="Search types, units, packages..." />
   </div>
-  <div class="section">
-    <div class="section-head">
-      <div class="title">Lookup</div>
-      <button id="btnBrowseAll" class="icon-btn" title="Browse all indexed library symbols">
-        <span class="codicon codicon-list-tree"></span>
-      </button>
-    </div>
-    <div class="search-row">
-      <input id="query" type="text" placeholder="Search types, units, packages..." />
-    </div>
-    <div id="state" class="muted">Type to search or browse all libraries.</div>
-    <div id="results"></div>
-  </div>
+  <div id="state" class="muted">Type to search or browse all libraries.</div>
+  <div id="results"></div>
 
   <script nonce="${nonce}">
     const vscode = acquireVsCodeApi();
@@ -329,19 +404,27 @@ export class LibraryWebviewViewProvider implements vscode.WebviewViewProvider {
       return btn;
     }
 
-    function compactRow(values) {
-      const row = el('div', 'compact-row');
-      values.filter(Boolean).forEach(value => row.appendChild(el('span', 'metric', String(value))));
-      return row;
-    }
-
-    function formatBundle(format) {
-      const normalized = String(format || '').trim();
-      return normalized ? normalized.toUpperCase() : 'bundled';
-    }
-
     function countText(packages, symbols) {
+      if (packages === undefined && symbols === undefined) return '';
       return String(packages || 0) + ' packages / ' + String(symbols || 0) + ' symbols';
+    }
+
+    function versionLabel(library) {
+      const pinned = library?.pinnedVersion || 'unknown';
+      const installed = library?.installedVersion;
+      if (!library?.available) {
+        return pinned + ' missing';
+      }
+      if (installed && installed !== pinned) {
+        return pinned + ' (have ' + installed + ')';
+      }
+      return installed || pinned;
+    }
+
+    function sectionTrail(...children) {
+      const trail = el('div', 'section-trail');
+      children.filter(Boolean).forEach(child => trail.appendChild(child));
+      return trail;
     }
 
     function renderDashboard(status) {
@@ -351,20 +434,35 @@ export class LibraryWebviewViewProvider implements vscode.WebviewViewProvider {
       const stdHead = el('div', 'section-head');
       stdHead.title = 'Release ' + (status?.stdlib?.pinnedVersion || 'unknown') + ' / ' + countText(status?.stdlib?.packageCount, status?.stdlib?.symbolCount) + ' / server-bundled';
       stdHead.appendChild(el('div', 'title', 'Standard Library'));
-      stdHead.appendChild(el('span', 'pill ok', formatBundle(status?.stdlib?.format)));
+      stdHead.appendChild(sectionTrail(el('span', 'pill ok', status?.stdlib?.pinnedVersion || 'bundled')));
       std.appendChild(stdHead);
       nodes.push(std);
 
-      const domain = status?.domain || {};
-      const domainSection = el('div', 'section');
-      const domainHead = el('div', 'section-head');
-      const domainPillClass = domain.available ? 'ok' : 'warning';
-      const domainPillLabel = domain.available ? formatBundle(domain.format) : 'unavailable';
-      domainHead.title = 'Revision ' + (domain.pinnedVersion || 'unknown') + ' / ' + countText(domain.packageCount, domain.symbolCount) + (domain.resolvedPath ? ' / ' + domain.resolvedPath : '');
-      domainHead.appendChild(el('div', 'title', 'Domain Libraries'));
-      domainHead.appendChild(el('span', 'pill ' + domainPillClass, domainPillLabel));
-      domainSection.appendChild(domainHead);
-      nodes.push(domainSection);
+      const kparLibraries = Array.isArray(status?.kparLibraries) && status.kparLibraries.length
+        ? status.kparLibraries
+        : (status?.domain ? [status.domain] : []);
+      kparLibraries.forEach((library) => {
+        const section = el('div', 'section');
+        const head = el('div', 'section-head');
+        const ok = !!library.available && !!library.versionMatches;
+        const pillClass = ok ? 'ok' : 'warning';
+        const counts = countText(library.packageCount, library.symbolCount);
+        head.title = [
+          library.displayName || library.id,
+          'pinned ' + (library.pinnedVersion || 'unknown'),
+          library.installedVersion ? 'installed ' + library.installedVersion : '',
+          library.sourceKind || '',
+          counts,
+          library.resolvedPath || ''
+        ].filter(Boolean).join(' / ');
+        head.appendChild(el('div', 'title', library.displayName || library.id || 'Library'));
+        head.appendChild(sectionTrail(
+          el('span', 'pill ' + pillClass, versionLabel(library)),
+          button('Library details', 'info', 'showKparLibraryInfo', { id: library.id })
+        ));
+        section.appendChild(head);
+        nodes.push(section);
+      });
 
       const custom = status?.custom || {};
       const customSection = el('div', 'section');
@@ -372,8 +470,10 @@ export class LibraryWebviewViewProvider implements vscode.WebviewViewProvider {
       const missing = Array.isArray(custom.missingPaths) ? custom.missingPaths : [];
       customHead.title = countText(custom.packageCount, custom.symbolCount) + (missing.length ? ' / ' + String(missing.length) + ' missing' : '');
       customHead.appendChild(el('div', 'title', 'Custom Libraries'));
-      customHead.appendChild(el('span', 'pill ' + (missing.length ? 'warning' : 'info'), String((custom.configuredPaths || []).length) + ' path(s)'));
-      customHead.appendChild(button('Manage custom library paths', 'settings-gear', 'manageCustomLibraries'));
+      customHead.appendChild(sectionTrail(
+        el('span', 'pill ' + (missing.length ? 'warning' : 'info'), String((custom.configuredPaths || []).length) + ' path(s)'),
+        button('Manage custom library paths', 'settings-gear', 'manageCustomLibraries')
+      ));
       customSection.appendChild(customHead);
       if (missing.length) {
         const list = el('ul', 'warning-list');
@@ -397,7 +497,7 @@ export class LibraryWebviewViewProvider implements vscode.WebviewViewProvider {
           sysand.lockPresent ? 'lockfile present' : ''
         ].filter(Boolean).join(' / ');
         sysandHead.appendChild(el('div', 'title', 'Sysand Dependencies'));
-        sysandHead.appendChild(el('span', 'pill ' + sysandClass, sysandLabel));
+        sysandHead.appendChild(sectionTrail(el('span', 'pill ' + sysandClass, sysandLabel)));
         sysandSection.appendChild(sysandHead);
         if (Array.isArray(sysand.warnings) && sysand.warnings.length) {
           const list = el('ul', 'warning-list');
@@ -524,13 +624,4 @@ export class LibraryWebviewViewProvider implements vscode.WebviewViewProvider {
 </body>
 </html>`;
   }
-}
-
-function getNonce(): string {
-  let text = "";
-  const possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-  for (let i = 0; i < 32; i++) {
-    text += possible.charAt(Math.floor(Math.random() * possible.length));
-  }
-  return text;
 }

@@ -104,6 +104,36 @@ export interface SysMLLibrarySearchResult {
   total: number;
 }
 
+export interface SysMLKparLibraryStatus {
+  id: string;
+  displayName: string;
+  pinnedVersion: string;
+  installedVersion?: string;
+  format: string;
+  available: boolean;
+  resolvedPath?: string;
+  sourceKind: string;
+  versionMatches: boolean;
+  isInstalled: boolean;
+  statusMessage?: string;
+}
+
+export interface SysMLStdlibLibraryStatus {
+  pinnedVersion: string;
+  installedVersion?: string;
+  format: string;
+  available: boolean;
+  resolvedPath?: string;
+  sourceKind: string;
+  versionMatches: boolean;
+  statusMessage?: string;
+}
+
+export interface SysMLLibraryStatusResult {
+  stdlib: SysMLStdlibLibraryStatus;
+  kparLibraries: SysMLKparLibraryStatus[];
+}
+
 /** Mirrors `crates/lsp_server/src/views/dto.rs`'s `SysmlFeatureInspector*Dto` types (hand-typed,
  * like `SysMLLibrarySearchResult` above -- those DTOs aren't wired into the ts-rs codegen yet). */
 export interface FeatureInspectorElementRef {
@@ -725,6 +755,13 @@ export class LspModelProvider {
     return await this.client.sendRequest<SysMLLibrarySearchResult>(
       "sysml/librarySearch",
       { query, limit }
+    );
+  }
+
+  async getLibraryStatus(): Promise<SysMLLibraryStatusResult> {
+    return await this.client.sendRequest<SysMLLibraryStatusResult>(
+      "sysml/libraryStatus",
+      {}
     );
   }
 
