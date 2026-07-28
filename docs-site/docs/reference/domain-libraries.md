@@ -3,110 +3,157 @@
 # Domain Libraries
 
 Elan8 domain libraries provide reusable SysML v2 **vocabulary** for things in the system.
-They are bundled with Spec42 and available automatically in the Library view.
+This overview is generated from the bundled KPAR artifact so it matches what Spec42 ships.
 
 | | |
 | --- | --- |
 | Bundled version | `0.2.0` |
 | Format | `kpar` |
+| Artifact | `elan8-domain-libraries-0.2.0.kpar` |
+| Packages / files | 43 packages · 43 source files |
 | Source | [elan8/sysml-domain-libraries](https://github.com/elan8/sysml-domain-libraries) |
 
-Use these libraries for domain and technical modeling content. Method / process packages live in the [Method libraries](./method-libraries).
+Method / process packages live in the [Method libraries](./method-libraries).
 
-## Library families
+## Package tree
 
-### Domain
+Tree of source files inside the KPAR. Package names are scanned from each `.sysml` file.
 
-Business-domain vocabulary for modeling things in a specific industry or product domain.
+- **domain/**
+  - **robotics/**
+    - **actuation/**
+      - `domain/robotics/actuation/RobotActuation.sysml` — `RobotActuation`
+    - **autonomy/**
+      - `domain/robotics/autonomy/RobotAutonomy.sysml` — `RobotAutonomy`
+    - **control/**
+      - `domain/robotics/control/RobotControl.sysml` — `RobotControl`
+    - **operations/**
+      - `domain/robotics/operations/RobotOperations.sysml` — `RobotOperations`
+    - **perception/**
+      - `domain/robotics/perception/RobotPerception.sysml` — `RobotPerception`
+    - **robotics-core/**
+      - `domain/robotics/robotics-core/RoboticsCore.sysml` — `RoboticsCore`
+    - **runtime/**
+      - `domain/robotics/runtime/RobotRuntime.sysml` — `RobotRuntime`
+    - **safety-assurance/**
+      - `domain/robotics/safety-assurance/RobotSafetyAssurance.sysml` — `RobotSafetyAssurance`
+    - **simulation/**
+      - `domain/robotics/simulation/RobotSimulation.sysml` — `RobotSimulation`
+    - **structure/**
+      - `domain/robotics/structure/RobotStructure.sysml` — `RobotStructure`
+- **generic/**
+  - **units/**
+    - `generic/units/EngineeringUnits.sysml` — `EngineeringUnits`
+    - `generic/units/MonetaryUnits.sysml` — `MonetaryUnits`
+- **technical/**
+  - **communication/**
+    - **core/**
+      - `technical/communication/core/CommunicationCore.sysml` — `CommunicationCore`
+      - `technical/communication/core/SerializationDomain.sysml` — `SerializationDomain`
+    - **device-bus/**
+      - `technical/communication/device-bus/DeviceBusDomain.sysml` — `DeviceBusDomain`
+    - **grpc/**
+      - `technical/communication/grpc/GrpcDomain.sysml` — `GrpcDomain`
+    - **http/**
+      - `technical/communication/http/HttpDomain.sysml` — `HttpDomain`
+      - `technical/communication/http/OpenApiDomain.sysml` — `OpenApiDomain`
+    - **industrial/**
+      - `technical/communication/industrial/IndustrialCommunicationDomain.sysml` — `IndustrialCommunicationDomain`
+    - **messaging/**
+      - `technical/communication/messaging/MessagingDomain.sysml` — `MessagingDomain`
+    - **streaming/**
+      - `technical/communication/streaming/KafkaDomain.sysml` — `KafkaDomain`
+    - **transport/**
+      - `technical/communication/transport/TransportDomain.sysml` — `TransportDomain`
+    - **wireless/**
+      - `technical/communication/wireless/WirelessDomain.sysml` — `WirelessDomain`
+  - **electronics/**
+    - **board/**
+      - `technical/electronics/board/BoardIntegrationDomain.sysml` — `BoardIntegrationDomain`
+    - **buses/**
+      - `technical/electronics/buses/ElectronicBusDomain.sysml` — `ElectronicBusDomain`
+    - **compute/**
+      - `technical/electronics/compute/EmbeddedComputeDomain.sysml` — `EmbeddedComputeDomain`
+    - **electronics-core/**
+      - `technical/electronics/electronics-core/ElectronicsCore.sysml` — `ElectronicsCore`
+    - **interconnection/**
+      - `technical/electronics/interconnection/ElectronicsInterconnection.sysml` — `ElectronicsInterconnection`
+    - **io/**
+      - `technical/electronics/io/ElectronicIoDomain.sysml` — `ElectronicIoDomain`
+    - **power/**
+      - `technical/electronics/power/ElectricalPowerDomain.sysml` — `ElectricalPowerDomain`
+  - **software/**
+    - **data/**
+      - `technical/software/data/NosqlDomain.sysml` — `NosqlDomain`
+      - `technical/software/data/SqlDomain.sysml` — `SqlDomain`
+    - **delivery-ops/**
+      - `technical/software/delivery-ops/ObservabilityDomain.sysml` — `ObservabilityDomain`
+      - `technical/software/delivery-ops/SoftwareControlPlane.sysml` — `SoftwareControlPlane`
+      - `technical/software/delivery-ops/SoftwareDelivery.sysml` — `SoftwareDelivery`
+    - **distributed-systems/**
+      - `technical/software/distributed-systems/DistributedSystems.sysml` — `DistributedSystems`
+    - **interactions/**
+      - `technical/software/interactions/SoftwareInteractions.sysml` — `SoftwareInteractions`
+    - **platform/**
+      - `technical/software/platform/CloudRuntimeDomain.sysml` — `CloudRuntimeDomain`
+      - `technical/software/platform/KubernetesDomain.sysml` — `KubernetesDomain`
+    - **security/**
+      - `technical/software/security/CyberAssuranceDomain.sysml` — `CyberAssuranceDomain`
+      - `technical/software/security/EuCyberResilienceOverlay.sysml` — `EuCyberResilienceOverlay`
+      - `technical/software/security/IdentitySecurityDomain.sysml` — `IdentitySecurityDomain`
+    - **software-core/**
+      - `technical/software/software-core/SoftwareCore.sysml` — `SoftwareCore`
 
-#### Robotics Business Domain Libraries
+## Package index
 
-This directory contains a SysML v2 business-domain library family for robotics, composed from reusable technical and cross-cutting capabilities.
-
-Key packages:
-
-- `actuation/RobotActuation.sysml`
-- `autonomy/RobotAutonomy.sysml`
-- `control/RobotControl.sysml`
-- `operations/RobotOperations.sysml`
-- `perception/RobotPerception.sysml`
-- `robotics-core/RoboticsCore.sysml`
-- `runtime/RobotRuntime.sysml`
-- `safety-assurance/RobotSafetyAssurance.sysml`
-- `simulation/RobotSimulation.sysml`
-- `structure/RobotStructure.sysml`
-
-### Technical
-
-Business-agnostic technical capabilities such as software, electronics, and communication.
-
-#### Technical Communication Libraries
-
-This directory contains reusable communication capability libraries that are independent from any single business domain.
-
-Key packages:
-
-- `core/CommunicationCore.sysml`
-- `core/SerializationDomain.sysml`
-- `device-bus/DeviceBusDomain.sysml`
-- `grpc/GrpcDomain.sysml`
-- `http/HttpDomain.sysml`
-- `http/OpenApiDomain.sysml`
-- `industrial/IndustrialCommunicationDomain.sysml`
-- `messaging/MessagingDomain.sysml`
-- `streaming/KafkaDomain.sysml`
-- `transport/TransportDomain.sysml`
-- `wireless/WirelessDomain.sysml`
-
-#### Electronics Technical Libraries
-
-This directory contains technical electronics capability libraries intended for reuse across multiple business domains.
-
-Key packages:
-
-- `board/BoardIntegrationDomain.sysml`
-- `buses/ElectronicBusDomain.sysml`
-- `compute/EmbeddedComputeDomain.sysml`
-- `electronics-core/ElectronicsCore.sysml`
-- `interconnection/ElectronicsInterconnection.sysml`
-- `io/ElectronicIoDomain.sysml`
-- `power/ElectricalPowerDomain.sysml`
-
-#### Software Technical Libraries
-
-This directory contains technical SysML v2 software capabilities that can be reused across business domains.
-
-Key packages:
-
-- `data/NosqlDomain.sysml`
-- `data/SqlDomain.sysml`
-- `delivery-ops/ObservabilityDomain.sysml`
-- `delivery-ops/SoftwareControlPlane.sysml`
-- `delivery-ops/SoftwareDelivery.sysml`
-- `distributed-systems/DistributedSystems.sysml`
-- `interactions/SoftwareInteractions.sysml`
-- `platform/CloudRuntimeDomain.sysml`
-- `platform/KubernetesDomain.sysml`
-- `security/CyberAssuranceDomain.sysml`
-- `security/EuCyberResilienceOverlay.sysml`
-- `security/IdentitySecurityDomain.sysml`
-- …and 1 more
-
-### Generic
-
-Cross-domain foundation content such as units.
-
-#### Units
-
-Cross-domain unit and quantity helpers that complement the OMG ISQ/SI standard library.
-
-Key packages:
-
-- `EngineeringUnits.sysml`
-- `MonetaryUnits.sysml`
+| Package | Source file |
+| --- | --- |
+| `BoardIntegrationDomain` | `technical/electronics/board/BoardIntegrationDomain.sysml` |
+| `CloudRuntimeDomain` | `technical/software/platform/CloudRuntimeDomain.sysml` |
+| `CommunicationCore` | `technical/communication/core/CommunicationCore.sysml` |
+| `CyberAssuranceDomain` | `technical/software/security/CyberAssuranceDomain.sysml` |
+| `DeviceBusDomain` | `technical/communication/device-bus/DeviceBusDomain.sysml` |
+| `DistributedSystems` | `technical/software/distributed-systems/DistributedSystems.sysml` |
+| `ElectricalPowerDomain` | `technical/electronics/power/ElectricalPowerDomain.sysml` |
+| `ElectronicBusDomain` | `technical/electronics/buses/ElectronicBusDomain.sysml` |
+| `ElectronicIoDomain` | `technical/electronics/io/ElectronicIoDomain.sysml` |
+| `ElectronicsCore` | `technical/electronics/electronics-core/ElectronicsCore.sysml` |
+| `ElectronicsInterconnection` | `technical/electronics/interconnection/ElectronicsInterconnection.sysml` |
+| `EmbeddedComputeDomain` | `technical/electronics/compute/EmbeddedComputeDomain.sysml` |
+| `EngineeringUnits` | `generic/units/EngineeringUnits.sysml` |
+| `EuCyberResilienceOverlay` | `technical/software/security/EuCyberResilienceOverlay.sysml` |
+| `GrpcDomain` | `technical/communication/grpc/GrpcDomain.sysml` |
+| `HttpDomain` | `technical/communication/http/HttpDomain.sysml` |
+| `IdentitySecurityDomain` | `technical/software/security/IdentitySecurityDomain.sysml` |
+| `IndustrialCommunicationDomain` | `technical/communication/industrial/IndustrialCommunicationDomain.sysml` |
+| `KafkaDomain` | `technical/communication/streaming/KafkaDomain.sysml` |
+| `KubernetesDomain` | `technical/software/platform/KubernetesDomain.sysml` |
+| `MessagingDomain` | `technical/communication/messaging/MessagingDomain.sysml` |
+| `MonetaryUnits` | `generic/units/MonetaryUnits.sysml` |
+| `NosqlDomain` | `technical/software/data/NosqlDomain.sysml` |
+| `ObservabilityDomain` | `technical/software/delivery-ops/ObservabilityDomain.sysml` |
+| `OpenApiDomain` | `technical/communication/http/OpenApiDomain.sysml` |
+| `RobotActuation` | `domain/robotics/actuation/RobotActuation.sysml` |
+| `RobotAutonomy` | `domain/robotics/autonomy/RobotAutonomy.sysml` |
+| `RobotControl` | `domain/robotics/control/RobotControl.sysml` |
+| `RoboticsCore` | `domain/robotics/robotics-core/RoboticsCore.sysml` |
+| `RobotOperations` | `domain/robotics/operations/RobotOperations.sysml` |
+| `RobotPerception` | `domain/robotics/perception/RobotPerception.sysml` |
+| `RobotRuntime` | `domain/robotics/runtime/RobotRuntime.sysml` |
+| `RobotSafetyAssurance` | `domain/robotics/safety-assurance/RobotSafetyAssurance.sysml` |
+| `RobotSimulation` | `domain/robotics/simulation/RobotSimulation.sysml` |
+| `RobotStructure` | `domain/robotics/structure/RobotStructure.sysml` |
+| `SerializationDomain` | `technical/communication/core/SerializationDomain.sysml` |
+| `SoftwareControlPlane` | `technical/software/delivery-ops/SoftwareControlPlane.sysml` |
+| `SoftwareCore` | `technical/software/software-core/SoftwareCore.sysml` |
+| `SoftwareDelivery` | `technical/software/delivery-ops/SoftwareDelivery.sysml` |
+| `SoftwareInteractions` | `technical/software/interactions/SoftwareInteractions.sysml` |
+| `SqlDomain` | `technical/software/data/SqlDomain.sysml` |
+| `TransportDomain` | `technical/communication/transport/TransportDomain.sysml` |
+| `WirelessDomain` | `technical/communication/wireless/WirelessDomain.sysml` |
 
 ## In Spec42
 
-- Open the **Library** view in the Spec42 sidebar to search and browse symbols.
+- Open the **Library** view to search and browse these symbols.
 - See [Library & Dependencies](/guide/libraries) for custom paths and Sysand.
-- See [What's included](./whats-included) for the exact bundled versions in this Spec42 release.
+- See [What's included](./whats-included) for release pins.

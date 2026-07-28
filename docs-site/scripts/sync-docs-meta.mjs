@@ -6,20 +6,24 @@
  *   - vscode/package.json (Spec42 version)
  *   - config/standard-library.json
  *   - config/libraries/*.json
- *   - sibling sysml-domain-libraries / mbse-methodology when present (catalog refresh)
+ *   - bundled KPAR artifacts in .cache/ (downloaded from GitHub releases when missing)
  *
- * Usage (from repo root or docs-site):
+ * Slice 1: materialize KPAR → package/file tree pages (no per-element docs yet).
+ *
+ * Usage:
  *   node docs-site/scripts/sync-docs-meta.mjs
- *   node scripts/sync-docs-meta.mjs
  */
 import fs from "node:fs";
 import path from "node:path";
 import process from "node:process";
 import { fileURLToPath } from "node:url";
+import AdmZip from "adm-zip";
 
 const scriptDir = path.dirname(fileURLToPath(import.meta.url));
 const docsSiteRoot = path.resolve(scriptDir, "..");
 const repoRoot = path.resolve(docsSiteRoot, "..");
+const cacheDir = path.join(repoRoot, ".cache");
+const materializeRoot = path.join(cacheDir, "docs-kpar-materialized");
 
 const generatedMetaPath = path.join(docsSiteRoot, "docs", ".vitepress", "generated-meta.json");
 const whatsIncludedPath = path.join(docsSiteRoot, "docs", "reference", "whats-included.md");
@@ -34,21 +38,11 @@ function writeIfChanged(filePath, content) {
   const next = content.endsWith("\n") ? content : `${content}\n`;
   if (fs.existsSync(filePath)) {
     const prev = fs.readFileSync(filePath, "utf8");
-    if (prev === next) {
-      return false;
-    }
+    if (prev === next) return false;
   }
   fs.mkdirSync(path.dirname(filePath), { recursive: true });
   fs.writeFileSync(filePath, next, "utf8");
   return true;
-}
-
-function findSibling(repoName) {
-  const candidates = [
-    path.join(repoRoot, "..", repoName),
-    path.join(repoRoot, repoName),
-  ];
-  return candidates.find((candidate) => fs.existsSync(candidate));
 }
 
 function loadKparLibraries() {
@@ -60,226 +54,291 @@ function loadKparLibraries() {
     .map((fileName) => {
       const config = readJson(path.join(librariesDir, fileName));
       const stem = path.basename(fileName, ".json");
+      const id = typeof config.id === "string" && config.id.trim() ? config.id : stem;
       return {
-        id: typeof config.id === "string" && config.id.trim() ? config.id : stem,
+        id,
         displayName: config.displayName,
         version: config.version,
         repo: config.repo,
         format: config.format,
-        artifact: config.artifact ?? "",
+        artifact:
+          config.artifact ||
+          `elan8-${id}-libraries-${config.version}.kpar`,
       };
     });
 }
 
-function firstParagraph(markdown) {
-  const lines = markdown.replace(/\r\n/g, "\n").split("\n");
-  const body = [];
-  let seenTitle = false;
-  for (const line of lines) {
-    const trimmed = line.trim();
-    if (!seenTitle) {
-      if (trimmed.startsWith("#")) {
-        seenTitle = true;
-      }
-      continue;
-    }
-    if (!trimmed) {
-      if (body.length > 0) break;
-      continue;
-    }
-    if (trimmed.startsWith("#") || trimmed.startsWith("---") || trimmed.startsWith(">")) {
-      if (body.length > 0) break;
-      continue;
-    }
-    if (trimmed.startsWith("- ") || trimmed.startsWith("* ") || trimmed.startsWith("|")) {
-      if (body.length > 0) break;
-      continue;
-    }
-    body.push(trimmed.replace(/\*\*/g, ""));
-    if (body.join(" ").length > 280) break;
+function isUsableKpar(filePath) {
+  if (!fs.existsSync(filePath)) return false;
+  try {
+    const zip = new AdmZip(filePath);
+    return Boolean(zip.getEntry(".project.json"));
+  } catch {
+    return false;
   }
-  return body.join(" ").trim();
 }
 
-function listSysmlRelative(rootDir, max = 40) {
-  const results = [];
-  function walk(dir) {
-    if (results.length >= max) return;
-    let entries = [];
-    try {
-      entries = fs.readdirSync(dir, { withFileTypes: true });
-    } catch {
-      return;
+async function downloadFile(url, destPath) {
+  const response = await fetch(url);
+  if (!response.ok) {
+    throw new Error(`HTTP ${response.status} for ${url}`);
+  }
+  const buffer = Buffer.from(await response.arrayBuffer());
+  fs.mkdirSync(path.dirname(destPath), { recursive: true });
+  fs.writeFileSync(destPath, buffer);
+}
+
+async function ensureKparArtifact(library) {
+  const out = path.join(cacheDir, library.artifact);
+  if (isUsableKpar(out)) {
+    console.log(`Using existing KPAR ${out}`);
+    return out;
+  }
+  const url = `https://github.com/${library.repo}/releases/download/v${library.version}/${library.artifact}`;
+  console.log(`Fetching KPAR ${url}`);
+  await downloadFile(url, out);
+  if (!isUsableKpar(out)) {
+    fs.rmSync(out, { force: true });
+    throw new Error(`Downloaded file is not a usable KPAR: ${url}`);
+  }
+  console.log(`Fetched ${out}`);
+  return out;
+}
+
+function materializeKpar(kparPath, destinationRoot) {
+  if (fs.existsSync(destinationRoot)) {
+    fs.rmSync(destinationRoot, { recursive: true, force: true });
+  }
+  fs.mkdirSync(destinationRoot, { recursive: true });
+
+  const zip = new AdmZip(kparPath);
+  const projectEntry = zip.getEntry(".project.json");
+  const metaEntry = zip.getEntry(".meta.json");
+  if (!projectEntry || !metaEntry) {
+    throw new Error(`KPAR missing manifests: ${kparPath}`);
+  }
+  const project = JSON.parse(projectEntry.getData().toString("utf8"));
+  const meta = JSON.parse(metaEntry.getData().toString("utf8"));
+  const entries = new Map(
+    zip.getEntries()
+      .filter((entry) => !entry.isDirectory)
+      .map((entry) => [entry.entryName.replace(/\\/g, "/"), entry.getData()])
+  );
+
+  const pairs = [];
+  const index = meta.index && typeof meta.index === "object" ? meta.index : {};
+  if (Object.keys(index).length === 0) {
+    for (const name of entries.keys()) {
+      if (name.endsWith(".sysml") || name.endsWith(".kerml")) {
+        pairs.push([name, name]);
+      }
     }
-    for (const entry of entries) {
-      if (results.length >= max) return;
-      if (entry.name.startsWith(".")) continue;
-      const full = path.join(dir, entry.name);
-      if (entry.isDirectory()) {
-        if (entry.name === "examples" || entry.name === "node_modules") continue;
-        walk(full);
-      } else if (entry.isFile() && entry.name.endsWith(".sysml")) {
-        results.push(path.relative(rootDir, full).replace(/\\/g, "/"));
+  } else {
+    for (const [logicalPath, archivePath] of Object.entries(index)) {
+      const logical = String(logicalPath).replace(/\\/g, "/");
+      const archive = String(archivePath).replace(/\\/g, "/");
+      if (logical.endsWith(".sysml") || logical.endsWith(".kerml")) {
+        pairs.push([logical, archive]);
+      } else if (archive.endsWith(".sysml") || archive.endsWith(".kerml")) {
+        pairs.push([archive, archive]);
       }
     }
   }
-  walk(rootDir);
-  return results;
+
+  const sourceFiles = [];
+  for (const [logicalPath, archivePath] of pairs) {
+    const bytes = entries.get(archivePath);
+    if (!bytes) continue;
+    const dest = path.join(destinationRoot, logicalPath);
+    fs.mkdirSync(path.dirname(dest), { recursive: true });
+    fs.writeFileSync(dest, bytes);
+    sourceFiles.push(logicalPath);
+  }
+  sourceFiles.sort();
+  return { project, meta, sourceFiles, root: destinationRoot };
 }
 
-function collectAreaCatalog(areaRoot, areaName) {
-  if (!fs.existsSync(areaRoot)) return [];
-  const families = fs
-    .readdirSync(areaRoot, { withFileTypes: true })
-    .filter((entry) => entry.isDirectory() && !entry.name.startsWith("."))
-    .map((entry) => entry.name)
-    .sort();
-
-  return families.map((family) => {
-    const familyRoot = path.join(areaRoot, family);
-    const readmePath = path.join(familyRoot, "README.md");
-    const readme = fs.existsSync(readmePath) ? fs.readFileSync(readmePath, "utf8") : "";
-    const titleMatch = readme.match(/^#\s+(.+)$/m);
-    const title = titleMatch ? titleMatch[1].trim() : family;
-    const summary = firstParagraph(readme) || `${areaName} library family \`${family}\`.`;
-    const packages = listSysmlRelative(familyRoot, 24);
-    return { family, title, summary, packages };
-  });
+function extractPackageNames(sourceText) {
+  const names = [];
+  const re =
+    /^\s*(?:private\s+|public\s+|protected\s+)*(?:standard\s+|library\s+)*package\s+([A-Za-z_][\w]*)/gm;
+  let match;
+  while ((match = re.exec(sourceText)) !== null) {
+    names.push(match[1]);
+  }
+  return [...new Set(names)];
 }
 
-function renderDomainPage(meta, catalog) {
+function buildSourceTree(sourceFiles, rootDir) {
+  /** @type {Map<string, any>} */
+  const root = new Map();
+
+  function ensureDir(map, name) {
+    if (!map.has(name)) {
+      map.set(name, { type: "dir", name, children: new Map() });
+    }
+    return map.get(name);
+  }
+
+  for (const relativePath of sourceFiles) {
+    const parts = relativePath.split("/");
+    let current = root;
+    for (let i = 0; i < parts.length - 1; i++) {
+      const node = ensureDir(current, parts[i]);
+      current = node.children;
+    }
+    const fileName = parts[parts.length - 1];
+    const abs = path.join(rootDir, relativePath);
+    const text = fs.readFileSync(abs, "utf8");
+    const packages = extractPackageNames(text);
+    current.set(fileName, {
+      type: "file",
+      name: fileName,
+      path: relativePath,
+      packages,
+    });
+  }
+
+  function toObject(map) {
+    return [...map.values()]
+      .sort((a, b) => {
+        if (a.type !== b.type) return a.type === "dir" ? -1 : 1;
+        return a.name.localeCompare(b.name);
+      })
+      .map((node) => {
+        if (node.type === "dir") {
+          return {
+            type: "dir",
+            name: node.name,
+            children: toObject(node.children),
+          };
+        }
+        return node;
+      });
+  }
+
+  return toObject(root);
+}
+
+function renderTreeMarkdown(nodes, indent = 0) {
+  const pad = "  ".repeat(indent);
+  const lines = [];
+  for (const node of nodes) {
+    if (node.type === "dir") {
+      lines.push(`${pad}- **${node.name}/**`);
+      lines.push(...renderTreeMarkdown(node.children, indent + 1));
+    } else {
+      const pkgLabel =
+        node.packages.length > 0
+          ? ` — ${node.packages.map((name) => `\`${name}\``).join(", ")}`
+          : "";
+      lines.push(`${pad}- \`${node.path}\`${pkgLabel}`);
+    }
+  }
+  return lines;
+}
+
+function countFiles(nodes) {
+  let count = 0;
+  for (const node of nodes) {
+    if (node.type === "file") count += 1;
+    else count += countFiles(node.children);
+  }
+  return count;
+}
+
+function flattenPackages(nodes, acc = []) {
+  for (const node of nodes) {
+    if (node.type === "file") {
+      for (const packageName of node.packages) {
+        acc.push({ packageName, file: node.path });
+      }
+    } else {
+      flattenPackages(node.children, acc);
+    }
+  }
+  return acc;
+}
+
+function renderDomainPage(meta, tree, project) {
   const domain = meta.libraries.find((library) => library.id === "domain");
+  const fileCount = countFiles(tree);
+  const packages = flattenPackages(tree);
   const lines = [
     "<!-- GENERATED by docs-site/scripts/sync-docs-meta.mjs — do not edit. -->",
     "",
     "# Domain Libraries",
     "",
     "Elan8 domain libraries provide reusable SysML v2 **vocabulary** for things in the system.",
-    "They are bundled with Spec42 and available automatically in the Library view.",
+    "This overview is generated from the bundled KPAR artifact so it matches what Spec42 ships.",
     "",
     `| | |`,
     `| --- | --- |`,
-    `| Bundled version | \`${domain?.version ?? "unknown"}\` |`,
-    `| Format | \`${domain?.format ?? "kpar"}\` |`,
+    `| Bundled version | \`${domain?.version ?? project?.version ?? "unknown"}\` |`,
+    `| Format | \`kpar\` |`,
+    `| Artifact | \`${domain?.artifact ?? ""}\` |`,
+    `| Packages / files | ${packages.length} packages · ${fileCount} source files |`,
     `| Source | [${domain?.repo ?? "elan8/sysml-domain-libraries"}](https://github.com/${domain?.repo ?? "elan8/sysml-domain-libraries"}) |`,
     "",
-    "Use these libraries for domain and technical modeling content. Method / process packages live in the [Method libraries](./method-libraries).",
+    "Method / process packages live in the [Method libraries](./method-libraries).",
     "",
+    "## Package tree",
+    "",
+    "Tree of source files inside the KPAR. Package names are scanned from each `.sysml` file.",
+    "",
+    ...renderTreeMarkdown(tree),
+    "",
+    "## Package index",
+    "",
+    "| Package | Source file |",
+    "| --- | --- |",
   ];
-
-  if (catalog?.areas?.length) {
-    lines.push("## Library families", "");
-    for (const area of catalog.areas) {
-      lines.push(`### ${area.name}`, "");
-      if (area.blurb) {
-        lines.push(area.blurb, "");
-      }
-      for (const family of area.families) {
-        lines.push(`#### ${family.title}`, "");
-        lines.push(family.summary, "");
-        if (family.packages.length) {
-          lines.push("Key packages:", "");
-          for (const pkg of family.packages.slice(0, 12)) {
-            lines.push(`- \`${pkg}\``);
-          }
-          if (family.packages.length > 12) {
-            lines.push(`- …and ${family.packages.length - 12} more`);
-          }
-          lines.push("");
-        }
-      }
-    }
-  } else {
-    lines.push(
-      "## Structure",
-      "",
-      "The bundled domain libraries are organized as:",
-      "",
-      "- `domain/` — business-domain vocabulary (for example robotics)",
-      "- `technical/` — business-agnostic technical capabilities (software, electronics, communication)",
-      "- `generic/` — cross-domain foundation units",
-      "",
-      "Refresh this page's detailed catalog by running `npm run docs:sync` from a checkout that also contains `sysml-domain-libraries`.",
-      ""
-    );
+  for (const row of packages.sort((a, b) => a.packageName.localeCompare(b.packageName))) {
+    lines.push(`| \`${row.packageName}\` | \`${row.file}\` |`);
   }
-
   lines.push(
+    "",
     "## In Spec42",
     "",
-    "- Open the **Library** view in the Spec42 sidebar to search and browse symbols.",
+    "- Open the **Library** view to search and browse these symbols.",
     "- See [Library & Dependencies](/guide/libraries) for custom paths and Sysand.",
-    "- See [What's included](./whats-included) for the exact bundled versions in this Spec42 release.",
+    "- See [What's included](./whats-included) for release pins.",
     ""
   );
   return lines.join("\n");
 }
 
-function parseMethodPackageTable(readme) {
-  const rows = [];
-  for (const line of readme.replace(/\r\n/g, "\n").split("\n")) {
-    if (!line.startsWith("|")) continue;
-    const cells = line
-      .split("|")
-      .slice(1, -1)
-      .map((cell) => cell.trim());
-    if (cells.length < 3) continue;
-    if (/^-{3,}/.test(cells[0]) || cells[0].toLowerCase() === "package") continue;
-    rows.push({
-      packageName: cells[0].replace(/`/g, ""),
-      file: cells[1].replace(/`/g, ""),
-      purpose: cells[2],
-    });
-  }
-  return rows;
-}
-
-function renderMethodPage(meta, catalog) {
+function renderMethodPage(meta, tree, project) {
   const method = meta.libraries.find((library) => library.id === "method");
+  const packages = flattenPackages(tree);
+  const fileCount = countFiles(tree);
   const lines = [
     "<!-- GENERATED by docs-site/scripts/sync-docs-meta.mjs — do not edit. -->",
     "",
     "# Method Libraries",
     "",
     "Elan8 Method libraries provide SysML v2 packages for requirements metadata, concerns, viewpoints, and related method concepts.",
-    "They are bundled with Spec42 separately from domain vocabulary.",
+    "This overview is generated from the bundled KPAR artifact so it matches what Spec42 ships.",
     "",
     `| | |`,
     `| --- | --- |`,
-    `| Bundled version | \`${method?.version ?? "unknown"}\` |`,
-    `| Format | \`${method?.format ?? "kpar"}\` |`,
+    `| Bundled version | \`${method?.version ?? project?.version ?? "unknown"}\` |`,
+    `| Format | \`kpar\` |`,
+    `| Artifact | \`${method?.artifact ?? ""}\` |`,
+    `| Packages / files | ${packages.length} packages · ${fileCount} source files |`,
     `| Source | [${method?.repo ?? "elan8/mbse-methodology"}](https://github.com/${method?.repo ?? "elan8/mbse-methodology"}) |`,
     "",
+    "## Package tree",
+    "",
+    ...renderTreeMarkdown(tree),
+    "",
+    "## Package index",
+    "",
+    "| Package | Source file |",
+    "| --- | --- |",
   ];
-
-  const packages = catalog?.packages?.length
-    ? catalog.packages
-    : [
-        {
-          packageName: "Elan8RequirementManagement",
-          file: "Elan8RequirementManagement.sysml",
-          purpose: "Evidence, baselines, traceability concerns",
-        },
-        {
-          packageName: "Elan8RequirementMetadata",
-          file: "Elan8RequirementMetadata.sysml",
-          purpose: "Requirement role and identity annotations",
-        },
-        {
-          packageName: "Elan8Method",
-          file: "Elan8Method.sysml",
-          purpose: "Concerns, abstraction levels, decisions, project info",
-        },
-        {
-          packageName: "Elan8Viewpoints",
-          file: "Elan8Viewpoints.sysml",
-          purpose: "Standard viewpoints and view stubs",
-        },
-      ];
-
-  lines.push("## Bundled packages", "", "| Package | File | Purpose |", "| --- | --- | --- |");
-  for (const row of packages) {
-    lines.push(`| \`${row.packageName}\` | \`${row.file}\` | ${row.purpose} |`);
+  for (const row of packages.sort((a, b) => a.packageName.localeCompare(b.packageName))) {
+    lines.push(`| \`${row.packageName}\` | \`${row.file}\` |`);
   }
   lines.push(
     "",
@@ -320,67 +379,21 @@ function renderWhatsIncluded(meta) {
     "| --- | --- | --- | --- |",
     `| SysML v2 standard library | \`${meta.standardLibrary.version}\` | \`${meta.standardLibrary.format}\` | [${meta.standardLibrary.repo}](https://github.com/${meta.standardLibrary.repo}) |`,
   ];
-
   for (const library of meta.libraries) {
     lines.push(
       `| ${library.displayName} | \`${library.version}\` | \`${library.format}\` | [${library.repo}](https://github.com/${library.repo}) |`
     );
   }
-
   lines.push(
     "",
     "## Learn more",
     "",
-    "- [Domain libraries](./domain-libraries) — vocabulary overview",
+    "- [Domain libraries](./domain-libraries) — KPAR package/file tree",
     "- [Method libraries](./method-libraries) — Elan8 Method packages",
-    "- [Library & Dependencies](/guide/libraries) — using the Library view, custom paths, and Sysand",
+    "- [Library & Dependencies](/guide/libraries) — Library view, custom paths, and Sysand",
     ""
   );
   return lines.join("\n");
-}
-
-function buildDomainCatalog(domainRoot) {
-  return {
-    areas: [
-      {
-        name: "Domain",
-        blurb: "Business-domain vocabulary for modeling things in a specific industry or product domain.",
-        families: collectAreaCatalog(path.join(domainRoot, "domain"), "Domain"),
-      },
-      {
-        name: "Technical",
-        blurb: "Business-agnostic technical capabilities such as software, electronics, and communication.",
-        families: collectAreaCatalog(path.join(domainRoot, "technical"), "Technical"),
-      },
-      {
-        name: "Generic",
-        blurb: "Cross-domain foundation content such as units.",
-        families: collectAreaCatalog(path.join(domainRoot, "generic"), "Generic"),
-      },
-    ].filter((area) => area.families.length > 0),
-  };
-}
-
-function buildMethodCatalog(methodRoot) {
-  const libraryReadme = path.join(methodRoot, "library", "README.md");
-  if (fs.existsSync(libraryReadme)) {
-    const packages = parseMethodPackageTable(fs.readFileSync(libraryReadme, "utf8"));
-    if (packages.length) {
-      return { packages };
-    }
-  }
-  const libraryDir = path.join(methodRoot, "library");
-  if (!fs.existsSync(libraryDir)) return { packages: [] };
-  const packages = fs
-    .readdirSync(libraryDir)
-    .filter((name) => name.endsWith(".sysml"))
-    .sort()
-    .map((file) => ({
-      packageName: path.basename(file, ".sysml"),
-      file,
-      purpose: "See source package documentation.",
-    }));
-  return { packages };
 }
 
 const packageJson = readJson(path.join(repoRoot, "vscode", "package.json"));
@@ -398,23 +411,33 @@ const meta = {
   libraries,
 };
 
-const domainSibling = findSibling("sysml-domain-libraries");
-const methodSibling = findSibling("mbse-methodology");
+const domainLib = libraries.find((library) => library.id === "domain");
+const methodLib = libraries.find((library) => library.id === "method");
+if (!domainLib || !methodLib) {
+  throw new Error("Expected domain and method entries in config/libraries.");
+}
 
-let domainCatalog = null;
-let methodCatalog = null;
-if (domainSibling) {
-  domainCatalog = buildDomainCatalog(domainSibling);
-  console.log(`Refreshed domain catalog from ${domainSibling}`);
-} else {
-  console.log("Sibling sysml-domain-libraries not found; writing domain page without local catalog scan.");
-}
-if (methodSibling) {
-  methodCatalog = buildMethodCatalog(methodSibling);
-  console.log(`Refreshed method catalog from ${methodSibling}`);
-} else {
-  console.log("Sibling mbse-methodology not found; using fallback method package table.");
-}
+const domainKpar = await ensureKparArtifact(domainLib);
+const methodKpar = await ensureKparArtifact(methodLib);
+
+const domainMaterialized = materializeKpar(
+  domainKpar,
+  path.join(materializeRoot, "domain")
+);
+const methodMaterialized = materializeKpar(
+  methodKpar,
+  path.join(materializeRoot, "method")
+);
+
+const domainTree = buildSourceTree(domainMaterialized.sourceFiles, domainMaterialized.root);
+const methodTree = buildSourceTree(methodMaterialized.sourceFiles, methodMaterialized.root);
+
+console.log(
+  `Domain KPAR tree: ${domainMaterialized.sourceFiles.length} files, ${flattenPackages(domainTree).length} packages`
+);
+console.log(
+  `Method KPAR tree: ${methodMaterialized.sourceFiles.length} files, ${flattenPackages(methodTree).length} packages`
+);
 
 const changed = [];
 if (writeIfChanged(generatedMetaPath, `${JSON.stringify(meta, null, 2)}\n`)) {
@@ -423,10 +446,10 @@ if (writeIfChanged(generatedMetaPath, `${JSON.stringify(meta, null, 2)}\n`)) {
 if (writeIfChanged(whatsIncludedPath, renderWhatsIncluded(meta))) {
   changed.push(path.relative(repoRoot, whatsIncludedPath));
 }
-if (writeIfChanged(domainLibrariesPath, renderDomainPage(meta, domainCatalog))) {
+if (writeIfChanged(domainLibrariesPath, renderDomainPage(meta, domainTree, domainMaterialized.project))) {
   changed.push(path.relative(repoRoot, domainLibrariesPath));
 }
-if (writeIfChanged(methodLibrariesPath, renderMethodPage(meta, methodCatalog))) {
+if (writeIfChanged(methodLibrariesPath, renderMethodPage(meta, methodTree, methodMaterialized.project))) {
   changed.push(path.relative(repoRoot, methodLibrariesPath));
 }
 
@@ -434,7 +457,5 @@ if (changed.length === 0) {
   console.log("Docs meta already up to date.");
 } else {
   console.log("Updated:");
-  for (const file of changed) {
-    console.log(`  ${file}`);
-  }
+  for (const file of changed) console.log(`  ${file}`);
 }

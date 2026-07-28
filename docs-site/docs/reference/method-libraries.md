@@ -3,22 +3,32 @@
 # Method Libraries
 
 Elan8 Method libraries provide SysML v2 packages for requirements metadata, concerns, viewpoints, and related method concepts.
-They are bundled with Spec42 separately from domain vocabulary.
+This overview is generated from the bundled KPAR artifact so it matches what Spec42 ships.
 
 | | |
 | --- | --- |
 | Bundled version | `0.1.1` |
 | Format | `kpar` |
+| Artifact | `elan8-method-libraries-0.1.1.kpar` |
+| Packages / files | 4 packages · 4 source files |
 | Source | [elan8/mbse-methodology](https://github.com/elan8/mbse-methodology) |
 
-## Bundled packages
+## Package tree
 
-| Package | File | Purpose |
-| --- | --- | --- |
-| `Elan8RequirementManagement` | `Elan8RequirementManagement.sysml` | Evidence, baselines, traceability concerns |
-| `Elan8RequirementMetadata` | `Elan8RequirementMetadata.sysml` | Requirement role and identity annotations |
-| `Elan8Method` | `Elan8Method.sysml` | Concerns, abstraction levels, decisions, project info |
-| `Elan8Viewpoints` | `Elan8Viewpoints.sysml` | Five standard viewpoints and view stubs |
+- **method/**
+  - `method/Elan8Method.sysml` — `Elan8Method`
+  - `method/Elan8RequirementManagement.sysml` — `Elan8RequirementManagement`
+  - `method/Elan8RequirementMetadata.sysml` — `Elan8RequirementMetadata`
+  - `method/Elan8Viewpoints.sysml` — `Elan8Viewpoints`
+
+## Package index
+
+| Package | Source file |
+| --- | --- |
+| `Elan8Method` | `method/Elan8Method.sysml` |
+| `Elan8RequirementManagement` | `method/Elan8RequirementManagement.sysml` |
+| `Elan8RequirementMetadata` | `method/Elan8RequirementMetadata.sysml` |
+| `Elan8Viewpoints` | `method/Elan8Viewpoints.sysml` |
 
 ## Methodology docs
 

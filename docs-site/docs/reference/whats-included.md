@@ -22,6 +22,6 @@ This page is generated from Spec42 product configuration so the docs stay aligne
 
 ## Learn more
 
-- [Domain libraries](./domain-libraries) — vocabulary overview
+- [Domain libraries](./domain-libraries) — KPAR package/file tree
 - [Method libraries](./method-libraries) — Elan8 Method packages
-- [Library & Dependencies](/guide/libraries) — using the Library view, custom paths, and Sysand
+- [Library & Dependencies](/guide/libraries) — Library view, custom paths, and Sysand

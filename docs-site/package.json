@@ -13,6 +13,7 @@
   "license": "ISC",
   "description": "Spec42 user documentation",
   "devDependencies": {
+    "adm-zip": "^0.6.0",
     "vitepress": "^1.6.4"
   },
   "type": "module"
