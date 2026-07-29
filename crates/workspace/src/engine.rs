@@ -1,4 +1,4 @@
-use std::collections::BTreeMap;
+use std::collections::{BTreeMap, BTreeSet};
 use std::path::{Path, PathBuf};
 
 use crate::catalog::{resolve_library_catalog, HostLibraryRequest, LibraryCatalog};
@@ -31,6 +31,7 @@ pub struct EngineBuilder {
     no_stdlib: bool,
     stdlib_path_override: Option<PathBuf>,
     kpar_library_path_overrides: BTreeMap<String, PathBuf>,
+    disabled_kpar_libraries: BTreeSet<String>,
     library_paths: Vec<PathBuf>,
     extra_library_paths: Vec<PathBuf>,
     standard_library: StandardLibraryConfig,
@@ -49,6 +50,7 @@ impl Default for EngineBuilder {
             no_stdlib: false,
             stdlib_path_override: None,
             kpar_library_path_overrides: BTreeMap::new(),
+            disabled_kpar_libraries: BTreeSet::new(),
             library_paths: Vec::new(),
             extra_library_paths: Vec::new(),
             standard_library: StandardLibraryConfig::default(),
@@ -137,6 +139,11 @@ impl EngineBuilder {
         self
     }
 
+    pub fn disable_kpar_library(mut self, id: impl Into<String>) -> Self {
+        self.disabled_kpar_libraries.insert(id.into());
+        self
+    }
+
     pub fn library_paths(mut self, paths: Vec<PathBuf>) -> Self {
         self.library_paths = paths;
         self
@@ -189,6 +196,7 @@ impl EngineBuilder {
             no_stdlib: self.no_stdlib,
             stdlib_path_override: self.stdlib_path_override,
             kpar_library_path_overrides: self.kpar_library_path_overrides,
+            disabled_kpar_libraries: self.disabled_kpar_libraries,
             library_paths: self.library_paths,
             standard_library: self.standard_library,
             use_embedded_stdlib: self.use_embedded_stdlib,
@@ -219,6 +227,7 @@ impl EngineBuilder {
             .extra_library_paths(request.extra_library_paths)
             .standard_library_config(request.standard_library);
         builder.kpar_library_path_overrides = request.kpar_library_path_overrides;
+        builder.disabled_kpar_libraries = request.disabled_kpar_libraries;
         if let Some(path) = request.stdlib_path_override {
             builder = builder.standard_library_path(path);
         }

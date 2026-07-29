@@ -245,6 +245,24 @@
         "category": "Spec42"
       },
       {
+        "command": "sysml.library.toggleLibrary",
+        "title": "Library: Enable/Disable Library...",
+        "icon": "$(circle-slash)",
+        "category": "Spec42"
+      },
+      {
+        "command": "sysml.library.setLocalLibraryPath",
+        "title": "Library: Use Local Library Path...",
+        "icon": "$(folder-opened)",
+        "category": "Spec42"
+      },
+      {
+        "command": "sysml.library.removeLocalLibraryPath",
+        "title": "Library: Remove Local/Custom Library...",
+        "icon": "$(trash)",
+        "category": "Spec42"
+      },
+      {
         "command": "sysml.sysand.showStatus",
         "title": "Sysand: Show Status",
         "icon": "$(package)",
@@ -535,6 +553,15 @@
         },
         {
           "command": "sysml.library.showDomainLibrariesStatus"
+        },
+        {
+          "command": "sysml.library.toggleLibrary"
+        },
+        {
+          "command": "sysml.library.setLocalLibraryPath"
+        },
+        {
+          "command": "sysml.library.removeLocalLibraryPath"
         }
       ]
     },
@@ -713,6 +740,27 @@
           },
           "default": [],
           "description": "Custom paths to additional SysML library roots. Files under these paths are indexed for hover, go-to-definition, and completion."
+        },
+        "spec42.disabledLibraries": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": [],
+          "description": "KPAR library ids to disable (for example \"domain\" or \"method\"). Disabled libraries are not indexed even though they are bundled."
+        },
+        "spec42.kparLibraryPaths": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          },
+          "default": {},
+          "description": "Map of KPAR library id to a local directory or .kpar file. Use a built-in id (domain, method) to override it with a local checkout for development, or any other id to add a custom KPAR library."
+        },
+        "spec42.development.diagnoseLibraryPaths": {
+          "type": "boolean",
+          "default": false,
+          "description": "⚠️ Development only, significant performance impact. Include configured library paths (spec42.libraryPaths, spec42.kparLibraryPaths) in the background workspace-wide diagnostics sweep that runs on a debounce after every edit, instead of only the currently open file. Every edit anywhere then revalidates the entire library corpus, which can be much slower on large libraries. Enable this only while actively developing or debugging a library through a local override; leave disabled otherwise."
         },
         "spec42.statusBar.enabled": {
           "type": "boolean",

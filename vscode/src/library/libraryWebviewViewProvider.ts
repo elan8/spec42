@@ -106,6 +106,30 @@ export class LibraryWebviewViewProvider implements vscode.WebviewViewProvider {
         return;
       }
 
+      if (message?.type === "toggleKparLibrary") {
+        await vscode.commands.executeCommand(
+          "sysml.library.toggleLibrary",
+          String(message.id ?? "")
+        );
+        return;
+      }
+
+      if (message?.type === "setLocalLibraryPath") {
+        await vscode.commands.executeCommand(
+          "sysml.library.setLocalLibraryPath",
+          message.id ? String(message.id) : undefined
+        );
+        return;
+      }
+
+      if (message?.type === "removeLocalLibraryPath") {
+        await vscode.commands.executeCommand(
+          "sysml.library.removeLocalLibraryPath",
+          String(message.id ?? "")
+        );
+        return;
+      }
+
       if (message?.type === "showDomainLibrariesInfo") {
         await vscode.commands.executeCommand(
           "sysml.library.showKparLibraryStatus",
@@ -410,6 +434,9 @@ export class LibraryWebviewViewProvider implements vscode.WebviewViewProvider {
     }
 
     function versionLabel(library) {
+      if (library?.sourceKind === 'disabled') {
+        return 'Disabled';
+      }
       const pinned = library?.pinnedVersion || 'unknown';
       const installed = library?.installedVersion;
       if (!library?.available) {
@@ -444,8 +471,9 @@ export class LibraryWebviewViewProvider implements vscode.WebviewViewProvider {
       kparLibraries.forEach((library) => {
         const section = el('div', 'section');
         const head = el('div', 'section-head');
-        const ok = !!library.available && !!library.versionMatches;
-        const pillClass = ok ? 'ok' : 'warning';
+        const disabled = library.sourceKind === 'disabled';
+        const ok = !disabled && !!library.available && !!library.versionMatches;
+        const pillClass = disabled ? 'info' : (ok ? 'ok' : 'warning');
         const counts = countText(library.packageCount, library.symbolCount);
         head.title = [
           library.displayName || library.id,
@@ -456,10 +484,26 @@ export class LibraryWebviewViewProvider implements vscode.WebviewViewProvider {
           library.resolvedPath || ''
         ].filter(Boolean).join(' / ');
         head.appendChild(el('div', 'title', library.displayName || library.id || 'Library'));
-        head.appendChild(sectionTrail(
+        const trailButtons = [
           el('span', 'pill ' + pillClass, versionLabel(library)),
-          button('Library details', 'info', 'showKparLibraryInfo', { id: library.id })
-        ));
+          button(
+            disabled ? 'Enable library' : 'Disable library',
+            disabled ? 'check' : 'circle-slash',
+            'toggleKparLibrary',
+            { id: library.id }
+          )
+        ];
+        if (library.sourceKind === 'override' || library.sourceKind === 'custom') {
+          trailButtons.push(
+            button('Remove local/custom library path', 'trash', 'removeLocalLibraryPath', { id: library.id })
+          );
+        } else {
+          trailButtons.push(
+            button('Use a local library path for development', 'folder-opened', 'setLocalLibraryPath', { id: library.id })
+          );
+        }
+        trailButtons.push(button('Library details', 'info', 'showKparLibraryInfo', { id: library.id }));
+        head.appendChild(sectionTrail(...trailButtons));
         section.appendChild(head);
         nodes.push(section);
       });
@@ -472,6 +516,7 @@ export class LibraryWebviewViewProvider implements vscode.WebviewViewProvider {
       customHead.appendChild(el('div', 'title', 'Custom Libraries'));
       customHead.appendChild(sectionTrail(
         el('span', 'pill ' + (missing.length ? 'warning' : 'info'), String((custom.configuredPaths || []).length) + ' path(s)'),
+        button('Add a KPAR library (directory or .kpar file)', 'add', 'setLocalLibraryPath', {}),
         button('Manage custom library paths', 'settings-gear', 'manageCustomLibraries')
       ));
       customSection.appendChild(customHead);

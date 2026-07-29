@@ -228,6 +228,21 @@ pub fn parse_perf_logging_enabled_from_value(
         .unwrap_or(default_enabled)
 }
 
+/// Development-only override: include library paths in the debounced workspace-wide
+/// diagnostics sweep (normally excluded — see `publish_workspace_diagnostics`'s comment
+/// and `docs/engineering/PERFORMANCE-GUARDRAILS.md`). Maps to the VS Code setting
+/// `spec42.development.diagnoseLibraryPaths`.
+pub fn parse_diagnose_library_paths_from_value(
+    value: Option<&serde_json::Value>,
+    default_enabled: bool,
+) -> bool {
+    value
+        .and_then(|opts| opts.get("diagnostics"))
+        .and_then(|diagnostics| diagnostics.get("includeLibraryPaths"))
+        .and_then(|enabled| enabled.as_bool())
+        .unwrap_or(default_enabled)
+}
+
 pub fn env_flag_enabled(name: &str, default_enabled: bool) -> bool {
     let Ok(raw_value) = std::env::var(name) else {
         return default_enabled;
@@ -282,7 +297,8 @@ pub fn symbol_hover_markdown(entry: &SymbolEntry, show_location: bool) -> String
 #[cfg(test)]
 mod tests {
     use super::{
-        apply_incremental_change, import_statement_ranges, untyped_part_usage_diagnostics,
+        apply_incremental_change, import_statement_ranges, parse_diagnose_library_paths_from_value,
+        untyped_part_usage_diagnostics,
     };
     use tower_lsp::lsp_types::{Position, Range};
 
@@ -317,5 +333,20 @@ mod tests {
         let text = "package P {\n  part def Laptop {\n    part display : Display;\n  }\n}\n";
         let diagnostics = untyped_part_usage_diagnostics(text);
         assert!(diagnostics.is_empty());
+    }
+
+    #[test]
+    fn diagnose_library_paths_defaults_when_absent() {
+        assert!(!parse_diagnose_library_paths_from_value(None, false));
+        assert!(parse_diagnose_library_paths_from_value(None, true));
+    }
+
+    #[test]
+    fn diagnose_library_paths_reads_nested_flag() {
+        let value = serde_json::json!({ "diagnostics": { "includeLibraryPaths": true } });
+        assert!(parse_diagnose_library_paths_from_value(Some(&value), false));
+
+        let value = serde_json::json!({ "diagnostics": { "includeLibraryPaths": false } });
+        assert!(!parse_diagnose_library_paths_from_value(Some(&value), true));
     }
 }

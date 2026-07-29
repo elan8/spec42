@@ -24,6 +24,8 @@ import {
   getConfigBoolean,
   getConfigString,
   getConfigStringArray,
+  getDisabledLibraries,
+  getKparLibraryPathOverrides,
   isDefaultServerPath,
 } from "./configBridge";
 import { setServerHealth } from "./statusBar";
@@ -220,10 +222,20 @@ export function startLanguageClient(
   const libraryPaths = customLibraryPaths.filter(
     (value, index, all) => all.indexOf(value) === index
   );
+  const disabledLibraries = getDisabledLibraries();
+  const kparLibraryPathOverridesRaw = getKparLibraryPathOverrides();
+  const kparLibraryPathOverrides: Record<string, string> = {};
+  for (const [id, rawPath] of Object.entries(kparLibraryPathOverridesRaw)) {
+    kparLibraryPathOverrides[id] = path.isAbsolute(rawPath)
+      ? rawPath
+      : path.resolve(workspaceRoot, rawPath);
+  }
   logPerf?.("activate:configResolved", {
     workspaceFolderCount: vscode.workspace.workspaceFolders?.length ?? 0,
     libraryPathCount: libraryPaths.length,
     customLibraryPathCount: customLibraryPaths.length,
+    disabledLibraryCount: disabledLibraries.length,
+    kparLibraryPathOverrideCount: Object.keys(kparLibraryPathOverrides).length,
   });
 
   const serverCommandResolutionStartedAt = Date.now();
@@ -245,6 +257,12 @@ export function startLanguageClient(
   }
 
   const serverArgs = ["lsp"];
+  for (const id of disabledLibraries) {
+    serverArgs.push("--disable-kpar-library", id);
+  }
+  for (const [id, resolvedPath] of Object.entries(kparLibraryPathOverrides)) {
+    serverArgs.push("--kpar-library-path", `${id}=${resolvedPath}`);
+  }
   logPerf?.("activate:serverCommandResolved", {
     totalMs: Date.now() - serverCommandResolutionStartedAt,
     serverCommand,
@@ -256,6 +274,17 @@ export function startLanguageClient(
   if (missingLibraryPaths.length > 0) {
     void showServerIssue(
       `Some SysML library paths do not exist and will be ignored: ${missingLibraryPaths.join(", ")}`,
+      "warning"
+    );
+  }
+  const missingKparLibraryPaths = Object.entries(kparLibraryPathOverrides).filter(
+    ([, resolvedPath]) => !fs.existsSync(resolvedPath)
+  );
+  if (missingKparLibraryPaths.length > 0) {
+    void showServerIssue(
+      `Some spec42.kparLibraryPaths entries do not exist and will be ignored: ${missingKparLibraryPaths
+        .map(([id, resolvedPath]) => `${id}=${resolvedPath}`)
+        .join(", ")}`,
       "warning"
     );
   }
@@ -354,6 +383,9 @@ export function startLanguageClient(
       },
       performanceLogging: {
         enabled: getConfigBoolean("performanceLogging.enabled", false),
+      },
+      diagnostics: {
+        includeLibraryPaths: getConfigBoolean("development.diagnoseLibraryPaths", false),
       },
     },
     initializationFailedHandler: (error) => {
@@ -595,7 +627,10 @@ export function registerServerConfigChangeHandler(
         event.affectsConfiguration("sysml-language-server.debug");
       const performanceLoggingConfigChanged =
         event.affectsConfiguration("spec42.performanceLogging.enabled") ||
-        event.affectsConfiguration("sysml-language-server.performanceLogging.enabled");
+        event.affectsConfiguration("sysml-language-server.performanceLogging.enabled") ||
+        event.affectsConfiguration("spec42.disabledLibraries") ||
+        event.affectsConfiguration("spec42.kparLibraryPaths") ||
+        event.affectsConfiguration("spec42.development.diagnoseLibraryPaths");
 
       if (verboseLoggingChanged && VisualizationPanel.currentPanel) {
         const panelDoc = VisualizationPanel.currentPanel.getDocument();

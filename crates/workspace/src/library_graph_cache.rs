@@ -168,6 +168,37 @@ pub fn store(library_paths: &[Url], graph: &SemanticGraph) {
     }
 }
 
+/// Delete every cached entry, regardless of key. Used when a library's
+/// resolution changes (enabled/disabled, overridden to a local path) so a
+/// stale entry for the previous configuration doesn't linger on disk.
+///
+/// Safe to call even when nothing is cached; returns the number of files removed.
+pub fn clear_all() -> Result<usize, String> {
+    let Some(cache_dir) = default_cache_dir() else {
+        return Ok(0);
+    };
+    clear_all_in(&cache_dir)
+}
+
+fn clear_all_in(cache_dir: &Path) -> Result<usize, String> {
+    let entries = match std::fs::read_dir(cache_dir) {
+        Ok(entries) => entries,
+        Err(e) if e.kind() == std::io::ErrorKind::NotFound => return Ok(0),
+        Err(e) => return Err(format!("Failed to read {}: {e}", cache_dir.display())),
+    };
+    let mut cleared = 0usize;
+    for entry in entries.flatten() {
+        let path = entry.path();
+        if path.extension().and_then(|e| e.to_str()) != Some("bin") {
+            continue;
+        }
+        std::fs::remove_file(&path)
+            .map_err(|e| format!("Failed to remove {}: {e}", path.display()))?;
+        cleared += 1;
+    }
+    Ok(cleared)
+}
+
 /// Delete cache entries whose version header does not match the current binary.
 /// Call once at startup on a background thread. Non-fatal.
 pub fn evict_stale_entries() {
@@ -339,6 +370,28 @@ mod tests {
     fn empty_library_paths_produces_empty_fingerprint() {
         let fp = build_fingerprint(&[]);
         assert!(fp.is_empty());
+    }
+
+    #[test]
+    fn clear_all_removes_bin_files_and_leaves_others() {
+        let dir = tempdir().unwrap();
+        std::fs::write(dir.path().join("a.bin"), b"x").unwrap();
+        std::fs::write(dir.path().join("b.bin"), b"y").unwrap();
+        std::fs::write(dir.path().join("keep.txt"), b"z").unwrap();
+
+        let cleared = clear_all_in(dir.path()).unwrap();
+
+        assert_eq!(cleared, 2);
+        assert!(dir.path().join("keep.txt").exists());
+        assert!(!dir.path().join("a.bin").exists());
+        assert!(!dir.path().join("b.bin").exists());
+    }
+
+    #[test]
+    fn clear_all_on_missing_dir_returns_zero() {
+        let dir = tempdir().unwrap();
+        let missing = dir.path().join("does-not-exist");
+        assert_eq!(clear_all_in(&missing).unwrap(), 0);
     }
 
     #[test]

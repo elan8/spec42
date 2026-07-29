@@ -268,11 +268,13 @@ export function buildKparLibraryStatusViewModel(
     runtime?.versionMatches ??
     (!installedVersion || installedVersion === pinnedVersion);
   const available =
-    runtime?.isInstalled === true ||
-    !!resolvedPath ||
-    sourceKind === "bundled" ||
-    sourceKind === "canonical-managed" ||
-    sourceKind === "override";
+    sourceKind !== "disabled" &&
+    (runtime?.isInstalled === true ||
+      !!resolvedPath ||
+      sourceKind === "bundled" ||
+      sourceKind === "canonical-managed" ||
+      sourceKind === "override" ||
+      sourceKind === "custom");
 
   return {
     id: heading.id,
@@ -285,6 +287,28 @@ export function buildKparLibraryStatusViewModel(
     resolvedPath,
     sourceKind,
   };
+}
+
+export function classifyKparLibraryStatus(library: KparLibraryStatusViewModel): {
+  label: string;
+  severity: "ok" | "info" | "warning";
+} {
+  if (library.sourceKind === "disabled") {
+    return { label: "Disabled", severity: "info" };
+  }
+  if (library.sourceKind === "override") {
+    return { label: "Using a local override path", severity: "info" };
+  }
+  if (library.sourceKind === "custom") {
+    return { label: "Custom library", severity: "info" };
+  }
+  if (!library.available) {
+    return { label: "Not available", severity: "warning" };
+  }
+  if (!library.versionMatches) {
+    return { label: "Version mismatch", severity: "warning" };
+  }
+  return { label: "Ready", severity: "ok" };
 }
 
 function emptyDomainFallback(format: string): KparLibraryStatusViewModel {
@@ -314,7 +338,19 @@ export function buildLibraryDashboardStatus(params: {
   const statusById = new Map(
     params.kparStatuses.map((status) => [status.id, status] as const)
   );
-  const kparLibraries = params.kparHeadings.map((heading) => {
+  const headingIds = new Set(params.kparHeadings.map((heading) => heading.id));
+  // Runtime-only ids (not part of the build-time heading list) are custom/ad-hoc
+  // libraries the user added via `spec42.kparLibraryPaths` — synthesize a heading
+  // from the runtime status itself so they still render in the dashboard.
+  const adHocHeadings: KparLibraryHeading[] = params.kparStatuses
+    .filter((status) => !headingIds.has(status.id))
+    .map((status) => ({
+      id: status.id,
+      displayName: status.displayName || status.id,
+      pinnedVersion: status.pinnedVersion || "local",
+      format: params.format,
+    }));
+  const kparLibraries = [...params.kparHeadings, ...adHocHeadings].map((heading) => {
     const status = buildKparLibraryStatusViewModel(heading, statusById.get(heading.id));
     if (heading.id === "domain") {
       return {

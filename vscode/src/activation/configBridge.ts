@@ -52,6 +52,18 @@ export function getStandardLibraryConfig(): StandardLibraryConfig {
   };
 }
 
+export function getDisabledLibraries(): string[] {
+  return getConfigStringArray("disabledLibraries") ?? [];
+}
+
+export function getKparLibraryPathOverrides(): Record<string, string> {
+  const { primary, legacy } = getConfig();
+  const value =
+    primary.get<Record<string, string>>("kparLibraryPaths") ??
+    legacy.get<Record<string, string>>("kparLibraryPaths");
+  return value ?? {};
+}
+
 export function getDomainLibrariesConfig(): DomainLibrariesConfig {
   const domain = kparLibraryDefaults("domain");
   if (!domain) {

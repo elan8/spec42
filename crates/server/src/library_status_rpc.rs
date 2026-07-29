@@ -149,6 +149,8 @@ fn source_kind(source: Option<&str>) -> String {
         Some("bundled") => "bundled".to_string(),
         Some("managed") => "canonical-managed".to_string(),
         Some("flag") | Some("env") => "override".to_string(),
+        Some("custom") => "custom".to_string(),
+        Some("disabled") => "disabled".to_string(),
         _ => "none".to_string(),
     }
 }
@@ -178,8 +180,7 @@ fn build_kpar_dto(component: &KparLibraryComponent) -> Result<KparLibraryStatusD
         status.source = component.source.clone();
     }
     if let Some(path) = &component.path {
-        if component.source.as_deref() != Some("flag") && component.source.as_deref() != Some("env")
-        {
+        if !matches!(component.source.as_deref(), Some("flag") | Some("env") | Some("custom")) {
             status.is_installed = status.is_installed && path.is_dir();
         }
     }

@@ -474,6 +474,7 @@ mod tests {
             library_paths: Vec::new(),
             stdlib_path: None,
             kpar_library_paths: Vec::new(),
+            disabled_kpar_libraries: Vec::new(),
             no_stdlib: true,
             stdio: false,
             command: None,

@@ -31,6 +31,19 @@ export function runSpec42Json(
   });
 }
 
+/** Runs a spec42 CLI subcommand and resolves with raw stdout (no JSON parsing). */
+export function runSpec42(command: string, args: string[], cwd: string): Promise<string> {
+  return new Promise((resolve, reject) => {
+    cp.execFile(command, args, { cwd: cwd || undefined, maxBuffer: 16 * 1024 * 1024 }, (error, stdout, stderr) => {
+      if (error) {
+        reject(new Error(stderr?.trim() || error.message));
+        return;
+      }
+      resolve(stdout);
+    });
+  });
+}
+
 export function defaultSysmlTargetPath(workspaceRoot: string): string | undefined {
   const active = vscode.window.activeTextEditor?.document;
   if (active && (active.languageId === "sysml" || active.languageId === "kerml")) {

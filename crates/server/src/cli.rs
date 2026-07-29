@@ -12,8 +12,13 @@ pub struct Cli {
     #[arg(long = "stdlib-path", global = true)]
     pub stdlib_path: Option<PathBuf>,
     /// Override a managed KPAR library install path (repeatable): `--kpar-library-path domain=C:/libs/domain`.
+    /// An id that isn't a registered library (domain, method, ...) registers an ad-hoc
+    /// extra KPAR library instead of overriding one.
     #[arg(long = "kpar-library-path", global = true, value_name = "ID=PATH")]
     pub kpar_library_paths: Vec<String>,
+    /// Disable a registered KPAR library by id (repeatable): `--disable-kpar-library domain`.
+    #[arg(long = "disable-kpar-library", global = true, value_name = "ID")]
+    pub disabled_kpar_libraries: Vec<String>,
     #[arg(long = "no-stdlib", global = true, default_value_t = false)]
     pub no_stdlib: bool,
     #[arg(long = "stdio", global = true, hide = true, default_value_t = false)]
@@ -153,6 +158,10 @@ pub enum LibrariesCommand {
     Path(LibrariesIdArgs),
     /// Delete materialized KPAR library files from the data directory (they are re-created from the embedded copy on next use).
     ClearCache(LibrariesIdArgs),
+    /// Delete the on-disk built-library-graph cache, forcing a full rebuild on the
+    /// next server start. Use this after enabling/disabling a library or changing
+    /// a `--kpar-library-path` override so a stale cached graph never lingers.
+    ClearGraphCache,
 }
 
 #[derive(Debug, Clone, Subcommand)]
@@ -365,6 +374,21 @@ mod tests {
     }
 
     #[test]
+    fn disable_kpar_library_flag_parses_repeatable_id() {
+        let cli = Cli::parse_from([
+            "spec42",
+            "--disable-kpar-library",
+            "domain",
+            "--disable-kpar-library",
+            "method",
+        ]);
+        assert_eq!(
+            cli.disabled_kpar_libraries,
+            vec!["domain".to_string(), "method".to_string()]
+        );
+    }
+
+    #[test]
     fn libraries_status_command_parses_optional_id() {
         let cli = Cli::parse_from(["spec42", "libraries", "status", "--id", "domain"]);
         match cli.command {
@@ -394,6 +418,17 @@ mod tests {
                 command: LibrariesCommand::ClearCache(args),
             }) => assert_eq!(args.id.as_deref(), Some("method")),
             other => panic!("expected libraries clear-cache command, got {other:?}"),
+        }
+    }
+
+    #[test]
+    fn libraries_clear_graph_cache_command_parses() {
+        let cli = Cli::parse_from(["spec42", "libraries", "clear-graph-cache"]);
+        match cli.command {
+            Some(Command::Libraries {
+                command: LibrariesCommand::ClearGraphCache,
+            }) => {}
+            other => panic!("expected libraries clear-graph-cache command, got {other:?}"),
         }
     }
 

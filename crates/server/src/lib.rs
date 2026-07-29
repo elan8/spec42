@@ -85,6 +85,7 @@ pub fn cli_from_global(global: &Spec42GlobalParams) -> Cli {
             .collect(),
         stdlib_path: global.stdlib_path.as_ref().map(PathBuf::from),
         kpar_library_paths: Vec::new(),
+        disabled_kpar_libraries: Vec::new(),
         no_stdlib: global.no_stdlib,
         stdio: false,
         command: None,
@@ -405,14 +406,44 @@ fn run_libraries(cli: &Cli, command: &LibrariesCommand) -> Result<ExitCode, Stri
     match command {
         LibrariesCommand::Status(args) => {
             for library in selected(&args.id)? {
-                let status = kpar_libraries::managed_status(&library.paths, &library.config)?;
                 println!("[{}] {}", library.id, library.display_name);
-                print_kpar_library_status(&status);
+                match library.source.as_deref() {
+                    Some("disabled") => println!("  disabled: yes (not used for resolution)"),
+                    // Overrides (`flag`/`env`) and ad-hoc `custom` libraries aren't reflected
+                    // in the on-disk managed metadata, so report the resolved component
+                    // directly instead of falling back to `managed_status`.
+                    Some("flag") | Some("env") | Some("custom") => {
+                        println!("  pinned version: {}", library.config.version);
+                        println!(
+                            "  resolved path: {}",
+                            library
+                                .path
+                                .as_ref()
+                                .map(|path| path.display().to_string())
+                                .unwrap_or_else(|| "(none)".to_string())
+                        );
+                        println!(
+                            "  source: {}",
+                            library.source.as_deref().unwrap_or("(none)")
+                        );
+                    }
+                    _ => {
+                        let status =
+                            kpar_libraries::managed_status(&library.paths, &library.config)?;
+                        print_kpar_library_status(&status);
+                    }
+                }
                 println!();
             }
         }
         LibrariesCommand::Path(args) => {
             for library in selected(&args.id)? {
+                if library.source.as_deref() == Some("disabled") {
+                    return Err(format!(
+                        "KPAR library '{}' is disabled and has no active resolution path.",
+                        library.id
+                    ));
+                }
                 if let Some(path) = &library.path {
                     if args.id.is_some() {
                         println!("{}", path.display());
@@ -451,6 +482,14 @@ fn run_libraries(cli: &Cli, command: &LibrariesCommand) -> Result<ExitCode, Stri
             }
             if cleared == 0 {
                 println!("No materialized KPAR library data was found.");
+            }
+        }
+        LibrariesCommand::ClearGraphCache => {
+            let cleared = workspace::library_graph_cache::clear_all()?;
+            if cleared == 0 {
+                println!("No cached library graph data was found.");
+            } else {
+                println!("Cleared {cleared} cached library graph file(s).");
             }
         }
     }

@@ -18,6 +18,16 @@ fn perf_logging_enabled(runtime_config: &Arc<std::sync::OnceLock<RuntimeConfig>>
         .perf_logging_enabled
 }
 
+/// `spec42.development.diagnoseLibraryPaths` — development-only opt-in to include library
+/// paths in the workspace-wide diagnostics sweep. See that setting's description and the
+/// comment on the exclusion below.
+fn diagnose_library_paths_enabled(runtime_config: &Arc<std::sync::OnceLock<RuntimeConfig>>) -> bool {
+    runtime_config
+        .get()
+        .expect("initialize precedes all other LSP requests")
+        .diagnose_library_paths
+}
+
 pub(crate) async fn publish_document_diagnostics(
     client: &Client,
     handle: &WorkspaceHandle,
@@ -27,9 +37,14 @@ pub(crate) async fn publish_document_diagnostics(
 ) {
     let started_at = Instant::now();
     let snap = handle.snapshot();
-    if util::uri_under_any_library(&uri, &snap.library_paths) {
-        return;
-    }
+    // Unlike `publish_workspace_diagnostics`'s debounced O(project files) republish pass
+    // (which excludes library paths to bound its cost — see
+    // docs/engineering/PERFORMANCE-GUARDRAILS.md), this only diagnoses the single document
+    // that was just opened/changed. That cost is the same regardless of library
+    // classification, so there's no performance reason to suppress it here — and doing so
+    // meant editing a library file directly (e.g. via `spec42.kparLibraryPaths` local-dev
+    // overrides) never showed diagnostics at all, even though hover still flagged
+    // unresolved references for the same file.
     if !supports_semantic_queries(snap.session.lifecycle()) {
         if perf_logging_enabled(runtime_config) {
             info!(
@@ -85,7 +100,21 @@ pub(crate) async fn publish_workspace_diagnostics(
                     .map(|entry| (uri.clone(), entry.content.clone()))
             })
             .collect()
+    } else if diagnose_library_paths_enabled(runtime_config) {
+        // `spec42.development.diagnoseLibraryPaths` opt-in: include library paths anyway,
+        // trading the performance guardrail below for full coverage while developing or
+        // debugging a library through a local override.
+        snap.index
+            .iter()
+            .map(|(uri, entry)| (uri.clone(), entry.content.clone()))
+            .collect()
     } else {
+        // Excludes library paths deliberately — this pass is O(project files) and runs on a
+        // debounce after every edit; including the bundled standard library and any configured
+        // KPAR libraries here would make every keystroke revalidate the whole library corpus.
+        // See docs/engineering/PERFORMANCE-GUARDRAILS.md. `publish_document_diagnostics` still
+        // diagnoses individual library files when they're actually opened/edited (no exclusion
+        // there — see its comment), so this only affects the *background* cross-file sweep.
         snap.index
             .iter()
             .filter(|(uri, _)| !util::uri_under_any_library(uri, &snap.library_paths))

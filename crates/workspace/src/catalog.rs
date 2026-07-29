@@ -38,6 +38,7 @@ pub struct HostLibraryRequest {
     pub no_stdlib: bool,
     pub stdlib_path_override: Option<PathBuf>,
     pub kpar_library_path_overrides: BTreeMap<String, PathBuf>,
+    pub disabled_kpar_libraries: BTreeSet<String>,
     pub library_paths: Vec<PathBuf>,
     pub standard_library: StandardLibraryConfig,
     pub use_embedded_stdlib: bool,
@@ -210,11 +211,42 @@ fn resolve_kpar_libraries(
     request: &HostLibraryRequest,
 ) -> WorkspaceResult<Vec<KparLibraryComponent>> {
     let mut components = Vec::new();
+    let mut registered_ids = BTreeSet::new();
     for config in registry_configs() {
+        registered_ids.insert(config.id.clone());
         let paths = kpar_library_paths_from_data_dir(&request.cache_dir, &config.id);
         let component = resolve_one_kpar_library(request, config, paths)?;
         components.push(component);
     }
+
+    // Any override id that isn't a registered library is treated as a manually
+    // added, ad-hoc KPAR library (a `.kpar` file or a materialized install root).
+    for (id, path) in &request.kpar_library_path_overrides {
+        if registered_ids.contains(id) || request.disabled_kpar_libraries.contains(id) {
+            continue;
+        }
+        let resolved = resolve_explicit_library_path(path, &request.cache_dir, id)
+            .map_err(WorkspaceError::unresolved_library_environment)?;
+        let paths = kpar_library_paths_from_data_dir(&request.cache_dir, id);
+        let config = KparLibraryConfig {
+            id: id.clone(),
+            display_name: id.clone(),
+            version: "local".to_string(),
+            repo: String::new(),
+            content_path: String::new(),
+            format: "kpar".to_string(),
+            artifact: None,
+        };
+        components.push(KparLibraryComponent {
+            id: id.clone(),
+            display_name: id.clone(),
+            path: Some(resolved.install_path),
+            source: Some("custom".to_string()),
+            config,
+            paths,
+        });
+    }
+
     Ok(components)
 }
 
@@ -223,6 +255,17 @@ fn resolve_one_kpar_library(
     config: KparLibraryConfig,
     paths: KparLibraryPaths,
 ) -> WorkspaceResult<KparLibraryComponent> {
+    if request.disabled_kpar_libraries.contains(&config.id) {
+        return Ok(KparLibraryComponent {
+            id: config.id.clone(),
+            display_name: config.display_name.clone(),
+            path: None,
+            source: Some("disabled".to_string()),
+            config,
+            paths,
+        });
+    }
+
     if let Some(path) = request.kpar_library_path_overrides.get(&config.id) {
         let resolved = resolve_explicit_library_path(path, &request.cache_dir, &config.id)
             .map_err(WorkspaceError::unresolved_library_environment)?;

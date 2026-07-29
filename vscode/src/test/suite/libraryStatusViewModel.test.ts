@@ -1,6 +1,7 @@
 import * as assert from "assert";
 import {
   buildLibraryDashboardStatus,
+  classifyKparLibraryStatus,
   classifySysandStatus,
   flattenLibrarySearchResults,
   summarizeLibrarySearch,
@@ -165,5 +166,102 @@ describe("libraryStatusViewModel", () => {
     assert.strictEqual(status.custom.packageCount, 2);
     assert.deepStrictEqual(status.custom.missingPaths, ["C:/libs/missing"]);
     assert.strictEqual(status.sysand.lockPresent, true);
+  });
+
+  it("marks a disabled KPAR library as unavailable with a disabled sourceKind", () => {
+    const status = buildLibraryDashboardStatus({
+      pinnedVersion: STANDARD_LIBRARY_DEFAULTS.version,
+      format: STANDARD_LIBRARY_DEFAULTS.format,
+      kparHeadings: KPAR_LIBRARIES_DEFAULTS.map((library) => ({
+        id: library.id,
+        displayName: library.displayName,
+        pinnedVersion: library.version,
+        format: library.format,
+      })),
+      kparStatuses: [
+        {
+          id: "domain",
+          displayName: DOMAIN_LIBRARIES_DEFAULTS.displayName,
+          sourceKind: "disabled",
+          pinnedVersion: DOMAIN_LIBRARIES_DEFAULTS.version,
+          isInstalled: false,
+          versionMatches: false,
+        },
+      ],
+      configuredPaths: [],
+      missingPaths: [],
+      summary: {
+        standardPackages: 0,
+        standardSymbols: 0,
+        domainPackages: 0,
+        domainSymbols: 0,
+        customPackages: 0,
+        customSymbols: 0,
+        totalSymbols: 0,
+      },
+      sysand: {
+        installed: false,
+        manifestPresent: false,
+        lockPresent: false,
+        dependencyRoots: [],
+        warnings: [],
+      },
+    });
+
+    const domain = status.kparLibraries.find((library) => library.id === "domain")!;
+    assert.strictEqual(domain.sourceKind, "disabled");
+    assert.strictEqual(domain.available, false);
+    assert.strictEqual(classifyKparLibraryStatus(domain).label, "Disabled");
+    assert.strictEqual(classifyKparLibraryStatus(domain).severity, "info");
+  });
+
+  it("includes an ad-hoc custom KPAR library not present in the static heading list", () => {
+    const status = buildLibraryDashboardStatus({
+      pinnedVersion: STANDARD_LIBRARY_DEFAULTS.version,
+      format: STANDARD_LIBRARY_DEFAULTS.format,
+      kparHeadings: KPAR_LIBRARIES_DEFAULTS.map((library) => ({
+        id: library.id,
+        displayName: library.displayName,
+        pinnedVersion: library.version,
+        format: library.format,
+      })),
+      kparStatuses: [
+        {
+          id: "mylib",
+          displayName: "mylib",
+          resolvedPath: "C:/libs/mylib",
+          sourceKind: "custom",
+          pinnedVersion: "local",
+          isInstalled: false,
+          versionMatches: true,
+        },
+      ],
+      configuredPaths: [],
+      missingPaths: [],
+      summary: {
+        standardPackages: 0,
+        standardSymbols: 0,
+        domainPackages: 0,
+        domainSymbols: 0,
+        customPackages: 0,
+        customSymbols: 0,
+        totalSymbols: 0,
+      },
+      sysand: {
+        installed: false,
+        manifestPresent: false,
+        lockPresent: false,
+        dependencyRoots: [],
+        warnings: [],
+      },
+    });
+
+    const mylib = status.kparLibraries.find((library) => library.id === "mylib");
+    assert.ok(mylib, "expected ad-hoc mylib library to appear in the dashboard");
+    assert.strictEqual(mylib!.sourceKind, "custom");
+    assert.strictEqual(mylib!.available, true);
+    assert.strictEqual(mylib!.resolvedPath, "C:/libs/mylib");
+    // domain/method headings are still present alongside the ad-hoc entry.
+    assert.strictEqual(status.kparLibraries.length, KPAR_LIBRARIES_DEFAULTS.length + 1);
   });
 });

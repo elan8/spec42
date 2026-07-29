@@ -23,6 +23,7 @@ fn robot_vacuum_check_has_zero_errors_and_warnings() {
             library_paths: vec![],
             stdlib_path: None,
             kpar_library_paths: Vec::new(),
+            disabled_kpar_libraries: Vec::new(),
             no_stdlib: false,
             stdio: false,
             command: None,
