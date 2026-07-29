@@ -1,8 +1,10 @@
-//! Disk cache for the fully-built semantic graph of library files.
+//! Disk cache for the workspace-scoped semantic graph of library files.
 //!
 //! Building the library graph on every startup requires ~10 s of disk I/O
 //! (walking library directories + reading files) plus ~2 s of graph construction.
-//! Library files never change between sessions, so we persist the result.
+//! Library files rarely change between sessions, so we persist the result. Because
+//! import-scoped loading produces a workspace-specific subset, the cache identity also
+//! includes the workspace facts that seed library closure resolution.
 //!
 //! # On-disk format
 //!
@@ -69,6 +71,8 @@ struct FileMetaEntry {
 struct LibraryGraphCachePayload {
     /// Sorted list of library root paths (for human-readable validation).
     library_paths: Vec<String>,
+    /// Workspace facts that determined the import-scoped library subset.
+    closure_seed_signature: Vec<String>,
     /// Level-2 fingerprint: sorted metadata of all library source files.
     file_fingerprint: Vec<FileMetaEntry>,
     /// The fully-built semantic graph for all library files.
@@ -92,9 +96,9 @@ pub fn default_cache_dir() -> Option<PathBuf> {
 ///
 /// Returns `None` on any miss, version mismatch, stale file metadata, or
 /// decode error. All failures are silent.
-pub fn load(library_paths: &[Url]) -> Option<SemanticGraph> {
+pub fn load(library_paths: &[Url], closure_seed_signature: &[String]) -> Option<SemanticGraph> {
     let cache_dir = default_cache_dir()?;
-    let key = cache_key(library_paths);
+    let key = cache_key(library_paths, closure_seed_signature);
     let path = entry_path(&cache_dir, &key);
 
     tracing::debug!(
@@ -139,6 +143,11 @@ pub fn load(library_paths: &[Url]) -> Option<SemanticGraph> {
         }
     };
 
+    if payload.closure_seed_signature != normalized_signature(closure_seed_signature) {
+        tracing::debug!("library graph cache: workspace closure signature mismatch");
+        return None;
+    }
+
     // Level-2 check: verify file metadata fingerprint.
     if !fingerprint_valid(&payload.file_fingerprint, library_paths) {
         tracing::debug!(
@@ -159,9 +168,9 @@ pub fn load(library_paths: &[Url]) -> Option<SemanticGraph> {
 ///
 /// Creates the cache directory if needed. Silently ignores all errors —
 /// caching is always best-effort.
-pub fn store(library_paths: &[Url], graph: &SemanticGraph) {
+pub fn store(library_paths: &[Url], closure_seed_signature: &[String], graph: &SemanticGraph) {
     tracing::debug!("library graph cache: attempting store");
-    if let Err(e) = store_inner(library_paths, graph) {
+    if let Err(e) = store_inner(library_paths, closure_seed_signature, graph) {
         tracing::warn!("library graph cache store failed: {e}");
     } else {
         tracing::debug!("library graph cache: store succeeded");
@@ -223,10 +232,10 @@ pub fn evict_stale_entries() {
 // Internal helpers
 // ---------------------------------------------------------------------------
 
-/// Level-1 cache key: SHA-256 of sorted library paths + binary version + parser AST schema
-/// version (so a parser-only dependency bump gets a fresh filename too, not just a header
-/// mismatch on an existing one -- see `version_field`).
-fn cache_key(library_paths: &[Url]) -> [u8; 32] {
+/// Level-1 cache key: SHA-256 of sorted library paths, workspace closure seeds, binary
+/// version, and parser AST schema version (so a parser-only dependency bump gets a fresh
+/// filename too, not just a header mismatch on an existing one -- see `version_field`).
+fn cache_key(library_paths: &[Url], closure_seed_signature: &[String]) -> [u8; 32] {
     let mut hasher = Sha256::new();
     hasher.update(env!("CARGO_PKG_VERSION").as_bytes());
     hasher.update(sysml_v2_parser::PARSE_AST_VERSION.to_le_bytes());
@@ -236,7 +245,21 @@ fn cache_key(library_paths: &[Url]) -> [u8; 32] {
         hasher.update(path.as_bytes());
         hasher.update(b"\0");
     }
+    // This marker guarantees that entries produced by the old path-only scheme are
+    // never reused, even when the workspace signature is empty.
+    hasher.update(b"workspace-closure-seeds-v1\0");
+    for seed in normalized_signature(closure_seed_signature) {
+        hasher.update(seed.as_bytes());
+        hasher.update(b"\0");
+    }
     hasher.finalize().into()
+}
+
+fn normalized_signature(signature: &[String]) -> Vec<String> {
+    let mut normalized = signature.to_vec();
+    normalized.sort_unstable();
+    normalized.dedup();
+    normalized
 }
 
 fn entry_path(cache_dir: &Path, key: &[u8; 32]) -> PathBuf {
@@ -294,6 +317,7 @@ fn fingerprint_valid(stored: &[FileMetaEntry], library_paths: &[Url]) -> bool {
 
 fn store_inner(
     library_paths: &[Url],
+    closure_seed_signature: &[String],
     graph: &SemanticGraph,
 ) -> Result<(), Box<dyn std::error::Error>> {
     let cache_dir = default_cache_dir().ok_or("no cache dir")?;
@@ -302,13 +326,14 @@ fn store_inner(
     let file_fingerprint = build_fingerprint(library_paths);
     let payload = LibraryGraphCachePayload {
         library_paths: library_paths.iter().map(|u| u.to_string()).collect(),
+        closure_seed_signature: normalized_signature(closure_seed_signature),
         file_fingerprint,
         graph: graph.clone(),
     };
 
     let payload_bytes = serde_json::to_vec(&payload)?;
 
-    let key = cache_key(library_paths);
+    let key = cache_key(library_paths, closure_seed_signature);
     let path = entry_path(&cache_dir, &key);
     let mut file = std::fs::File::create(&path)?;
     file.write_all(MAGIC)?;
@@ -345,13 +370,30 @@ mod tests {
     fn cache_key_is_deterministic_and_order_independent() {
         let a = Url::parse("file:///lib/a").unwrap();
         let b = Url::parse("file:///lib/b").unwrap();
-        let key1 = cache_key(&[a.clone(), b.clone()]);
-        let key2 = cache_key(&[b.clone(), a.clone()]);
+        let signature = vec!["import:ScalarValues::*".to_string()];
+        let key1 = cache_key(&[a.clone(), b.clone()], &signature);
+        let key2 = cache_key(&[b.clone(), a.clone()], &signature);
         assert_eq!(key1, key2, "cache key must be order-independent");
 
         let c = Url::parse("file:///lib/c").unwrap();
-        let key3 = cache_key(&[a, b, c]);
+        let key3 = cache_key(&[a, b, c], &signature);
         assert_ne!(key1, key3, "different paths must produce different keys");
+    }
+
+    #[test]
+    fn cache_key_changes_with_workspace_library_closure() {
+        let library = Url::parse("file:///lib").unwrap();
+        let without_metadata = vec!["import:ScalarValues::*".to_string()];
+        let with_metadata = vec![
+            "import:ScalarValues::*".to_string(),
+            "import:ModelingMetadata::*".to_string(),
+        ];
+
+        assert_ne!(
+            cache_key(std::slice::from_ref(&library), &without_metadata),
+            cache_key(std::slice::from_ref(&library), &with_metadata),
+            "a graph without ModelingMetadata must not satisfy a workspace that imports it"
+        );
     }
 
     #[test]
@@ -402,6 +444,7 @@ mod tests {
         let graph = SemanticGraph::default();
         let payload = LibraryGraphCachePayload {
             library_paths: vec![],
+            closure_seed_signature: vec![],
             file_fingerprint: vec![],
             graph: graph.clone(),
         };

@@ -69,6 +69,62 @@ impl Default for LibraryClosureOptions {
     }
 }
 
+/// Return a stable signature of the workspace facts that seed library closure resolution.
+///
+/// The resolved library graph is workspace-specific: imports, type references, locally
+/// declared packages, unit literals, and closure options all influence which library files
+/// are loaded. Cache callers must include this signature in their cache identity.
+pub fn library_closure_seed_signature(
+    workspace: &[WorkspaceSource<'_>],
+    options: &LibraryClosureOptions,
+) -> Vec<String> {
+    let mut signature = Vec::new();
+    signature.push(format!(
+        "option:bootstrap-sysml={}",
+        options.bootstrap_sysml_namespace
+    ));
+    signature.push(format!(
+        "option:bootstrap-typing={}",
+        options.bootstrap_typing_references
+    ));
+    signature.extend(
+        options
+            .seed_packages
+            .iter()
+            .map(|package| format!("seed:{package}")),
+    );
+
+    for source in workspace {
+        if options.bootstrap_sysml_namespace && source.content.contains("SysML::") {
+            signature.push("workspace:sysml-namespace".to_string());
+        }
+        signature.extend(
+            collect_import_targets_from_content(source.content)
+                .into_iter()
+                .map(|target| format!("import:{target}")),
+        );
+        if options.bootstrap_typing_references {
+            signature.extend(
+                collect_type_reference_targets_from_content(source.content)
+                    .into_iter()
+                    .map(|target| format!("type:{target}")),
+            );
+        }
+        signature.extend(
+            declared_packages_in_content(source.content)
+                .into_iter()
+                .map(|package| format!("workspace-package:{package}")),
+        );
+        if workspace_contains_unit_literal(source.content) {
+            signature.push("workspace:unit-literal".to_string());
+        }
+    }
+
+    signature.sort_unstable();
+    signature.dedup();
+    signature
+}
+
 /// Build the set of library files required by `workspace` imports (transitive closure).
 pub fn resolve_library_closure(
     workspace: &[WorkspaceSource<'_>],
@@ -213,6 +269,37 @@ pub(crate) use type_refs::*;
 mod tests {
     use super::*;
     use std::fs;
+
+    #[test]
+    fn closure_seed_signature_tracks_workspace_imports() {
+        let without_metadata =
+            "package Model { private import ScalarValues::*; attribute value : Real; }";
+        let with_metadata = "package Model {
+            private import ScalarValues::*;
+            private import ModelingMetadata::*;
+            attribute value : Real;
+        }";
+        let options = LibraryClosureOptions::default();
+        let first = library_closure_seed_signature(
+            &[WorkspaceSource {
+                path: "Model.sysml",
+                content: without_metadata,
+            }],
+            &options,
+        );
+        let second = library_closure_seed_signature(
+            &[WorkspaceSource {
+                path: "Model.sysml",
+                content: with_metadata,
+            }],
+            &options,
+        );
+
+        assert_ne!(first, second);
+        assert!(second
+            .iter()
+            .any(|seed| seed == "import:ModelingMetadata::*"));
+    }
 
     #[test]
     fn closure_parsing_does_not_inherit_the_callers_small_stack() {

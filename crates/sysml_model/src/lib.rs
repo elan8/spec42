@@ -39,8 +39,8 @@ pub use semantic::interconnection_projection::{
 };
 pub use semantic::interconnection_scene::{build_interconnection_scene, InterconnectionSceneDto};
 pub use semantic::library_loader::{
-    declared_packages_in_content, resolve_library_closure, LibraryClosureOptions,
-    LoadedLibraryFile, WorkspaceSource,
+    declared_packages_in_content, library_closure_seed_signature, resolve_library_closure,
+    LibraryClosureOptions, LoadedLibraryFile, WorkspaceSource,
 };
 pub use semantic::model::{
     ConnectStatementDetail, DeclaredExpression, ElementKind, FlowStatementDetail, NodeId,

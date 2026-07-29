@@ -139,19 +139,39 @@ pub(crate) async fn initialized(
         .unwrap_or_default();
         let parse_worker_ms = parse_worker_start.elapsed().as_millis() as u64;
 
+        let workspace_closure_inputs: Vec<(String, String)> = parsed_entries
+            .iter()
+            .map(|entry| (entry.uri.to_string(), entry.content.clone()))
+            .collect();
+        let closure_seed_signature = {
+            let workspace_sources: Vec<sysml_model::WorkspaceSource<'_>> = workspace_closure_inputs
+                .iter()
+                .map(|(path, content)| sysml_model::WorkspaceSource {
+                    path: path.as_str(),
+                    content: content.as_str(),
+                })
+                .collect();
+            sysml_model::library_closure_seed_signature(
+                &workspace_sources,
+                &sysml_model::LibraryClosureOptions::default(),
+            )
+        };
+
         // --- Library graph cache check (Level 1 + Level 2) ---
         // If the library graph was built previously and library files haven't
         // changed (verified via file metadata fingerprint), skip all library
         // disk I/O, parsing, and graph construction.
         // Keep a clone for the post-rebuild cache store call (cache miss path).
         let library_paths_for_store = library_paths_for_closure.clone();
+        let closure_seed_signature_for_store = closure_seed_signature.clone();
         let library_graph_cache_hit =
             if !crate::workspace::library_closure::library_full_scan_enabled()
                 && !library_paths_for_closure.is_empty()
             {
                 let lp = library_paths_for_closure.clone();
+                let signature = closure_seed_signature.clone();
                 tokio::task::spawn_blocking(move || {
-                    crate::workspace::library_graph_cache::load(&lp)
+                    crate::workspace::library_graph_cache::load(&lp, &signature)
                 })
                 .await
                 .ok()
@@ -178,10 +198,6 @@ pub(crate) async fn initialized(
                 (0usize, 0usize, parsed_entries)
             } else {
                 // Cache miss: load library files from disk the normal way.
-                let workspace_closure_inputs: Vec<(String, String)> = parsed_entries
-                    .iter()
-                    .map(|entry| (entry.uri.to_string(), entry.content.clone()))
-                    .collect();
                 let library_entries = match tokio::task::spawn_blocking(move || {
                     let workspace_sources: Vec<sysml_model::WorkspaceSource<'_>> =
                         workspace_closure_inputs
@@ -310,8 +326,9 @@ pub(crate) async fn initialized(
                     .semantic_graph
                     .extract_library_subgraph(&snap.library_paths);
                 let lp = library_paths_for_store.clone();
+                let signature = closure_seed_signature_for_store.clone();
                 tokio::task::spawn_blocking(move || {
-                    crate::workspace::library_graph_cache::store(&lp, &graph_to_cache);
+                    crate::workspace::library_graph_cache::store(&lp, &signature, &graph_to_cache);
                 });
             }
 
