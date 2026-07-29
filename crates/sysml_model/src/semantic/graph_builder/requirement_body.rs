@@ -306,6 +306,50 @@ pub(super) fn import_member_label(target: &str) -> String {
     }
 }
 
+fn inherit_requirement_subjects(
+    g: &mut SemanticGraph,
+    uri: &Url,
+    requirement_id: &NodeId,
+    inherited_subjects: &[NodeId],
+) {
+    let existing_subjects: Vec<NodeId> = g
+        .get_node(requirement_id)
+        .map(|requirement| {
+            g.outgoing_targets_by_kind(requirement, RelationshipKind::Subject)
+                .into_iter()
+                .map(|subject| subject.id.clone())
+                .collect()
+        })
+        .unwrap_or_default();
+    let effective_subjects = if existing_subjects.is_empty() {
+        for subject_id in inherited_subjects {
+            add_edge_if_both_exist(
+                g,
+                uri,
+                &requirement_id.qualified_name,
+                &subject_id.qualified_name,
+                RelationshipKind::Subject,
+            );
+        }
+        inherited_subjects.to_vec()
+    } else {
+        existing_subjects
+    };
+    let child_requirements: Vec<NodeId> = g
+        .get_node(requirement_id)
+        .map(|requirement| {
+            g.children_of(requirement)
+                .into_iter()
+                .filter(|child| child.element_kind == ElementKind::Requirement)
+                .map(|child| child.id.clone())
+                .collect()
+        })
+        .unwrap_or_default();
+    for child_id in child_requirements {
+        inherit_requirement_subjects(g, uri, &child_id, &effective_subjects);
+    }
+}
+
 /// Walks a requirement-style body and adds structural nodes plus subject relationship edges.
 pub(super) fn walk_requirement_def_body(
     g: &mut SemanticGraph,
@@ -390,6 +434,25 @@ pub(super) fn walk_requirement_def_body(
                     ad.value.type_name.as_str(),
                     type_resolution_prefix,
                 );
+            }
+            RequirementDefBodyElement::RequirementUsage(requirement) => {
+                let child_id = super::usage_builders::materialize_requirement_usage(
+                    requirement,
+                    uri,
+                    Some(parent_id.qualified_name.as_str()),
+                    Some(parent_id),
+                    g,
+                );
+                let inherited_subjects: Vec<NodeId> = g
+                    .get_node(parent_id)
+                    .map(|parent| {
+                        g.outgoing_targets_by_kind(parent, RelationshipKind::Subject)
+                            .into_iter()
+                            .map(|subject| subject.id.clone())
+                            .collect()
+                    })
+                    .unwrap_or_default();
+                inherit_requirement_subjects(g, uri, &child_id, &inherited_subjects);
             }
             RequirementDefBodyElement::RequireConstraint(rc) => {
                 for line in require_constraint_display_lines(&rc.value.body) {

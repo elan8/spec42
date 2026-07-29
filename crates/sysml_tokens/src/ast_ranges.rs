@@ -1290,6 +1290,22 @@ fn collect_semantic_ranges_requirement_def_body_element(
         RDBE::RequirementActorDecl(actor) => {
             out.push((span_to_source_range(&actor.span), TYPE_PROPERTY));
         }
+        RDBE::RequirementUsage(requirement) => {
+            push_usage_name_type_spans(
+                ctx.source,
+                &requirement.span,
+                &requirement.value.name,
+                requirement.value.type_name.as_deref(),
+                None,
+                None,
+                out,
+            );
+            if let RequirementDefBody::Brace { elements } = &requirement.value.body {
+                for element in elements {
+                    collect_semantic_ranges_requirement_def_body_element(ctx, element, out);
+                }
+            }
+        }
         RDBE::Doc(_) | RDBE::Error(_) | RDBE::Other(_) | RDBE::Annotation(_) => {}
         RDBE::MetadataAnnotation(meta) => collect_semantic_ranges_metadata_annotation(meta, out),
     }
