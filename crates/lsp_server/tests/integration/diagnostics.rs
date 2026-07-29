@@ -1602,6 +1602,56 @@ fn compatible_different_port_def_connection_has_no_port_type_mismatch_diagnostic
 }
 
 #[test]
+fn typed_interface_does_not_compare_distinct_declared_ends_pairwise() {
+    let content = r#"
+        package P {
+            item def ElectricalSignal;
+
+            port def I2cPort {
+                inout item clock : ElectricalSignal;
+                inout item data : ElectricalSignal;
+            }
+            port def I2cControllerPort :> I2cPort;
+            port def I2cTargetPort :> I2cPort;
+
+            interface def I2cLink {
+                end controllerPort : I2cControllerPort;
+                end targetPort : I2cTargetPort;
+            }
+
+            part def Controller {
+                port bus : I2cControllerPort;
+            }
+            part def Target {
+                port bus : I2cTargetPort;
+            }
+            part def System {
+                part controller : Controller;
+                part target : Target;
+                interface link : I2cLink
+                    connect controllerPort ::> controller.bus
+                    to targetPort ::> target.bus;
+            }
+            part def UntypedSystem {
+                part controller : Controller;
+                part target : Target;
+                interface controller.bus to target.bus;
+            }
+        }
+    "#;
+    let diagnostics = validate_inline_sysml("typed_interface_distinct_ends.sysml", content);
+
+    assert!(
+        !has_diag_code(&diagnostics, "semantic", "port_type_mismatch"),
+        "typed interface endpoints conform to their declared ends and must not be compared pairwise: {diagnostics:?}"
+    );
+    assert!(
+        !has_diag_code(&diagnostics, "semantic", "conjugated_port_inconsistent"),
+        "typed interface endpoints need not share one conjugated port definition: {diagnostics:?}"
+    );
+}
+
+#[test]
 fn part_to_part_connect_has_no_connection_endpoint_not_port_diagnostic() {
     let content = r#"
         package P {

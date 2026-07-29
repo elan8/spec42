@@ -9,12 +9,34 @@ pub(crate) fn add_pending_expression_relationship(
     kind: RelationshipKind,
     source_range: crate::semantic::text_span::TextRange,
 ) {
+    add_pending_expression_relationship_with_metadata(
+        g,
+        uri,
+        container_prefix,
+        source_expression,
+        target_expression,
+        source_range,
+        ExpressionRelationshipMetadata::plain(kind),
+    );
+}
+
+pub(crate) fn add_pending_expression_relationship_with_metadata(
+    g: &mut SemanticGraph,
+    uri: &Url,
+    container_prefix: Option<&str>,
+    source_expression: &str,
+    target_expression: &str,
+    source_range: crate::semantic::text_span::TextRange,
+    metadata: ExpressionRelationshipMetadata,
+) {
     let duplicate = g.pending_expression_relationships.iter().any(|pending| {
         pending.uri == *uri
-            && pending.kind == kind
+            && pending.kind == metadata.kind
             && pending.source_expression == source_expression
             && pending.target_expression == target_expression
             && pending.container_prefix.as_deref() == container_prefix
+            && pending.is_interface_usage == metadata.is_interface_usage
+            && pending.interface_type == metadata.interface_type
     });
     if duplicate {
         return;
@@ -24,9 +46,11 @@ pub(crate) fn add_pending_expression_relationship(
             uri: uri.clone(),
             source_expression: source_expression.to_string(),
             target_expression: target_expression.to_string(),
-            kind,
+            kind: metadata.kind,
             container_prefix: container_prefix.map(ToString::to_string),
             source_range,
+            is_interface_usage: metadata.is_interface_usage,
+            interface_type: metadata.interface_type,
         });
 }
 
@@ -200,6 +224,8 @@ fn resolve_pending_expression_relationships_for_uri(g: &mut SemanticGraph, uri: 
                     source_expression: pending_edge.source_expression,
                     target_expression: pending_edge.target_expression,
                     container_prefix: pending_edge.container_prefix.clone(),
+                    is_interface_usage: pending_edge.is_interface_usage,
+                    interface_type: pending_edge.interface_type,
                 }),
             );
         } else {

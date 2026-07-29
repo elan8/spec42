@@ -528,6 +528,17 @@ pub struct ConnectStatementDetail {
     pub source_expression: String,
     pub target_expression: String,
     pub container_prefix: Option<String>,
+    /// True when the edge was declared by an `interface` usage rather than a
+    /// plain `connect` statement.
+    #[serde(default)]
+    pub is_interface_usage: bool,
+    /// The declared `InterfaceDefinition` for a typed interface usage.
+    ///
+    /// When present, the two connected ports specialize the corresponding
+    /// interface ends. They are not required to be conjugations of one shared
+    /// port definition.
+    #[serde(default)]
+    pub interface_type: Option<String>,
 }
 
 /// Optional metadata when a `Flow`/`SuccessionFlow` edge came from a resolved `flow` usage.

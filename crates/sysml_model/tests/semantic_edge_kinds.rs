@@ -50,6 +50,8 @@ fn fan_out_connect_statements_with_distinct_targets_add_parallel_connection_edge
         source_expression: "flightController.motorCmd".to_string(),
         target_expression: target.to_string(),
         container_prefix: Some("Pkg::Drone".to_string()),
+        is_interface_usage: false,
+        interface_type: None,
     };
     for target in [
         "propulsion.propulsionUnit1.cmd",
@@ -80,6 +82,8 @@ fn duplicate_connect_on_existing_connection_pair_is_rejected() {
         source_expression: "a".to_string(),
         target_expression: "b".to_string(),
         container_prefix: None,
+        is_interface_usage: false,
+        interface_type: None,
     };
     assert_eq!(
         add_semantic_edge_once(

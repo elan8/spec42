@@ -139,7 +139,10 @@ pub fn compute_semantic_diagnostics_with_unit_registry(
                     ));
                 }
             }
-            if is_port_like(&src.element_kind) && is_port_like(&tgt.element_kind) {
+            if !connect.is_interface_usage
+                && is_port_like(&src.element_kind)
+                && is_port_like(&tgt.element_kind)
+            {
                 if let Some(msg) = port_compatibility_mismatch(graph, src, tgt) {
                     diagnostics.push(diag(
                         uri,

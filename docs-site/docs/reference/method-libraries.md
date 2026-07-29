@@ -16,19 +16,19 @@ This overview is generated from the bundled KPAR artifact so it matches what Spe
 ## Package tree
 
 - **method/**
-  - `method/Elan8Method.sysml` — `Elan8Method`
-  - `method/Elan8RequirementManagement.sysml` — `Elan8RequirementManagement`
-  - `method/Elan8RequirementMetadata.sysml` — `Elan8RequirementMetadata`
-  - `method/Elan8Viewpoints.sysml` — `Elan8Viewpoints`
+  - `method/Metadata.sysml` — `Elan8::Method::Metadata`
+  - `method/Method.sysml` — `Elan8::Method`
+  - `method/Requirements.sysml` — `Elan8::Method::Requirements`
+  - `method/Viewpoints.sysml` — `Elan8::Method::Viewpoints`
 
 ## Package index
 
 | Package | Source file |
 | --- | --- |
-| `Elan8Method` | `method/Elan8Method.sysml` |
-| `Elan8RequirementManagement` | `method/Elan8RequirementManagement.sysml` |
-| `Elan8RequirementMetadata` | `method/Elan8RequirementMetadata.sysml` |
-| `Elan8Viewpoints` | `method/Elan8Viewpoints.sysml` |
+| `Elan8::Method` | `method/Method.sysml` |
+| `Elan8::Method::Metadata` | `method/Metadata.sysml` |
+| `Elan8::Method::Requirements` | `method/Requirements.sysml` |
+| `Elan8::Method::Viewpoints` | `method/Viewpoints.sysml` |
 
 ## Methodology docs
 

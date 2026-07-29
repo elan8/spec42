@@ -178,6 +178,10 @@ pub struct PendingExpressionRelationship {
     pub kind: RelationshipKind,
     pub container_prefix: Option<String>,
     pub source_range: TextRange,
+    #[serde(default)]
+    pub is_interface_usage: bool,
+    #[serde(default)]
+    pub interface_type: Option<String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]

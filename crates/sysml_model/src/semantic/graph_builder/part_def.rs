@@ -267,15 +267,29 @@ pub(super) fn build_from_part_def_body_element(
         PDBE::InterfaceUsage(interface_usage) => {
             use sysml_v2_parser::ast::InterfaceUsage;
             match &interface_usage.value {
-                InterfaceUsage::TypedConnect { from, to, .. }
-                | InterfaceUsage::Connection { from, to, .. } => {
-                    expressions::add_expression_edge_if_both_exist(
+                InterfaceUsage::TypedConnect {
+                    interface_type,
+                    from,
+                    to,
+                    ..
+                } => {
+                    expressions::add_interface_edge_if_both_exist(
                         g,
                         uri,
                         container_prefix,
                         from,
                         to,
-                        RelationshipKind::Connection,
+                        interface_type.as_deref(),
+                    );
+                }
+                InterfaceUsage::Connection { from, to, .. } => {
+                    expressions::add_interface_edge_if_both_exist(
+                        g,
+                        uri,
+                        container_prefix,
+                        from,
+                        to,
+                        None,
                     );
                 }
             }

@@ -30,6 +30,31 @@ pub use crate::semantic::resolution::naming::{
 };
 use crate::semantic::root_element::root_element_body;
 
+#[derive(Debug, Clone)]
+pub(crate) struct ExpressionRelationshipMetadata {
+    pub kind: RelationshipKind,
+    pub is_interface_usage: bool,
+    pub interface_type: Option<String>,
+}
+
+impl ExpressionRelationshipMetadata {
+    pub fn plain(kind: RelationshipKind) -> Self {
+        Self {
+            kind,
+            is_interface_usage: false,
+            interface_type: None,
+        }
+    }
+
+    pub fn interface(interface_type: Option<String>) -> Self {
+        Self {
+            kind: RelationshipKind::Connection,
+            is_interface_usage: true,
+            interface_type,
+        }
+    }
+}
+
 /// Uniform view of an explicit parser relationship target or a legacy textual target.
 /// The graph resolver consumes the target only at this boundary; builders retain typed AST facts.
 pub trait TypeReferenceTarget {

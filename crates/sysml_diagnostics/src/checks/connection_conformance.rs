@@ -100,12 +100,23 @@ pub(crate) fn collect_connection_conformance_diagnostics(
         }
     }
 
-    for (left_id, right_id) in graph.connection_edge_node_pairs_for_uri(uri) {
+    for (left_id, right_id, edge) in graph.connection_edges_touching_uri(uri) {
         let (Some(left), Some(right)) = (graph.get_node(&left_id), graph.get_node(&right_id))
         else {
             continue;
         };
         if is_port_like(&left.element_kind) && is_port_like(&right.element_kind) {
+            // SysML v2 §8.4.10.2: the ends of a typed InterfaceUsage
+            // redefine the corresponding ends of its InterfaceDefinition.
+            // End conformance is therefore defined against the declared
+            // interface ends; the pairwise check below is inapplicable.
+            if edge
+                .connect
+                .as_ref()
+                .is_some_and(|connect| connect.is_interface_usage)
+            {
+                continue;
+            }
             if let Some(message) = port_compatibility_mismatch(graph, left, right) {
                 if let Some(code) = port_mismatch_code(&message) {
                     let key = format!(

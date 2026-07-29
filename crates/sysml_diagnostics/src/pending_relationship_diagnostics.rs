@@ -101,6 +101,8 @@ mod tests {
                 kind: RelationshipKind::Connection,
                 container_prefix: Some("P".to_string()),
                 source_range: TextRange::new(TextPosition::new(2, 4), TextPosition::new(2, 20)),
+                is_interface_usage: false,
+                interface_type: None,
             });
 
         let diagnostics =

@@ -89,6 +89,19 @@ async function downloadFile(url, destPath) {
 }
 
 async function ensureKparArtifact(library) {
+  const overrideVariable = `SPEC42_DOCS_${library.id.toUpperCase()}_KPAR`;
+  const overridePath = process.env[overrideVariable];
+  if (overridePath) {
+    const resolvedOverride = path.resolve(overridePath);
+    if (!isUsableKpar(resolvedOverride)) {
+      throw new Error(
+        `${overrideVariable} does not point to a usable KPAR: ${resolvedOverride}`
+      );
+    }
+    console.log(`Using local KPAR override ${resolvedOverride}`);
+    return resolvedOverride;
+  }
+
   const out = path.join(cacheDir, library.artifact);
   if (isUsableKpar(out)) {
     console.log(`Using existing KPAR ${out}`);
@@ -159,14 +172,48 @@ function materializeKpar(kparPath, destinationRoot) {
 }
 
 function extractPackageNames(sourceText) {
-  const names = [];
-  const re =
-    /^\s*(?:private\s+|public\s+|protected\s+)*(?:standard\s+|library\s+)*package\s+([A-Za-z_][\w]*)/gm;
+  const mask = (value) => value.replace(/[^\r\n]/g, " ");
+  const sanitized = sourceText
+    .replace(/\/\*[\s\S]*?\*\//g, mask)
+    .replace(/\/\/[^\r\n]*/g, mask)
+    .replace(/"(?:\\.|[^"\\])*"/g, mask);
+
+  const paths = [];
+  const packageStack = [];
+  let braceDepth = 0;
+  const tokenPattern =
+    /\b(?:private\s+|public\s+|protected\s+)*(?:standard\s+|library\s+)*package\s+([A-Za-z_][\w]*)\s*\{|[{}]/g;
+
   let match;
-  while ((match = re.exec(sourceText)) !== null) {
-    names.push(match[1]);
+  while ((match = tokenPattern.exec(sanitized)) !== null) {
+    if (match[1]) {
+      braceDepth += 1;
+      packageStack.push({ name: match[1], depth: braceDepth });
+      paths.push(packageStack.map((entry) => entry.name).join("::"));
+      continue;
+    }
+
+    if (match[0] === "{") {
+      braceDepth += 1;
+      continue;
+    }
+
+    while (
+      packageStack.length > 0 &&
+      packageStack[packageStack.length - 1].depth === braceDepth
+    ) {
+      packageStack.pop();
+    }
+    braceDepth = Math.max(0, braceDepth - 1);
   }
-  return [...new Set(names)];
+
+  const uniquePaths = [...new Set(paths)];
+  return uniquePaths.filter(
+    (candidate) =>
+      !uniquePaths.some(
+        (other) => other !== candidate && other.startsWith(`${candidate}::`)
+      )
+  );
 }
 
 function buildSourceTree(sourceFiles, rootDir) {

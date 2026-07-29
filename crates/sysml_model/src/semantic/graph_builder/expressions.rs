@@ -11,7 +11,9 @@ use crate::semantic::model::{
 };
 use crate::semantic::reference_resolution::{resolve_expression_endpoint_strict, ResolveResult};
 use crate::semantic::relationships::{
-    add_edge_if_both_exist, add_pending_expression_relationship, add_typing_edge_if_exists,
+    add_edge_if_both_exist, add_pending_expression_relationship,
+    add_pending_expression_relationship_with_metadata, add_typing_edge_if_exists,
+    ExpressionRelationshipMetadata,
 };
 use crate::semantic::relationships::{add_semantic_edge_once, AddSemanticEdgeResult};
 
@@ -75,6 +77,45 @@ pub(super) fn add_expression_edge_if_both_exist(
     right: &sysml_v2_parser::Node<sysml_v2_parser::Expression>,
     kind: RelationshipKind,
 ) {
+    add_expression_edge_with_metadata(
+        g,
+        uri,
+        container_prefix,
+        left,
+        right,
+        ExpressionRelationshipMetadata::plain(kind),
+    );
+}
+
+pub(super) fn add_interface_edge_if_both_exist(
+    g: &mut SemanticGraph,
+    uri: &Url,
+    container_prefix: Option<&str>,
+    left: &sysml_v2_parser::Node<sysml_v2_parser::Expression>,
+    right: &sysml_v2_parser::Node<sysml_v2_parser::Expression>,
+    interface_type: Option<&str>,
+) {
+    add_expression_edge_with_metadata(
+        g,
+        uri,
+        container_prefix,
+        left,
+        right,
+        ExpressionRelationshipMetadata::interface(interface_type.map(ToString::to_string)),
+    );
+}
+
+fn add_expression_edge_with_metadata(
+    g: &mut SemanticGraph,
+    uri: &Url,
+    container_prefix: Option<&str>,
+    left: &sysml_v2_parser::Node<sysml_v2_parser::Expression>,
+    right: &sysml_v2_parser::Node<sysml_v2_parser::Expression>,
+    metadata: ExpressionRelationshipMetadata,
+) {
+    let kind = metadata.kind.clone();
+    let is_interface_usage = metadata.is_interface_usage;
+    let interface_type = metadata.interface_type.clone();
     let left_str = expr_node_to_qualified_string(left);
     let right_str = expr_node_to_qualified_string(right);
     if left_str.is_empty() || right_str.is_empty() {
@@ -96,6 +137,8 @@ pub(super) fn add_expression_edge_if_both_exist(
                         source_expression: left_str,
                         target_expression: right_str,
                         container_prefix: container_prefix.map(ToString::to_string),
+                        is_interface_usage,
+                        interface_type: interface_type.clone(),
                     }),
                 ) == AddSemanticEdgeResult::DuplicateConnect
                 {
@@ -139,14 +182,14 @@ pub(super) fn add_expression_edge_if_both_exist(
                 return;
             }
             (ResolveResult::Unresolved, _) | (_, ResolveResult::Unresolved) => {
-                add_pending_expression_relationship(
+                add_pending_expression_relationship_with_metadata(
                     g,
                     uri,
                     container_prefix,
                     &left_str,
                     &right_str,
-                    RelationshipKind::Connection,
                     span_to_range(&left.span),
+                    metadata.clone(),
                 );
                 return;
             }
@@ -296,6 +339,8 @@ pub(super) fn add_expression_edge_if_both_exist(
                     source_expression: left_str.clone(),
                     target_expression: right_str.clone(),
                     container_prefix: container_prefix.map(ToString::to_string),
+                    is_interface_usage,
+                    interface_type: interface_type.clone(),
                 }),
             ),
             AddSemanticEdgeResult::DuplicateConnect

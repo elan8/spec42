@@ -10,7 +10,7 @@ This overview is generated from the bundled KPAR artifact so it matches what Spe
 | Bundled version | `0.2.0` |
 | Format | `kpar` |
 | Artifact | `elan8-domain-libraries-0.2.0.kpar` |
-| Packages / files | 43 packages · 43 source files |
+| Packages / files | 38 packages · 38 source files |
 | Source | [elan8/sysml-domain-libraries](https://github.com/elan8/sysml-domain-libraries) |
 
 Method / process packages live in the [Method libraries](./method-libraries).
@@ -19,138 +19,126 @@ Method / process packages live in the [Method libraries](./method-libraries).
 
 Tree of source files inside the KPAR. Package names are scanned from each `.sysml` file.
 
-- **domain/**
-  - **robotics/**
-    - **actuation/**
-      - `domain/robotics/actuation/RobotActuation.sysml` — `RobotActuation`
-    - **autonomy/**
-      - `domain/robotics/autonomy/RobotAutonomy.sysml` — `RobotAutonomy`
-    - **control/**
-      - `domain/robotics/control/RobotControl.sysml` — `RobotControl`
-    - **operations/**
-      - `domain/robotics/operations/RobotOperations.sysml` — `RobotOperations`
-    - **perception/**
-      - `domain/robotics/perception/RobotPerception.sysml` — `RobotPerception`
-    - **robotics-core/**
-      - `domain/robotics/robotics-core/RoboticsCore.sysml` — `RoboticsCore`
-    - **runtime/**
-      - `domain/robotics/runtime/RobotRuntime.sysml` — `RobotRuntime`
-    - **safety-assurance/**
-      - `domain/robotics/safety-assurance/RobotSafetyAssurance.sysml` — `RobotSafetyAssurance`
-    - **simulation/**
-      - `domain/robotics/simulation/RobotSimulation.sysml` — `RobotSimulation`
-    - **structure/**
-      - `domain/robotics/structure/RobotStructure.sysml` — `RobotStructure`
 - **generic/**
+  - **mbse/**
+    - `generic/mbse/Core.sysml` — `Elan8::Core`
+  - **procurement/**
+    - `generic/procurement/PartProcurement.sysml` — `Elan8::Procurement`
   - **units/**
-    - `generic/units/EngineeringUnits.sysml` — `EngineeringUnits`
-    - `generic/units/MonetaryUnits.sysml` — `MonetaryUnits`
+    - `generic/units/EngineeringUnits.sysml` — `Elan8::Units::Engineering`
+    - `generic/units/MonetaryUnits.sysml` — `Elan8::Units::Money`
 - **technical/**
   - **communication/**
     - **core/**
-      - `technical/communication/core/CommunicationCore.sysml` — `CommunicationCore`
-      - `technical/communication/core/SerializationDomain.sysml` — `SerializationDomain`
+      - `technical/communication/core/CommunicationCore.sysml` — `Elan8::Communication::Core`
+      - `technical/communication/core/SerializationDomain.sysml` — `Elan8::Communication::Serialization`
     - **device-bus/**
-      - `technical/communication/device-bus/DeviceBusDomain.sysml` — `DeviceBusDomain`
+      - `technical/communication/device-bus/DeviceBusDomain.sysml` — `Elan8::Communication::DeviceBus`
     - **grpc/**
-      - `technical/communication/grpc/GrpcDomain.sysml` — `GrpcDomain`
+      - `technical/communication/grpc/GrpcDomain.sysml` — `Elan8::Communication::Grpc`
     - **http/**
-      - `technical/communication/http/HttpDomain.sysml` — `HttpDomain`
-      - `technical/communication/http/OpenApiDomain.sysml` — `OpenApiDomain`
+      - `technical/communication/http/HttpDomain.sysml` — `Elan8::Communication::Http`
+      - `technical/communication/http/OpenApiDomain.sysml` — `Elan8::Communication::OpenApi`
     - **industrial/**
-      - `technical/communication/industrial/IndustrialCommunicationDomain.sysml` — `IndustrialCommunicationDomain`
+      - `technical/communication/industrial/IndustrialCommunicationDomain.sysml` — `Elan8::Communication::Industrial`
     - **messaging/**
-      - `technical/communication/messaging/MessagingDomain.sysml` — `MessagingDomain`
+      - `technical/communication/messaging/MessagingDomain.sysml` — `Elan8::Communication::Messaging`
     - **streaming/**
-      - `technical/communication/streaming/KafkaDomain.sysml` — `KafkaDomain`
+      - `technical/communication/streaming/KafkaDomain.sysml` — `Elan8::Communication::Kafka`
     - **transport/**
-      - `technical/communication/transport/TransportDomain.sysml` — `TransportDomain`
+      - `technical/communication/transport/TransportDomain.sysml` — `Elan8::Communication::Transport`
     - **wireless/**
-      - `technical/communication/wireless/WirelessDomain.sysml` — `WirelessDomain`
+      - `technical/communication/wireless/WirelessDomain.sysml` — `Elan8::Communication::Wireless`
   - **electronics/**
+    - **actuation/**
+      - `technical/electronics/actuation/ElectronicActuationDomain.sysml` — `Elan8::Electronics::Actuation`
+    - **assembly/**
+      - `technical/electronics/assembly/ElectronicsAssemblyDomain.sysml` — `Elan8::Electronics::Assembly`
     - **board/**
-      - `technical/electronics/board/BoardIntegrationDomain.sysml` — `BoardIntegrationDomain`
+      - `technical/electronics/board/PrintedBoardDomain.sysml` — `Elan8::Electronics::Board`
     - **buses/**
-      - `technical/electronics/buses/ElectronicBusDomain.sysml` — `ElectronicBusDomain`
+      - `technical/electronics/buses/ElectronicBusDomain.sysml` — `Elan8::Electronics::Buses`
+    - **components/**
+      - `technical/electronics/components/ElectronicComponentDomain.sysml` — `Elan8::Electronics::Components`
     - **compute/**
-      - `technical/electronics/compute/EmbeddedComputeDomain.sysml` — `EmbeddedComputeDomain`
-    - **electronics-core/**
-      - `technical/electronics/electronics-core/ElectronicsCore.sysml` — `ElectronicsCore`
+      - `technical/electronics/compute/EmbeddedComputeDomain.sysml` — `Elan8::Electronics::Compute`
+    - **core/**
+      - `technical/electronics/core/ElectronicsCore.sysml` — `Elan8::Electronics::Core`
     - **interconnection/**
-      - `technical/electronics/interconnection/ElectronicsInterconnection.sysml` — `ElectronicsInterconnection`
+      - `technical/electronics/interconnection/ElectronicsInterconnection.sysml` — `Elan8::Electronics::Interconnection`
     - **io/**
-      - `technical/electronics/io/ElectronicIoDomain.sysml` — `ElectronicIoDomain`
+      - `technical/electronics/io/ElectronicIoDomain.sysml` — `Elan8::Electronics::Io`
     - **power/**
-      - `technical/electronics/power/ElectricalPowerDomain.sysml` — `ElectricalPowerDomain`
+      - `technical/electronics/power/ElectricalPowerDomain.sysml` — `Elan8::Electronics::Power`
+    - **sensing/**
+      - `technical/electronics/sensing/SensingDomain.sysml` — `Elan8::Electronics::Sensing`
+    - **wireless/**
+      - `technical/electronics/wireless/Wireless.sysml` — `Elan8::Electronics::Wireless`
+  - **mechanical/**
+    - **core/**
+      - `technical/mechanical/core/MechanicalCore.sysml` — `Elan8::Mechanical::Core`
+    - **drivetrain/**
+      - `technical/mechanical/drivetrain/DrivetrainDomain.sysml` — `Elan8::Mechanical::Drivetrain`
+    - **interconnection/**
+      - `technical/mechanical/interconnection/MechanicalInterconnection.sysml` — `Elan8::Mechanical::Interconnection`
   - **software/**
+    - **core/**
+      - `technical/software/core/SoftwareCore.sysml` — `Elan8::Software::Core`
     - **data/**
-      - `technical/software/data/NosqlDomain.sysml` — `NosqlDomain`
-      - `technical/software/data/SqlDomain.sysml` — `SqlDomain`
-    - **delivery-ops/**
-      - `technical/software/delivery-ops/ObservabilityDomain.sysml` — `ObservabilityDomain`
-      - `technical/software/delivery-ops/SoftwareControlPlane.sysml` — `SoftwareControlPlane`
-      - `technical/software/delivery-ops/SoftwareDelivery.sysml` — `SoftwareDelivery`
+      - `technical/software/data/NosqlDomain.sysml` — `Elan8::Software::Data::NoSql`
+      - `technical/software/data/SqlDomain.sysml` — `Elan8::Software::Data::Sql`
     - **distributed-systems/**
-      - `technical/software/distributed-systems/DistributedSystems.sysml` — `DistributedSystems`
+      - `technical/software/distributed-systems/DistributedSystems.sysml` — `Elan8::Software::Distributed`
     - **interactions/**
-      - `technical/software/interactions/SoftwareInteractions.sysml` — `SoftwareInteractions`
+      - `technical/software/interactions/SoftwareInteractions.sysml` — `Elan8::Software::Interactions`
     - **platform/**
-      - `technical/software/platform/CloudRuntimeDomain.sysml` — `CloudRuntimeDomain`
-      - `technical/software/platform/KubernetesDomain.sysml` — `KubernetesDomain`
-    - **security/**
-      - `technical/software/security/CyberAssuranceDomain.sysml` — `CyberAssuranceDomain`
-      - `technical/software/security/EuCyberResilienceOverlay.sysml` — `EuCyberResilienceOverlay`
-      - `technical/software/security/IdentitySecurityDomain.sysml` — `IdentitySecurityDomain`
-    - **software-core/**
-      - `technical/software/software-core/SoftwareCore.sysml` — `SoftwareCore`
+      - `technical/software/platform/CloudRuntimeDomain.sysml` — `Elan8::Software::Platform::Cloud`
+      - `technical/software/platform/KubernetesDomain.sysml` — `Elan8::Software::Platform::Kubernetes`
+    - **realtime-runtime/**
+      - `technical/software/realtime-runtime/RealtimeRuntime.sysml` — `Elan8::Software::Realtime`
 
 ## Package index
 
 | Package | Source file |
 | --- | --- |
-| `BoardIntegrationDomain` | `technical/electronics/board/BoardIntegrationDomain.sysml` |
-| `CloudRuntimeDomain` | `technical/software/platform/CloudRuntimeDomain.sysml` |
-| `CommunicationCore` | `technical/communication/core/CommunicationCore.sysml` |
-| `CyberAssuranceDomain` | `technical/software/security/CyberAssuranceDomain.sysml` |
-| `DeviceBusDomain` | `technical/communication/device-bus/DeviceBusDomain.sysml` |
-| `DistributedSystems` | `technical/software/distributed-systems/DistributedSystems.sysml` |
-| `ElectricalPowerDomain` | `technical/electronics/power/ElectricalPowerDomain.sysml` |
-| `ElectronicBusDomain` | `technical/electronics/buses/ElectronicBusDomain.sysml` |
-| `ElectronicIoDomain` | `technical/electronics/io/ElectronicIoDomain.sysml` |
-| `ElectronicsCore` | `technical/electronics/electronics-core/ElectronicsCore.sysml` |
-| `ElectronicsInterconnection` | `technical/electronics/interconnection/ElectronicsInterconnection.sysml` |
-| `EmbeddedComputeDomain` | `technical/electronics/compute/EmbeddedComputeDomain.sysml` |
-| `EngineeringUnits` | `generic/units/EngineeringUnits.sysml` |
-| `EuCyberResilienceOverlay` | `technical/software/security/EuCyberResilienceOverlay.sysml` |
-| `GrpcDomain` | `technical/communication/grpc/GrpcDomain.sysml` |
-| `HttpDomain` | `technical/communication/http/HttpDomain.sysml` |
-| `IdentitySecurityDomain` | `technical/software/security/IdentitySecurityDomain.sysml` |
-| `IndustrialCommunicationDomain` | `technical/communication/industrial/IndustrialCommunicationDomain.sysml` |
-| `KafkaDomain` | `technical/communication/streaming/KafkaDomain.sysml` |
-| `KubernetesDomain` | `technical/software/platform/KubernetesDomain.sysml` |
-| `MessagingDomain` | `technical/communication/messaging/MessagingDomain.sysml` |
-| `MonetaryUnits` | `generic/units/MonetaryUnits.sysml` |
-| `NosqlDomain` | `technical/software/data/NosqlDomain.sysml` |
-| `ObservabilityDomain` | `technical/software/delivery-ops/ObservabilityDomain.sysml` |
-| `OpenApiDomain` | `technical/communication/http/OpenApiDomain.sysml` |
-| `RobotActuation` | `domain/robotics/actuation/RobotActuation.sysml` |
-| `RobotAutonomy` | `domain/robotics/autonomy/RobotAutonomy.sysml` |
-| `RobotControl` | `domain/robotics/control/RobotControl.sysml` |
-| `RoboticsCore` | `domain/robotics/robotics-core/RoboticsCore.sysml` |
-| `RobotOperations` | `domain/robotics/operations/RobotOperations.sysml` |
-| `RobotPerception` | `domain/robotics/perception/RobotPerception.sysml` |
-| `RobotRuntime` | `domain/robotics/runtime/RobotRuntime.sysml` |
-| `RobotSafetyAssurance` | `domain/robotics/safety-assurance/RobotSafetyAssurance.sysml` |
-| `RobotSimulation` | `domain/robotics/simulation/RobotSimulation.sysml` |
-| `RobotStructure` | `domain/robotics/structure/RobotStructure.sysml` |
-| `SerializationDomain` | `technical/communication/core/SerializationDomain.sysml` |
-| `SoftwareControlPlane` | `technical/software/delivery-ops/SoftwareControlPlane.sysml` |
-| `SoftwareCore` | `technical/software/software-core/SoftwareCore.sysml` |
-| `SoftwareDelivery` | `technical/software/delivery-ops/SoftwareDelivery.sysml` |
-| `SoftwareInteractions` | `technical/software/interactions/SoftwareInteractions.sysml` |
-| `SqlDomain` | `technical/software/data/SqlDomain.sysml` |
-| `TransportDomain` | `technical/communication/transport/TransportDomain.sysml` |
-| `WirelessDomain` | `technical/communication/wireless/WirelessDomain.sysml` |
+| `Elan8::Communication::Core` | `technical/communication/core/CommunicationCore.sysml` |
+| `Elan8::Communication::DeviceBus` | `technical/communication/device-bus/DeviceBusDomain.sysml` |
+| `Elan8::Communication::Grpc` | `technical/communication/grpc/GrpcDomain.sysml` |
+| `Elan8::Communication::Http` | `technical/communication/http/HttpDomain.sysml` |
+| `Elan8::Communication::Industrial` | `technical/communication/industrial/IndustrialCommunicationDomain.sysml` |
+| `Elan8::Communication::Kafka` | `technical/communication/streaming/KafkaDomain.sysml` |
+| `Elan8::Communication::Messaging` | `technical/communication/messaging/MessagingDomain.sysml` |
+| `Elan8::Communication::OpenApi` | `technical/communication/http/OpenApiDomain.sysml` |
+| `Elan8::Communication::Serialization` | `technical/communication/core/SerializationDomain.sysml` |
+| `Elan8::Communication::Transport` | `technical/communication/transport/TransportDomain.sysml` |
+| `Elan8::Communication::Wireless` | `technical/communication/wireless/WirelessDomain.sysml` |
+| `Elan8::Core` | `generic/mbse/Core.sysml` |
+| `Elan8::Electronics::Actuation` | `technical/electronics/actuation/ElectronicActuationDomain.sysml` |
+| `Elan8::Electronics::Assembly` | `technical/electronics/assembly/ElectronicsAssemblyDomain.sysml` |
+| `Elan8::Electronics::Board` | `technical/electronics/board/PrintedBoardDomain.sysml` |
+| `Elan8::Electronics::Buses` | `technical/electronics/buses/ElectronicBusDomain.sysml` |
+| `Elan8::Electronics::Components` | `technical/electronics/components/ElectronicComponentDomain.sysml` |
+| `Elan8::Electronics::Compute` | `technical/electronics/compute/EmbeddedComputeDomain.sysml` |
+| `Elan8::Electronics::Core` | `technical/electronics/core/ElectronicsCore.sysml` |
+| `Elan8::Electronics::Interconnection` | `technical/electronics/interconnection/ElectronicsInterconnection.sysml` |
+| `Elan8::Electronics::Io` | `technical/electronics/io/ElectronicIoDomain.sysml` |
+| `Elan8::Electronics::Power` | `technical/electronics/power/ElectricalPowerDomain.sysml` |
+| `Elan8::Electronics::Sensing` | `technical/electronics/sensing/SensingDomain.sysml` |
+| `Elan8::Electronics::Wireless` | `technical/electronics/wireless/Wireless.sysml` |
+| `Elan8::Mechanical::Core` | `technical/mechanical/core/MechanicalCore.sysml` |
+| `Elan8::Mechanical::Drivetrain` | `technical/mechanical/drivetrain/DrivetrainDomain.sysml` |
+| `Elan8::Mechanical::Interconnection` | `technical/mechanical/interconnection/MechanicalInterconnection.sysml` |
+| `Elan8::Procurement` | `generic/procurement/PartProcurement.sysml` |
+| `Elan8::Software::Core` | `technical/software/core/SoftwareCore.sysml` |
+| `Elan8::Software::Data::NoSql` | `technical/software/data/NosqlDomain.sysml` |
+| `Elan8::Software::Data::Sql` | `technical/software/data/SqlDomain.sysml` |
+| `Elan8::Software::Distributed` | `technical/software/distributed-systems/DistributedSystems.sysml` |
+| `Elan8::Software::Interactions` | `technical/software/interactions/SoftwareInteractions.sysml` |
+| `Elan8::Software::Platform::Cloud` | `technical/software/platform/CloudRuntimeDomain.sysml` |
+| `Elan8::Software::Platform::Kubernetes` | `technical/software/platform/KubernetesDomain.sysml` |
+| `Elan8::Software::Realtime` | `technical/software/realtime-runtime/RealtimeRuntime.sysml` |
+| `Elan8::Units::Engineering` | `generic/units/EngineeringUnits.sysml` |
+| `Elan8::Units::Money` | `generic/units/MonetaryUnits.sysml` |
 
 ## In Spec42
 
