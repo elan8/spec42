@@ -472,10 +472,9 @@ pub fn build_sysml_visualization_from_artifacts(
     let selected_graph = project_graph_by_ids(graph, &projected_ids);
     // Compartment folding (and the package groups derived from it) is only consumed by
     // general/browser/grid/geometry views client-side — see `renderer_uses_general_view_graph`.
-    // Skipping it for interconnection/sequence/state/action-flow saves real work: folding needs
-    // attribute/port children that a kind-narrowing `filter` clause (e.g. `filter
-    // @SysML::PartUsage;`) may have already excluded from `projected_ids`, so it runs on the
-    // broader pre-filter set, then re-narrows to the actually-visible node set.
+    // Skipping it for interconnection/sequence/state/action-flow saves real work. For standard
+    // views that define scope traversal, folding uses the pre-filter set and then re-narrows to
+    // visible nodes. A GeneralView's pre-filter set is simply its exact exposed scope.
     let (general_view_graph, package_groups) =
         if renderer_uses_general_view_graph(resolved_view.as_str()) {
             let fold_source_graph = project_graph_by_ids(graph, &pre_filter_node_ids);
@@ -484,7 +483,7 @@ pub fn build_sysml_visualization_from_artifacts(
                     &canonical_general_view_graph(&fold_source_graph, true),
                     &projected_ids,
                 ),
-                edge_predicate,
+                &edge_predicate,
             );
             let groups = build_package_groups_from_graph(&folded);
             (Some(folded), Some(groups))

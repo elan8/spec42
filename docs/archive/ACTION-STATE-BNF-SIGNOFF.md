@@ -25,12 +25,12 @@ Normative figures: `SysML-v2-Release/bnf/images/`. Implementation: [`shared/diag
 | action-flow-compartment.svg | shared | perform/parameters in `drawActionNode` | `renderer.test.ts` |
 | succession.svg | shared | `aflow-succession` + `aflow-conditional` edge classes | `prepare/behavior.ts`, `action-flow.ts`, `renderer.test.ts` |
 | decision.svg / merge.svg | shared | `ActivityStateDto` + `DecisionNodeDto`; graph enrichment in `activity_graph.rs` | `extracted_model` tests, `activity_graph_semantics.rs` |
-| fork.svg / join.svg | WONTFIX (inventory) | — | — |
+| fork.svg / join.svg | shared | `activity_graph.rs` extraction + `views/action-flow.ts` synchronization bars | `activity_graph` and renderer suites |
 
 **Graph-first path:** `extract_activity_diagrams` + `enrich_activity_diagrams_from_graph` (then-action, bind, perform, assign, for-loop, decision/merge control nodes, in/out parameters).
 
-**Covered:** `Assign` / `ForLoop` topology; decision via typed action usage (`: Decision`); conditional succession labels on edges; swim lanes only when >1 lane.
+**Covered:** `Assign` / `ForLoop` topology; decision/merge/fork/join control nodes; conditional succession labels on edges; swim lanes only when >1 lane.
 
 ## Conformance metadata
 
-`docs/reference/conformance-metadata.json` marks both views **complete** (fork/join remain WONTFIX inventory).
+`docs/reference/conformance-metadata.json` marks both views **complete**.

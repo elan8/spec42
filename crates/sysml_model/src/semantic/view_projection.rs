@@ -3,9 +3,9 @@
 //! Per SysML v2 §7.26.2 the pipeline is expose → filter → render. Projection runs after
 //! expose/filter evaluation and before renderer-specific layout.
 //!
-//! Per §9.2.20.2.3, requirement traceability is not a separate standard view type: it is a
-//! `GeneralView` specialization expressed through filters (RequirementUsage, VerificationCase,
-//! SatisfyRequirementUsage, …). Traceability closure applies only for those filtered views.
+//! Per §9.2.20.2.3, `GeneralView` remains generic: exact exposure controls its scope and its
+//! declared filters select both nodes and relationships. Standard view definitions with explicit
+//! traversal semantics (for example `BrowserView`) apply those semantics separately.
 
 use std::collections::{HashMap, HashSet};
 
@@ -16,12 +16,12 @@ use crate::semantic::kinds::is_part_like_str as is_part_like;
 use crate::semantic::standard_view_defaults::grid_subtype_for_filters;
 
 /// Which relationship edges belong in the projected graph.
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub enum EdgePredicate {
     /// Keep all edges whose endpoints are in the projected node set.
     All,
-    /// Requirement/traceability views: derivation, satisfy, verify, subject.
-    TraceabilityOnly,
+    /// Keep relationships selected by the view's own filter expressions.
+    MatchingFilters(Vec<FilterExpr>),
 }
 
 /// Presentation hints for standard-view renderers (grid layout, browser tree, geometry params).
@@ -39,13 +39,9 @@ pub struct ProjectionHints {
 #[derive(Debug, Clone)]
 pub struct ProjectedView {
     pub node_ids: HashSet<String>,
-    /// Node ids after scope expansion (structural/descendants/traceability) but *before* the
-    /// view's `filter` clause narrows by element kind. A `filter @SysML::PartUsage;` clause (for
-    /// example) legitimately excludes attribute/port nodes from becoming their own diagram boxes,
-    /// but general-view compartment folding (`canonical_general_view_graph`) needs those same
-    /// attribute/port nodes present as input to compute a part's Attributes/Parts/Ports rows.
-    /// Callers that fold compartments should build their source graph from this broader set, then
-    /// re-narrow the folded result down to `node_ids` for the actual rendered/visible nodes.
+    /// Node ids after standard-view scope handling but before the view's filters are applied.
+    /// For `GeneralView`, this is exactly the exposed scope; other standard views may define
+    /// traversal semantics such as hierarchical membership or behavioral descendants.
     pub pre_filter_node_ids: HashSet<String>,
     pub edge_predicate: EdgePredicate,
     pub hints: ProjectionHints,
@@ -59,14 +55,9 @@ pub fn project_view(evaluated: &EvaluatedView, graph: &SysmlGraphDto) -> Project
         .map(normalize_view_type)
         .unwrap_or_else(|| "generalview".to_string());
 
-    let strategy = resolve_projection_strategy(&view_type, &evaluated.filters);
+    let strategy = projection_strategy(&view_type);
     let expanded_ids = match strategy.scope {
-        ScopeStrategy::TraceabilityClosure => expand_traceability_scope(
-            &evaluated.exposed_ids,
-            graph,
-            &evaluated.filters,
-            &indexes.node_by_id,
-        ),
+        ScopeStrategy::Exposed => evaluated.exposed_ids.clone(),
         ScopeStrategy::Structural => expand_structural_scope(
             &evaluated.exposed_ids,
             &indexes.children_by_parent,
@@ -101,7 +92,11 @@ pub fn project_view(evaluated: &EvaluatedView, graph: &SysmlGraphDto) -> Project
     ProjectedView {
         node_ids,
         pre_filter_node_ids,
-        edge_predicate: strategy.edge_predicate,
+        edge_predicate: if strategy.edges_match_filters && !evaluated.filters.is_empty() {
+            EdgePredicate::MatchingFilters(evaluated.filters.clone())
+        } else {
+            EdgePredicate::All
+        },
         hints: ProjectionHints {
             grid_layout: strategy.grid_layout.map(str::to_string),
             grid_subtype: grid_subtype_for_filters(&evaluated.filters)
@@ -122,13 +117,13 @@ pub fn project_ids_for_renderer(
     project_view(evaluated, graph).node_ids
 }
 
-pub fn apply_edge_predicate(graph: &SysmlGraphDto, predicate: EdgePredicate) -> SysmlGraphDto {
+pub fn apply_edge_predicate(graph: &SysmlGraphDto, predicate: &EdgePredicate) -> SysmlGraphDto {
     let edges: Vec<GraphEdgeDto> = match predicate {
         EdgePredicate::All => graph.edges.clone(),
-        EdgePredicate::TraceabilityOnly => graph
+        EdgePredicate::MatchingFilters(filters) => graph
             .edges
             .iter()
-            .filter(|edge| is_traceability_rel_type(&edge.rel_type))
+            .filter(|edge| edge_matches_all_filters(&edge.rel_type, filters))
             .cloned()
             .collect(),
     };
@@ -143,7 +138,7 @@ struct ProjectionStrategy {
     scope: ScopeStrategy,
     apply_filters_after_expansion: bool,
     include_ancestors: bool,
-    edge_predicate: EdgePredicate,
+    edges_match_filters: bool,
     grid_layout: Option<&'static str>,
     grid_subtype: Option<&'static str>,
     browser_layout: Option<&'static str>,
@@ -151,98 +146,34 @@ struct ProjectionStrategy {
     geometry_projection: Option<&'static str>,
 }
 
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
 enum ScopeStrategy {
-    TraceabilityClosure,
+    Exposed,
     Structural,
     Descendants,
-}
-
-fn resolve_projection_strategy(
-    normalized_view_type: &str,
-    filters: &[FilterExpr],
-) -> ProjectionStrategy {
-    if is_requirement_traceability_general_view(normalized_view_type, filters) {
-        return traceability_projection_strategy();
-    }
-    projection_strategy(normalized_view_type)
-}
-
-fn traceability_projection_strategy() -> ProjectionStrategy {
-    ProjectionStrategy {
-        scope: ScopeStrategy::TraceabilityClosure,
-        apply_filters_after_expansion: false,
-        include_ancestors: false,
-        edge_predicate: EdgePredicate::TraceabilityOnly,
-        grid_layout: Some("traceability"),
-        grid_subtype: None,
-        browser_layout: None,
-        geometry_mode: None,
-        geometry_projection: None,
-    }
-}
-
-/// §9.2.20.2.3: requirement traceability is a filtered `GeneralView`, not a standard view type.
-fn is_requirement_traceability_general_view(
-    normalized_view_type: &str,
-    filters: &[FilterExpr],
-) -> bool {
-    normalized_view_type == "generalview"
-        && filters
-            .iter()
-            .any(filter_expr_targets_requirement_traceability)
-}
-
-fn filter_expr_targets_requirement_traceability(filter: &FilterExpr) -> bool {
-    match filter {
-        FilterExpr::Matches(qualified) => is_requirement_traceability_kind(qualified),
-        FilterExpr::Not(inner) => filter_expr_targets_requirement_traceability(inner),
-        FilterExpr::And(left, right) | FilterExpr::Or(left, right) => {
-            filter_expr_targets_requirement_traceability(left)
-                || filter_expr_targets_requirement_traceability(right)
-        }
-        FilterExpr::Unsupported(_) => false,
-    }
-}
-
-fn is_requirement_traceability_kind(qualified: &str) -> bool {
-    let kind = qualified
-        .split("::")
-        .last()
-        .unwrap_or(qualified)
-        .replace([' ', '_'], "")
-        .to_lowercase();
-    matches!(
-        kind.as_str(),
-        "requirementusage"
-            | "requirementdefinition"
-            | "requirementdef"
-            | "verificationcase"
-            | "verificationusage"
-            | "satisfyrequirementusage"
-            | "allocationusage"
-            | "allocationdefinition"
-    )
 }
 
 fn projection_strategy(normalized_view_type: &str) -> ProjectionStrategy {
     match normalized_view_type {
         "browserview" => ProjectionStrategy {
-            scope: ScopeStrategy::Structural,
+            // §9.2.20.2.2 defines a membership tree starting at the exposed root.
+            // Following FeatureTyping here incorrectly splices the contents of a
+            // definition into the usage's membership hierarchy.
+            scope: ScopeStrategy::Descendants,
             apply_filters_after_expansion: true,
             include_ancestors: false,
-            edge_predicate: EdgePredicate::All,
+            edges_match_filters: false,
             grid_layout: None,
             grid_subtype: None,
             browser_layout: Some("hierarchy"),
             geometry_mode: None,
             geometry_projection: None,
         },
-        "actionflowview" | "statetransitionview" => ProjectionStrategy {
+        "actionflowview" | "sequenceview" | "statetransitionview" => ProjectionStrategy {
             scope: ScopeStrategy::Descendants,
             apply_filters_after_expansion: true,
             include_ancestors: false,
-            edge_predicate: EdgePredicate::All,
+            edges_match_filters: false,
             grid_layout: None,
             grid_subtype: None,
             browser_layout: None,
@@ -250,10 +181,12 @@ fn projection_strategy(normalized_view_type: &str) -> ProjectionStrategy {
             geometry_projection: None,
         },
         "gridview" => ProjectionStrategy {
-            scope: ScopeStrategy::Structural,
+            // §9.2.20.2.5 says that the exposed elements and relationships are
+            // arranged in a grid; it does not define implicit structural closure.
+            scope: ScopeStrategy::Exposed,
             apply_filters_after_expansion: true,
-            include_ancestors: true,
-            edge_predicate: EdgePredicate::All,
+            include_ancestors: false,
+            edges_match_filters: true,
             grid_layout: None,
             grid_subtype: Some("element_table"),
             browser_layout: None,
@@ -261,10 +194,12 @@ fn projection_strategy(normalized_view_type: &str) -> ProjectionStrategy {
             geometry_projection: None,
         },
         "geometryview" => ProjectionStrategy {
-            scope: ScopeStrategy::Structural,
+            // GeometryView visualizes exposed spatial items. Spatial containment
+            // and typing are model semantics, not permission to add unexposed nodes.
+            scope: ScopeStrategy::Exposed,
             apply_filters_after_expansion: true,
-            include_ancestors: true,
-            edge_predicate: EdgePredicate::All,
+            include_ancestors: false,
+            edges_match_filters: true,
             grid_layout: None,
             grid_subtype: None,
             browser_layout: None,
@@ -275,7 +210,7 @@ fn projection_strategy(normalized_view_type: &str) -> ProjectionStrategy {
             scope: ScopeStrategy::Structural,
             apply_filters_after_expansion: true,
             include_ancestors: true,
-            edge_predicate: EdgePredicate::All,
+            edges_match_filters: false,
             grid_layout: None,
             grid_subtype: None,
             browser_layout: None,
@@ -283,10 +218,10 @@ fn projection_strategy(normalized_view_type: &str) -> ProjectionStrategy {
             geometry_projection: None,
         },
         _ => ProjectionStrategy {
-            scope: ScopeStrategy::Structural,
+            scope: ScopeStrategy::Exposed,
             apply_filters_after_expansion: true,
-            include_ancestors: true,
-            edge_predicate: EdgePredicate::All,
+            include_ancestors: false,
+            edges_match_filters: true,
             grid_layout: None,
             grid_subtype: None,
             browser_layout: None,
@@ -305,51 +240,57 @@ fn normalize_view_type(view_type: &str) -> String {
         .to_lowercase()
 }
 
-fn is_traceability_rel_type(rel_type: &str) -> bool {
-    matches!(
-        rel_type.to_lowercase().as_str(),
-        "allocate" | "derivation" | "satisfy" | "verify" | "subject"
-    )
+fn edge_matches_all_filters(rel_type: &str, filters: &[FilterExpr]) -> bool {
+    filters
+        .iter()
+        .all(|filter| edge_matches_filter(filter, rel_type))
 }
 
-fn expand_traceability_scope(
-    seed_ids: &HashSet<String>,
-    graph: &SysmlGraphDto,
-    filters: &[FilterExpr],
-    node_by_id: &HashMap<&str, &GraphNodeDto>,
-) -> HashSet<String> {
-    let mut visible: HashSet<String> = seed_ids
-        .iter()
-        .filter(|node_id| node_matches_all_filters(node_id, node_by_id, filters))
-        .cloned()
-        .collect();
-
-    loop {
-        let mut changed = false;
-        for edge in &graph.edges {
-            if !is_traceability_rel_type(&edge.rel_type) {
-                continue;
-            }
-            if visible.contains(&edge.source)
-                && node_matches_all_filters(edge.target.as_str(), node_by_id, filters)
-                && visible.insert(edge.target.clone())
-            {
-                changed = true;
-            }
-            if visible.contains(&edge.target)
-                && node_matches_all_filters(edge.source.as_str(), node_by_id, filters)
-                && visible.insert(edge.source.clone())
-            {
-                changed = true;
-            }
+fn edge_matches_filter(filter: &FilterExpr, rel_type: &str) -> bool {
+    match filter {
+        FilterExpr::Matches(qualified) => edge_matches_kind(rel_type, qualified),
+        FilterExpr::Not(inner) => !edge_matches_filter(inner, rel_type),
+        FilterExpr::And(left, right) => {
+            edge_matches_filter(left, rel_type) && edge_matches_filter(right, rel_type)
         }
-        if !changed {
-            break;
+        FilterExpr::Or(left, right) => {
+            edge_matches_filter(left, rel_type) || edge_matches_filter(right, rel_type)
         }
+        FilterExpr::Unsupported(_) => false,
     }
+}
 
-    visible.extend(seed_ids.iter().cloned());
-    visible
+fn edge_matches_kind(rel_type: &str, qualified: &str) -> bool {
+    let wanted = qualified
+        .split("::")
+        .last()
+        .unwrap_or(qualified)
+        .replace([' ', '_'], "")
+        .to_lowercase();
+    let actual = rel_type.replace([' ', '_'], "").to_lowercase();
+    match actual.as_str() {
+        "contains" => matches!(
+            wanted.as_str(),
+            "owningmembership" | "membership" | "containment" | "packagecontainment"
+        ),
+        "typing" => matches!(wanted.as_str(), "featuretyping" | "typing"),
+        "specializes" | "specialization" => matches!(
+            wanted.as_str(),
+            "specialization" | "subclassification" | "subsetting" | "redefinition"
+        ),
+        "connection" => matches!(wanted.as_str(), "connection" | "connectionusage"),
+        "allocate" | "allocation" => {
+            matches!(wanted.as_str(), "allocation" | "allocationusage")
+        }
+        "derivation" => matches!(wanted.as_str(), "derivation" | "dependency"),
+        "satisfy" => matches!(wanted.as_str(), "satisfy" | "satisfyrequirementusage"),
+        "verify" => matches!(
+            wanted.as_str(),
+            "verify" | "verificationusage" | "verifyrequirementusage"
+        ),
+        "subject" => matches!(wanted.as_str(), "subject" | "subjectmembership"),
+        _ => wanted == actual || wanted == "relationship",
+    }
 }
 
 fn expand_descendants(
@@ -460,7 +401,7 @@ impl<'a> GraphIndexes<'a> {
             let mut map = HashMap::new();
             for edge in &graph.edges {
                 let rel_type = edge.rel_type.to_lowercase();
-                if rel_type == "typing" || rel_type == "specializes" {
+                if rel_type == "typing" {
                     map.entry(edge.source.as_str())
                         .or_insert_with(Vec::new)
                         .push(edge.target.as_str());
@@ -497,7 +438,31 @@ mod tests {
     }
 
     #[test]
-    fn traceability_closure_is_stable_and_respects_filters() {
+    fn standard_view_scope_strategies_follow_the_spec_descriptions() {
+        assert_eq!(
+            projection_strategy("browserview").scope,
+            ScopeStrategy::Descendants
+        );
+        assert_eq!(
+            projection_strategy("sequenceview").scope,
+            ScopeStrategy::Descendants
+        );
+        assert_eq!(
+            projection_strategy("gridview").scope,
+            ScopeStrategy::Exposed
+        );
+        assert_eq!(
+            projection_strategy("geometryview").scope,
+            ScopeStrategy::Exposed
+        );
+        assert_eq!(
+            projection_strategy("interconnectionview").scope,
+            ScopeStrategy::Structural
+        );
+    }
+
+    #[test]
+    fn general_view_does_not_infer_traceability_closure() {
         let graph = SysmlGraphDto {
             nodes: vec![
                 GraphNodeDto {
@@ -556,14 +521,17 @@ mod tests {
 
         let projected = project_view(&evaluated, &graph);
         assert!(projected.node_ids.contains("Pkg::need"));
-        assert!(projected.node_ids.contains("Pkg::req"));
+        assert!(!projected.node_ids.contains("Pkg::req"));
         assert!(!projected.node_ids.contains("Pkg::part"));
-        assert_eq!(projected.edge_predicate, EdgePredicate::TraceabilityOnly);
-        assert_eq!(projected.hints.grid_layout.as_deref(), Some("traceability"));
+        assert_eq!(
+            projected.edge_predicate,
+            EdgePredicate::MatchingFilters(evaluated.filters.clone())
+        );
+        assert!(projected.hints.grid_layout.is_none());
     }
 
     #[test]
-    fn part_usage_general_view_uses_structural_projection() {
+    fn general_view_uses_exposed_scope_and_its_declared_filters() {
         let evaluated = EvaluatedView {
             id: "Pkg::structure".to_string(),
             name: "structure".to_string(),
@@ -579,17 +547,15 @@ mod tests {
             edges: vec![],
         };
         let projected = project_view(&evaluated, &graph);
-        assert_eq!(projected.edge_predicate, EdgePredicate::All);
+        assert_eq!(
+            projected.edge_predicate,
+            EdgePredicate::MatchingFilters(evaluated.filters.clone())
+        );
         assert!(projected.hints.grid_layout.is_none());
     }
 
     #[test]
-    fn part_usage_filter_excludes_attributes_from_node_ids_but_not_pre_filter_node_ids() {
-        // Regression test: `filter @SysML::PartUsage;` (e.g. the real "productStructure" view)
-        // legitimately excludes attribute nodes from `node_ids` (they shouldn't be their own
-        // diagram boxes), but general-view compartment folding needs them present as input to
-        // populate the owning part's Attributes compartment. `pre_filter_node_ids` must still
-        // contain the attribute node even though `node_ids` does not.
+    fn part_structure_projection_keeps_explicit_parts_shallow() {
         let graph = SysmlGraphDto {
             nodes: vec![
                 GraphNodeDto {
@@ -631,14 +597,84 @@ mod tests {
             "attribute should not become its own diagram box under a PartUsage filter"
         );
         assert!(
-            projected.pre_filter_node_ids.contains("Pkg::robot::mass"),
-            "attribute must still be present in pre_filter_node_ids so compartment folding can see it"
+            !projected.pre_filter_node_ids.contains("Pkg::robot::mass"),
+            "a focused part structure should not populate attribute compartments recursively"
         );
         assert!(projected.pre_filter_node_ids.contains("Pkg::robot"));
     }
 
     #[test]
-    fn edge_predicate_filters_non_traceability_edges() {
+    fn general_view_contains_only_explicitly_exposed_definitions() {
+        let graph = SysmlGraphDto {
+            nodes: vec![
+                GraphNodeDto {
+                    id: "Pkg::robot".to_string(),
+                    element_type: "part".to_string(),
+                    name: "robot".to_string(),
+                    uri: None,
+                    parent_id: None,
+                    range: zero_range(),
+                    attributes: HashMap::new(),
+                },
+                GraphNodeDto {
+                    id: "Pkg::Robot".to_string(),
+                    element_type: "part def".to_string(),
+                    name: "Robot".to_string(),
+                    uri: None,
+                    parent_id: None,
+                    range: zero_range(),
+                    attributes: HashMap::new(),
+                },
+                GraphNodeDto {
+                    id: "Pkg::RequirementSubject".to_string(),
+                    element_type: "part def".to_string(),
+                    name: "RequirementSubject".to_string(),
+                    uri: None,
+                    parent_id: None,
+                    range: zero_range(),
+                    attributes: HashMap::new(),
+                },
+            ],
+            edges: vec![
+                GraphEdgeDto {
+                    source: "Pkg::robot".to_string(),
+                    target: "Pkg::Robot".to_string(),
+                    rel_type: "typing".to_string(),
+                    name: None,
+                },
+                GraphEdgeDto {
+                    source: "Pkg::Robot".to_string(),
+                    target: "Pkg::RequirementSubject".to_string(),
+                    rel_type: "specializes".to_string(),
+                    name: None,
+                },
+            ],
+        };
+        let evaluated = EvaluatedView {
+            id: "Pkg::structure".to_string(),
+            name: "structure".to_string(),
+            effective_view_type: Some("GeneralView".to_string()),
+            exposed_ids: HashSet::from(["Pkg::robot".to_string(), "Pkg::Robot".to_string()]),
+            conforms_to: Vec::new(),
+            filters: vec![FilterExpr::Or(
+                Box::new(FilterExpr::Matches("@SysML::PartUsage".to_string())),
+                Box::new(FilterExpr::Matches("@SysML::PartDefinition".to_string())),
+            )],
+            visible_ids: HashSet::new(),
+            issues: Vec::new(),
+        };
+
+        let projected = project_view(&evaluated, &graph);
+        assert!(projected.node_ids.contains("Pkg::robot"));
+        assert!(projected.node_ids.contains("Pkg::Robot"));
+        assert!(
+            !projected.node_ids.contains("Pkg::RequirementSubject"),
+            "a supertype provides semantics but is not a decomposition child"
+        );
+    }
+
+    #[test]
+    fn edge_predicate_matches_relationship_kinds_declared_by_filters() {
         let graph = SysmlGraphDto {
             nodes: vec![],
             edges: vec![
@@ -662,9 +698,51 @@ mod tests {
                 },
             ],
         };
-        let filtered = apply_edge_predicate(&graph, EdgePredicate::TraceabilityOnly);
+        let predicate = EdgePredicate::MatchingFilters(vec![FilterExpr::Or(
+            Box::new(FilterExpr::Matches(
+                "@SysML::SatisfyRequirementUsage".to_string(),
+            )),
+            Box::new(FilterExpr::Matches("@SysML::AllocationUsage".to_string())),
+        )]);
+        let filtered = apply_edge_predicate(&graph, &predicate);
         assert_eq!(filtered.edges.len(), 2);
         assert_eq!(filtered.edges[0].rel_type, "satisfy");
         assert_eq!(filtered.edges[1].rel_type, "allocate");
+    }
+
+    #[test]
+    fn product_structure_filters_keep_membership_and_typing_only() {
+        let graph = SysmlGraphDto {
+            nodes: vec![],
+            edges: vec![
+                GraphEdgeDto {
+                    source: "robot".to_string(),
+                    target: "base".to_string(),
+                    rel_type: "contains".to_string(),
+                    name: None,
+                },
+                GraphEdgeDto {
+                    source: "base".to_string(),
+                    target: "Base".to_string(),
+                    rel_type: "typing".to_string(),
+                    name: None,
+                },
+                GraphEdgeDto {
+                    source: "base".to_string(),
+                    target: "top".to_string(),
+                    rel_type: "connection".to_string(),
+                    name: None,
+                },
+            ],
+        };
+        let predicate = EdgePredicate::MatchingFilters(vec![FilterExpr::Or(
+            Box::new(FilterExpr::Matches("@KerML::OwningMembership".to_string())),
+            Box::new(FilterExpr::Matches("@KerML::FeatureTyping".to_string())),
+        )]);
+
+        let filtered = apply_edge_predicate(&graph, &predicate);
+        assert_eq!(filtered.edges.len(), 2);
+        assert_eq!(filtered.edges[0].rel_type, "contains");
+        assert_eq!(filtered.edges[1].rel_type, "typing");
     }
 }

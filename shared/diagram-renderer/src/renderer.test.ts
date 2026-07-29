@@ -1426,7 +1426,7 @@ describe("shared renderer", () => {
     expect(target.textContent).toContain("[ok]");
   });
 
-  it("renders provisional Browser, Grid, and Geometry standard views", async () => {
+  it("renders Browser and Grid as standard views and keeps Geometry provisional", async () => {
     for (const view of ["browser-view", "grid-view", "geometry-view"]) {
       const target = document.createElement("div");
       Object.defineProperty(target, "clientWidth", { value: 1200, configurable: true });
@@ -1457,12 +1457,13 @@ describe("shared renderer", () => {
             { id: "system", label: "System", kind: "part def" },
             { id: "engine", label: "engine", kind: "part" },
           ],
-          provisional: true,
+          hierarchyLayout: view === "browser-view",
+          provisional: view === "geometry-view",
         },
       }, { delegateZoom: true });
 
       expectFiniteRootTransform(target);
-      expect(target.querySelector(".provisional-view-badge")).toBeTruthy();
+      expect(Boolean(target.querySelector(".provisional-view-badge"))).toBe(view === "geometry-view");
       if (view === "browser-view") expect(target.querySelectorAll(".browser-row").length).toBeGreaterThan(0);
       if (view === "grid-view") expect(target.querySelectorAll(".grid-cell").length).toBeGreaterThan(0);
       if (view === "geometry-view") expect(target.querySelectorAll(".geometry-object").length).toBeGreaterThan(0);

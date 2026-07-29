@@ -10,7 +10,7 @@ use tempfile::TempDir;
 use tower_lsp::lsp_types::NumberOrString;
 
 const DOMAIN_SMOKE_MODEL: &str = r#"package KparDomainLibrariesSmoke {
-  private import MonetaryUnits::*;
+  private import Elan8::Units::Money::*;
 
   part def Robot {
     attribute bomCost : MonetaryAmount = 120 [EUR];
@@ -19,7 +19,7 @@ const DOMAIN_SMOKE_MODEL: &str = r#"package KparDomainLibrariesSmoke {
 "#;
 
 const METHOD_SMOKE_MODEL: &str = r#"package KparMethodLibrariesSmoke {
-  private import Elan8RequirementManagement::*;
+  private import Elan8::Method::Requirements::*;
 
   attribute id : Identifier;
 }
@@ -62,11 +62,11 @@ fn doctor_library<'a>(
 
 #[cfg(feature = "embed-kpar-libraries")]
 #[test]
-fn embedded_kpar_domain_libraries_resolve_monetary_units() {
+fn embedded_kpar_domain_libraries_resolve_elan8_money() {
     let archive = embedded_archive("domain").unwrap_or(&[]);
     if archive.is_empty() {
         eprintln!(
-            "Skipping embedded_kpar_domain_libraries_resolve_monetary_units: \
+            "Skipping embedded_kpar_domain_libraries_resolve_elan8_money: \
              rebuild after packing domain KPAR with embed-kpar-libraries enabled"
         );
         return;
@@ -113,7 +113,7 @@ fn embedded_kpar_domain_libraries_resolve_monetary_units() {
         ] {
             assert!(
                 !codes.iter().any(|actual| actual == code),
-                "MonetaryUnits and EUR should resolve via embedded domain KPAR: {codes:?}"
+                "Elan8::Units::Money and EUR should resolve via embedded domain KPAR: {codes:?}"
             );
         }
         assert_eq!(
@@ -126,11 +126,11 @@ fn embedded_kpar_domain_libraries_resolve_monetary_units() {
 
 #[cfg(feature = "embed-kpar-libraries")]
 #[test]
-fn embedded_kpar_method_libraries_resolve_elan8_requirement_management() {
+fn embedded_kpar_method_libraries_resolve_elan8_method_requirements() {
     let archive = embedded_archive("method").unwrap_or(&[]);
     if archive.is_empty() {
         eprintln!(
-            "Skipping embedded_kpar_method_libraries_resolve_elan8_requirement_management: \
+            "Skipping embedded_kpar_method_libraries_resolve_elan8_method_requirements: \
              rebuild after packing method KPAR with embed-kpar-libraries enabled"
         );
         return;
@@ -162,9 +162,9 @@ fn embedded_kpar_method_libraries_resolve_elan8_requirement_management() {
         assert!(
             std::path::Path::new(install)
                 .join("method")
-                .join("Elan8Method.sysml")
+                .join("Method.sysml")
                 .is_file(),
-            "expected method/Elan8Method.sysml under {install}"
+            "expected method/Method.sysml under {install}"
         );
 
         let args = CheckArgs {
@@ -182,7 +182,7 @@ fn embedded_kpar_method_libraries_resolve_elan8_requirement_management() {
             !codes
                 .iter()
                 .any(|actual| actual == "unresolved_import_target"),
-            "Elan8RequirementManagement should resolve via embedded method KPAR: {codes:?}"
+            "Elan8::Method::Requirements should resolve via embedded method KPAR: {codes:?}"
         );
         assert_eq!(
             report.summary.error_count, 0,

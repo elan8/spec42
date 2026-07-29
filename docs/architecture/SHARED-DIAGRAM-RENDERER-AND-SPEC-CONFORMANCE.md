@@ -19,7 +19,7 @@ Related docs:
 |-------|-------|
 | Shared renderer | All `SYSML_ENABLED_VIEWS`: general, interconnection, action-flow, state-transition, sequence, browser, grid, geometry |
 | Headless SVG export | CLI and HTTP API render SVG through a bundled `shared/diagram-renderer` headless entrypoint |
-| SysML v2 spec target | Strict standard-view ambition for shipped views, with Browser/Grid/Geometry marked provisional while upstream graphical details settle |
+| SysML v2 spec target | All eight standard view definitions are routed; GeometryView remains explicitly partial until spatial geometry is modeled and rendered |
 
 The removed `spec42.visualization.useSharedRenderer` setting must not be reintroduced. New SysML notation belongs in `shared/diagram-renderer`, not in VS Code host-specific renderer branches.
 
@@ -29,12 +29,12 @@ The removed `spec42.visualization.useSharedRenderer` setting must not be reintro
 |---------|--------------------|----------|--------|
 | `general-view` | General View | `renderer.ts` + `sysml-node-builder.ts` | Complete for shipped structural workflows |
 | `interconnection-view` | Interconnection View | `renderer.ts` IBD path | Complete for shipped structural workflows |
-| `action-flow-view` | Action Flow View | `views/action-flow.ts` | Complete — decision/merge/assign/for-loop, conditional succession; fork/join WONTFIX; see [ACTION-STATE-BNF-SIGNOFF.md](../archive/ACTION-STATE-BNF-SIGNOFF.md) |
+| `action-flow-view` | Action Flow View | `views/action-flow.ts` | Complete — decision/merge/fork/join, assign/for-loop, parameters, swim lanes, and conditional succession |
 | `state-transition-view` | State Transition View | `views/state-transition.ts` | Complete — `RegionDto`, terminate vs final, guard/effect/accept/send; see [ACTION-STATE-BNF-SIGNOFF.md](../archive/ACTION-STATE-BNF-SIGNOFF.md) |
 | `sequence-view` | Sequence View | `views/sequence.ts` | Shared behavior renderer with lifelines, messages, activations, fragments, return messages, and self messages |
-| `browser-view` | Browser View | `views/standard-views.ts` | Partial — hierarchy projection + collapsible tree |
-| `grid-view` | Grid View | `views/standard-views.ts` | Partial — element table + relationship matrix |
-| `geometry-view` / `geometric-view` | Geometry View | `views/standard-views.ts` | Partial — backend spatial filters + 2D orthographic preview |
+| `browser-view` | Browser View | `views/standard-views-render.ts` | Complete — exposed-root membership hierarchy + collapsible tree |
+| `grid-view` | Grid View | `views/standard-views-render.ts` | Complete — exact exposed set as element table or relationship matrix |
+| `geometry-view` | Geometry View | `views/standard-views-render.ts` | Partial — provisional 2D preview; authored spatial geometry and 3D deferred |
 | Case-style filtered views | Filtered standard views | mapped to `general-view` | Mapped |
 
 ## Routing
@@ -48,7 +48,8 @@ Visualization payloads are built by `semantic_core` and normalized in `shared/di
 - `prepareActivity` -> Action Flow View
 - `prepareState` -> State Transition View
 - `prepareSequence` -> Sequence View
-- `prepareBrowser`, `prepareGrid`, `prepareGeometry` -> provisional standard views
+- `prepareBrowser`, `prepareGrid` -> Browser/Grid standard views
+- `prepareGeometry` -> provisional GeometryView preview
 
 ## Conformance Notes
 
@@ -60,7 +61,8 @@ Visualization payloads are built by `semantic_core` and normalized in `shared/di
 | Action perform nodes and parameter badges | Implemented | `views/action-flow.ts` |
 | State composite regions and entry/do/exit compartments | Implemented | `views/state-transition.ts` |
 | Sequence fragments, activations, self/return messages | Implemented | `views/sequence.ts` |
-| Browser/Grid/Geometry top-level views | Partial | `views/standard-views.ts` |
+| Browser/Grid top-level views | Implemented | `views/standard-views-render.ts` |
+| Geometry top-level view | Partial | `views/standard-views-render.ts` |
 | Annotation/comment nodes and n-ary hub graphics | Deferred | Shared renderer + projection |
 | Full per-kind long-tail silhouettes | Partial | `node-notation.ts` |
 
@@ -83,12 +85,13 @@ Manual acceptance:
 
 - General and Interconnection: validate def/usage/ref chrome, ports, and connectors.
 - Action, State, Sequence: validate click-to-source plus behavior-specific notation.
-- Browser/Grid/Geometry: validate provisional badge and useful nonblank rendering.
+- Browser/Grid: validate hierarchy/table/matrix semantics and useful nonblank rendering.
+- Geometry: validate the provisional badge and useful nonblank preview.
 
 ## Guardrails
 
 1. Keep all SysML rendering in `shared/diagram-renderer`.
-2. Do not claim full OMG graphical conformance until provisional views and deferred notation are closed.
+2. Do not claim full OMG graphical conformance until GeometryView and deferred notation are closed.
 3. Rebuild the webview bundle after shared renderer or webview TypeScript changes:
 
 ```bash

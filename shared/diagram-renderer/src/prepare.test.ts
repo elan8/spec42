@@ -179,6 +179,21 @@ describe("shared prepareViewData", () => {
     expect(rows[1]?.parentId).toBe("root");
   });
 
+  it("prepares an ordinary GridView as a standard element table", () => {
+    const prepared = prepareViewData({
+      view: "grid-view",
+      selectedViewName: "Parts",
+      generalViewGraph: {
+        nodes: [{ id: "robot", name: "robot", type: "part" }],
+        edges: [],
+      },
+    });
+
+    expect(prepared.view).toBe("grid-view");
+    expect(prepared.meta?.relationshipMatrix).toBe(false);
+    expect(prepared.meta?.provisional).toBe(false);
+  });
+
   it("prepares interconnection from canonical scene fixture", () => {
     const prepared = prepareViewData({
       view: "interconnection-view",

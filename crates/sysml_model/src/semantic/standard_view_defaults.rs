@@ -2,7 +2,8 @@
 //!
 //! Per §9.2.20, `StandardViewDefinitions` in the Systems Model Library may supply filter
 //! conditions; OMG issue SYSML2-25 leaves those incomplete. Spec42 tries stdlib introspection
-//! first, then applies documented fallbacks from §9.2.20.2.2–2.5.
+//! first and otherwise preserves the usage's unfiltered exposed set. Descriptive lists in
+//! §9.2.20.2 are not executable default filter expressions.
 
 use crate::semantic::explicit_views::FilterExpr;
 use crate::semantic::graph::SemanticGraph;
@@ -77,35 +78,11 @@ fn parse_filter_attributes(
 
 fn fallback_default_filters(normalized_view_type: &str) -> Vec<FilterExpr> {
     match normalized_view_type {
-        // §9.2.20.2.4 — spatial items, coordinate frames, quantity features on spatial items.
-        "geometryview" => geometry_spatial_default_filter(),
-        // §9.2.20.2.2 / 2.5 — membership tree / element table: no kind restriction by default.
-        "browserview" | "gridview" => Vec::new(),
+        // The standard definitions currently provide no normative executable
+        // fallback filters for these views.
+        "browserview" | "gridview" | "geometryview" => Vec::new(),
         _ => Vec::new(),
     }
-}
-
-fn geometry_spatial_default_filter() -> Vec<FilterExpr> {
-    let kinds = [
-        "@SysML::PartUsage",
-        "@SysML::PortUsage",
-        "@SysML::ItemUsage",
-        "@SysML::ConnectionUsage",
-        "@SysML::Shape",
-        "@SysML::CoordinateFrame",
-    ];
-    kinds
-        .iter()
-        .rev()
-        .fold(None, |acc: Option<FilterExpr>, kind| {
-            let expr = FilterExpr::Matches((*kind).to_string());
-            match acc {
-                None => Some(expr),
-                Some(right) => Some(FilterExpr::Or(Box::new(expr), Box::new(right))),
-            }
-        })
-        .into_iter()
-        .collect()
 }
 
 pub(crate) fn grid_subtype_for_filters(filters: &[FilterExpr]) -> Option<&'static str> {
@@ -151,10 +128,8 @@ mod tests {
     use super::*;
 
     #[test]
-    fn geometry_view_gets_spatial_default_filter() {
-        let filters = fallback_default_filters("geometryview");
-        assert_eq!(filters.len(), 1);
-        assert!(matches!(&filters[0], FilterExpr::Or(_, _)));
+    fn geometry_view_does_not_invent_a_spatial_kind_filter() {
+        assert!(fallback_default_filters("geometryview").is_empty());
     }
 
     #[test]

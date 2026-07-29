@@ -425,7 +425,7 @@ For local development, `build.rs` prefers, in order (per managed library):
 Domain library releases are published from [elan8/sysml-domain-libraries](https://github.com/elan8/sysml-domain-libraries) via the `release-kpar` GitHub Action when a `v*` tag is pushed. Pack locally with:
 
 ```bash
-cargo run -p kpar --bin kpar-pack -- --root ../sysml-domain-libraries --version 0.2.0 --output elan8-domain-libraries-0.2.0.kpar
+cargo run -p kpar --bin kpar-pack -- --root ../sysml-domain-libraries --version 0.3.0 --output elan8-domain-libraries-0.3.0.kpar
 ```
 
 `vscode/.gitignore` ignores `vscode/examples` so duplicate checkouts under `vscode/` are not committed. If you see the same example folders twice in the Spec42 **Examples** view, remove the extra copy under `vscode/examples` and keep the root submodule.

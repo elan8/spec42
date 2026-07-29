@@ -227,7 +227,9 @@ export function prepareGrid(visualization: VisualizationPayload): PreparedView {
       matrixRowIds: relationshipMatrix ? nodeIds : [],
       matrixColIds: relationshipMatrix ? nodeIds : [],
       matrixCells,
-      provisional: !relationshipMatrix && !traceabilityLayout,
+      // Both an element table and a relationship matrix are rectangular GridView
+      // presentations described by §9.2.20.2.5.
+      provisional: false,
     },
   };
 }

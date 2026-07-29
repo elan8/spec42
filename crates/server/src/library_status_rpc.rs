@@ -180,7 +180,10 @@ fn build_kpar_dto(component: &KparLibraryComponent) -> Result<KparLibraryStatusD
         status.source = component.source.clone();
     }
     if let Some(path) = &component.path {
-        if !matches!(component.source.as_deref(), Some("flag") | Some("env") | Some("custom")) {
+        if !matches!(
+            component.source.as_deref(),
+            Some("flag") | Some("env") | Some("custom")
+        ) {
             status.is_installed = status.is_installed && path.is_dir();
         }
     }
@@ -232,18 +235,18 @@ mod tests {
         let config = KparLibraryConfig {
             id: "method".to_string(),
             display_name: "Method libraries".to_string(),
-            version: "0.1.1".to_string(),
+            version: "0.2.0".to_string(),
             repo: EMBEDDED_KPAR_LIBRARY_REPO.to_string(),
             content_path: String::new(),
             format: "kpar".to_string(),
-            artifact: Some("elan8-method-libraries-0.1.1.kpar".to_string()),
+            artifact: Some("elan8-method-libraries-0.2.0.kpar".to_string()),
         };
         let paths = kpar_library_paths_from_data_dir(std::path::Path::new("/tmp/data"), "method");
         let component = KparLibraryComponent {
             id: "method".to_string(),
             display_name: "Method libraries".to_string(),
             path: Some(std::path::PathBuf::from(
-                "/tmp/data/kpar-libraries/method/versions/0.1.1",
+                "/tmp/data/kpar-libraries/method/versions/0.2.0",
             )),
             source: Some("bundled".to_string()),
             config,
@@ -251,7 +254,7 @@ mod tests {
         };
         let dto = build_kpar_dto(&component).expect("dto");
         assert_eq!(dto.id, "method");
-        assert_eq!(dto.pinned_version, "0.1.1");
+        assert_eq!(dto.pinned_version, "0.2.0");
         assert_eq!(dto.source_kind, "bundled");
         assert!(dto.available);
         assert_eq!(dto.format, "kpar");

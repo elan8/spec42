@@ -483,16 +483,16 @@ mod tests {
         let config = KparLibraryConfig {
             id: "domain".to_string(),
             display_name: "Domain libraries".to_string(),
-            version: "0.2.0".to_string(),
+            version: "0.3.0".to_string(),
             repo: "elan8/sysml-domain-libraries".to_string(),
             content_path: String::new(),
             format: "kpar".to_string(),
-            artifact: Some("elan8-domain-libraries-0.2.0.kpar".to_string()),
+            artifact: Some("elan8-domain-libraries-0.3.0.kpar".to_string()),
         };
         let install = managed_install_path(&paths, &config);
         assert!(
-            install.ends_with("kpar-libraries/domain/versions/0.2.0")
-                || install.ends_with(r"kpar-libraries\domain\versions\0.2.0")
+            install.ends_with("kpar-libraries/domain/versions/0.3.0")
+                || install.ends_with(r"kpar-libraries\domain\versions\0.3.0")
         );
     }
 }

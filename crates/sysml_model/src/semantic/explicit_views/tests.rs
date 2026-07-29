@@ -160,7 +160,7 @@ fn standard_view_types_map_to_shared_renderers() {
 }
 
 #[test]
-fn general_view_projection_expands_exposed_roots_to_owned_members() {
+fn general_view_projection_uses_exact_exposed_scope() {
     fn zero_range() -> RangeDto {
         RangeDto {
             start: PositionDto {
@@ -210,7 +210,10 @@ fn general_view_projection_expands_exposed_roots_to_owned_members() {
 
     let projected = project_ids_for_renderer(&evaluated, &graph, "general-view");
     assert!(projected.contains("Office::OfficeDeskSetup"));
-    assert!(projected.contains("Office::OfficeDeskSetup::laptop"));
+    assert!(
+        !projected.contains("Office::OfficeDeskSetup::laptop"),
+        "owned members require their own expose or a namespace expose"
+    );
 }
 
 #[test]
@@ -310,7 +313,7 @@ fn structural_projection_recursively_expands_typed_part_definitions() {
 }
 
 #[test]
-fn browser_view_projection_applies_expose_kind_filters_after_expansion() {
+fn browser_view_projection_follows_membership_but_not_typing() {
     fn zero_range() -> RangeDto {
         RangeDto {
             start: PositionDto {
@@ -374,16 +377,23 @@ fn browser_view_projection_applies_expose_kind_filters_after_expansion() {
         id: "Pkg::structure".to_string(),
         name: "structure".to_string(),
         effective_view_type: Some("BrowserView".to_string()),
-        exposed_ids: HashSet::from(["Pkg::robot".to_string()]),
+        exposed_ids: HashSet::from(["Pkg::Robot".to_string()]),
         conforms_to: Vec::new(),
-        filters: vec![FilterExpr::Matches("@SysML::PartUsage".to_string())],
+        filters: vec![FilterExpr::Or(
+            Box::new(FilterExpr::Matches("@SysML::PartDefinition".to_string())),
+            Box::new(FilterExpr::Matches("@SysML::PartUsage".to_string())),
+        )],
         visible_ids: HashSet::new(),
         issues: Vec::new(),
     };
 
     let projected = project_ids_for_renderer(&evaluated, &graph, "browser-view");
-    assert!(projected.contains("Pkg::robot"));
+    assert!(projected.contains("Pkg::Robot"));
     assert!(projected.contains("Pkg::Robot::chassis"));
+    assert!(
+        !projected.contains("Pkg::robot"),
+        "BrowserView follows hierarchical membership, not inverse or forward typing"
+    );
     assert!(
         !projected.contains("Pkg::Robot::powerPort"),
         "PartUsage filter should exclude ports after expansion"
@@ -391,7 +401,7 @@ fn browser_view_projection_applies_expose_kind_filters_after_expansion() {
 }
 
 #[test]
-fn requirement_view_projection_follows_traceability_links_without_structural_expansion() {
+fn requirement_general_view_does_not_infer_traceability_members() {
     fn zero_range() -> RangeDto {
         RangeDto {
             start: PositionDto {
@@ -472,8 +482,11 @@ fn requirement_view_projection_follows_traceability_links_without_structural_exp
 
     let projected = project_ids_for_renderer(&evaluated, &graph, "general-view");
     assert!(projected.contains("Pkg::need"));
-    assert!(projected.contains("Pkg::req"));
-    assert!(projected.contains("Pkg::design"));
+    assert!(!projected.contains("Pkg::req"));
+    assert!(
+        !projected.contains("Pkg::design"),
+        "the RequirementUsage filter excludes an exposed action"
+    );
     assert!(
         !projected.contains("Pkg::unrelatedPart"),
         "traceability projection should not structurally expand unrelated elements"

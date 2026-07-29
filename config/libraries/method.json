@@ -1,10 +1,10 @@
 {
   "id": "method",
   "displayName": "Method libraries",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "repo": "elan8/mbse-methodology",
   "format": "kpar",
-  "artifact": "elan8-method-libraries-0.1.1.kpar",
+  "artifact": "elan8-method-libraries-0.2.0.kpar",
   "contentPath": "",
   "pack": {
     "kind": "named-prefix",

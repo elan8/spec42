@@ -7,6 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.49.0] - 2026-07-29
+
+- **Aligns standard-view projection with SysML v2.** `GeneralView`, `BrowserView`, `GridView`,
+  and `GeometryView` now respect their specified exposed scope and relationship-filter
+  semantics. Browser and Grid presentations are no longer marked provisional; Geometry remains
+  explicitly partial while authored spatial geometry and 3D rendering are deferred.
+- **Keeps focused architecture views focused.** Product decomposition retains the explicitly
+  exposed part usages and definitions with their membership and typing relationships, avoiding
+  unrelated firmware and requirement-subject expansion.
+- **Updates the bundled Elan8 libraries.** Domain libraries now use `0.3.0` and method
+  libraries use `0.2.0`, including the new root-level `Elan8` package organization and the
+  expanded electronics, mechanical, sensing, actuation, assembly, and real-time vocabulary.
+
 ## [0.48.0] - 2026-07-28
 
 - **Lets you move the Visualizer between the secondary sidebar and an editor tab.** Commands
@@ -1737,6 +1750,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Parser is aligned with the SysML v2 Release validation suite; it does not claim full OMG spec compliance.
 - Some constructs may have incomplete semantic token or outline coverage.
 
+[0.49.0]: https://github.com/elan8/spec42/releases/tag/v0.49.0
 [0.48.0]: https://github.com/elan8/spec42/releases/tag/v0.48.0
 [0.47.3]: https://github.com/elan8/spec42/releases/tag/v0.47.3
 [0.47.2]: https://github.com/elan8/spec42/releases/tag/v0.47.2

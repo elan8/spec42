@@ -7,9 +7,9 @@ This overview is generated from the bundled KPAR artifact so it matches what Spe
 
 | | |
 | --- | --- |
-| Bundled version | `0.1.1` |
+| Bundled version | `0.2.0` |
 | Format | `kpar` |
-| Artifact | `elan8-method-libraries-0.1.1.kpar` |
+| Artifact | `elan8-method-libraries-0.2.0.kpar` |
 | Packages / files | 4 packages · 4 source files |
 | Source | [elan8/mbse-methodology](https://github.com/elan8/mbse-methodology) |
 
@@ -17,7 +17,7 @@ This overview is generated from the bundled KPAR artifact so it matches what Spe
 
 - **method/**
   - `method/Metadata.sysml` — `Elan8::Method::Metadata`
-  - `method/Method.sysml` — `Elan8::Method`
+  - `method/Method.sysml` — `Elan8::Method::Core`
   - `method/Requirements.sysml` — `Elan8::Method::Requirements`
   - `method/Viewpoints.sysml` — `Elan8::Method::Viewpoints`
 
@@ -25,7 +25,7 @@ This overview is generated from the bundled KPAR artifact so it matches what Spe
 
 | Package | Source file |
 | --- | --- |
-| `Elan8::Method` | `method/Method.sysml` |
+| `Elan8::Method::Core` | `method/Method.sysml` |
 | `Elan8::Method::Metadata` | `method/Metadata.sysml` |
 | `Elan8::Method::Requirements` | `method/Requirements.sysml` |
 | `Elan8::Method::Viewpoints` | `method/Viewpoints.sysml` |

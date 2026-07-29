@@ -8,7 +8,7 @@ This page is generated from Spec42 product configuration so the docs stay aligne
 
 | | |
 | --- | --- |
-| Extension version | `0.48.0` |
+| Extension version | `0.49.0` |
 | Marketplace | [SysML v2 Editor (Spec42)](https://marketplace.visualstudio.com/items?itemName=Elan8.spec42) |
 | Source | [elan8/spec42](https://github.com/elan8/spec42) |
 
@@ -17,8 +17,8 @@ This page is generated from Spec42 product configuration so the docs stay aligne
 | Library | Version | Format | Source |
 | --- | --- | --- | --- |
 | SysML v2 standard library | `2026-04` | `kpar` | [Systems-Modeling/SysML-v2-Release](https://github.com/Systems-Modeling/SysML-v2-Release) |
-| Domain libraries | `0.2.0` | `kpar` | [elan8/sysml-domain-libraries](https://github.com/elan8/sysml-domain-libraries) |
-| Method libraries | `0.1.1` | `kpar` | [elan8/mbse-methodology](https://github.com/elan8/mbse-methodology) |
+| Domain libraries | `0.3.0` | `kpar` | [elan8/sysml-domain-libraries](https://github.com/elan8/sysml-domain-libraries) |
+| Method libraries | `0.2.0` | `kpar` | [elan8/mbse-methodology](https://github.com/elan8/mbse-methodology) |
 
 ## Learn more
 
