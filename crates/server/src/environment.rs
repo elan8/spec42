@@ -309,7 +309,10 @@ fn build_doctor_kpar_library(
         status.source = component.source.clone();
     }
     if let Some(path) = &component.path {
-        if !matches!(component.source.as_deref(), Some("flag") | Some("env") | Some("custom")) {
+        if !matches!(
+            component.source.as_deref(),
+            Some("flag") | Some("env") | Some("custom")
+        ) {
             status.is_installed = status.is_installed && path.is_dir();
         }
     }
@@ -391,7 +394,11 @@ fn build_host_library_request(
         no_stdlib: cli.no_stdlib,
         stdlib_path_override: cli.stdlib_path.clone(),
         kpar_library_path_overrides: parse_kpar_library_path_overrides(&cli.kpar_library_paths)?,
-        disabled_kpar_libraries: resolve_disabled_kpar_libraries(cli, explicit_config, default_config),
+        disabled_kpar_libraries: resolve_disabled_kpar_libraries(
+            cli,
+            explicit_config,
+            default_config,
+        ),
         library_paths,
         standard_library,
         use_embedded_stdlib: cfg!(feature = "embed-stdlib"),
@@ -712,11 +719,8 @@ mod tests {
         std::fs::create_dir_all(&config_dir).expect("create config dir");
         std::fs::create_dir_all(&data_dir).expect("create data dir");
         std::fs::create_dir_all(&custom_lib_dir).expect("create custom lib dir");
-        std::fs::write(
-            custom_lib_dir.join("Custom.sysml"),
-            "package Custom { }",
-        )
-        .expect("write custom sysml file");
+        std::fs::write(custom_lib_dir.join("Custom.sysml"), "package Custom { }")
+            .expect("write custom sysml file");
 
         let mut cli = empty_cli();
         cli.no_stdlib = true;

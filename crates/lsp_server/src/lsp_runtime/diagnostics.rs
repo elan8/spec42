@@ -21,7 +21,9 @@ fn perf_logging_enabled(runtime_config: &Arc<std::sync::OnceLock<RuntimeConfig>>
 /// `spec42.development.diagnoseLibraryPaths` — development-only opt-in to include library
 /// paths in the workspace-wide diagnostics sweep. See that setting's description and the
 /// comment on the exclusion below.
-fn diagnose_library_paths_enabled(runtime_config: &Arc<std::sync::OnceLock<RuntimeConfig>>) -> bool {
+fn diagnose_library_paths_enabled(
+    runtime_config: &Arc<std::sync::OnceLock<RuntimeConfig>>,
+) -> bool {
     runtime_config
         .get()
         .expect("initialize precedes all other LSP requests")
