@@ -145,6 +145,40 @@ describe("shared prepareViewData", () => {
     expect(prepared.nodes.map((n) => n.id)).toEqual(["canonical"]);
   });
 
+  it("builds Browser View membership hierarchy when legacy parent_id is blank", () => {
+    const prepared = prepareViewData({
+      view: "browser-view",
+      selectedViewName: "Structure Browser",
+      projectionHints: {
+        browserLayout: "hierarchy",
+        treeRoots: ["root"],
+      },
+      generalViewGraph: {
+        nodes: [
+          { id: "root", name: "Root", type: "part def", parent_id: "", parentId: "" },
+          { id: "child", name: "Child", type: "part", parent_id: "", parentId: "root" },
+        ],
+        edges: [],
+      },
+    });
+
+    const rows = prepared.meta?.rows as Array<{
+      id: string;
+      depth: number;
+      hasChildren: boolean;
+      parentId: string;
+    }>;
+    expect(prepared.view).toBe("browser-view");
+    expect(prepared.meta?.hierarchyLayout).toBe(true);
+    expect(prepared.meta?.provisional).toBe(false);
+    expect(rows.map((row) => [row.id, row.depth])).toEqual([
+      ["root", 0],
+      ["child", 1],
+    ]);
+    expect(rows[0]?.hasChildren).toBe(true);
+    expect(rows[1]?.parentId).toBe("root");
+  });
+
   it("prepares interconnection from canonical scene fixture", () => {
     const prepared = prepareViewData({
       view: "interconnection-view",

@@ -111,4 +111,31 @@ describe("headless SVG export", () => {
     expect(sequenceSvg).toContain("sequence-lifeline");
     expect(sequenceSvg).toContain("sequence-message");
   });
+
+  it("exports Browser View as an indented expandable hierarchy", async () => {
+    const svg = await exportHeadlessSvg({
+      ...basePayload,
+      view: "browser-view",
+      selectedViewName: "Structure Browser",
+      projectionHints: {
+        browserLayout: "hierarchy",
+        treeRoots: ["root"],
+      },
+      graph: null,
+      generalViewGraph: {
+        nodes: [
+          { id: "root", name: "Root", type: "part def", parent_id: "", parentId: "" },
+          { id: "child", name: "Child", type: "part", parent_id: "", parentId: "root" },
+        ],
+        edges: [],
+      },
+      activityDiagrams: null,
+      sequenceDiagrams: null,
+      stateMachines: null,
+    });
+
+    expect(svg).toContain("browser-toggle");
+    expect(svg).toContain('data-node-id="child"');
+    expect(svg).not.toContain("provisional SysML notation");
+  });
 });

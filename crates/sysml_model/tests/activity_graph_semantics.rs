@@ -95,6 +95,38 @@ fn ast_only_first_then_synthesis_still_works_without_enrichment() {
 }
 
 #[test]
+fn graph_enrichment_does_not_duplicate_first_then_as_flow() {
+    let content = r#"package P {
+  action def Step;
+  action def Pipeline {
+    action step1 : Step;
+    action step2 : Step;
+    first step1 then step2;
+  }
+}"#;
+    let doc = workspace_doc("first_then.sysml", content);
+    let uri = doc.uri.clone();
+    let (graph, parsed_docs) = build_semantic_graph_from_documents(&[doc]).expect("graph");
+    let mut diagrams = extract_activity_diagrams(&parsed_docs[0].parsed);
+    for diagram in &mut diagrams {
+        diagram.uri = Some(uri.as_str().to_string());
+    }
+    enrich_activity_diagrams_from_graph(&mut diagrams, &graph, &[uri]);
+
+    let diagram = diagrams
+        .iter()
+        .find(|d| d.name == "Pipeline")
+        .expect("pipeline");
+    let step_flows: Vec<_> = diagram
+        .flows
+        .iter()
+        .filter(|flow| flow.from == "step1" && flow.to == "step2")
+        .collect();
+    assert_eq!(step_flows.len(), 1, "flows={:?}", diagram.flows);
+    assert_eq!(step_flows[0].guard.as_deref(), Some("first"));
+}
+
+#[test]
 fn enrich_does_not_promote_interface_parameters_to_action_steps() {
     let content = r#"package P {
   action def ExecutePatrol {

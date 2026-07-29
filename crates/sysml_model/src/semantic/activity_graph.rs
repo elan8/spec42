@@ -191,6 +191,12 @@ fn merge_graph_flows(
             )
         })
         .collect();
+    let first_pairs: HashSet<(String, String)> = diagram
+        .flows
+        .iter()
+        .filter(|flow| flow.guard.as_deref() == Some("first"))
+        .map(|flow| (flow.from.clone(), flow.to.clone()))
+        .collect();
 
     let mut push_flow = |from: &str, to: &str, guard: &str, range: RangeDto| {
         let key = (from.to_string(), to.to_string(), guard.to_string());
@@ -223,8 +229,14 @@ fn merge_graph_flows(
             if (kind == RelationshipKind::Flow || kind == RelationshipKind::Bind)
                 && step_nodes.contains_key(&target_name)
             {
+                let source_name = activity_step_name(node);
+                if kind == RelationshipKind::Flow
+                    && first_pairs.contains(&(source_name.clone(), target_name.clone()))
+                {
+                    continue;
+                }
                 push_flow(
-                    &activity_step_name(node),
+                    &source_name,
                     &target_name,
                     flow_guard_for_kind(&kind),
                     text_range_to_dto(node.range),

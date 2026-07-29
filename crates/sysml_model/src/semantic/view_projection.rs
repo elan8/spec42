@@ -308,7 +308,7 @@ fn normalize_view_type(view_type: &str) -> String {
 fn is_traceability_rel_type(rel_type: &str) -> bool {
     matches!(
         rel_type.to_lowercase().as_str(),
-        "derivation" | "satisfy" | "verify" | "subject"
+        "allocate" | "derivation" | "satisfy" | "verify" | "subject"
     )
 }
 
@@ -654,10 +654,17 @@ mod tests {
                     rel_type: "typing".to_string(),
                     name: None,
                 },
+                GraphEdgeDto {
+                    source: "a".to_string(),
+                    target: "d".to_string(),
+                    rel_type: "allocate".to_string(),
+                    name: None,
+                },
             ],
         };
         let filtered = apply_edge_predicate(&graph, EdgePredicate::TraceabilityOnly);
-        assert_eq!(filtered.edges.len(), 1);
+        assert_eq!(filtered.edges.len(), 2);
         assert_eq!(filtered.edges[0].rel_type, "satisfy");
+        assert_eq!(filtered.edges[1].rel_type, "allocate");
     }
 }

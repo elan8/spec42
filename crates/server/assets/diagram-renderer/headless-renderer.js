@@ -213,6 +213,9 @@ var Spec42HeadlessRendererBundle = (() => {
     const attrs = asRecord(node.attributes);
     return Boolean(node.synthetic ?? node.isSynthetic ?? attrs.synthetic ?? attrs.isSyntheticContainer);
   }
+  function firstPresent(...values) {
+    return values.find((value) => value != null && asString(value).trim() !== "");
+  }
 
   // ../shared/diagram-renderer/src/prepare/diagram-select.ts
   function normalizeDiagramKey(value) {
@@ -1072,7 +1075,7 @@ var Spec42HeadlessRendererBundle = (() => {
       id: asString(node.id),
       label: asString(node.name ?? node.qualifiedName ?? node.id, "Unnamed"),
       kind: elementTypeOf(node) || "element",
-      parentId: asString(node.parent_id ?? node.parentId ?? asRecord(node.attributes).parentId),
+      parentId: asString(firstPresent(node.parent_id, node.parentId, asRecord(node.attributes).parentId)),
       qualifiedName: qualifiedNameOf(node),
       uri: optionalUri(node),
       range: optionalRange(node)

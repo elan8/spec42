@@ -1,5 +1,5 @@
 import type { PreparedView, UnknownRecord, VisualizationPayload } from "./types";
-import { asArray, asRecord, asString, elementTypeOf, nodeRange, nodeUri } from "./util";
+import { asArray, asRecord, asString, elementTypeOf, firstPresent, nodeRange, nodeUri } from "./util";
 
 function graphNodesForStandardView(visualization: VisualizationPayload): UnknownRecord[] {
   const graph = asRecord(visualization?.generalViewGraph ?? visualization?.graph);
@@ -154,7 +154,7 @@ export function prepareBrowser(visualization: VisualizationPayload): PreparedVie
     id: asString(node.id),
     label: asString(node.name ?? node.qualifiedName ?? node.id, "Unnamed"),
     kind: elementTypeOf(node) || "element",
-    parentId: asString(node.parent_id ?? node.parentId ?? asRecord(node.attributes).parentId),
+    parentId: asString(firstPresent(node.parent_id, node.parentId, asRecord(node.attributes).parentId)),
     qualifiedName: qualifiedNameOf(node),
     uri: optionalUri(node),
     range: optionalRange(node),
