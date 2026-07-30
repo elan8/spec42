@@ -1,4 +1,4 @@
-﻿use sysml_model::{
+use sysml_model::{
     build_semantic_graph_from_documents, build_view_catalog, build_workspace_graph_dto_for_uris,
     evaluate_views, project_ids_for_renderer, SysmlDocument, SysmlDocumentSourceKind,
 };
@@ -31,12 +31,7 @@ package P {
 }
 "#;
 
-fn evaluate_named_view(
-    sysml: &str,
-) -> (
-    sysml_model::EvaluatedView,
-    sysml_model::SysmlGraphDto,
-) {
+fn evaluate_named_view(sysml: &str) -> (sysml_model::EvaluatedView, sysml_model::SysmlGraphDto) {
     let doc = SysmlDocument::from_memory_path(
         "workspace",
         "model.sysml",
@@ -81,8 +76,7 @@ fn general_view_exact_expose_does_not_infer_typed_definition_parts() {
 
     let projected = project_ids_for_renderer(&view, &graph_dto, "general-view");
     assert_eq!(
-        projected,
-        view.exposed_ids,
+        projected, view.exposed_ids,
         "GeneralView projection follows exact exposed scope"
     );
 }
