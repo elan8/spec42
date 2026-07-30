@@ -396,6 +396,8 @@ jobs:
     needs: [preflight, build-server, package-extension-with-server, build-zed-extension]
     permissions:
       contents: write
+    outputs:
+      tag: ${{ steps.version.outputs.tag }}
     steps:
       - name: Resolve tag and version
         id: version
@@ -495,3 +497,14 @@ jobs:
             artifacts/extension/*.vsix \
             artifacts/zed-extension/* \
             SHA256SUMS.txt
+
+  deploy-docs:
+    name: Deploy documentation site
+    needs: [create-release]
+    uses: ./.github/workflows/docs.yml
+    with:
+      ref: ${{ needs.create-release.outputs.tag }}
+    permissions:
+      contents: read
+      pages: write
+      id-token: write

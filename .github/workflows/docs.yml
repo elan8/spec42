@@ -1,22 +1,26 @@
 # Publish the VitePress docs site to GitHub Pages after a successful Spec42 release.
-# The github-pages environment only allows deployments from `main`, so this workflow
-# runs in that context (via workflow_run) and checks out the release commit for content.
-# Docs track product pins (extension version, bundled KPARs), so they publish with
-# each Spec42 release rather than on every docs-site change on main.
+# Called from the Release workflow (trusted tag checkout) so docs track product pins
+# without a privileged workflow_run + head_sha pattern. Manual runs use workflow_dispatch.
 name: Deploy Docs
 
 on:
-  workflow_run:
-    workflows: ["Release"]
-    types:
-      - completed
+  workflow_call:
+    inputs:
+      ref:
+        description: Trusted git ref (usually the release tag) to build docs from
+        required: true
+        type: string
   workflow_dispatch:
+    inputs:
+      ref:
+        description: Git ref to build (tag, branch, or SHA). Leave empty for the workflow ref.
+        required: false
+        type: string
 
 permissions:
   contents: read
   pages: write
   id-token: write
-  actions: read
 
 concurrency:
   group: pages
@@ -24,20 +28,12 @@ concurrency:
 
 jobs:
   build:
-    if: github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success'
     runs-on: ubuntu-latest
     steps:
-      - name: Resolve docs source ref
-        id: source
-        run: |
-          if [ "${{ github.event_name }}" = "workflow_run" ]; then
-            echo "ref=${{ github.event.workflow_run.head_sha }}" >> "$GITHUB_OUTPUT"
-          else
-            echo "ref=${{ github.sha }}" >> "$GITHUB_OUTPUT"
-          fi
       - uses: actions/checkout@v4
         with:
-          ref: ${{ steps.source.outputs.ref }}
+          # Explicit ref from Release / dispatch — never workflow_run head_sha.
+          ref: ${{ inputs.ref || github.sha }}
       - uses: actions/setup-node@v4
         with:
           node-version: 24
@@ -53,7 +49,6 @@ jobs:
 
   deploy:
     needs: build
-    if: github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success'
     runs-on: ubuntu-latest
     environment:
       name: github-pages
