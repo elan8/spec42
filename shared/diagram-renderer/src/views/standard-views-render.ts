@@ -186,13 +186,21 @@ export function renderGridView(ctx: BehaviorSceneContext): { minX: number; minY:
   const rows = cells.length > 0 ? cells : ctx.prepared.nodes.map((node) => asRecord(node.attributes));
   const left = 52;
   const top = 92;
-  const columns = [
-    { key: "name", label: "Name", width: 220 },
-    { key: "kind", label: "Kind", width: 150 },
-    { key: "attributeCount", label: "Attrs", width: 80 },
-    { key: "partCount", label: "Parts", width: 80 },
-    { key: "portCount", label: "Ports", width: 80 },
-  ];
+  const columnViews = asArray(ctx.prepared.meta?.columns).map(asRecord);
+  const columns =
+    columnViews.length > 0
+      ? columnViews.map((column) => ({
+          key: asString(column.key, "name"),
+          label: asString(column.label, "Column"),
+          width: 220,
+        }))
+      : [
+          { key: "name", label: "Name", width: 220 },
+          { key: "kind", label: "Kind", width: 150 },
+          { key: "attributeCount", label: "Attrs", width: 80 },
+          { key: "partCount", label: "Parts", width: 80 },
+          { key: "portCount", label: "Ports", width: 80 },
+        ];
   const tableWidth = columns.reduce((sum, column) => sum + column.width, 0);
   const rowHeight = 30;
   ctx.root

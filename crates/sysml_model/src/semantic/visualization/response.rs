@@ -39,7 +39,7 @@ use crate::semantic::visualization::projection::{
     build_workspace_activity_diagrams, build_workspace_graph_dto_for_uris,
     build_workspace_model_dto_from_graph, collect_package_candidates,
     filter_activity_diagrams_by_graph, no_defined_views_message, project_graph_by_ids,
-    renderer_empty_state_message, unsupported_view_type_message,
+    renderer_empty_state_message, resolve_grid_column_views, unsupported_view_type_message,
     workspace_parsed_documents_for_uris,
 };
 use crate::semantic::visualization::scope::{
@@ -437,12 +437,18 @@ pub fn build_sysml_visualization_from_artifacts(
     let (projected_ids, pre_filter_node_ids, edge_predicate, projection_hints) =
         if let Some(evaluated) = selected_evaluated {
             let projected = project_view(evaluated, graph);
+            let column_views = if resolved_view == "grid-view" {
+                resolve_grid_column_views(graph, &evaluated.id)
+            } else {
+                Vec::new()
+            };
             let hints = if projected.hints.grid_layout.is_some()
                 || projected.hints.grid_subtype.is_some()
                 || projected.hints.browser_layout.is_some()
                 || !projected.hints.tree_roots.is_empty()
                 || projected.hints.geometry_mode.is_some()
                 || projected.hints.geometry_projection.is_some()
+                || !column_views.is_empty()
             {
                 Some(SysmlVisualizationProjectionHintsDto {
                     grid_layout: projected.hints.grid_layout,
@@ -451,6 +457,7 @@ pub fn build_sysml_visualization_from_artifacts(
                     tree_roots: projected.hints.tree_roots,
                     geometry_mode: projected.hints.geometry_mode,
                     geometry_projection: projected.hints.geometry_projection,
+                    column_views,
                 })
             } else {
                 None

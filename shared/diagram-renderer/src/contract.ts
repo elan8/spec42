@@ -53,6 +53,7 @@ export interface SharedVisualizationPayload {
     treeRoots?: string[];
     geometryMode?: string;
     geometryProjection?: string;
+    columnViews?: Array<{ label: string; renderingType?: string }>;
   };
   /** Normalized behavior diagrams (extension prepare or server DTO). */
   diagrams?: unknown[];

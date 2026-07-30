@@ -203,6 +203,21 @@ pub struct SequenceDiagramCandidateDto {
     pub lifeline_count: u32,
 }
 
+/// A `columnView` redefinition of GridView's `asElementTable` rendering (SysML v2 `Views.sysml`'s
+/// `view columnView[0..*] ordered { ... }`), resolved into a display-ready column spec.
+#[derive(Debug, Clone, Serialize, TS)]
+#[serde(rename_all = "camelCase")]
+pub struct GridColumnViewDto {
+    /// The redefined feature name, e.g. `columnView`. Falls back to a synthetic label when the
+    /// source model doesn't redefine anything by name.
+    pub label: String,
+    /// The rendering this column applies to each row element, e.g. `asTextualNotation` from the
+    /// nested `render asTextualNotation;` binding. `None` when the column has no render binding.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    #[ts(optional)]
+    pub rendering_type: Option<String>,
+}
+
 #[derive(Debug, Clone, Serialize, TS)]
 #[serde(rename_all = "camelCase")]
 pub struct SysmlVisualizationProjectionHintsDto {
@@ -223,6 +238,11 @@ pub struct SysmlVisualizationProjectionHintsDto {
     #[serde(skip_serializing_if = "Option::is_none")]
     #[ts(optional)]
     pub geometry_projection: Option<String>,
+    /// GridView `asElementTable` columns resolved from a `columnView` redefinition, in
+    /// declaration order. Empty when the view doesn't configure columns (the client falls back to
+    /// its own default column set).
+    #[serde(skip_serializing_if = "Vec::is_empty")]
+    pub column_views: Vec<GridColumnViewDto>,
 }
 
 #[derive(Debug, Clone, Serialize, TS)]

@@ -265,6 +265,32 @@ describe("shared prepareViewData", () => {
     expect(cell?.labels).toEqual(["Dependency", "Satisfy"]);
   });
 
+  it("builds Grid View columns from columnView projection hints when present", () => {
+    const prepared = prepareViewData({
+      view: "grid-view",
+      projectionHints: {
+        columnViews: [{ label: "columnView[1]", renderingType: "asTextualNotation" }],
+      },
+      generalViewGraph: {
+        nodes: [{ id: "a", name: "a", type: "part" }],
+        edges: [],
+      },
+    });
+    const columns = prepared.meta?.columns as Array<{ key: string; label: string }>;
+    expect(columns).toEqual([{ key: "name", label: "columnView[1]" }]);
+  });
+
+  it("falls back to default Grid View columns when no columnView hints are present", () => {
+    const prepared = prepareViewData({
+      view: "grid-view",
+      generalViewGraph: {
+        nodes: [{ id: "a", name: "a", type: "part" }],
+        edges: [],
+      },
+    });
+    expect(prepared.meta?.columns).toBeUndefined();
+  });
+
   it("prepares an ordinary GridView as a standard element table", () => {
     const prepared = prepareViewData({
       view: "grid-view",

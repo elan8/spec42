@@ -5,9 +5,9 @@ use std::collections::{HashMap, HashSet};
 use url::Url;
 
 use crate::semantic::dto::{
-    range_to_dto, GraphEdgeDto, GraphNodeDto, RelationshipDto, SysmlElementDto, SysmlGraphDto,
-    SysmlVisualizationGroupDto, SysmlVisualizationPackageCandidateDto, WorkspaceFileModelDto,
-    WorkspaceModelDto, WorkspaceModelSummaryDto,
+    range_to_dto, GraphEdgeDto, GraphNodeDto, GridColumnViewDto, RelationshipDto, SysmlElementDto,
+    SysmlGraphDto, SysmlVisualizationGroupDto, SysmlVisualizationPackageCandidateDto,
+    WorkspaceFileModelDto, WorkspaceModelDto, WorkspaceModelSummaryDto,
 };
 use crate::semantic::extracted_model::{extract_activity_diagrams, ActivityDiagramDto};
 use crate::semantic::ibd::{IbdDataDto, IbdPackageContainerGroupDto, IbdPartDto};
@@ -91,6 +91,49 @@ pub fn build_workspace_graph_dto_for_uris(
     }
 
     SysmlGraphDto { nodes, edges }
+}
+
+/// Resolves GridView `asElementTable` columns for a view usage, given the full (unfiltered)
+/// workspace graph DTO and the view's own qualified id. Handles both real fixture shapes
+/// (confirmed against `sysml-v2-parser/sysml-v2-release/sysml/src/training/42. Views/Views
+/// Example.sysml` and `.../validation/11-View and Viewpoint/11a-View-Viewpoint.sysml`): an inline
+/// `render asElementTable { view :>> columnView[N] { ... } }` binding directly on the view usage,
+/// and a `render <name>;` reference to a separately-declared standalone `rendering <name> :>
+/// asElementTable { ... }` usage elsewhere in the workspace.
+pub(crate) fn resolve_grid_column_views(graph: &SysmlGraphDto, view_id: &str) -> Vec<GridColumnViewDto> {
+    let Some(rendering_child) = graph.nodes.iter().find(|node| {
+        node.element_type == "view rendering" && node.parent_id.as_deref() == Some(view_id)
+    }) else {
+        return Vec::new();
+    };
+    let inline_columns = collect_column_views(graph, &rendering_child.id);
+    if !inline_columns.is_empty() {
+        return inline_columns;
+    }
+    graph
+        .nodes
+        .iter()
+        .find(|node| node.element_type == "rendering" && node.name == rendering_child.name)
+        .map(|node| collect_column_views(graph, &node.id))
+        .unwrap_or_default()
+}
+
+fn collect_column_views(graph: &SysmlGraphDto, rendering_node_id: &str) -> Vec<GridColumnViewDto> {
+    graph
+        .nodes
+        .iter()
+        .filter(|node| {
+            node.element_type == "view column" && node.parent_id.as_deref() == Some(rendering_node_id)
+        })
+        .map(|node| GridColumnViewDto {
+            label: node.name.clone(),
+            rendering_type: node
+                .attributes
+                .get("renderingType")
+                .and_then(|v| v.as_str())
+                .map(str::to_string),
+        })
+        .collect()
 }
 
 pub(crate) fn project_graph_by_ids(
@@ -923,5 +966,104 @@ mod bench {
             bundle.workspace_model.files.len(),
             bundle.full_ibd.root_views.len()
         );
+    }
+}
+
+#[cfg(test)]
+mod column_view_tests {
+    use super::*;
+    use crate::build_graph_from_doc;
+
+    fn graph_dto_for(input: &str, uri: &Url) -> SysmlGraphDto {
+        let parsed = sysml_v2_parser::parse(input).expect("parse");
+        let semantic_graph = build_graph_from_doc(&parsed, uri);
+        build_workspace_graph_dto_for_uris(&semantic_graph, std::slice::from_ref(uri))
+    }
+
+    #[test]
+    fn resolves_columns_from_an_inline_render_binding() {
+        let uri = Url::parse("file:///inline.sysml").unwrap();
+        let graph = graph_dto_for(
+            r#"
+                package P {
+                    view 'system structure generation' {
+                        render asElementTable {
+                            view :>> columnView[1] {
+                                render asTextualNotation;
+                            }
+                        }
+                    }
+                }
+            "#,
+            &uri,
+        );
+        let view_id = graph
+            .nodes
+            .iter()
+            .find(|n| n.name == "system structure generation")
+            .expect("view node")
+            .id
+            .clone();
+        let columns = resolve_grid_column_views(&graph, &view_id);
+        assert_eq!(columns.len(), 1);
+        assert_eq!(columns[0].rendering_type.as_deref(), Some("asTextualNotation"));
+    }
+
+    #[test]
+    fn resolves_columns_through_a_named_rendering_reference() {
+        // Real shape: `render <name>;` references a *separately declared* standalone
+        // `rendering <name> :> asElementTable { ... }` usage, not an inline binding (confirmed in
+        // sysml-v2-release/sysml/src/training/42. Views/Views Example.sysml).
+        let uri = Url::parse("file:///named-reference.sysml").unwrap();
+        let graph = graph_dto_for(
+            r#"
+                package P {
+                    rendering asTextualNotationTable :> asElementTable {
+                        view :>> columnView[1] {
+                            render asTextualNotation;
+                        }
+                    }
+                    view safetyFeaturesView {
+                        render asTextualNotationTable;
+                    }
+                }
+            "#,
+            &uri,
+        );
+        let view_id = graph
+            .nodes
+            .iter()
+            .find(|n| n.name == "safetyFeaturesView")
+            .expect("view node")
+            .id
+            .clone();
+        let columns = resolve_grid_column_views(&graph, &view_id);
+        assert_eq!(columns.len(), 1, "expected one resolved column");
+        assert_eq!(columns[0].rendering_type.as_deref(), Some("asTextualNotation"));
+    }
+
+    #[test]
+    fn returns_empty_when_the_view_has_no_column_view_configuration() {
+        let uri = Url::parse("file:///no-columns.sysml").unwrap();
+        let graph = graph_dto_for(
+            r#"
+                package P {
+                    part def System;
+                    view plainGrid {
+                        expose System;
+                        render asElementTable;
+                    }
+                }
+            "#,
+            &uri,
+        );
+        let view_id = graph
+            .nodes
+            .iter()
+            .find(|n| n.name == "plainGrid")
+            .expect("view node")
+            .id
+            .clone();
+        assert!(resolve_grid_column_views(&graph, &view_id).is_empty());
     }
 }

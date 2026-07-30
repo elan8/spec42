@@ -32,6 +32,18 @@ function treeRootHints(visualization: VisualizationPayload): string[] {
   return asArray(projectionHints(visualization).treeRoots).map((value) => asString(value)).filter(Boolean);
 }
 
+// GridView `asElementTable` columns resolved server-side from a `columnView` redefinition
+// (SysML v2 `Views.sysml`'s `view columnView[0..*] ordered { ... }`). Each entry currently
+// renders via `asTextualNotation` -- the only rendering confirmed in real usage -- shown as the
+// row element's own name, matching how `renderingType` other than `asTextualNotation` isn't yet
+// interpreted server-side either (deferred, not silently wrong: the column still appears, just
+// with the same textual-notation content every column currently knows how to produce).
+function columnViewsHint(visualization: VisualizationPayload): Array<{ label: string }> {
+  return asArray(projectionHints(visualization).columnViews)
+    .map(asRecord)
+    .map((entry) => ({ label: asString(entry.label, "Column") }));
+}
+
 // Standard-view payloads normalize nullable graph fields to `undefined`
 // so PreparedNode contracts remain consistent across renderers.
 function optionalUri(node: UnknownRecord): string | undefined {
@@ -189,6 +201,7 @@ export function prepareGrid(visualization: VisualizationPayload): PreparedView {
     .sort((left, right) => left.qualifiedName.localeCompare(right.qualifiedName));
   const nodeIds = cells.map((cell) => cell.id).filter(Boolean);
   const matrixCells = relationshipMatrix ? buildRelationshipMatrix(nodeIds, graphEdges) : [];
+  const columnViews = columnViewsHint(visualization);
   return {
     title: asString(visualization?.selectedViewName, "Grid View"),
     view: "grid-view",
@@ -207,6 +220,10 @@ export function prepareGrid(visualization: VisualizationPayload): PreparedView {
       matrixRowIds: relationshipMatrix ? nodeIds : [],
       matrixColIds: relationshipMatrix ? nodeIds : [],
       matrixCells,
+      columns:
+        columnViews.length > 0
+          ? columnViews.map((column) => ({ key: "name", label: column.label }))
+          : undefined,
       // Both an element table and a relationship matrix are rectangular GridView
       // presentations described by §9.2.20.2.5.
       provisional: false,

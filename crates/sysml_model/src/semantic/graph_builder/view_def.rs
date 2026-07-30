@@ -4,8 +4,9 @@ use std::collections::HashMap;
 
 use sysml_v2_parser::ast::{
     ExposeMember, FilterMember, RenderingDef, RenderingDefBody, RenderingDefBodyElement,
-    RequirementDefBody, ViewBody, ViewBodyElement, ViewDef, ViewDefBody, ViewDefBodyElement,
-    ViewRenderingUsage, ViewUsage, ViewpointDef, ViewpointUsage,
+    RenderingUsageBody, RenderingUsageBodyElement, RequirementDefBody, ViewBody, ViewBodyElement,
+    ViewDef, ViewDefBody, ViewDefBodyElement, ViewRenderingUsage, ViewUsage, ViewpointDef,
+    ViewpointUsage,
 };
 use sysml_v2_parser::Node;
 use url::Url;
@@ -17,7 +18,7 @@ use super::{
 };
 use crate::semantic::ast_util::{
     attach_membership_visibility, attach_short_name_attribute, declared_expression,
-    identification_name, span_to_range,
+    identification_name, span_to_range, subsetting_target,
 };
 use crate::semantic::graph::SemanticGraph;
 use crate::semantic::graph_builder::expressions;
@@ -122,6 +123,96 @@ pub(super) fn add_view_rendering_node(
             Some(parent_id.qualified_name.as_str()),
         );
     }
+    let node_id = NodeId::new(uri, &qualified);
+    walk_rendering_usage_body(g, uri, &node_id, &vr.body);
+}
+
+/// Walks a `render`/`rendering` usage body for nested `view` usage members -- most notably a
+/// `columnView` redefinition of `asElementTable` (`view :>> columnView[N] { render ...; }`, the
+/// Systems Library's GridView element-table column-configuration mechanism, `Views.sysml`'s
+/// `view columnView[0..*] ordered { ... }`). Shared by both rendering-usage builders
+/// ([`add_view_rendering_node`] for the inline `render` form,
+/// [`build_rendering_usage`](super::build_rendering_usage) for the standalone `rendering` form)
+/// since both AST nodes carry the same `RenderingUsageBody` shape.
+fn walk_rendering_usage_body(
+    g: &mut SemanticGraph,
+    uri: &Url,
+    parent_id: &NodeId,
+    body: &RenderingUsageBody,
+) {
+    let RenderingUsageBody::Brace { elements } = body else {
+        return;
+    };
+    for element in elements {
+        match &element.value {
+            RenderingUsageBodyElement::ViewUsage(column) => {
+                add_view_column_node(g, uri, parent_id, column);
+            }
+            RenderingUsageBodyElement::Doc(doc) => {
+                super::attach_doc_comment(g, parent_id, &doc.value.text);
+            }
+            RenderingUsageBodyElement::Error(_) => {}
+        }
+    }
+}
+
+/// Materializes a nested `view :>> columnView[N] { render <renderingName>; }` redefinition inside
+/// a `render`/`rendering` usage body as a `view column` child node -- captures which feature it
+/// redefines (`columnView`), its declared index, and the rendering it applies to each row element
+/// (the nested `render` binding's name, e.g. `asTextualNotation`), in declaration order (the
+/// stdlib defines `columnView[0..*] ordered`, so order is semantically meaningful -- this walks
+/// `elements` in their parsed order, never re-sorted).
+fn add_view_column_node(g: &mut SemanticGraph, uri: &Url, parent_id: &NodeId, column: &Node<ViewUsage>) {
+    let cv = &column.value;
+    let redefines_name = subsetting_target(cv.redefines.as_deref());
+    let base_label = redefines_name.unwrap_or("_columnView");
+    // Multiple `columnView[N]` redefinitions in one table would otherwise all display the same
+    // base label (the redefined feature name is always `columnView`, per §Views.sysml's stdlib
+    // definition) -- the index disambiguates them for display, purely a label concern (qualified
+    // name uniqueness is already handled independently by `qualified_name_for_node`'s own
+    // collision suffix below).
+    let index_text = cv.multiplicity.as_ref().and_then(|m| {
+        m.lower
+            .as_ref()
+            .map(|lower| expressions::expression_to_debug_string(lower))
+    });
+    let label = match index_text {
+        Some(index) => format!("{base_label}[{index}]"),
+        None => base_label.to_string(),
+    };
+    let qualified = qualified_name_for_node(
+        g,
+        uri,
+        Some(parent_id.qualified_name.as_str()),
+        &label,
+        "view column",
+    );
+    let mut attrs = HashMap::new();
+    attach_membership_visibility(&mut attrs, &cv.membership);
+    if let Some(redefines) = redefines_name {
+        attrs.insert("redefines".to_string(), serde_json::json!(redefines));
+    }
+    if let Some(ref multiplicity) = cv.multiplicity {
+        attrs.insert("multiplicity".to_string(), serde_json::json!(multiplicity));
+    }
+    if let ViewBody::Brace { elements } = &cv.body {
+        if let Some(rendering_name) = elements.iter().find_map(|element| match &element.value {
+            ViewBodyElement::ViewRendering(rendering) => Some(rendering.value.name.clone()),
+            _ => None,
+        }) {
+            attrs.insert("renderingType".to_string(), serde_json::json!(rendering_name));
+        }
+    }
+    add_node_and_recurse(
+        g,
+        uri,
+        &qualified,
+        "view column",
+        label,
+        span_to_range(&column.span),
+        attrs,
+        Some(parent_id),
+    );
 }
 
 fn annotate_rendering_def_body(
@@ -481,6 +572,8 @@ pub(super) fn build_rendering_usage(
     if let Some(ref t) = ru_node.value.type_name {
         add_typing_edge_if_exists(g, uri, &qualified, t, container_prefix);
     }
+    let node_id = NodeId::new(uri, &qualified);
+    walk_rendering_usage_body(g, uri, &node_id, &ru_node.value.body);
 }
 
 pub(super) fn build_filter_member(

@@ -140,6 +140,10 @@ pub enum ElementKind {
     Viewpoint,
     Rendering,
     ViewRendering,
+    /// A `columnView` (or other) redefinition inside a `render`/`rendering` usage body -- Grid
+    /// View's `asElementTable`/`columnView` column-configuration mechanism (SysML v2
+    /// `Views.sysml`'s `view columnView[0..*] ordered { ... }`).
+    ViewColumn,
     MetadataUsage,
     MetadataKeyword,
     Flow,
@@ -271,6 +275,7 @@ impl ElementKind {
             ElementKind::Viewpoint => "viewpoint",
             ElementKind::Rendering => "rendering",
             ElementKind::ViewRendering => "view rendering",
+            ElementKind::ViewColumn => "view column",
             ElementKind::MetadataUsage => "metadata usage",
             ElementKind::MetadataKeyword => "metadata keyword",
             ElementKind::Flow => "flow",
@@ -378,6 +383,7 @@ impl ElementKind {
             "viewpoint" => ElementKind::Viewpoint,
             "rendering" => ElementKind::Rendering,
             "view rendering" => ElementKind::ViewRendering,
+            "view column" => ElementKind::ViewColumn,
             "metadata usage" => ElementKind::MetadataUsage,
             "metadata keyword" => ElementKind::MetadataKeyword,
             "flow" => ElementKind::Flow,

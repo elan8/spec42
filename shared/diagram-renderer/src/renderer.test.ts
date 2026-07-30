@@ -1516,6 +1516,30 @@ describe("shared renderer", () => {
     expect(rowText.some((text) => text.includes("publicPart") && !text.includes("- publicPart"))).toBe(true);
   });
 
+  it("renders grid columns in columnView-declared order with columnView-declared labels", async () => {
+    const target = document.createElement("div");
+    Object.defineProperty(target, "clientWidth", { value: 900, configurable: true });
+    Object.defineProperty(target, "clientHeight", { value: 600, configurable: true });
+
+    await renderVisualization(target, {
+      title: "Grid",
+      view: "grid-view",
+      nodes: [{ id: "a", label: "a", kind: "part" }],
+      edges: [],
+      meta: {
+        cells: [{ id: "a", name: "a", kind: "part" }],
+        relationshipMatrix: false,
+        columns: [{ key: "name", label: "columnView[1]" }],
+        provisional: false,
+      },
+    });
+
+    const headerText = Array.from(target.querySelectorAll(".grid-header-cell + text")).map(
+      (el) => el.textContent,
+    );
+    expect(headerText).toEqual(["columnView[1]"]);
+  });
+
   it("renders multiple relationship-kind markers in a single relationship-matrix cell", async () => {
     const target = document.createElement("div");
     Object.defineProperty(target, "clientWidth", { value: 900, configurable: true });
