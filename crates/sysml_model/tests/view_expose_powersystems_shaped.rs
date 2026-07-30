@@ -32,7 +32,7 @@ package RegionalGridExpansion::Views {
 "#;
 
 #[test]
-fn powersystems_shaped_feature_chain_expose_projects_grid_topology() {
+fn powersystems_shaped_feature_chain_expose_resolves_exact_architecture() {
     let project = SysmlDocument::from_memory_path(
         "powersystems",
         "Project.sysml",
@@ -75,21 +75,21 @@ fn powersystems_shaped_feature_chain_expose_projects_grid_topology() {
         .expect("gridStructure view");
 
     assert!(
-        !view.exposed_ids.is_empty(),
-        "architecture expose should resolve, issues: {:?}, exposed: {:?}",
+        view.exposed_ids
+            .contains("RegionalGridExpansion::regionalExpansionProject::architecture"),
+        "architecture feature-chain expose should resolve, issues: {:?}, exposed: {:?}",
         view.issues,
+        view.exposed_ids
+    );
+    assert!(
+        !view.exposed_ids.iter().any(|id| id.contains("feeder")),
+        "exact feature-chain expose must not invent typed-definition members, got: {:?}",
         view.exposed_ids
     );
 
     let projected = project_ids_for_renderer(view, &graph_dto, "general-view");
-    assert!(
-        projected.iter().any(|id| id.contains("feederNorth")),
-        "general-view should include feederNorth from typed architecture definition, got: {:?}",
-        projected
-    );
-    assert!(
-        projected.iter().any(|id| id.contains("feederSouth")),
-        "general-view should include feederSouth from typed architecture definition, got: {:?}",
-        projected
+    assert_eq!(
+        projected, view.exposed_ids,
+        "GeneralView projection follows exact exposed scope"
     );
 }

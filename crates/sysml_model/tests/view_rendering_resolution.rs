@@ -216,7 +216,7 @@ fn general_view_part_usage_filter_excludes_non_part_elements() {
 }
 
 #[test]
-fn general_view_requirement_filter_projection_follows_traceability_links() {
+fn general_view_requirement_filter_projection_stays_on_exact_expose() {
     let content = r#"
         package Pkg {
             requirement need;
@@ -252,9 +252,13 @@ fn general_view_requirement_filter_projection_follows_traceability_links() {
     };
     let projected = sysml_model::project_view(&view, &graph_dto);
     assert!(projected.node_ids.iter().any(|id| id.contains("need")));
-    assert!(projected.node_ids.iter().any(|id| id.contains("req")));
     assert!(projected.node_ids.iter().any(|id| id.contains("design")));
-    assert_eq!(projected.hints.grid_layout.as_deref(), Some("traceability"));
+    assert!(
+        !projected.node_ids.iter().any(|id| id.contains("req")),
+        "GeneralView must not infer traceability closure beyond exact expose, got: {:?}",
+        projected.node_ids
+    );
+    assert!(projected.hints.grid_layout.is_none());
 }
 
 #[test]
@@ -306,10 +310,10 @@ fn geometry_view_without_usage_filter_gets_spatial_defaults() {
         visible_ids: std::collections::HashSet::new(),
         issues: Vec::new(),
     };
-    assert!(view
-        .filters
-        .iter()
-        .any(|filter| matches!(filter, sysml_model::FilterExpr::Or(_, _))));
+    assert!(
+        view.filters.is_empty(),
+        "GeometryView must not invent fallback kind filters when stdlib has none"
+    );
     let projected = sysml_model::project_view(
         &view,
         &sysml_model::SysmlGraphDto {
