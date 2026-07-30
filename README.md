@@ -1,6 +1,6 @@
 # Spec42
 
-Spec42 is modern language tooling for [SysML v2](https://www.omg.org/sysml/sysmlv2/) and KerML. It gives systems engineers and tool builders a practical way to edit, inspect, validate, and automate textual models with the same analysis engine in the editor, CLI, CI, and assistant workflows.
+Spec42 is open, local-first tooling for [SysML v2](https://www.omg.org/sysml/sysmlv2/) and KerML: edit textual models with live feedback, understand structure and behavior beyond the source, and keep the same analysis engine in the editor, CI, and assistant workflows.
 
 ![SysML v2](https://img.shields.io/badge/SysML-v2.0-blue)
 ![VS Code Extension](https://img.shields.io/badge/VS%20Code-Extension-007ACC?logo=visual-studio-code)
@@ -10,160 +10,74 @@ Spec42 is modern language tooling for [SysML v2](https://www.omg.org/sysml/sysml
 
 ![Spec42 SysML v2 editor and visualizer](vscode/media/screenshot.png)
 
-## What Spec42 Provides
+## Why Spec42
 
-- **Editor feedback for SysML v2 and KerML**: diagnostics, semantic highlighting, completion, hover, definitions, references, document symbols, and hierarchy navigation.
-- **Model exploration**: a Model Explorer for workspace structure, a Model Visualizer for graphical views, and a Feature Inspector for resolved semantics (declared vs. effective typing, specialization/subsetting/redefinition, inherited features, multiplicity, and applied metadata) of the same semantic model.
-- **Repeatable validation**: `spec42 check` for local use, scripted quality gates, SARIF output, and GitHub Code Scanning.
-- **Standard-library support**: bundled SysML library resolution plus `spec42 doctor` for environment and configuration diagnostics.
-- **Headless diagrams**: deterministic JSON and SVG export for supported views, suitable for CI artifacts and documentation pipelines.
-- **Automation and assistant integration**: a GitHub Action, CLI assistant commands, and an MCP server exposing validation and model-summary tools.
-- **Reusable example content**: compact examples and domain libraries for software, communication, electronics, robotics, and systems-engineering workflows.
+SysML v2 is powerful, but textual models only help when the tooling keeps pace: clear feedback while editing, a trustworthy picture of structure and behavior, and validation that does not change meaning when it leaves the IDE.
 
-Spec42 is designed around one expectation: the model should mean the same thing whether you inspect it in VS Code, validate it in CI, or hand it to another tool.
+Spec42 is built for that continuity. One analysis engine backs the VS Code extension, the CLI, GitHub Actions, diagram export, and assistant integrations. What you see while modeling is what CI will check, and what an assistant can explain.
 
-## Quick Start
+It stays local-first: the language server, standard library, and Elan8 domain/method libraries ship with Spec42. You can work offline, keep models in your own repositories, and adopt automation without a proprietary runtime.
 
-### VS Code
+## What you get
 
-1. Install [SysML v2 Editor (Elan8.spec42)](https://marketplace.visualstudio.com/items?itemName=Elan8.spec42).
-2. Open a `.sysml` or `.kerml` file, for example [`examples/timer/KitchenTimer.sysml`](examples/timer/KitchenTimer.sysml).
-3. Run **SysML: Show SysML Model Explorer** to browse the model.
-4. Run **SysML: Open SysML Visualizer** to inspect supported graphical views.
+- **A capable SysML v2 / KerML editor** — diagnostics, semantic highlighting, completion, hover, navigation, rename, symbols, and formatting for day-to-day modeling.
+- **Ways to understand the model, not just the text** — Model Explorer for structure, diagram views for architecture and behavior, and Feature Inspector for resolved typing, inheritance, relationships, and values.
+- **Validation you can trust in automation** — the same engine in `spec42 check`, with text/JSON/SARIF/JUnit output for local scripts and CI quality gates.
+- **Diagrams for review and documentation** — interactive views in the editor, plus deterministic JSON/SVG export for pipelines and design packages.
+- **Libraries ready to use** — bundled OMG SysML libraries plus searchable Elan8 domain and method libraries, with room for your own library roots.
+- **Room for assistants** — Copilot Language Model Tools in VS Code, plus an MCP server and CLI helpers for other AI hosts.
 
-Marketplace builds include the matching `spec42` language server binary.
+## Where Spec42 fits
 
-### CLI
-
-Download a release from [GitHub Releases](https://github.com/elan8/spec42/releases), extract the archive for your platform, and put `spec42` on your `PATH`.
-
-```bash
-spec42 doctor
-spec42 check examples/timer/KitchenTimer.sysml
-spec42 check examples/timer/KitchenTimer.sysml --format sarif
-spec42 diagrams export examples/office --view general-view --format svg --output target/diagrams
-```
-
-Use `spec42 doctor` first when library paths, editor setup, or CI behavior differ from what you expect.
-
-### GitHub Action
-
-```yaml
-permissions:
-  contents: read
-  security-events: write
-
-jobs:
-  spec42:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v6
-      - uses: elan8/spec42@vX.Y.Z
-        with:
-          path: examples/timer/KitchenTimer.sysml
-          format: sarif
-          warnings-as-errors: true
-```
-
-See [docs/user/GITHUB-ACTION.md](docs/user/GITHUB-ACTION.md) for inputs, SARIF upload behavior, and advanced usage.
-
-### AI Assistants
-
-Spec42 includes `spec42-mcp`, a stdio MCP server for assistant workflows, plus CLI commands such as `spec42 model-summary` and `spec42 explain-diagnostic`.
-
-See [docs/user/AI-ASSISTANTS.md](docs/user/AI-ASSISTANTS.md) for Copilot, Cursor, and MCP setup notes.
-
-## Supported Views
-
-Spec42 currently focuses on the views that are most useful for day-to-day model understanding:
-
-| View | Purpose |
+| Surface | Role |
 | --- | --- |
-| General View | High-level structure and relationships across a model. |
-| Interconnection View | Parts, ports, connectors, and system architecture wiring. |
-| Action Flow View | Control and data flow through actions in a behavior. |
-| State Transition View | States and transitions for lifecycle-oriented behavior. |
+| **VS Code** | Primary modeling environment: edit, explore, visualize, inspect. |
+| **CLI** | Doctor, check, model summary, diagram export, and assistant-oriented commands. |
+| **GitHub Action** | Repeatable model validation with optional SARIF upload. |
+| **MCP / LM Tools** | Validation and model context for AI-assisted workflows. |
+| **Zed** | Lightweight editor support with the same server family. |
 
-Diagram export supports JSON payloads and SVG for the supported headless renderers. Routed SysML views use vendored ELK.js through embedded QuickJS for deterministic CI behavior.
+## Views
 
-## Examples and Libraries
-
-Start with the examples if you are evaluating Spec42 or learning SysML v2:
-
-| Example | Best For |
+| View | What it is for |
 | --- | --- |
-| [`examples/office`](examples/office/README.md) | Smallest first read: parts, ports, connections, and simple behavior. |
-| [`examples/timer`](examples/timer/README.md) | Recommended first substantial model and flagship validation example. |
-| [`examples/intersection`](examples/intersection/README.md) | Controller and state-machine behavior in a familiar system. |
-| [`examples/webshop`](examples/webshop/README.md) | Software architecture, interactions, requirements, and views. |
-| [`examples/drone`](examples/drone/README.md) | Broader system decomposition with mission behavior and requirements. |
+| General View | Structure and relationships across the exposed model. |
+| Interconnection View | Parts, ports, connectors, and architecture wiring. |
+| Action Flow View | Control and data flow through actions. |
+| State Transition View | States and transitions for lifecycle behavior. |
+| Sequence View | Lifelines and messages for interaction-oriented models. |
+| Browser View | Hierarchical membership browsing. |
+| Grid View | Tabular arrangement of exposed elements and relationships. |
+| Geometry View | Spatial items (partial while authored geometry and 3D catch up). |
 
-Reusable SysML v2 domain libraries from [elan8/sysml-domain-libraries](https://github.com/elan8/sysml-domain-libraries) and Elan8 MBSE method libraries from [elan8/mbse-methodology](https://github.com/elan8/mbse-methodology) are each bundled as separate KPAR archives inside the Spec42 server binary and materialized on first use (same as the OMG standard library). Availability does not require projects to import them.
+## Examples
 
-## Installation
-
-Install the VS Code extension from the Marketplace:
-
-- [SysML v2 Editor (Elan8.spec42)](https://marketplace.visualstudio.com/items?itemName=Elan8.spec42)
-
-Download release artifacts from [GitHub Releases](https://github.com/elan8/spec42/releases):
-
-- Platform archives contain `spec42` and `spec42-mcp`.
-- The `.vsix` package contains the VS Code extension and bundled server.
-- The Zed bundle contains the extension source; the extension can download the matching server binary when needed.
-
-After installing a binary, verify the environment with:
-
-```bash
-spec42 doctor
-```
-
-## Repository Layout
-
-| Path | Contents |
+| Example | Best for |
 | --- | --- |
-| [`crates/workspace`](crates/workspace) | Workspace build, snapshot, comparison, and library management. |
-| [`crates/sysml_model`](crates/sysml_model) | Reusable semantic model core. |
-| [`crates/sysml_diagnostics`](crates/sysml_diagnostics) | Semantic diagnostics engine. |
-| [`crates/language_service`](crates/language_service) | Protocol-neutral editor language services (hover, completion, code actions, etc.). |
-| [`crates/lsp_server`](crates/lsp_server) | LSP-facing semantic model, DTOs, and extension traits. |
-| [`crates/workspace_session`](crates/workspace_session) | Lock-free session concurrency wrapper shared by LSP and HTTP hosts. |
-| [`crates/server`](crates/server) | CLI, LSP server, HTTP API, MCP server, reports, and diagram export. |
-| [`crates/sysml_tokens`](crates/sysml_tokens) | Semantic tokenization for editor highlighting. |
-| [`crates/kpar`](crates/kpar) | KerML Project Archive (KPAR) read, pack, and validate. |
-| [`crates/diagram`](crates/diagram) | Shared diagram projection utilities. |
-| [`vscode`](vscode/README.md) | VS Code extension, webviews, packaging, and tests. |
-| [`zed`](zed/README.md) | Zed extension. |
-| [`shared/diagram-renderer`](shared/diagram-renderer/README.md) | Shared TypeScript diagram renderer used by editor and export workflows. |
-| [`docs`](docs/README.md) | User, architecture, engineering, API, and reference documentation. |
-| [`docs-site`](docs-site) | VitePress user docs site (published to GitHub Pages on `v*` releases). |
-| [`examples`](examples/README.md) | Example SysML workspaces. |
-| [`config/standard-library.json`](config/standard-library.json) | Pinned OMG SysML v2 standard library release. |
-| [`config/libraries/`](config/libraries) | Pinned Elan8 domain and method library KPAR configs. |
+| [`examples/office`](examples/office/README.md) | Smallest first read: parts, ports, connections, simple behavior. |
+| [`examples/timer`](examples/timer/README.md) | Recommended first substantial model. |
+| [`examples/intersection`](examples/intersection/README.md) | Controllers and state machines. |
+| [`examples/webshop`](examples/webshop/README.md) | Software architecture, requirements, and views. |
+| [`examples/drone`](examples/drone/README.md) | Broader system decomposition and mission behavior. |
 
-## Building
+## Get started
 
-```bash
-cargo build --release
-cd vscode && npm install && npm run compile
-```
+1. Install **[SysML v2 Editor](https://marketplace.visualstudio.com/items?itemName=Elan8.spec42)** from the VS Code Marketplace.
+2. Open a `.sysml` / `.kerml` file, or try the bundled **timer** example from the Spec42 sidebar.
+3. Follow the full walkthrough in **[Getting Started](https://elan8.github.io/spec42/guide/getting-started)**.
 
-```bash
-cd zed
-cargo build --target wasm32-wasip2 --release
-```
-
-For contributor setup, test commands, packaging notes, and release checks, see [DEVELOPMENT.md](DEVELOPMENT.md).
+CLI and CI users can download platform archives from [GitHub Releases](https://github.com/elan8/spec42/releases). Setup details for Actions, assistants, and troubleshooting live in the docs linked below.
 
 ## Documentation
 
-- [User documentation site](https://elan8.github.io/spec42/)
-- [In-repo user documentation](docs/README.md)
-- [VS Code extension guide](vscode/README.md)
-- [GitHub Action guide](docs/user/GITHUB-ACTION.md)
+- [User documentation](https://elan8.github.io/spec42/) — getting started, explorer, visualizer, inspector, libraries
+- [VS Code extension](vscode/README.md)
+- [GitHub Action](docs/user/GITHUB-ACTION.md)
+- [AI assistants](docs/user/AI-ASSISTANTS.md)
 - [Troubleshooting](docs/user/TROUBLESHOOTING.md)
-- [API documentation](docs/api/README.md)
+- [What's included](https://elan8.github.io/spec42/reference/whats-included)
 - [Conformance matrix](docs/reference/CONFORMANCE-MATRIX.md)
+- [Contributor development guide](DEVELOPMENT.md)
 
 ## License
 

@@ -3,8 +3,8 @@ layout: home
 
 hero:
   name: "Spec42"
-  text: "SysML v2 for VS Code"
-  tagline: A fast, lightweight SysML v2 language server and diagram visualizer.
+  text: "SysML v2 you can work with"
+  tagline: Open, local-first tooling for SysML v2 and KerML — edit with live feedback, understand structure and behavior beyond the source, and keep the same analysis engine in the editor, CI, and assistant workflows.
   actions:
     - theme: brand
       text: Get Started
@@ -14,16 +14,16 @@ hero:
       link: /reference/whats-included
 
 features:
-  - icon: ⚡
-    title: Fast Language Server
-    details: Syntax highlighting, error checking, auto-complete, and go-to-definition for SysML v2 and KerML files.
-  - icon: 🔍
-    title: Model Explorer + Inspector
-    details: Browse the semantic model in the sidebar and inspect resolved types, relationships, values, and source locations as you move the cursor.
-  - icon: 📦
-    title: Libraries Included
-    details: SysML v2 standard library plus Elan8 domain and method libraries are bundled, searchable, and versioned with each Spec42 release.
-  - icon: 🗺️
-    title: Diagram Visualizer
-    details: Interactive diagrams auto-generated from your model — general view, interconnection view, state transitions, and more.
+  - icon: ✎
+    title: Edit with confidence
+    details: Live diagnostics, navigation, completion, and formatting for SysML v2 and KerML — across multi-file models and bundled libraries.
+  - icon: ◈
+    title: See what the model means
+    details: Model Explorer, diagram views, and Feature Inspector turn textual SysML into structure, wiring, behavior, and resolved semantics.
+  - icon: ✓
+    title: Same checks everywhere
+    details: One analysis engine for VS Code, CLI, GitHub Actions, and assistant tools — so editor feedback and automation stay aligned.
+  - icon: ⧉
+    title: Local-first by design
+    details: Language server, standard library, and Elan8 domain/method libraries ship with Spec42. Your models stay in your workspace.
 ---
