@@ -10,9 +10,9 @@ use sysml_v2_parser::ast::{
 use url::Url;
 
 use crate::semantic::ast_util::{
-    action_usage_feature_properties, attach_short_name_attribute, declared_multiplicity,
-    span_to_range, state_usage_feature_properties, subsetting_target, subsetting_targets,
-    typing_targets,
+    action_usage_feature_properties, attach_membership_visibility, attach_short_name_attribute,
+    declared_multiplicity, span_to_range, state_usage_feature_properties, subsetting_target,
+    subsetting_targets, typing_targets,
 };
 use crate::semantic::graph::SemanticGraph;
 use crate::semantic::model::{NodeId, RelationshipKind};
@@ -498,6 +498,7 @@ fn materialize_nested_action_usage(
 
 fn action_usage_graph_attrs(usage: &ActionUsage) -> HashMap<String, serde_json::Value> {
     let mut attrs = HashMap::new();
+    attach_membership_visibility(&mut attrs, &usage.membership);
     attrs.insert(
         "actionType".to_string(),
         serde_json::json!(&usage.type_name),
@@ -551,6 +552,7 @@ fn wire_action_usage_typing(
 
 pub(super) fn state_usage_graph_attrs(usage: &StateUsage) -> HashMap<String, serde_json::Value> {
     let mut attrs = HashMap::new();
+    attach_membership_visibility(&mut attrs, &usage.membership);
     if let Some(ref t) = usage.type_name {
         attrs.insert("stateType".to_string(), serde_json::json!(t));
     }
@@ -1008,6 +1010,7 @@ pub(super) fn materialize_action_def(
     let action_id = NodeId::new(uri, &qualified);
     let mut attrs = HashMap::new();
     attach_short_name_attribute(&mut attrs, &ad_node.identification);
+    attach_membership_visibility(&mut attrs, &ad_node.membership);
     let spec_targets: Vec<&str> = specializes
         .map(|spec| crate::semantic::ast_util::typing_targets(Some(spec)))
         .unwrap_or_default()

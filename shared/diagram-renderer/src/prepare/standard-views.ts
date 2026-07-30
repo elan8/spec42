@@ -16,31 +16,8 @@ function qualifiedNameOf(node: UnknownRecord): string {
   return asString(node.id ?? node.qualifiedName ?? attrs.qualifiedName ?? node.name);
 }
 
-function traceabilityLinkCount(nodeId: string, edges: UnknownRecord[]): number {
-  let links = 0;
-  for (const edge of edges) {
-    const relType = asString(edge.type ?? edge.rel_type).toLowerCase();
-    if (!/(satisfy|derivation|derive|verify|subject)/.test(relType)) continue;
-    const source = asString(edge.source);
-    const target = asString(edge.target);
-    if (source === nodeId || target === nodeId) {
-      links += 1;
-    }
-  }
-  return links;
-}
-
-function packageLabelOf(qualifiedName: string): string {
-  const segments = qualifiedName.split("::").filter(Boolean);
-  return segments.length > 1 ? segments[0] : "";
-}
-
 function projectionHints(visualization: VisualizationPayload): UnknownRecord {
   return asRecord(visualization?.projectionHints);
-}
-
-function gridLayoutHint(visualization: VisualizationPayload): string | undefined {
-  return asString(projectionHints(visualization).gridLayout) || undefined;
 }
 
 function gridSubtypeHint(visualization: VisualizationPayload): string | undefined {
@@ -71,6 +48,7 @@ interface BrowserRow {
   kind: string;
   parentId: string;
   qualifiedName: string;
+  visibility?: string;
   uri?: string;
   range?: UnknownRecord;
   depth: number;
@@ -84,6 +62,7 @@ function buildHierarchyRows(
     kind: string;
     parentId: string;
     qualifiedName: string;
+    visibility?: string;
     uri?: string;
     range?: UnknownRecord;
   }>,
@@ -99,14 +78,15 @@ function buildHierarchyRows(
     siblings.push(node);
     childrenByParent.set(node.parentId, siblings);
   }
-  for (const siblings of childrenByParent.values()) {
-    siblings.sort((left, right) => left.qualifiedName.localeCompare(right.qualifiedName));
-  }
+  // Sibling order follows graphNodes' own order (source declaration order for SysML `ordered`
+  // membership features) -- do not alphabetize, it discards semantically meaningful order.
 
   const roots =
     treeRoots.length > 0
       ? treeRoots.map((id) => byId.get(id)).filter((node): node is (typeof graphNodes)[number] => Boolean(node))
       : graphNodes.filter((node) => !node.parentId || !byId.has(node.parentId));
+  // `roots` already reflects exposure order (treeRoots hint) or declaration order (graphNodes
+  // filter) -- do not re-sort, that would discard the order those sources intentionally carry.
 
   const rows: BrowserRow[] = [];
   const visit = (node: (typeof graphNodes)[number], depth: number) => {
@@ -121,7 +101,6 @@ function buildHierarchyRows(
     }
   };
 
-  roots.sort((left, right) => left.qualifiedName.localeCompare(right.qualifiedName));
   for (const root of roots) {
     visit(root, 0);
   }
@@ -131,19 +110,24 @@ function buildHierarchyRows(
 function buildRelationshipMatrix(
   nodeIds: string[],
   graphEdges: UnknownRecord[],
-): Array<{ source: string; target: string; present: boolean; label: string }> {
-  const edgeByPair = new Map<string, string>();
+): Array<{ source: string; target: string; present: boolean; labels: string[] }> {
+  const edgeByPair = new Map<string, string[]>();
   for (const edge of graphEdges) {
     const source = asString(edge.source);
     const target = asString(edge.target);
     if (!source || !target) continue;
-    edgeByPair.set(`${source}::${target}`, asString(edge.name ?? edge.label ?? edge.type ?? edge.rel_type, ""));
+    const label = asString(edge.name ?? edge.label ?? edge.type ?? edge.rel_type, "");
+    if (!label) continue;
+    const key = `${source}::${target}`;
+    const labels = edgeByPair.get(key) ?? [];
+    labels.push(label);
+    edgeByPair.set(key, labels);
   }
-  const cells: Array<{ source: string; target: string; present: boolean; label: string }> = [];
+  const cells: Array<{ source: string; target: string; present: boolean; labels: string[] }> = [];
   for (const source of nodeIds) {
     for (const target of nodeIds) {
-      const label = edgeByPair.get(`${source}::${target}`) ?? "";
-      cells.push({ source, target, present: label.length > 0, label });
+      const labels = edgeByPair.get(`${source}::${target}`) ?? [];
+      cells.push({ source, target, present: labels.length > 0, labels });
     }
   }
   return cells;
@@ -156,6 +140,7 @@ export function prepareBrowser(visualization: VisualizationPayload): PreparedVie
     kind: elementTypeOf(node) || "element",
     parentId: asString(firstPresent(node.parent_id, node.parentId, asRecord(node.attributes).parentId)),
     qualifiedName: qualifiedNameOf(node),
+    visibility: asString(asRecord(node.attributes).visibility) || undefined,
     uri: optionalUri(node),
     range: optionalRange(node),
   }));
@@ -183,21 +168,17 @@ export function prepareBrowser(visualization: VisualizationPayload): PreparedVie
 
 export function prepareGrid(visualization: VisualizationPayload): PreparedView {
   const graphEdges = graphEdgesForStandardView(visualization);
-  const traceabilityLayout = gridLayoutHint(visualization) === "traceability";
   const relationshipMatrix = gridSubtypeHint(visualization) === "relationship_matrix";
   const cells = graphNodesForStandardView(visualization)
     .map((node) => {
       const attrs = asRecord(node.attributes);
       const qualifiedName = qualifiedNameOf(node);
       const nodeId = asString(node.id);
-      const linkCount = traceabilityLinkCount(nodeId, graphEdges);
       return {
         id: nodeId,
         name: asString(node.name ?? node.qualifiedName ?? node.id, "Unnamed"),
         kind: elementTypeOf(node) || "element",
-        package: packageLabelOf(qualifiedName),
         qualifiedName,
-        linkCount,
         attributeCount: asArray(attrs.attributes).length,
         partCount: asArray(attrs.parts).length,
         portCount: asArray(attrs.ports).length,
@@ -222,7 +203,6 @@ export function prepareGrid(visualization: VisualizationPayload): PreparedView {
     edges: [],
     meta: {
       cells,
-      traceabilityTable: traceabilityLayout,
       relationshipMatrix,
       matrixRowIds: relationshipMatrix ? nodeIds : [],
       matrixColIds: relationshipMatrix ? nodeIds : [],

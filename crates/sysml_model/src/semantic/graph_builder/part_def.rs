@@ -6,8 +6,8 @@ use sysml_v2_parser::ast::{
 use url::Url;
 
 use crate::semantic::ast_util::{
-    attach_short_name_attribute, declared_multiplicity, definition_feature_properties,
-    identification_name, span_to_range, typing_targets,
+    attach_membership_visibility, attach_short_name_attribute, declared_multiplicity,
+    definition_feature_properties, identification_name, span_to_range, typing_targets,
 };
 use crate::semantic::graph::SemanticGraph;
 use crate::semantic::model::{DeclaredFeatureProperties, NodeId, RelationshipKind};
@@ -38,6 +38,7 @@ pub(super) fn build_from_part_def_body_element(
                 qualified_name_for_node(g, uri, container_prefix, name, "attribute def");
             let range = span_to_range(&n.span);
             let mut attrs = HashMap::new();
+            attach_membership_visibility(&mut attrs, &n.membership);
             if let Some(ref t) = n.typing {
                 attrs.insert("attributeType".to_string(), serde_json::json!(t));
             }
@@ -109,6 +110,7 @@ pub(super) fn build_from_part_def_body_element(
             let range = span_to_range(&pd_node.span);
             let mut attrs = HashMap::new();
             attach_short_name_attribute(&mut attrs, &pd_node.identification);
+            attach_membership_visibility(&mut attrs, &pd_node.membership);
             if let Some(ref p) = pd_node.definition_prefix {
                 attrs.insert(
                     "definitionPrefix".to_string(),
@@ -168,6 +170,7 @@ pub(super) fn build_from_part_def_body_element(
                     qualified_name_for_node(g, uri, container_prefix, &name, "item def");
                 let mut attrs = HashMap::new();
                 attach_short_name_attribute(&mut attrs, &item_node.identification);
+                attach_membership_visibility(&mut attrs, &item_node.membership);
                 if let Some(ref s) = item_node.specializes {
                     attrs.insert("specializes".to_string(), serde_json::json!(s));
                 }
@@ -199,6 +202,7 @@ pub(super) fn build_from_part_def_body_element(
             let qualified = qualified_name_for_node(g, uri, container_prefix, name, "item");
             let range = span_to_range(&item_node.span);
             let mut attrs = HashMap::new();
+            attach_membership_visibility(&mut attrs, &item_node.membership);
             if let Some(ref t) = item_node.type_name {
                 attrs.insert("itemType".to_string(), serde_json::json!(t));
             }
@@ -301,6 +305,7 @@ pub(super) fn build_from_part_def_body_element(
             let range = span_to_range(&id_node.span);
             let mut attrs = HashMap::new();
             attach_short_name_attribute(&mut attrs, &id_node.identification);
+            attach_membership_visibility(&mut attrs, &id_node.membership);
             add_node_and_recurse(
                 g,
                 uri,
@@ -337,6 +342,7 @@ pub(super) fn build_from_part_def_body_element(
             let range = span_to_range(&calc_node.span);
             let mut attrs = HashMap::new();
             attach_short_name_attribute(&mut attrs, &calc_node.value.identification);
+            attach_membership_visibility(&mut attrs, &calc_node.value.membership);
             if let Some(ref t) = calc_node.value.type_name {
                 attrs.insert("calcType".to_string(), serde_json::json!(t));
             }
@@ -571,6 +577,7 @@ pub(super) fn build_from_part_def_body_element(
             let qualified = qualified_name_for_node(g, uri, container_prefix, name, "enumeration");
             let range = span_to_range(&enum_node.span);
             let mut attrs = HashMap::new();
+            attach_membership_visibility(&mut attrs, &enum_node.membership);
             if let Some(ref t) = enum_node.type_name {
                 attrs.insert("enumerationType".to_string(), serde_json::json!(t));
             }

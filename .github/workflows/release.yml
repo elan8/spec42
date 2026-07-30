@@ -499,12 +499,39 @@ jobs:
             SHA256SUMS.txt
 
   deploy-docs:
-    name: Deploy documentation site
+    name: Trigger documentation site deploy
     needs: [create-release]
-    uses: ./.github/workflows/docs.yml
-    with:
-      ref: ${{ needs.create-release.outputs.tag }}
+    runs-on: ubuntu-latest
+    permissions:
+      actions: write
+      contents: read
+    steps:
+      - name: Dispatch Deploy Docs on main
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          # github-pages only allows deployments from main. Run the docs workflow
+          # on main while building the trusted release tag content.
+          gh workflow run "Deploy Docs" \
+            --repo "${{ github.repository }}" \
+            --ref main \
+            -f "ref=${{ needs.create-release.outputs.tag }}"
+
+  publish-zed-extension:
+    name: Bump Zed extension registry
+    needs: [create-release]
+    runs-on: ubuntu-latest
     permissions:
       contents: read
-      pages: write
-      id-token: write
+    steps:
+      - name: Update sysml-v2 in zed-industries/extensions
+        uses: huacnlee/zed-extension-action@v2
+        with:
+          extension-name: sysml-v2
+          push-to: elan8/extensions
+          tag: ${{ needs.create-release.outputs.tag }}
+        env:
+          # PAT with repo + workflow scopes; pushes to elan8/extensions and opens
+          # a PR against zed-industries/extensions to bump the submodule + version.
+          COMMITTER_TOKEN: ${{ secrets.COMMITTER_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

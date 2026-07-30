@@ -13,10 +13,10 @@ use sysml_v2_parser::Node;
 use url::Url;
 
 use crate::semantic::ast_util::{
-    attribute_usage_feature_properties, connection_end_expression, declared_feature_value,
-    declared_multiplicity, item_usage_feature_properties, occurrence_usage_feature_properties,
-    part_usage_feature_properties, span_to_range, subsetting_target, subsetting_target_display,
-    typing_targets,
+    attach_membership_visibility, attribute_usage_feature_properties, connection_end_expression,
+    declared_feature_value, declared_multiplicity, item_usage_feature_properties,
+    occurrence_usage_feature_properties, part_usage_feature_properties, span_to_range,
+    subsetting_target, subsetting_target_display, typing_targets,
 };
 use crate::semantic::graph::SemanticGraph;
 use crate::semantic::model::{ElementKind, NodeId, RelationshipKind};
@@ -44,6 +44,7 @@ pub(super) fn materialize_part_usage(
     let qualified = qualified_name_for_node(g, uri, container_prefix, name, "part");
     let range = span_to_range(&n.span);
     let mut attrs = HashMap::new();
+    attach_membership_visibility(&mut attrs, &n.membership);
     if let Some(ref prefix) = n.usage_prefix {
         attrs.insert(
             "usagePrefix".to_string(),
@@ -135,6 +136,7 @@ pub(super) fn materialize_attribute_usage(
     let qualified = qualified_name_for_node(g, uri, container_prefix, name, kind);
     let range = span_to_range(&n.span);
     let mut attrs = HashMap::new();
+    attach_membership_visibility(&mut attrs, &n.membership);
     let typed_by = typing_targets(n.typing.as_deref());
     if !typed_by.is_empty() {
         attrs.insert(
@@ -208,6 +210,7 @@ pub(super) fn materialize_occurrence_usage(
     let qualified = qualified_name_for_node(g, uri, container_prefix, name, "occurrence");
     let range = span_to_range(&n.span);
     let mut attrs = HashMap::new();
+    attach_membership_visibility(&mut attrs, &n.membership);
     if let Some(ref t) = n.type_name {
         attrs.insert("occurrenceType".to_string(), serde_json::json!(t));
     }
@@ -273,6 +276,7 @@ pub(super) fn materialize_requirement_usage(
     let qualified = qualified_name_for_node(g, uri, container_prefix, name, "requirement");
     let range = span_to_range(&n.span);
     let mut attrs = HashMap::new();
+    attach_membership_visibility(&mut attrs, &n.membership);
     if let Some(ref t) = n.type_name {
         attrs.insert("requirementType".to_string(), serde_json::json!(t));
     }
@@ -313,6 +317,7 @@ pub(super) fn materialize_item_usage(
     let qualified = qualified_name_for_node(g, uri, container_prefix, name, "item");
     let range = span_to_range(&n.span);
     let mut attrs = HashMap::new();
+    attach_membership_visibility(&mut attrs, &n.membership);
     if let Some(ref t) = n.type_name {
         attrs.insert("itemType".to_string(), serde_json::json!(t));
     }
@@ -364,6 +369,7 @@ pub(super) fn materialize_connection_usage(
     let name = declared_name.or(redefine_target).unwrap_or("_connection");
     let qualified = qualified_name_for_node(g, uri, container_prefix, name, "connection");
     let mut attrs = HashMap::new();
+    attach_membership_visibility(&mut attrs, &n.membership);
     if let Some(type_name) = &n.type_name {
         attrs.insert("connectionType".to_string(), serde_json::json!(type_name));
     }
@@ -454,6 +460,8 @@ pub(super) fn materialize_variant_usage(
         None => {
             let qualified =
                 qualified_name_for_node(g, uri, container_prefix, &variant.name, "variant");
+            let mut attrs = HashMap::new();
+            attach_membership_visibility(&mut attrs, &variant.membership);
             add_node_and_recurse(
                 g,
                 uri,
@@ -461,7 +469,7 @@ pub(super) fn materialize_variant_usage(
                 "variant",
                 variant.name.clone(),
                 span_to_range(&n.span),
-                HashMap::new(),
+                attrs,
                 Some(parent_id),
             );
             NodeId::new(uri, &qualified)

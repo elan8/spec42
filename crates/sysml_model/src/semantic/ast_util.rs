@@ -9,8 +9,8 @@ use crate::semantic::model::{
 };
 use crate::semantic::text_span::{TextPosition, TextRange};
 use sysml_v2_parser::ast::{
-    Argument, ConnectionEnd, DefinitionPrefix, Identification, InOut, Node, SubsettingRelationship,
-    TypingRelationship,
+    Argument, ConnectionEnd, DefinitionPrefix, Identification, InOut, Membership, Node,
+    SubsettingRelationship, TypingRelationship,
 };
 use sysml_v2_parser::{Expression, Span};
 
@@ -35,6 +35,27 @@ pub fn definition_prefix_flags(prefix: Option<&DefinitionPrefix>) -> (bool, bool
 /// Composite ownership defaults for ordinary (non-`ref`) feature usages.
 fn composite_usage_ownership() -> (Option<bool>, Option<bool>) {
     (Some(true), Some(false))
+}
+
+/// Attaches the explicit `private`/`protected`/`public` visibility prefix from a member's
+/// `Membership` to its node attributes, if one was written. Mirrors the exact convention
+/// previously duplicated ad hoc in `graph_builder/ref_decl.rs`/`requirement_body.rs`/
+/// `package_body/materialize.rs`; centralized here so every builder that constructs an `attrs`
+/// map for a node with a `membership` field (the parser's Item 4b rollout covers ~51 of 53
+/// `*Def`/`*Usage` structs, see `sysml-v2-parser`'s `src/ast/membership.rs` doc comment) can share
+/// it instead of re-deriving the `format!("{vis:?}")` encoding independently. `None`/omitted when
+/// no explicit prefix was written -- `Membership` records only what was written, not the resolved
+/// default visibility.
+pub fn attach_membership_visibility(
+    attrs: &mut HashMap<String, serde_json::Value>,
+    membership: &Membership,
+) {
+    if let Some(vis) = &membership.visibility {
+        attrs.insert(
+            "visibility".to_string(),
+            serde_json::json!(format!("{vis:?}")),
+        );
+    }
 }
 
 /// Builds declared feature properties for a part usage.

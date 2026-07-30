@@ -6,7 +6,9 @@ use sysml_v2_parser::ast::{AttributeBody, AttributeBodyElement};
 use url::Url;
 
 use super::{add_node_and_recurse, expressions, qualified_name_for_node, unit_metadata};
-use crate::semantic::ast_util::{span_to_range, subsetting_target, typing_targets};
+use crate::semantic::ast_util::{
+    attach_membership_visibility, span_to_range, subsetting_target, typing_targets,
+};
 use crate::semantic::graph::SemanticGraph;
 use crate::semantic::kinds::METADATA_RESTRICTION_FEATURE_NAMES;
 use crate::semantic::model::{ElementKind, NodeId};
@@ -45,6 +47,7 @@ pub(super) fn build_from_attribute_body(
                 let qualified =
                     qualified_name_for_node(g, uri, container_prefix, &value.name, "attribute def");
                 let mut attrs = HashMap::new();
+                attach_membership_visibility(&mut attrs, &value.membership);
                 let targets = typing_targets(value.typing.as_deref());
                 if !targets.is_empty() {
                     attrs.insert(
@@ -80,6 +83,7 @@ pub(super) fn build_from_attribute_body(
                 let qualified =
                     qualified_name_for_node(g, uri, container_prefix, name, "attribute");
                 let mut attrs = HashMap::new();
+                attach_membership_visibility(&mut attrs, &value.membership);
                 let targets = typing_targets(value.typing.as_deref());
                 if !targets.is_empty() {
                     attrs.insert(

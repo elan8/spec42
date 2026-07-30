@@ -7,7 +7,7 @@ use sysml_v2_parser::ast::{
 use url::Url;
 
 use super::{add_node_and_recurse, qualified_name_for_node};
-use crate::semantic::ast_util::span_to_range;
+use crate::semantic::ast_util::{attach_membership_visibility, span_to_range};
 use crate::semantic::graph::SemanticGraph;
 use crate::semantic::model::{NodeId, RelationshipKind};
 use crate::semantic::relationships::{add_edge_if_both_exist, add_typing_edge_if_exists};
@@ -174,6 +174,7 @@ impl CaseSuccessionChain {
             "use case",
         );
         let mut attrs = HashMap::new();
+        attach_membership_visibility(&mut attrs, &use_case.value.membership);
         if let Some(ref typing) = use_case.value.type_name {
             attrs.insert("useCaseType".to_string(), serde_json::json!(typing));
         }
@@ -270,6 +271,7 @@ pub(super) fn add_actor_usage_node(
     );
     let range = span_to_range(span);
     let mut attrs = HashMap::new();
+    attach_membership_visibility(&mut attrs, &actor.membership);
     attrs.insert("actorType".to_string(), serde_json::json!(&actor.type_name));
     add_node_and_recurse(
         g,

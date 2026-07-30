@@ -179,6 +179,92 @@ describe("shared prepareViewData", () => {
     expect(rows[1]?.parentId).toBe("root");
   });
 
+  it("surfaces visibility on Browser View rows when present in node attributes", () => {
+    const prepared = prepareViewData({
+      view: "browser-view",
+      projectionHints: { browserLayout: "hierarchy" },
+      generalViewGraph: {
+        nodes: [
+          {
+            id: "privatePart",
+            name: "privatePart",
+            type: "part",
+            parentId: "",
+            attributes: { visibility: "Private" },
+          },
+          { id: "publicPart", name: "publicPart", type: "part", parentId: "" },
+        ],
+        edges: [],
+      },
+    });
+    const rows = prepared.meta?.rows as Array<{ id: string; visibility?: string }>;
+    expect(rows.find((row) => row.id === "privatePart")?.visibility).toBe("Private");
+    expect(rows.find((row) => row.id === "publicPart")?.visibility).toBeUndefined();
+  });
+
+  it("preserves explicit treeRoots order in Browser View hierarchy instead of alphabetizing", () => {
+    const prepared = prepareViewData({
+      view: "browser-view",
+      projectionHints: {
+        browserLayout: "hierarchy",
+        treeRoots: ["zRoot", "aRoot"],
+      },
+      generalViewGraph: {
+        nodes: [
+          { id: "zRoot", name: "zRoot", type: "part", parentId: "" },
+          { id: "aRoot", name: "aRoot", type: "part", parentId: "" },
+        ],
+        edges: [],
+      },
+    });
+    const rows = prepared.meta?.rows as Array<{ id: string }>;
+    expect(rows.map((row) => row.id)).toEqual(["zRoot", "aRoot"]);
+  });
+
+  it("preserves sibling declaration order in Browser View hierarchy when no treeRoots hint is present", () => {
+    const prepared = prepareViewData({
+      view: "browser-view",
+      projectionHints: { browserLayout: "hierarchy" },
+      generalViewGraph: {
+        nodes: [
+          { id: "root", name: "root", type: "part", parentId: "" },
+          { id: "zChild", name: "zChild", type: "part", parentId: "root" },
+          { id: "aChild", name: "aChild", type: "part", parentId: "root" },
+        ],
+        edges: [],
+      },
+    });
+    const rows = prepared.meta?.rows as Array<{ id: string }>;
+    expect(rows.map((row) => row.id)).toEqual(["root", "zChild", "aChild"]);
+  });
+
+  it("keeps every relationship kind between the same pair of elements in the relationship matrix", () => {
+    const prepared = prepareViewData({
+      view: "grid-view",
+      projectionHints: { gridSubtype: "relationship_matrix" },
+      generalViewGraph: {
+        nodes: [
+          { id: "a", name: "a", type: "part" },
+          { id: "b", name: "b", type: "part" },
+        ],
+        edges: [
+          { source: "a", target: "b", type: "Dependency" },
+          { source: "a", target: "b", type: "Satisfy" },
+        ],
+      },
+    });
+    expect(prepared.meta?.relationshipMatrix).toBe(true);
+    const matrixCells = prepared.meta?.matrixCells as Array<{
+      source: string;
+      target: string;
+      present: boolean;
+      labels: string[];
+    }>;
+    const cell = matrixCells.find((entry) => entry.source === "a" && entry.target === "b");
+    expect(cell?.present).toBe(true);
+    expect(cell?.labels).toEqual(["Dependency", "Satisfy"]);
+  });
+
   it("prepares an ordinary GridView as a standard element table", () => {
     const prepared = prepareViewData({
       view: "grid-view",

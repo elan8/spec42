@@ -354,3 +354,57 @@ fn grid_view_connection_filter_selects_relationship_matrix_subtype() {
         Some("relationship_matrix")
     );
 }
+
+#[test]
+fn grid_view_flow_connection_filter_selects_relationship_matrix_subtype() {
+    let view = sysml_model::EvaluatedView {
+        id: "Pkg::matrix".to_string(),
+        name: "matrix".to_string(),
+        effective_view_type: Some("GridView".to_string()),
+        exposed_ids: std::collections::HashSet::from(["Pkg::a".to_string()]),
+        conforms_to: Vec::new(),
+        filters: vec![sysml_model::FilterExpr::Matches(
+            "@SysML::FlowConnectionUsage".to_string(),
+        )],
+        visible_ids: std::collections::HashSet::new(),
+        issues: Vec::new(),
+    };
+    let projected = sysml_model::project_view(
+        &view,
+        &sysml_model::SysmlGraphDto {
+            nodes: vec![],
+            edges: vec![],
+        },
+    );
+    assert_eq!(
+        projected.hints.grid_subtype.as_deref(),
+        Some("relationship_matrix")
+    );
+}
+
+#[test]
+fn grid_view_interface_usage_filter_selects_relationship_matrix_subtype() {
+    let view = sysml_model::EvaluatedView {
+        id: "Pkg::matrix".to_string(),
+        name: "matrix".to_string(),
+        effective_view_type: Some("GridView".to_string()),
+        exposed_ids: std::collections::HashSet::from(["Pkg::a".to_string()]),
+        conforms_to: Vec::new(),
+        filters: vec![sysml_model::FilterExpr::Matches(
+            "@SysML::InterfaceUsage".to_string(),
+        )],
+        visible_ids: std::collections::HashSet::new(),
+        issues: Vec::new(),
+    };
+    let projected = sysml_model::project_view(
+        &view,
+        &sysml_model::SysmlGraphDto {
+            nodes: vec![],
+            edges: vec![],
+        },
+    );
+    assert_eq!(
+        projected.hints.grid_subtype.as_deref(),
+        Some("relationship_matrix")
+    );
+}

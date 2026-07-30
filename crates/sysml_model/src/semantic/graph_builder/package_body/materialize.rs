@@ -15,6 +15,7 @@ pub(super) fn materialize_part_def(
     let range = span_to_range(&pd_node.span);
     let mut attrs = HashMap::new();
     attach_short_name_attribute(&mut attrs, &pd_node.identification);
+    attach_membership_visibility(&mut attrs, &pd_node.membership);
     if let Some(ref p) = pd_node.definition_prefix {
         attrs.insert(
             "definitionPrefix".to_string(),
@@ -143,6 +144,7 @@ pub(crate) fn materialize_port_def(
     let range = span_to_range(&pd_node.span);
     let mut attrs = HashMap::new();
     attach_short_name_attribute(&mut attrs, &pd_node.identification);
+    attach_membership_visibility(&mut attrs, &pd_node.membership);
     insert_def_specialization_attr(&mut attrs, pd_node.specializes.as_deref());
     add_node_and_recurse(
         g,
@@ -229,6 +231,7 @@ pub(super) fn materialize_interface_def(
     let range = span_to_range(&id_node.span);
     let mut attrs = HashMap::new();
     attach_short_name_attribute(&mut attrs, &id_node.identification);
+    attach_membership_visibility(&mut attrs, &id_node.membership);
     insert_def_specialization_attr(&mut attrs, id_node.specializes.as_deref());
     add_node_and_recurse(
         g,
@@ -273,6 +276,7 @@ pub(crate) fn materialize_attribute_def(
         );
     }
     unit_metadata::project_attribute_def_unit_metadata(&mut attrs, value);
+    attach_membership_visibility(&mut attrs, &value.membership);
     add_node_and_recurse(
         g,
         uri,
@@ -320,6 +324,7 @@ pub(super) fn materialize_alias_def(
     let range = span_to_range(&alias_node.span);
     let mut attrs = HashMap::new();
     attach_short_name_attribute(&mut attrs, &alias_node.identification);
+    attach_membership_visibility(&mut attrs, &alias_node.membership);
     attrs.insert(
         "target".to_string(),
         serde_json::json!(alias_node.target.to_display_string()),
@@ -339,6 +344,7 @@ pub(super) fn materialize_requirement_def(
     let range = span_to_range(&rd_node.span);
     let mut attrs = HashMap::new();
     attach_short_name_attribute(&mut attrs, &rd_node.identification);
+    attach_membership_visibility(&mut attrs, &rd_node.membership);
     insert_def_specialization_attr(&mut attrs, rd_node.specializes.as_deref());
     attrs.insert(
         "isAbstract".to_string(),
@@ -407,6 +413,7 @@ pub(super) fn materialize_allocation_usage(
     let qualified = qualified_name_for_node(g, uri, container_prefix, name, "allocation");
     let range = span_to_range(&alloc_node.span);
     let mut attrs = HashMap::new();
+    attach_membership_visibility(&mut attrs, &alloc_node.membership);
     if let Some(ref t) = alloc_node.type_name {
         attrs.insert("allocationType".to_string(), serde_json::json!(t));
     }
@@ -467,6 +474,7 @@ pub(super) fn materialize_concern_usage(
     let qualified = qualified_name_for_node(g, uri, container_prefix, name, kind);
     let range = span_to_range(&cu_node.span);
     let mut attrs = HashMap::new();
+    attach_membership_visibility(&mut attrs, &cu_node.membership);
     if let Some(ref t) = cu_node.type_name {
         attrs.insert("concernType".to_string(), serde_json::json!(t));
     }
@@ -506,6 +514,7 @@ pub(crate) fn materialize_use_case_def(
     let range = span_to_range(&ucd_node.span);
     let mut attrs = HashMap::new();
     attach_short_name_attribute(&mut attrs, &ucd_node.identification);
+    attach_membership_visibility(&mut attrs, &ucd_node.membership);
     insert_def_specialization_attr(&mut attrs, ucd_node.specializes.as_deref());
     attrs.insert(
         "isAbstract".to_string(),
@@ -545,6 +554,7 @@ pub(crate) fn materialize_use_case_usage(
     let qualified = qualified_name_for_node(g, uri, container_prefix, name, "use case");
     let range = span_to_range(&ucu_node.span);
     let mut attrs = HashMap::new();
+    attach_membership_visibility(&mut attrs, &ucu_node.membership);
     if let Some(ref t) = ucu_node.type_name {
         attrs.insert("useCaseType".to_string(), serde_json::json!(t));
     }
@@ -585,6 +595,7 @@ pub(crate) fn materialize_item_def(
     let qualified = qualified_name_for_node(g, uri, container_prefix, &name, "item def");
     let mut attrs = HashMap::new();
     attach_short_name_attribute(&mut attrs, &item_node.identification);
+    attach_membership_visibility(&mut attrs, &item_node.membership);
     insert_def_specialization_attr(&mut attrs, item_node.specializes.as_deref());
     add_node_and_recurse(
         g,
@@ -621,6 +632,7 @@ pub(super) fn materialize_individual_def(
     let qualified = qualified_name_for_node(g, uri, container_prefix, &name, "individual def");
     let mut attrs = HashMap::new();
     attach_short_name_attribute(&mut attrs, &ind_node.identification);
+    attach_membership_visibility(&mut attrs, &ind_node.membership);
     insert_def_specialization_attr(&mut attrs, ind_node.specializes.as_deref());
     add_node_and_recurse(
         g,
@@ -657,6 +669,7 @@ pub(super) fn materialize_metadata_def(
     let qualified = qualified_name_for_node(g, uri, container_prefix, &name, "metadata def");
     let mut attrs = HashMap::new();
     attach_short_name_attribute(&mut attrs, &md_node.identification);
+    attach_membership_visibility(&mut attrs, &md_node.membership);
     insert_def_specialization_attr(&mut attrs, md_node.specializes.as_deref());
     add_node_and_recurse(
         g,
@@ -699,6 +712,7 @@ pub(super) fn materialize_enum_def(
     let qualified = qualified_name_for_node(g, uri, container_prefix, &name, "enum def");
     let mut attrs = HashMap::new();
     attach_short_name_attribute(&mut attrs, &enum_node.identification);
+    attach_membership_visibility(&mut attrs, &enum_node.membership);
     insert_def_specialization_attr(&mut attrs, enum_node.specializes.as_deref());
     add_node_and_recurse(
         g,
@@ -763,6 +777,7 @@ pub(super) fn materialize_enum_usage(
     let qualified = qualified_name_for_node(g, uri, container_prefix, name, "enumeration");
     let range = span_to_range(&enum_node.span);
     let mut attrs = HashMap::new();
+    attach_membership_visibility(&mut attrs, &enum_node.membership);
     if let Some(ref t) = enum_node.type_name {
         attrs.insert("enumerationType".to_string(), serde_json::json!(t));
     }
@@ -800,6 +815,7 @@ pub(super) fn materialize_occurrence_def(
     let qualified = qualified_name_for_node(g, uri, container_prefix, &name, "occurrence def");
     let mut attrs = HashMap::new();
     attach_short_name_attribute(&mut attrs, &occ_node.identification);
+    attach_membership_visibility(&mut attrs, &occ_node.membership);
     insert_def_specialization_attr(&mut attrs, occ_node.specializes.as_deref());
     add_node_and_recurse(
         g,
@@ -856,6 +872,7 @@ pub(super) fn materialize_connection_def(
     };
     let mut attrs = HashMap::new();
     attach_short_name_attribute(&mut attrs, &conn_node.identification);
+    attach_membership_visibility(&mut attrs, &conn_node.membership);
     if let Some(annotation) = annotation {
         attrs.insert(
             "connectionAnnotation".to_string(),
@@ -908,6 +925,7 @@ pub(super) fn materialize_flow_def(
     let qualified = qualified_name_for_node(g, uri, container_prefix, &name, "flow def");
     let mut attrs = HashMap::new();
     attach_short_name_attribute(&mut attrs, &flow_node.identification);
+    attach_membership_visibility(&mut attrs, &flow_node.membership);
     insert_def_specialization_attr(&mut attrs, flow_node.specializes.as_deref());
     add_node_and_recurse(
         g,
@@ -950,6 +968,7 @@ pub(super) fn materialize_allocation_def(
     let qualified = qualified_name_for_node(g, uri, container_prefix, &name, "allocation def");
     let mut attrs = HashMap::new();
     attach_short_name_attribute(&mut attrs, &alloc_node.identification);
+    attach_membership_visibility(&mut attrs, &alloc_node.membership);
     insert_def_specialization_attr(&mut attrs, alloc_node.specializes.as_deref());
     add_node_and_recurse(
         g,
@@ -1045,6 +1064,7 @@ pub(crate) fn materialize_case_def(
     let qualified = qualified_name_for_node(g, uri, container_prefix, &name, "case def");
     let mut attrs = HashMap::new();
     attach_short_name_attribute(&mut attrs, &c_node.identification);
+    attach_membership_visibility(&mut attrs, &c_node.membership);
     insert_def_specialization_attr(&mut attrs, c_node.specializes.as_deref());
     attrs.insert(
         "isAbstract".to_string(),
@@ -1085,6 +1105,7 @@ pub(crate) fn materialize_case_usage(
 ) {
     let qualified = qualified_name_for_node(g, uri, container_prefix, &c_node.name, "case");
     let mut attrs = HashMap::new();
+    attach_membership_visibility(&mut attrs, &c_node.membership);
     if let Some(ref t) = c_node.type_name {
         attrs.insert("caseType".to_string(), serde_json::json!(t));
     }
@@ -1128,6 +1149,7 @@ pub(crate) fn materialize_analysis_case_def(
     let qualified = qualified_name_for_node(g, uri, container_prefix, &name, "analysis def");
     let mut attrs = HashMap::new();
     attach_short_name_attribute(&mut attrs, &c_node.identification);
+    attach_membership_visibility(&mut attrs, &c_node.membership);
     insert_def_specialization_attr(&mut attrs, c_node.specializes.as_deref());
     attrs.insert(
         "isAbstract".to_string(),
@@ -1163,6 +1185,7 @@ pub(crate) fn materialize_analysis_case_usage(
 ) {
     let qualified = qualified_name_for_node(g, uri, container_prefix, &c_node.name, "analysis");
     let mut attrs = HashMap::new();
+    attach_membership_visibility(&mut attrs, &c_node.membership);
     if let Some(ref t) = c_node.type_name {
         attrs.insert("analysisType".to_string(), serde_json::json!(t));
     }
@@ -1201,6 +1224,7 @@ pub(crate) fn materialize_verification_case_def(
     let qualified = qualified_name_for_node(g, uri, container_prefix, &name, "verification def");
     let mut attrs = HashMap::new();
     attach_short_name_attribute(&mut attrs, &c_node.identification);
+    attach_membership_visibility(&mut attrs, &c_node.membership);
     insert_def_specialization_attr(&mut attrs, c_node.specializes.as_deref());
     attrs.insert(
         "isAbstract".to_string(),
@@ -1236,6 +1260,7 @@ pub(crate) fn materialize_verification_case_usage(
 ) {
     let qualified = qualified_name_for_node(g, uri, container_prefix, &c_node.name, "verification");
     let mut attrs = HashMap::new();
+    attach_membership_visibility(&mut attrs, &c_node.membership);
     if let Some(ref t) = c_node.type_name {
         attrs.insert("verificationType".to_string(), serde_json::json!(t));
     }
@@ -1287,6 +1312,7 @@ pub(super) fn materialize_state_def(
     let range = span_to_range(&sd_node.span);
     let mut attrs = HashMap::new();
     attach_short_name_attribute(&mut attrs, &sd_node.identification);
+    attach_membership_visibility(&mut attrs, &sd_node.membership);
     insert_def_specialization_attr(&mut attrs, sd_node.specializes.as_deref());
     add_node_and_recurse(
         g,
@@ -1356,12 +1382,7 @@ pub(super) fn materialize_import(
     let mut attrs = HashMap::new();
     attrs.insert("importTarget".to_string(), serde_json::json!(&v.target));
     attrs.insert("importAll".to_string(), serde_json::json!(v.is_import_all));
-    if let Some(vis) = &v.membership.visibility {
-        attrs.insert(
-            "visibility".to_string(),
-            serde_json::json!(format!("{vis:?}")),
-        );
-    }
+    attach_membership_visibility(&mut attrs, &v.membership);
     attrs.insert("recursive".to_string(), serde_json::json!(v.is_recursive));
     add_node_and_recurse(
         g,

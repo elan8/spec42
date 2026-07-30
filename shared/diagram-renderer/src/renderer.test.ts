@@ -1470,6 +1470,85 @@ describe("shared renderer", () => {
     }
   });
 
+  it("renders a stereotype-style kind badge and visibility glyphs on Browser View rows", async () => {
+    const target = document.createElement("div");
+    Object.defineProperty(target, "clientWidth", { value: 900, configurable: true });
+    Object.defineProperty(target, "clientHeight", { value: 600, configurable: true });
+
+    await renderVisualization(target, {
+      title: "Browser",
+      view: "browser-view",
+      nodes: [
+        { id: "privatePart", label: "privatePart", kind: "part" },
+        { id: "publicPart", label: "publicPart", kind: "part" },
+      ],
+      edges: [],
+      meta: {
+        hierarchyLayout: true,
+        provisional: false,
+        rows: [
+          {
+            id: "privatePart",
+            label: "privatePart",
+            kind: "part",
+            qualifiedName: "privatePart",
+            visibility: "Private",
+            depth: 0,
+            hasChildren: false,
+          },
+          {
+            id: "publicPart",
+            label: "publicPart",
+            kind: "part",
+            qualifiedName: "publicPart",
+            depth: 0,
+            hasChildren: false,
+          },
+        ],
+      },
+    });
+
+    const rows = Array.from(target.querySelectorAll(".browser-row"));
+    expect(rows).toHaveLength(2);
+    const rowText = rows.map((row) => row.textContent ?? "");
+    expect(rowText.some((text) => text.includes("«part»"))).toBe(true);
+    expect(rowText.some((text) => text.includes("- privatePart"))).toBe(true);
+    expect(rowText.some((text) => text.includes("publicPart") && !text.includes("- publicPart"))).toBe(true);
+  });
+
+  it("renders multiple relationship-kind markers in a single relationship-matrix cell", async () => {
+    const target = document.createElement("div");
+    Object.defineProperty(target, "clientWidth", { value: 900, configurable: true });
+    Object.defineProperty(target, "clientHeight", { value: 600, configurable: true });
+
+    await renderVisualization(target, {
+      title: "Relationship Matrix",
+      view: "grid-view",
+      nodes: [
+        { id: "a", label: "a", kind: "part" },
+        { id: "b", label: "b", kind: "part" },
+      ],
+      edges: [],
+      meta: {
+        relationshipMatrix: true,
+        matrixRowIds: ["a", "b"],
+        matrixColIds: ["a", "b"],
+        matrixCells: [
+          { source: "a", target: "a", present: false, labels: [] },
+          { source: "a", target: "b", present: true, labels: ["Dependency", "Satisfy"] },
+          { source: "b", target: "a", present: false, labels: [] },
+          { source: "b", target: "b", present: false, labels: [] },
+        ],
+        provisional: false,
+      },
+    });
+
+    const cell = target.querySelector('.grid-relationship-matrix-cell[data-row-id="a"][data-col-id="b"]');
+    expect(cell).toBeTruthy();
+    expect(cell?.querySelectorAll("text").length).toBe(2);
+    expect(cell?.querySelector("title")?.textContent).toBe("Dependency, Satisfy");
+  });
+
   it("styles composition edges with diamond marker in general view", async () => {
     const target = document.createElement("div");
     Object.defineProperty(target, "clientWidth", { value: 900, configurable: true });

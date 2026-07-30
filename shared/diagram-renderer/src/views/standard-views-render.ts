@@ -5,6 +5,21 @@ import type { DiagramTheme } from "../theme";
 import { attachBehaviorNodeClick } from "./behavior-interaction";
 import type { BehaviorSceneContext } from "./behavior-common";
 import { truncateLabel } from "./behavior-common";
+import { formatStereotype } from "../sysml-node-builder";
+
+// UML/SysML visibility glyph convention: + public, - private, # protected.
+function visibilityGlyph(visibility: string): string {
+  switch (visibility) {
+    case "Public":
+      return "+ ";
+    case "Private":
+      return "- ";
+    case "Protected":
+      return "# ";
+    default:
+      return "";
+  }
+}
 
 function drawProvisionalBadge(
   root: d3.Selection<SVGGElement, unknown, null, undefined>,
@@ -129,6 +144,7 @@ export function renderBrowserView(ctx: BehaviorSceneContext): { minX: number; mi
           redraw();
         });
       }
+      const visibilityPrefix = visibilityGlyph(asString(row.visibility));
       item
         .append("text")
         .attr("x", 14 + depth * 16 + (hasChildren ? 12 : 0))
@@ -136,7 +152,9 @@ export function renderBrowserView(ctx: BehaviorSceneContext): { minX: number; mi
         .style("font-size", "11px")
         .style("font-weight", "600")
         .style("fill", ctx.theme.textPrimary)
-        .text(truncateLabel(asString(row.label ?? row.name ?? row.id, "Unnamed"), 48));
+        .text(
+          `${visibilityPrefix}${truncateLabel(asString(row.label ?? row.name ?? row.id, "Unnamed"), 48)}`,
+        );
       item
         .append("text")
         .attr("x", width - 14)
@@ -144,7 +162,7 @@ export function renderBrowserView(ctx: BehaviorSceneContext): { minX: number; mi
         .attr("text-anchor", "end")
         .style("font-size", "10px")
         .style("fill", ctx.theme.textSecondary)
-        .text(truncateLabel(asString(row.kind, "element"), 24));
+        .text(formatStereotype(truncateLabel(asString(row.kind, "element"), 24)));
       if (preparedNode) {
         attachBehaviorNodeClick(item, preparedNode, ctx.theme, ctx.options ?? {}, ctx.root);
       }
@@ -168,21 +186,13 @@ export function renderGridView(ctx: BehaviorSceneContext): { minX: number; minY:
   const rows = cells.length > 0 ? cells : ctx.prepared.nodes.map((node) => asRecord(node.attributes));
   const left = 52;
   const top = 92;
-  const traceabilityTable = Boolean(ctx.prepared.meta?.traceabilityTable);
-  const columns = traceabilityTable
-    ? [
-        { key: "name", label: "Name", width: 240 },
-        { key: "kind", label: "Kind", width: 130 },
-        { key: "package", label: "Package", width: 170 },
-        { key: "linkCount", label: "Links", width: 70 },
-      ]
-    : [
-        { key: "name", label: "Name", width: 220 },
-        { key: "kind", label: "Kind", width: 150 },
-        { key: "attributeCount", label: "Attrs", width: 80 },
-        { key: "partCount", label: "Parts", width: 80 },
-        { key: "portCount", label: "Ports", width: 80 },
-      ];
+  const columns = [
+    { key: "name", label: "Name", width: 220 },
+    { key: "kind", label: "Kind", width: 150 },
+    { key: "attributeCount", label: "Attrs", width: 80 },
+    { key: "partCount", label: "Parts", width: 80 },
+    { key: "portCount", label: "Ports", width: 80 },
+  ];
   const tableWidth = columns.reduce((sum, column) => sum + column.width, 0);
   const rowHeight = 30;
   ctx.root
@@ -295,10 +305,16 @@ function renderRelationshipMatrix(ctx: BehaviorSceneContext): { minX: number; mi
       const cell = matrixCells.find(
         (entry) => asString(entry.source) === rowId && asString(entry.target) === colId,
       );
-      const present = Boolean(cell?.present);
+      const labels = asArray(cell?.labels).map((value) => asString(value)).filter(Boolean);
+      const present = labels.length > 0;
       const x = headerSize + colIndex * cellSize;
       const y = headerSize + rowIndex * cellSize;
-      layer
+      const cellGroup = layer
+        .append("g")
+        .attr("class", "grid-relationship-matrix-cell")
+        .attr("data-row-id", rowId)
+        .attr("data-col-id", colId);
+      cellGroup
         .append("rect")
         .attr("x", x)
         .attr("y", y)
@@ -308,15 +324,24 @@ function renderRelationshipMatrix(ctx: BehaviorSceneContext): { minX: number; mi
         .style("stroke", ctx.theme.nodeBorder)
         .style("stroke-width", "1px");
       if (present) {
-        layer
-          .append("text")
-          .attr("x", x + (cellSize - 2) / 2)
-          .attr("y", y + (cellSize - 2) / 2 + 4)
-          .attr("text-anchor", "middle")
-          .style("font-size", "12px")
-          .style("font-weight", "700")
-          .style("fill", ctx.theme.edge.default)
-          .text("●");
+        // One dot per relationship kind between this pair (not collapsed to a single boolean
+        // marker) so multiple concurrent relationship kinds (e.g. both satisfy and dependency)
+        // stay visible; the full kind list is also available via the cell's tooltip.
+        const dotSpacing = 10;
+        const dotsWidth = (labels.length - 1) * dotSpacing;
+        const startX = x + (cellSize - 2) / 2 - dotsWidth / 2;
+        labels.forEach((_, labelIndex) => {
+          cellGroup
+            .append("text")
+            .attr("x", startX + labelIndex * dotSpacing)
+            .attr("y", y + (cellSize - 2) / 2 + 4)
+            .attr("text-anchor", "middle")
+            .style("font-size", "12px")
+            .style("font-weight", "700")
+            .style("fill", ctx.theme.edge.default)
+            .text("●");
+        });
+        cellGroup.append("title").text(labels.join(", "));
       }
     });
   });

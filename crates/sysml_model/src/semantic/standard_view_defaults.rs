@@ -5,6 +5,7 @@
 //! first and otherwise preserves the usage's unfiltered exposed set. Descriptive lists in
 //! §9.2.20.2 are not executable default filter expressions.
 
+use crate::semantic::element_kind_classify::is_relationship_like;
 use crate::semantic::explicit_views::FilterExpr;
 use crate::semantic::graph::SemanticGraph;
 use crate::semantic::model::ElementKind;
@@ -105,22 +106,7 @@ fn filter_expr_targets_relationship_matrix(filter: &FilterExpr) -> bool {
 }
 
 fn is_relationship_matrix_kind(qualified: &str) -> bool {
-    let kind = qualified
-        .split("::")
-        .last()
-        .unwrap_or(qualified)
-        .replace([' ', '_'], "")
-        .to_lowercase();
-    matches!(
-        kind.as_str(),
-        "relationship"
-            | "connectionusage"
-            | "connectiondefinition"
-            | "allocationusage"
-            | "allocationdefinition"
-            | "satisfyrequirementusage"
-            | "dependency"
-    )
+    is_relationship_like(qualified)
 }
 
 #[cfg(test)]
@@ -140,6 +126,60 @@ mod tests {
     #[test]
     fn relationship_filter_selects_matrix_subtype() {
         let filters = vec![FilterExpr::Matches("@SysML::ConnectionUsage".to_string())];
+        assert_eq!(
+            grid_subtype_for_filters(&filters),
+            Some("relationship_matrix")
+        );
+    }
+
+    #[test]
+    fn flowconnection_filter_selects_matrix_subtype() {
+        let filters = vec![FilterExpr::Matches("@SysML::FlowConnectionUsage".to_string())];
+        assert_eq!(
+            grid_subtype_for_filters(&filters),
+            Some("relationship_matrix")
+        );
+    }
+
+    #[test]
+    fn interface_usage_filter_selects_matrix_subtype() {
+        let filters = vec![FilterExpr::Matches("@SysML::InterfaceUsage".to_string())];
+        assert_eq!(
+            grid_subtype_for_filters(&filters),
+            Some("relationship_matrix")
+        );
+    }
+
+    #[test]
+    fn succession_filter_selects_matrix_subtype() {
+        let filters = vec![FilterExpr::Matches("@SysML::SuccessionUsage".to_string())];
+        assert_eq!(
+            grid_subtype_for_filters(&filters),
+            Some("relationship_matrix")
+        );
+    }
+
+    #[test]
+    fn binding_connector_filter_selects_matrix_subtype() {
+        let filters = vec![FilterExpr::Matches("@SysML::BindingConnectorUsage".to_string())];
+        assert_eq!(
+            grid_subtype_for_filters(&filters),
+            Some("relationship_matrix")
+        );
+    }
+
+    #[test]
+    fn itemflow_filter_selects_matrix_subtype() {
+        let filters = vec![FilterExpr::Matches("@SysML::ItemFlow".to_string())];
+        assert_eq!(
+            grid_subtype_for_filters(&filters),
+            Some("relationship_matrix")
+        );
+    }
+
+    #[test]
+    fn association_filter_selects_matrix_subtype() {
+        let filters = vec![FilterExpr::Matches("@KerML::Association".to_string())];
         assert_eq!(
             grid_subtype_for_filters(&filters),
             Some("relationship_matrix")

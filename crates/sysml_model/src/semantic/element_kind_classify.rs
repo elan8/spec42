@@ -22,3 +22,34 @@ pub(crate) fn is_attribute_like(element_type: &str) -> bool {
 pub(crate) fn is_parameter_like(element_type: &str) -> bool {
     element_type.to_lowercase().contains("parameter")
 }
+
+/// Whether a bare or qualified element-type name denotes a relationship-family kind, for
+/// GridView's relationship-matrix subtype detection (`standard_view_defaults::grid_subtype_for_filters`).
+/// Exact-match (not substring) against the normalized bare name, mirroring how this predicate
+/// originally lived as a hardcoded allowlist in `standard_view_defaults.rs` -- kept precise rather
+/// than a `contains` check since compound kind names (e.g. `ActionUsage`) could otherwise
+/// false-positive on loose substrings.
+pub(crate) fn is_relationship_like(element_type: &str) -> bool {
+    let kind = element_type
+        .split("::")
+        .last()
+        .unwrap_or(element_type)
+        .replace([' ', '_'], "")
+        .to_lowercase();
+    matches!(
+        kind.as_str(),
+        "relationship"
+            | "connectionusage"
+            | "connectiondefinition"
+            | "allocationusage"
+            | "allocationdefinition"
+            | "satisfyrequirementusage"
+            | "dependency"
+            | "flowconnectionusage"
+            | "interfaceusage"
+            | "successionusage"
+            | "bindingconnectorusage"
+            | "itemflow"
+            | "association"
+    )
+}

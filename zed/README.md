@@ -57,4 +57,13 @@ Use the VS Code extension when you want the fuller `spec42` experience, includin
 
 - The extension language name is `SysML v2`.
 - The language server id is `spec42`.
+- The Zed extension id is `sysml-v2` (see `extension.toml`).
 - By default the extension prefers a user-configured binary path, then a `spec42` binary on `PATH`, and finally downloads the matching GitHub Release asset for the current platform.
+
+## Publishing to the Zed extension registry
+
+Releases automate registry bumps via [`huacnlee/zed-extension-action`](https://github.com/huacnlee/zed-extension-action): after a successful GitHub Release, the workflow opens a PR on [`zed-industries/extensions`](https://github.com/zed-industries/extensions) (pushed through the [`elan8/extensions`](https://github.com/elan8/extensions) fork) to update the `sysml-v2` submodule and version.
+
+Repository secret required:
+
+- `COMMITTER_TOKEN` — personal access token with `repo` and `workflow` scopes, able to push to `elan8/extensions` and open PRs against `zed-industries/extensions`.

@@ -1,19 +1,14 @@
-# Publish the VitePress docs site to GitHub Pages after a successful Spec42 release.
-# Called from the Release workflow (trusted tag checkout) so docs track product pins
-# without a privileged workflow_run + head_sha pattern. Manual runs use workflow_dispatch.
+# Publish the VitePress docs site to GitHub Pages.
+# Release triggers this on `main` (required by the github-pages environment branch
+# policy) and passes the release tag as `ref` so the site still tracks product pins.
+# Manual runs can leave `ref` empty to build the current workflow ref.
 name: Deploy Docs
 
 on:
-  workflow_call:
-    inputs:
-      ref:
-        description: Trusted git ref (usually the release tag) to build docs from
-        required: true
-        type: string
   workflow_dispatch:
     inputs:
       ref:
-        description: Git ref to build (tag, branch, or SHA). Leave empty for the workflow ref.
+        description: Git ref to build (release tag, branch, or SHA). Leave empty for the workflow ref.
         required: false
         type: string
 
@@ -32,7 +27,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          # Explicit ref from Release / dispatch — never workflow_run head_sha.
+          # Explicit release tag / dispatch input — never workflow_run head_sha.
           ref: ${{ inputs.ref || github.sha }}
       - uses: actions/setup-node@v4
         with:

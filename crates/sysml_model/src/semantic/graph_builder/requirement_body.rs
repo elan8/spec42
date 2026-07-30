@@ -9,7 +9,7 @@ use sysml_v2_parser::ast::{
 };
 use url::Url;
 
-use crate::semantic::ast_util::{span_to_range, text_range_to_json};
+use crate::semantic::ast_util::{attach_membership_visibility, span_to_range, text_range_to_json};
 use crate::semantic::graph::SemanticGraph;
 use crate::semantic::import_resolution::resolve_type_reference_targets;
 use crate::semantic::kinds::VERIFIED_REQUIREMENT_TARGET_KINDS;
@@ -553,12 +553,7 @@ pub(super) fn walk_requirement_def_body(
                 let mut attrs = HashMap::new();
                 attrs.insert("importTarget".to_string(), serde_json::json!(&v.target));
                 attrs.insert("importAll".to_string(), serde_json::json!(v.is_import_all));
-                if let Some(vis) = &v.membership.visibility {
-                    attrs.insert(
-                        "visibility".to_string(),
-                        serde_json::json!(format!("{vis:?}")),
-                    );
-                }
+                attach_membership_visibility(&mut attrs, &v.membership);
                 attrs.insert("recursive".to_string(), serde_json::json!(v.is_recursive));
                 add_node_and_recurse(
                     g,

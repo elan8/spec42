@@ -8,7 +8,7 @@ use sysml_v2_parser::ast::{
 };
 use url::Url;
 
-use crate::semantic::ast_util::{span_to_range, typing_targets};
+use crate::semantic::ast_util::{attach_membership_visibility, span_to_range, typing_targets};
 use crate::semantic::graph::SemanticGraph;
 use crate::semantic::model::{ElementKind, NodeId};
 use crate::semantic::relationships::add_typing_edge_if_exists;
@@ -57,6 +57,7 @@ pub(super) fn build_from_occurrence_body_element(
             let name = super::effective_usage_name(&value.name, value.redefines.as_deref());
             let qualified = qualified_name_for_node(g, uri, container_prefix, name, "attribute");
             let mut attrs = HashMap::new();
+            attach_membership_visibility(&mut attrs, &value.membership);
             let typed_by = typing_targets(value.typing.as_deref());
             if !typed_by.is_empty() {
                 attrs.insert(
@@ -92,6 +93,7 @@ pub(super) fn build_from_occurrence_body_element(
             let name = &part.name;
             let qualified = qualified_name_for_node(g, uri, container_prefix, name, "part");
             let mut attrs = HashMap::new();
+            attach_membership_visibility(&mut attrs, &part.membership);
             attrs.insert("partType".to_string(), serde_json::json!(&part.type_name));
             if let Some(ref m) = part.multiplicity {
                 attrs.insert("multiplicity".to_string(), serde_json::json!(m));

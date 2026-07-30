@@ -438,7 +438,7 @@ function truncate(value: string, max: number): string {
   return value.length > max ? `${value.slice(0, max - 2)}..` : value;
 }
 
-function formatStereotype(type: string): string {
+export function formatStereotype(type: string): string {
   return `\u00ab${type.replace(/_/g, " ")}\u00bb`;
 }
 
