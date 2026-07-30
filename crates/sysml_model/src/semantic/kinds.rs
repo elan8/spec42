@@ -407,7 +407,19 @@ pub fn allowed_typing_target_kinds(usage_kind: &ElementKind) -> &'static [Elemen
 
 pub fn allowed_specializes_target_kinds(def_kind: &ElementKind) -> &'static [ElementKind] {
     match def_kind {
-        ElementKind::PartDef => &[ElementKind::PartDef, ElementKind::OccurrenceDef],
+        // `Systems Library/Parts.sysml` itself declares `abstract part def Part :> Item` --
+        // ItemDef must be an allowed specializes target for PartDef, matching
+        // `allowed_typing_target_kinds`'s `Part => [PartDef, ItemDef, OccurrenceDef]`, which
+        // already correctly allows the usage-level equivalent (`part x : SomeItemDef;`). Its
+        // absence here made `incompatible_specializes_kind` false-positive on any `part def X :>
+        // SomeItemDef` -- confirmed against the OMG Geometry domain library's own
+        // `VehicleGeometryAndCoordinateFrames.sysml` example, which specializes `SpatialItem`
+        // (an `item def`) from several `part def`s.
+        ElementKind::PartDef => &[
+            ElementKind::PartDef,
+            ElementKind::ItemDef,
+            ElementKind::OccurrenceDef,
+        ],
         ElementKind::PortDef => &[ElementKind::PortDef],
         ElementKind::ItemDef => &[ElementKind::ItemDef],
         ElementKind::AttributeDef => &[ElementKind::AttributeDef],
