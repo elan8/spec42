@@ -4,8 +4,8 @@ use std::collections::HashMap;
 
 use sysml_v2_parser::ast::{
     ActionBodyDecl, ActionDefBody, ActionDefBodyElement, ActionUsage, ActionUsageBody,
-    ActionUsageBodyElement, AssignStmt, ForLoop, IfStmt, InOut, Perform, RefBody, RefDecl,
-    StateDefBody, StateUsage, TerminateStmt, ThenAction, WhileStmt,
+    ActionUsageBodyElement, AssignStmt, DefaultReferenceUsage, ForLoop, IfStmt, InOut, Perform,
+    RefBody, RefDecl, StateDefBody, StateUsage, TerminateStmt, ThenAction, ThenTarget, WhileStmt,
 };
 use url::Url;
 
@@ -21,7 +21,7 @@ use crate::semantic::relationships::{add_edge_if_both_exist, add_typing_edge_if_
 use super::expressions;
 use super::payload::insert_action_payload_attrs;
 use super::state;
-use super::{add_node_and_recurse, attach_feature_properties, qualified_name_for_node};
+use super::{add_node_and_recurse, attach_feature_properties, qualified_name, qualified_name_for_node};
 
 struct ThenActionChain {
     previous: Option<String>,
@@ -36,7 +36,68 @@ impl ThenActionChain {
         parent_id: &NodeId,
         then_action: &sysml_v2_parser::Node<ThenAction>,
     ) {
-        let action = &then_action.value.action.value;
+        match &then_action.value.target {
+            ThenTarget::Action(action_node) => {
+                self.chain_then_inline_action(
+                    g,
+                    uri,
+                    container_prefix,
+                    parent_id,
+                    then_action,
+                    &action_node.value,
+                );
+            }
+            // `then merge <name>;` (§6 G23) -- an inline merge node, same shape as the
+            // standalone `merge <name>;` statement handled in build_from_action_def_body/
+            // build_from_action_usage_body below, but also spliced into this then-chain.
+            ThenTarget::Merge(merge_node) => {
+                let merge_target = expressions::expression_to_debug_string(&merge_node.value.merge);
+                let merge_qualified =
+                    qualified_name_for_node(g, uri, container_prefix, &merge_target, "merge");
+                let mut attrs = HashMap::new();
+                attrs.insert("mergeTarget".to_string(), serde_json::json!(merge_target));
+                add_node_and_recurse(
+                    g,
+                    uri,
+                    &merge_qualified,
+                    "merge",
+                    "merge".to_string(),
+                    span_to_range(&then_action.span),
+                    attrs,
+                    Some(parent_id),
+                );
+                if let Some(previous) = self.previous.as_ref() {
+                    add_edge_if_both_exist(g, uri, previous, &merge_qualified, RelationshipKind::Flow);
+                }
+                self.previous = Some(merge_qualified);
+            }
+            // `then <name>;` (§6 G23) -- a reference to an already-declared node, not a new
+            // declaration; resolve it by name in the current scope rather than minting a node.
+            ThenTarget::Feature(expr_node) => {
+                let target_name = expressions::expr_node_to_qualified_string(expr_node);
+                if target_name.is_empty() {
+                    return;
+                }
+                let target_qualified = qualified_name(container_prefix, &target_name);
+                let source = self
+                    .previous
+                    .clone()
+                    .unwrap_or_else(|| parent_id.qualified_name.clone());
+                add_edge_if_both_exist(g, uri, &source, &target_qualified, RelationshipKind::Flow);
+                self.previous = Some(target_qualified);
+            }
+        }
+    }
+
+    fn chain_then_inline_action(
+        &mut self,
+        g: &mut SemanticGraph,
+        uri: &Url,
+        container_prefix: Option<&str>,
+        parent_id: &NodeId,
+        then_action: &sysml_v2_parser::Node<ThenAction>,
+        action: &ActionUsage,
+    ) {
         let action_qualified = qualified_name_for_node(
             g,
             uri,
@@ -49,7 +110,7 @@ impl ThenActionChain {
             "actionType".to_string(),
             serde_json::json!(action.type_name.as_str()),
         );
-        insert_action_payload_attrs(&mut attrs, &then_action.value.action.value);
+        insert_action_payload_attrs(&mut attrs, action);
         add_node_and_recurse(
             g,
             uri,
@@ -151,13 +212,13 @@ pub(super) fn add_in_out_decl(
     );
 }
 
-fn add_perform_step(
+pub(super) fn add_perform_step(
     g: &mut SemanticGraph,
     uri: &Url,
     container_prefix: Option<&str>,
     parent_id: &NodeId,
     perform: &sysml_v2_parser::Node<Perform>,
-) {
+) -> NodeId {
     let step_name = if perform.value.action_name.trim().is_empty() {
         perform
             .value
@@ -185,6 +246,7 @@ fn add_perform_step(
     if let Some(ref action_type) = perform.value.type_name {
         add_typing_edge_if_exists(g, uri, &child_qualified, action_type, container_prefix);
     }
+    NodeId::new(uri, &child_qualified)
 }
 
 fn add_ref_decl(
@@ -335,6 +397,77 @@ fn add_terminate_stmt(
         attrs,
         Some(parent_id),
     );
+}
+
+/// `loop { ... }` (§6 G14) -- a `while` with no condition; same node shape as `add_while_stmt`
+/// minus the `whileCondition` attribute.
+fn add_loop_stmt(
+    g: &mut SemanticGraph,
+    uri: &Url,
+    container_prefix: Option<&str>,
+    parent_id: &NodeId,
+    loop_stmt: &sysml_v2_parser::Node<sysml_v2_parser::ast::LoopStmt>,
+) {
+    let qualified = qualified_name_for_node(g, uri, container_prefix, "_loop", "loop");
+    add_node_and_recurse(
+        g,
+        uri,
+        &qualified,
+        "loop",
+        "loop".to_string(),
+        span_to_range(&loop_stmt.span),
+        HashMap::new(),
+        Some(parent_id),
+    );
+    let loop_id = NodeId::new(uri, &qualified);
+    if let ActionDefBody::Brace { elements } = &loop_stmt.value.body {
+        build_from_action_def_body(elements, uri, Some(qualified.as_str()), &loop_id, g);
+    }
+}
+
+/// `name = expr;` / `name : Type;` keyword-less binding (§6 G26), e.g. `measurement =
+/// testVehicle.mass;` (OMG spec Annex `9-Verification-simplified.sysml`). Same node shape as an
+/// `attribute` usage of that name -- see `attribute_body.rs::build_from_attribute_body`'s
+/// `AttributeUsage` arm.
+fn add_default_reference_usage(
+    g: &mut SemanticGraph,
+    uri: &Url,
+    container_prefix: Option<&str>,
+    parent_id: &NodeId,
+    node: &sysml_v2_parser::Node<DefaultReferenceUsage>,
+) {
+    let value = &node.value;
+    let qualified = qualified_name_for_node(g, uri, container_prefix, &value.name, "attribute");
+    let mut attrs = HashMap::new();
+    attach_membership_visibility(&mut attrs, &value.membership);
+    let targets = typing_targets(value.typing.as_deref());
+    if !targets.is_empty() {
+        attrs.insert(
+            "attributeType".to_string(),
+            serde_json::json!(targets.join(", ")),
+        );
+    }
+    if let Some(expr_node) = &value.value {
+        attrs.insert(
+            "value".to_string(),
+            serde_json::json!(expressions::expression_to_debug_string(
+                &expr_node.value.expression
+            )),
+        );
+    }
+    add_node_and_recurse(
+        g,
+        uri,
+        &qualified,
+        "attribute",
+        value.name.clone(),
+        span_to_range(&node.span),
+        attrs,
+        Some(parent_id),
+    );
+    for target in targets {
+        add_typing_edge_if_exists(g, uri, &qualified, target, container_prefix);
+    }
 }
 
 fn add_while_stmt(
@@ -647,14 +780,18 @@ pub(super) fn build_from_action_def_body(
                 );
             }
             ActionDefBodyElement::FirstStmt(first) => {
-                expressions::add_expression_edge_if_both_exist(
-                    g,
-                    uri,
-                    container_prefix,
-                    &first.value.first,
-                    &first.value.then,
-                    RelationshipKind::Flow,
-                );
+                // `then` is `None` for the standalone initial-node marker `first start;` (§6
+                // G13) -- nothing to connect a Flow edge to in that case.
+                if let Some(then) = &first.value.then {
+                    expressions::add_expression_edge_if_both_exist(
+                        g,
+                        uri,
+                        container_prefix,
+                        &first.value.first,
+                        then,
+                        RelationshipKind::Flow,
+                    );
+                }
             }
             ActionDefBodyElement::MergeStmt(merge) => {
                 let merge_target = expressions::expression_to_debug_string(&merge.value.merge);
@@ -786,6 +923,12 @@ pub(super) fn build_from_action_def_body(
             ActionDefBodyElement::IfStmt(if_stmt) => {
                 add_if_stmt(g, uri, container_prefix, parent_id, if_stmt);
             }
+            ActionDefBodyElement::LoopStmt(loop_stmt) => {
+                add_loop_stmt(g, uri, container_prefix, parent_id, loop_stmt);
+            }
+            ActionDefBodyElement::DefaultReferenceUsage(default_ref) => {
+                add_default_reference_usage(g, uri, container_prefix, parent_id, default_ref);
+            }
         }
     }
 }
@@ -823,14 +966,18 @@ pub(super) fn build_from_action_usage_body(
                 );
             }
             ActionUsageBodyElement::FirstStmt(first) => {
-                expressions::add_expression_edge_if_both_exist(
-                    g,
-                    uri,
-                    container_prefix,
-                    &first.value.first,
-                    &first.value.then,
-                    RelationshipKind::Flow,
-                );
+                // `then` is `None` for the standalone initial-node marker `first start;` (§6
+                // G13) -- nothing to connect a Flow edge to in that case.
+                if let Some(then) = &first.value.then {
+                    expressions::add_expression_edge_if_both_exist(
+                        g,
+                        uri,
+                        container_prefix,
+                        &first.value.first,
+                        then,
+                        RelationshipKind::Flow,
+                    );
+                }
             }
             ActionUsageBodyElement::MergeStmt(merge) => {
                 let merge_target = expressions::expression_to_debug_string(&merge.value.merge);
@@ -961,6 +1108,12 @@ pub(super) fn build_from_action_usage_body(
             }
             ActionUsageBodyElement::IfStmt(if_stmt) => {
                 add_if_stmt(g, uri, container_prefix, parent_id, if_stmt);
+            }
+            ActionUsageBodyElement::LoopStmt(loop_stmt) => {
+                add_loop_stmt(g, uri, container_prefix, parent_id, loop_stmt);
+            }
+            ActionUsageBodyElement::DefaultReferenceUsage(default_ref) => {
+                add_default_reference_usage(g, uri, container_prefix, parent_id, default_ref);
             }
         }
     }

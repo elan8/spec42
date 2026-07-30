@@ -30,6 +30,7 @@ use super::calc_constraint_def;
 use super::definition_body;
 use super::expressions;
 use super::kerml_library;
+use super::metadata_keyword;
 use super::modeled_kerml_name::extract_modeled_decl_name;
 use super::package_packages;
 use super::unit_metadata;
@@ -328,5 +329,30 @@ pub(super) fn build_from_package_body_element(
             );
         }
         PBE::ItemUsage(_) | PBE::InterfaceUsage(_) => {}
+        // `#<tag>` at package level, bare or `PrefixMetadataMember`-style prefixing the next
+        // member (e.g. `#fmeaspec requirement req1 { ... }`, OMG spec Annex `14c-Language
+        // Extensions.sysml` FMEA library example) -- package bodies previously had no `#`/`@`
+        // annotation support at all.
+        PBE::MetadataKeywordUsage(mk_node) => {
+            metadata_keyword::add_metadata_keyword_node_opt(
+                g,
+                uri,
+                parent_id,
+                &mk_node.value,
+                &mk_node.span,
+            );
+        }
+        // Standalone `connect a to b;` at package level (distinct from the `connection <name> :
+        // Type` usage form above) -- same FMEA library example.
+        PBE::Connect(c) => {
+            expressions::add_expression_edge_if_both_exist(
+                g,
+                uri,
+                container_prefix,
+                crate::semantic::ast_util::connection_end_expression(&c.from),
+                crate::semantic::ast_util::connection_end_expression(&c.to),
+                RelationshipKind::Connection,
+            );
+        }
     }
 }

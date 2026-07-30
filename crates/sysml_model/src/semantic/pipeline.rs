@@ -47,9 +47,7 @@ pub fn build_and_link_graph(
 
     for document in workspace_docs {
         let parse_start = Instant::now();
-        let Ok(parsed) = sysml_v2_parser::parse(&document.content) else {
-            continue;
-        };
+        let parsed = sysml_v2_parser::parse_for_editor(&document.content).root;
         workspace_packages.extend(declared_packages_from_parsed(&parsed));
         let parse_time_ms = parse_start.elapsed().as_millis().max(1) as u32;
         let doc_graph = build_graph_from_doc(&parsed, &document.uri);
@@ -65,9 +63,7 @@ pub fn build_and_link_graph(
 
     for document in library_docs {
         let parse_start = Instant::now();
-        let Ok(parsed) = sysml_v2_parser::parse(&document.content) else {
-            continue;
-        };
+        let parsed = sysml_v2_parser::parse_for_editor(&document.content).root;
         let parse_time_ms = parse_start.elapsed().as_millis().max(1) as u32;
         let doc_graph = build_graph_from_doc(&parsed, &document.uri);
         graph.merge_skip_existing_qualified_names(doc_graph, &workspace_packages);
@@ -85,17 +81,17 @@ pub fn build_and_link_graph(
     Ok((graph, parsed_docs))
 }
 
-fn parse_document(document: &SysmlDocument) -> Option<WorkspaceParsedDocument> {
+fn parse_document(document: &SysmlDocument) -> WorkspaceParsedDocument {
     let parse_start = Instant::now();
-    let parsed = sysml_v2_parser::parse(&document.content).ok()?;
+    let parsed = sysml_v2_parser::parse_for_editor(&document.content).root;
     let parse_time_ms = parse_start.elapsed().as_millis().max(1) as u32;
-    Some(WorkspaceParsedDocument {
+    WorkspaceParsedDocument {
         uri: document.uri.clone(),
         content: document.content.clone(),
         parsed,
         parse_time_ms,
         parse_cached: false,
-    })
+    }
 }
 
 /// Parses, builds, and links a semantic graph from many documents in parallel — the
@@ -111,7 +107,7 @@ pub fn build_and_link_graph_parallel(
 ) -> (SemanticGraph, Vec<WorkspaceParsedDocument>) {
     let entries: Vec<SourceTaggedDocument> = documents
         .par_iter()
-        .filter_map(|document| parse_document(document).map(|entry| (document.source_kind, entry)))
+        .map(|document| (document.source_kind, parse_document(document)))
         .collect();
     link_parsed_documents_parallel(entries, true)
 }

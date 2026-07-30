@@ -103,7 +103,6 @@ fn parse_with_diagnostics_common_invalid_inputs_have_codes_and_ranges() {
         ("extra closing brace", "package P { } }"),
         ("invalid keyword in package", "package P { xyz }"),
         ("missing member name", "package P { part def }"),
-        ("illegal top-level definition", "part def Top;"),
     ];
 
     for (label, content) in invalid_inputs {

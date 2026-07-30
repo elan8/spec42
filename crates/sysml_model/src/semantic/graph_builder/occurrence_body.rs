@@ -10,9 +10,10 @@ use url::Url;
 
 use crate::semantic::ast_util::{attach_membership_visibility, span_to_range, typing_targets};
 use crate::semantic::graph::SemanticGraph;
-use crate::semantic::model::{ElementKind, NodeId};
+use crate::semantic::model::{ElementKind, NodeId, RelationshipKind};
 use crate::semantic::relationships::add_typing_edge_if_exists;
 
+use super::expressions;
 use super::expressions::expression_to_debug_string;
 use super::part_usage;
 use super::{add_node_and_recurse, qualified_name_for_node};
@@ -139,6 +140,29 @@ pub(super) fn build_from_occurrence_body_element(
         }
         OBE::Doc(doc) => {
             super::attach_doc_comment(g, parent_id, &doc.value.text);
+        }
+        // Nested `allocate source to target;` (§6 G17) inside an allocation/occurrence usage
+        // body -- see the same pattern in part_def.rs/part_usage.rs.
+        OBE::Allocate(allocate_node) => {
+            expressions::add_expression_edge_if_both_exist(
+                g,
+                uri,
+                container_prefix,
+                &allocate_node.source,
+                &allocate_node.target,
+                RelationshipKind::Allocate,
+            );
+        }
+        // `exhibit (state)? <name> ...` inside an occurrence/snapshot usage body (§6 G30) --
+        // see the same pattern in part_def.rs/state.rs.
+        OBE::StateUsage(state_node) => {
+            super::package_body::materialize_state_usage(
+                g,
+                uri,
+                container_prefix,
+                Some(parent_id),
+                state_node,
+            );
         }
         OBE::Error(_) | OBE::Annotation(_) | OBE::Other(_) => {}
         // Not yet modeled in the semantic graph.

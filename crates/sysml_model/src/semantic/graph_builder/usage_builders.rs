@@ -303,9 +303,11 @@ pub(super) fn materialize_requirement_usage(
 }
 
 /// Builds an `item`-usage node, wiring the typing edge and recursing into its (attribute) body.
-/// Currently only used by [`materialize_variant_usage`] for the typed `variant item ...;` form —
-/// the pre-existing `item` usage handling inside a `part def` body remains its own inline copy
-/// in `part_def.rs`.
+/// Used by [`materialize_variant_usage`] for the typed `variant item ...;` form and by
+/// `part_def.rs` for `item` usages in a `part def` body — those two call sites used to diverge
+/// (the `part_def.rs` copy never picked up an anonymous usage's `redefines`/`value`, so
+/// `item :>> shape : Cylinder { ... }` produced an empty-named node and spurious
+/// `unresolved_redefines_target` warnings on its nested body members).
 pub(super) fn materialize_item_usage(
     n: &Node<sysml_v2_parser::ast::ItemUsage>,
     uri: &Url,
@@ -313,7 +315,7 @@ pub(super) fn materialize_item_usage(
     parent_id: &NodeId,
     g: &mut SemanticGraph,
 ) -> NodeId {
-    let name = &n.name;
+    let name = effective_usage_name(&n.name, n.redefines.as_deref());
     let qualified = qualified_name_for_node(g, uri, container_prefix, name, "item");
     let range = span_to_range(&n.span);
     let mut attrs = HashMap::new();
@@ -324,12 +326,21 @@ pub(super) fn materialize_item_usage(
     if let Some(ref m) = n.multiplicity {
         attrs.insert("multiplicity".to_string(), serde_json::json!(m));
     }
+    if let Some(r) = subsetting_target(n.redefines.as_deref()) {
+        attrs.insert("redefines".to_string(), serde_json::json!(r));
+    }
+    if let Some(ref v) = n.value.value {
+        attrs.insert(
+            "value".to_string(),
+            serde_json::json!(expressions::expression_to_debug_string(&v.value.expression)),
+        );
+    }
     add_node_and_recurse(
         g,
         uri,
         &qualified,
         "item",
-        name.clone(),
+        name.to_string(),
         range,
         attrs,
         Some(parent_id),
@@ -339,6 +350,11 @@ pub(super) fn materialize_item_usage(
     if let Some(multiplicity) = &n.multiplicity {
         if let Some(node) = g.get_node_mut(&node_id) {
             node.declared_facts.multiplicity = Some(declared_multiplicity(multiplicity, false));
+        }
+    }
+    if let Some(value) = &n.value.value {
+        if let Some(node) = g.get_node_mut(&node_id) {
+            node.declared_facts.feature_value = Some(declared_feature_value(value));
         }
     }
     if let Some(ref t) = n.type_name {
@@ -456,6 +472,10 @@ pub(super) fn materialize_variant_usage(
         }
         Some(VariantTypedUsage::Port(port_node)) => {
             super::port_def::materialize_port_usage(port_node, uri, container_prefix, parent_id, g)
+        }
+        // `variant perform doX;` inside a `variation perform action ... { ... }` body (§6 G5).
+        Some(VariantTypedUsage::Perform(perform_node)) => {
+            super::action::add_perform_step(g, uri, container_prefix, parent_id, perform_node)
         }
         None => {
             let qualified =

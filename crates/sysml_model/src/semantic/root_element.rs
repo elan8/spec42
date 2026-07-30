@@ -19,6 +19,7 @@ pub fn root_element_body(
         RootElement::Namespace(n) => (&n.identification, &n.body, &n.span),
         RootElement::LibraryPackage(lp) => (&lp.identification, &lp.body, &lp.span),
         RootElement::Import(_) => return None,
+        RootElement::Member(_) => return None,
     };
     let name = identification_name(ident);
     let qualified = if name.is_empty() {

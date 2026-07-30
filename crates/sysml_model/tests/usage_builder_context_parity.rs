@@ -185,6 +185,51 @@ fn unnamed_redefining_usage_gets_effective_name_per_spec_7_6_5() {
 }
 
 #[test]
+fn anonymous_item_redefinition_gets_effective_name_and_typing_in_part_def_body() {
+    // Geometry Examples/VehicleGeometryAndCoordinateFrames.sysml uses the anonymous
+    // `item :>> shape : Cylinder { ... }` redefinition form inside a `part def` body. Unlike
+    // `part`/`attribute` usages (whose `part_def.rs` copy already delegated to
+    // `usage_builders::materialize_part_usage`/`materialize_attribute_usage`), the `ItemUsage`
+    // arm had its own inline copy that never read `redefines`/`value` at all, so this usage got
+    // an empty name, a malformed qualified path ("P::Wheel::" with a trailing "::"), and no
+    // typing edge to `Cylinder` reachable by name — silently breaking any nested-body member
+    // resolution and by-name lookups of `shape`.
+    let src = r#"package P {
+  part def SpatialItem {
+    item shape;
+  }
+  item def Cylinder {
+    attribute radius;
+    attribute height;
+  }
+  part def Wheel :> SpatialItem {
+    item :>> shape : Cylinder {
+      :>> radius = 20;
+      :>> height = 40;
+    }
+  }
+}"#;
+    let doc = workspace_doc("item_effective_name.sysml", src);
+    let (graph, _parsed) = build_semantic_graph_from_documents(&[doc]).expect("graph");
+    let shape = graph
+        .nodes_named("shape")
+        .into_iter()
+        .find(|node| node.id.qualified_name == "P::Wheel::shape")
+        .expect("expected the redefining `shape` item usage to be addressable by its effective name");
+    assert_eq!(
+        shape.attributes.get("redefines").and_then(|v| v.as_str()),
+        Some("shape")
+    );
+    assert!(
+        graph
+            .children_of(shape)
+            .iter()
+            .any(|child| child.name == "radius"),
+        "expected nested `:>> radius` body member to be reachable as a child of the `shape` item usage"
+    );
+}
+
+#[test]
 fn occurrence_usage_body_recurses_into_children_in_every_containing_context() {
     let contexts = [
         (

@@ -6,8 +6,8 @@ use sysml_v2_parser::ast::{
 use url::Url;
 
 use crate::semantic::ast_util::{
-    attach_membership_visibility, attach_short_name_attribute, declared_multiplicity,
-    definition_feature_properties, identification_name, span_to_range, typing_targets,
+    attach_membership_visibility, attach_short_name_attribute, definition_feature_properties,
+    identification_name, span_to_range, typing_targets,
 };
 use crate::semantic::graph::SemanticGraph;
 use crate::semantic::model::{DeclaredFeatureProperties, NodeId, RelationshipKind};
@@ -198,44 +198,7 @@ pub(super) fn build_from_part_def_body_element(
             }
         }
         PDBE::ItemUsage(item_node) => {
-            let name = &item_node.name;
-            let qualified = qualified_name_for_node(g, uri, container_prefix, name, "item");
-            let range = span_to_range(&item_node.span);
-            let mut attrs = HashMap::new();
-            attach_membership_visibility(&mut attrs, &item_node.membership);
-            if let Some(ref t) = item_node.type_name {
-                attrs.insert("itemType".to_string(), serde_json::json!(t));
-            }
-            if let Some(ref m) = item_node.multiplicity {
-                attrs.insert("multiplicity".to_string(), serde_json::json!(m));
-            }
-            add_node_and_recurse(
-                g,
-                uri,
-                &qualified,
-                "item",
-                name.clone(),
-                range,
-                attrs,
-                Some(parent_id),
-            );
-            let node_id = NodeId::new(uri, &qualified);
-            if let Some(multiplicity) = &item_node.multiplicity {
-                if let Some(node) = g.get_node_mut(&node_id) {
-                    node.declared_facts.multiplicity =
-                        Some(declared_multiplicity(multiplicity, false));
-                }
-            }
-            if let Some(ref t) = item_node.type_name {
-                add_typing_edge_if_exists(g, uri, &qualified, t, container_prefix);
-            }
-            attribute_body::build_from_attribute_body(
-                &item_node.body,
-                uri,
-                Some(&qualified),
-                &node_id,
-                g,
-            );
+            usage_builders::materialize_item_usage(item_node, uri, container_prefix, parent_id, g);
         }
         PDBE::RequirementUsage(ru_node) => {
             usage_builders::materialize_requirement_usage(

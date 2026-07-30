@@ -431,7 +431,7 @@ fn print_diagnostics_for_real_sysml_examples_surveillance_drone() {
                 RootElement::Package(p) => Some(&p.body),
                 RootElement::Namespace(n) => Some(&n.body),
                 RootElement::LibraryPackage(lp) => Some(&lp.body),
-                RootElement::Import(_) => None,
+                RootElement::Import(_) | RootElement::Member(_) => None,
             };
             let Some(PackageBody::Brace { elements }) = body else {
                 continue;
@@ -487,7 +487,7 @@ fn print_diagnostics_for_real_sysml_examples_surveillance_drone() {
                 RootElement::Package(p) => Some(&p.body),
                 RootElement::Namespace(n) => Some(&n.body),
                 RootElement::LibraryPackage(lp) => Some(&lp.body),
-                RootElement::Import(_) => None,
+                RootElement::Import(_) | RootElement::Member(_) => None,
             };
             let Some(PackageBody::Brace { elements }) = body else {
                 continue;
@@ -1719,29 +1719,28 @@ fn homonymous_port_defs_emit_port_type_mismatch_with_qualified_names() {
     );
 }
 
+/// `part def` (and other package-body elements) directly at the root, with no enclosing
+/// `package { ... }`, is valid SysML v2 -- sysml-v2-parser 0.50.0 removed the non-spec
+/// `illegal_top_level_definition` diagnostic and parses this as `RootElement::Member` instead
+/// (see sysml-v2-parser's `PARSER_BACKLOG_ROADMAP.md`). Only the genuine semantic issue in the
+/// body (`part motherboard;` has no type) should still be reported.
 #[test]
-fn top_level_part_def_emits_illegal_top_level_definition_diagnostic() {
+fn top_level_part_def_is_valid_and_only_reports_the_untyped_member_inside_it() {
     let content = r#"
 part def Laptop {
     part motherboard;
 }
 "#;
     let diagnostics = validate_inline_sysml("top_level_part_def.sysml", content);
-    let found = has_diag_code(&diagnostics, "sysml", "illegal_top_level_definition");
-    let seen_codes: Vec<String> = diagnostics
-        .iter()
-        .map(|diagnostic| match diagnostic.code.as_ref() {
-            Some(tower_lsp::lsp_types::NumberOrString::String(code)) => code.clone(),
-            Some(tower_lsp::lsp_types::NumberOrString::Number(code)) => code.to_string(),
-            None => String::new(),
-        })
-        .filter(|code| !code.is_empty())
-        .collect();
-
     assert!(
-        found,
-        "expected illegal_top_level_definition parser diagnostic for top-level part def; seen codes: {:?}",
-        seen_codes
+        !has_diag_code(&diagnostics, "sysml", "illegal_top_level_definition"),
+        "illegal_top_level_definition was removed as non-spec; a top-level part def is valid: {:?}",
+        diagnostics
+    );
+    assert!(
+        has_diag_code(&diagnostics, "sysml", "untyped_part_usage"),
+        "expected the untyped `part motherboard;` to still be flagged: {:?}",
+        diagnostics
     );
 }
 

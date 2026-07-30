@@ -371,6 +371,7 @@ pub fn extract_activity_diagrams(root: &RootNamespace) -> Vec<ActivityDiagramDto
                 }
             }
             RootElement::Import(_) => {}
+            RootElement::Member(_) => {}
         }
     }
     out

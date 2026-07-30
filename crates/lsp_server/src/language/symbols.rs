@@ -176,7 +176,7 @@ pub fn collect_named_elements(root: &RootNamespace) -> Vec<(String, String)> {
                 };
                 (name, elements)
             }
-            RootElement::Import(_) => continue,
+            RootElement::Import(_) | RootElement::Member(_) => continue,
         };
         if !name.is_empty() {
             out.push((name.clone(), format!("package '{}'", name)));

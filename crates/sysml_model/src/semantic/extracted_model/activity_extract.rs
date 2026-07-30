@@ -1,4 +1,62 @@
 use super::*;
+use sysml_v2_parser::ast::ThenTarget;
+
+/// Resolves a `ThenAction`'s node name for this flat DTO extraction, pushing an
+/// `ActivityActionDto`/`ActivityStateDto` for the `Action`/`Merge` forms (new declarations) but
+/// not for `Feature` (§6 G23's `then <name>;` -- a reference to an already-declared node, so
+/// nothing new to push).
+fn then_target_node_name(
+    then_action: &sysml_v2_parser::Node<sysml_v2_parser::ast::ThenAction>,
+    fallback: String,
+    qualified_segments: &[String],
+    actions: &mut Vec<ActivityActionDto>,
+    states: &mut Vec<ActivityStateDto>,
+) -> String {
+    match &then_action.value.target {
+        ThenTarget::Action(action_node) => {
+            let action = &action_node.value;
+            let perform_name = if action.name.trim().is_empty() {
+                fallback
+            } else {
+                action.name.clone()
+            };
+            actions.push(ActivityActionDto {
+                id: Some(format!(
+                    "{}::{}",
+                    join_segments(qualified_segments),
+                    perform_name
+                )),
+                name: perform_name.clone(),
+                action_type: "action".to_string(),
+                kind: Some("action".to_string()),
+                inputs: None,
+                outputs: None,
+                range: Some(span_to_range_dto(&then_action.span)),
+                uri: None,
+                swim_lane: None,
+            });
+            perform_name
+        }
+        ThenTarget::Merge(merge_node) => {
+            let m = expr_to_string(&merge_node.value.merge);
+            let name = if m.is_empty() { fallback } else { m };
+            states.push(ActivityStateDto {
+                name: name.clone(),
+                state_type: "merge".to_string(),
+                range: span_to_range_dto(&then_action.span),
+            });
+            name
+        }
+        ThenTarget::Feature(expr_node) => {
+            let name = expr_to_string(expr_node);
+            if name.is_empty() {
+                fallback
+            } else {
+                name
+            }
+        }
+    }
+}
 
 pub(crate) fn extract_activity_from_action(
     node: &sysml_v2_parser::Node<sysml_v2_parser::ast::ActionDef>,
@@ -149,12 +207,13 @@ pub(crate) fn extract_activity_from_action(
                     if let ActionDefBody::Brace { elements } = &fl.body {
                         for (j, inner) in elements.iter().enumerate() {
                             if let ActionDefBodyElement::ThenAction(then_action) = &inner.value {
-                                let action = &then_action.value.action.value;
-                                let perform_name = if action.name.trim().is_empty() {
-                                    format!("for_body_{j}")
-                                } else {
-                                    action.name.clone()
-                                };
+                                let perform_name = then_target_node_name(
+                                    then_action,
+                                    format!("for_body_{j}"),
+                                    &qualified_segments,
+                                    &mut actions,
+                                    &mut states,
+                                );
                                 if let Some(previous) = previous_then_action.take() {
                                     flows.push(ControlFlowDto {
                                         from: previous,
@@ -170,21 +229,6 @@ pub(crate) fn extract_activity_from_action(
                                     condition: None,
                                     guard: Some("flow".to_string()),
                                     range: span_to_range_dto(&for_loop.span),
-                                });
-                                actions.push(ActivityActionDto {
-                                    id: Some(format!(
-                                        "{}::{}",
-                                        join_segments(&qualified_segments),
-                                        perform_name
-                                    )),
-                                    name: perform_name.clone(),
-                                    action_type: "action".to_string(),
-                                    kind: Some("action".to_string()),
-                                    inputs: None,
-                                    outputs: None,
-                                    range: Some(span_to_range_dto(&then_action.span)),
-                                    uri: None,
-                                    swim_lane: None,
                                 });
                                 previous_then_action = Some(perform_name);
                             }
@@ -226,7 +270,14 @@ pub(crate) fn extract_activity_from_action(
                 }
                 ActionDefBodyElement::FirstStmt(first) => {
                     let from = expr_to_string(&first.value.first);
-                    let to = expr_to_string(&first.value.then);
+                    // `then` is `None` for the standalone initial-node marker `first start;`
+                    // (§6 G13); an empty string matches this function's existing "absent" convention.
+                    let to = first
+                        .value
+                        .then
+                        .as_ref()
+                        .map(expr_to_string)
+                        .unwrap_or_default();
                     if !from.is_empty() && !to.is_empty() {
                         flows.push(ControlFlowDto {
                             from,
@@ -250,12 +301,13 @@ pub(crate) fn extract_activity_from_action(
                     });
                 }
                 ActionDefBodyElement::ThenAction(then_action) => {
-                    let action = &then_action.value.action.value;
-                    let perform_name = if action.name.trim().is_empty() {
-                        format!("then_action_{}", i)
-                    } else {
-                        action.name.clone()
-                    };
+                    let perform_name = then_target_node_name(
+                        then_action,
+                        format!("then_action_{}", i),
+                        &qualified_segments,
+                        &mut actions,
+                        &mut states,
+                    );
                     if let Some(previous) = previous_then_action.take() {
                         flows.push(ControlFlowDto {
                             from: previous,
@@ -265,21 +317,6 @@ pub(crate) fn extract_activity_from_action(
                             range: span_to_range_dto(&then_action.span),
                         });
                     }
-                    actions.push(ActivityActionDto {
-                        id: Some(format!(
-                            "{}::{}",
-                            join_segments(&qualified_segments),
-                            perform_name
-                        )),
-                        name: perform_name.clone(),
-                        action_type: "action".to_string(),
-                        kind: Some("action".to_string()),
-                        inputs: None,
-                        outputs: None,
-                        range: Some(span_to_range_dto(&then_action.span)),
-                        uri: None,
-                        swim_lane: None,
-                    });
                     previous_then_action = Some(perform_name);
                 }
                 ActionDefBodyElement::StateUsage(state_usage) => {

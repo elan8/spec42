@@ -5,13 +5,15 @@ use std::collections::HashMap;
 use sysml_v2_parser::ast::{AttributeBody, AttributeBodyElement};
 use url::Url;
 
-use super::{add_node_and_recurse, expressions, qualified_name_for_node, unit_metadata};
+use super::{
+    add_node_and_recurse, expressions, qualified_name_for_node, unit_metadata, usage_builders,
+};
 use crate::semantic::ast_util::{
     attach_membership_visibility, span_to_range, subsetting_target, typing_targets,
 };
 use crate::semantic::graph::SemanticGraph;
 use crate::semantic::kinds::METADATA_RESTRICTION_FEATURE_NAMES;
-use crate::semantic::model::{ElementKind, NodeId};
+use crate::semantic::model::{ElementKind, NodeId, RelationshipKind};
 use crate::semantic::relationships::add_typing_edge_if_exists;
 
 /// Attaches any `doc` comments written inside a nested attribute def/usage's own
@@ -129,6 +131,39 @@ pub(super) fn build_from_attribute_body(
             }
             AttributeBodyElement::Doc(doc) => {
                 super::attach_doc_comment(g, parent_id, &doc.value.text);
+            }
+            // §6 G27: this body is shared with `item def`/`item` usage bodies, which legally
+            // own occurrence members.
+            AttributeBodyElement::OccurrenceUsage(occ_node) => {
+                usage_builders::materialize_occurrence_usage(
+                    occ_node,
+                    uri,
+                    container_prefix,
+                    Some(parent_id),
+                    g,
+                );
+            }
+            // Also shared with `item def`/`item` usage bodies, which legally own connector
+            // members (`connect a to b;`) and metadata tags (see the FMEA library example in
+            // `14c-Language Extensions.sysml`).
+            AttributeBodyElement::Connect(c) => {
+                expressions::add_expression_edge_if_both_exist(
+                    g,
+                    uri,
+                    container_prefix,
+                    crate::semantic::ast_util::connection_end_expression(&c.from),
+                    crate::semantic::ast_util::connection_end_expression(&c.to),
+                    RelationshipKind::Connection,
+                );
+            }
+            AttributeBodyElement::MetadataKeywordUsage(mk_node) => {
+                super::metadata_keyword::add_metadata_keyword_node(
+                    g,
+                    uri,
+                    parent_id,
+                    &mk_node.value,
+                    &mk_node.span,
+                );
             }
             AttributeBodyElement::Error(_) | AttributeBodyElement::Other(_) => {}
         }

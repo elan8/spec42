@@ -42,6 +42,7 @@ pub fn ast_semantic_ranges(root: &RootNamespace, source: &str) -> Vec<(SourceRan
                 _ => continue,
             },
             RootElement::Import(_) => continue,
+            RootElement::Member(_) => continue,
         };
         for el in elements {
             collect_semantic_ranges_package_body_element(&ctx, el, &mut out);
@@ -638,6 +639,12 @@ fn collect_semantic_ranges_attribute_body(
                     out,
                 );
             }
+            AttributeBodyElement::MetadataKeywordUsage(mk_node) => {
+                collect_semantic_ranges_metadata_keyword_usage(mk_node, out);
+            }
+            // §6 G27: this body is shared with `item def`/`item` usage bodies. `Connect` has no
+            // dedicated highlighting elsewhere in this file either (see e.g. `PDBE::Connect`).
+            AttributeBodyElement::OccurrenceUsage(_) | AttributeBodyElement::Connect(_) => {}
             AttributeBodyElement::Doc(_)
             | AttributeBodyElement::Error(_)
             | AttributeBodyElement::Other(_) => {}
@@ -689,6 +696,9 @@ fn collect_semantic_ranges_transition_accept(
             collect_semantic_ranges_payload_clause(clause, out)
         }
         TransitionAccept::Shorthand(expr, _via) => {
+            out.push((span_to_source_range(&expr.span), TYPE_PROPERTY));
+        }
+        TransitionAccept::TimeTrigger(_kind, expr) => {
             out.push((span_to_source_range(&expr.span), TYPE_PROPERTY));
         }
     }
@@ -806,10 +816,12 @@ fn collect_semantic_ranges_occurrence_body_element(
             out.push((span_to_source_range(&flow.span), TYPE_PROPERTY));
             collect_semantic_ranges_definition_body(ctx, &flow.value.body, out);
         }
+        OBE::StateUsage(state_usage) => collect_semantic_ranges_state_usage(ctx, state_usage, out),
         OBE::Doc(_)
         | OBE::Error(_)
         | OBE::Annotation(_)
         | OBE::AssertConstraint(_)
+        | OBE::Allocate(_)
         | OBE::Other(_)
         | OBE::SuccessionUsage(_)
         | OBE::Satisfy(_) => {}
@@ -1321,13 +1333,30 @@ fn collect_semantic_ranges_action_def_body_element(
         ADBE::InOutDecl(in_out) => out.push((span_to_source_range(&in_out.span), TYPE_PROPERTY)),
         ADBE::ActionUsage(usage) => collect_semantic_ranges_action_usage(ctx, usage.as_ref(), out),
         ADBE::ThenAction(then_action) => {
-            collect_semantic_ranges_action_usage(ctx, &then_action.value.action.value, out);
+            // `then merge <name>;`/`then <name>;` (§6 G23) aren't action-usage declarations --
+            // nothing to highlight beyond what's already emitted for the enclosing statement.
+            if let sysml_v2_parser::ast::ThenTarget::Action(action_node) =
+                &then_action.value.target
+            {
+                collect_semantic_ranges_action_usage(ctx, &action_node.value, out);
+            }
         }
         ADBE::RefDecl(ref_decl) => collect_semantic_ranges_ref_decl(ref_decl, out),
         ADBE::StateUsage(state_usage) => collect_semantic_ranges_state_usage(ctx, state_usage, out),
         ADBE::Perform(perform) => out.push((span_to_source_range(&perform.span), TYPE_FUNCTION)),
         ADBE::Assign(assign) => out.push((span_to_source_range(&assign.span), TYPE_PROPERTY)),
         ADBE::ForLoop(for_loop) => out.push((span_to_source_range(&for_loop.span), TYPE_PROPERTY)),
+        ADBE::DefaultReferenceUsage(default_ref) => {
+            push_usage_name_type_spans(
+                ctx.source,
+                &default_ref.span,
+                &default_ref.value.name,
+                default_ref.value.typing.as_deref(),
+                default_ref.value.name_span.as_ref(),
+                default_ref.value.typing_span.as_ref(),
+                out,
+            );
+        }
         ADBE::Bind(_)
         | ADBE::FlowUsage(_)
         | ADBE::FirstStmt(_)
@@ -1341,6 +1370,7 @@ fn collect_semantic_ranges_action_def_body_element(
         | ADBE::Annotation(_)
         | ADBE::TerminateStmt(_)
         | ADBE::WhileStmt(_)
+        | ADBE::LoopStmt(_)
         | ADBE::IfStmt(_) => {}
         ADBE::MetadataAnnotation(meta) => collect_semantic_ranges_metadata_annotation(meta, out),
         ADBE::MetadataKeywordUsage(mk_node) => {
@@ -1359,12 +1389,28 @@ fn collect_semantic_ranges_action_usage_body_element(
         AUBE::InOutDecl(in_out) => out.push((span_to_source_range(&in_out.span), TYPE_PROPERTY)),
         AUBE::ActionUsage(usage) => collect_semantic_ranges_action_usage(ctx, usage.as_ref(), out),
         AUBE::ThenAction(then_action) => {
-            collect_semantic_ranges_action_usage(ctx, &then_action.value.action.value, out);
+            // See ADBE::ThenAction above.
+            if let sysml_v2_parser::ast::ThenTarget::Action(action_node) =
+                &then_action.value.target
+            {
+                collect_semantic_ranges_action_usage(ctx, &action_node.value, out);
+            }
         }
         AUBE::RefDecl(ref_decl) => collect_semantic_ranges_ref_decl(ref_decl, out),
         AUBE::StateUsage(state_usage) => collect_semantic_ranges_state_usage(ctx, state_usage, out),
         AUBE::Assign(assign) => out.push((span_to_source_range(&assign.span), TYPE_PROPERTY)),
         AUBE::ForLoop(for_loop) => out.push((span_to_source_range(&for_loop.span), TYPE_PROPERTY)),
+        AUBE::DefaultReferenceUsage(default_ref) => {
+            push_usage_name_type_spans(
+                ctx.source,
+                &default_ref.span,
+                &default_ref.value.name,
+                default_ref.value.typing.as_deref(),
+                default_ref.value.name_span.as_ref(),
+                default_ref.value.typing_span.as_ref(),
+                out,
+            );
+        }
         AUBE::Bind(_)
         | AUBE::FlowUsage(_)
         | AUBE::FirstStmt(_)
@@ -1378,6 +1424,7 @@ fn collect_semantic_ranges_action_usage_body_element(
         | AUBE::Decl(_)
         | AUBE::TerminateStmt(_)
         | AUBE::WhileStmt(_)
+        | AUBE::LoopStmt(_)
         | AUBE::IfStmt(_) => {}
         AUBE::MetadataAnnotation(meta) => collect_semantic_ranges_metadata_annotation(meta, out),
         AUBE::MetadataKeywordUsage(mk_node) => {

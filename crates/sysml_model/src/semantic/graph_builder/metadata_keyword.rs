@@ -20,7 +20,21 @@ pub(super) fn add_metadata_keyword_node(
     mk: &MetadataKeywordUsage,
     span: &sysml_v2_parser::Span,
 ) {
-    let container_prefix = Some(parent_id.qualified_name.as_str());
+    add_metadata_keyword_node_opt(g, uri, Some(parent_id), mk, span);
+}
+
+/// Like [`add_metadata_keyword_node`], but for scopes that may have no enclosing node -- a
+/// package body element can sit at the literal file root, outside any `package { ... }`. When
+/// `parent_id` is `None`, the metadata node is still created (rooted directly under
+/// `container_prefix`), just without an owner to annotate.
+pub(super) fn add_metadata_keyword_node_opt(
+    g: &mut SemanticGraph,
+    uri: &Url,
+    parent_id: Option<&NodeId>,
+    mk: &MetadataKeywordUsage,
+    span: &sysml_v2_parser::Span,
+) {
+    let container_prefix = parent_id.map(|id| id.qualified_name.as_str());
     let name = format!("_{}", mk.keyword);
     let qualified = qualified_name_for_node(g, uri, container_prefix, &name, "metadata keyword");
     let mut attrs = HashMap::new();
@@ -42,7 +56,7 @@ pub(super) fn add_metadata_keyword_node(
         mk.keyword.clone(),
         span_to_range(span),
         attrs,
-        Some(parent_id),
+        parent_id,
     );
     if let Some(ref type_name) = mk.type_name {
         add_typing_edge_if_exists(g, uri, &qualified, type_name, container_prefix);
@@ -54,6 +68,8 @@ pub(super) fn add_metadata_keyword_node(
         &NodeId::new(uri, &qualified),
         g,
     );
-    let metadata_id = NodeId::new(uri, &qualified);
-    wire_metadata_annotated_elements(g, uri, &metadata_id, parent_id, &mk.about_targets);
+    if let Some(parent_id) = parent_id {
+        let metadata_id = NodeId::new(uri, &qualified);
+        wire_metadata_annotated_elements(g, uri, &metadata_id, parent_id, &mk.about_targets);
+    }
 }

@@ -2,15 +2,17 @@ use std::collections::HashMap;
 
 use sysml_v2_parser::ast::{
     ActorRedefinitionAssignment, ActorUsage, FirstSuccession, IncludeUseCase, RefRedefinition,
-    ThenAction, ThenDone, ThenUseCaseUsage, UseCaseDefBody,
+    ThenAction, ThenDone, ThenTarget, ThenUseCaseUsage, UseCaseDefBody,
 };
 use url::Url;
 
-use super::{add_node_and_recurse, qualified_name_for_node};
+use super::{add_node_and_recurse, qualified_name, qualified_name_for_node};
 use crate::semantic::ast_util::{attach_membership_visibility, span_to_range};
 use crate::semantic::graph::SemanticGraph;
 use crate::semantic::model::{NodeId, RelationshipKind};
 use crate::semantic::relationships::{add_edge_if_both_exist, add_typing_edge_if_exists};
+
+use super::expressions;
 
 /// Tracks `first` / `then` succession steps for use-case and verification bodies.
 pub(super) struct CaseSuccessionChain {
@@ -74,55 +76,108 @@ impl CaseSuccessionChain {
         parent_id: &NodeId,
         then_action: &sysml_v2_parser::Node<ThenAction>,
     ) {
-        let action = &then_action.value.action.value;
-        let action_qualified = qualified_name_for_node(
-            g,
-            uri,
-            Some(parent_id.qualified_name.as_str()),
-            &action.name,
-            "action",
-        );
-        let mut attrs = HashMap::new();
-        attrs.insert(
-            "actionType".to_string(),
-            serde_json::json!(action.type_name.as_str()),
-        );
-        add_node_and_recurse(
-            g,
-            uri,
-            &action_qualified,
-            "action",
-            action.name.clone(),
-            span_to_range(&then_action.span),
-            attrs,
-            Some(parent_id),
-        );
-        if !action.type_name.is_empty() {
-            add_typing_edge_if_exists(
-                g,
-                uri,
-                &action_qualified,
-                action.type_name.as_str(),
-                container_prefix,
-            );
+        match &then_action.value.target {
+            ThenTarget::Action(action_node) => {
+                let action = &action_node.value;
+                let action_qualified = qualified_name_for_node(
+                    g,
+                    uri,
+                    Some(parent_id.qualified_name.as_str()),
+                    &action.name,
+                    "action",
+                );
+                let mut attrs = HashMap::new();
+                attrs.insert(
+                    "actionType".to_string(),
+                    serde_json::json!(action.type_name.as_str()),
+                );
+                add_node_and_recurse(
+                    g,
+                    uri,
+                    &action_qualified,
+                    "action",
+                    action.name.clone(),
+                    span_to_range(&then_action.span),
+                    attrs,
+                    Some(parent_id),
+                );
+                if !action.type_name.is_empty() {
+                    add_typing_edge_if_exists(
+                        g,
+                        uri,
+                        &action_qualified,
+                        action.type_name.as_str(),
+                        container_prefix,
+                    );
+                }
+                add_edge_if_both_exist(
+                    g,
+                    uri,
+                    &parent_id.qualified_name,
+                    &action_qualified,
+                    RelationshipKind::Perform,
+                );
+                if let Some(previous_step) = self.previous.as_ref() {
+                    add_edge_if_both_exist(
+                        g,
+                        uri,
+                        previous_step,
+                        &action_qualified,
+                        RelationshipKind::Flow,
+                    );
+                }
+                self.previous = Some(action_qualified);
+            }
+            // `then merge <name>;` (§6 G23) -- an inline merge node, same shape as
+            // action.rs::ThenActionChain::chain_then_action's Merge handling.
+            ThenTarget::Merge(merge_node) => {
+                let merge_target = expressions::expression_to_debug_string(&merge_node.value.merge);
+                let merge_qualified = qualified_name_for_node(
+                    g,
+                    uri,
+                    Some(parent_id.qualified_name.as_str()),
+                    &merge_target,
+                    "merge",
+                );
+                let mut attrs = HashMap::new();
+                attrs.insert("mergeTarget".to_string(), serde_json::json!(merge_target));
+                add_node_and_recurse(
+                    g,
+                    uri,
+                    &merge_qualified,
+                    "merge",
+                    "merge".to_string(),
+                    span_to_range(&then_action.span),
+                    attrs,
+                    Some(parent_id),
+                );
+                if let Some(previous_step) = self.previous.as_ref() {
+                    add_edge_if_both_exist(
+                        g,
+                        uri,
+                        previous_step,
+                        &merge_qualified,
+                        RelationshipKind::Flow,
+                    );
+                }
+                self.previous = Some(merge_qualified);
+            }
+            // `then <name>;` (§6 G23) -- a reference to an already-declared node, not a new
+            // declaration; resolve it by name in the current scope rather than minting a node.
+            ThenTarget::Feature(expr_node) => {
+                let target_name = expressions::expr_node_to_qualified_string(expr_node);
+                if target_name.is_empty() {
+                    return;
+                }
+                let target_qualified = qualified_name(container_prefix, &target_name);
+                let source = self
+                    .previous
+                    .clone()
+                    .unwrap_or_else(|| parent_id.qualified_name.clone());
+                add_edge_if_both_exist(g, uri, &source, &target_qualified, RelationshipKind::Flow);
+                self.previous = Some(target_qualified);
+            }
         }
-        add_edge_if_both_exist(
-            g,
-            uri,
-            &parent_id.qualified_name,
-            &action_qualified,
-            RelationshipKind::Perform,
-        );
-        if let Some(previous_step) = self.previous.as_ref() {
-            add_edge_if_both_exist(
-                g,
-                uri,
-                previous_step,
-                &action_qualified,
-                RelationshipKind::Flow,
-            );
-        }
-        self.previous = Some(action_qualified);
     }
 
     pub fn chain_then_done(

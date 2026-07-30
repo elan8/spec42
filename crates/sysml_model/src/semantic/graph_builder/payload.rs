@@ -2,7 +2,7 @@
 
 use std::collections::HashMap;
 
-use sysml_v2_parser::ast::{ActionUsage, PayloadClause, TransitionAccept};
+use sysml_v2_parser::ast::{ActionUsage, PayloadClause, TransitionAccept, TriggerKind};
 
 use super::expressions;
 
@@ -55,6 +55,22 @@ pub(super) fn insert_transition_accept_attrs(
             insert_payload_clause_attrs(attrs, "accept", clause);
         }
         TransitionAccept::Shorthand(expr, _via) => {
+            attrs.insert(
+                "acceptExpression".to_string(),
+                serde_json::json!(expressions::expression_to_debug_string(expr)),
+            );
+        }
+        // `accept at/when/after <expr>` (§6 G8) -- a time/condition trigger rather than a
+        // payload signal; OMG spec Annex `5-State-based Behavior-1.sysml`.
+        TransitionAccept::TimeTrigger(trigger_kind, expr) => {
+            attrs.insert(
+                "triggerKind".to_string(),
+                serde_json::json!(match trigger_kind {
+                    TriggerKind::At => "at",
+                    TriggerKind::When => "when",
+                    TriggerKind::After => "after",
+                }),
+            );
             attrs.insert(
                 "acceptExpression".to_string(),
                 serde_json::json!(expressions::expression_to_debug_string(expr)),

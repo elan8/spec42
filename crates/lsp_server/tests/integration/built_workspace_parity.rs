@@ -102,11 +102,11 @@ package RiskTrace {
     );
 }
 
-/// Regression test: a document with a hard syntax error is dropped from
-/// `build_semantic_graph_with_provider`'s `parsed_documents`, so
-/// `BuiltWorkspaceInput::all_documents` must still carry its raw text or the document's
-/// index entry vanishes entirely and `spec42 check` reports zero diagnostics instead of a
-/// parse error.
+/// Regression test: a document with a syntax error still gets a parse-error diagnostic, and
+/// (since `build_semantic_graph_with_provider` parses with recovery, keeping whatever partial
+/// AST it could salvage in `parsed_documents` rather than dropping the document outright) its
+/// still-valid content stays indexed too, instead of `spec42 check` silently losing the whole
+/// file's diagnostics because one part of it didn't parse.
 #[test]
 fn built_workspace_reports_hard_parse_error() {
     let temp = tempfile::tempdir().expect("tempdir");
@@ -129,9 +129,10 @@ fn built_workspace_reports_hard_parse_error() {
     );
     let (semantic_graph, parsed_documents) =
         build_semantic_graph_with_provider(&provider).expect("graph");
-    assert!(
-        parsed_documents.is_empty(),
-        "expected the hard parse error to be dropped from parsed_documents"
+    assert_eq!(
+        parsed_documents.len(),
+        1,
+        "expected the malformed document to still be indexed via recovery, with a parse-error diagnostic reported separately"
     );
     let all_documents = provider.load_documents().expect("load documents");
     assert_eq!(all_documents.len(), 1);

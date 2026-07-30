@@ -83,6 +83,7 @@ pub fn document_symbols(root: &RootNamespace) -> Vec<OutlineSymbol> {
                 })
             }
             RootElement::Import(_) => None,
+            RootElement::Member(member) => outline_symbol_from_element(member),
         };
         if let Some(s) = sym {
             out.push(s);
