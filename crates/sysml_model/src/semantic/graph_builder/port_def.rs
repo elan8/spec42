@@ -8,8 +8,8 @@ use url::Url;
 
 use crate::semantic::ast_util::{
     attach_membership_visibility, declared_multiplicity, direction_name,
-    item_usage_feature_properties, port_usage_feature_properties, span_to_range,
-    subsetting_target, typing_targets,
+    item_usage_feature_properties, port_usage_feature_properties, span_to_range, subsetting_target,
+    typing_targets,
 };
 use crate::semantic::graph::SemanticGraph;
 use crate::semantic::model::{DeclaredFeatureProperties, NodeId};

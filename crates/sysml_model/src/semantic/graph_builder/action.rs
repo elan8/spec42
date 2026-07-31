@@ -21,7 +21,9 @@ use crate::semantic::relationships::{add_edge_if_both_exist, add_typing_edge_if_
 use super::expressions;
 use super::payload::insert_action_payload_attrs;
 use super::state;
-use super::{add_node_and_recurse, attach_feature_properties, qualified_name, qualified_name_for_node};
+use super::{
+    add_node_and_recurse, attach_feature_properties, qualified_name, qualified_name_for_node,
+};
 
 struct ThenActionChain {
     previous: Option<String>,
@@ -67,7 +69,13 @@ impl ThenActionChain {
                     Some(parent_id),
                 );
                 if let Some(previous) = self.previous.as_ref() {
-                    add_edge_if_both_exist(g, uri, previous, &merge_qualified, RelationshipKind::Flow);
+                    add_edge_if_both_exist(
+                        g,
+                        uri,
+                        previous,
+                        &merge_qualified,
+                        RelationshipKind::Flow,
+                    );
                 }
                 self.previous = Some(merge_qualified);
             }

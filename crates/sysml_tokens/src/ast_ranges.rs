@@ -1335,8 +1335,7 @@ fn collect_semantic_ranges_action_def_body_element(
         ADBE::ThenAction(then_action) => {
             // `then merge <name>;`/`then <name>;` (§6 G23) aren't action-usage declarations --
             // nothing to highlight beyond what's already emitted for the enclosing statement.
-            if let sysml_v2_parser::ast::ThenTarget::Action(action_node) =
-                &then_action.value.target
+            if let sysml_v2_parser::ast::ThenTarget::Action(action_node) = &then_action.value.target
             {
                 collect_semantic_ranges_action_usage(ctx, &action_node.value, out);
             }
@@ -1423,8 +1422,7 @@ fn collect_semantic_ranges_action_usage_body_element(
         AUBE::ActionUsage(usage) => collect_semantic_ranges_action_usage(ctx, usage.as_ref(), out),
         AUBE::ThenAction(then_action) => {
             // See ADBE::ThenAction above.
-            if let sysml_v2_parser::ast::ThenTarget::Action(action_node) =
-                &then_action.value.target
+            if let sysml_v2_parser::ast::ThenTarget::Action(action_node) = &then_action.value.target
             {
                 collect_semantic_ranges_action_usage(ctx, &action_node.value, out);
             }

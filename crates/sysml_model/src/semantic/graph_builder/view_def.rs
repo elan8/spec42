@@ -162,7 +162,12 @@ fn walk_rendering_usage_body(
 /// (the nested `render` binding's name, e.g. `asTextualNotation`), in declaration order (the
 /// stdlib defines `columnView[0..*] ordered`, so order is semantically meaningful -- this walks
 /// `elements` in their parsed order, never re-sorted).
-fn add_view_column_node(g: &mut SemanticGraph, uri: &Url, parent_id: &NodeId, column: &Node<ViewUsage>) {
+fn add_view_column_node(
+    g: &mut SemanticGraph,
+    uri: &Url,
+    parent_id: &NodeId,
+    column: &Node<ViewUsage>,
+) {
     let cv = &column.value;
     let redefines_name = subsetting_target(cv.redefines.as_deref());
     let base_label = redefines_name.unwrap_or("_columnView");
@@ -200,7 +205,10 @@ fn add_view_column_node(g: &mut SemanticGraph, uri: &Url, parent_id: &NodeId, co
             ViewBodyElement::ViewRendering(rendering) => Some(rendering.value.name.clone()),
             _ => None,
         }) {
-            attrs.insert("renderingType".to_string(), serde_json::json!(rendering_name));
+            attrs.insert(
+                "renderingType".to_string(),
+                serde_json::json!(rendering_name),
+            );
         }
     }
     add_node_and_recurse(
