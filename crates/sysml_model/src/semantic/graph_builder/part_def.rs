@@ -259,6 +259,13 @@ pub(super) fn build_from_part_def_body_element(
                         None,
                     );
                 }
+                // `interface name;` / `interface : Type { ... }` with no inline `connect`
+                // clause (GH-16) -- a placeholder/to-be-redefined-later declaration with no
+                // `from`/`to` endpoints to wire a connection edge between, so there is nothing
+                // for this arm to do yet (same "no node materialized" treatment the two arms
+                // above already give `TypedConnect`/`Connection`, neither of which creates an
+                // interface-usage node here either).
+                InterfaceUsage::Declaration { .. } => {}
             }
         }
         PDBE::InterfaceDef(id_node) => {

@@ -177,6 +177,21 @@ impl CaseSuccessionChain {
                 add_edge_if_both_exist(g, uri, &source, &target_qualified, RelationshipKind::Flow);
                 self.previous = Some(target_qualified);
             }
+            // `then perform body;` (Systems Library `Actions.sysml`) -- succession to an
+            // already-declared perform usage, same reference-not-declaration shape as `Feature`.
+            ThenTarget::Perform(perform_node) => {
+                let target_name = &perform_node.value.action_name;
+                if target_name.is_empty() {
+                    return;
+                }
+                let target_qualified = qualified_name(container_prefix, target_name);
+                let source = self
+                    .previous
+                    .clone()
+                    .unwrap_or_else(|| parent_id.qualified_name.clone());
+                add_edge_if_both_exist(g, uri, &source, &target_qualified, RelationshipKind::Flow);
+                self.previous = Some(target_qualified);
+            }
         }
     }
 

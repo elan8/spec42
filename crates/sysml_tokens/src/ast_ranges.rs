@@ -1376,6 +1376,39 @@ fn collect_semantic_ranges_action_def_body_element(
         ADBE::MetadataKeywordUsage(mk_node) => {
             collect_semantic_ranges_metadata_keyword_usage(mk_node, out);
         }
+        ADBE::PartUsage(pu_node) => {
+            if let Some(ref span) = pu_node.value.name_span {
+                out.push((span_to_source_range(span), TYPE_PROPERTY));
+            }
+            if let Some(ref span) = pu_node.value.type_ref_span {
+                out.push((span_to_source_range(span), TYPE_TYPE));
+            }
+            if let PartUsageBody::Brace { elements } = &pu_node.body {
+                for child in elements {
+                    collect_semantic_ranges_part_usage_body_element(ctx, child, out);
+                }
+            }
+        }
+        ADBE::ItemUsage(item_node) => {
+            push_usage_name_type_spans(
+                ctx.source,
+                &item_node.span,
+                &item_node.value.name,
+                item_node.value.type_name.as_deref(),
+                None,
+                None,
+                out,
+            );
+        }
+        ADBE::OccurrenceUsage(occurrence_usage) => {
+            out.push((span_to_source_range(&occurrence_usage.span), TYPE_PROPERTY));
+            if let OccurrenceUsageBody::Brace { elements } = &occurrence_usage.body {
+                for child in elements {
+                    collect_semantic_ranges_occurrence_body_element(ctx, child, out);
+                }
+            }
+        }
+        ADBE::AssertConstraint(_) => {}
     }
 }
 
@@ -1430,5 +1463,38 @@ fn collect_semantic_ranges_action_usage_body_element(
         AUBE::MetadataKeywordUsage(mk_node) => {
             collect_semantic_ranges_metadata_keyword_usage(mk_node, out);
         }
+        AUBE::PartUsage(pu_node) => {
+            if let Some(ref span) = pu_node.value.name_span {
+                out.push((span_to_source_range(span), TYPE_PROPERTY));
+            }
+            if let Some(ref span) = pu_node.value.type_ref_span {
+                out.push((span_to_source_range(span), TYPE_TYPE));
+            }
+            if let PartUsageBody::Brace { elements } = &pu_node.body {
+                for child in elements {
+                    collect_semantic_ranges_part_usage_body_element(ctx, child, out);
+                }
+            }
+        }
+        AUBE::ItemUsage(item_node) => {
+            push_usage_name_type_spans(
+                ctx.source,
+                &item_node.span,
+                &item_node.value.name,
+                item_node.value.type_name.as_deref(),
+                None,
+                None,
+                out,
+            );
+        }
+        AUBE::OccurrenceUsage(occurrence_usage) => {
+            out.push((span_to_source_range(&occurrence_usage.span), TYPE_PROPERTY));
+            if let OccurrenceUsageBody::Brace { elements } = &occurrence_usage.body {
+                for child in elements {
+                    collect_semantic_ranges_occurrence_body_element(ctx, child, out);
+                }
+            }
+        }
+        AUBE::AssertConstraint(_) => {}
     }
 }

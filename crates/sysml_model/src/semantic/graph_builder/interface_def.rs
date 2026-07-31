@@ -7,7 +7,7 @@ use sysml_v2_parser::ast::{
 };
 use url::Url;
 
-use crate::semantic::ast_util::{connection_end_expression, span_to_range};
+use crate::semantic::ast_util::{connection_end_expression, span_to_range, subsetting_target};
 use crate::semantic::graph::SemanticGraph;
 use crate::semantic::model::{ElementKind, NodeId, RelationshipKind};
 use crate::semantic::relationships::{
@@ -29,8 +29,27 @@ fn add_end_decl(
     let range = span_to_range(&wrap.span);
     let qualified = qualified_name_for_node(g, uri, container_prefix, &n.name, "interface end");
     let mut attrs = HashMap::new();
+    // `endType` feeds `add_connection_edges_from_end_typing`'s connection-wiring fallback below
+    // regardless of whether this end is typed (`:`) or reference-subsetted (`::>`/`references`)
+    // -- it resolves via `resolve_expression_endpoint_qualified`, which already understands both
+    // bare names and dotted feature chains as *feature* references, not type names.
     attrs.insert("endType".to_string(), serde_json::json!(&n.type_name));
-    attrs.insert("portType".to_string(), serde_json::json!(&n.type_name));
+    if let Some(reference_target) = subsetting_target(n.references.as_deref()) {
+        // spec42#1/#2: `::>`/`references` names a reference (KerML `ReferenceSubsetting`), not a
+        // type. Previously this always also set `portType`, which feeds the generic
+        // type-resolution diagnostics/edges (`unresolved_type_reference`,
+        // `add_typing_edge_if_exists`) and misfired treating the referenced feature's name as an
+        // unresolved type. Set `referencesFeature` instead, which
+        // `link_subsetting_family_edges_for_node` already resolves into a proper
+        // `ReferenceSubsetting` edge the same way attribute/occurrence usages' `references`
+        // clauses do.
+        attrs.insert(
+            "referencesFeature".to_string(),
+            serde_json::json!(reference_target),
+        );
+    } else {
+        attrs.insert("portType".to_string(), serde_json::json!(&n.type_name));
+    }
     add_node_and_recurse(
         g,
         uri,
@@ -41,7 +60,9 @@ fn add_end_decl(
         attrs,
         Some(parent_id),
     );
-    add_typing_edge_if_exists(g, uri, &qualified, &n.type_name, container_prefix);
+    if n.references.is_none() {
+        add_typing_edge_if_exists(g, uri, &qualified, &n.type_name, container_prefix);
+    }
 }
 
 fn add_ref_decl(

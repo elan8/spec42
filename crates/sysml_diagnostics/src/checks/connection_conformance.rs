@@ -168,6 +168,19 @@ pub(crate) fn collect_connection_conformance_diagnostics(
         if node.element_kind != sysml_model::ElementKind::InterfaceEnd {
             continue;
         }
+        // `end name ::> target;` / `end name references target;` (KerML `ReferenceSubsetting`)
+        // names a reference, not a type -- its effective type is inherited from whatever it
+        // references, not declared on the end itself, so it has no `portType` attribute by
+        // design (see `add_end_decl`). Don't flag it as missing a port type it was never meant
+        // to declare.
+        if node
+            .attributes
+            .get("referencesFeature")
+            .and_then(|value| value.as_str())
+            .is_some()
+        {
+            continue;
+        }
         let Some(port_type) = node
             .attributes
             .get("portType")
