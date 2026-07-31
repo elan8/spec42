@@ -160,6 +160,16 @@ fn enrich_does_not_promote_interface_parameters_to_action_steps() {
 }
 
 #[test]
+#[ignore = "this fixture's `succession validate to checkRoute of status == \"ok\";` line is not \
+            valid SysML v2 at all -- no `to`/`of` clause exists anywhere in the real \
+            `SuccessionAsUsage` grammar (OMG SysML v2.0 spec Sec.8.2.2.13.3). It happened to \
+            silently pass under sysml-v2-parser 0.50.0's more permissive handling; 0.51.1 \
+            correctly rejects it. The valid form (`succession name first A then B;`) is ALSO not \
+            yet supported by the parser -- tracked separately in \
+            https://github.com/elan8/sysml-v2-parser/issues/38, evidenced by real usage in the \
+            SysML v2 release library. This fixture itself needs rewriting to valid syntax once \
+            that lands, not just a parser fix -- tracked in \
+            https://github.com/elan8/spec42/issues/5."]
 fn ast_extract_includes_decision_merge_assign_and_conditional_succession() {
     let input = r#"package P {
   action def Route;

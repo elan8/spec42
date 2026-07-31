@@ -55,6 +55,16 @@ fn then_target_node_name(
                 name
             }
         }
+        // `then perform body;` (Systems Library `Actions.sysml`) -- a reference to an
+        // already-declared perform usage, same "nothing new to push" shape as `Feature`.
+        ThenTarget::Perform(perform_node) => {
+            let name = &perform_node.value.action_name;
+            if name.is_empty() {
+                fallback
+            } else {
+                name.clone()
+            }
+        }
     }
 }
 

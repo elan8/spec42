@@ -134,7 +134,9 @@ mod tests {
 
     #[test]
     fn flowconnection_filter_selects_matrix_subtype() {
-        let filters = vec![FilterExpr::Matches("@SysML::FlowConnectionUsage".to_string())];
+        let filters = vec![FilterExpr::Matches(
+            "@SysML::FlowConnectionUsage".to_string(),
+        )];
         assert_eq!(
             grid_subtype_for_filters(&filters),
             Some("relationship_matrix")
@@ -161,7 +163,9 @@ mod tests {
 
     #[test]
     fn binding_connector_filter_selects_matrix_subtype() {
-        let filters = vec![FilterExpr::Matches("@SysML::BindingConnectorUsage".to_string())];
+        let filters = vec![FilterExpr::Matches(
+            "@SysML::BindingConnectorUsage".to_string(),
+        )];
         assert_eq!(
             grid_subtype_for_filters(&filters),
             Some("relationship_matrix")

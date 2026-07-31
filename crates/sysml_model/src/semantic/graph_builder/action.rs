@@ -21,7 +21,9 @@ use crate::semantic::relationships::{add_edge_if_both_exist, add_typing_edge_if_
 use super::expressions;
 use super::payload::insert_action_payload_attrs;
 use super::state;
-use super::{add_node_and_recurse, attach_feature_properties, qualified_name, qualified_name_for_node};
+use super::{
+    add_node_and_recurse, attach_feature_properties, qualified_name, qualified_name_for_node,
+};
 
 struct ThenActionChain {
     previous: Option<String>,
@@ -67,7 +69,13 @@ impl ThenActionChain {
                     Some(parent_id),
                 );
                 if let Some(previous) = self.previous.as_ref() {
-                    add_edge_if_both_exist(g, uri, previous, &merge_qualified, RelationshipKind::Flow);
+                    add_edge_if_both_exist(
+                        g,
+                        uri,
+                        previous,
+                        &merge_qualified,
+                        RelationshipKind::Flow,
+                    );
                 }
                 self.previous = Some(merge_qualified);
             }
@@ -79,6 +87,21 @@ impl ThenActionChain {
                     return;
                 }
                 let target_qualified = qualified_name(container_prefix, &target_name);
+                let source = self
+                    .previous
+                    .clone()
+                    .unwrap_or_else(|| parent_id.qualified_name.clone());
+                add_edge_if_both_exist(g, uri, &source, &target_qualified, RelationshipKind::Flow);
+                self.previous = Some(target_qualified);
+            }
+            // `then perform body;` (Systems Library `Actions.sysml`) -- succession to an
+            // already-declared perform usage, same reference-not-declaration shape as `Feature`.
+            ThenTarget::Perform(perform_node) => {
+                let target_name = &perform_node.value.action_name;
+                if target_name.is_empty() {
+                    return;
+                }
+                let target_qualified = qualified_name(container_prefix, target_name);
                 let source = self
                     .previous
                     .clone()
@@ -929,6 +952,39 @@ pub(super) fn build_from_action_def_body(
             ActionDefBodyElement::DefaultReferenceUsage(default_ref) => {
                 add_default_reference_usage(g, uri, container_prefix, parent_id, default_ref);
             }
+            // `part`/`item`/`snapshot` (StructureUsageMember) and `assert constraint`
+            // (BehaviorUsageMember) in an action body (GH-13). Materialize part/item/occurrence
+            // the same way every other body kind does; `assert constraint` is a no-op here,
+            // matching `part_def.rs`'s existing `PDBE::AssertConstraint(_) => {}` precedent (no
+            // dedicated action-body assert-constraint graph projection yet).
+            ActionDefBodyElement::PartUsage(part) => {
+                super::usage_builders::materialize_part_usage(
+                    part,
+                    uri,
+                    container_prefix,
+                    Some(parent_id),
+                    g,
+                );
+            }
+            ActionDefBodyElement::ItemUsage(item) => {
+                super::usage_builders::materialize_item_usage(
+                    item,
+                    uri,
+                    container_prefix,
+                    parent_id,
+                    g,
+                );
+            }
+            ActionDefBodyElement::OccurrenceUsage(occ) => {
+                super::usage_builders::materialize_occurrence_usage(
+                    occ,
+                    uri,
+                    container_prefix,
+                    Some(parent_id),
+                    g,
+                );
+            }
+            ActionDefBodyElement::AssertConstraint(_) => {}
         }
     }
 }
@@ -1115,6 +1171,35 @@ pub(super) fn build_from_action_usage_body(
             ActionUsageBodyElement::DefaultReferenceUsage(default_ref) => {
                 add_default_reference_usage(g, uri, container_prefix, parent_id, default_ref);
             }
+            // See the matching arms in `build_from_action_def_body` above.
+            ActionUsageBodyElement::PartUsage(part) => {
+                super::usage_builders::materialize_part_usage(
+                    part,
+                    uri,
+                    container_prefix,
+                    Some(parent_id),
+                    g,
+                );
+            }
+            ActionUsageBodyElement::ItemUsage(item) => {
+                super::usage_builders::materialize_item_usage(
+                    item,
+                    uri,
+                    container_prefix,
+                    parent_id,
+                    g,
+                );
+            }
+            ActionUsageBodyElement::OccurrenceUsage(occ) => {
+                super::usage_builders::materialize_occurrence_usage(
+                    occ,
+                    uri,
+                    container_prefix,
+                    Some(parent_id),
+                    g,
+                );
+            }
+            ActionUsageBodyElement::AssertConstraint(_) => {}
         }
     }
 }

@@ -37,11 +37,23 @@ fn part_def_and_usage_carry_explicit_visibility() {
         }
     "#,
     );
-    assert_eq!(visibility_of(&g, "PrivatePartDef"), Some("Private".to_string()));
-    assert_eq!(visibility_of(&g, "ProtectedPartDef"), Some("Protected".to_string()));
+    assert_eq!(
+        visibility_of(&g, "PrivatePartDef"),
+        Some("Private".to_string())
+    );
+    assert_eq!(
+        visibility_of(&g, "ProtectedPartDef"),
+        Some("Protected".to_string())
+    );
     assert_eq!(visibility_of(&g, "PublicPartDef"), None);
-    assert_eq!(visibility_of(&g, "privatePart"), Some("Private".to_string()));
-    assert_eq!(visibility_of(&g, "protectedPart"), Some("Protected".to_string()));
+    assert_eq!(
+        visibility_of(&g, "privatePart"),
+        Some("Private".to_string())
+    );
+    assert_eq!(
+        visibility_of(&g, "protectedPart"),
+        Some("Protected".to_string())
+    );
     assert_eq!(visibility_of(&g, "publicPart"), None);
 }
 
@@ -58,8 +70,14 @@ fn attribute_def_and_usage_carry_explicit_visibility() {
         }
     "#,
     );
-    assert_eq!(visibility_of(&g, "PrivateAttrDef"), Some("Private".to_string()));
-    assert_eq!(visibility_of(&g, "privateAttr"), Some("Private".to_string()));
+    assert_eq!(
+        visibility_of(&g, "PrivateAttrDef"),
+        Some("Private".to_string())
+    );
+    assert_eq!(
+        visibility_of(&g, "privateAttr"),
+        Some("Private".to_string())
+    );
     assert_eq!(visibility_of(&g, "publicAttr"), None);
 }
 
@@ -73,8 +91,14 @@ fn action_def_and_state_def_carry_explicit_visibility() {
         }
     "#,
     );
-    assert_eq!(visibility_of(&g, "PrivateActionDef"), Some("Private".to_string()));
-    assert_eq!(visibility_of(&g, "ProtectedStateDef"), Some("Protected".to_string()));
+    assert_eq!(
+        visibility_of(&g, "PrivateActionDef"),
+        Some("Private".to_string())
+    );
+    assert_eq!(
+        visibility_of(&g, "ProtectedStateDef"),
+        Some("Protected".to_string())
+    );
 }
 
 #[test]
@@ -93,5 +117,8 @@ fn requirement_and_view_usages_carry_explicit_visibility() {
         visibility_of(&g, "PrivateRequirementDef"),
         Some("Private".to_string())
     );
-    assert_eq!(visibility_of(&g, "privateView"), Some("Private".to_string()));
+    assert_eq!(
+        visibility_of(&g, "privateView"),
+        Some("Private".to_string())
+    );
 }

@@ -5,7 +5,9 @@ use std::collections::HashMap;
 use sysml_v2_parser::ast::{FlowUsage, FlowUsageKind, Node, PayloadFeature};
 use url::Url;
 
-use crate::semantic::ast_util::{attach_membership_visibility, declared_multiplicity, span_to_range};
+use crate::semantic::ast_util::{
+    attach_membership_visibility, declared_multiplicity, span_to_range,
+};
 use crate::semantic::graph::SemanticGraph;
 use crate::semantic::kinds::TYPING_TARGET_KINDS;
 use crate::semantic::model::{FlowStatementDetail, NodeId, RelationshipKind, SemanticEdge};

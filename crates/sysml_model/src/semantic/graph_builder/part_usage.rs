@@ -89,6 +89,8 @@ pub(super) fn build_from_part_usage_body_element(
                         None,
                     );
                 }
+                // See the matching arm in `part_def.rs`'s `PDBE::InterfaceUsage` handling.
+                InterfaceUsage::Declaration { .. } => {}
             }
         }
         PUBE::Perform(perform_node) => {

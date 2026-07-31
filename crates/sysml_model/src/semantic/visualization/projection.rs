@@ -100,7 +100,10 @@ pub fn build_workspace_graph_dto_for_uris(
 /// `render asElementTable { view :>> columnView[N] { ... } }` binding directly on the view usage,
 /// and a `render <name>;` reference to a separately-declared standalone `rendering <name> :>
 /// asElementTable { ... }` usage elsewhere in the workspace.
-pub(crate) fn resolve_grid_column_views(graph: &SysmlGraphDto, view_id: &str) -> Vec<GridColumnViewDto> {
+pub(crate) fn resolve_grid_column_views(
+    graph: &SysmlGraphDto,
+    view_id: &str,
+) -> Vec<GridColumnViewDto> {
     let Some(rendering_child) = graph.nodes.iter().find(|node| {
         node.element_type == "view rendering" && node.parent_id.as_deref() == Some(view_id)
     }) else {
@@ -123,7 +126,8 @@ fn collect_column_views(graph: &SysmlGraphDto, rendering_node_id: &str) -> Vec<G
         .nodes
         .iter()
         .filter(|node| {
-            node.element_type == "view column" && node.parent_id.as_deref() == Some(rendering_node_id)
+            node.element_type == "view column"
+                && node.parent_id.as_deref() == Some(rendering_node_id)
         })
         .map(|node| GridColumnViewDto {
             label: node.name.clone(),
@@ -1006,7 +1010,10 @@ mod column_view_tests {
             .clone();
         let columns = resolve_grid_column_views(&graph, &view_id);
         assert_eq!(columns.len(), 1);
-        assert_eq!(columns[0].rendering_type.as_deref(), Some("asTextualNotation"));
+        assert_eq!(
+            columns[0].rendering_type.as_deref(),
+            Some("asTextualNotation")
+        );
     }
 
     #[test]
@@ -1039,7 +1046,10 @@ mod column_view_tests {
             .clone();
         let columns = resolve_grid_column_views(&graph, &view_id);
         assert_eq!(columns.len(), 1, "expected one resolved column");
-        assert_eq!(columns[0].rendering_type.as_deref(), Some("asTextualNotation"));
+        assert_eq!(
+            columns[0].rendering_type.as_deref(),
+            Some("asTextualNotation")
+        );
     }
 
     #[test]

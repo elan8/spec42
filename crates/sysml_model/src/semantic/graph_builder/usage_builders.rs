@@ -21,7 +21,7 @@ use crate::semantic::ast_util::{
 use crate::semantic::graph::SemanticGraph;
 use crate::semantic::model::{ElementKind, NodeId, RelationshipKind};
 use crate::semantic::reference_resolution::{resolve_member_via_type, ResolveResult};
-use crate::semantic::relationships::add_typing_edge_if_exists;
+use crate::semantic::relationships::{add_edge_if_both_exist, add_typing_edge_if_exists};
 
 use super::expressions;
 use super::occurrence_body;
@@ -33,6 +33,14 @@ use super::{
 
 /// Builds the `part`-usage node (and recurses into its body), wiring the typing edge. Used by
 /// the top-level package body, `part def` bodies, and `part` usage bodies alike.
+///
+/// `ref part name : Type [= value];` (`PartUsage.is_reference`, sysml-v2-parser#10) materializes
+/// as `ElementKind::Ref` instead of `ElementKind::Part` -- mirroring `ref_decl::materialize_ref_decl`
+/// -- and wires a `Reference` edge from the optional value expression, the same way a bare
+/// `ref name = value;` (`RefDecl`) already does. Before that parser fix, `ref part ...` was only
+/// ever reachable as a `RefDecl` via `part_ref_usage`; now the parser can also route it through
+/// `PartUsage`, so this materializer has to make the same is-it-a-reference distinction
+/// `materialize_ref_decl` always made.
 pub(super) fn materialize_part_usage(
     n: &Node<sysml_v2_parser::ast::PartUsage>,
     uri: &Url,
@@ -41,7 +49,8 @@ pub(super) fn materialize_part_usage(
     g: &mut SemanticGraph,
 ) -> NodeId {
     let name = effective_usage_name(&n.name, n.redefines.as_deref());
-    let qualified = qualified_name_for_node(g, uri, container_prefix, name, "part");
+    let kind = if n.is_reference { "ref" } else { "part" };
+    let qualified = qualified_name_for_node(g, uri, container_prefix, name, kind);
     let range = span_to_range(&n.span);
     let mut attrs = HashMap::new();
     attach_membership_visibility(&mut attrs, &n.membership);
@@ -74,17 +83,19 @@ pub(super) fn materialize_part_usage(
     if let Some(r) = subsetting_target(n.redefines.as_deref()) {
         attrs.insert("redefines".to_string(), serde_json::json!(r));
     }
-    if let Some(ref v) = n.value.value {
-        attrs.insert(
-            "value".to_string(),
-            serde_json::json!(expressions::expression_to_debug_string(&v.value.expression)),
-        );
+    let value_expression = n
+        .value
+        .value
+        .as_ref()
+        .map(|v| expressions::expression_to_debug_string(&v.value.expression));
+    if let Some(ref v) = value_expression {
+        attrs.insert("value".to_string(), serde_json::json!(v));
     }
     add_node_and_recurse(
         g,
         uri,
         &qualified,
-        "part",
+        kind,
         name.to_string(),
         range,
         attrs,
@@ -104,6 +115,18 @@ pub(super) fn materialize_part_usage(
     }
     for target in typing_targets(n.typing.as_deref()) {
         add_typing_edge_if_exists(g, uri, &qualified, target, container_prefix);
+    }
+    if n.is_reference {
+        if let Some(value_expression) = value_expression.as_deref() {
+            if let Some(target) = expressions::resolve_expression_endpoint_legacy(
+                g,
+                uri,
+                container_prefix,
+                value_expression,
+            ) {
+                add_edge_if_both_exist(g, uri, &qualified, &target, RelationshipKind::Reference);
+            }
+        }
     }
     if let PartUsageBody::Brace { elements } = &n.body {
         for child in elements {

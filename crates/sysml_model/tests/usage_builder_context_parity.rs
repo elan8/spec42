@@ -215,7 +215,9 @@ fn anonymous_item_redefinition_gets_effective_name_and_typing_in_part_def_body()
         .nodes_named("shape")
         .into_iter()
         .find(|node| node.id.qualified_name == "P::Wheel::shape")
-        .expect("expected the redefining `shape` item usage to be addressable by its effective name");
+        .expect(
+            "expected the redefining `shape` item usage to be addressable by its effective name",
+        );
     assert_eq!(
         shape.attributes.get("redefines").and_then(|v| v.as_str()),
         Some("shape")
