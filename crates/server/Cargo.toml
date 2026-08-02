@@ -21,6 +21,8 @@ embed-kpar-libraries = ["workspace/embed-kpar-libraries"]
 workspace = { path = "../workspace", default-features = false }
 lsp_server = { path = "../lsp_server" }
 sysml_model = { path = "../sysml_model" }
+generator_api = { path = "../generator_api" }
+generator_host = { path = "../generator_host" }
 walkdir = "2"
 kpar = { path = "../kpar" }
 tokio = { version = "1", features = ["full"] }
@@ -32,6 +34,8 @@ toml = "0.8"
 zip = { version = "2", default-features = false, features = ["deflate"] }
 tower-lsp = "0.20"
 rquickjs = "0.11"
+sha2 = { workspace = true }
+tempfile = "3"
 
 [dev-dependencies]
 lsp_server = { path = "../lsp_server" }

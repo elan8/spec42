@@ -1,0 +1,9 @@
+[package]
+name = "spec42-generator-sdk"
+version.workspace = true
+edition.workspace = true
+description = "Rust guest bindings for the Spec42 generator component API"
+license.workspace = true
+
+[dependencies]
+wit-bindgen = "0.59"

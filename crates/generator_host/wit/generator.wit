@@ -1,0 +1,99 @@
+package elan8:spec42-generator@0.1.0;
+
+interface model {
+    record model-info {
+        model-digest: string,
+        spec42-version: string,
+        semantic-api-version: string,
+    }
+
+    record element-summary {
+        handle: string,
+        semantic-id: string,
+        metaclass: string,
+        name: option<string>,
+        qualified-name: string,
+        library-element: bool,
+    }
+
+    record source-range {
+        start-line: u32,
+        start-character: u32,
+        end-line: u32,
+        end-character: u32,
+    }
+
+    record multiplicity {
+        lower: option<string>,
+        upper: option<string>,
+        ordered: bool,
+        unique: option<bool>,
+        implied: bool,
+    }
+
+    record element-detail {
+        summary: element-summary,
+        owner: option<element-summary>,
+        declared-name: option<string>,
+        effective-name: option<string>,
+        source-uri: string,
+        source-range: source-range,
+        definition: bool,
+        documentation: option<string>,
+        short-name: option<string>,
+        direction: option<string>,
+        derived: bool,
+        constant: bool,
+        abstract-flag: bool,
+        variation: bool,
+        individual: bool,
+        conjugated: bool,
+        composite: option<bool>,
+        reference: option<bool>,
+        end: bool,
+        ordered: option<bool>,
+        unique: option<bool>,
+        multiplicity: option<multiplicity>,
+        evaluated-value: option<string>,
+    }
+
+    record relationship {
+        kind: string,
+        source: element-summary,
+        target: element-summary,
+        implied: bool,
+    }
+
+    info: func() -> model-info;
+    roots: func() -> result<list<element-summary>, string>;
+    find: func(metaclass: option<string>) -> result<list<element-summary>, string>;
+    children: func(owner: string) -> result<list<element-summary>, string>;
+    element: func(handle: string) -> result<element-detail, string>;
+    typed-by: func(feature: string) -> result<option<element-summary>, string>;
+    relationships: func(element: string) -> result<list<relationship>, string>;
+    effective-features: func(element: string) -> result<list<element-summary>, string>;
+}
+
+interface artifacts {
+    emit: func(path: string, content: list<u8>) -> result<_, string>;
+}
+
+interface diagnostics {
+    enum level {
+        debug,
+        info,
+        warning,
+        error,
+    }
+
+    log: func(level: level, message: string);
+    report: func(level: level, message: string, element: option<string>);
+}
+
+world generator {
+    import model;
+    import artifacts;
+    import diagnostics;
+
+    export generate: func(args: list<string>) -> result<_, string>;
+}

@@ -1,0 +1,217 @@
+use std::collections::BTreeMap;
+use std::path::{Component, Path};
+
+use serde::{Deserialize, Serialize};
+use thiserror::Error;
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub struct ArtifactLimits {
+    pub max_files: usize,
+    pub max_file_bytes: usize,
+    pub max_total_bytes: usize,
+}
+
+impl Default for ArtifactLimits {
+    fn default() -> Self {
+        Self {
+            max_files: 1_000,
+            max_file_bytes: 16 * 1024 * 1024,
+            max_total_bytes: 128 * 1024 * 1024,
+        }
+    }
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct Artifact {
+    pub path: String,
+    pub content: Vec<u8>,
+}
+
+#[derive(Debug, Error, Clone, PartialEq, Eq)]
+pub enum ArtifactError {
+    #[error("artifact path must not be empty")]
+    EmptyPath,
+    #[error("artifact path `{0}` is absolute or has a platform prefix")]
+    AbsolutePath(String),
+    #[error("artifact path `{0}` contains a forbidden component")]
+    ForbiddenComponent(String),
+    #[error("artifact path `{0}` must use `/` as its separator")]
+    InvalidSeparator(String),
+    #[error("artifact path contains NUL")]
+    Nul,
+    #[error("artifact `{0}` was emitted more than once")]
+    Duplicate(String),
+    #[error("artifact `{path}` is {actual} bytes; the per-file limit is {limit}")]
+    FileTooLarge {
+        path: String,
+        actual: usize,
+        limit: usize,
+    },
+    #[error("generator emitted {actual} files; the limit is {limit}")]
+    TooManyFiles { actual: usize, limit: usize },
+    #[error("generator emitted {actual} bytes; the total-output limit is {limit}")]
+    TotalTooLarge { actual: usize, limit: usize },
+}
+
+#[derive(Debug, Clone)]
+pub struct ArtifactSet {
+    limits: ArtifactLimits,
+    total_bytes: usize,
+    files: BTreeMap<String, Vec<u8>>,
+}
+
+impl ArtifactSet {
+    pub fn new(limits: ArtifactLimits) -> Self {
+        Self {
+            limits,
+            total_bytes: 0,
+            files: BTreeMap::new(),
+        }
+    }
+
+    pub fn emit(&mut self, path: &str, content: Vec<u8>) -> Result<(), ArtifactError> {
+        let normalized = normalize_artifact_path(path)?;
+        if self.files.contains_key(&normalized) {
+            return Err(ArtifactError::Duplicate(normalized));
+        }
+        if content.len() > self.limits.max_file_bytes {
+            return Err(ArtifactError::FileTooLarge {
+                path: normalized,
+                actual: content.len(),
+                limit: self.limits.max_file_bytes,
+            });
+        }
+        let next_count = self.files.len().saturating_add(1);
+        if next_count > self.limits.max_files {
+            return Err(ArtifactError::TooManyFiles {
+                actual: next_count,
+                limit: self.limits.max_files,
+            });
+        }
+        let next_total = self.total_bytes.saturating_add(content.len());
+        if next_total > self.limits.max_total_bytes {
+            return Err(ArtifactError::TotalTooLarge {
+                actual: next_total,
+                limit: self.limits.max_total_bytes,
+            });
+        }
+        self.total_bytes = next_total;
+        self.files.insert(normalized, content);
+        Ok(())
+    }
+
+    pub fn len(&self) -> usize {
+        self.files.len()
+    }
+
+    pub fn is_empty(&self) -> bool {
+        self.files.is_empty()
+    }
+
+    pub fn total_bytes(&self) -> usize {
+        self.total_bytes
+    }
+
+    pub fn iter(&self) -> impl Iterator<Item = Artifact> + '_ {
+        self.files.iter().map(|(path, content)| Artifact {
+            path: path.clone(),
+            content: content.clone(),
+        })
+    }
+
+    pub fn get(&self, path: &str) -> Option<&[u8]> {
+        self.files.get(path).map(Vec::as_slice)
+    }
+}
+
+pub fn normalize_artifact_path(path: &str) -> Result<String, ArtifactError> {
+    if path.is_empty() {
+        return Err(ArtifactError::EmptyPath);
+    }
+    if path.contains('\0') {
+        return Err(ArtifactError::Nul);
+    }
+    if path.contains('\\') {
+        return Err(ArtifactError::InvalidSeparator(path.to_owned()));
+    }
+    if path.starts_with('/') || has_windows_prefix(path) {
+        return Err(ArtifactError::AbsolutePath(path.to_owned()));
+    }
+
+    let parsed = Path::new(path);
+    let mut segments = Vec::new();
+    for component in parsed.components() {
+        match component {
+            Component::Normal(value) => {
+                let value = value
+                    .to_str()
+                    .ok_or_else(|| ArtifactError::ForbiddenComponent(path.to_owned()))?;
+                if value.is_empty() || value == "." || value == ".." {
+                    return Err(ArtifactError::ForbiddenComponent(path.to_owned()));
+                }
+                segments.push(value);
+            }
+            _ => return Err(ArtifactError::ForbiddenComponent(path.to_owned())),
+        }
+    }
+    if segments.is_empty()
+        || path
+            .split('/')
+            .any(|part| part.is_empty() || part == "." || part == "..")
+    {
+        return Err(ArtifactError::ForbiddenComponent(path.to_owned()));
+    }
+    Ok(segments.join("/"))
+}
+
+fn has_windows_prefix(path: &str) -> bool {
+    let bytes = path.as_bytes();
+    bytes.len() >= 2 && bytes[0].is_ascii_alphabetic() && bytes[1] == b':'
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn rejects_escape_and_platform_paths() {
+        for path in [
+            "../escape",
+            "a/../../escape",
+            "/absolute",
+            "C:/drive",
+            "a\\b",
+            "a//b",
+        ] {
+            assert!(normalize_artifact_path(path).is_err(), "accepted {path}");
+        }
+    }
+
+    #[test]
+    fn stages_binary_artifacts_in_path_order() {
+        let mut set = ArtifactSet::new(ArtifactLimits::default());
+        set.emit("z.bin", vec![0, 255]).unwrap();
+        set.emit("a/file.txt", b"hello".to_vec()).unwrap();
+        let paths = set.iter().map(|file| file.path).collect::<Vec<_>>();
+        assert_eq!(paths, ["a/file.txt", "z.bin"]);
+        assert_eq!(set.total_bytes(), 7);
+    }
+
+    #[test]
+    fn rejects_duplicates_and_limits() {
+        let mut set = ArtifactSet::new(ArtifactLimits {
+            max_files: 1,
+            max_file_bytes: 2,
+            max_total_bytes: 2,
+        });
+        set.emit("a", vec![1, 2]).unwrap();
+        assert!(matches!(
+            set.emit("a", vec![]),
+            Err(ArtifactError::Duplicate(_))
+        ));
+        assert!(matches!(
+            set.emit("b", vec![]),
+            Err(ArtifactError::TooManyFiles { .. })
+        ));
+    }
+}

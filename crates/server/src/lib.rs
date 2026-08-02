@@ -7,6 +7,7 @@ pub mod diagrams;
 #[cfg(test)]
 pub mod elk_layout;
 pub mod environment;
+pub mod generation;
 pub mod headless_renderer;
 pub mod host_snapshot;
 pub mod kpar_libraries;
@@ -179,6 +180,7 @@ pub async fn run_cli(cli: Cli) -> Result<ExitCode, String> {
         None => run_lsp(&cli).await,
         Some(Command::Lsp) => run_lsp(&cli).await,
         Some(Command::Check(args)) => run_check(&cli, args),
+        Some(Command::Generate(args)) => generation::run_generate(&cli, args),
         Some(Command::Doctor(args)) => run_doctor(&cli, args),
         Some(Command::ExplainDiagnostic(args)) => run_explain_diagnostic(&cli, args),
         Some(Command::ModelSummary(args)) => run_model_summary(&cli, args),
