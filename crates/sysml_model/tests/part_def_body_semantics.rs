@@ -419,10 +419,16 @@ fn part_def_body_bind_emits_bind_edge_between_nested_features() {
     let doc = workspace_doc(
         "part_def_bind.sysml",
         r#"package P {
-  part def Assembly {
-    part source;
-    part target;
-    bind source = target;
+  port def SignalPort;
+  part def Component {
+    port internalPort : SignalPort;
+  }
+  part def Boundary {
+    port boundaryPort : SignalPort;
+  }
+  part def Assembly :> Boundary {
+    part component : Component;
+    bind boundaryPort = component.internalPort;
   }
 }"#,
     );
@@ -438,11 +444,11 @@ fn part_def_body_bind_emits_bind_edge_between_nested_features() {
     assert_eq!(bind_edges.len(), 1, "expected exactly one Bind edge");
     let (source, target, _, _) = &bind_edges[0];
     assert!(
-        source.ends_with("::Assembly::source"),
+        source.ends_with("::Boundary::boundaryPort"),
         "unexpected bind source: {source}"
     );
     assert!(
-        target.ends_with("::Assembly::target"),
+        target.ends_with("::Component::internalPort"),
         "unexpected bind target: {target}"
     );
 }
