@@ -1,12 +1,18 @@
 //! Shared data types for Spec42's core WebAssembly generator ABI.
 //!
 //! The executable ABI is intentionally small: one Postcard query import plus
-//! dedicated artifact and diagnostic imports. No custom metadata is required.
+//! a diagnostic import. Generated artifacts are returned from the guest entrypoint.
 
 use serde::{Deserialize, Serialize};
 
-pub const ABI_VERSION: u32 = 1;
+pub const ABI_VERSION: u32 = 2;
 pub const IMPORT_MODULE: &str = "spec42";
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct Artifact {
+    pub file_path: String,
+    pub contents: Vec<u8>,
+}
 
 pub mod operation {
     pub const INFO: i32 = 0;

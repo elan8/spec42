@@ -4,7 +4,9 @@ mod artifacts;
 mod diagnostics;
 mod model;
 
-pub use artifacts::{Artifact, ArtifactError, ArtifactLimits, ArtifactSet};
+pub use artifacts::{
+    Artifact, ArtifactError, ArtifactLimits, ArtifactSet, MAX_ARTIFACT_PATH_BYTES,
+};
 pub use diagnostics::{GeneratorDiagnostic, GeneratorDiagnosticLevel};
 pub use model::{
     ElementDetail, ElementSummary, GeneratorModelView, ModelQueryError, MultiplicitySummary,

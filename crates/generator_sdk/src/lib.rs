@@ -4,10 +4,12 @@ use serde::de::DeserializeOwned;
 use serde::Serialize;
 
 pub use spec42_generator_protocol as protocol;
-pub use spec42_generator_protocol::{ElementDetail, ElementSummary, Multiplicity, Relationship};
+pub use spec42_generator_protocol::{
+    Artifact, ElementDetail, ElementSummary, Multiplicity, Relationship,
+};
 
 pub trait Guest {
-    fn generate(args: Vec<String>) -> Result<(), String>;
+    fn generate(args: Vec<String>) -> Result<Vec<Artifact>, String>;
 }
 
 #[cfg(target_arch = "wasm32")]
@@ -19,14 +21,6 @@ unsafe extern "C" {
         request_len: i32,
         response_ptr: i32,
         response_capacity: i32,
-    ) -> i64;
-    fn emit(
-        path_ptr: i32,
-        path_len: i32,
-        content_ptr: i32,
-        content_len: i32,
-        error_ptr: i32,
-        error_capacity: i32,
     ) -> i64;
     fn diagnostic(
         level: i32,
@@ -113,47 +107,6 @@ pub mod model {
     }
 }
 
-pub mod artifacts {
-    #[cfg(target_arch = "wasm32")]
-    pub fn emit(path: &str, content: &[u8]) -> Result<(), String> {
-        let mut error = vec![0; 4096];
-        loop {
-            let status = unsafe {
-                super::emit(
-                    path.as_ptr() as i32,
-                    path.len() as i32,
-                    content.as_ptr() as i32,
-                    content.len() as i32,
-                    error.as_mut_ptr() as i32,
-                    error.len() as i32,
-                )
-            };
-            if status == 0 {
-                return Ok(());
-            }
-            if status < 0 {
-                let required = usize::try_from(-status)
-                    .map_err(|_| "host returned an invalid error size".to_owned())?;
-                error.resize(required, 0);
-                continue;
-            }
-            let length = usize::try_from(status)
-                .map_err(|_| "host returned an invalid error length".to_owned())?;
-            if length > error.len() {
-                return Err("host error exceeded the supplied buffer".to_owned());
-            }
-            return String::from_utf8(error[..length].to_vec())
-                .map(Err)
-                .unwrap_or_else(|decode_error| Err(decode_error.to_string()));
-        }
-    }
-
-    #[cfg(not(target_arch = "wasm32"))]
-    pub fn emit(_: &str, _: &[u8]) -> Result<(), String> {
-        panic!("Spec42 artifact emission is only available in WebAssembly guests")
-    }
-}
-
 pub mod diagnostics {
     pub use spec42_generator_protocol::Level;
 
@@ -209,7 +162,9 @@ pub fn run_guest<T: Guest>(args_ptr: i32, args_len: i32) -> u64 {
         .map_err(|error| format!("invalid generator arguments: {error}"))
         .and_then(T::generate);
     let output = postcard::to_allocvec(&result)
-        .unwrap_or_else(|error| postcard::to_allocvec(&Err::<(), _>(error.to_string())).unwrap())
+        .unwrap_or_else(|error| {
+            postcard::to_allocvec(&Err::<Vec<Artifact>, _>(error.to_string())).unwrap()
+        })
         .into_boxed_slice();
     let length = output.len() as u64;
     let pointer = Box::into_raw(output) as *mut u8 as u64;

@@ -8,6 +8,7 @@ use generator_api::{
     ArtifactLimits, ArtifactSet, ElementDetail as ApiElementDetail,
     ElementSummary as ApiElementSummary, GeneratorDiagnostic, GeneratorDiagnosticLevel,
     GeneratorModelView, MultiplicitySummary as ApiMultiplicity, RelationshipSummary,
+    MAX_ARTIFACT_PATH_BYTES,
 };
 use serde::{de::DeserializeOwned, Deserialize, Serialize};
 use sha2::{Digest, Sha256};
@@ -20,7 +21,10 @@ use wasmtime::{
 };
 
 pub const GENERATOR_ABI_VERSION: u32 = protocol::ABI_VERSION;
-const MAX_TRANSFER_BYTES: usize = 64 * 1024 * 1024;
+const MAX_QUERY_TRANSFER_BYTES: usize = 64 * 1024 * 1024;
+const MAX_POSTCARD_ARTIFACT_OVERHEAD_BYTES: usize = 20;
+const MAX_POSTCARD_RESULT_OVERHEAD_BYTES: usize = 16;
+const MAX_GENERATOR_ERROR_RESULT_BYTES: usize = 64 * 1024;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 pub struct RuntimeLimits {
@@ -211,11 +215,9 @@ impl GeneratorRuntime {
             &self.engine,
             HostState {
                 model,
-                artifacts: ArtifactSet::new(artifact_limits),
                 diagnostics: Vec::new(),
                 store_limits,
                 query_count: 0,
-                output_policy_violation: None,
             },
         );
         store.limiter(|state| &mut state.store_limits);
@@ -254,25 +256,23 @@ impl GeneratorRuntime {
         });
 
         let started = Instant::now();
-        let guest_result =
-            execute_guest(&mut store, &linker, &prepared.module, args, &cancellation);
+        let guest_result = execute_guest(
+            &mut store,
+            &linker,
+            &prepared.module,
+            args,
+            artifact_limits,
+            &cancellation,
+        );
         let _ = deadline_tx.send(());
         let _ = deadline_thread.join();
-        guest_result?;
-
-        if let Some(message) = store.data().output_policy_violation.clone() {
-            return Err(GeneratorHostError {
-                category: GeneratorFailureCategory::OutputPolicy,
-                phase: "artifact-staging",
-                message,
-            });
-        }
+        let artifacts = guest_result?;
         let duration = started.elapsed();
         let remaining_fuel = store.get_fuel().unwrap_or(0);
         let fuel_consumed = runtime_limits.fuel.saturating_sub(remaining_fuel);
         let state = store.into_data();
         Ok(GeneratorExecution {
-            artifacts: state.artifacts,
+            artifacts,
             diagnostics: state.diagnostics,
             generator_digest: prepared.generator_digest.clone(),
             duration,
@@ -335,8 +335,9 @@ fn execute_guest(
     linker: &Linker<HostState>,
     module: &Module,
     args: &[String],
+    artifact_limits: ArtifactLimits,
     cancellation: &CancellationHandle,
-) -> Result<(), GeneratorHostError> {
+) -> Result<ArtifactSet, GeneratorHostError> {
     let instance = linker.instantiate(&mut *store, module).map_err(|error| {
         classify_wasmtime_error("guest-instantiation", error.to_string(), cancellation)
     })?;
@@ -377,11 +378,12 @@ fn execute_guest(
         })? as u64;
     let output_ptr = (packed & u32::MAX as u64) as u32 as usize;
     let output_len = (packed >> 32) as usize;
-    if output_len > MAX_TRANSFER_BYTES {
-        return Err(incompatible(
-            "guest-execution",
-            "generator result exceeds the ABI transfer limit",
-        ));
+    if output_len > max_artifact_result_bytes(artifact_limits) {
+        return Err(GeneratorHostError {
+            category: GeneratorFailureCategory::OutputPolicy,
+            phase: "artifact-validation",
+            message: "generator result exceeds the configured artifact limits".to_owned(),
+        });
     }
     let mut output = vec![0; output_len];
     memory
@@ -392,26 +394,87 @@ fn execute_guest(
         .map_err(|error| {
             classify_wasmtime_error("guest-execution", error.to_string(), cancellation)
         })?;
-    let result: Result<(), String> = postcard::from_bytes(&output).map_err(|error| {
-        incompatible(
+    validate_artifact_result_header(&output, artifact_limits.max_files)?;
+    let (result, remaining): (Result<Vec<protocol::Artifact>, String>, _) =
+        postcard::take_from_bytes(&output).map_err(|error| {
+            incompatible(
+                "guest-execution",
+                format!("generator returned an invalid result: {error}"),
+            )
+        })?;
+    if !remaining.is_empty() {
+        return Err(incompatible(
             "guest-execution",
-            format!("generator returned an invalid result: {error}"),
-        )
-    })?;
-    result.map_err(|message| GeneratorHostError {
+            "generator result contains trailing bytes",
+        ));
+    }
+    let returned = result.map_err(|message| GeneratorHostError {
         category: GeneratorFailureCategory::GeneratorError,
         phase: "guest-execution",
         message,
-    })
+    })?;
+    validate_returned_artifacts(returned, artifact_limits)
+}
+
+fn max_artifact_result_bytes(limits: ArtifactLimits) -> usize {
+    limits
+        .max_total_bytes
+        .saturating_add(
+            limits
+                .max_files
+                .saturating_mul(MAX_ARTIFACT_PATH_BYTES + MAX_POSTCARD_ARTIFACT_OVERHEAD_BYTES),
+        )
+        .saturating_add(MAX_POSTCARD_RESULT_OVERHEAD_BYTES)
+        .max(MAX_GENERATOR_ERROR_RESULT_BYTES)
+        .min(i32::MAX as usize)
+}
+
+fn validate_artifact_result_header(
+    output: &[u8],
+    max_files: usize,
+) -> Result<(), GeneratorHostError> {
+    let Ok((variant, remaining)) = postcard::take_from_bytes::<u32>(output) else {
+        return Ok(());
+    };
+    if variant != 0 {
+        return Ok(());
+    }
+    let Ok((count, _)) = postcard::take_from_bytes::<u32>(remaining) else {
+        return Ok(());
+    };
+    let count = count as usize;
+    if count > max_files {
+        return Err(GeneratorHostError {
+            category: GeneratorFailureCategory::OutputPolicy,
+            phase: "artifact-validation",
+            message: format!("generator returned {count} files; the limit is {max_files}"),
+        });
+    }
+    Ok(())
+}
+
+fn validate_returned_artifacts(
+    returned: Vec<protocol::Artifact>,
+    limits: ArtifactLimits,
+) -> Result<ArtifactSet, GeneratorHostError> {
+    let mut artifacts = ArtifactSet::new(limits);
+    for artifact in returned {
+        artifacts
+            .emit(&artifact.file_path, artifact.contents)
+            .map_err(|error| GeneratorHostError {
+                category: GeneratorFailureCategory::OutputPolicy,
+                phase: "artifact-validation",
+                message: error.to_string(),
+            })?;
+    }
+    Ok(artifacts)
 }
 
 struct HostState {
     model: Arc<GeneratorModelView>,
-    artifacts: ArtifactSet,
     diagnostics: Vec<GeneratorDiagnostic>,
     store_limits: StoreLimits,
     query_count: u64,
-    output_policy_violation: Option<String>,
 }
 
 impl HostState {
@@ -434,33 +497,6 @@ fn add_host_functions(linker: &mut Linker<HostState>) -> wasmtime::Result<()> {
             let request = read_guest(&mut caller, request_ptr, request_len)?;
             let response = handle_query(caller.data_mut(), operation, &request)?;
             write_guest_response(&mut caller, response_ptr, response_capacity, &response)
-        },
-    )?;
-    linker.func_wrap(
-        protocol::IMPORT_MODULE,
-        "emit",
-        |mut caller: Caller<'_, HostState>,
-         path_ptr: i32,
-         path_len: i32,
-         content_ptr: i32,
-         content_len: i32,
-         error_ptr: i32,
-         error_capacity: i32|
-         -> wasmtime::Result<i64> {
-            let path = read_guest_string(&mut caller, path_ptr, path_len)?;
-            let content = read_guest(&mut caller, content_ptr, content_len)?;
-            let result = caller.data_mut().artifacts.emit(&path, content);
-            match result {
-                Ok(()) => Ok(0),
-                Err(error) => {
-                    let message = error.to_string();
-                    caller
-                        .data_mut()
-                        .output_policy_violation
-                        .get_or_insert_with(|| message.clone());
-                    write_guest_response(&mut caller, error_ptr, error_capacity, message.as_bytes())
-                }
-            }
         },
     )?;
     linker.func_wrap(
@@ -605,7 +641,7 @@ fn transfer_range(pointer: i32, length: i32) -> wasmtime::Result<(usize, usize)>
         .map_err(|_| wasmtime::Error::msg("negative guest memory pointer"))?;
     let length = usize::try_from(length)
         .map_err(|_| wasmtime::Error::msg("negative guest memory length"))?;
-    if length > MAX_TRANSFER_BYTES {
+    if length > MAX_QUERY_TRANSFER_BYTES {
         return Err(wasmtime::Error::msg("guest transfer exceeds the ABI limit"));
     }
     Ok((pointer, length))
@@ -641,7 +677,7 @@ fn write_guest_response(
     bytes: &[u8],
 ) -> wasmtime::Result<i64> {
     let (pointer, capacity) = transfer_range(pointer, capacity)?;
-    if bytes.len() > MAX_TRANSFER_BYTES {
+    if bytes.len() > MAX_QUERY_TRANSFER_BYTES {
         return Err(wasmtime::Error::msg("host response exceeds the ABI limit"));
     }
     if bytes.len() > capacity {
@@ -814,5 +850,74 @@ mod tests {
         assert_eq!(error.category, GeneratorFailureCategory::ApiIncompatible);
         assert_eq!(error.phase, "api-compatibility");
         assert_eq!(error.message, "module does not export `memory`");
+    }
+
+    #[test]
+    fn returned_artifacts_are_validated_and_sorted() {
+        let artifacts = validate_returned_artifacts(
+            vec![
+                protocol::Artifact {
+                    file_path: "z.bin".to_owned(),
+                    contents: vec![0, 255],
+                },
+                protocol::Artifact {
+                    file_path: "a/report.txt".to_owned(),
+                    contents: b"report".to_vec(),
+                },
+            ],
+            ArtifactLimits::default(),
+        )
+        .expect("valid returned artifacts");
+
+        assert_eq!(
+            artifacts
+                .iter()
+                .map(|artifact| artifact.path)
+                .collect::<Vec<_>>(),
+            ["a/report.txt", "z.bin"]
+        );
+    }
+
+    #[test]
+    fn duplicate_returned_paths_are_output_policy_failures() {
+        let error = validate_returned_artifacts(
+            vec![
+                protocol::Artifact {
+                    file_path: "report.txt".to_owned(),
+                    contents: vec![],
+                },
+                protocol::Artifact {
+                    file_path: "report.txt".to_owned(),
+                    contents: vec![],
+                },
+            ],
+            ArtifactLimits::default(),
+        )
+        .expect_err("duplicate path should fail");
+
+        assert_eq!(error.category, GeneratorFailureCategory::OutputPolicy);
+        assert_eq!(error.phase, "artifact-validation");
+        assert!(error.message.contains("returned more than once"));
+    }
+
+    #[test]
+    fn returned_artifact_count_is_bounded_before_deserialization() {
+        let encoded = postcard::to_allocvec(&Ok::<_, String>(vec![
+            protocol::Artifact {
+                file_path: "a".to_owned(),
+                contents: vec![],
+            },
+            protocol::Artifact {
+                file_path: "b".to_owned(),
+                contents: vec![],
+            },
+        ]))
+        .expect("encode result");
+
+        let error = validate_artifact_result_header(&encoded, 1)
+            .expect_err("artifact count over the limit should fail");
+        assert_eq!(error.category, GeneratorFailureCategory::OutputPolicy);
+        assert_eq!(error.phase, "artifact-validation");
+        assert_eq!(error.message, "generator returned 2 files; the limit is 1");
     }
 }

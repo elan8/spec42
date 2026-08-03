@@ -1,9 +1,9 @@
-use spec42_generator_sdk::{artifacts, diagnostics, export, model, Guest};
+use spec42_generator_sdk::{diagnostics, export, model, Artifact, Guest};
 
 struct ExampleGenerator;
 
 impl Guest for ExampleGenerator {
-    fn generate(args: Vec<String>) -> Result<(), String> {
+    fn generate(args: Vec<String>) -> Result<Vec<Artifact>, String> {
         let info = model::info();
         let parts = model::find(Some("PartDefinition"))?;
 
@@ -35,25 +35,32 @@ impl Guest for ExampleGenerator {
                 ));
             }
         }
-        artifacts::emit("README.md", markdown.as_bytes())?;
-
         let names = parts
             .iter()
             .map(|part| format!("\"{}\"", part.qualified_name.replace('"', "\\\"")))
             .collect::<Vec<_>>()
             .join(",\n  ");
-        artifacts::emit("model/parts.json", format!("[\n  {names}\n]\n").as_bytes())?;
+        let parts_json = format!("[\n  {names}\n]\n");
         diagnostics::log(
             diagnostics::Level::Info,
-            &format!("emitted {} part definition(s)", parts.len()),
+            &format!("generated {} part definition(s)", parts.len()),
         );
-        if args.iter().any(|arg| arg == "error-after-emit") {
-            return Err("requested failure after emission".to_owned());
+        if args.iter().any(|arg| arg == "error-after-build") {
+            return Err("requested failure after building artifacts".to_owned());
         }
-        if args.iter().any(|arg| arg == "trap-after-emit") {
-            panic!("requested trap after emission");
+        if args.iter().any(|arg| arg == "trap-after-build") {
+            panic!("requested trap after building artifacts");
         }
-        Ok(())
+        Ok(vec![
+            Artifact {
+                file_path: "README.md".to_owned(),
+                contents: markdown.into_bytes(),
+            },
+            Artifact {
+                file_path: "model/parts.json".to_owned(),
+                contents: parts_json.into_bytes(),
+            },
+        ])
     }
 }
 

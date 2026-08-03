@@ -1,6 +1,6 @@
 # Generator threat model
 
-The generator module, its bytes, arguments, emitted paths, diagnostic strings, handles, and all
+The generator module, its bytes, arguments, returned paths, diagnostic strings, handles, and all
 returned guest values are untrusted. Workspace model sources are trusted only to the same extent as
 normal `spec42 check`; generation introduces no parser or linker.
 
@@ -13,16 +13,16 @@ normal `spec42 check`; generation introduces no parser or linker.
 
 ## Controls
 
-- The linker supplies only `spec42.query`, `spec42.emit`, and `spec42.diagnostic`. No WASI,
+- The linker supplies only `spec42.query` and `spec42.diagnostic`. No WASI,
   network, filesystem, environment, clock, random, secret, or subprocess interfaces are linked.
 - The core ABI validates memory ranges, transfer sizes, UTF-8, Postcard payloads, operation codes,
-  and diagnostic levels. The facade validates opaque handles; artifact collection validates paths,
-  duplicates, counts, and byte totals; diagnostics and query results are bounded.
+  and diagnostic levels. The facade validates opaque handles; returned artifacts are validated for
+  paths, duplicates, counts, and byte totals; diagnostics and query results are bounded.
 - A fresh store and host state are used per call. Wasmtime traps are returned as categorized
   errors. Store memory limits, fuel, epoch wall-time interruption, and a host cancellation flag
   limit denial of service.
 - Paths are normalized without guest-controlled canonicalization. The transaction rejects symlinks
-  at the output root, at emitted path components, and anywhere copied from an existing output tree.
+  at the output root, at returned path components, and anywhere copied from an existing output tree.
   Staging is a private sibling and final replacement uses same-filesystem renames with rollback.
 - The manifest permits replacement only when the existing bytes still match the prior owned hash;
   otherwise explicit `--force` is required. Stale or unrecorded files are never deleted.

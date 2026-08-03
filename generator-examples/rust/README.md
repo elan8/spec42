@@ -17,6 +17,6 @@ cargo run -p server --bin spec42 -- generate \
   -- target=rust
 ```
 
-Spec42 loads the module directly with Wasmtime. The guest receives only the `spec42.query`,
-`spec42.emit`, and `spec42.diagnostic` imports. It does not receive WASI filesystem, network,
-environment, clock, random, or subprocess imports.
+Spec42 loads the module directly with Wasmtime. The guest receives only the `spec42.query` and
+`spec42.diagnostic` imports, and returns its generated files from the entrypoint. It does not
+receive WASI filesystem, network, environment, clock, random, or subprocess imports.

@@ -4,6 +4,8 @@ use std::path::{Component, Path};
 use serde::{Deserialize, Serialize};
 use thiserror::Error;
 
+pub const MAX_ARTIFACT_PATH_BYTES: usize = 4 * 1024;
+
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 pub struct ArtifactLimits {
     pub max_files: usize,
@@ -39,7 +41,9 @@ pub enum ArtifactError {
     InvalidSeparator(String),
     #[error("artifact path contains NUL")]
     Nul,
-    #[error("artifact `{0}` was emitted more than once")]
+    #[error("artifact path is {actual} bytes; the path limit is {limit}")]
+    PathTooLong { actual: usize, limit: usize },
+    #[error("artifact `{0}` was returned more than once")]
     Duplicate(String),
     #[error("artifact `{path}` is {actual} bytes; the per-file limit is {limit}")]
     FileTooLarge {
@@ -47,9 +51,9 @@ pub enum ArtifactError {
         actual: usize,
         limit: usize,
     },
-    #[error("generator emitted {actual} files; the limit is {limit}")]
+    #[error("generator returned {actual} files; the limit is {limit}")]
     TooManyFiles { actual: usize, limit: usize },
-    #[error("generator emitted {actual} bytes; the total-output limit is {limit}")]
+    #[error("generator returned {actual} bytes; the total-output limit is {limit}")]
     TotalTooLarge { actual: usize, limit: usize },
 }
 
@@ -128,6 +132,12 @@ pub fn normalize_artifact_path(path: &str) -> Result<String, ArtifactError> {
     if path.is_empty() {
         return Err(ArtifactError::EmptyPath);
     }
+    if path.len() > MAX_ARTIFACT_PATH_BYTES {
+        return Err(ArtifactError::PathTooLong {
+            actual: path.len(),
+            limit: MAX_ARTIFACT_PATH_BYTES,
+        });
+    }
     if path.contains('\0') {
         return Err(ArtifactError::Nul);
     }
@@ -185,6 +195,18 @@ mod tests {
         ] {
             assert!(normalize_artifact_path(path).is_err(), "accepted {path}");
         }
+    }
+
+    #[test]
+    fn rejects_overlong_paths() {
+        let path = "a".repeat(MAX_ARTIFACT_PATH_BYTES + 1);
+        assert_eq!(
+            normalize_artifact_path(&path),
+            Err(ArtifactError::PathTooLong {
+                actual: MAX_ARTIFACT_PATH_BYTES + 1,
+                limit: MAX_ARTIFACT_PATH_BYTES,
+            })
+        );
     }
 
     #[test]

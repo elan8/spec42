@@ -4,7 +4,7 @@ Spec42 can run a language-neutral core WebAssembly module against the same immut
 snapshot used by its normal workspace engine:
 
 ```sh
-spec42 generate generator.wasm model.sysml --output generated -- target=rust
+spec42 generate generator.wasm model.sysml --output generated
 ```
 
 `--output` is mandatory. This avoids an implicit write location. A model path may be one SysML or
@@ -13,28 +13,28 @@ library-path options apply before `generate` just as they do for `check`.
 
 Generation stops before guest instantiation when validation contains an error. Warnings are printed
 and are also present in JSON reports. The host does not expose source mutation or an alternative
-parser/linker: `GeneratorModelView` reads one `HostWorkspaceSnapshot` produced by the normal engine.
+parser/linker: its read-only model view comes from one immutable snapshot produced by the normal
+workspace engine.
 
 ## Guest contract
 
 The public contract is the versioned core WebAssembly ABI defined by
-[`spec42-generator-protocol`](../../crates/generator_protocol). A module imports only three
+[`spec42-generator-protocol`](../../crates/generator_protocol). A module imports only two
 functions from the `spec42` module:
 
 - `query`: deterministic, read-only semantic queries encoded with Postcard;
-- `emit`: bounded, staged artifact bytes passed without serialization;
 - `diagnostic`: bounded logs and element-associated diagnostics.
 
 It exports `memory`, `spec42_alloc`, `spec42_dealloc`, and `spec42_generate`. Arguments after CLI
-`--` are passed verbatim. Modules requiring WASI, filesystem, sockets, environment variables,
-clocks, random, or subprocess imports fail compatibility checking because those imports are never
-linked.
+`--` are passed verbatim. The entrypoint returns a Postcard-encoded result containing a list of
+records with a UTF-8 `file_path` and binary `contents`. Modules requiring WASI, filesystem, sockets,
+environment variables, clocks, random, or subprocess imports fail compatibility checking because
+those imports are never linked.
 
-The first-party Rust SDK is in [`crates/generator_sdk`](../../crates/generator_sdk), and a standalone
-two-file example is in [`generator-examples/rust`](../../generator-examples/rust). Build guests for
-`wasm32-unknown-unknown` and pass the resulting core module directly to Spec42. No metadata or
-post-processing step is required. Using a WASI target would intentionally introduce imports that
-this host refuses.
+Any language or toolchain that can produce the required core WebAssembly imports and exports can
+implement this contract. Pass the resulting core module directly to Spec42; no metadata or
+post-processing step is required. Toolchains must not introduce WASI imports because this host does
+not link them.
 
 ## Output ownership and transactions
 
@@ -42,7 +42,7 @@ Generated paths use `/`, are relative, and reject empty segments, `.`, `..`, abs
 prefixes, backslashes, and NUL. The initial policy is:
 
 - binary contents are preserved byte-for-byte;
-- duplicate emission is an invocation failure;
+- duplicate returned paths are an invocation failure;
 - unowned or locally modified files conflict unless `--force` is explicit;
 - files absent from the current generation are never deleted;
 - `.spec42-generator-manifest.json` records generator, model, API, Spec42, and artifact hashes;
@@ -61,8 +61,8 @@ must still never delete a path absent from the prior manifest.
 ## Limits and exit codes
 
 Defaults are 256 MiB guest memory, 100 million fuel units, 30 seconds wall time, 1,000 files,
-16 MiB per file, 128 MiB total output, and 50,000 elements per query result. CLI limit flags can
-reduce or increase those values explicitly.
+4 KiB per returned path, 16 MiB per file, 128 MiB total output, and 50,000 elements per query
+result. CLI limit flags can reduce or increase the configurable values explicitly.
 
 | Code | Meaning |
 | ---: | --- |
