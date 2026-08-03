@@ -34,10 +34,27 @@ function mapPortDetail(port: InterconnectionScenePortDto) {
   };
 }
 
+function rootCoverage(rootId: string, scene: InterconnectionSceneDto): number {
+  const prefix = `${rootId}.`;
+  return scene.nodes.filter((node) => node.id === rootId || node.id.startsWith(prefix)).length;
+}
+
+function selectRoot(scene: InterconnectionSceneDto): string | null {
+  return [...scene.view.rootIds].sort((left, right) => {
+    const coverageDelta = rootCoverage(right, scene) - rootCoverage(left, scene);
+    if (coverageDelta !== 0) return coverageDelta;
+    const depthDelta = left.split(".").length - right.split(".").length;
+    if (depthDelta !== 0) return depthDelta;
+    return left.localeCompare(right);
+  })[0] ?? null;
+}
+
 export function prepareInterconnectionScene(
   scene: InterconnectionSceneDto,
   visualization: VisualizationPayload,
 ): InterconnectionPreparedView {
+  const selectedRoot = selectRoot(scene);
+  const selectedRootHasCoverage = selectedRoot !== null && rootCoverage(selectedRoot, scene) > 0;
   const nodeIds = new Set(scene.nodes.map((node) => node.id));
   const nodes: InterconnectionPreparedNode[] = scene.nodes.map((node) => {
     const nodePorts = portsForNode(node.id, scene.ports);
@@ -64,7 +81,11 @@ export function prepareInterconnectionScene(
   });
 
   for (const container of scene.containers) {
-    if (nodeIds.has(container.id)) continue;
+    const inSelectedScope = !selectedRootHasCoverage
+      || selectedRoot === null
+      || container.id === selectedRoot
+      || container.id.startsWith(`${selectedRoot}.`);
+    if (nodeIds.has(container.id) || !inSelectedScope) continue;
     nodes.push({
       id: container.id,
       label: container.label,
@@ -111,7 +132,7 @@ export function prepareInterconnectionScene(
     meta: {
       canonicalScene: true,
       schemaVersion: scene.schemaVersion,
-      selectedRoot: scene.view.rootIds[0] ?? null,
+      selectedRoot,
       rootCandidates: scene.view.rootIds,
       diagnostics: scene.diagnostics,
     },

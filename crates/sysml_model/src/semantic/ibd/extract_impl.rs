@@ -7,16 +7,16 @@ use url::Url;
 
 use super::connectors::{
     build_instance_def_mappings, dedupe_connectors, endpoint_under_definition_prefix,
-    enrich_connector_endpoint_refs, map_definition_endpoint_to_usage,
-    mirror_connectors_from_definition_document, remap_connectors_to_typed_instances,
-    IbdConnectorSink,
+    enrich_connector_endpoint_refs, interconnection_relation_type, is_interconnection_relationship,
+    map_definition_endpoint_to_usage, mirror_connectors_from_definition_document,
+    remap_connectors_to_typed_instances, IbdConnectorSink,
 };
 use super::dto::{
     DefInstanceMappingDto, IbdConnectorDto, IbdContainerGroupDto, IbdDataDto, IbdPartDto,
     IbdPortDto, IbdRootViewDto,
 };
 use crate::semantic::kinds;
-use crate::{ElementKind, NodeId, RelationshipKind, SemanticGraph, SemanticNode};
+use crate::{ElementKind, NodeId, SemanticGraph, SemanticNode};
 
 mod container_groups;
 mod endpoint_expansion;
@@ -275,10 +275,7 @@ pub fn build_ibd_for_uri(graph: &SemanticGraph, uri: &Url) -> IbdDataDto {
         .collect();
 
     let mut connectors = Vec::new();
-    for (src_id, tgt_id, edge) in graph.connection_edges_touching_uri(uri) {
-        if edge.kind != RelationshipKind::Connection {
-            continue;
-        }
+    for (src_id, tgt_id, edge) in graph.interconnection_edges_touching_uri(uri) {
         let source = src_id.qualified_name.clone();
         let target = tgt_id.qualified_name.clone();
         let (source_id, target_id) = if let Some(connect) = &edge.connect {
@@ -311,13 +308,13 @@ pub fn build_ibd_for_uri(graph: &SemanticGraph, uri: &Url) -> IbdDataDto {
             target_part_id: None,
             source_port_id: None,
             target_port_id: None,
-            rel_type: "connection".to_string(),
+            rel_type: interconnection_relation_type(&edge.kind).to_string(),
         });
     }
     for pending in graph
         .pending_expression_relationships
         .iter()
-        .filter(|pending| pending.kind == RelationshipKind::Connection && &pending.uri == uri)
+        .filter(|pending| is_interconnection_relationship(&pending.kind) && &pending.uri == uri)
     {
         let source_id = qualify_pending_connection_endpoint(
             pending.container_prefix.as_deref(),
@@ -339,7 +336,7 @@ pub fn build_ibd_for_uri(graph: &SemanticGraph, uri: &Url) -> IbdDataDto {
             target_part_id: None,
             source_port_id: None,
             target_port_id: None,
-            rel_type: "connection".to_string(),
+            rel_type: interconnection_relation_type(&pending.kind).to_string(),
         });
     }
 
@@ -369,11 +366,17 @@ pub fn build_ibd_for_uri(graph: &SemanticGraph, uri: &Url) -> IbdDataDto {
             );
             continue;
         }
-        let def_edges = graph.edges_for_uri_as_strings(&def_id.uri);
-        for (src, tgt, kind, _name) in &def_edges {
-            if *kind != RelationshipKind::Connection {
+        let def_edges = graph.interconnection_edges_touching_uri(&def_id.uri);
+        for (src_id, tgt_id, edge) in &def_edges {
+            // Expression-backed relationships were already collected above with their declaring
+            // context intact. Re-mirroring their resolved definition endpoints can collapse a
+            // usage-to-boundary binding into a bogus self-binding.
+            if edge.connect.is_some() {
                 continue;
             }
+            let src = &src_id.qualified_name;
+            let tgt = &tgt_id.qualified_name;
+            let kind = &edge.kind;
             if !endpoint_under_definition_prefix(src, def_prefix)
                 || !endpoint_under_definition_prefix(tgt, def_prefix)
             {
@@ -392,7 +395,7 @@ pub fn build_ibd_for_uri(graph: &SemanticGraph, uri: &Url) -> IbdDataDto {
             let key = (
                 source_id.clone(),
                 target_id.clone(),
-                "connection".to_string(),
+                interconnection_relation_type(kind).to_string(),
             );
             if !connector_keys.insert(key) {
                 continue;
@@ -406,7 +409,7 @@ pub fn build_ibd_for_uri(graph: &SemanticGraph, uri: &Url) -> IbdDataDto {
                 target_part_id: None,
                 source_port_id: None,
                 target_port_id: None,
-                rel_type: "connection".to_string(),
+                rel_type: interconnection_relation_type(kind).to_string(),
             });
         }
     }

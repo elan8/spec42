@@ -339,6 +339,17 @@ pub(crate) struct IbdConnectorSink<'a> {
     pub(crate) keys: &'a mut std::collections::HashSet<(String, String, String)>,
 }
 
+pub(crate) fn is_interconnection_relationship(kind: &RelationshipKind) -> bool {
+    matches!(kind, RelationshipKind::Connection | RelationshipKind::Bind)
+}
+
+pub(crate) fn interconnection_relation_type(kind: &RelationshipKind) -> &'static str {
+    match kind {
+        RelationshipKind::Bind => "binding",
+        _ => "connection",
+    }
+}
+
 /// Copy connectors declared on a part definition's document onto a typed instance path.
 pub(crate) fn mirror_connectors_from_definition_document(
     graph: &SemanticGraph,
@@ -352,7 +363,7 @@ pub(crate) fn mirror_connectors_from_definition_document(
     let def_prefix_dot = qualified_name_to_dot(def_prefix);
     let def_container_prefixes = def_container_prefixes_for_uri(graph, def_uri);
 
-    let mut push_connector = |source_id: String, target_id: String| {
+    let mut push_connector = |source_id: String, target_id: String, rel_type: &str| {
         let source_id = expand_relative_endpoint_to_part_path(&source_id, parts, ports);
         let target_id = expand_relative_endpoint_to_part_path(&target_id, parts, ports);
         let source_id =
@@ -361,11 +372,7 @@ pub(crate) fn mirror_connectors_from_definition_document(
         let target_id =
             map_container_endpoint_to_instance(&target_id, &def_prefix_dot, usage_prefix_dot)
                 .unwrap_or(target_id);
-        let key = (
-            source_id.clone(),
-            target_id.clone(),
-            "connection".to_string(),
-        );
+        let key = (source_id.clone(), target_id.clone(), rel_type.to_string());
         if !sink.keys.insert(key) {
             return;
         }
@@ -378,14 +385,12 @@ pub(crate) fn mirror_connectors_from_definition_document(
             target_part_id: None,
             source_port_id: None,
             target_port_id: None,
-            rel_type: "connection".to_string(),
+            rel_type: rel_type.to_string(),
         });
     };
 
-    for (_src, _tgt, edge) in graph.connection_edges_touching_uri(def_uri) {
-        if edge.kind != RelationshipKind::Connection {
-            continue;
-        }
+    for (_src, _tgt, edge) in graph.interconnection_edges_touching_uri(def_uri) {
+        let rel_type = interconnection_relation_type(&edge.kind);
         let Some(connect) = &edge.connect else {
             continue;
         };
@@ -405,13 +410,13 @@ pub(crate) fn mirror_connectors_from_definition_document(
         } else {
             (source_id, target_id)
         };
-        push_connector(source_id, target_id);
+        push_connector(source_id, target_id, rel_type);
     }
 
     for pending in graph
         .pending_expression_relationships
         .iter()
-        .filter(|pending| pending.kind == RelationshipKind::Connection && pending.uri == *def_uri)
+        .filter(|pending| is_interconnection_relationship(&pending.kind) && pending.uri == *def_uri)
     {
         let source_id = qualify_pending_connection_endpoint(
             pending.container_prefix.as_deref(),
@@ -424,11 +429,15 @@ pub(crate) fn mirror_connectors_from_definition_document(
         if source_id.is_empty() || target_id.is_empty() {
             continue;
         }
-        push_connector(source_id, target_id);
+        push_connector(
+            source_id,
+            target_id,
+            interconnection_relation_type(&pending.kind),
+        );
     }
 
-    for (src_id, tgt_id, edge) in graph.connection_edges_touching_uri(def_uri) {
-        if edge.kind != RelationshipKind::Connection || edge.connect.is_some() {
+    for (src_id, tgt_id, edge) in graph.interconnection_edges_touching_uri(def_uri) {
+        if edge.connect.is_some() {
             continue;
         }
         let src = src_id.qualified_name;
@@ -446,7 +455,11 @@ pub(crate) fn mirror_connectors_from_definition_document(
         else {
             continue;
         };
-        push_connector(source_id, target_id);
+        push_connector(
+            source_id,
+            target_id,
+            interconnection_relation_type(&edge.kind),
+        );
     }
 }
 pub fn finalize_merged_ibd_connectors(

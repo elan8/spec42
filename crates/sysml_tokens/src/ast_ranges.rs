@@ -1015,6 +1015,7 @@ fn collect_semantic_ranges_part_def_body_element(
         PDBE::Connect(_)
         | PDBE::InterfaceUsage(_)
         | PDBE::Allocate(_)
+        | PDBE::Bind(_)
         | PDBE::OpaqueMember(_)
         | PDBE::Annotation(_)
         | PDBE::Error(_)

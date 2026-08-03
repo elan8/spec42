@@ -917,6 +917,29 @@ impl SemanticGraphData {
             .collect()
     }
 
+    /// Returns structural interconnection edges (`connect` and `bind`) incident to nodes in the
+    /// given URI. Kept separate from `connection_edges_touching_uri` because callers performing
+    /// connection type compatibility checks must not treat bindings as connections.
+    pub fn interconnection_edges_touching_uri(
+        &self,
+        uri: &Url,
+    ) -> Vec<(NodeId, NodeId, SemanticEdge)> {
+        let indexes = self.query_indexes();
+        indexes
+            .edges_by_uri
+            .get(uri)
+            .into_iter()
+            .flatten()
+            .filter(|(_, _, edge)| {
+                matches!(
+                    edge.kind,
+                    RelationshipKind::Connection | RelationshipKind::Bind
+                )
+            })
+            .cloned()
+            .collect()
+    }
+
     /// Returns `Connection` edges declared in the given URI with `connect` metadata.
     pub fn connect_statement_edges_for_uri(
         &self,

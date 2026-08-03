@@ -121,12 +121,32 @@ fn add_expression_edge_with_metadata(
     if left_str.is_empty() || right_str.is_empty() {
         return;
     }
-    if kind == RelationshipKind::Connection {
+    if matches!(kind, RelationshipKind::Connection | RelationshipKind::Bind) {
         let left_resolved = resolve_expression_endpoint_strict(g, uri, container_prefix, &left_str);
         let right_resolved =
             resolve_expression_endpoint_strict(g, uri, container_prefix, &right_str);
         match (left_resolved, right_resolved) {
             (ResolveResult::Resolved(src_id), ResolveResult::Resolved(tgt_id)) => {
+                if kind == RelationshipKind::Bind {
+                    add_semantic_edge_once(
+                        g,
+                        &src_id,
+                        &tgt_id,
+                        SemanticEdge::interconnection_with_detail(
+                            kind,
+                            ConnectStatementDetail {
+                                declaring_uri: uri.clone(),
+                                range: span_to_range(&left.span),
+                                source_expression: left_str,
+                                target_expression: right_str,
+                                container_prefix: container_prefix.map(ToString::to_string),
+                                is_interface_usage,
+                                interface_type,
+                            },
+                        ),
+                    );
+                    return;
+                }
                 if add_semantic_edge_once(
                     g,
                     &src_id,

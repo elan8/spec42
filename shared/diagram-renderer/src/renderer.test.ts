@@ -1135,6 +1135,33 @@ describe("shared renderer", () => {
     expect(target.querySelectorAll(".action-flow-edge").length).toBeGreaterThanOrEqual(2);
   });
 
+  it("renders streaming flows solid and successions dashed", async () => {
+    const target = document.createElement("div");
+    Object.defineProperty(target, "clientWidth", { value: 1200, configurable: true });
+    Object.defineProperty(target, "clientHeight", { value: 800, configurable: true });
+
+    await renderVisualization(target, {
+      title: "Flow semantics",
+      view: "action-flow-view",
+      nodes: [
+        { id: "a", label: "a", kind: "action" },
+        { id: "b", label: "b", kind: "action" },
+        { id: "c", label: "c", kind: "action" },
+      ],
+      edges: [
+        { id: "stream", source: "a", target: "b", label: "flow", attributes: { guard: "flow", streamingFlow: true } },
+        { id: "sequence", source: "b", target: "c", label: "succession", attributes: { guard: "succession", succession: true } },
+      ],
+    });
+
+    const streaming = target.querySelector('[data-flow-kind="streaming"]') as SVGPathElement;
+    const succession = target.querySelector('[data-flow-kind="succession"]') as SVGPathElement;
+    expect(streaming?.getAttribute("class")).toContain("aflow-streaming");
+    expect(streaming?.style.strokeDasharray).toBe("none");
+    expect(succession?.getAttribute("class")).toContain("aflow-succession");
+    expect(succession?.style.strokeDasharray).toBe("7,4");
+  });
+
   it("renders action-flow perform actions with parameter badges and flow final notation", async () => {
     const target = document.createElement("div");
     Object.defineProperty(target, "clientWidth", { value: 1200, configurable: true });

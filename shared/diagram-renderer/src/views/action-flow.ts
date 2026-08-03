@@ -237,7 +237,8 @@ export async function renderActionFlowView(ctx: BehaviorSceneContext): Promise<{
     const fallback = fallbackEdgePath(source, target, horizontal);
     const edgeAttrs = (edge.attributes ?? {}) as Record<string, unknown>;
     const guard = String(edgeAttrs.guard ?? edge.label ?? "").toLowerCase();
-    const succession = Boolean(edgeAttrs.succession) || guard === "flow" || guard === "first" || guard === "succession";
+    const succession = Boolean(edgeAttrs.succession) || guard === "first" || guard === "succession" || guard === "succession flow";
+    const streamingFlow = Boolean(edgeAttrs.streamingFlow) || guard === "flow";
     const conditional = Boolean(edgeAttrs.conditional);
     flowLayer
       .append("path")
@@ -247,12 +248,16 @@ export async function renderActionFlowView(ctx: BehaviorSceneContext): Promise<{
           ? conditional
             ? "activity-flow action-flow-edge aflow-succession aflow-conditional"
             : "activity-flow action-flow-edge aflow-succession"
-          : "activity-flow action-flow-edge",
+          : streamingFlow
+            ? "activity-flow action-flow-edge aflow-streaming"
+            : "activity-flow action-flow-edge",
       )
+      .attr("data-flow-kind", succession ? "succession" : streamingFlow ? "streaming" : "other")
       .attr("d", pathFromSections(sections) || fallback.path)
       .style("fill", "none")
       .style("stroke", ctx.theme.edge.default)
       .style("stroke-width", "2px")
+      .style("stroke-dasharray", succession ? "7,4" : "none")
       .style("marker-end", "url(#action-flow-arrow)");
     const label = truncateLabel(edge.label, 20);
     if (label && !["flow", "first", "bind"].includes(label.toLowerCase())) {
