@@ -4,12 +4,13 @@ Spec42 can run a language-neutral core WebAssembly module against the same immut
 snapshot used by its normal workspace engine:
 
 ```sh
-spec42 generate generator.wasm model.sysml --output generated
+spec42 generate generator.wasm model.sysml
 ```
 
-`--output` is mandatory. This avoids an implicit write location. A model path may be one SysML or
-KerML file or a workspace directory, and all global standard-library, KPAR, configuration, and
-library-path options apply before `generate` just as they do for `check`.
+Generated paths are written beneath `./generated` by default. Use `--output <DIR>` to select a
+different destination root. A model path may be one SysML or KerML file or a workspace directory,
+and all global standard-library, KPAR, configuration, and library-path options apply before
+`generate` just as they do for `check`.
 
 Generation stops before guest instantiation when validation contains an error. Warnings are printed
 and are also present in JSON reports. The host does not expose source mutation or an alternative

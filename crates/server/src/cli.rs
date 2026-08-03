@@ -65,8 +65,8 @@ pub struct GenerateArgs {
     pub path: PathBuf,
     #[arg(long = "workspace-root")]
     pub workspace_root: Option<PathBuf>,
-    /// Generator-owned output directory. Explicit to avoid surprising writes.
-    #[arg(long = "output", required = true)]
+    /// Generator-owned output directory.
+    #[arg(long = "output", default_value = "generated")]
     pub output: PathBuf,
     #[arg(long = "format", value_enum, default_value_t = OutputFormat::Text)]
     pub format: OutputFormat,
@@ -333,6 +333,17 @@ mod tests {
                 assert!(args.dry_run);
                 assert_eq!(args.max_files, 12);
                 assert_eq!(args.generator_args, ["target=rust", "namespace=vehicle"]);
+            }
+            other => panic!("expected generate command, got {other:?}"),
+        }
+    }
+
+    #[test]
+    fn generate_command_defaults_output_to_generated_directory() {
+        let cli = Cli::parse_from(["spec42", "generate", "generator.wasm", "model.sysml"]);
+        match cli.command {
+            Some(Command::Generate(args)) => {
+                assert_eq!(args.output, PathBuf::from("generated"));
             }
             other => panic!("expected generate command, got {other:?}"),
         }
