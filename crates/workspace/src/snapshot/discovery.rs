@@ -66,7 +66,7 @@ pub fn discover_target_files(targets: &[PathBuf]) -> WorkspaceResult<Vec<PathBuf
 /// Public so embedders holding an [`crate::IncrementalWorkspace`] directly (not going through
 /// the `snapshot` build pipeline) can compute `library_urls` for
 /// [`crate::validate_workspace`] with the same normalization
-/// [`super::build::build_workspace_snapshot`] applies — see `SPEC42-ISSUES.md` in downstream
+/// `snapshot::build::build_workspace_snapshot` applies — see `SPEC42-ISSUES.md` in downstream
 /// consumers for what silently diverging normalization once broke.
 pub fn path_to_file_url(path: &Path) -> WorkspaceResult<Url> {
     let absolute = if path.is_absolute() {

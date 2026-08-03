@@ -12,6 +12,8 @@ permissions:
 
 env:
   VSCODE_TEST_VERSION: "1.106.0"
+  # Keep in sync with `channel` in rust-toolchain.toml; bump both deliberately.
+  RUST_TOOLCHAIN_VERSION: "1.97.1"
 
 jobs:
   rust-core:
@@ -23,8 +25,9 @@ jobs:
           submodules: recursive
 
       - name: Install Rust
-        uses: dtolnay/rust-toolchain@stable
+        uses: dtolnay/rust-toolchain@master
         with:
+          toolchain: ${{ env.RUST_TOOLCHAIN_VERSION }}
           components: clippy
 
       - name: Cache cargo
@@ -125,6 +128,25 @@ jobs:
       - name: cargo clippy
         run: cargo clippy --workspace --all-targets --all-features -- -D warnings
 
+      - name: cargo doc
+        run: cargo doc --no-deps --workspace
+        env:
+          RUSTDOCFLAGS: -D warnings
+
+  audit:
+    name: Dependency audit
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Install cargo-audit
+        uses: taiki-e/install-action@v2
+        with:
+          tool: cargo-audit
+
+      - name: cargo audit
+        run: cargo audit
+
   rust-surfaces:
     name: Rust agent/API surfaces
     runs-on: ubuntu-latest
@@ -134,7 +156,9 @@ jobs:
           submodules: recursive
 
       - name: Install Rust
-        uses: dtolnay/rust-toolchain@stable
+        uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: ${{ env.RUST_TOOLCHAIN_VERSION }}
 
       - name: Cache cargo
         uses: Swatinem/rust-cache@v2
@@ -233,6 +257,9 @@ jobs:
       - name: npm ci (diagram renderer)
         run: cd shared/diagram-renderer && npm ci
 
+      - name: npm audit (diagram renderer)
+        run: cd shared/diagram-renderer && npm audit --omit=dev
+
       - name: npm typecheck (diagram renderer)
         run: cd shared/diagram-renderer && npm run typecheck
 
@@ -244,6 +271,9 @@ jobs:
 
       - name: npm ci (vscode)
         run: cd vscode && npm ci
+
+      - name: npm audit (vscode)
+        run: cd vscode && npm audit --omit=dev
 
       - name: Typecheck extension
         run: cd vscode && npm run typecheck
@@ -286,7 +316,9 @@ jobs:
           cache-dependency-path: vscode/package-lock.json
 
       - name: Install Rust
-        uses: dtolnay/rust-toolchain@stable
+        uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: ${{ env.RUST_TOOLCHAIN_VERSION }}
 
       - name: Prepare SysML stdlib bundle
         run: |
@@ -418,7 +450,9 @@ jobs:
           cache-dependency-path: vscode/package-lock.json
 
       - name: Install Rust
-        uses: dtolnay/rust-toolchain@stable
+        uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: ${{ env.RUST_TOOLCHAIN_VERSION }}
 
       - name: Prepare SysML stdlib bundle
         run: |
@@ -533,8 +567,9 @@ jobs:
           submodules: recursive
 
       - name: Install Rust
-        uses: dtolnay/rust-toolchain@stable
+        uses: dtolnay/rust-toolchain@master
         with:
+          toolchain: ${{ env.RUST_TOOLCHAIN_VERSION }}
           targets: wasm32-wasip2
 
       - name: Cache cargo

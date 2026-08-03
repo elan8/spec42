@@ -149,7 +149,7 @@ impl IncrementalWorkspace {
     /// Full load from documents this engine has already parsed — e.g. a caller with its own
     /// pre-parsed document index (`lsp_server`'s `IndexEntry.parsed`) that would otherwise
     /// have to throw that work away to call [`Self::load`]. Delegates to
-    /// [`link_parsed_documents_parallel`] — the merge/link half of
+    /// [`sysml_model::link_parsed_documents_parallel`] — the merge/link half of
     /// [`build_and_link_graph_parallel`] with the parse step already done by the caller.
     pub fn load_parsed(
         &mut self,
@@ -334,7 +334,7 @@ impl IncrementalWorkspace {
 /// graph/documents, without building a [`crate::snapshot::HostWorkspaceSnapshot`].
 ///
 /// A thin, same-crate call into `snapshot::facts::collect_host_validation_report` — the exact
-/// function [`crate::snapshot::build::build_workspace_snapshot`] already uses internally.
+/// function `snapshot::build::build_workspace_snapshot` already uses internally.
 /// Exists so embedders that hold an [`IncrementalWorkspace`] directly (rather than going
 /// through the `snapshot` pipeline) can still get diagnostics, without paying for the rest of
 /// a snapshot's eager derived fields (`language_workspace`/`render_snapshot`/

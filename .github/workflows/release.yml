@@ -18,6 +18,8 @@ env:
   BINARY_NAME: spec42
   MCP_BINARY_NAME: spec42-mcp
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
+  # Keep in sync with `channel` in rust-toolchain.toml; bump both deliberately.
+  RUST_TOOLCHAIN_VERSION: "1.97.1"
 
 jobs:
   preflight:
@@ -29,8 +31,9 @@ jobs:
           submodules: recursive
 
       - name: Install Rust
-        uses: dtolnay/rust-toolchain@stable
+        uses: dtolnay/rust-toolchain@master
         with:
+          toolchain: ${{ env.RUST_TOOLCHAIN_VERSION }}
           components: clippy
 
       - name: Cache cargo
@@ -169,8 +172,9 @@ jobs:
           submodules: recursive
 
       - name: Install Rust
-        uses: dtolnay/rust-toolchain@stable
+        uses: dtolnay/rust-toolchain@master
         with:
+          toolchain: ${{ env.RUST_TOOLCHAIN_VERSION }}
           targets: ${{ matrix.target }}
 
       - name: Cache cargo
@@ -352,8 +356,9 @@ jobs:
           ref: ${{ steps.version.outputs.tag || github.ref }}
 
       - name: Install Rust
-        uses: dtolnay/rust-toolchain@stable
+        uses: dtolnay/rust-toolchain@master
         with:
+          toolchain: ${{ env.RUST_TOOLCHAIN_VERSION }}
           targets: wasm32-wasip2
 
       - name: Cache cargo

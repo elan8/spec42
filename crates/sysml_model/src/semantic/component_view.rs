@@ -198,7 +198,7 @@ pub fn expand_part_usage(
 
 /// Resolves the canonical type/specialization target for a usage-like node.
 ///
-/// Unlike [`first_typed_definition_with_shape`], this does not require the
+/// Unlike `first_typed_definition_with_shape`, this does not require the
 /// target to have materialized shape or be part-like: `typedBy` should point
 /// at whatever the usage is typed by (a `part def`, `port def`, `item def`,
 /// `attribute def`, `action def`, ...) even if that definition has no members.

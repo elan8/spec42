@@ -72,7 +72,8 @@ pub struct EvaluatedView {
 
 /// Build a catalog of view definitions and usages from parsed workspace documents.
 ///
-/// Callers (for example the LSP server) typically derive [`WorkspaceParsedDocument`] values
+/// Callers (for example the LSP server) typically derive
+/// [`WorkspaceParsedDocument`](crate::semantic::workspace_graph::WorkspaceParsedDocument) values
 /// from their on-disk index; the graph-first workspace builder passes the documents returned
 /// alongside [`crate::semantic::graph::SemanticGraph`].
 pub fn build_view_catalog(
