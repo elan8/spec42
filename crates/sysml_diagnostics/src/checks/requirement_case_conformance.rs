@@ -456,7 +456,7 @@ pub(crate) fn collect_requirement_case_conformance_diagnostics(
                         "semantic",
                         "case_objective_binding_cardinality",
                         format!(
-                            "Analysis case '{}' has objectives bound to analysis result but no return ref is declared.",
+                            "Analysis case '{}' has objectives bound to an analysis result but no returned result is declared.",
                             node.name
                         ),
                     ));

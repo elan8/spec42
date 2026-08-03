@@ -2008,7 +2008,7 @@ fn lsp_sysml_model_graph_includes_verification_semantics() {
 }
 
 #[test]
-fn lsp_sysml_model_graph_includes_analysis_objective_binding_to_result() {
+fn lsp_sysml_model_graph_includes_typed_numeric_analysis_result() {
     let mut child = spawn_server();
     let mut stdin = child.stdin.take().expect("stdin");
     let mut stdout = child.stdout.take().expect("stdout");
@@ -2016,13 +2016,17 @@ fn lsp_sysml_model_graph_includes_analysis_objective_binding_to_result() {
     let uri = "file:///analysis_graph_test.sysml";
     let content = r#"
         package V {
-            part def System;
-            analysis def AnalyzeStartup {
-                subject testSystem : System;
-                return ref analysisResult { return 1; }
-                objective startupObjective {
-                    doc /* Analyze startup behavior. */
-                }
+            attribute def PowerLevel :> Real;
+            requirement def MinimumPower {
+                subject result : PowerLevel;
+                attribute minimum : PowerLevel = -6.0;
+                require constraint { result >= minimum }
+            }
+            analysis AnalyzePower {
+                attribute inputPower : PowerLevel = 3.0;
+                attribute loss : Real = 7.5;
+                return attribute outputPower : PowerLevel = inputPower - loss;
+                objective powerObjective : MinimumPower;
             }
         }
     "#;
@@ -2071,16 +2075,24 @@ fn lsp_sysml_model_graph_includes_analysis_objective_binding_to_result() {
     let nodes = model_json["result"]["graph"]["nodes"]
         .as_array()
         .expect("graph nodes array");
-
     assert!(
         nodes.iter().any(|node| {
             node["type"].as_str() == Some("objective")
                 && node["attributes"]["objectiveBindingKind"].as_str() == Some("analysis_result")
                 && node["attributes"]["objectiveBoundTo"]
                     .as_str()
-                    .is_some_and(|bound_to| bound_to.ends_with("analysisResult"))
+                    .is_some_and(|bound_to| bound_to.ends_with("outputPower"))
         }),
         "expected analysis objective binding to analysis result in graph output"
+    );
+    assert!(
+        nodes.iter().any(|node| {
+            node["type"].as_str() == Some("analysis result")
+                && node["name"].as_str() == Some("outputPower")
+                && node["attributes"]["returnType"].as_str() == Some("PowerLevel")
+                && node["attributes"]["value"].as_str() == Some("(inputPower - loss)")
+        }),
+        "expected typed numeric analysis result expression in graph output: {nodes:#?}"
     );
 
     let _ = child.kill();

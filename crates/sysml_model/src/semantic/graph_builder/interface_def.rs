@@ -205,7 +205,7 @@ pub(super) fn build_from_interface_def_body_element(
             Some(parent_id),
             item,
         ),
-        E::ItemUsage(_) | E::PortUsage(_) => {}
+        E::ItemUsage(_) | E::PortUsage(_) | E::Error(_) => {}
         E::PortDef(port) => super::package_body::materialize_port_def(
             g,
             uri,
@@ -262,7 +262,12 @@ pub(super) fn build_from_connection_def_body_element(
             Some(parent_id),
             port,
         ),
-        E::ItemUsage(_) | E::PortUsage(_) | E::Error(_) => {}
+        E::ItemUsage(_)
+        | E::PortUsage(_)
+        | E::AssertConstraint(_)
+        | E::OccurrenceUsage(_)
+        | E::SuccessionUsage(_)
+        | E::Error(_) => {}
     }
 }
 
