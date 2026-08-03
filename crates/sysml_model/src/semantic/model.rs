@@ -571,7 +571,8 @@ pub struct FlowStatementDetail {
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct SemanticEdge {
     pub kind: RelationshipKind,
-    /// Set when this `Connection` came from a resolved `connect` (or pending-expression resolve).
+    /// Set when a structural expression relationship (`connect` or `bind`) was resolved, retaining
+    /// its declaring context and endpoint expressions for instance projection.
     pub connect: Option<ConnectStatementDetail>,
     /// Set when this `Flow`/`SuccessionFlow` came from a resolved `flow` usage.
     #[serde(default)]
@@ -590,6 +591,17 @@ impl SemanticEdge {
     pub fn connection_with_connect(connect: ConnectStatementDetail) -> Self {
         Self {
             kind: RelationshipKind::Connection,
+            connect: Some(connect),
+            flow: None,
+        }
+    }
+
+    pub fn interconnection_with_detail(
+        kind: RelationshipKind,
+        connect: ConnectStatementDetail,
+    ) -> Self {
+        Self {
+            kind,
             connect: Some(connect),
             flow: None,
         }

@@ -11,16 +11,19 @@ const REF_PART_INTERCONNECTION_MODEL: &str = r#"package RefContext {
 
   part def System {
     port link : LinkPort;
+    port boundLink : LinkPort;
   }
 
   part def Peer {
     port link : LinkPort;
+    port boundLink : LinkPort;
   }
 
   part def Context {
     ref part system : System;
     part peer : Peer;
     connect system.link to peer.link;
+    bind system.boundLink = peer.boundLink;
   }
 
   part context : Context;
@@ -181,7 +184,7 @@ fn lsp_interconnection_visualization_returns_slim_scene_only_payload_for_drone()
 }
 
 #[test]
-fn lsp_interconnection_visualization_projects_connections_to_typed_ref_parts() {
+fn lsp_interconnection_visualization_projects_connections_and_bindings_to_typed_ref_parts() {
     let workspace_dir = tempfile::tempdir().expect("temporary workspace");
     let model_path = workspace_dir.path().join("Model.sysml");
     std::fs::write(&model_path, REF_PART_INTERCONNECTION_MODEL).expect("write model fixture");
@@ -277,6 +280,9 @@ fn lsp_interconnection_visualization_projects_connections_to_typed_ref_parts() {
         .as_array()
         .expect("reference part should expose inherited port details");
     assert!(reference_ports.iter().any(|port| port["name"] == "link"));
+    assert!(reference_ports
+        .iter()
+        .any(|port| port["name"] == "boundLink"));
 
     let peer_part = nodes
         .iter()
@@ -290,11 +296,18 @@ fn lsp_interconnection_visualization_projects_connections_to_typed_ref_parts() {
         .as_array()
         .expect("peer part should expose port details");
     assert!(peer_ports.iter().any(|port| port["name"] == "link"));
+    assert!(peer_ports.iter().any(|port| port["name"] == "boundLink"));
 
     let edges = prepared["edges"]
         .as_array()
         .expect("preparedView.edges should be an array");
-    assert_eq!(edges.len(), 1, "expected exactly one prepared connection");
+    assert_eq!(
+        edges.len(),
+        2,
+        "expected one connection and one binding in the prepared view, got {edges:#?}"
+    );
+    assert!(edges.iter().any(|edge| edge["edgeKind"] == "connection"));
+    assert!(edges.iter().any(|edge| edge["edgeKind"] == "bind"));
     assert!(edges[0]["attributes"]["sourcePortId"].is_string());
     assert!(edges[0]["attributes"]["targetPortId"].is_string());
     assert!(

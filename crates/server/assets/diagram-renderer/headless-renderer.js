@@ -419,7 +419,8 @@ var Spec42HeadlessRendererBundle = (() => {
       const guard = asString(edge.guard ?? edge.type, "");
       const condition = asString(edge.condition, "");
       const guardLower = guard.toLowerCase();
-      const succession = guardLower === "flow" || guardLower === "first" || guardLower === "succession";
+      const succession = guardLower === "first" || guardLower === "succession" || guardLower === "succession flow";
+      const streamingFlow = guardLower === "flow";
       const conditional = condition.length > 0 || guard.length > 0 && !["flow", "first", "bind", "perform", "succession"].includes(guardLower);
       return {
         id: asString(edge.id, `flow-${index}`),
@@ -430,6 +431,8 @@ var Spec42HeadlessRendererBundle = (() => {
           ...guard ? { guard } : {},
           ...condition ? { condition } : {},
           succession,
+          streamingFlow,
+          flowKind: succession ? "succession" : streamingFlow ? "streaming" : "other",
           conditional
         }
       };
@@ -870,7 +873,22 @@ var Spec42HeadlessRendererBundle = (() => {
       }
     };
   }
+  function rootCoverage(rootId, scene) {
+    const prefix = `${rootId}.`;
+    return scene.nodes.filter((node) => node.id === rootId || node.id.startsWith(prefix)).length;
+  }
+  function selectRoot(scene) {
+    return [...scene.view.rootIds].sort((left, right) => {
+      const coverageDelta = rootCoverage(right, scene) - rootCoverage(left, scene);
+      if (coverageDelta !== 0) return coverageDelta;
+      const depthDelta = left.split(".").length - right.split(".").length;
+      if (depthDelta !== 0) return depthDelta;
+      return left.localeCompare(right);
+    })[0] ?? null;
+  }
   function prepareInterconnectionScene(scene, visualization) {
+    const selectedRoot = selectRoot(scene);
+    const selectedRootHasCoverage = selectedRoot !== null && rootCoverage(selectedRoot, scene) > 0;
     const nodeIds = new Set(scene.nodes.map((node) => node.id));
     const nodes = scene.nodes.map((node) => {
       const nodePorts = portsForNode(node.id, scene.ports);
@@ -896,7 +914,8 @@ var Spec42HeadlessRendererBundle = (() => {
       };
     });
     for (const container of scene.containers) {
-      if (nodeIds.has(container.id)) continue;
+      const inSelectedScope = !selectedRootHasCoverage || selectedRoot === null || container.id === selectedRoot || container.id.startsWith(`${selectedRoot}.`);
+      if (nodeIds.has(container.id) || !inSelectedScope) continue;
       nodes.push({
         id: container.id,
         label: container.label,
@@ -939,7 +958,7 @@ var Spec42HeadlessRendererBundle = (() => {
       meta: {
         canonicalScene: true,
         schemaVersion: scene.schemaVersion,
-        selectedRoot: scene.view.rootIds[0] ?? null,
+        selectedRoot,
         rootCandidates: scene.view.rootIds,
         diagnostics: scene.diagnostics
       }
@@ -982,28 +1001,8 @@ var Spec42HeadlessRendererBundle = (() => {
     const attrs = asRecord(node.attributes);
     return asString(node.id ?? node.qualifiedName ?? attrs.qualifiedName ?? node.name);
   }
-  function traceabilityLinkCount(nodeId, edges) {
-    let links = 0;
-    for (const edge of edges) {
-      const relType = asString(edge.type ?? edge.rel_type).toLowerCase();
-      if (!/(satisfy|derivation|derive|verify|subject)/.test(relType)) continue;
-      const source = asString(edge.source);
-      const target = asString(edge.target);
-      if (source === nodeId || target === nodeId) {
-        links += 1;
-      }
-    }
-    return links;
-  }
-  function packageLabelOf(qualifiedName) {
-    const segments = qualifiedName.split("::").filter(Boolean);
-    return segments.length > 1 ? segments[0] : "";
-  }
   function projectionHints(visualization) {
     return asRecord(visualization?.projectionHints);
-  }
-  function gridLayoutHint(visualization) {
-    return asString(projectionHints(visualization).gridLayout) || void 0;
   }
   function gridSubtypeHint(visualization) {
     return asString(projectionHints(visualization).gridSubtype) || void 0;
@@ -1013,6 +1012,9 @@ var Spec42HeadlessRendererBundle = (() => {
   }
   function treeRootHints(visualization) {
     return asArray(projectionHints(visualization).treeRoots).map((value) => asString(value)).filter(Boolean);
+  }
+  function columnViewsHint(visualization) {
+    return asArray(projectionHints(visualization).columnViews).map(asRecord).map((entry) => ({ label: asString(entry.label, "Column") }));
   }
   function optionalUri(node) {
     return nodeUri(node) ?? void 0;
@@ -1031,9 +1033,6 @@ var Spec42HeadlessRendererBundle = (() => {
       siblings.push(node);
       childrenByParent.set(node.parentId, siblings);
     }
-    for (const siblings of childrenByParent.values()) {
-      siblings.sort((left, right) => left.qualifiedName.localeCompare(right.qualifiedName));
-    }
     const roots = treeRoots.length > 0 ? treeRoots.map((id2) => byId.get(id2)).filter((node) => Boolean(node)) : graphNodes.filter((node) => !node.parentId || !byId.has(node.parentId));
     const rows = [];
     const visit = (node, depth) => {
@@ -1047,7 +1046,6 @@ var Spec42HeadlessRendererBundle = (() => {
         visit(child, depth + 1);
       }
     };
-    roots.sort((left, right) => left.qualifiedName.localeCompare(right.qualifiedName));
     for (const root2 of roots) {
       visit(root2, 0);
     }
@@ -1059,13 +1057,18 @@ var Spec42HeadlessRendererBundle = (() => {
       const source = asString(edge.source);
       const target = asString(edge.target);
       if (!source || !target) continue;
-      edgeByPair.set(`${source}::${target}`, asString(edge.name ?? edge.label ?? edge.type ?? edge.rel_type, ""));
+      const label = asString(edge.name ?? edge.label ?? edge.type ?? edge.rel_type, "");
+      if (!label) continue;
+      const key = `${source}::${target}`;
+      const labels = edgeByPair.get(key) ?? [];
+      labels.push(label);
+      edgeByPair.set(key, labels);
     }
     const cells = [];
     for (const source of nodeIds) {
       for (const target of nodeIds) {
-        const label = edgeByPair.get(`${source}::${target}`) ?? "";
-        cells.push({ source, target, present: label.length > 0, label });
+        const labels = edgeByPair.get(`${source}::${target}`) ?? [];
+        cells.push({ source, target, present: labels.length > 0, labels });
       }
     }
     return cells;
@@ -1077,6 +1080,7 @@ var Spec42HeadlessRendererBundle = (() => {
       kind: elementTypeOf(node) || "element",
       parentId: asString(firstPresent(node.parent_id, node.parentId, asRecord(node.attributes).parentId)),
       qualifiedName: qualifiedNameOf(node),
+      visibility: asString(asRecord(node.attributes).visibility) || void 0,
       uri: optionalUri(node),
       range: optionalRange(node)
     }));
@@ -1099,20 +1103,16 @@ var Spec42HeadlessRendererBundle = (() => {
   }
   function prepareGrid(visualization) {
     const graphEdges = graphEdgesForStandardView(visualization);
-    const traceabilityLayout = gridLayoutHint(visualization) === "traceability";
     const relationshipMatrix = gridSubtypeHint(visualization) === "relationship_matrix";
     const cells = graphNodesForStandardView(visualization).map((node) => {
       const attrs = asRecord(node.attributes);
       const qualifiedName = qualifiedNameOf(node);
       const nodeId = asString(node.id);
-      const linkCount = traceabilityLinkCount(nodeId, graphEdges);
       return {
         id: nodeId,
         name: asString(node.name ?? node.qualifiedName ?? node.id, "Unnamed"),
         kind: elementTypeOf(node) || "element",
-        package: packageLabelOf(qualifiedName),
         qualifiedName,
-        linkCount,
         attributeCount: asArray(attrs.attributes).length,
         partCount: asArray(attrs.parts).length,
         portCount: asArray(attrs.ports).length,
@@ -1122,6 +1122,7 @@ var Spec42HeadlessRendererBundle = (() => {
     }).sort((left, right) => left.qualifiedName.localeCompare(right.qualifiedName));
     const nodeIds = cells.map((cell) => cell.id).filter(Boolean);
     const matrixCells = relationshipMatrix ? buildRelationshipMatrix(nodeIds, graphEdges) : [];
+    const columnViews = columnViewsHint(visualization);
     return {
       title: asString(visualization?.selectedViewName, "Grid View"),
       view: "grid-view",
@@ -1136,11 +1137,11 @@ var Spec42HeadlessRendererBundle = (() => {
       edges: [],
       meta: {
         cells,
-        traceabilityTable: traceabilityLayout,
         relationshipMatrix,
         matrixRowIds: relationshipMatrix ? nodeIds : [],
         matrixColIds: relationshipMatrix ? nodeIds : [],
         matrixCells,
+        columns: columnViews.length > 0 ? columnViews.map((column) => ({ key: "name", label: column.label })) : void 0,
         // Both an element table and a relationship matrix are rectangular GridView
         // presentations described by §9.2.20.2.5.
         provisional: false
@@ -4719,12 +4720,13 @@ var Spec42HeadlessRendererBundle = (() => {
       const fallback = fallbackEdgePath(source, target, horizontal);
       const edgeAttrs = edge.attributes ?? {};
       const guard = String(edgeAttrs.guard ?? edge.label ?? "").toLowerCase();
-      const succession = Boolean(edgeAttrs.succession) || guard === "flow" || guard === "first" || guard === "succession";
+      const succession = Boolean(edgeAttrs.succession) || guard === "first" || guard === "succession" || guard === "succession flow";
+      const streamingFlow = Boolean(edgeAttrs.streamingFlow) || guard === "flow";
       const conditional = Boolean(edgeAttrs.conditional);
       flowLayer.append("path").attr(
         "class",
-        succession ? conditional ? "activity-flow action-flow-edge aflow-succession aflow-conditional" : "activity-flow action-flow-edge aflow-succession" : "activity-flow action-flow-edge"
-      ).attr("d", pathFromSections(sections) || fallback.path).style("fill", "none").style("stroke", ctx.theme.edge.default).style("stroke-width", "2px").style("marker-end", "url(#action-flow-arrow)");
+        succession ? conditional ? "activity-flow action-flow-edge aflow-succession aflow-conditional" : "activity-flow action-flow-edge aflow-succession" : streamingFlow ? "activity-flow action-flow-edge aflow-streaming" : "activity-flow action-flow-edge"
+      ).attr("data-flow-kind", succession ? "succession" : streamingFlow ? "streaming" : "other").attr("d", pathFromSections(sections) || fallback.path).style("fill", "none").style("stroke", ctx.theme.edge.default).style("stroke-width", "2px").style("stroke-dasharray", succession ? "7,4" : "none").style("marker-end", "url(#action-flow-arrow)");
       const label = truncateLabel(edge.label, 20);
       if (label && !["flow", "first", "bind"].includes(label.toLowerCase())) {
         const elkLabel = layout.edgeLabelsById.get(edge.id)?.[0];
@@ -5015,293 +5017,6 @@ var Spec42HeadlessRendererBundle = (() => {
     defs.append("marker").attr("id", "state-transition-arrow").attr("viewBox", "0 -5 10 10").attr("refX", 8).attr("refY", 0).attr("markerWidth", 6).attr("markerHeight", 6).attr("orient", "auto").append("path").attr("d", "M0,-5L10,0L0,5").style("fill", theme.edge.default);
   }
 
-  // ../shared/diagram-renderer/src/views/standard-views-render.ts
-  function drawProvisionalBadge(root2, theme, label = "provisional SysML notation") {
-    const badge = root2.append("g").attr("class", "provisional-view-badge");
-    badge.append("rect").attr("x", 22).attr("y", 42).attr("width", 176).attr("height", 24).attr("rx", 5).style("fill", theme.canvasBackground).style("stroke", theme.edge.default).style("stroke-dasharray", "4,3");
-    badge.append("text").attr("x", 34).attr("y", 58).style("font-size", "10px").style("fill", theme.textSecondary).text(label);
-  }
-  function nodeFromMeta(row, fallback) {
-    const id2 = asString(row.id);
-    return fallback.find((node) => node.id === id2 || node.label === asString(row.label ?? row.name));
-  }
-  function shortMatrixLabel(id2) {
-    const segments = id2.split("::").filter(Boolean);
-    return truncateLabel(segments[segments.length - 1] ?? id2, 10);
-  }
-  function renderBrowserView(ctx) {
-    const rows = asArray(ctx.prepared.meta?.rows).map(asRecord);
-    const sourceRows = rows.length > 0 ? rows : ctx.prepared.nodes.map((node) => ({ id: node.id, label: node.label, kind: node.kind }));
-    const hierarchyLayout = Boolean(ctx.prepared.meta?.hierarchyLayout);
-    const rowHeight = 28;
-    const left = 52;
-    const top = 88;
-    const width = Math.max(520, Math.min(920, ctx.width - 120));
-    const collapsed = /* @__PURE__ */ new Set();
-    ctx.root.append("text").attr("x", 24).attr("y", 28).style("font-size", "14px").style("font-weight", "700").style("fill", ctx.theme.textPrimary).text(ctx.prepared.title || "Browser View");
-    if (!hierarchyLayout) {
-      drawProvisionalBadge(ctx.root, ctx.theme);
-    }
-    const layer = ctx.root.append("g").attr("class", "browser-view-rows");
-    const isRowVisible = (row, index) => {
-      if (!hierarchyLayout) return true;
-      const parentId = asString(row.parentId);
-      if (!parentId) return true;
-      for (let cursor = index - 1; cursor >= 0; cursor -= 1) {
-        const ancestor = asRecord(sourceRows[cursor]);
-        if (asString(ancestor.id) !== parentId) continue;
-        if (!isRowVisible(ancestor, cursor) || collapsed.has(parentId)) {
-          return false;
-        }
-        return true;
-      }
-      return !collapsed.has(parentId);
-    };
-    const redraw = () => {
-      layer.selectAll("*").remove();
-      let visibleIndex = 0;
-      sourceRows.forEach((row, index) => {
-        if (!isRowVisible(row, index)) return;
-        const y2 = top + visibleIndex * rowHeight;
-        visibleIndex += 1;
-        const depth = hierarchyLayout ? Number(row.depth ?? 0) : Math.max(0, asString(row.qualifiedName).split("::").filter(Boolean).length - 1);
-        const hasChildren = Boolean(row.hasChildren);
-        const preparedNode = nodeFromMeta(row, ctx.prepared.nodes);
-        const rowId = preparedNode?.id ?? asString(row.id, `browser-row-${index}`);
-        const item = layer.append("g").attr("class", "browser-row").attr("data-node-id", rowId).attr("transform", `translate(${left},${y2})`);
-        item.append("rect").attr("class", "node-background").attr("data-original-stroke", ctx.theme.nodeBorder).attr("data-original-width", "1px").attr("width", width).attr("height", rowHeight - 3).attr("rx", 4).style("fill", visibleIndex % 2 === 0 ? ctx.theme.nodeFill : ctx.theme.canvasBackground).style("stroke", ctx.theme.nodeBorder).style("stroke-width", "1px").style("opacity", 0.9);
-        if (hasChildren) {
-          const toggle = item.append("text").attr("x", 8 + depth * 16).attr("y", 18).attr("class", "browser-toggle").style("font-size", "11px").style("font-weight", "700").style("fill", ctx.theme.textSecondary).style("cursor", "pointer").text(collapsed.has(rowId) ? "\u25B8" : "\u25BE");
-          toggle.on("click", (event) => {
-            event.stopPropagation();
-            if (collapsed.has(rowId)) {
-              collapsed.delete(rowId);
-            } else {
-              collapsed.add(rowId);
-            }
-            redraw();
-          });
-        }
-        item.append("text").attr("x", 14 + depth * 16 + (hasChildren ? 12 : 0)).attr("y", 18).style("font-size", "11px").style("font-weight", "600").style("fill", ctx.theme.textPrimary).text(truncateLabel(asString(row.label ?? row.name ?? row.id, "Unnamed"), 48));
-        item.append("text").attr("x", width - 14).attr("y", 18).attr("text-anchor", "end").style("font-size", "10px").style("fill", ctx.theme.textSecondary).text(truncateLabel(asString(row.kind, "element"), 24));
-        if (preparedNode) {
-          attachBehaviorNodeClick(item, preparedNode, ctx.theme, ctx.options ?? {}, ctx.root);
-        }
-      });
-    };
-    redraw();
-    const visibleCount = hierarchyLayout ? sourceRows.filter((row, index) => isRowVisible(row, index)).length : sourceRows.length;
-    return { minX: 0, minY: 0, maxX: left + width + 80, maxY: top + visibleCount * rowHeight + 80 };
-  }
-  function renderGridView(ctx) {
-    const relationshipMatrix = Boolean(ctx.prepared.meta?.relationshipMatrix);
-    if (relationshipMatrix) {
-      return renderRelationshipMatrix(ctx);
-    }
-    const cells = asArray(ctx.prepared.meta?.cells).map(asRecord);
-    const rows = cells.length > 0 ? cells : ctx.prepared.nodes.map((node) => asRecord(node.attributes));
-    const left = 52;
-    const top = 92;
-    const traceabilityTable = Boolean(ctx.prepared.meta?.traceabilityTable);
-    const columns = traceabilityTable ? [
-      { key: "name", label: "Name", width: 240 },
-      { key: "kind", label: "Kind", width: 130 },
-      { key: "package", label: "Package", width: 170 },
-      { key: "linkCount", label: "Links", width: 70 }
-    ] : [
-      { key: "name", label: "Name", width: 220 },
-      { key: "kind", label: "Kind", width: 150 },
-      { key: "attributeCount", label: "Attrs", width: 80 },
-      { key: "partCount", label: "Parts", width: 80 },
-      { key: "portCount", label: "Ports", width: 80 }
-    ];
-    const tableWidth = columns.reduce((sum, column) => sum + column.width, 0);
-    const rowHeight = 30;
-    ctx.root.append("text").attr("x", 24).attr("y", 28).style("font-size", "14px").style("font-weight", "700").style("fill", ctx.theme.textPrimary).text(ctx.prepared.title || "Grid View");
-    if (Boolean(ctx.prepared.meta?.provisional)) {
-      drawProvisionalBadge(ctx.root, ctx.theme);
-    }
-    const table = ctx.root.append("g").attr("class", "grid-view-table").attr("transform", `translate(${left},${top})`);
-    let x2 = 0;
-    columns.forEach((column) => {
-      table.append("rect").attr("class", "grid-header-cell").attr("x", x2).attr("width", column.width).attr("height", rowHeight).style("fill", ctx.theme.nodeBorder).style("stroke", ctx.theme.nodeBorder);
-      table.append("text").attr("x", x2 + 10).attr("y", 20).style("font-size", "11px").style("font-weight", "700").style("fill", ctx.theme.canvasBackground).text(column.label);
-      x2 += column.width;
-    });
-    rows.forEach((row, rowIndex) => {
-      x2 = 0;
-      const preparedNode = nodeFromMeta(row, ctx.prepared.nodes);
-      const group = table.append("g").attr("class", "grid-row").attr("data-node-id", preparedNode?.id ?? asString(row.id, `grid-row-${rowIndex}`)).attr("transform", `translate(0,${(rowIndex + 1) * rowHeight})`);
-      columns.forEach((column) => {
-        group.append("rect").attr("class", "grid-cell").attr("x", x2).attr("width", column.width).attr("height", rowHeight).style("fill", rowIndex % 2 === 0 ? ctx.theme.nodeFill : ctx.theme.canvasBackground).style("stroke", ctx.theme.nodeBorder).style("stroke-width", "1px");
-        group.append("text").attr("x", x2 + 10).attr("y", 20).style("font-size", "10px").style("fill", ctx.theme.textPrimary).text(truncateLabel(asString(row[column.key]), column.width > 100 ? 28 : 8));
-        x2 += column.width;
-      });
-      if (preparedNode) {
-        attachBehaviorNodeClick(group, preparedNode, ctx.theme, ctx.options ?? {}, ctx.root);
-      }
-    });
-    return { minX: 0, minY: 0, maxX: left + tableWidth + 80, maxY: top + (rows.length + 2) * rowHeight + 80 };
-  }
-  function renderRelationshipMatrix(ctx) {
-    const rowIds = asArray(ctx.prepared.meta?.matrixRowIds).map((value) => asString(value)).filter(Boolean);
-    const colIds = asArray(ctx.prepared.meta?.matrixColIds).map((value) => asString(value)).filter(Boolean);
-    const matrixCells = asArray(ctx.prepared.meta?.matrixCells).map(asRecord);
-    const cellSize = 34;
-    const headerSize = 120;
-    const left = 180;
-    const top = 92;
-    ctx.root.append("text").attr("x", 24).attr("y", 28).style("font-size", "14px").style("font-weight", "700").style("fill", ctx.theme.textPrimary).text(ctx.prepared.title || "Relationship Matrix");
-    const layer = ctx.root.append("g").attr("class", "grid-relationship-matrix").attr("transform", `translate(${left},${top})`);
-    colIds.forEach((colId, colIndex) => {
-      layer.append("text").attr("x", headerSize + colIndex * cellSize + cellSize / 2).attr("y", 16).attr("text-anchor", "middle").attr("transform", `rotate(-35, ${headerSize + colIndex * cellSize + cellSize / 2}, 16)`).style("font-size", "9px").style("fill", ctx.theme.textSecondary).text(shortMatrixLabel(colId));
-    });
-    rowIds.forEach((rowId, rowIndex) => {
-      layer.append("text").attr("x", headerSize - 8).attr("y", headerSize + rowIndex * cellSize + cellSize / 2 + 4).attr("text-anchor", "end").style("font-size", "10px").style("fill", ctx.theme.textPrimary).text(shortMatrixLabel(rowId));
-      colIds.forEach((colId, colIndex) => {
-        const cell = matrixCells.find(
-          (entry) => asString(entry.source) === rowId && asString(entry.target) === colId
-        );
-        const present = Boolean(cell?.present);
-        const x2 = headerSize + colIndex * cellSize;
-        const y2 = headerSize + rowIndex * cellSize;
-        layer.append("rect").attr("x", x2).attr("y", y2).attr("width", cellSize - 2).attr("height", cellSize - 2).style("fill", present ? ctx.theme.nodeFill : ctx.theme.canvasBackground).style("stroke", ctx.theme.nodeBorder).style("stroke-width", "1px");
-        if (present) {
-          layer.append("text").attr("x", x2 + (cellSize - 2) / 2).attr("y", y2 + (cellSize - 2) / 2 + 4).attr("text-anchor", "middle").style("font-size", "12px").style("font-weight", "700").style("fill", ctx.theme.edge.default).text("\u25CF");
-        }
-      });
-    });
-    const width = headerSize + colIds.length * cellSize + 40;
-    const height = headerSize + rowIds.length * cellSize + 40;
-    return { minX: 0, minY: 0, maxX: left + width, maxY: top + height };
-  }
-  function renderGeometryView(ctx) {
-    const elements = asArray(ctx.prepared.meta?.elements).map(asRecord);
-    const nodes = elements.length > 0 ? elements : ctx.prepared.nodes.map((node) => ({ id: node.id, label: node.label, kind: node.kind }));
-    const geometryMode = asString(ctx.prepared.meta?.geometryMode, "2d");
-    const geometryProjection = asString(ctx.prepared.meta?.geometryProjection, "orthographic");
-    const left = 64;
-    const top = 88;
-    const cellWidth = 128;
-    const cellHeight = 72;
-    const columns = Math.max(1, Math.ceil(Math.sqrt(nodes.length)));
-    ctx.root.append("text").attr("x", 24).attr("y", 28).style("font-size", "14px").style("font-weight", "700").style("fill", ctx.theme.textPrimary).text(ctx.prepared.title || "Geometry View");
-    if (Boolean(ctx.prepared.meta?.provisional)) {
-      drawProvisionalBadge(ctx.root, ctx.theme, `${geometryMode} ${geometryProjection} preview`);
-    }
-    const layer = ctx.root.append("g").attr("class", "geometry-view-scene").attr("transform", `translate(${left},${top})`);
-    layer.append("rect").attr("width", columns * cellWidth + 24).attr("height", Math.ceil(nodes.length / columns) * cellHeight + 24).attr("rx", 8).style("fill", "none").style("stroke", ctx.theme.frame.stroke).style("stroke-dasharray", "8,6");
-    nodes.forEach((node, index) => {
-      const col = index % columns;
-      const row = Math.floor(index / columns);
-      const x2 = col * cellWidth + 12;
-      const y2 = row * cellHeight + 12;
-      const preparedNode = nodeFromMeta(node, ctx.prepared.nodes);
-      const item = layer.append("g").attr("class", "geometry-object").attr("data-node-id", preparedNode?.id ?? asString(node.id, `geometry-node-${index}`)).attr("transform", `translate(${x2},${y2})`);
-      item.append("rect").attr("class", "node-background").attr("data-original-stroke", ctx.theme.nodeBorder).attr("data-original-width", "1.5px").attr("width", cellWidth - 20).attr("height", cellHeight - 16).attr("rx", 6).style("fill", ctx.theme.nodeFill).style("stroke", ctx.theme.nodeBorder).style("stroke-width", "1.5px");
-      item.append("text").attr("x", (cellWidth - 20) / 2).attr("y", 24).attr("text-anchor", "middle").style("font-size", "10px").style("font-weight", "700").style("fill", ctx.theme.textPrimary).text(truncateLabel(asString(node.label ?? node.name ?? node.id), 16));
-      item.append("text").attr("x", (cellWidth - 20) / 2).attr("y", 42).attr("text-anchor", "middle").style("font-size", "8px").style("fill", ctx.theme.textSecondary).text(truncateLabel(asString(node.kind, "element"), 18));
-      if (preparedNode) {
-        attachBehaviorNodeClick(item, preparedNode, ctx.theme, ctx.options ?? {}, ctx.root);
-      }
-    });
-    const width = columns * cellWidth + 80;
-    const height = Math.ceil(nodes.length / columns) * cellHeight + 120;
-    return { minX: 0, minY: 0, maxX: left + width, maxY: top + height };
-  }
-
-  // ../shared/diagram-renderer/src/render/types.ts
-  var nodeWidth = 200;
-  var nodeHeight = 70;
-  var ibdNodeWidth = 280;
-  var ibdNodeHeight = 140;
-  function contentBoundsFromExtents(extents) {
-    const width = extents.maxX - extents.minX;
-    const height = extents.maxY - extents.minY;
-    return {
-      x: extents.minX,
-      y: extents.minY,
-      width: width > 0 ? width : 1,
-      height: height > 0 ? height : 1
-    };
-  }
-  function compareIbdPorts(node, a, b, usageForPort) {
-    const usageA = usageForPort(node, a);
-    const usageB = usageForPort(node, b);
-    const degreeA = usageA.sourceCount + usageA.targetCount;
-    const degreeB = usageB.sourceCount + usageB.targetCount;
-    if (degreeB !== degreeA) return degreeB - degreeA;
-    return a.name.localeCompare(b.name);
-  }
-  function splitIbdPortsBySide(node, ports, sideForPort, usageForPort) {
-    const west = [];
-    const east = [];
-    for (const port of ports) {
-      (sideForPort(port, node) === "WEST" ? west : east).push(port);
-    }
-    const compare = (a, b) => compareIbdPorts(node, a, b, usageForPort);
-    west.sort(compare);
-    east.sort(compare);
-    return { west, east };
-  }
-  function computeIbdLeafHeight(node, ports, portRows) {
-    const attrs = node.attributes ?? {};
-    const headerHeight = attrs.partType ? 50 : 38;
-    const children2 = Array.isArray(attrs.children) ? attrs.children : [];
-    const contentLineCount = children2.filter(
-      (child) => child && typeof child === "object" && String(child.name || "")
-    ).length;
-    const contentHeight = Math.min(contentLineCount, 8) * 12 + 10;
-    const portSpacing = 26;
-    const portsHeight = ports.length > 0 ? portRows * portSpacing + 22 : 0;
-    return Math.min(340, Math.max(ibdNodeHeight, headerHeight + contentHeight + portsHeight));
-  }
-
-  // ../shared/diagram-renderer/src/render/export.ts
-  function contentBounds(layout) {
-    if (!layout.nodes.length) return { x: 0, y: 0, width: 100, height: 100 };
-    const minX = Math.min(...layout.nodes.map((node) => node.x || 0));
-    const minY = Math.min(...layout.nodes.map((node) => node.y || 0));
-    const maxX = Math.max(...layout.nodes.map((node) => (node.x || 0) + (node.width || nodeWidth)));
-    const maxY = Math.max(...layout.nodes.map((node) => (node.y || 0) + (node.height || nodeHeight)));
-    return { x: minX, y: minY, width: maxX - minX, height: maxY - minY };
-  }
-  function applyFit(svg, zoom, root2, bounds, width, height, isInterconnectionView = false, delegateZoom = false) {
-    const padding = 48;
-    const minScale = isInterconnectionView ? 0.2 : 0.08;
-    const maxScale = isInterconnectionView ? 1.1 : 1.3;
-    const scale = Math.min(
-      maxScale,
-      Math.max(minScale, Math.min((width - padding * 2) / bounds.width, (height - padding * 2) / bounds.height))
-    );
-    const tx = (width - bounds.width * scale) / 2 - bounds.x * scale;
-    const ty = (height - bounds.height * scale) / 2 - bounds.y * scale;
-    const transform2 = identity2.translate(tx, ty).scale(scale);
-    if (delegateZoom) {
-      root2.attr("transform", transform2.toString());
-      return transform2;
-    }
-    svg.transition().duration(180).call(zoom.transform, transform2);
-    return transform2;
-  }
-  function addMarkers(svg, theme) {
-    const defs = svg.append("defs");
-    defs.append("marker").attr("id", "viz-arrow").attr("markerWidth", 10).attr("markerHeight", 10).attr("refX", 9).attr("refY", 3).attr("orient", "auto").attr("markerUnits", "strokeWidth").append("path").attr("d", "M0,0 L0,6 L9,3 z").attr("fill", theme.edge.default);
-    defs.append("marker").attr("id", "general-d3-arrow").attr("viewBox", "0 -5 10 10").attr("refX", 8).attr("refY", 0).attr("markerWidth", 5).attr("markerHeight", 5).attr("orient", "auto").append("path").attr("d", "M0,-4L10,0L0,4").style("fill", theme.edge.default);
-    defs.append("marker").attr("id", "general-d3-arrow-open").attr("viewBox", "0 -5 10 10").attr("refX", 9).attr("refY", 0).attr("markerWidth", 8).attr("markerHeight", 8).attr("orient", "auto").append("path").attr("d", "M0,-4L10,0L0,4").style("fill", "none").style("stroke", theme.edge.default).style("stroke-width", "1.3");
-    defs.append("marker").attr("id", "general-d3-specializes").attr("viewBox", "0 -6 12 12").attr("refX", 11).attr("refY", 0).attr("markerWidth", 8).attr("markerHeight", 8).attr("orient", "auto").append("path").attr("d", "M0,0L10,-4L10,4Z").style("fill", theme.nodeFill).style("stroke", theme.edge.default).style("stroke-width", "1.2");
-    defs.append("marker").attr("id", "general-d3-diamond").attr("viewBox", "0 -6 12 12").attr("refX", 2).attr("refY", 0).attr("markerWidth", 7).attr("markerHeight", 7).attr("orient", "auto").append("path").attr("d", "M0,0L5,-4L10,0L5,4Z").style("fill", theme.edge.default);
-    defs.append("marker").attr("id", "ibd-connection-dot").attr("viewBox", "-5 -5 10 10").attr("refX", 0).attr("refY", 0).attr("markerWidth", 5).attr("markerHeight", 5).attr("orient", "auto").append("circle").attr("r", 3).style("fill", theme.nodeFill).style("stroke", theme.edge.default).style("stroke-width", "1.5");
-    defs.append("marker").attr("id", "ibd-flow-arrow").attr("viewBox", "0 -5 10 10").attr("refX", 10).attr("refY", 0).attr("markerWidth", 8).attr("markerHeight", 8).attr("orient", "auto").append("path").attr("d", "M0,-4L10,0L0,4Z").style("fill", theme.edge.default);
-    defs.append("marker").attr("id", "ibd-interface-arrow").attr("viewBox", "0 -5 10 10").attr("refX", 10).attr("refY", 0).attr("markerWidth", 8).attr("markerHeight", 8).attr("orient", "auto").append("path").attr("d", "M0,-4L10,0L0,4Z").style("fill", "none").style("stroke", theme.edge.default).style("stroke-width", "1.5");
-  }
-  function exportSvg(svgNode2, bounds) {
-    const clone = svgNode2.cloneNode(true);
-    clone.setAttribute("xmlns", "http://www.w3.org/2000/svg");
-    clone.setAttribute("viewBox", `${bounds.x - 40} ${bounds.y - 40} ${bounds.width + 80} ${bounds.height + 80}`);
-    return new XMLSerializer().serializeToString(clone);
-  }
-
   // ../shared/diagram-renderer/src/sysml-node-builder.ts
   var LINE_HEIGHT = 12;
   var COMPARTMENT_LABEL_HEIGHT = 14;
@@ -5521,6 +5236,315 @@ var Spec42HeadlessRendererBundle = (() => {
       renderCompartment(section.title, section.items, Boolean(section.collapsed));
     }
     return node;
+  }
+
+  // ../shared/diagram-renderer/src/views/standard-views-render.ts
+  function visibilityGlyph(visibility) {
+    switch (visibility) {
+      case "Public":
+        return "+ ";
+      case "Private":
+        return "- ";
+      case "Protected":
+        return "# ";
+      default:
+        return "";
+    }
+  }
+  function drawProvisionalBadge(root2, theme, label = "provisional SysML notation") {
+    const badge = root2.append("g").attr("class", "provisional-view-badge");
+    badge.append("rect").attr("x", 22).attr("y", 42).attr("width", 176).attr("height", 24).attr("rx", 5).style("fill", theme.canvasBackground).style("stroke", theme.edge.default).style("stroke-dasharray", "4,3");
+    badge.append("text").attr("x", 34).attr("y", 58).style("font-size", "10px").style("fill", theme.textSecondary).text(label);
+  }
+  function nodeFromMeta(row, fallback) {
+    const id2 = asString(row.id);
+    return fallback.find((node) => node.id === id2 || node.label === asString(row.label ?? row.name));
+  }
+  function shortMatrixLabel(id2) {
+    const segments = id2.split("::").filter(Boolean);
+    return truncateLabel(segments[segments.length - 1] ?? id2, 10);
+  }
+  function renderBrowserView(ctx) {
+    const rows = asArray(ctx.prepared.meta?.rows).map(asRecord);
+    const sourceRows = rows.length > 0 ? rows : ctx.prepared.nodes.map((node) => ({ id: node.id, label: node.label, kind: node.kind }));
+    const hierarchyLayout = Boolean(ctx.prepared.meta?.hierarchyLayout);
+    const rowHeight = 28;
+    const left = 52;
+    const top = 88;
+    const width = Math.max(520, Math.min(920, ctx.width - 120));
+    const collapsed = /* @__PURE__ */ new Set();
+    ctx.root.append("text").attr("x", 24).attr("y", 28).style("font-size", "14px").style("font-weight", "700").style("fill", ctx.theme.textPrimary).text(ctx.prepared.title || "Browser View");
+    if (!hierarchyLayout) {
+      drawProvisionalBadge(ctx.root, ctx.theme);
+    }
+    const layer = ctx.root.append("g").attr("class", "browser-view-rows");
+    const isRowVisible = (row, index) => {
+      if (!hierarchyLayout) return true;
+      const parentId = asString(row.parentId);
+      if (!parentId) return true;
+      for (let cursor = index - 1; cursor >= 0; cursor -= 1) {
+        const ancestor = asRecord(sourceRows[cursor]);
+        if (asString(ancestor.id) !== parentId) continue;
+        if (!isRowVisible(ancestor, cursor) || collapsed.has(parentId)) {
+          return false;
+        }
+        return true;
+      }
+      return !collapsed.has(parentId);
+    };
+    const redraw = () => {
+      layer.selectAll("*").remove();
+      let visibleIndex = 0;
+      sourceRows.forEach((row, index) => {
+        if (!isRowVisible(row, index)) return;
+        const y2 = top + visibleIndex * rowHeight;
+        visibleIndex += 1;
+        const depth = hierarchyLayout ? Number(row.depth ?? 0) : Math.max(0, asString(row.qualifiedName).split("::").filter(Boolean).length - 1);
+        const hasChildren = Boolean(row.hasChildren);
+        const preparedNode = nodeFromMeta(row, ctx.prepared.nodes);
+        const rowId = preparedNode?.id ?? asString(row.id, `browser-row-${index}`);
+        const item = layer.append("g").attr("class", "browser-row").attr("data-node-id", rowId).attr("transform", `translate(${left},${y2})`);
+        item.append("rect").attr("class", "node-background").attr("data-original-stroke", ctx.theme.nodeBorder).attr("data-original-width", "1px").attr("width", width).attr("height", rowHeight - 3).attr("rx", 4).style("fill", visibleIndex % 2 === 0 ? ctx.theme.nodeFill : ctx.theme.canvasBackground).style("stroke", ctx.theme.nodeBorder).style("stroke-width", "1px").style("opacity", 0.9);
+        if (hasChildren) {
+          const toggle = item.append("text").attr("x", 8 + depth * 16).attr("y", 18).attr("class", "browser-toggle").style("font-size", "11px").style("font-weight", "700").style("fill", ctx.theme.textSecondary).style("cursor", "pointer").text(collapsed.has(rowId) ? "\u25B8" : "\u25BE");
+          toggle.on("click", (event) => {
+            event.stopPropagation();
+            if (collapsed.has(rowId)) {
+              collapsed.delete(rowId);
+            } else {
+              collapsed.add(rowId);
+            }
+            redraw();
+          });
+        }
+        const visibilityPrefix = visibilityGlyph(asString(row.visibility));
+        item.append("text").attr("x", 14 + depth * 16 + (hasChildren ? 12 : 0)).attr("y", 18).style("font-size", "11px").style("font-weight", "600").style("fill", ctx.theme.textPrimary).text(
+          `${visibilityPrefix}${truncateLabel(asString(row.label ?? row.name ?? row.id, "Unnamed"), 48)}`
+        );
+        item.append("text").attr("x", width - 14).attr("y", 18).attr("text-anchor", "end").style("font-size", "10px").style("fill", ctx.theme.textSecondary).text(formatStereotype(truncateLabel(asString(row.kind, "element"), 24)));
+        if (preparedNode) {
+          attachBehaviorNodeClick(item, preparedNode, ctx.theme, ctx.options ?? {}, ctx.root);
+        }
+      });
+    };
+    redraw();
+    const visibleCount = hierarchyLayout ? sourceRows.filter((row, index) => isRowVisible(row, index)).length : sourceRows.length;
+    return { minX: 0, minY: 0, maxX: left + width + 80, maxY: top + visibleCount * rowHeight + 80 };
+  }
+  function renderGridView(ctx) {
+    const relationshipMatrix = Boolean(ctx.prepared.meta?.relationshipMatrix);
+    if (relationshipMatrix) {
+      return renderRelationshipMatrix(ctx);
+    }
+    const cells = asArray(ctx.prepared.meta?.cells).map(asRecord);
+    const rows = cells.length > 0 ? cells : ctx.prepared.nodes.map((node) => asRecord(node.attributes));
+    const left = 52;
+    const top = 92;
+    const columnViews = asArray(ctx.prepared.meta?.columns).map(asRecord);
+    const columns = columnViews.length > 0 ? columnViews.map((column) => ({
+      key: asString(column.key, "name"),
+      label: asString(column.label, "Column"),
+      width: 220
+    })) : [
+      { key: "name", label: "Name", width: 220 },
+      { key: "kind", label: "Kind", width: 150 },
+      { key: "attributeCount", label: "Attrs", width: 80 },
+      { key: "partCount", label: "Parts", width: 80 },
+      { key: "portCount", label: "Ports", width: 80 }
+    ];
+    const tableWidth = columns.reduce((sum, column) => sum + column.width, 0);
+    const rowHeight = 30;
+    ctx.root.append("text").attr("x", 24).attr("y", 28).style("font-size", "14px").style("font-weight", "700").style("fill", ctx.theme.textPrimary).text(ctx.prepared.title || "Grid View");
+    if (Boolean(ctx.prepared.meta?.provisional)) {
+      drawProvisionalBadge(ctx.root, ctx.theme);
+    }
+    const table = ctx.root.append("g").attr("class", "grid-view-table").attr("transform", `translate(${left},${top})`);
+    let x2 = 0;
+    columns.forEach((column) => {
+      table.append("rect").attr("class", "grid-header-cell").attr("x", x2).attr("width", column.width).attr("height", rowHeight).style("fill", ctx.theme.nodeBorder).style("stroke", ctx.theme.nodeBorder);
+      table.append("text").attr("x", x2 + 10).attr("y", 20).style("font-size", "11px").style("font-weight", "700").style("fill", ctx.theme.canvasBackground).text(column.label);
+      x2 += column.width;
+    });
+    rows.forEach((row, rowIndex) => {
+      x2 = 0;
+      const preparedNode = nodeFromMeta(row, ctx.prepared.nodes);
+      const group = table.append("g").attr("class", "grid-row").attr("data-node-id", preparedNode?.id ?? asString(row.id, `grid-row-${rowIndex}`)).attr("transform", `translate(0,${(rowIndex + 1) * rowHeight})`);
+      columns.forEach((column) => {
+        group.append("rect").attr("class", "grid-cell").attr("x", x2).attr("width", column.width).attr("height", rowHeight).style("fill", rowIndex % 2 === 0 ? ctx.theme.nodeFill : ctx.theme.canvasBackground).style("stroke", ctx.theme.nodeBorder).style("stroke-width", "1px");
+        group.append("text").attr("x", x2 + 10).attr("y", 20).style("font-size", "10px").style("fill", ctx.theme.textPrimary).text(truncateLabel(asString(row[column.key]), column.width > 100 ? 28 : 8));
+        x2 += column.width;
+      });
+      if (preparedNode) {
+        attachBehaviorNodeClick(group, preparedNode, ctx.theme, ctx.options ?? {}, ctx.root);
+      }
+    });
+    return { minX: 0, minY: 0, maxX: left + tableWidth + 80, maxY: top + (rows.length + 2) * rowHeight + 80 };
+  }
+  function renderRelationshipMatrix(ctx) {
+    const rowIds = asArray(ctx.prepared.meta?.matrixRowIds).map((value) => asString(value)).filter(Boolean);
+    const colIds = asArray(ctx.prepared.meta?.matrixColIds).map((value) => asString(value)).filter(Boolean);
+    const matrixCells = asArray(ctx.prepared.meta?.matrixCells).map(asRecord);
+    const cellSize = 34;
+    const headerSize = 120;
+    const left = 180;
+    const top = 92;
+    ctx.root.append("text").attr("x", 24).attr("y", 28).style("font-size", "14px").style("font-weight", "700").style("fill", ctx.theme.textPrimary).text(ctx.prepared.title || "Relationship Matrix");
+    const layer = ctx.root.append("g").attr("class", "grid-relationship-matrix").attr("transform", `translate(${left},${top})`);
+    colIds.forEach((colId, colIndex) => {
+      layer.append("text").attr("x", headerSize + colIndex * cellSize + cellSize / 2).attr("y", 16).attr("text-anchor", "middle").attr("transform", `rotate(-35, ${headerSize + colIndex * cellSize + cellSize / 2}, 16)`).style("font-size", "9px").style("fill", ctx.theme.textSecondary).text(shortMatrixLabel(colId));
+    });
+    rowIds.forEach((rowId, rowIndex) => {
+      layer.append("text").attr("x", headerSize - 8).attr("y", headerSize + rowIndex * cellSize + cellSize / 2 + 4).attr("text-anchor", "end").style("font-size", "10px").style("fill", ctx.theme.textPrimary).text(shortMatrixLabel(rowId));
+      colIds.forEach((colId, colIndex) => {
+        const cell = matrixCells.find(
+          (entry) => asString(entry.source) === rowId && asString(entry.target) === colId
+        );
+        const labels = asArray(cell?.labels).map((value) => asString(value)).filter(Boolean);
+        const present = labels.length > 0;
+        const x2 = headerSize + colIndex * cellSize;
+        const y2 = headerSize + rowIndex * cellSize;
+        const cellGroup = layer.append("g").attr("class", "grid-relationship-matrix-cell").attr("data-row-id", rowId).attr("data-col-id", colId);
+        cellGroup.append("rect").attr("x", x2).attr("y", y2).attr("width", cellSize - 2).attr("height", cellSize - 2).style("fill", present ? ctx.theme.nodeFill : ctx.theme.canvasBackground).style("stroke", ctx.theme.nodeBorder).style("stroke-width", "1px");
+        if (present) {
+          const dotSpacing = 10;
+          const dotsWidth = (labels.length - 1) * dotSpacing;
+          const startX = x2 + (cellSize - 2) / 2 - dotsWidth / 2;
+          labels.forEach((_, labelIndex) => {
+            cellGroup.append("text").attr("x", startX + labelIndex * dotSpacing).attr("y", y2 + (cellSize - 2) / 2 + 4).attr("text-anchor", "middle").style("font-size", "12px").style("font-weight", "700").style("fill", ctx.theme.edge.default).text("\u25CF");
+          });
+          cellGroup.append("title").text(labels.join(", "));
+        }
+      });
+    });
+    const width = headerSize + colIds.length * cellSize + 40;
+    const height = headerSize + rowIds.length * cellSize + 40;
+    return { minX: 0, minY: 0, maxX: left + width, maxY: top + height };
+  }
+  function renderGeometryView(ctx) {
+    const elements = asArray(ctx.prepared.meta?.elements).map(asRecord);
+    const nodes = elements.length > 0 ? elements : ctx.prepared.nodes.map((node) => ({ id: node.id, label: node.label, kind: node.kind }));
+    const geometryMode = asString(ctx.prepared.meta?.geometryMode, "2d");
+    const geometryProjection = asString(ctx.prepared.meta?.geometryProjection, "orthographic");
+    const left = 64;
+    const top = 88;
+    const cellWidth = 128;
+    const cellHeight = 72;
+    const columns = Math.max(1, Math.ceil(Math.sqrt(nodes.length)));
+    ctx.root.append("text").attr("x", 24).attr("y", 28).style("font-size", "14px").style("font-weight", "700").style("fill", ctx.theme.textPrimary).text(ctx.prepared.title || "Geometry View");
+    if (Boolean(ctx.prepared.meta?.provisional)) {
+      drawProvisionalBadge(ctx.root, ctx.theme, `${geometryMode} ${geometryProjection} preview`);
+    }
+    const layer = ctx.root.append("g").attr("class", "geometry-view-scene").attr("transform", `translate(${left},${top})`);
+    layer.append("rect").attr("width", columns * cellWidth + 24).attr("height", Math.ceil(nodes.length / columns) * cellHeight + 24).attr("rx", 8).style("fill", "none").style("stroke", ctx.theme.frame.stroke).style("stroke-dasharray", "8,6");
+    nodes.forEach((node, index) => {
+      const col = index % columns;
+      const row = Math.floor(index / columns);
+      const x2 = col * cellWidth + 12;
+      const y2 = row * cellHeight + 12;
+      const preparedNode = nodeFromMeta(node, ctx.prepared.nodes);
+      const item = layer.append("g").attr("class", "geometry-object").attr("data-node-id", preparedNode?.id ?? asString(node.id, `geometry-node-${index}`)).attr("transform", `translate(${x2},${y2})`);
+      item.append("rect").attr("class", "node-background").attr("data-original-stroke", ctx.theme.nodeBorder).attr("data-original-width", "1.5px").attr("width", cellWidth - 20).attr("height", cellHeight - 16).attr("rx", 6).style("fill", ctx.theme.nodeFill).style("stroke", ctx.theme.nodeBorder).style("stroke-width", "1.5px");
+      item.append("text").attr("x", (cellWidth - 20) / 2).attr("y", 24).attr("text-anchor", "middle").style("font-size", "10px").style("font-weight", "700").style("fill", ctx.theme.textPrimary).text(truncateLabel(asString(node.label ?? node.name ?? node.id), 16));
+      item.append("text").attr("x", (cellWidth - 20) / 2).attr("y", 42).attr("text-anchor", "middle").style("font-size", "8px").style("fill", ctx.theme.textSecondary).text(truncateLabel(asString(node.kind, "element"), 18));
+      if (preparedNode) {
+        attachBehaviorNodeClick(item, preparedNode, ctx.theme, ctx.options ?? {}, ctx.root);
+      }
+    });
+    const width = columns * cellWidth + 80;
+    const height = Math.ceil(nodes.length / columns) * cellHeight + 120;
+    return { minX: 0, minY: 0, maxX: left + width, maxY: top + height };
+  }
+
+  // ../shared/diagram-renderer/src/render/types.ts
+  var nodeWidth = 200;
+  var nodeHeight = 70;
+  var ibdNodeWidth = 280;
+  var ibdNodeHeight = 140;
+  function contentBoundsFromExtents(extents) {
+    const width = extents.maxX - extents.minX;
+    const height = extents.maxY - extents.minY;
+    return {
+      x: extents.minX,
+      y: extents.minY,
+      width: width > 0 ? width : 1,
+      height: height > 0 ? height : 1
+    };
+  }
+  function compareIbdPorts(node, a, b, usageForPort) {
+    const usageA = usageForPort(node, a);
+    const usageB = usageForPort(node, b);
+    const degreeA = usageA.sourceCount + usageA.targetCount;
+    const degreeB = usageB.sourceCount + usageB.targetCount;
+    if (degreeB !== degreeA) return degreeB - degreeA;
+    return a.name.localeCompare(b.name);
+  }
+  function splitIbdPortsBySide(node, ports, sideForPort, usageForPort) {
+    const west = [];
+    const east = [];
+    for (const port of ports) {
+      (sideForPort(port, node) === "WEST" ? west : east).push(port);
+    }
+    const compare = (a, b) => compareIbdPorts(node, a, b, usageForPort);
+    west.sort(compare);
+    east.sort(compare);
+    return { west, east };
+  }
+  function computeIbdLeafHeight(node, ports, portRows) {
+    const attrs = node.attributes ?? {};
+    const headerHeight = attrs.partType ? 50 : 38;
+    const children2 = Array.isArray(attrs.children) ? attrs.children : [];
+    const contentLineCount = children2.filter(
+      (child) => child && typeof child === "object" && String(child.name || "")
+    ).length;
+    const contentHeight = Math.min(contentLineCount, 8) * 12 + 10;
+    const portSpacing = 26;
+    const portsHeight = ports.length > 0 ? portRows * portSpacing + 22 : 0;
+    return Math.min(340, Math.max(ibdNodeHeight, headerHeight + contentHeight + portsHeight));
+  }
+
+  // ../shared/diagram-renderer/src/render/export.ts
+  function contentBounds(layout) {
+    if (!layout.nodes.length) return { x: 0, y: 0, width: 100, height: 100 };
+    const minX = Math.min(...layout.nodes.map((node) => node.x || 0));
+    const minY = Math.min(...layout.nodes.map((node) => node.y || 0));
+    const maxX = Math.max(...layout.nodes.map((node) => (node.x || 0) + (node.width || nodeWidth)));
+    const maxY = Math.max(...layout.nodes.map((node) => (node.y || 0) + (node.height || nodeHeight)));
+    return { x: minX, y: minY, width: maxX - minX, height: maxY - minY };
+  }
+  function applyFit(svg, zoom, root2, bounds, width, height, isInterconnectionView = false, delegateZoom = false) {
+    const padding = 48;
+    const minScale = isInterconnectionView ? 0.2 : 0.08;
+    const maxScale = isInterconnectionView ? 1.1 : 1.3;
+    const scale = Math.min(
+      maxScale,
+      Math.max(minScale, Math.min((width - padding * 2) / bounds.width, (height - padding * 2) / bounds.height))
+    );
+    const tx = (width - bounds.width * scale) / 2 - bounds.x * scale;
+    const ty = (height - bounds.height * scale) / 2 - bounds.y * scale;
+    const transform2 = identity2.translate(tx, ty).scale(scale);
+    if (delegateZoom) {
+      root2.attr("transform", transform2.toString());
+      return transform2;
+    }
+    svg.transition().duration(180).call(zoom.transform, transform2);
+    return transform2;
+  }
+  function addMarkers(svg, theme) {
+    const defs = svg.append("defs");
+    defs.append("marker").attr("id", "viz-arrow").attr("markerWidth", 10).attr("markerHeight", 10).attr("refX", 9).attr("refY", 3).attr("orient", "auto").attr("markerUnits", "strokeWidth").append("path").attr("d", "M0,0 L0,6 L9,3 z").attr("fill", theme.edge.default);
+    defs.append("marker").attr("id", "general-d3-arrow").attr("viewBox", "0 -5 10 10").attr("refX", 8).attr("refY", 0).attr("markerWidth", 5).attr("markerHeight", 5).attr("orient", "auto").append("path").attr("d", "M0,-4L10,0L0,4").style("fill", theme.edge.default);
+    defs.append("marker").attr("id", "general-d3-arrow-open").attr("viewBox", "0 -5 10 10").attr("refX", 9).attr("refY", 0).attr("markerWidth", 8).attr("markerHeight", 8).attr("orient", "auto").append("path").attr("d", "M0,-4L10,0L0,4").style("fill", "none").style("stroke", theme.edge.default).style("stroke-width", "1.3");
+    defs.append("marker").attr("id", "general-d3-specializes").attr("viewBox", "0 -6 12 12").attr("refX", 11).attr("refY", 0).attr("markerWidth", 8).attr("markerHeight", 8).attr("orient", "auto").append("path").attr("d", "M0,0L10,-4L10,4Z").style("fill", theme.nodeFill).style("stroke", theme.edge.default).style("stroke-width", "1.2");
+    defs.append("marker").attr("id", "general-d3-diamond").attr("viewBox", "0 -6 12 12").attr("refX", 2).attr("refY", 0).attr("markerWidth", 7).attr("markerHeight", 7).attr("orient", "auto").append("path").attr("d", "M0,0L5,-4L10,0L5,4Z").style("fill", theme.edge.default);
+    defs.append("marker").attr("id", "ibd-connection-dot").attr("viewBox", "-5 -5 10 10").attr("refX", 0).attr("refY", 0).attr("markerWidth", 5).attr("markerHeight", 5).attr("orient", "auto").append("circle").attr("r", 3).style("fill", theme.nodeFill).style("stroke", theme.edge.default).style("stroke-width", "1.5");
+    defs.append("marker").attr("id", "ibd-flow-arrow").attr("viewBox", "0 -5 10 10").attr("refX", 10).attr("refY", 0).attr("markerWidth", 8).attr("markerHeight", 8).attr("orient", "auto").append("path").attr("d", "M0,-4L10,0L0,4Z").style("fill", theme.edge.default);
+    defs.append("marker").attr("id", "ibd-interface-arrow").attr("viewBox", "0 -5 10 10").attr("refX", 10).attr("refY", 0).attr("markerWidth", 8).attr("markerHeight", 8).attr("orient", "auto").append("path").attr("d", "M0,-4L10,0L0,4Z").style("fill", "none").style("stroke", theme.edge.default).style("stroke-width", "1.5");
+  }
+  function exportSvg(svgNode2, bounds) {
+    const clone = svgNode2.cloneNode(true);
+    clone.setAttribute("xmlns", "http://www.w3.org/2000/svg");
+    clone.setAttribute("viewBox", `${bounds.x - 40} ${bounds.y - 40} ${bounds.width + 80} ${bounds.height + 80}`);
+    return new XMLSerializer().serializeToString(clone);
   }
 
   // ../shared/diagram-renderer/src/render/ibd-route.ts

@@ -432,6 +432,36 @@ describe("shared prepareViewData", () => {
     expect(prepared.edges[1]?.target).toBe("WebShopBehavior::CheckoutPipeline::reserveInventory");
   });
 
+  it("distinguishes streaming flows from successions", () => {
+    const prepared = prepareViewData({
+      view: "action-flow-view",
+      activityDiagrams: [{
+        id: "Demo::Behavior",
+        name: "Behavior",
+        actions: [
+          { id: "Demo::Behavior::a", name: "a", type: "action" },
+          { id: "Demo::Behavior::b", name: "b", type: "action" },
+          { id: "Demo::Behavior::c", name: "c", type: "action" },
+        ],
+        flows: [
+          { id: "stream", from: "a", to: "b", guard: "flow" },
+          { id: "sequence", from: "b", to: "c", guard: "succession" },
+        ],
+      }],
+    });
+
+    expect(prepared.edges[0]?.attributes).toMatchObject({
+      streamingFlow: true,
+      succession: false,
+      flowKind: "streaming",
+    });
+    expect(prepared.edges[1]?.attributes).toMatchObject({
+      streamingFlow: false,
+      succession: true,
+      flowKind: "succession",
+    });
+  });
+
   it("matches action-flow diagram when view usage name differs in case from diagram name", () => {
     const prepared = prepareViewData({
       view: "action-flow-view",

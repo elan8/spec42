@@ -117,7 +117,8 @@ export function prepareActivity(visualization: VisualizationPayload): PreparedVi
       const guard = asString(edge.guard ?? edge.type, "");
       const condition = asString(edge.condition, "");
       const guardLower = guard.toLowerCase();
-      const succession = guardLower === "flow" || guardLower === "first" || guardLower === "succession";
+      const succession = guardLower === "first" || guardLower === "succession" || guardLower === "succession flow";
+      const streamingFlow = guardLower === "flow";
       const conditional =
         condition.length > 0
         || (guard.length > 0 && !["flow", "first", "bind", "perform", "succession"].includes(guardLower));
@@ -130,6 +131,8 @@ export function prepareActivity(visualization: VisualizationPayload): PreparedVi
           ...(guard ? { guard } : {}),
           ...(condition ? { condition } : {}),
           succession,
+          streamingFlow,
+          flowKind: succession ? "succession" : streamingFlow ? "streaming" : "other",
           conditional,
         },
       };

@@ -213,20 +213,29 @@ fn resolve_pending_expression_relationships_for_uri(g: &mut SemanticGraph, uri: 
                 continue;
             }
         };
-        if pending_edge.kind == RelationshipKind::Connection {
+        if matches!(
+            pending_edge.kind,
+            RelationshipKind::Connection | RelationshipKind::Bind
+        ) {
+            let kind = pending_edge.kind.clone();
+            let detail = ConnectStatementDetail {
+                declaring_uri: uri.clone(),
+                range: pending_edge.source_range,
+                source_expression: pending_edge.source_expression,
+                target_expression: pending_edge.target_expression,
+                container_prefix: pending_edge.container_prefix.clone(),
+                is_interface_usage: pending_edge.is_interface_usage,
+                interface_type: pending_edge.interface_type,
+            };
             add_semantic_edge_once(
                 g,
                 &source_id,
                 &target_id,
-                SemanticEdge::connection_with_connect(ConnectStatementDetail {
-                    declaring_uri: uri.clone(),
-                    range: pending_edge.source_range,
-                    source_expression: pending_edge.source_expression,
-                    target_expression: pending_edge.target_expression,
-                    container_prefix: pending_edge.container_prefix.clone(),
-                    is_interface_usage: pending_edge.is_interface_usage,
-                    interface_type: pending_edge.interface_type,
-                }),
+                if kind == RelationshipKind::Connection {
+                    SemanticEdge::connection_with_connect(detail)
+                } else {
+                    SemanticEdge::interconnection_with_detail(kind, detail)
+                },
             );
         } else {
             add_semantic_edge_once(
