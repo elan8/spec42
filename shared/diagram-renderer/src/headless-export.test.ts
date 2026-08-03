@@ -72,7 +72,7 @@ describe("headless SVG export", () => {
     expect(svg).toContain("ibd-flow-arrow");
     expect(svg).toContain("port-icon");
     expect(svg).toContain("viz-node--usage");
-    expect(svg).toContain("Port: p");
+    expect(svg).toContain("<title>p");
     expect(svg).toContain("Type: ~Power");
     expect(svg).toContain("Multiplicity: [0..1]");
     expect(svg).toContain("Resolved source: a.p");

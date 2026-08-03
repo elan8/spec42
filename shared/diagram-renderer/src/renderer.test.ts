@@ -82,7 +82,7 @@ describe("shared renderer", () => {
     expect(svg).toContain("Ports");
     expect(svg).toContain("mass");
     expect(svg).toContain("Typing");
-    expect(svg).toContain("Source: A (a)");
+    expect(svg).toContain("From: A");
 
     controller.reset();
     controller.destroy();
@@ -1098,20 +1098,24 @@ describe("shared renderer", () => {
     expect(target.querySelectorAll(".ibd-connector")).toHaveLength(5);
     const connectionHit = target.querySelector('[data-tooltip-id="connection-edge"].viz-edge-hit-target') as SVGPathElement;
     expect(connectionHit.style.strokeWidth).toBe("12px");
-    expect(connectionHit.querySelector("title")?.textContent).toContain("Source: battery.pwr");
+    expect(connectionHit.querySelector("title")?.textContent).toContain("From: battery.pwr");
     connectionHit.dispatchEvent(new MouseEvent("mouseover", { bubbles: true, clientX: 200, clientY: 100 }));
     const tooltip = target.querySelector(".sysml-diagram-tooltip") as HTMLDivElement;
     expect(tooltip.style.display).toBe("block");
     expect(connectionHit.querySelector("title")).toBeNull();
     const hoveredExport = controller.exportSvg();
-    expect(hoveredExport).toContain("Source: battery.pwr");
+    expect(hoveredExport).toContain("From: battery.pwr");
     expect(hoveredExport).toContain("<title>");
     expect(hoveredExport).not.toContain("data-tooltip-title");
-    expect(tooltip.textContent).toContain("Resolved target: Drone.distribution.mainPower");
+    expect(tooltip.querySelector(".sysml-diagram-tooltip-title")?.textContent).toBe("Connection");
+    expect(Array.from(tooltip.querySelectorAll(".sysml-diagram-tooltip-label"), (node) => node.textContent)).toEqual(["From", "To"]);
+    expect(Array.from(tooltip.querySelectorAll(".sysml-diagram-tooltip-value"), (node) => node.textContent)).toEqual(["battery.pwr", "distribution.mainPower"]);
+    expect(tooltip.textContent).not.toContain("Resolved target");
+    expect(tooltip.textContent).not.toContain("Semantic ID");
     expect(connection?.classList.contains("viz-edge-hovered")).toBe(true);
     connectionHit.dispatchEvent(new MouseEvent("mouseout", { bubbles: true, relatedTarget: target }));
     expect(tooltip.style.display).toBe("none");
-    expect(connectionHit.querySelector("title")?.textContent).toContain("Source: battery.pwr");
+    expect(connectionHit.querySelector("title")?.textContent).toContain("From: battery.pwr");
     expect(connection?.classList.contains("viz-edge-hovered")).toBe(false);
   });
 

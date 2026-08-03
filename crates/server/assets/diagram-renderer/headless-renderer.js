@@ -4300,15 +4300,23 @@ var Spec42HeadlessRendererBundle = (() => {
   }
   function portTooltipDescriptor(port) {
     const rows = [];
+    const technicalRows = [];
     pushRow(rows, "Type", port.portType ?? port.attributes?.portType);
     pushRow(rows, "Direction", port.direction ?? port.attributes?.direction);
-    pushRow(rows, "Multiplicity", port.multiplicity ?? port.attributes?.multiplicity ?? "[1]");
-    pushRow(rows, "Qualified name", port.semanticId ?? port.attributes?.semanticId ?? port.id ?? port.attributes?.scenePortId);
-    return { title: `Port: ${port.name}`, rows };
+    const multiplicity = text(port.multiplicity ?? port.attributes?.multiplicity ?? "[1]");
+    if (multiplicity && multiplicity !== "[1]") pushRow(rows, "Multiplicity", multiplicity);
+    pushRow(technicalRows, "Multiplicity", multiplicity);
+    pushRow(technicalRows, "Qualified name", port.semanticId ?? port.attributes?.semanticId ?? port.id ?? port.attributes?.scenePortId);
+    return { title: port.name, rows, technicalRows };
   }
   function nodeLabel(nodes, id2) {
     const node = nodes.get(id2);
-    return node?.label ? `${node.label} (${id2})` : id2;
+    return node?.label || id2;
+  }
+  function compactEndpoint(value) {
+    const raw = text(value).replace(/^occ:/, "");
+    const segments = raw.split(/::|\./).filter(Boolean);
+    return segments.length > 2 ? segments.slice(-2).join(".") : raw.replace(/::/g, ".");
   }
   function edgeTooltipDescriptor(edge, prepared) {
     const attributes = edge.attributes ?? {};
@@ -4317,16 +4325,19 @@ var Spec42HeadlessRendererBundle = (() => {
     const rawKind = view === "sequence-view" ? "message" : view === "state-transition-view" ? "transition" : view === "action-flow-view" ? attributes.succession === true || text(attributes.flowKind).toLowerCase() === "succession" ? "succession" : "flow" : text(view === "interconnection-view" ? text(attributes.relationType).toLowerCase() === "binding" ? "bind" : attributes.relationType ?? edge.edgeKind ?? edge.label : attributes.relationType ?? attributes.kind ?? edge.edgeKind ?? edge.label);
     const title = humanize(rawKind || (view === "sequence-view" ? "message" : "relationship"));
     const rows = [];
+    const technicalRows = [];
     const genericLabels = /* @__PURE__ */ new Set(["", "bind", "binding", "connect", "connection", "flow", "succession", "transition", "message", rawKind.toLowerCase()]);
     if (!genericLabels.has(text(edge.label).toLowerCase())) pushRow(rows, "Name", edge.label);
     if (view === "interconnection-view") {
-      pushRow(rows, "Source", attributes.sourceExpression ?? nodeLabel(nodes, edge.source));
-      pushRow(rows, "Target", attributes.targetExpression ?? nodeLabel(nodes, edge.target));
-      pushRow(rows, "Resolved source", attributes.sourcePortId ?? attributes.sourceId);
-      pushRow(rows, "Resolved target", attributes.targetPortId ?? attributes.targetId);
+      pushRow(rows, "From", compactEndpoint(attributes.sourceExpression ?? nodeLabel(nodes, edge.source)));
+      pushRow(rows, "To", compactEndpoint(attributes.targetExpression ?? nodeLabel(nodes, edge.target)));
+      pushRow(technicalRows, "Resolved source", attributes.sourcePortId ?? attributes.sourceId);
+      pushRow(technicalRows, "Resolved target", attributes.targetPortId ?? attributes.targetId);
     } else {
-      pushRow(rows, "Source", nodeLabel(nodes, edge.source));
-      pushRow(rows, "Target", nodeLabel(nodes, edge.target));
+      pushRow(rows, "From", nodeLabel(nodes, edge.source));
+      pushRow(rows, "To", nodeLabel(nodes, edge.target));
+      pushRow(technicalRows, "Source ID", edge.source);
+      pushRow(technicalRows, "Target ID", edge.target);
     }
     if (view === "action-flow-view") {
       const guard = text(attributes.guard);
@@ -4344,11 +4355,56 @@ var Spec42HeadlessRendererBundle = (() => {
       pushRow(rows, "Message kind", attributes.messageKind ?? attributes.kind);
       pushRow(rows, "Order", attributes.order);
     }
-    pushRow(rows, "Semantic ID", attributes.semanticId);
-    return { title, rows };
+    pushRow(technicalRows, "Semantic ID", attributes.semanticId);
+    return { title, rows, technicalRows };
   }
-  function tooltipText(descriptor) {
-    return [descriptor.title, ...descriptor.rows.map((row) => `${row.label}: ${row.value}`)].join("\n");
+  function tooltipFallbackText(descriptor) {
+    const technicalRows = (descriptor.technicalRows ?? []).filter((technical) => !descriptor.rows.some(
+      (row) => row.label === technical.label && row.value === technical.value
+    ));
+    return [
+      descriptor.title,
+      ...descriptor.rows.map((row) => `${row.label}: ${row.value}`),
+      ...technicalRows.map((row) => `${row.label}: ${row.value}`)
+    ].join("\n");
+  }
+  function renderHtmlTooltip(tooltip, descriptor, theme) {
+    tooltip.replaceChildren();
+    const heading = tooltip.ownerDocument.createElement("div");
+    heading.className = "sysml-diagram-tooltip-title";
+    heading.textContent = descriptor.title;
+    Object.assign(heading.style, {
+      fontSize: "13px",
+      fontWeight: "600",
+      color: theme.textPrimary,
+      marginBottom: descriptor.rows.length > 0 ? "6px" : "0"
+    });
+    tooltip.appendChild(heading);
+    if (descriptor.rows.length === 0) return;
+    const grid = tooltip.ownerDocument.createElement("div");
+    grid.className = "sysml-diagram-tooltip-grid";
+    Object.assign(grid.style, {
+      display: "grid",
+      gridTemplateColumns: "max-content minmax(0, 1fr)",
+      columnGap: "10px",
+      rowGap: "3px",
+      alignItems: "start"
+    });
+    for (const row of descriptor.rows) {
+      const label = tooltip.ownerDocument.createElement("span");
+      label.className = "sysml-diagram-tooltip-label";
+      label.textContent = row.label;
+      label.style.color = theme.textSecondary;
+      const value = tooltip.ownerDocument.createElement("span");
+      value.className = "sysml-diagram-tooltip-value";
+      value.textContent = row.value;
+      Object.assign(value.style, {
+        color: theme.textPrimary,
+        overflowWrap: "anywhere"
+      });
+      grid.append(label, value);
+    }
+    tooltip.appendChild(grid);
   }
   function appendPathEdgeHitTarget(layer, path2, edgeId) {
     layer.append("path").attr("class", "viz-edge-hit-target").attr("data-tooltip-kind", "edge").attr("data-tooltip-id", edgeId).attr("d", path2).style("fill", "none").style("stroke", "transparent").style("stroke-width", "12px").style("pointer-events", "stroke");
@@ -4381,8 +4437,9 @@ var Spec42HeadlessRendererBundle = (() => {
       display: "none",
       pointerEvents: "none",
       zIndex: "20",
-      maxWidth: "420px",
-      padding: "8px 10px",
+      width: "max-content",
+      maxWidth: "340px",
+      padding: "9px 11px",
       borderRadius: "5px",
       border: `1px solid ${theme.nodeBorder}`,
       background: theme.nodeFill,
@@ -4390,8 +4447,7 @@ var Spec42HeadlessRendererBundle = (() => {
       boxShadow: "0 4px 14px rgba(0, 0, 0, 0.35)",
       fontFamily: "system-ui, sans-serif",
       fontSize: "12px",
-      lineHeight: "1.4",
-      whiteSpace: "pre-wrap"
+      lineHeight: "1.35"
     });
     target.appendChild(tooltip);
     const marked = Array.from(target.querySelectorAll("[data-tooltip-kind]")).filter((element) => Boolean(element.dataset?.tooltipId ?? element.getAttribute("data-tooltip-id")));
@@ -4400,7 +4456,7 @@ var Spec42HeadlessRendererBundle = (() => {
       const id2 = element.dataset?.tooltipId ?? element.getAttribute("data-tooltip-id") ?? "";
       const descriptor = descriptors.get(`${kind}:${id2}`);
       if (!descriptor) continue;
-      const fullText = tooltipText(descriptor);
+      const fullText = tooltipFallbackText(descriptor);
       element.setAttribute("aria-label", fullText.replace(/\n/g, "; "));
       element.setAttribute("data-tooltip-title", fullText);
       const title = target.ownerDocument.createElementNS("http://www.w3.org/2000/svg", "title");
@@ -4449,7 +4505,7 @@ var Spec42HeadlessRendererBundle = (() => {
       const descriptor = descriptors.get(`${element.dataset.tooltipKind}:${element.dataset.tooltipId}`);
       if (!descriptor) return;
       suppressNativeTitle(element);
-      tooltip.textContent = tooltipText(descriptor);
+      renderHtmlTooltip(tooltip, descriptor, theme);
       tooltip.style.display = "block";
       positionTooltip(event);
       if (element.dataset.tooltipKind === "edge") {
