@@ -46,6 +46,7 @@ fn test_port(id: &str, name: &str, parent_id: &str) -> IbdPortDto {
         parent_id: parent_id.to_string(),
         direction: None,
         port_type: None,
+        multiplicity: Some("[1]".to_string()),
         port_side: None,
         uri: None,
         range: None,

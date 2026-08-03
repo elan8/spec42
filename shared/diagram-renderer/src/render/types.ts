@@ -69,6 +69,8 @@ export interface PreparedPort {
   id?: string;
   name: string;
   direction?: string;
+  semanticId?: string;
+  multiplicity?: string;
   portType?: string;
   portSide?: string;
   attributes?: Record<string, unknown>;

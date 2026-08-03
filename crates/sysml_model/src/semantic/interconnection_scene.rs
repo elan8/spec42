@@ -65,6 +65,9 @@ pub struct InterconnectionPortDto {
     #[serde(skip_serializing_if = "Option::is_none")]
     #[ts(optional)]
     pub direction: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    #[ts(optional)]
+    pub multiplicity: Option<String>,
     pub side_hint: String,
     /// Source document URI, for click-to-source navigation.
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -329,6 +332,7 @@ pub fn build_interconnection_scene(
                 name: feature.name.clone(),
                 type_name: feature.definition_id.clone(),
                 direction: source_port.and_then(|port| port.direction.clone()),
+                multiplicity: source_port.and_then(|port| port.multiplicity.clone()),
                 side_hint: side_hint_for_projected_port(feature, &ibd.ports),
                 uri: source_port.and_then(|port| port.uri.clone()),
                 range: source_port.and_then(|port| port.range.clone()),
@@ -403,6 +407,7 @@ mod tests {
             parent_id: parent.to_string(),
             direction: None,
             port_type: None,
+            multiplicity: Some("[1]".to_string()),
             port_side: None,
             uri: None,
             range: None,

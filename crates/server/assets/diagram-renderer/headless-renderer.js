@@ -295,7 +295,11 @@ var Spec42HeadlessRendererBundle = (() => {
           id: asString(message.id, `message-${index}`),
           source: asString(message.source ?? message.from ?? message.sourceId, ""),
           target: asString(message.target ?? message.to ?? message.targetId, ""),
-          label: asString(message.name ?? message.label ?? message.type, "")
+          label: asString(message.name ?? message.label ?? message.type, ""),
+          attributes: {
+            messageKind: asString(message.kind ?? message.type),
+            order: message.order
+          }
         };
       });
     }
@@ -601,6 +605,8 @@ var Spec42HeadlessRendererBundle = (() => {
         label,
         attributes: {
           selfLoop: Boolean(edge.selfLoop ?? source === target),
+          relationType: "transition",
+          trigger: edge.trigger,
           guard: edge.guard,
           effect: edge.effect,
           accept: edge.accept,
@@ -862,6 +868,8 @@ var Spec42HeadlessRendererBundle = (() => {
       id: port.id,
       name: port.name,
       direction: port.direction,
+      semanticId: port.semanticId,
+      multiplicity: port.multiplicity ?? "[1]",
       portType: port.typeName,
       portSide: port.sideHint === "west" ? "left" : port.sideHint === "east" ? "right" : void 0,
       uri: port.uri,
@@ -4277,6 +4285,197 @@ var Spec42HeadlessRendererBundle = (() => {
     return theme.edge.default;
   }
 
+  // ../shared/diagram-renderer/src/render/diagram-tooltip.ts
+  var activeTooltipControllers = /* @__PURE__ */ new WeakMap();
+  function text(value) {
+    return String(value ?? "").trim();
+  }
+  function humanize(value) {
+    const normalized = value.replace(/[_-]+/g, " ").replace(/([a-z])([A-Z])/g, "$1 $2").trim();
+    return normalized ? normalized.replace(/^./, (first) => first.toUpperCase()) : "Relationship";
+  }
+  function pushRow(rows, label, value) {
+    const normalized = text(value);
+    if (normalized) rows.push({ label, value: normalized });
+  }
+  function portTooltipDescriptor(port) {
+    const rows = [];
+    pushRow(rows, "Type", port.portType ?? port.attributes?.portType);
+    pushRow(rows, "Direction", port.direction ?? port.attributes?.direction);
+    pushRow(rows, "Multiplicity", port.multiplicity ?? port.attributes?.multiplicity ?? "[1]");
+    pushRow(rows, "Qualified name", port.semanticId ?? port.attributes?.semanticId ?? port.id ?? port.attributes?.scenePortId);
+    return { title: `Port: ${port.name}`, rows };
+  }
+  function nodeLabel(nodes, id2) {
+    const node = nodes.get(id2);
+    return node?.label ? `${node.label} (${id2})` : id2;
+  }
+  function edgeTooltipDescriptor(edge, prepared) {
+    const attributes = edge.attributes ?? {};
+    const nodes = new Map(prepared.nodes.map((node) => [node.id, node]));
+    const view = prepared.view;
+    const rawKind = view === "sequence-view" ? "message" : view === "state-transition-view" ? "transition" : view === "action-flow-view" ? attributes.succession === true || text(attributes.flowKind).toLowerCase() === "succession" ? "succession" : "flow" : text(view === "interconnection-view" ? text(attributes.relationType).toLowerCase() === "binding" ? "bind" : attributes.relationType ?? edge.edgeKind ?? edge.label : attributes.relationType ?? attributes.kind ?? edge.edgeKind ?? edge.label);
+    const title = humanize(rawKind || (view === "sequence-view" ? "message" : "relationship"));
+    const rows = [];
+    const genericLabels = /* @__PURE__ */ new Set(["", "bind", "binding", "connect", "connection", "flow", "succession", "transition", "message", rawKind.toLowerCase()]);
+    if (!genericLabels.has(text(edge.label).toLowerCase())) pushRow(rows, "Name", edge.label);
+    if (view === "interconnection-view") {
+      pushRow(rows, "Source", attributes.sourceExpression ?? nodeLabel(nodes, edge.source));
+      pushRow(rows, "Target", attributes.targetExpression ?? nodeLabel(nodes, edge.target));
+      pushRow(rows, "Resolved source", attributes.sourcePortId ?? attributes.sourceId);
+      pushRow(rows, "Resolved target", attributes.targetPortId ?? attributes.targetId);
+    } else {
+      pushRow(rows, "Source", nodeLabel(nodes, edge.source));
+      pushRow(rows, "Target", nodeLabel(nodes, edge.target));
+    }
+    if (view === "action-flow-view") {
+      const guard = text(attributes.guard);
+      if (guard && !["flow", "first", "succession", "succession flow"].includes(guard.toLowerCase())) {
+        pushRow(rows, "Guard", guard);
+      }
+      pushRow(rows, "Condition", attributes.condition);
+    } else if (view === "state-transition-view") {
+      pushRow(rows, "Trigger", attributes.trigger);
+      pushRow(rows, "Accept", attributes.accept);
+      pushRow(rows, "Guard", attributes.guard);
+      pushRow(rows, "Effect", attributes.effect);
+      pushRow(rows, "Send", attributes.send);
+    } else if (view === "sequence-view") {
+      pushRow(rows, "Message kind", attributes.messageKind ?? attributes.kind);
+      pushRow(rows, "Order", attributes.order);
+    }
+    pushRow(rows, "Semantic ID", attributes.semanticId);
+    return { title, rows };
+  }
+  function tooltipText(descriptor) {
+    return [descriptor.title, ...descriptor.rows.map((row) => `${row.label}: ${row.value}`)].join("\n");
+  }
+  function appendPathEdgeHitTarget(layer, path2, edgeId) {
+    layer.append("path").attr("class", "viz-edge-hit-target").attr("data-tooltip-kind", "edge").attr("data-tooltip-id", edgeId).attr("d", path2).style("fill", "none").style("stroke", "transparent").style("stroke-width", "12px").style("pointer-events", "stroke");
+  }
+  function appendLineEdgeHitTarget(layer, edgeId, x1, y1, x2, y2) {
+    layer.append("line").attr("class", "viz-edge-hit-target").attr("data-tooltip-kind", "edge").attr("data-tooltip-id", edgeId).attr("x1", x1).attr("y1", y1).attr("x2", x2).attr("y2", y2).style("stroke", "transparent").style("stroke-width", "12px").style("pointer-events", "stroke");
+  }
+  function markVisibleEdge(edge, edgeId, strokeWidth) {
+    edge.attr("data-edge-id", edgeId).attr("data-base-stroke-width", String(strokeWidth));
+  }
+  function installDiagramTooltips(target, prepared, theme) {
+    activeTooltipControllers.get(target)?.();
+    const descriptors = /* @__PURE__ */ new Map();
+    for (const node of prepared.nodes) {
+      const details = Array.isArray(node.attributes?.portDetails) ? node.attributes?.portDetails : [];
+      for (const port of details) {
+        const id2 = text(port.id ?? port.attributes?.scenePortId);
+        if (id2) descriptors.set(`port:${id2}`, portTooltipDescriptor(port));
+      }
+    }
+    for (const edge of prepared.edges) {
+      descriptors.set(`edge:${edge.id}`, edgeTooltipDescriptor(edge, prepared));
+    }
+    const previousPosition = target.style.position;
+    if (!previousPosition) target.style.position = "relative";
+    const tooltip = target.ownerDocument.createElement("div");
+    tooltip.className = "sysml-diagram-tooltip";
+    Object.assign(tooltip.style, {
+      position: "absolute",
+      display: "none",
+      pointerEvents: "none",
+      zIndex: "20",
+      maxWidth: "420px",
+      padding: "8px 10px",
+      borderRadius: "5px",
+      border: `1px solid ${theme.nodeBorder}`,
+      background: theme.nodeFill,
+      color: theme.textPrimary,
+      boxShadow: "0 4px 14px rgba(0, 0, 0, 0.35)",
+      fontFamily: "system-ui, sans-serif",
+      fontSize: "12px",
+      lineHeight: "1.4",
+      whiteSpace: "pre-wrap"
+    });
+    target.appendChild(tooltip);
+    const marked = Array.from(target.querySelectorAll("[data-tooltip-kind]")).filter((element) => Boolean(element.dataset?.tooltipId ?? element.getAttribute("data-tooltip-id")));
+    for (const element of marked) {
+      const kind = element.dataset?.tooltipKind ?? element.getAttribute("data-tooltip-kind") ?? "";
+      const id2 = element.dataset?.tooltipId ?? element.getAttribute("data-tooltip-id") ?? "";
+      const descriptor = descriptors.get(`${kind}:${id2}`);
+      if (!descriptor) continue;
+      const fullText = tooltipText(descriptor);
+      element.setAttribute("aria-label", fullText.replace(/\n/g, "; "));
+      const title = target.ownerDocument.createElementNS("http://www.w3.org/2000/svg", "title");
+      title.textContent = fullText;
+      element.appendChild(title);
+    }
+    let activeEdgeId = "";
+    const highlightEdge = (edgeId, active) => {
+      for (const edgeElement of Array.from(target.querySelectorAll("[data-edge-id]"))) {
+        if (edgeElement.getAttribute("data-edge-id") !== edgeId) continue;
+        const base = Number(edgeElement.getAttribute("data-base-stroke-width") || 2);
+        edgeElement.classList.toggle("viz-edge-hovered", active);
+        edgeElement.style.strokeWidth = `${active ? base + 1.5 : base}px`;
+        edgeElement.style.opacity = active ? "1" : "0.9";
+      }
+    };
+    const positionTooltip = (event) => {
+      const bounds = target.getBoundingClientRect();
+      const width = tooltip.offsetWidth || 280;
+      const height = tooltip.offsetHeight || 80;
+      const left = Math.max(4, Math.min(event.clientX - bounds.left + 14, bounds.width - width - 4));
+      const top = Math.max(4, Math.min(event.clientY - bounds.top + 14, bounds.height - height - 4));
+      tooltip.style.left = `${left}px`;
+      tooltip.style.top = `${top}px`;
+    };
+    const tooltipElement = (event) => {
+      const candidate = event.target instanceof Element ? event.target.closest("[data-tooltip-kind][data-tooltip-id]") : null;
+      return candidate && target.contains(candidate) ? candidate : null;
+    };
+    const show = (event) => {
+      const element = tooltipElement(event);
+      if (!element) return;
+      const descriptor = descriptors.get(`${element.dataset.tooltipKind}:${element.dataset.tooltipId}`);
+      if (!descriptor) return;
+      tooltip.textContent = tooltipText(descriptor);
+      tooltip.style.display = "block";
+      positionTooltip(event);
+      if (element.dataset.tooltipKind === "edge") {
+        const nextEdgeId = element.dataset.tooltipId ?? "";
+        if (activeEdgeId && activeEdgeId !== nextEdgeId) highlightEdge(activeEdgeId, false);
+        activeEdgeId = nextEdgeId;
+        highlightEdge(activeEdgeId, true);
+      }
+    };
+    const move = (event) => {
+      if (tooltip.style.display !== "none") positionTooltip(event);
+    };
+    const hide = () => {
+      tooltip.style.display = "none";
+      if (activeEdgeId) highlightEdge(activeEdgeId, false);
+      activeEdgeId = "";
+    };
+    const leave = (event) => {
+      const current = tooltipElement(event);
+      if (!current) return;
+      const next = event.relatedTarget instanceof Element ? event.relatedTarget.closest("[data-tooltip-kind][data-tooltip-id]") : null;
+      if (next?.dataset.tooltipKind === current.dataset.tooltipKind && next?.dataset.tooltipId === current.dataset.tooltipId) return;
+      hide();
+    };
+    target.addEventListener("mouseover", show);
+    target.addEventListener("mousemove", move);
+    target.addEventListener("mouseout", leave);
+    target.addEventListener("mouseleave", hide);
+    const cleanup = () => {
+      target.removeEventListener("mouseover", show);
+      target.removeEventListener("mousemove", move);
+      target.removeEventListener("mouseout", leave);
+      target.removeEventListener("mouseleave", hide);
+      tooltip.remove();
+      if (!previousPosition) target.style.position = "";
+      if (activeTooltipControllers.get(target) === cleanup) activeTooltipControllers.delete(target);
+    };
+    activeTooltipControllers.set(target, cleanup);
+    return cleanup;
+  }
+
   // ../shared/diagram-renderer/src/views/behavior-interaction.ts
   function nodeSupportsSourceNavigation(node) {
     const attrs = node.attributes ?? {};
@@ -4338,7 +4537,7 @@ var Spec42HeadlessRendererBundle = (() => {
   };
 
   // ../shared/diagram-renderer/src/views/elk-label-utils.ts
-  function estimateElkLabelBox(id2, text, options) {
+  function estimateElkLabelBox(id2, text2, options) {
     const paddingX = options?.paddingX ?? 10;
     const paddingY = options?.paddingY ?? 8;
     const minWidth = options?.minWidth ?? 42;
@@ -4346,21 +4545,21 @@ var Spec42HeadlessRendererBundle = (() => {
     const charWidth = options?.charWidth ?? 6;
     return {
       id: id2,
-      text,
+      text: text2,
       x: 0,
       y: 0,
-      width: Math.max(minWidth, text.length * charWidth + paddingX),
+      width: Math.max(minWidth, text2.length * charWidth + paddingX),
       height: Math.max(minHeight, paddingY + 10)
     };
   }
   function toAbsoluteElkLabelBox(label, offset = { x: 0, y: 0 }) {
     if (!label) return null;
     const id2 = String(label.id || "");
-    const text = String(label.text || "");
-    if (!id2 || !text) return null;
+    const text2 = String(label.text || "");
+    if (!id2 || !text2) return null;
     return {
       id: id2,
-      text,
+      text: text2,
       x: (label.x ?? 0) + offset.x,
       y: (label.y ?? 0) + offset.y,
       width: label.width ?? 0,
@@ -4608,8 +4807,8 @@ var Spec42HeadlessRendererBundle = (() => {
     collectElkEdgeLabels(laidOut, { x: 0, y: 0 }, edgeLabelsById);
     return { positions, edgeSectionsById, edgeLabelsById };
   }
-  function truncateLabel(text, max2) {
-    const trimmed = text.trim();
+  function truncateLabel(text2, max2) {
+    const trimmed = text2.trim();
     return trimmed.length > max2 ? `${trimmed.slice(0, max2 - 2)}..` : trimmed;
   }
 
@@ -4723,10 +4922,13 @@ var Spec42HeadlessRendererBundle = (() => {
       const succession = Boolean(edgeAttrs.succession) || guard === "first" || guard === "succession" || guard === "succession flow";
       const streamingFlow = Boolean(edgeAttrs.streamingFlow) || guard === "flow";
       const conditional = Boolean(edgeAttrs.conditional);
-      flowLayer.append("path").attr(
+      const path2 = pathFromSections(sections) || fallback.path;
+      const visibleEdge = flowLayer.append("path").attr(
         "class",
         succession ? conditional ? "activity-flow action-flow-edge aflow-succession aflow-conditional" : "activity-flow action-flow-edge aflow-succession" : streamingFlow ? "activity-flow action-flow-edge aflow-streaming" : "activity-flow action-flow-edge"
-      ).attr("data-flow-kind", succession ? "succession" : streamingFlow ? "streaming" : "other").attr("d", pathFromSections(sections) || fallback.path).style("fill", "none").style("stroke", ctx.theme.edge.default).style("stroke-width", "2px").style("stroke-dasharray", succession ? "7,4" : "none").style("marker-end", "url(#action-flow-arrow)");
+      ).attr("data-flow-kind", succession ? "succession" : streamingFlow ? "streaming" : "other").attr("d", path2).style("fill", "none").style("stroke", ctx.theme.edge.default).style("stroke-width", "2px").style("stroke-dasharray", succession ? "7,4" : "none").style("marker-end", "url(#action-flow-arrow)");
+      markVisibleEdge(visibleEdge, edge.id, 2);
+      appendPathEdgeHitTarget(flowLayer, path2, edge.id);
       const label = truncateLabel(edge.label, 20);
       if (label && !["flow", "first", "bind"].includes(label.toLowerCase())) {
         const elkLabel = layout.edgeLabelsById.get(edge.id)?.[0];
@@ -4844,13 +5046,18 @@ var Spec42HeadlessRendererBundle = (() => {
       const y2 = messageRow(Number(message.order ?? 1));
       messagePosition.set(messageRef(message), { sourceX, targetX, y: y2 });
       const kind = asString3(message.kind ?? message.type).toLowerCase();
+      const edgeId = asString3(message.id, messageRef(message));
       const isReturn = kind.includes("return") || kind.includes("reply");
       const isSelf = sourceId === targetId;
       if (isSelf) {
         const path2 = `M${sourceX},${y2} C${sourceX + 84},${y2 - 18} ${sourceX + 84},${y2 + 34} ${sourceX},${y2 + 28}`;
-        messageLayer.append("path").attr("class", `sequence-message sequence-message-self${isReturn ? " sequence-message-return" : ""}`).attr("d", path2).style("fill", "none").style("stroke", ctx.theme.edge.default).style("stroke-width", "1.8px").style("stroke-dasharray", isReturn ? "6,4" : "none").style("marker-end", "url(#sequence-arrow-sync)");
+        const visibleEdge = messageLayer.append("path").attr("class", `sequence-message sequence-message-self${isReturn ? " sequence-message-return" : ""}`).attr("d", path2).style("fill", "none").style("stroke", ctx.theme.edge.default).style("stroke-width", "1.8px").style("stroke-dasharray", isReturn ? "6,4" : "none").style("marker-end", "url(#sequence-arrow-sync)");
+        markVisibleEdge(visibleEdge, edgeId, 1.8);
+        appendPathEdgeHitTarget(messageLayer, path2, edgeId);
       } else {
-        messageLayer.append("line").attr("class", `sequence-message${isReturn ? " sequence-message-return" : ""}`).attr("x1", sourceX).attr("y1", y2).attr("x2", targetX).attr("y2", y2).style("stroke", ctx.theme.edge.default).style("stroke-width", "1.8px").style("stroke-dasharray", isReturn ? "6,4" : "none").style("marker-end", "url(#sequence-arrow-sync)");
+        const visibleEdge = messageLayer.append("line").attr("class", `sequence-message${isReturn ? " sequence-message-return" : ""}`).attr("x1", sourceX).attr("y1", y2).attr("x2", targetX).attr("y2", y2).style("stroke", ctx.theme.edge.default).style("stroke-width", "1.8px").style("stroke-dasharray", isReturn ? "6,4" : "none").style("marker-end", "url(#sequence-arrow-sync)");
+        markVisibleEdge(visibleEdge, edgeId, 1.8);
+        appendLineEdgeHitTarget(messageLayer, edgeId, sourceX, y2, targetX, y2);
       }
       const label = truncateLabel(asString3(message.name ?? message.label), 28);
       if (label) {
@@ -4982,7 +5189,9 @@ var Spec42HeadlessRendererBundle = (() => {
       const effect = String(edgeAttrs.effect ?? "").trim();
       const accept = String(edgeAttrs.accept ?? "").trim();
       const send = String(edgeAttrs.send ?? "").trim();
-      edgeLayer.append("path").attr("class", "state-transition-edge").attr("data-guard", guard || null).attr("data-effect", effect || null).attr("data-accept", accept || null).attr("data-send", send || null).attr("d", path2).style("fill", "none").style("stroke", ctx.theme.edge.default).style("stroke-width", "2px").style("marker-end", "url(#state-transition-arrow)");
+      const visibleEdge = edgeLayer.append("path").attr("class", "state-transition-edge").attr("data-guard", guard || null).attr("data-effect", effect || null).attr("data-accept", accept || null).attr("data-send", send || null).attr("d", path2).style("fill", "none").style("stroke", ctx.theme.edge.default).style("stroke-width", "2px").style("marker-end", "url(#state-transition-arrow)");
+      markVisibleEdge(visibleEdge, edge.id, 2);
+      appendPathEdgeHitTarget(edgeLayer, path2, edge.id);
       const label = transitionDisplayLabel2(edge.label);
       if (label) {
         const elkLabel = layout.edgeLabelsById.get(edge.id)?.[0];
@@ -5043,8 +5252,8 @@ var Spec42HeadlessRendererBundle = (() => {
   function asArray4(value) {
     return Array.isArray(value) ? value : [];
   }
-  function normalizeUnitBrackets(text) {
-    let out = text;
+  function normalizeUnitBrackets(text2) {
+    let out = text2;
     while (/\[\[[^\[\]]+\]\]/.test(out)) {
       out = out.replace(/\[\[([^\[\]]+)\]\]/g, "[$1]");
     }
@@ -5052,8 +5261,8 @@ var Spec42HeadlessRendererBundle = (() => {
   }
   function normalizeDetailItem(item) {
     if (typeof item === "string") {
-      const text = normalizeUnitBrackets(item.trim());
-      return text ? { name: text, displayText: text } : null;
+      const text2 = normalizeUnitBrackets(item.trim());
+      return text2 ? { name: text2, displayText: text2 } : null;
     }
     if (!item || typeof item !== "object") return null;
     const record = item;
@@ -5721,29 +5930,23 @@ var Spec42HeadlessRendererBundle = (() => {
   // ../shared/diagram-renderer/src/render/ibd-port-label.ts
   var IBD_PORT_LABEL_FONT_SIZE = 8;
   var IBD_PORT_LABEL_HEIGHT = 10;
-  var IBD_PORT_LABEL_MAX_LENGTH = 24;
+  var IBD_PORT_LABEL_MAX_LENGTH = 20;
   var IBD_PORT_LABEL_CHARACTER_WIDTH = 5;
   function formatIbdPortLabel(name, detail) {
-    const direction = String(detail?.direction || "").trim();
-    const directionPrefix = direction ? `${direction} ` : "";
-    const type2 = String(detail?.portType || detail?.attributes?.portType || "").trim();
-    if (!type2) return `${directionPrefix}${name}`;
-    const conjugated = type2.startsWith("~");
-    const cleanType = type2.replace(/^~/, "").split(/::|\./).pop() || type2.replace(/^~/, "");
-    return `${directionPrefix}${name}: ${conjugated ? "~" : ""}${cleanType}`;
+    return String(name || "").trim();
   }
   function ibdPortLabelText(name, detail) {
     const label = formatIbdPortLabel(name, detail);
-    return label.length > IBD_PORT_LABEL_MAX_LENGTH ? `${label.slice(0, IBD_PORT_LABEL_MAX_LENGTH - 1)}...` : label;
+    return label.length > IBD_PORT_LABEL_MAX_LENGTH ? `${label.slice(0, IBD_PORT_LABEL_MAX_LENGTH - 1)}\u2026` : label;
   }
-  function ibdPortLabelWidth(text) {
-    return Math.max(12, text.length * IBD_PORT_LABEL_CHARACTER_WIDTH);
+  function ibdPortLabelWidth(text2) {
+    return Math.max(12, text2.length * IBD_PORT_LABEL_CHARACTER_WIDTH);
   }
 
   // ../shared/diagram-renderer/src/render/drawing.ts
   function truncate2(value, max2) {
-    const text = String(value || "");
-    return text.length > max2 ? `${text.slice(0, max2 - 1)}...` : text;
+    const text2 = String(value || "");
+    return text2.length > max2 ? `${text2.slice(0, max2 - 1)}...` : text2;
   }
   function drawEdges(root2, edges, isInterconnectionView, theme, layoutDto) {
     const layoutLookup = layoutDto ? buildInterconnectionLayoutLookup(layoutDto) : void 0;
@@ -5758,7 +5961,9 @@ var Spec42HeadlessRendererBundle = (() => {
       const stroke = strokeColorForEdge(edgeKind, theme);
       const strokeWidth = edgeKind === "hierarchy" ? 1.4 : isInterconnectionView ? 2 : 1.8;
       const pathSelection = edgeLayer.append("path").attr("class", `${isInterconnectionView ? "ibd-connector" : "general-connector"} viz-edge viz-edge--${edgeKind}`).attr("d", path2).attr("data-connector-id", edge.id).attr("data-source", edge.source).attr("data-target", edge.target).attr("data-type", String(edge.attributes?.relationType || edgeKind || "relationship")).style("fill", "none").style("stroke", stroke).style("stroke-width", strokeWidth).style("opacity", 0.9);
+      markVisibleEdge(pathSelection, edge.id, strokeWidth);
       applyEdgeMarker(pathSelection, edgeKind, isInterconnectionView, theme);
+      appendPathEdgeHitTarget(edgeLayer, path2, edge.id);
       if (shouldRenderEdgeLabel(edge, edgeKind, isInterconnectionView)) {
         labels.push({
           edge,
@@ -6043,6 +6248,7 @@ var Spec42HeadlessRendererBundle = (() => {
     const fallbackSpacing = 26;
     const drawPort = (name, sideIndex, side) => {
       const detail = details.find((port) => port.name === name);
+      const tooltipId = String(detail?.id || detail?.attributes?.scenePortId || "");
       const sanitized = name.replace(/[^A-Za-z0-9_.-]/g, "_");
       const anchor = anchors[sanitized] ?? anchors[name];
       const resolvedSide = anchor?.side === "WEST" || anchor?.side === "EAST" ? anchor.side : side;
@@ -6051,8 +6257,8 @@ var Spec42HeadlessRendererBundle = (() => {
       const color2 = theme.nodeBorder;
       const labelLayout = anchor?.label;
       const labelText = labelLayout?.text || ibdPortLabelText(name, detail);
-      group.append("rect").attr("class", "port-icon").attr("data-port-name", name).attr("data-port-side", resolvedSide).attr("x", x2 - portSize / 2).attr("y", y2 - portSize / 2).attr("width", portSize).attr("height", portSize).style("fill", "none").style("stroke", color2).style("stroke-width", "1.8px");
-      group.append("text").attr("class", "port-label").attr("data-port-name", name).attr("data-port-side", resolvedSide).attr("x", labelLayout?.x ?? (resolvedSide === "WEST" ? Math.min(width - 10, x2 + 16) : Math.max(10, x2 - 16))).attr("y", labelLayout ? labelLayout.y + labelLayout.height - 1 : y2 - 6).attr("text-anchor", labelLayout ? "start" : resolvedSide === "WEST" ? "start" : "end").attr("textLength", labelLayout?.width ?? null).attr("lengthAdjust", labelLayout ? "spacingAndGlyphs" : null).attr("paint-order", "stroke fill").attr("stroke", theme.canvasBackground).attr("stroke-width", 3).attr("stroke-linejoin", "round").text(labelText).style("font-family", "monospace").style("font-size", `${IBD_PORT_LABEL_FONT_SIZE}px`).style("font-weight", "500").style("fill", color2);
+      group.append("rect").attr("class", "port-icon").attr("data-port-name", name).attr("data-port-side", resolvedSide).attr("data-tooltip-kind", tooltipId ? "port" : null).attr("data-tooltip-id", tooltipId || null).attr("x", x2 - portSize / 2).attr("y", y2 - portSize / 2).attr("width", portSize).attr("height", portSize).style("fill", "none").style("stroke", color2).style("stroke-width", "1.8px").style("pointer-events", tooltipId ? "all" : "none").style("cursor", tooltipId ? "help" : "default");
+      group.append("text").attr("class", "port-label").attr("data-port-name", name).attr("data-port-side", resolvedSide).attr("data-tooltip-kind", tooltipId ? "port" : null).attr("data-tooltip-id", tooltipId || null).attr("x", labelLayout?.x ?? (resolvedSide === "WEST" ? Math.min(width - 10, x2 + 16) : Math.max(10, x2 - 16))).attr("y", labelLayout ? labelLayout.y + labelLayout.height - 1 : y2 - 6).attr("text-anchor", labelLayout ? "start" : resolvedSide === "WEST" ? "start" : "end").attr("textLength", labelLayout?.width ?? null).attr("lengthAdjust", labelLayout ? "spacingAndGlyphs" : null).attr("paint-order", "stroke fill").attr("stroke", theme.canvasBackground).attr("stroke-width", 3).attr("stroke-linejoin", "round").text(labelText).style("font-family", "monospace").style("font-size", `${IBD_PORT_LABEL_FONT_SIZE}px`).style("font-weight", "500").style("fill", color2).style("pointer-events", tooltipId ? "all" : "none").style("cursor", tooltipId ? "help" : "default");
     };
     if (drawOrder) {
       (drawOrder.west ?? []).forEach((name, index) => drawPort(name, index, "WEST"));
@@ -6895,6 +7101,7 @@ var Spec42HeadlessRendererBundle = (() => {
       );
     };
     fitView();
+    const destroyTooltips = installDiagramTooltips(target, prepared, theme);
     options.onPerformance?.("sharedRenderer:render", {
       view,
       totalMs: Date.now() - renderStartedAt,
@@ -6906,6 +7113,7 @@ var Spec42HeadlessRendererBundle = (() => {
       getFitTransform: () => lastFitTransform,
       exportSvg: () => exportSvg(svg.node(), bounds),
       destroy: () => {
+        destroyTooltips();
         target.innerHTML = "";
       }
     };

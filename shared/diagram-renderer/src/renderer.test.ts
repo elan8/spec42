@@ -81,6 +81,8 @@ describe("shared renderer", () => {
     expect(svg).toContain("Attributes");
     expect(svg).toContain("Ports");
     expect(svg).toContain("mass");
+    expect(svg).toContain("Typing");
+    expect(svg).toContain("Source: A (a)");
 
     controller.reset();
     controller.destroy();
@@ -1012,8 +1014,8 @@ describe("shared renderer", () => {
       title: "DroneInterconnection",
       view: "interconnection-view",
       nodes: [
-        { id: "battery", label: "battery", kind: "part", attributes: { portDetails: [{ id: "Drone.battery.pwr", name: "pwr", portType: "PowerPort" }] } },
-        { id: "distribution", label: "distribution", kind: "part", attributes: { portDetails: [{ id: "Drone.distribution.mainPower", name: "mainPower", portType: "~PowerPort" }] } },
+        { id: "battery", label: "battery", kind: "part", attributes: { portDetails: [{ id: "Drone.battery.pwr", name: "pwr", portType: "PowerPort", direction: "out", multiplicity: "[0..1]", semanticId: "Drone::battery::pwr" }] } },
+        { id: "distribution", label: "distribution", kind: "part", attributes: { portDetails: [{ id: "Drone.distribution.mainPower", name: "mainPower", portType: "~PowerPort", direction: "in", multiplicity: "[1]", semanticId: "Drone::distribution::mainPower" }] } },
         { id: "controller", label: "controller", kind: "part", attributes: { portDetails: [{ id: "Drone.controller.cmd", name: "cmd" }] } },
         { id: "motor", label: "motor", kind: "part", attributes: { portDetails: [{ id: "Drone.motor.cmd", name: "cmd" }] } },
         { id: "sensor", label: "sensor", kind: "part" },
@@ -1025,7 +1027,7 @@ describe("shared renderer", () => {
           target: "distribution",
           label: "connection",
           edgeKind: "connection",
-          attributes: { sourceId: "Drone.battery.pwr", targetId: "Drone.distribution.mainPower", relationType: "connection" },
+          attributes: { sourceId: "Drone.battery.pwr", targetId: "Drone.distribution.mainPower", sourcePortId: "Drone.battery.pwr", targetPortId: "Drone.distribution.mainPower", sourceExpression: "battery.pwr", targetExpression: "distribution.mainPower", relationType: "connection" },
         },
         {
           id: "flow-edge",
@@ -1081,8 +1083,30 @@ describe("shared renderer", () => {
     expect(iface?.style.markerEnd).toContain("ibd-interface-arrow");
     expect(binding?.style.strokeDasharray).toBe("6,4");
     expect(reference?.style.strokeDasharray).toBe("4,4");
-    expect(target.textContent).toContain("pwr: PowerPort");
-    expect(target.textContent).toContain("mainPower: ~PowerPort");
+    const portLabels = Array.from(target.querySelectorAll(".port-label"), (node) => node.childNodes[0]?.textContent);
+    expect(portLabels).toContain("pwr");
+    expect(portLabels).toContain("mainPower");
+    expect(target.querySelector('[data-tooltip-kind="port"] title')?.textContent).toContain("Type: PowerPort");
+    expect(target.querySelectorAll('.port-icon[data-tooltip-kind="port"]')).toHaveLength(4);
+    expect(target.querySelectorAll('.port-label[data-tooltip-kind="port"]')).toHaveLength(4);
+    for (const portElement of target.querySelectorAll('[data-tooltip-kind="port"]')) {
+      expect(portElement.querySelector("title")?.textContent).toContain("Multiplicity:");
+      expect(portElement.getAttribute("aria-label")).toContain("Qualified name:");
+      expect((portElement as SVGElement).style.pointerEvents).toBe("all");
+    }
+    expect(target.querySelectorAll('.viz-edge-hit-target[data-tooltip-kind="edge"]')).toHaveLength(5);
+    expect(target.querySelectorAll(".ibd-connector")).toHaveLength(5);
+    const connectionHit = target.querySelector('[data-tooltip-id="connection-edge"].viz-edge-hit-target') as SVGPathElement;
+    expect(connectionHit.style.strokeWidth).toBe("12px");
+    expect(connectionHit.querySelector("title")?.textContent).toContain("Source: battery.pwr");
+    connectionHit.dispatchEvent(new MouseEvent("mouseover", { bubbles: true, clientX: 200, clientY: 100 }));
+    const tooltip = target.querySelector(".sysml-diagram-tooltip") as HTMLDivElement;
+    expect(tooltip.style.display).toBe("block");
+    expect(tooltip.textContent).toContain("Resolved target: Drone.distribution.mainPower");
+    expect(connection?.classList.contains("viz-edge-hovered")).toBe(true);
+    connectionHit.dispatchEvent(new MouseEvent("mouseout", { bubbles: true, relatedTarget: target }));
+    expect(tooltip.style.display).toBe("none");
+    expect(connection?.classList.contains("viz-edge-hovered")).toBe(false);
   });
 
   it("renders direct part-to-part IBD connections when ports are absent", async () => {
@@ -1133,6 +1157,8 @@ describe("shared renderer", () => {
     expectFiniteRootTransform(target);
     expect(target.querySelectorAll(".action-flow-node").length).toBe(3);
     expect(target.querySelectorAll(".action-flow-edge").length).toBeGreaterThanOrEqual(2);
+    expect(target.querySelector('[data-tooltip-id="f2"] title')?.textContent).toContain("Flow");
+    expect(target.querySelector('[data-tooltip-id="f2"] title')?.textContent).toContain("Name: complete");
   });
 
   it("renders streaming flows solid and successions dashed", async () => {
@@ -1351,6 +1377,8 @@ describe("shared renderer", () => {
     expect(target.textContent).toContain("[armed]");
     expect(target.textContent).toContain("accept StartPressed");
     expect(target.textContent).toContain("send Notification");
+    expect(target.querySelector('[data-tooltip-id="t1"] title')?.textContent).toContain("Guard: armed");
+    expect(target.querySelector('[data-tooltip-id="t1"] title')?.textContent).toContain("Effect: start");
   });
 
   it("highlights action-flow nodes on click when onNodeClick is wired", async () => {
@@ -1395,7 +1423,10 @@ describe("shared renderer", () => {
         title: "Interaction",
         view: "sequence-view",
         nodes: [],
-        edges: [],
+        edges: [
+          { id: "m1", source: "user", target: "robot", label: "command", attributes: { messageKind: "sync", order: 1 } },
+          { id: "m2", source: "robot", target: "user", label: "status", attributes: { messageKind: "reply", order: 2 } },
+        ],
         meta: {
           sequenceDiagram: {
             name: "Demo",
@@ -1416,6 +1447,8 @@ describe("shared renderer", () => {
     expectFiniteRootTransform(target);
     expect(target.querySelectorAll(".sequence-lifelines line").length).toBeGreaterThanOrEqual(2);
     expect(target.querySelectorAll(".sequence-message").length).toBe(2);
+    expect(target.querySelector('[data-tooltip-id="m1"] title')?.textContent).toContain("Message kind: sync");
+    expect(target.querySelector('[data-tooltip-id="m1"] title')?.textContent).toContain("Order: 1");
   });
 
   it("renders sequence fragments, activations, self messages, and return messages", async () => {

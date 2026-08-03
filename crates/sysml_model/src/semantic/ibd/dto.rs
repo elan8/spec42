@@ -46,6 +46,9 @@ pub struct IbdPortDto {
     pub port_type: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
     #[ts(optional)]
+    pub multiplicity: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    #[ts(optional)]
     pub port_side: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
     #[ts(optional)]

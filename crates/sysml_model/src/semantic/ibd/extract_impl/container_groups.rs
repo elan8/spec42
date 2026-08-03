@@ -106,6 +106,7 @@ pub(crate) fn expanded_port_to_ibd_dto(
         parent_id: port.parent_path.clone(),
         direction: port.direction.clone(),
         port_type: port.port_type.clone(),
+        multiplicity: Some(port.multiplicity.clone()),
         port_side,
         uri: Some(port.node_id.uri.as_str().to_string()),
         range: declaring_node.map(|node| crate::semantic::dto::range_to_dto(node.range)),

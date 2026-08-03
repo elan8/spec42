@@ -59,8 +59,8 @@ describe("headless SVG export", () => {
           { id: "b", name: "b", kind: "part", qualifiedName: "b", semanticId: "b", definitionId: "B", typeName: "B" },
         ],
         ports: [
-          { id: "a.p", ownerNodeId: "a", name: "p", direction: "out", typeName: "Power", sideHint: "east" },
-          { id: "b.p", ownerNodeId: "b", name: "p", direction: "in", typeName: "Power", sideHint: "west" },
+          { id: "a.p", semanticId: "Demo::a::p", ownerNodeId: "a", name: "p", direction: "out", multiplicity: "[0..1]", typeName: "Power", sideHint: "east" },
+          { id: "b.p", semanticId: "Demo::b::p", ownerNodeId: "b", name: "p", direction: "in", multiplicity: "[1]", typeName: "~Power", sideHint: "west" },
         ],
         edges: [{ id: "e", sourceNodeId: "a", targetNodeId: "b", sourcePortId: "a.p", targetPortId: "b.p", kind: "flow", label: "flow", semanticId: "e" }],
         containers: [],
@@ -72,6 +72,12 @@ describe("headless SVG export", () => {
     expect(svg).toContain("ibd-flow-arrow");
     expect(svg).toContain("port-icon");
     expect(svg).toContain("viz-node--usage");
+    expect(svg).toContain("Port: p");
+    expect(svg).toContain("Type: ~Power");
+    expect(svg).toContain("Multiplicity: [0..1]");
+    expect(svg).toContain("Resolved source: a.p");
+    expect(svg).toContain("viz-edge-hit-target");
+    expect(svg).not.toContain("sysml-diagram-tooltip");
   });
 
   it("exports behavior views", async () => {

@@ -1,6 +1,7 @@
 import * as d3 from "d3";
 import type { PreparedNode } from "../prepare";
 import type { DiagramTheme } from "../theme";
+import { appendLineEdgeHitTarget, appendPathEdgeHitTarget, markVisibleEdge } from "../render/diagram-tooltip";
 import { attachBehaviorNodeClick } from "./behavior-interaction";
 import { BehaviorSceneContext, truncateLabel } from "./behavior-common";
 
@@ -157,11 +158,12 @@ export function renderSequenceView(ctx: BehaviorSceneContext): { minX: number; m
     const y = messageRow(Number(message.order ?? 1));
     messagePosition.set(messageRef(message), { sourceX, targetX, y });
     const kind = asString(message.kind ?? message.type).toLowerCase();
+    const edgeId = asString(message.id, messageRef(message));
     const isReturn = kind.includes("return") || kind.includes("reply");
     const isSelf = sourceId === targetId;
     if (isSelf) {
       const path = `M${sourceX},${y} C${sourceX + 84},${y - 18} ${sourceX + 84},${y + 34} ${sourceX},${y + 28}`;
-      messageLayer
+      const visibleEdge = messageLayer
         .append("path")
         .attr("class", `sequence-message sequence-message-self${isReturn ? " sequence-message-return" : ""}`)
         .attr("d", path)
@@ -170,8 +172,10 @@ export function renderSequenceView(ctx: BehaviorSceneContext): { minX: number; m
         .style("stroke-width", "1.8px")
         .style("stroke-dasharray", isReturn ? "6,4" : "none")
         .style("marker-end", "url(#sequence-arrow-sync)");
+      markVisibleEdge(visibleEdge, edgeId, 1.8);
+      appendPathEdgeHitTarget(messageLayer, path, edgeId);
     } else {
-      messageLayer
+      const visibleEdge = messageLayer
         .append("line")
       .attr("class", `sequence-message${isReturn ? " sequence-message-return" : ""}`)
       .attr("x1", sourceX)
@@ -182,6 +186,8 @@ export function renderSequenceView(ctx: BehaviorSceneContext): { minX: number; m
       .style("stroke-width", "1.8px")
       .style("stroke-dasharray", isReturn ? "6,4" : "none")
       .style("marker-end", "url(#sequence-arrow-sync)");
+      markVisibleEdge(visibleEdge, edgeId, 1.8);
+      appendLineEdgeHitTarget(messageLayer, edgeId, sourceX, y, targetX, y);
     }
     const label = truncateLabel(asString(message.name ?? message.label), 28);
     if (label) {
