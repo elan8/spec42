@@ -413,3 +413,36 @@ fn occurrence_def_body_flow_emits_flow_edge() {
         .any(|(_, _, k, _)| *k == RelationshipKind::Flow);
     assert!(has_flow, "expected Flow edge from occurrence def body flow");
 }
+
+#[test]
+fn part_def_body_bind_emits_bind_edge_between_nested_features() {
+    let doc = workspace_doc(
+        "part_def_bind.sysml",
+        r#"package P {
+  part def Assembly {
+    part source;
+    part target;
+    bind source = target;
+  }
+}"#,
+    );
+    let uri = doc.uri.clone();
+    let (graph, _parsed) = build_semantic_graph_from_documents(&[doc]).expect("graph");
+
+    let bind_edges: Vec<_> = graph
+        .edges_for_uri_as_strings(&uri)
+        .into_iter()
+        .filter(|(_, _, kind, _)| *kind == RelationshipKind::Bind)
+        .collect();
+
+    assert_eq!(bind_edges.len(), 1, "expected exactly one Bind edge");
+    let (source, target, _, _) = &bind_edges[0];
+    assert!(
+        source.ends_with("::Assembly::source"),
+        "unexpected bind source: {source}"
+    );
+    assert!(
+        target.ends_with("::Assembly::target"),
+        "unexpected bind target: {target}"
+    );
+}

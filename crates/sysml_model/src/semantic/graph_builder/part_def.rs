@@ -503,6 +503,16 @@ pub(super) fn build_from_part_def_body_element(
                 RelationshipKind::Allocate,
             );
         }
+        PDBE::Bind(bind_node) => {
+            expressions::add_expression_edge_if_both_exist(
+                g,
+                uri,
+                container_prefix,
+                &bind_node.value.left,
+                &bind_node.value.right,
+                RelationshipKind::Bind,
+            );
+        }
         PDBE::Ref(r) => {
             super::ref_decl::materialize_ref_decl(
                 g,
