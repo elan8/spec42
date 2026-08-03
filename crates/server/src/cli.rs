@@ -31,7 +31,7 @@ pub struct Cli {
 pub enum Command {
     Lsp,
     Check(CheckArgs),
-    /// Run a sandboxed WebAssembly component against a resolved semantic model.
+    /// Run a sandboxed WebAssembly plugin against a resolved semantic model.
     Generate(GenerateArgs),
     Doctor(DoctorArgs),
     /// Explain a diagnostic code.
@@ -59,7 +59,7 @@ pub enum Command {
 
 #[derive(Debug, Clone, Args)]
 pub struct GenerateArgs {
-    /// WebAssembly Component implementing elan8:spec42-generator@0.1.0.
+    /// Core WebAssembly module implementing the Spec42 generator ABI.
     pub generator: PathBuf,
     /// SysML/KerML file or workspace directory.
     pub path: PathBuf,

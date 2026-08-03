@@ -123,11 +123,9 @@ jobs:
       - name: Sandboxed Rust generator smoke
         run: |
           rustup target add wasm32-unknown-unknown
-          cargo install wasm-tools --locked
           cargo build --manifest-path generator-examples/rust/Cargo.toml --target wasm32-unknown-unknown
-          wasm-tools component new generator-examples/rust/target/wasm32-unknown-unknown/debug/spec42_example_generator.wasm -o target/spec42-example-generator.component.wasm
-          cargo run -p server --bin spec42 -- --no-stdlib generate target/spec42-example-generator.component.wasm vscode/testFixture/workspaces/multi-file/def.sysml --output target/generator-smoke -- target=rust
-          cargo run -p server --bin spec42 -- --no-stdlib generate target/spec42-example-generator.component.wasm vscode/testFixture/workspaces/multi-file/def.sysml --output target/generator-smoke --check -- target=rust
+          cargo run -p server --bin spec42 -- --no-stdlib generate generator-examples/rust/target/wasm32-unknown-unknown/debug/spec42_example_generator.wasm vscode/testFixture/workspaces/multi-file/def.sysml --output target/generator-smoke -- target=rust
+          cargo run -p server --bin spec42 -- --no-stdlib generate generator-examples/rust/target/wasm32-unknown-unknown/debug/spec42_example_generator.wasm vscode/testFixture/workspaces/multi-file/def.sysml --output target/generator-smoke --check -- target=rust
 
       # Robot-vacuum zero-warning / view smoke stay local-only (`--ignored` tests +
       # scripts/fetch-robot-vacuum-cleaner.sh). The showcase repo already gates

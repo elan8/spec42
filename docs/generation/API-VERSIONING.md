@@ -1,12 +1,15 @@
 # Generator API compatibility policy
 
-The experimental package is `elan8:spec42-generator@0.1.0`. Handles are opaque and valid only for
-one invocation; `semantic-id` is the deterministic provenance identity.
+The experimental core WebAssembly protocol is ABI version 1. Handles are opaque and valid only for
+one invocation; `semantic-id` is the deterministic provenance identity. The semantic model API
+reported by `model.info` remains version `0.1.0`.
 
-Before 1.0, a minor package version may add functions, record fields, or string-valued semantic
-concepts. Removing or changing a function/type requires a new incompatible minor package version.
-Patch versions do not change WIT shape. The host initially supports exactly 0.1.x-compatible shape;
-support for multiple package versions requires separate generated bindings and linkers.
+The Postcard schema is positional. Adding, removing, or changing a field or operation requires a
+new ABI version and matching SDK/host support. Each incompatible ABI uses a distinct import
+namespace or entrypoint name so compatibility remains observable from ordinary module imports and
+exports; version 1 uses the `spec42` import namespace. Supporting multiple ABI versions requires
+separate linkers and codecs. String-valued metaclasses and relationship kinds may grow without
+changing the binary schema.
 
 Metaclasses and relationship kinds are strings so an older guest can ignore unknown semantic
 concepts. Result ordering is qualified name, normative metaclass, then semantic ID unless a query

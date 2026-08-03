@@ -11,7 +11,7 @@ use generator_api::{
 };
 use generator_host::{
     CancellationHandle, GeneratorFailureCategory, GeneratorHostError, GeneratorRuntime,
-    RuntimeLimits, GENERATOR_WIT_VERSION,
+    RuntimeLimits, GENERATOR_ABI_VERSION,
 };
 use serde::{Deserialize, Serialize};
 use sha2::{Digest, Sha256};
@@ -57,7 +57,7 @@ pub struct GeneratorDiagnosticRecord {
 
 #[derive(Debug, Clone, Serialize)]
 pub struct GenerationTimings {
-    pub component_prepare_ms: u128,
+    pub module_prepare_ms: u128,
     pub workspace_load_ms: u128,
     pub validation_ms: u128,
     pub guest_execution_ms: u128,
@@ -108,7 +108,7 @@ pub fn run_generate(cli: &Cli, args: &GenerateArgs) -> Result<ExitCode, String> 
         return Err("generate supports only text and json output".to_owned());
     }
 
-    let component_bytes = match fs::read(&args.generator) {
+    let module_bytes = match fs::read(&args.generator) {
         Ok(bytes) => bytes,
         Err(error) => {
             emit_simple_failure(
@@ -122,17 +122,17 @@ pub fn run_generate(cli: &Cli, args: &GenerateArgs) -> Result<ExitCode, String> 
             return Ok(ExitCode::from(EXIT_API_INCOMPATIBLE));
         }
     };
-    let component_prepare_started = Instant::now();
+    let module_prepare_started = Instant::now();
     let runtime = match GeneratorRuntime::new() {
         Ok(runtime) => runtime,
         Err(error) => return emit_host_failure(args.format, &error),
     };
-    // Validate the component and its imports before paying the cost of model analysis.
-    let prepared = match runtime.prepare(&component_bytes) {
+    // Validate the module and its core ABI imports before model analysis.
+    let prepared = match runtime.prepare(&module_bytes) {
         Ok(prepared) => prepared,
         Err(error) => return emit_host_failure(args.format, &error),
     };
-    let component_prepare_ms = component_prepare_started.elapsed().as_millis();
+    let module_prepare_ms = module_prepare_started.elapsed().as_millis();
 
     let workspace_load_started = Instant::now();
     let snapshot = match load_snapshot_for_paths(
@@ -272,7 +272,7 @@ pub fn run_generate(cli: &Cli, args: &GenerateArgs) -> Result<ExitCode, String> 
         status: status.to_owned(),
         model_digest,
         generator_digest: execution.generator_digest,
-        api_version: GENERATOR_WIT_VERSION.to_owned(),
+        api_version: GENERATOR_ABI_VERSION.to_string(),
         spec42_version,
         invalid_model: false,
         validation_errors,
@@ -284,7 +284,7 @@ pub fn run_generate(cli: &Cli, args: &GenerateArgs) -> Result<ExitCode, String> 
         output_bytes: execution.artifacts.total_bytes(),
         duration_ms: execution.duration.as_millis(),
         timings: GenerationTimings {
-            component_prepare_ms,
+            module_prepare_ms,
             workspace_load_ms,
             validation_ms,
             guest_execution_ms: execution.duration.as_millis(),
@@ -315,7 +315,7 @@ fn manifest_for(
         schema_version: 1,
         generator_digest: generator_digest.to_owned(),
         model_digest: model_digest.to_owned(),
-        generator_api_version: GENERATOR_WIT_VERSION.to_owned(),
+        generator_api_version: GENERATOR_ABI_VERSION.to_string(),
         spec42_version: spec42_version.to_owned(),
         artifacts: artifacts
             .iter()

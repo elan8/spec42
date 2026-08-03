@@ -1,10 +1,10 @@
 # Sandboxed model generation
 
-Spec42 can run a language-neutral WebAssembly Component against the same immutable semantic
+Spec42 can run a language-neutral core WebAssembly module against the same immutable semantic
 snapshot used by its normal workspace engine:
 
 ```sh
-spec42 generate generator.component.wasm model.sysml --output generated -- target=rust
+spec42 generate generator.wasm model.sysml --output generated -- target=rust
 ```
 
 `--output` is mandatory. This avoids an implicit write location. A model path may be one SysML or
@@ -17,21 +17,24 @@ parser/linker: `GeneratorModelView` reads one `HostWorkspaceSnapshot` produced b
 
 ## Guest contract
 
-The public contract is [`generator.wit`](../../crates/generator_host/wit/generator.wit), package
-`elan8:spec42-generator@0.1.0`. It imports only:
+The public contract is the versioned core WebAssembly ABI defined by
+[`spec42-generator-protocol`](../../crates/generator_protocol). A module imports only three
+functions from the `spec42` module:
 
-- `model`: deterministic, read-only semantic queries;
-- `artifacts`: bounded, staged byte emission;
-- `diagnostics`: bounded generator logs and element-associated diagnostics.
+- `query`: deterministic, read-only semantic queries encoded with Postcard;
+- `emit`: bounded, staged artifact bytes passed without serialization;
+- `diagnostic`: bounded logs and element-associated diagnostics.
 
-It exports `generate(args: list<string>) -> result<_, string>`. Arguments after CLI `--` are passed
-verbatim. Components requiring WASI, filesystem, sockets, environment variables, clocks, random,
-or subprocess imports fail compatibility checking because those imports are never linked.
+It exports `memory`, `spec42_alloc`, `spec42_dealloc`, and `spec42_generate`. Arguments after CLI
+`--` are passed verbatim. Modules requiring WASI, filesystem, sockets, environment variables,
+clocks, random, or subprocess imports fail compatibility checking because those imports are never
+linked.
 
 The first-party Rust SDK is in [`crates/generator_sdk`](../../crates/generator_sdk), and a standalone
 two-file example is in [`generator-examples/rust`](../../generator-examples/rust). Build guests for
-`wasm32-unknown-unknown` and wrap their WIT metadata with `wasm-tools component new`; using
-`wasm32-wasip2` would intentionally introduce WASI imports that this host refuses.
+`wasm32-unknown-unknown` and pass the resulting core module directly to Spec42. No metadata or
+post-processing step is required. Using a WASI target would intentionally introduce imports that
+this host refuses.
 
 ## Output ownership and transactions
 
@@ -65,12 +68,12 @@ reduce or increase those values explicitly.
 | ---: | --- |
 | 0 | generated, unchanged check, or successful dry run |
 | 10 | model loading or validation failure |
-| 11 | malformed component or generator API incompatibility |
+| 11 | malformed module or generator ABI incompatibility |
 | 12 | guest error, trap, or cancellation |
 | 13 | fuel, wall-time, memory, or runtime resource exhaustion |
 | 14 | artifact path, output limit, conflict, symlink, or commit-policy failure |
 | 15 | `--check` found byte differences |
 
-JSON reports include snapshot and component digests, API and Spec42 versions, query count, output
+JSON reports include snapshot and module digests, API and Spec42 versions, query count, output
 totals, runtime, fuel consumed, diagnostics, and per-path operation classes. The manifest and digest
 inputs contain no current time, random value, environment value, or machine-specific output path.

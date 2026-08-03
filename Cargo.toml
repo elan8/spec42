@@ -4,6 +4,7 @@ members = [
   "crates/diagram",
   "crates/generator_api",
   "crates/generator_host",
+  "crates/generator_protocol",
   "crates/generator_sdk",
   "crates/language_service",
   "crates/lsp_server",
@@ -29,6 +30,7 @@ debug = true
 [workspace.dependencies]
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
+postcard = { version = "1", features = ["alloc"] }
 thiserror = "2"
 clap = { version = "4", features = ["derive"] }
 petgraph = { version = "0.8", features = ["serde-1"] }

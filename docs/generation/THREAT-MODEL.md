@@ -1,6 +1,6 @@
 # Generator threat model
 
-The generator component, its bytes, arguments, emitted paths, diagnostic strings, handles, and all
+The generator module, its bytes, arguments, emitted paths, diagnostic strings, handles, and all
 returned guest values are untrusted. Workspace model sources are trusted only to the same extent as
 normal `spec42 check`; generation introduces no parser or linker.
 
@@ -13,11 +13,11 @@ normal `spec42 check`; generation introduces no parser or linker.
 
 ## Controls
 
-- The linker supplies only `model.read`, `artifacts.emit`, and `diagnostics.emit`. No WASI,
+- The linker supplies only `spec42.query`, `spec42.emit`, and `spec42.diagnostic`. No WASI,
   network, filesystem, environment, clock, random, secret, or subprocess interfaces are linked.
-- Generated WIT bindings validate canonical ABI values. The facade validates opaque handles;
-  artifact collection validates paths, duplicates, counts, and byte totals; diagnostics and query
-  results are bounded.
+- The core ABI validates memory ranges, transfer sizes, UTF-8, Postcard payloads, operation codes,
+  and diagnostic levels. The facade validates opaque handles; artifact collection validates paths,
+  duplicates, counts, and byte totals; diagnostics and query results are bounded.
 - A fresh store and host state are used per call. Wasmtime traps are returned as categorized
   errors. Store memory limits, fuel, epoch wall-time interruption, and a host cancellation flag
   limit denial of service.
@@ -39,6 +39,6 @@ normal `spec42 check`; generation introduces no parser or linker.
   descriptor-relative directory APIs may further narrow races on supported platforms.
 - A generator can compute nondeterministic bytes internally. The host supplies deterministic order
   and no nondeterministic capability, but cannot prove guest purity.
-- Component compilation itself consumes host resources before store limits apply. Wasmtime validates
-  malformed binaries; separate input-size and compilation concurrency limits should be measured
-  before accepting generators from multi-tenant remote users.
+- Module compilation consumes host resources before store limits apply. Wasmtime validates malformed
+  binaries; separate input-size and compilation concurrency limits should be measured before
+  accepting generators from multi-tenant remote users.

@@ -57,4 +57,4 @@ impl Guest for ExampleGenerator {
     }
 }
 
-export!(ExampleGenerator with_types_in spec42_generator_sdk::bindings);
+export!(ExampleGenerator);
