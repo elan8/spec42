@@ -59,6 +59,54 @@ pub(crate) fn build_package_index(library_roots: &[String]) -> Result<PackageInd
     })
 }
 
+/// Expand the cheap top-level package index only where a workspace and a library share a
+/// namespace root.
+///
+/// The normal index deliberately reads only the first package declaration in each file so
+/// import-closure startup does not parse the entire library corpus. That is sufficient until a
+/// workspace contributes to the same namespace as a library, for example
+/// `Elan8::Photonics` beside bundled `Elan8::Method` and `Elan8::Electronics`. In that case the
+/// top-level `Elan8` workspace package satisfies the root seed, and the nested library packages
+/// need their own index entries to remain reachable.
+pub(crate) fn expand_library_namespaces_shared_with_workspace(
+    index: &mut PackageIndex,
+    workspace_packages: &HashSet<PackageKey>,
+) -> Result<(), String> {
+    let shared_roots: Vec<PackageKey> = workspace_packages
+        .iter()
+        .filter(|package| !package.0.contains("::") && index.packages.contains_key(*package))
+        .cloned()
+        .collect();
+
+    for root in shared_roots {
+        let candidates = index.packages.get(&root).cloned().unwrap_or_default();
+        for candidate in candidates {
+            let full_path = PathBuf::from(&candidate.root).join(&candidate.path);
+            let content = std::fs::read_to_string(&full_path).map_err(|err| {
+                format!(
+                    "failed to read shared-namespace library file {}: {err}",
+                    full_path.display()
+                )
+            })?;
+            for package in declared_packages_in_content(&content) {
+                let key = PackageKey(package);
+                if key == root {
+                    continue;
+                }
+                let entries = index.packages.entry(key).or_default();
+                if !entries
+                    .iter()
+                    .any(|entry| entry.root == candidate.root && entry.path == candidate.path)
+                {
+                    entries.push(candidate.clone());
+                }
+            }
+        }
+    }
+
+    Ok(())
+}
+
 pub(crate) fn extract_package_name(content: &str) -> Option<String> {
     for line in content.lines().take(80) {
         let trimmed = line.trim();

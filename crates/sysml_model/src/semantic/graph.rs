@@ -463,8 +463,10 @@ impl SemanticGraphData {
 
     /// Merges another graph but skips nodes already declared in the workspace.
     ///
-    /// Skips a library node when its qualified name already exists, or when it
-    /// belongs to a package name declared in `shadowed_packages` (workspace wins).
+    /// Skips a library node when it belongs to a most-specific package declared in
+    /// `shadowed_packages` (workspace wins), or when a non-package element with the same
+    /// qualified name already exists. Duplicate ancestor package nodes are retained so a
+    /// namespace can be assembled from workspace and library contributions.
     pub fn merge_skip_existing_qualified_names(
         &mut self,
         other: SemanticGraph,
@@ -484,10 +486,12 @@ impl SemanticGraphData {
             .extend(other.pending_expression_relationships.iter().cloned());
         for (id, node) in other.iter_nodes() {
             if let Some(shadowed) = shadowed_packages {
-                if self
+                let exact_name_exists = self
                     .node_ids_by_qualified_name
-                    .contains_key(&id.qualified_name)
-                    || Self::qualified_name_under_packages(&id.qualified_name, shadowed)
+                    .contains_key(&id.qualified_name);
+                let is_package = matches!(node.element_kind, ElementKind::Package);
+                if Self::qualified_name_under_packages(&id.qualified_name, shadowed)
+                    || (exact_name_exists && !is_package)
                 {
                     continue;
                 }

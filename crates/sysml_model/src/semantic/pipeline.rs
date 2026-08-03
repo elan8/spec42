@@ -25,6 +25,24 @@ use crate::semantic::workspace_graph::WorkspaceParsedDocument;
 /// decide how it merges — see [`link_parsed_documents_parallel`].
 type SourceTaggedDocument = (SysmlDocumentSourceKind, WorkspaceParsedDocument);
 
+/// Packages that are not merely namespace ancestors of another workspace package.
+///
+/// A workspace may contribute `Elan8::Photonics` while libraries contribute sibling packages
+/// such as `Elan8::Method`. Treating the common `Elan8` ancestor as a shadow root would hide
+/// those siblings. The most-specific workspace packages still shadow matching library content.
+fn most_specific_packages(packages: HashSet<String>) -> HashSet<String> {
+    packages
+        .iter()
+        .filter(|candidate| {
+            let descendant_prefix = format!("{candidate}::");
+            !packages
+                .iter()
+                .any(|other| other.starts_with(&descendant_prefix))
+        })
+        .cloned()
+        .collect()
+}
+
 /// Build, merge, link, and resolve pending relationships for pre-loaded documents.
 pub fn build_and_link_graph(
     documents: &[SysmlDocument],
@@ -60,6 +78,8 @@ pub fn build_and_link_graph(
             parse_cached: false,
         });
     }
+
+    let workspace_packages = most_specific_packages(workspace_packages);
 
     for document in library_docs {
         let parse_start = Instant::now();
@@ -170,10 +190,12 @@ pub fn link_parsed_documents_parallel_from(
             (doc_graph, entry)
         })
         .collect();
-    let workspace_packages: HashSet<String> = workspace_built
-        .iter()
-        .flat_map(|(_, entry)| declared_packages_from_parsed(&entry.parsed))
-        .collect();
+    let workspace_packages = most_specific_packages(
+        workspace_built
+            .iter()
+            .flat_map(|(_, entry)| declared_packages_from_parsed(&entry.parsed))
+            .collect(),
+    );
     for (doc_graph, entry) in workspace_built {
         uris.push(entry.uri.clone());
         graph.merge(doc_graph);

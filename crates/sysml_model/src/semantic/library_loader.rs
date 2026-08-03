@@ -155,8 +155,9 @@ fn resolve_library_closure_inner(
     if library_roots.is_empty() {
         return Ok(Vec::new());
     }
-    let index = build_package_index(library_roots)?;
+    let mut index = build_package_index(library_roots)?;
     let workspace_declared_packages = workspace_declared_packages(workspace);
+    expand_library_namespaces_shared_with_workspace(&mut index, &workspace_declared_packages)?;
     let mut seeds = HashSet::<PackageKey>::new();
     seeds.extend(options.seed_packages.iter().cloned().map(PackageKey));
     let mut wants_sysml_bootstrap = false;
@@ -481,6 +482,48 @@ package Views {
         assert!(
             paths.iter().any(|p| p.contains("ScalarValues.sysml")),
             "transitive workspace import should still load ScalarValues, got {paths:?}"
+        );
+    }
+
+    #[test]
+    fn closure_loads_nested_library_package_beside_shared_workspace_namespace() {
+        let temp = tempfile::tempdir().expect("tempdir");
+        let lib = temp.path().join("lib");
+        fs::create_dir_all(&lib).expect("lib dir");
+        fs::write(
+            lib.join("Method.sysml"),
+            r#"
+package Elan8 {
+    package Method {
+        package Core { part def ProjectInfo; }
+    }
+}
+"#,
+        )
+        .expect("method library");
+        let workspace = [WorkspaceSource {
+            path: "Photonics.sysml",
+            content: r#"
+package Elan8 {
+    package Photonics { item def OpticalSignal; }
+}
+package App {
+    private import Elan8::Method::Core::*;
+    part project : ProjectInfo;
+}
+"#,
+        }];
+        let roots = vec![lib.to_string_lossy().replace('\\', "/")];
+
+        let loaded = resolve_library_closure(&workspace, &roots, &LibraryClosureOptions::default())
+            .expect("closure");
+
+        assert!(
+            loaded
+                .iter()
+                .any(|file| file.path.ends_with("Method.sysml")),
+            "a workspace contribution to Elan8 must not hide Elan8::Method; got {:?}",
+            loaded.iter().map(|file| &file.path).collect::<Vec<_>>()
         );
     }
 
