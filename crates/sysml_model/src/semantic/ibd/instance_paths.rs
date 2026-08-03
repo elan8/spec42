@@ -142,6 +142,7 @@ mod tests {
                 parent_id: definition_part.clone(),
                 direction: None,
                 port_type: None,
+                multiplicity: Some("[1]".to_string()),
                 port_side: None,
                 uri: None,
                 range: None,

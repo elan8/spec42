@@ -197,6 +197,9 @@ pub fn build_ibd_for_uri(graph: &SemanticGraph, uri: &Url) -> IbdDataDto {
                 parent_id,
                 direction,
                 port_type,
+                multiplicity: Some(crate::semantic::component_view::port_multiplicity_label(
+                    node,
+                )),
                 port_side,
                 uri: Some(node.id.uri.as_str().to_string()),
                 range: Some(crate::semantic::dto::range_to_dto(node.range)),

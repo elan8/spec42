@@ -101,6 +101,10 @@ export function diagramToPrepared(diagramInput: unknown, view: string, fallbackT
         source: asString(message.source ?? message.from ?? message.sourceId, ""),
         target: asString(message.target ?? message.to ?? message.targetId, ""),
         label: asString(message.name ?? message.label ?? message.type, ""),
+        attributes: {
+          messageKind: asString(message.kind ?? message.type),
+          order: message.order,
+        },
       };
     });
   }

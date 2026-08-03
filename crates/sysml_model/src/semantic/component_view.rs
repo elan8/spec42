@@ -44,8 +44,49 @@ pub struct ExpandedPort {
     pub name: String,
     pub direction: Option<String>,
     pub port_type: Option<String>,
+    /// Canonical display multiplicity. Port usages default to exactly one in SysML v2.
+    pub multiplicity: String,
     /// Dot-notation path of the owning part.
     pub parent_path: String,
+}
+
+fn declared_expression_atom(
+    expression: &crate::semantic::model::DeclaredExpression,
+) -> Option<String> {
+    if let Some(literal) = &expression.literal {
+        return Some(match literal {
+            serde_json::Value::String(value) => value.clone(),
+            other => other.to_string(),
+        });
+    }
+    if let Some(reference) = expression.reference.as_deref() {
+        return Some(reference.to_string());
+    }
+    expression
+        .operator
+        .as_deref()
+        .filter(|_| expression.children.is_empty())
+        .map(ToString::to_string)
+}
+
+pub(crate) fn port_multiplicity_label(node: &SemanticNode) -> String {
+    let Some(multiplicity) = node.declared_facts.multiplicity.as_ref() else {
+        return "[1]".to_string();
+    };
+    let lower = multiplicity
+        .lower
+        .as_ref()
+        .and_then(declared_expression_atom);
+    let upper = multiplicity
+        .upper
+        .as_ref()
+        .and_then(declared_expression_atom);
+    match (lower, upper) {
+        (Some(lower), Some(upper)) if lower == upper => format!("[{lower}]"),
+        (Some(lower), Some(upper)) => format!("[{lower}..{upper}]"),
+        (Some(value), None) | (None, Some(value)) => format!("[{value}]"),
+        (None, None) => "[?]".to_string(),
+    }
 }
 
 /// Source location of a node, for client-side "open source" navigation.
@@ -287,6 +328,7 @@ fn collect_inherited_ports(
                     .get("portType")
                     .and_then(|v| v.as_str())
                     .map(String::from),
+                multiplicity: port_multiplicity_label(child),
                 parent_path: parent_path.to_string(),
             });
         }
@@ -444,7 +486,7 @@ mod tests {
     use crate::semantic::source::{SysmlDocument, SysmlDocumentSourceKind};
     use crate::semantic::workspace_graph::build_semantic_graph_from_documents;
 
-    use super::{expand_part_definition, typed_by_reference};
+    use super::{expand_part_definition, inherited_ports, typed_by_reference};
 
     fn build_graph(source: &str) -> crate::semantic::graph::SemanticGraph {
         let doc = SysmlDocument::from_memory_path(
@@ -534,5 +576,35 @@ mod tests {
         assert!(!expanded
             .iter()
             .any(|part| part.path == "Demo.context.loose"));
+    }
+
+    #[test]
+    fn inherited_ports_report_explicit_and_default_multiplicity() {
+        let graph = build_graph(
+            r#"package Demo {
+  port def LinkPort;
+  part def Component {
+    port optionalLink : LinkPort[0..1];
+    port standard : LinkPort;
+  }
+}"#,
+        );
+        let component = node_by_qualified_name(&graph, "Demo::Component");
+        let ports = inherited_ports(&graph, component, "Demo.component");
+
+        assert_eq!(
+            ports
+                .iter()
+                .find(|port| port.name == "optionalLink")
+                .map(|port| port.multiplicity.as_str()),
+            Some("[0..1]")
+        );
+        assert_eq!(
+            ports
+                .iter()
+                .find(|port| port.name == "standard")
+                .map(|port| port.multiplicity.as_str()),
+            Some("[1]")
+        );
     }
 }

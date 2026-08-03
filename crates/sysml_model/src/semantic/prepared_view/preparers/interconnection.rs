@@ -77,8 +77,10 @@ pub fn prepare_interconnection_scene(
                 .map(|port| {
                     json!({
                         "id": port.id,
+                        "semanticId": port.semantic_id,
                         "name": port.name,
                         "direction": port.direction,
+                        "multiplicity": port.multiplicity,
                         "portType": port.type_name,
                         "portSide": match port.side_hint.as_str() {
                             "west" => json!("left"),
@@ -238,6 +240,7 @@ mod tests {
             parent_id: parent.to_string(),
             direction: None,
             port_type: None,
+            multiplicity: Some("[1]".to_string()),
             port_side: None,
             uri: Some("file:///model.sysml".to_string()),
             range: Some(RangeDto {
@@ -338,5 +341,13 @@ mod tests {
             Some("file:///model.sysml")
         );
         assert!(port.get("range").is_some_and(|value| !value.is_null()));
+        assert_eq!(
+            port.get("multiplicity").and_then(|value| value.as_str()),
+            Some("[1]")
+        );
+        assert_eq!(
+            port.get("semanticId").and_then(|value| value.as_str()),
+            scene.ports.first().map(|value| value.semantic_id.as_str())
+        );
     }
 }

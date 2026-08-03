@@ -147,7 +147,9 @@ describe("interconnection drawing from layout DTO", () => {
       "viz-edges",
       "viz-edge-labels",
     ]);
-    expect(layers[0].querySelectorAll("path")).toHaveLength(2);
+    expect(layers[0].querySelectorAll(".viz-edge")).toHaveLength(2);
+    expect(layers[0].querySelectorAll(".viz-edge-hit-target")).toHaveLength(2);
+    expect((layers[0].querySelector(".viz-edge-hit-target") as SVGPathElement).style.strokeWidth).toBe("12px");
     expect(layers[1].querySelectorAll("text")).toHaveLength(2);
     const label = layers[1].querySelector("text");
     expect(label?.getAttribute("paint-order")).toBe("stroke fill");

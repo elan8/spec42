@@ -1,6 +1,7 @@
 import * as d3 from "d3";
 import type { PreparedNode } from "../prepare";
 import type { DiagramTheme } from "../theme";
+import { appendPathEdgeHitTarget, markVisibleEdge } from "../render/diagram-tooltip";
 import { attachBehaviorNodeClick } from "./behavior-interaction";
 import {
   BehaviorSceneContext,
@@ -240,7 +241,8 @@ export async function renderActionFlowView(ctx: BehaviorSceneContext): Promise<{
     const succession = Boolean(edgeAttrs.succession) || guard === "first" || guard === "succession" || guard === "succession flow";
     const streamingFlow = Boolean(edgeAttrs.streamingFlow) || guard === "flow";
     const conditional = Boolean(edgeAttrs.conditional);
-    flowLayer
+    const path = pathFromSections(sections) || fallback.path;
+    const visibleEdge = flowLayer
       .append("path")
       .attr(
         "class",
@@ -253,12 +255,14 @@ export async function renderActionFlowView(ctx: BehaviorSceneContext): Promise<{
             : "activity-flow action-flow-edge",
       )
       .attr("data-flow-kind", succession ? "succession" : streamingFlow ? "streaming" : "other")
-      .attr("d", pathFromSections(sections) || fallback.path)
+      .attr("d", path)
       .style("fill", "none")
       .style("stroke", ctx.theme.edge.default)
       .style("stroke-width", "2px")
       .style("stroke-dasharray", succession ? "7,4" : "none")
       .style("marker-end", "url(#action-flow-arrow)");
+    markVisibleEdge(visibleEdge, edge.id, 2);
+    appendPathEdgeHitTarget(flowLayer, path, edge.id);
     const label = truncateLabel(edge.label, 20);
     if (label && !["flow", "first", "bind"].includes(label.toLowerCase())) {
       const elkLabel = layout.edgeLabelsById.get(edge.id)?.[0];

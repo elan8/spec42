@@ -23,6 +23,7 @@ import {
 import { layoutPrepared } from "./render/layout";
 import { contentBoundsFromExtents, type ContentBounds } from "./render/types";
 import type { RenderOptions } from "./render/types";
+import { installDiagramTooltips } from "./render/diagram-tooltip";
 
 export type { RenderOptions } from "./render/types";
 
@@ -185,6 +186,7 @@ export async function renderVisualization(
     );
   };
   fitView();
+  const destroyTooltips = installDiagramTooltips(target, prepared, theme);
   options.onPerformance?.("sharedRenderer:render", {
     view,
     totalMs: Date.now() - renderStartedAt,
@@ -197,6 +199,7 @@ export async function renderVisualization(
     getFitTransform: () => lastFitTransform,
     exportSvg: () => exportSvg(svg.node() as SVGSVGElement, bounds),
     destroy: () => {
+      destroyTooltips();
       target.innerHTML = "";
     },
   };

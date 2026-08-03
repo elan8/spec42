@@ -8,6 +8,7 @@ import type { PreparedView } from "../prepare";
 import { nodeSupportsSourceNavigation } from "../views/behavior-interaction";
 import { buildInterconnectionLayoutLookup, type InterconnectionLayoutLookup } from "./interconnection-layout-dto";
 import { resolveIbdRoutePoints } from "./ibd-route";
+import { appendPathEdgeHitTarget, markVisibleEdge } from "./diagram-tooltip";
 import {
   IBD_PORT_LABEL_FONT_SIZE,
   ibdPortLabelText,
@@ -67,7 +68,9 @@ export function drawEdges(
       .style("stroke", stroke)
       .style("stroke-width", strokeWidth)
       .style("opacity", 0.9);
+    markVisibleEdge(pathSelection, edge.id, strokeWidth);
     applyEdgeMarker(pathSelection, edgeKind, isInterconnectionView, theme);
+    appendPathEdgeHitTarget(edgeLayer, path, edge.id);
     if (shouldRenderEdgeLabel(edge, edgeKind, isInterconnectionView)) {
       labels.push({
         edge,
@@ -576,6 +579,7 @@ function drawIbdPorts(
   const fallbackSpacing = 26;
   const drawPort = (name: string, sideIndex: number, side: "WEST" | "EAST") => {
     const detail = details.find((port) => port.name === name);
+    const tooltipId = String(detail?.id || detail?.attributes?.scenePortId || "");
     const sanitized = name.replace(/[^A-Za-z0-9_.-]/g, "_");
     const anchor = anchors[sanitized] ?? anchors[name];
     const resolvedSide = (anchor?.side === "WEST" || anchor?.side === "EAST" ? anchor.side : side) as "WEST" | "EAST";
@@ -589,18 +593,24 @@ function drawIbdPorts(
       .attr("class", "port-icon")
       .attr("data-port-name", name)
       .attr("data-port-side", resolvedSide)
+      .attr("data-tooltip-kind", tooltipId ? "port" : null)
+      .attr("data-tooltip-id", tooltipId || null)
       .attr("x", x - portSize / 2)
       .attr("y", y - portSize / 2)
       .attr("width", portSize)
       .attr("height", portSize)
       .style("fill", "none")
       .style("stroke", color)
-      .style("stroke-width", "1.8px");
+      .style("stroke-width", "1.8px")
+      .style("pointer-events", tooltipId ? "all" : "none")
+      .style("cursor", tooltipId ? "help" : "default");
     group
       .append("text")
       .attr("class", "port-label")
       .attr("data-port-name", name)
       .attr("data-port-side", resolvedSide)
+      .attr("data-tooltip-kind", tooltipId ? "port" : null)
+      .attr("data-tooltip-id", tooltipId || null)
       .attr("x", labelLayout?.x
         ?? (resolvedSide === "WEST" ? Math.min(width - 10, x + 16) : Math.max(10, x - 16)))
       .attr("y", labelLayout
@@ -617,7 +627,9 @@ function drawIbdPorts(
       .style("font-family", "monospace")
       .style("font-size", `${IBD_PORT_LABEL_FONT_SIZE}px`)
       .style("font-weight", "500")
-      .style("fill", color);
+      .style("fill", color)
+      .style("pointer-events", tooltipId ? "all" : "none")
+      .style("cursor", tooltipId ? "help" : "default");
   };
 
   if (drawOrder) {

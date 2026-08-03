@@ -1,6 +1,7 @@
 import * as d3 from "d3";
 import type { PreparedNode } from "../prepare";
 import type { DiagramTheme } from "../theme";
+import { appendPathEdgeHitTarget, markVisibleEdge } from "../render/diagram-tooltip";
 import { attachBehaviorNodeClick } from "./behavior-interaction";
 import {
   BehaviorSceneContext,
@@ -180,7 +181,7 @@ export async function renderStateTransitionView(ctx: BehaviorSceneContext): Prom
     const effect = String(edgeAttrs.effect ?? "").trim();
     const accept = String(edgeAttrs.accept ?? "").trim();
     const send = String(edgeAttrs.send ?? "").trim();
-    edgeLayer
+    const visibleEdge = edgeLayer
       .append("path")
       .attr("class", "state-transition-edge")
       .attr("data-guard", guard || null)
@@ -192,6 +193,8 @@ export async function renderStateTransitionView(ctx: BehaviorSceneContext): Prom
       .style("stroke", ctx.theme.edge.default)
       .style("stroke-width", "2px")
       .style("marker-end", "url(#state-transition-arrow)");
+    markVisibleEdge(visibleEdge, edge.id, 2);
+    appendPathEdgeHitTarget(edgeLayer, path, edge.id);
 
     const label = transitionDisplayLabel(edge.label);
     if (label) {
