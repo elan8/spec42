@@ -672,8 +672,8 @@ Add a `subject` clause to the verification def before this objective \
         ),
         "analysis_result" => format!(
             "Analysis objective '{objective_name}' is not bound to a case result. \
-Add a `return ref` clause to the analysis def before this objective \
-(for example: `return ref analysisResult {{ return true; }}`)."
+Add a returned result to the analysis def before this objective \
+(for example: `return attribute analysisResult : Real = 1.0;`)."
         ),
         other => format!(
             "Objective '{objective_name}' could not be bound (expected binding: {other}). \
@@ -737,9 +737,10 @@ mod objective_binding_message_tests {
     }
 
     #[test]
-    fn analysis_result_message_mentions_return_ref() {
+    fn analysis_result_message_mentions_returned_result() {
         let message = objective_binding_unresolved_message("runtimeObjective", "analysis_result");
-        assert!(message.contains("return ref"));
+        assert!(message.contains("return attribute"));
+        assert!(message.contains("case result"));
         assert!(!message.contains("analysis_result"));
     }
 }

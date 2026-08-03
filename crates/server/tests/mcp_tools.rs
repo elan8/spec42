@@ -20,6 +20,25 @@ fn invalid_fixture_path() -> PathBuf {
     PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures/mcp_invalid.sysml")
 }
 
+const NUMERIC_ANALYSIS_FIXTURE: &str = r#"
+package AnalysisDemo {
+    attribute def PowerLevel :> Real;
+
+    requirement def MinimumPower {
+        subject result : PowerLevel;
+        attribute minimum : PowerLevel = -6.0;
+        require constraint { result >= minimum }
+    }
+
+    analysis AnalyzePower {
+        attribute inputPower : PowerLevel = 3.0;
+        attribute loss : Real = 7.5;
+        return attribute outputPower : PowerLevel = inputPower - loss;
+        objective powerObjective : MinimumPower;
+    }
+}
+"#;
+
 #[test]
 #[ignore = "agent/API/MCP integration; run: cargo test -p spec42 -- --include-ignored"]
 fn mcp_tool_names_match_server_registration() {
@@ -150,6 +169,57 @@ fn mcp_model_summary_respects_max_nodes() {
             .and_then(|v| v.as_array())
             .expect("nodes");
         assert_eq!(nodes.len(), 1);
+    });
+}
+
+#[test]
+#[ignore = "agent/API/MCP integration; run: cargo test -p spec42 -- --include-ignored"]
+fn mcp_model_summary_includes_evaluated_numeric_analysis_result() {
+    with_isolated_data_dir(|| {
+        let model_dir = tempfile::TempDir::new().expect("numeric analysis temp dir");
+        let model_path = model_dir.path().join("NumericAnalysis.sysml");
+        std::fs::write(&model_path, NUMERIC_ANALYSIS_FIXTURE)
+            .expect("write numeric analysis fixture");
+
+        let value = handle_spec42_model_summary(json!({
+            "path": model_path.display().to_string(),
+            "max_nodes": 50,
+        }))
+        .expect("numeric analysis model summary");
+        let nodes = value["nodes"].as_array().expect("summary nodes");
+
+        let result = nodes
+            .iter()
+            .find(|node| {
+                node["element_kind"].as_str() == Some("analysis result")
+                    && node["name"].as_str() == Some("outputPower")
+            })
+            .expect("numeric analysis result node");
+        assert_eq!(
+            result["attributes"]["returnType"].as_str(),
+            Some("PowerLevel")
+        );
+        assert_eq!(result["attributes"]["evaluatedValue"].as_f64(), Some(-4.5));
+
+        let analysis = nodes
+            .iter()
+            .find(|node| {
+                node["element_kind"].as_str() == Some("analysis")
+                    && node["name"].as_str() == Some("AnalyzePower")
+            })
+            .expect("analysis node");
+        assert_eq!(
+            analysis["attributes"]["analysisEvaluationStatus"].as_str(),
+            Some("ok")
+        );
+        assert_eq!(
+            analysis["attributes"]["analysisComputedValue"].as_f64(),
+            Some(-4.5)
+        );
+        assert_eq!(
+            analysis["attributes"]["analysisConstraintPassed"].as_bool(),
+            Some(true)
+        );
     });
 }
 

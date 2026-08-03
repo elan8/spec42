@@ -160,12 +160,82 @@ fn propagate_case_usage_from_typing(
     let Some(expression) = resolve_case_definition_expression(graph, &def_id) else {
         return;
     };
+    let result = effective_case_result(graph, &def_id).cloned();
     if let Some(usage_mut) = graph.get_node_mut(usage_id) {
         usage_mut.attributes.insert(
             ANALYSIS_EXPRESSION_KEY.to_string(),
             serde_json::json!(expression),
         );
+        if let Some(result) = result.as_ref() {
+            usage_mut
+                .attributes
+                .insert("analysisResultCount".to_string(), serde_json::json!(1));
+            usage_mut.attributes.insert(
+                "inheritedAnalysisResult".to_string(),
+                serde_json::json!(result.id.qualified_name.as_str()),
+            );
+            if let Some(mode) = result
+                .attributes
+                .get("analysisResultMode")
+                .and_then(|value| value.as_str())
+            {
+                usage_mut
+                    .attributes
+                    .insert("analysisResultMode".to_string(), serde_json::json!(mode));
+            }
+            if let Some(type_name) = result
+                .attributes
+                .get("returnType")
+                .and_then(|value| value.as_str())
+            {
+                usage_mut.attributes.insert(
+                    "analysisResultType".to_string(),
+                    serde_json::json!(type_name),
+                );
+            }
+        }
     }
+    if let Some(result) = result.as_ref() {
+        let objective_ids = graph
+            .get_node(usage_id)
+            .map(|usage| {
+                graph
+                    .children_of(usage)
+                    .into_iter()
+                    .filter(|child| child.element_kind == ElementKind::Objective)
+                    .map(|child| child.id.clone())
+                    .collect::<Vec<_>>()
+            })
+            .unwrap_or_default();
+        for objective_id in objective_ids {
+            if let Some(objective) = graph.get_node_mut(&objective_id) {
+                objective.attributes.insert(
+                    "objectiveBoundTo".to_string(),
+                    serde_json::json!(result.id.qualified_name.as_str()),
+                );
+            }
+        }
+    }
+}
+
+fn effective_case_result<'a>(
+    graph: &'a SemanticGraph,
+    case_def_id: &NodeId,
+) -> Option<&'a SemanticNode> {
+    let case_def = graph.get_node(case_def_id)?;
+    if let Some(result) = graph
+        .children_of(case_def)
+        .into_iter()
+        .find(|child| child.element_kind == ElementKind::AnalysisResult)
+    {
+        return Some(result);
+    }
+    let inherited = inherited_case_result_qualified(graph, case_def_id)?;
+    graph
+        .node_ids_by_qualified_name
+        .get(&inherited)?
+        .iter()
+        .find_map(|id| graph.get_node(id))
 }
 
 fn usage_has_local_analysis_expression(usage: &SemanticNode) -> bool {
@@ -316,6 +386,15 @@ pub(crate) fn inherited_case_expression(
     if let Some(result_qualified) = inherited_result_qualified {
         let result_id = NodeId::new(&case_def_id.uri, result_qualified);
         if let Some(result_node) = graph.get_node(&result_id) {
+            if let Some(expression) = result_node
+                .attributes
+                .get("value")
+                .and_then(|value| value.as_str())
+                .map(str::trim)
+                .filter(|expression| !expression.is_empty())
+            {
+                return Some(expression.to_string());
+            }
             if let Some(body) = result_node
                 .attributes
                 .get("returnBody")

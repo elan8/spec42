@@ -6,7 +6,7 @@ use crate::semantic::analysis_typing::{
     typed_case_definition_scope_prefixes, typed_requirement_definition_scope_prefixes,
 };
 use crate::semantic::graph::SemanticGraph;
-use crate::semantic::model::{ElementKind, NodeId, SemanticNode};
+use crate::semantic::model::{ElementKind, NodeId, RelationshipKind, SemanticNode};
 use crate::semantic::reference_resolution::{resolve_member_via_type, ResolveResult};
 
 mod units;
@@ -142,7 +142,44 @@ fn evaluate_analysis_constraints(graph: &mut SemanticGraph, units: UnitRegistry)
                 }
             } else if let Some(expr) = single_expression.as_deref() {
                 evaluated = true;
-                if let Some(verdict_token) = resolve_verdict_kind_token(graph, &node_id, expr) {
+                let result_mode = node
+                    .attributes
+                    .get("analysisResultMode")
+                    .and_then(Value::as_str);
+                if result_mode == Some("value") {
+                    let outcome = engine.evaluate_expression_text(&node_id, expr);
+                    status = outcome.status.as_str().to_string();
+                    error = outcome.error;
+                    value = outcome.value.clone();
+                    if outcome.status == EvalStatus::Ok {
+                        if let Some(number) = outcome.value.as_ref().and_then(json_value_to_f64) {
+                            let result = Quantity {
+                                value: number,
+                                unit: outcome.unit,
+                            };
+                            computed = Some(result.clone());
+                            match evaluate_numeric_result_objectives(&mut engine, &node_id, &result)
+                            {
+                                Ok(Some((objective_passed, objective_limit))) => {
+                                    passed = Some(objective_passed);
+                                    limit = objective_limit;
+                                    status = if objective_passed {
+                                        STATUS_OK.to_string()
+                                    } else {
+                                        "failed_constraint".to_string()
+                                    };
+                                }
+                                Ok(None) => {}
+                                Err(err) => {
+                                    status = err.status.as_str().to_string();
+                                    error = Some(err.message);
+                                }
+                            }
+                        }
+                    }
+                } else if let Some(verdict_token) =
+                    resolve_verdict_kind_token(graph, &node_id, expr)
+                {
                     let is_pass = verdict_token == "pass";
                     status = STATUS_OK.to_string();
                     value = Some(Value::Bool(is_pass));
@@ -227,6 +264,83 @@ fn evaluate_analysis_constraints(graph: &mut SemanticGraph, units: UnitRegistry)
             );
         }
     }
+}
+
+fn evaluate_numeric_result_objectives(
+    engine: &mut EvalEngine<'_>,
+    analysis_id: &NodeId,
+    result: &Quantity,
+) -> Result<Option<(bool, Option<Quantity>)>, AnalysisEvalError> {
+    let Some(analysis) = engine.graph.get_node(analysis_id) else {
+        return Ok(None);
+    };
+    let objectives = engine
+        .graph
+        .children_of(analysis)
+        .into_iter()
+        .filter(|child| child.element_kind == ElementKind::Objective)
+        .cloned()
+        .collect::<Vec<_>>();
+    let mut evaluated_any = false;
+    let mut all_passed = true;
+    let mut first_limit = None;
+
+    for objective in objectives {
+        let requirement_defs = engine
+            .graph
+            .outgoing_targets_by_kind(&objective, RelationshipKind::Typing)
+            .into_iter()
+            .filter(|target| target.element_kind == ElementKind::RequirementDef)
+            .cloned()
+            .collect::<Vec<_>>();
+        for requirement_def in requirement_defs {
+            let constraints = requirement_def
+                .attributes
+                .get(ANALYSIS_CONSTRAINTS_KEY)
+                .and_then(Value::as_array)
+                .cloned()
+                .unwrap_or_default();
+            if constraints.is_empty() {
+                continue;
+            }
+            let subject_name = engine
+                .graph
+                .children_of(&requirement_def)
+                .into_iter()
+                .find(|child| child.element_kind == ElementKind::Subject)
+                .map(|subject| subject.name.clone());
+            let Some(subject_name) = subject_name else {
+                continue;
+            };
+            let mut bindings = HashMap::new();
+            bindings.insert(subject_name, BoundValue::Quantity(result.clone()));
+            engine.parameter_bindings.push(bindings);
+            for constraint in constraints {
+                let Some(expression) = constraint
+                    .as_object()
+                    .and_then(|object| object.get("expression"))
+                    .and_then(Value::as_str)
+                else {
+                    continue;
+                };
+                evaluated_any = true;
+                if first_limit.is_none() {
+                    first_limit =
+                        evaluate_analysis_limit_quantity(engine, &requirement_def.id, expression);
+                }
+                match evaluate_analysis_expression(engine, &requirement_def.id, expression) {
+                    Ok(constraint_passed) => all_passed &= constraint_passed,
+                    Err(err) => {
+                        engine.parameter_bindings.pop();
+                        return Err(err);
+                    }
+                }
+            }
+            engine.parameter_bindings.pop();
+        }
+    }
+
+    Ok(evaluated_any.then_some((all_passed, first_limit)))
 }
 
 #[cfg(test)]

@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- **Supports typed numeric analysis results and objective evaluation.** Analysis `return attribute`
+  declarations are materialized with their type and expression, inherited by typed analysis usages,
+  evaluated as numeric values rather than Boolean verdicts, and checked against typed objective
+  requirement constraints. Existing `return ref` and verification verdict behavior is preserved.
+
 - **Fixed a high-severity DNS rebinding vulnerability in the bundled MCP server** ([RUSTSEC-2026-0189](https://rustsec.org/advisories/RUSTSEC-2026-0189)) — `rmcp` (the crate backing `spec42-mcp`'s Streamable HTTP server transport) was pinned to 0.9.1; upgraded to 1.4+ (resolved to 1.8.0), which also drops the unmaintained `paste` dependency (replaced upstream by `pastey`). The upgrade's API changes (tool/result construction moved to non-exhaustive structs with builder methods) are internal to `crates/server/src/mcp/server.rs`; MCP tool behavior is unchanged (confirmed via the existing `mcp_tools`/`mcp_protocol`/`mcp_binary` integration suites).
 - **Removed the unused `adm-zip` VS Code extension dependency**, which carried a high-severity vulnerability ([GHSA-xcpc-8h2w-3j85](https://github.com/advisories/GHSA-xcpc-8h2w-3j85)). Neither `adm-zip` nor `@types/adm-zip` were referenced anywhere in the extension's source; the scripts that do handle VSIX/zip files already use `@vscode/test-electron`'s downloader and the shell `unzip` command. Also picked up a `brace-expansion` fix via `npm audit fix` (no source changes needed).
 - **Hardened CI**: added a `cargo audit` job (dependency vulnerability scanning), `npm audit --omit=dev` steps for both `shared/diagram-renderer` and `vscode`, and a `cargo doc --no-deps --workspace` step with `RUSTDOCFLAGS=-D warnings` to `ci.yml`'s `rust-core` job (fixed the 14 pre-existing broken/private intra-doc links this surfaced, across `sysml_model`, `workspace`, and `server`). Also pinned `rust-toolchain.toml` and every CI/release Rust-install step to an exact version (`1.97.1`) instead of the floating `stable` channel, so a new stable Rust release adding a default-warn lint can no longer break CI on an unrelated day.

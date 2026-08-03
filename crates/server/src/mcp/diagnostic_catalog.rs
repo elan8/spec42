@@ -623,7 +623,7 @@ const CATALOG: &[DiagnosticCatalogEntry] = &[
         code: "case_objective_binding_cardinality",
         severity: "warning",
         meaning: "Case objectives expect a single subject or analysis result but the case declares the wrong count.",
-        typical_fix: "Declare exactly one subject or return ref matching the objective binding kind.",
+        typical_fix: "Declare exactly one subject or returned analysis result matching the objective binding kind.",
         editor_quick_fixes: None,
     },
     DiagnosticCatalogEntry {

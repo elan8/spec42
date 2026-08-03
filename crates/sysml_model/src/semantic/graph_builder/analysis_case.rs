@@ -89,6 +89,10 @@ pub(super) fn build_from_analysis_body(
                     "returnBody".to_string(),
                     serde_json::json!(value.body.as_str()),
                 );
+                attrs.insert(
+                    "analysisResultMode".to_string(),
+                    serde_json::json!("predicate"),
+                );
                 if let Some(multiplicity) = value.multiplicity.as_deref() {
                     attrs.insert("multiplicity".to_string(), serde_json::json!(multiplicity));
                 }
@@ -110,6 +114,64 @@ pub(super) fn build_from_analysis_body(
                             parent_node.attributes.insert(
                                 "analysisExpression".to_string(),
                                 serde_json::json!(expression),
+                            );
+                            parent_node.attributes.insert(
+                                "analysisResultMode".to_string(),
+                                serde_json::json!("predicate"),
+                            );
+                        }
+                    }
+                }
+            }
+            UseCaseDefBodyElement::CaseReturnDecl(return_decl) => {
+                let value = &return_decl.value;
+                let qualified = qualified_name_for_node(
+                    g,
+                    uri,
+                    Some(parent_id.qualified_name.as_str()),
+                    &value.name,
+                    "analysis result",
+                );
+                let mut attrs = HashMap::new();
+                attrs.insert("analysisResultMode".to_string(), serde_json::json!("value"));
+                attrs.insert(
+                    "isRedefinition".to_string(),
+                    serde_json::json!(value.is_redefine),
+                );
+                if let Some(type_name) = value.type_name.as_deref() {
+                    attrs.insert("returnType".to_string(), serde_json::json!(type_name));
+                }
+                let expression = value
+                    .value_expression
+                    .as_ref()
+                    .map(expressions::expression_to_debug_string);
+                if let Some(expression) = expression.as_deref() {
+                    attrs.insert("value".to_string(), serde_json::json!(expression));
+                }
+                add_node_and_recurse(
+                    g,
+                    uri,
+                    &qualified,
+                    "analysis result",
+                    value.name.clone(),
+                    span_to_range(&return_decl.span),
+                    attrs,
+                    Some(parent_id),
+                );
+                if let Some(type_name) = value.type_name.as_deref() {
+                    add_typing_edge_if_exists(g, uri, &qualified, type_name, container_prefix);
+                }
+                if analysis_result_qualified.is_none() {
+                    analysis_result_qualified = Some(qualified);
+                    if let Some(expression) = expression {
+                        if let Some(parent_node) = g.get_node_mut(parent_id) {
+                            parent_node.attributes.insert(
+                                "analysisExpression".to_string(),
+                                serde_json::json!(expression),
+                            );
+                            parent_node.attributes.insert(
+                                "analysisResultMode".to_string(),
+                                serde_json::json!("value"),
                             );
                         }
                     }
@@ -296,8 +358,7 @@ pub(super) fn build_from_analysis_body(
             | UseCaseDefBodyElement::IncludeUseCase(_)
             | UseCaseDefBodyElement::ForLoop(_)
             | UseCaseDefBodyElement::ThenAction(_)
-            | UseCaseDefBodyElement::Annotation(_)
-            | UseCaseDefBodyElement::CaseReturnDecl(_) => {}
+            | UseCaseDefBodyElement::Annotation(_) => {}
             UseCaseDefBodyElement::FlowUsage(flow) => {
                 super::flow_usage::materialize_flow_usage(
                     flow,
