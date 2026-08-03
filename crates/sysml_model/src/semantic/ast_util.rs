@@ -522,7 +522,7 @@ impl ExpressionAlgebra for DeclaredExpressionAlgebra {
 /// uses the debug renderer; structural children and named arguments remain
 /// explicit for later addressable projection.
 ///
-/// Iterative, not recursive: see [`crate::semantic::expression_fold`] for why.
+/// Iterative, not recursive: see the `semantic::expression_fold` module doc for why.
 pub fn declared_expression(node: &Node<Expression>) -> DeclaredExpression {
     fold_expression(node, &mut DeclaredExpressionAlgebra)
 }

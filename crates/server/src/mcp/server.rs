@@ -12,7 +12,7 @@ use crate::mcp::schemas::{
     Spec42CheckParams, Spec42DoctorParams, Spec42ExplainDiagnosticParams, Spec42ModelSummaryParams,
 };
 
-/// Registered MCP tool names (order matches [`build_mcp_tools`]).
+/// Registered MCP tool names (order matches `build_mcp_tools`).
 pub const MCP_TOOL_NAMES: &[&str] = &[
     "spec42_check",
     "spec42_doctor",
@@ -67,70 +67,46 @@ fn build_mcp_tools() -> Vec<rmcp::model::Tool> {
     use rmcp::model::Tool;
 
     vec![
-        Tool {
-            name: MCP_TOOL_NAMES[0].into(),
-            title: Some("Validate SysML / KerML (spec42 check)".into()),
-            description: Some(
-                "Run the same validation pipeline as `spec42 check`. Returns JSON with documents, \
-                diagnostics (code, message, range), summary (error_count, warning_count), and advice. \
-                Set include_semantic_model=true only when you need the full semantic projection; \
-                prefer spec42_model_summary for large workspaces.".into(),
-            ),
-            input_schema: schema_to_map(
+        Tool::new(
+            MCP_TOOL_NAMES[0],
+            "Run the same validation pipeline as `spec42 check`. Returns JSON with documents, \
+            diagnostics (code, message, range), summary (error_count, warning_count), and advice. \
+            Set include_semantic_model=true only when you need the full semantic projection; \
+            prefer spec42_model_summary for large workspaces.",
+            schema_to_map(
                 serde_json::to_value(schemars::schema_for!(Spec42CheckParams)).unwrap_or_default(),
             ),
-            output_schema: None,
-            annotations: None,
-            icons: None,
-            meta: None,
-        },
-        Tool {
-            name: MCP_TOOL_NAMES[1].into(),
-            title: Some("Spec42 environment doctor".into()),
-            description: Some(
-                "Report standard library installation, config/data dirs, library paths, and Sysand \
-                detection (same as `spec42 doctor`). Run before blaming unresolved imports on model text.".into(),
-            ),
-            input_schema: schema_to_map(
+        )
+        .with_title("Validate SysML / KerML (spec42 check)"),
+        Tool::new(
+            MCP_TOOL_NAMES[1],
+            "Report standard library installation, config/data dirs, library paths, and Sysand \
+            detection (same as `spec42 doctor`). Run before blaming unresolved imports on model text.",
+            schema_to_map(
                 serde_json::to_value(schemars::schema_for!(Spec42DoctorParams)).unwrap_or_default(),
             ),
-            output_schema: None,
-            annotations: None,
-            icons: None,
-            meta: None,
-        },
-        Tool {
-            name: MCP_TOOL_NAMES[2].into(),
-            title: Some("Compact semantic model summary".into()),
-            description: Some(
-                "Validate the path and return a capped semantic graph: nodes (qualified names, kinds) \
-                and relationships filtered to typing, connection, and reference. Use max_nodes to limit payload size.".into(),
-            ),
-            input_schema: schema_to_map(
+        )
+        .with_title("Spec42 environment doctor"),
+        Tool::new(
+            MCP_TOOL_NAMES[2],
+            "Validate the path and return a capped semantic graph: nodes (qualified names, kinds) \
+            and relationships filtered to typing, connection, and reference. Use max_nodes to limit payload size.",
+            schema_to_map(
                 serde_json::to_value(schemars::schema_for!(Spec42ModelSummaryParams))
                     .unwrap_or_default(),
             ),
-            output_schema: None,
-            annotations: None,
-            icons: None,
-            meta: None,
-        },
-        Tool {
-            name: MCP_TOOL_NAMES[3].into(),
-            title: Some("Explain a diagnostic code".into()),
-            description: Some(
-                "Deterministic catalog entry for a diagnostic code (severity, meaning, typical fix, \
-                editor quick-fix hints). Optionally pass path and line to list matching instances from spec42_check.".into(),
-            ),
-            input_schema: schema_to_map(
+        )
+        .with_title("Compact semantic model summary"),
+        Tool::new(
+            MCP_TOOL_NAMES[3],
+            "Deterministic catalog entry for a diagnostic code (severity, meaning, typical fix, \
+            editor quick-fix hints). Optionally pass path and line to list matching instances from spec42_check.",
+            schema_to_map(
                 serde_json::to_value(schemars::schema_for!(Spec42ExplainDiagnosticParams))
                     .unwrap_or_default(),
             ),
-            output_schema: None,
-            annotations: None,
-            icons: None,
-            meta: None,
-        },
+        )
+        .with_title("Explain a diagnostic code"),
     ]
 }
 
@@ -157,38 +133,30 @@ pub fn execute_tool(
 
 impl ServerHandler for Spec42McpServer {
     fn get_info(&self) -> InitializeResult {
-        use rmcp::model::ProtocolVersion;
-        InitializeResult {
-            protocol_version: ProtocolVersion::V_2024_11_05,
-            capabilities: rmcp::model::ServerCapabilities {
-                tools: Some(rmcp::model::ToolsCapability { list_changed: None }),
-                ..Default::default()
-            },
-            server_info: rmcp::model::Implementation {
-                name: "spec42-mcp".into(),
-                version: env!("CARGO_PKG_VERSION").into(),
-                title: Some("Spec42 MCP".into()),
-                website_url: Some("https://github.com/elan8/spec42".into()),
-                icons: None,
-            },
-            instructions: Some(MCP_INSTRUCTIONS.into()),
-        }
+        use rmcp::model::{Implementation, ProtocolVersion, ServerCapabilities};
+        InitializeResult::new(ServerCapabilities::builder().enable_tools().build())
+            .with_protocol_version(ProtocolVersion::V_2024_11_05)
+            .with_server_info(
+                Implementation::new("spec42-mcp", env!("CARGO_PKG_VERSION"))
+                    .with_title("Spec42 MCP")
+                    .with_website_url("https://github.com/elan8/spec42"),
+            )
+            .with_instructions(MCP_INSTRUCTIONS)
     }
 
     async fn list_tools(
         &self,
-        _paginated: Option<rmcp::model::PaginatedRequestParam>,
+        _paginated: Option<rmcp::model::PaginatedRequestParams>,
         _ctx: RequestContext<RoleServer>,
     ) -> Result<rmcp::model::ListToolsResult, rmcp::ErrorData> {
-        Ok(rmcp::model::ListToolsResult {
-            tools: build_mcp_tools(),
-            next_cursor: None,
-        })
+        Ok(rmcp::model::ListToolsResult::with_all_items(
+            build_mcp_tools(),
+        ))
     }
 
     async fn call_tool(
         &self,
-        params: rmcp::model::CallToolRequestParam,
+        params: rmcp::model::CallToolRequestParams,
         _ctx: RequestContext<RoleServer>,
     ) -> Result<rmcp::model::CallToolResult, rmcp::ErrorData> {
         let arguments = Value::Object(params.arguments.unwrap_or_default());
@@ -197,19 +165,7 @@ impl ServerHandler for Spec42McpServer {
 }
 
 fn tool_success(content: Value) -> Result<rmcp::model::CallToolResult, rmcp::ErrorData> {
-    let content_str = serde_json::to_string(&content).unwrap_or_default();
-    Ok(rmcp::model::CallToolResult {
-        content: vec![rmcp::model::Annotated {
-            raw: rmcp::model::RawContent::Text(rmcp::model::RawTextContent {
-                text: content_str,
-                meta: None,
-            }),
-            annotations: None,
-        }],
-        is_error: Some(false),
-        meta: None,
-        structured_content: Some(content),
-    })
+    Ok(rmcp::model::CallToolResult::structured(content))
 }
 
 fn tool_error(name: &str, e: String) -> Result<rmcp::model::CallToolResult, rmcp::ErrorData> {
@@ -236,21 +192,7 @@ fn tool_error(name: &str, e: String) -> Result<rmcp::model::CallToolResult, rmcp
             "example_retry": example_retry,
         }
     });
-    let error_str = serde_json::to_string(&error_content).unwrap_or_else(|_| {
-        format!("{{\"error\":{{\"code\":{error_code},\"message\":\"{name} failed\"}}}}")
-    });
-    Ok(rmcp::model::CallToolResult {
-        content: vec![rmcp::model::Annotated {
-            raw: rmcp::model::RawContent::Text(rmcp::model::RawTextContent {
-                text: error_str,
-                meta: None,
-            }),
-            annotations: None,
-        }],
-        is_error: Some(true),
-        meta: None,
-        structured_content: Some(error_content),
-    })
+    Ok(rmcp::model::CallToolResult::structured_error(error_content))
 }
 
 pub async fn run() -> Result<(), Box<dyn std::error::Error>> {

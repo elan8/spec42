@@ -48,12 +48,12 @@ struct ShapeCache {
 #[derive(Debug, Serialize, Deserialize)]
 pub struct SemanticGraphData {
     pub graph: StableGraph<SemanticNode, SemanticEdge, Directed>,
-    /// Rebuilt after deserialization via [`rebuild_derived_indexes`].
+    /// Rebuilt after deserialization via [`SemanticGraphData::rebuild_derived_indexes`].
     #[serde(skip)]
     pub node_index_by_id: HashMap<NodeId, NodeIndex>,
     pub nodes_by_uri: HashMap<Url, Vec<NodeId>>,
     pub node_ids_by_qualified_name: HashMap<String, Vec<NodeId>>,
-    /// Rebuilt after deserialization via [`rebuild_derived_indexes`].
+    /// Rebuilt after deserialization via [`SemanticGraphData::rebuild_derived_indexes`].
     #[serde(skip)]
     pub children_by_parent_id: HashMap<NodeId, Vec<NodeId>>,
     pub pending_expression_relationships: Vec<PendingExpressionRelationship>,
@@ -71,19 +71,19 @@ pub struct SemanticGraphData {
     /// of another document's resolution outcome. Deliberately NOT a cache of resolution
     /// results — a reference that temporarily fails to resolve (e.g. its target is renamed
     /// away then back) must not cause this to go stale, since nothing would ever trigger
-    /// re-checking it. Rebuilt after deserialization via [`rebuild_derived_indexes`].
+    /// re-checking it. Rebuilt after deserialization via [`SemanticGraphData::rebuild_derived_indexes`].
     #[serde(skip)]
     pub document_dependency_targets: HashMap<Url, HashSet<Url>>,
     /// Reverse of `document_dependency_targets`: for each URI, the other URIs that statically
     /// depend on it. This is `refresh_relationship_frontier`'s frontier source — every URI
     /// that might need its relationships re-resolved after `changed_uri` is edited. Rebuilt
-    /// after deserialization via [`rebuild_derived_indexes`].
+    /// after deserialization via [`SemanticGraphData::rebuild_derived_indexes`].
     #[serde(skip)]
     pub document_dependents: HashMap<Url, HashSet<Url>>,
     /// The exact (src, tgt, kind) triples `add_cross_document_edges_for_uri` last added for a
     /// given source URI. Lets a re-resolve for that URI cleanly remove its own prior
     /// cross-document edges before adding fresh ones, without touching edges owned by other
-    /// passes. Rebuilt after deserialization via [`rebuild_derived_indexes`].
+    /// passes. Rebuilt after deserialization via [`SemanticGraphData::rebuild_derived_indexes`].
     #[serde(skip)]
     pub cross_document_edges_by_source_uri: HashMap<Url, Vec<(NodeId, NodeId, RelationshipKind)>>,
 }

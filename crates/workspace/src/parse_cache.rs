@@ -96,7 +96,7 @@ pub fn store(cache_dir: &Path, hash: &[u8; 32], root: &RootNamespace) {
 }
 
 /// Delete cache entries whose `ast_version` header does not match the current
-/// binary's [`AST_VERSION`]. Call once at startup on a background thread.
+/// binary's [`sysml_v2_parser::PARSE_AST_VERSION`]. Call once at startup on a background thread.
 /// Non-fatal — errors are silently ignored.
 pub fn evict_stale_entries(cache_dir: &Path) {
     let Ok(entries) = std::fs::read_dir(cache_dir) else {

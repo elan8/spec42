@@ -3,7 +3,7 @@
 mod common;
 
 use common::with_isolated_data_dir_async;
-use rmcp::model::CallToolRequestParam;
+use rmcp::model::CallToolRequestParams;
 use rmcp::transport::TokioChildProcess;
 use rmcp::ServiceExt;
 
@@ -25,10 +25,9 @@ async fn spec42_mcp_binary_lists_tools_and_doctor() -> anyhow::Result<()> {
         }
 
         let doctor = client
-            .call_tool(CallToolRequestParam {
-                name: "spec42_doctor".into(),
-                arguments: Some(serde_json::Map::new()),
-            })
+            .call_tool(
+                CallToolRequestParams::new("spec42_doctor").with_arguments(serde_json::Map::new()),
+            )
             .await?;
         assert_ne!(doctor.is_error, Some(true));
         let structured = doctor.structured_content.expect("doctor json");

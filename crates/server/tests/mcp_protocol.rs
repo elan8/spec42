@@ -5,7 +5,7 @@ mod common;
 use std::path::PathBuf;
 
 use common::with_isolated_data_dir_async;
-use rmcp::model::{CallToolRequestParam, ClientInfo};
+use rmcp::model::{CallToolRequestParams, ClientInfo};
 use rmcp::{ClientHandler, ServiceExt};
 use serde_json::json;
 use spec42::mcp::server::{Spec42McpServer, MCP_TOOL_NAMES};
@@ -67,15 +67,14 @@ async fn mcp_protocol_call_spec42_check() -> anyhow::Result<()> {
 
         let client = TestMcpClient.serve(client_transport).await?;
         let result = client
-            .call_tool(CallToolRequestParam {
-                name: "spec42_check".into(),
-                arguments: Some(
+            .call_tool(
+                CallToolRequestParams::new("spec42_check").with_arguments(
                     json!({ "path": path.display().to_string() })
                         .as_object()
                         .unwrap()
                         .clone(),
                 ),
-            })
+            )
             .await?;
 
         assert_ne!(result.is_error, Some(true));
@@ -104,12 +103,7 @@ async fn mcp_protocol_unknown_tool_returns_error_result() -> anyhow::Result<()> 
         });
 
         let client = TestMcpClient.serve(client_transport).await?;
-        let result = client
-            .call_tool(CallToolRequestParam {
-                name: "nope".into(),
-                arguments: None,
-            })
-            .await?;
+        let result = client.call_tool(CallToolRequestParams::new("nope")).await?;
 
         assert_eq!(result.is_error, Some(true));
         let structured = result.structured_content.expect("structured error content");
