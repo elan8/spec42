@@ -471,4 +471,51 @@ package Demo {
             "library Demo must not be merged when workspace declares Demo"
         );
     }
+
+    #[test]
+    fn provider_merges_nested_library_package_beside_shared_workspace_namespace() {
+        let temp = tempfile::tempdir().expect("tempdir");
+        let workspace = temp.path().join("workspace");
+        let lib = temp.path().join("lib");
+        fs::create_dir_all(&workspace).expect("workspace dir");
+        fs::create_dir_all(&lib).expect("lib dir");
+        fs::write(
+            workspace.join("App.sysml"),
+            r#"
+package Elan8 {
+    package Photonics { item def OpticalSignal; }
+}
+package App {
+    private import Elan8::Method::Core::*;
+    part project : ProjectInfo;
+}
+"#,
+        )
+        .expect("workspace model");
+        fs::write(
+            lib.join("Method.sysml"),
+            r#"
+package Elan8 {
+    package Method {
+        package Core { part def ProjectInfo; }
+    }
+}
+"#,
+        )
+        .expect("method library");
+
+        let provider =
+            FileSystemDocumentProvider::new(workspace.clone(), Some(workspace), vec![lib]);
+        let (graph, _) = build_semantic_graph_with_provider(&provider).expect("graph");
+
+        assert!(graph
+            .node_ids_for_qualified_name("Elan8::Photonics::OpticalSignal")
+            .is_some());
+        assert!(
+            graph
+                .node_ids_for_qualified_name("Elan8::Method::Core::ProjectInfo")
+                .is_some(),
+            "bundled nested namespaces must remain visible beside workspace Elan8 packages"
+        );
+    }
 }

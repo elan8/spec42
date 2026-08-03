@@ -13,7 +13,7 @@ use url::Url;
 
 use crate::semantic::graph::SemanticGraph;
 use crate::semantic::kinds::is_part_like;
-use crate::semantic::model::{NodeId, SemanticNode};
+use crate::semantic::model::{ElementKind, NodeId, SemanticNode};
 
 // Re-export the canonical port predicate for consumers of this module.
 pub use crate::semantic::kinds::is_port_like;
@@ -198,6 +198,21 @@ fn node_to_typed_by_ref(node: &SemanticNode) -> TypedByRef {
     }
 }
 
+/// Classifies usages that can materialize as structural parts in a component tree.
+///
+/// A generic `ref` can reference many kinds of elements, so it is structural only
+/// when its resolved typing target is itself part-like. This intentionally stays
+/// local to component expansion: the broader `is_part_like` predicate is also used
+/// for definition classification and type compatibility.
+fn is_structural_part_usage(graph: &SemanticGraph, node: &SemanticNode) -> bool {
+    is_part_like(&node.element_kind)
+        || (node.element_kind == ElementKind::Ref
+            && graph
+                .outgoing_typing_or_specializes_targets(node)
+                .into_iter()
+                .any(|target| is_part_like(&target.element_kind)))
+}
+
 fn compute_has_materialized_shape(
     graph: &SemanticGraph,
     def_node: &SemanticNode,
@@ -212,7 +227,7 @@ fn compute_has_materialized_shape(
     let has_direct = graph
         .children_of(def_node)
         .iter()
-        .any(|child| is_part_like(&child.element_kind) || is_port_like(&child.element_kind));
+        .any(|child| is_structural_part_usage(graph, child) || is_port_like(&child.element_kind));
     let result = has_direct
         || graph
             .outgoing_typing_or_specializes_targets(def_node)
@@ -297,7 +312,7 @@ fn expand_def_subtree(
     let can_recurse = max_depth.is_none_or(|max| current_depth < max);
 
     for part_child in graph.children_of(def_node) {
-        if !is_part_like(&part_child.element_kind) {
+        if !is_structural_part_usage(graph, part_child) {
             continue;
         }
         let child_path = format!("{parent_path}.{}", part_child.name);
@@ -376,7 +391,7 @@ fn expand_usage_children(
     existing_paths: &mut HashSet<String>,
 ) {
     for part_child in graph.children_of(usage_node) {
-        if !is_part_like(&part_child.element_kind) {
+        if !is_structural_part_usage(graph, part_child) {
             continue;
         }
         let child_path = format!("{parent_path}.{}", part_child.name);
@@ -429,7 +444,7 @@ mod tests {
     use crate::semantic::source::{SysmlDocument, SysmlDocumentSourceKind};
     use crate::semantic::workspace_graph::build_semantic_graph_from_documents;
 
-    use super::typed_by_reference;
+    use super::{expand_part_definition, typed_by_reference};
 
     fn build_graph(source: &str) -> crate::semantic::graph::SemanticGraph {
         let doc = SysmlDocument::from_memory_path(
@@ -483,5 +498,41 @@ mod tests {
         let graph = build_graph("package Demo { part def Robot { part loose; } }");
         let usage = node_by_qualified_name(&graph, "Demo::Robot::loose");
         assert!(typed_by_reference(&graph, usage).is_none());
+    }
+
+    #[test]
+    fn expansion_includes_typed_ref_parts_but_excludes_untyped_refs() {
+        let graph = build_graph(
+            r#"package Demo {
+  port def LinkPort;
+  part def System {
+    port link : LinkPort;
+  }
+  part def Peer {
+    port link : LinkPort;
+  }
+  part def Context {
+    ref part system : System;
+    part peer : Peer;
+    ref part loose;
+    connect system.link to peer.link;
+  }
+  part context : Context;
+}"#,
+        );
+        let context = node_by_qualified_name(&graph, "Demo::Context");
+
+        let expanded = expand_part_definition(&graph, context, "Demo.context", None);
+        let system = expanded
+            .iter()
+            .find(|part| part.path == "Demo.context.system")
+            .expect("typed ref part should be materialized");
+
+        assert_eq!(system.element_kind, "ref");
+        assert!(system.ports.iter().any(|port| port.name == "link"));
+        assert!(expanded.iter().any(|part| part.path == "Demo.context.peer"));
+        assert!(!expanded
+            .iter()
+            .any(|part| part.path == "Demo.context.loose"));
     }
 }
