@@ -1010,7 +1010,7 @@ describe("shared renderer", () => {
     Object.defineProperty(target, "clientWidth", { value: 1600, configurable: true });
     Object.defineProperty(target, "clientHeight", { value: 1000, configurable: true });
 
-    await renderVisualization(target, {
+    const controller = await renderVisualization(target, {
       title: "DroneInterconnection",
       view: "interconnection-view",
       nodes: [
@@ -1102,10 +1102,16 @@ describe("shared renderer", () => {
     connectionHit.dispatchEvent(new MouseEvent("mouseover", { bubbles: true, clientX: 200, clientY: 100 }));
     const tooltip = target.querySelector(".sysml-diagram-tooltip") as HTMLDivElement;
     expect(tooltip.style.display).toBe("block");
+    expect(connectionHit.querySelector("title")).toBeNull();
+    const hoveredExport = controller.exportSvg();
+    expect(hoveredExport).toContain("Source: battery.pwr");
+    expect(hoveredExport).toContain("<title>");
+    expect(hoveredExport).not.toContain("data-tooltip-title");
     expect(tooltip.textContent).toContain("Resolved target: Drone.distribution.mainPower");
     expect(connection?.classList.contains("viz-edge-hovered")).toBe(true);
     connectionHit.dispatchEvent(new MouseEvent("mouseout", { bubbles: true, relatedTarget: target }));
     expect(tooltip.style.display).toBe("none");
+    expect(connectionHit.querySelector("title")?.textContent).toContain("Source: battery.pwr");
     expect(connection?.classList.contains("viz-edge-hovered")).toBe(false);
   });
 

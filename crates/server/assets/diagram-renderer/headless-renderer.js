@@ -4402,11 +4402,25 @@ var Spec42HeadlessRendererBundle = (() => {
       if (!descriptor) continue;
       const fullText = tooltipText(descriptor);
       element.setAttribute("aria-label", fullText.replace(/\n/g, "; "));
+      element.setAttribute("data-tooltip-title", fullText);
       const title = target.ownerDocument.createElementNS("http://www.w3.org/2000/svg", "title");
       title.textContent = fullText;
       element.appendChild(title);
     }
     let activeEdgeId = "";
+    let suppressedNativeTitle = null;
+    const restoreNativeTitle = () => {
+      if (!suppressedNativeTitle) return;
+      suppressedNativeTitle.element.appendChild(suppressedNativeTitle.title);
+      suppressedNativeTitle = null;
+    };
+    const suppressNativeTitle = (element) => {
+      restoreNativeTitle();
+      const title = Array.from(element.children).find((child) => child.tagName.toLowerCase() === "title");
+      if (!title) return;
+      title.remove();
+      suppressedNativeTitle = { element, title };
+    };
     const highlightEdge = (edgeId, active) => {
       for (const edgeElement of Array.from(target.querySelectorAll("[data-edge-id]"))) {
         if (edgeElement.getAttribute("data-edge-id") !== edgeId) continue;
@@ -4434,6 +4448,7 @@ var Spec42HeadlessRendererBundle = (() => {
       if (!element) return;
       const descriptor = descriptors.get(`${element.dataset.tooltipKind}:${element.dataset.tooltipId}`);
       if (!descriptor) return;
+      suppressNativeTitle(element);
       tooltip.textContent = tooltipText(descriptor);
       tooltip.style.display = "block";
       positionTooltip(event);
@@ -4449,6 +4464,7 @@ var Spec42HeadlessRendererBundle = (() => {
     };
     const hide = () => {
       tooltip.style.display = "none";
+      restoreNativeTitle();
       if (activeEdgeId) highlightEdge(activeEdgeId, false);
       activeEdgeId = "";
     };
@@ -4464,6 +4480,7 @@ var Spec42HeadlessRendererBundle = (() => {
     target.addEventListener("mouseout", leave);
     target.addEventListener("mouseleave", hide);
     const cleanup = () => {
+      hide();
       target.removeEventListener("mouseover", show);
       target.removeEventListener("mousemove", move);
       target.removeEventListener("mouseout", leave);
@@ -5751,6 +5768,15 @@ var Spec42HeadlessRendererBundle = (() => {
   }
   function exportSvg(svgNode2, bounds) {
     const clone = svgNode2.cloneNode(true);
+    for (const element of Array.from(clone.querySelectorAll("[data-tooltip-title]"))) {
+      const hasTitle = Array.from(element.children).some((child) => child.tagName.toLowerCase() === "title");
+      if (!hasTitle) {
+        const title = clone.ownerDocument.createElementNS("http://www.w3.org/2000/svg", "title");
+        title.textContent = element.getAttribute("data-tooltip-title") ?? "";
+        element.appendChild(title);
+      }
+      element.removeAttribute("data-tooltip-title");
+    }
     clone.setAttribute("xmlns", "http://www.w3.org/2000/svg");
     clone.setAttribute("viewBox", `${bounds.x - 40} ${bounds.y - 40} ${bounds.width + 80} ${bounds.height + 80}`);
     return new XMLSerializer().serializeToString(clone);

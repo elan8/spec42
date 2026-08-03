@@ -187,12 +187,27 @@ export function installDiagramTooltips(
     if (!descriptor) continue;
     const fullText = tooltipText(descriptor);
     element.setAttribute("aria-label", fullText.replace(/\n/g, "; "));
+    element.setAttribute("data-tooltip-title", fullText);
     const title = target.ownerDocument.createElementNS("http://www.w3.org/2000/svg", "title");
     title.textContent = fullText;
     element.appendChild(title);
   }
 
   let activeEdgeId = "";
+  let suppressedNativeTitle: { element: SVGElement; title: SVGTitleElement } | null = null;
+  const restoreNativeTitle = (): void => {
+    if (!suppressedNativeTitle) return;
+    suppressedNativeTitle.element.appendChild(suppressedNativeTitle.title);
+    suppressedNativeTitle = null;
+  };
+  const suppressNativeTitle = (element: SVGElement): void => {
+    restoreNativeTitle();
+    const title = Array.from(element.children)
+      .find((child): child is SVGTitleElement => child.tagName.toLowerCase() === "title");
+    if (!title) return;
+    title.remove();
+    suppressedNativeTitle = { element, title };
+  };
   const highlightEdge = (edgeId: string, active: boolean): void => {
     for (const edgeElement of Array.from(target.querySelectorAll<SVGGeometryElement>("[data-edge-id]"))) {
       if (edgeElement.getAttribute("data-edge-id") !== edgeId) continue;
@@ -222,6 +237,7 @@ export function installDiagramTooltips(
     if (!element) return;
     const descriptor = descriptors.get(`${element.dataset.tooltipKind}:${element.dataset.tooltipId}`);
     if (!descriptor) return;
+    suppressNativeTitle(element);
     tooltip.textContent = tooltipText(descriptor);
     tooltip.style.display = "block";
     positionTooltip(event);
@@ -237,6 +253,7 @@ export function installDiagramTooltips(
   };
   const hide = (): void => {
     tooltip.style.display = "none";
+    restoreNativeTitle();
     if (activeEdgeId) highlightEdge(activeEdgeId, false);
     activeEdgeId = "";
   };
@@ -256,6 +273,7 @@ export function installDiagramTooltips(
   target.addEventListener("mouseleave", hide);
 
   const cleanup = () => {
+    hide();
     target.removeEventListener("mouseover", show);
     target.removeEventListener("mousemove", move);
     target.removeEventListener("mouseout", leave);
