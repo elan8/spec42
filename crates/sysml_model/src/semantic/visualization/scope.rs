@@ -89,15 +89,28 @@ pub enum IbdBuildScope {
     ViewExposedPackages,
 }
 
-/// Follows containment (children), typing/specializes edges, and `redefines`/`subsets` targets
-/// transitively from `node`, collecting every document URI touched. An exposed usage's nested
-/// structure and connectors are frequently declared on its *type definition* (possibly in another
-/// document) rather than on the usage itself, so the exposed-id qualified-name prefix alone isn't
-/// enough to find every document needed to reconstruct the interconnection view (e.g. connectors
-/// mirrored from a part def in a sibling file would otherwise be silently excluded from the scoped
-/// build). Likewise, a `redefines`/`subsets` target can live in yet another file whose connectors
-/// are needed for correct mirroring — without following it, the scoped build can end up resolving
-/// against a different (but individually valid) root than the full-workspace build would.
+/// Follows containment (children), typing/specializes edges, `redefines`/`subsets` targets, and
+/// sibling usages of a shared type transitively from `node`, collecting every document URI
+/// touched. An exposed usage's nested structure and connectors are frequently declared on its
+/// *type definition* (possibly in another document) rather than on the usage itself, so the
+/// exposed-id qualified-name prefix alone isn't enough to find every document needed to
+/// reconstruct the interconnection view (e.g. connectors mirrored from a part def in a sibling
+/// file would otherwise be silently excluded from the scoped build). Likewise, a
+/// `redefines`/`subsets` target can live in yet another file whose connectors are needed for
+/// correct mirroring — without following it, the scoped build can end up resolving against a
+/// different (but individually valid) root than the full-workspace build would.
+///
+/// The same applies to *other* usages that instantiate a type reached while walking this
+/// subtree (e.g. a def-nested `part base : BaseModule;` declared inside another definition,
+/// sitting alongside the "real" top-level instance path the full-workspace build resolves
+/// against): `finalize_merged_ibd_connectors`'s workspace-wide instance/def remap picks whichever
+/// instance path it can see. If the scoped closure only includes the def-nested sibling and not
+/// the real instance path's document, the scoped build's connectors get localized against a
+/// different (but individually valid) instance root than the full build -- diverging connector
+/// counts even though both roots are legal per SysML §7. Following incoming typing/specializes
+/// edges from every definition visited (not just the one the exposed node itself was typed by)
+/// keeps every workspace instantiation of a shared type in scope, so the remap step converges on
+/// the same root regardless of scoping (see O-1).
 fn collect_definition_uris_for_subtree(
     semantic_graph: &SemanticGraph,
     node: &crate::SemanticNode,
@@ -113,6 +126,27 @@ fn collect_definition_uris_for_subtree(
     }
     if let Some(owner_id) = node.parent_id.as_ref() {
         if let Some(owner) = semantic_graph.get_node(owner_id) {
+            // `node` is a def-nested member (e.g. `base` inside `part def AutonomousFloorCleaningRobot
+            // { part base : BaseModule; }`). If `owner` (the enclosing def) is itself instantiated
+            // elsewhere in the workspace (e.g. `part physical : AutonomousFloorCleaningRobot;` in
+            // another document), that sibling instantiation's `.base` member is the *same* logical
+            // component reached through a different, deeper instance path -- and
+            // `finalize_merged_ibd_connectors`'s workspace-wide instance/def remap will pick
+            // whichever path it can see across every processed document. A scoped build that only
+            // sees the def-nested member (not the sibling instantiation) resolves connectors against
+            // a different root than the full-workspace build, corrupting the filtered connector
+            // count. Following incoming typing/specializes edges from `owner` keeps every workspace
+            // instantiation of the enclosing definition in scope, so the remap step converges on the
+            // same root regardless of scoping (see O-1).
+            for sibling_owner_usage in semantic_graph.incoming_typing_or_specializes_sources(owner)
+            {
+                collect_definition_uris_for_subtree(
+                    semantic_graph,
+                    sibling_owner_usage,
+                    uris,
+                    visited,
+                );
+            }
             for attribute_key in ["redefines", "subsetsFeature"] {
                 let Some(attribute_value) = node
                     .attributes
@@ -265,6 +299,53 @@ mod tests {
         assert!(
             closure.iter().any(|candidate| candidate == &base_uri),
             "expected the subsets target's document to be included in the closure, got {:?}",
+            closure
+        );
+    }
+
+    #[test]
+    fn ibd_uri_closure_follows_sibling_instantiation_of_an_owning_definition() {
+        // Regression test for O-1 (robot-vacuum `baseDecomposition` general view): `Robot::base`
+        // is a def-nested member (declared inside `part def Robot`, not on a top-level instance).
+        // `Robot` is itself instantiated elsewhere as `Context::vehicle::robot`, in a document the
+        // exposed id's own subtree never touches. Without following that sibling instantiation,
+        // `finalize_merged_ibd_connectors`'s workspace-wide instance/def remap has only the
+        // def-nested path to work with in a scoped build, but resolves against the deeper
+        // `Context::vehicle::robot::base` path when the full workspace is available -- diverging
+        // (but individually valid) roots between scoped and full builds.
+        let module_doc = doc(
+            "Module.sysml",
+            r#"package Module {
+    part def BaseModule;
+}"#,
+        );
+        let robot_doc = doc(
+            "Robot.sysml",
+            r#"package Robot {
+    import Module::*;
+    part def Robot {
+        part base : BaseModule;
+    }
+}"#,
+        );
+        let context_doc = doc(
+            "Context.sysml",
+            r#"package Context {
+    import Robot::*;
+    part def Vehicle {
+        part robot : Robot;
+    }
+}"#,
+        );
+        let context_uri = context_doc.uri.clone();
+        let (graph, _) = build_semantic_graph_from_documents(&[module_doc, robot_doc, context_doc])
+            .expect("graph");
+        let mut exposed = HashSet::new();
+        exposed.insert("Robot::Robot::base".to_string());
+        let closure = ibd_uri_closure_for_exposed_ids(&graph, &exposed);
+        assert!(
+            closure.iter().any(|candidate| candidate == &context_uri),
+            "expected the sibling instantiation's document to be included in the closure, got {:?}",
             closure
         );
     }
