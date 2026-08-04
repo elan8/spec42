@@ -138,8 +138,7 @@ fn collect_definition_uris_for_subtree(
             // count. Following incoming typing/specializes edges from `owner` keeps every workspace
             // instantiation of the enclosing definition in scope, so the remap step converges on the
             // same root regardless of scoping (see O-1).
-            for sibling_owner_usage in
-                semantic_graph.incoming_typing_or_specializes_sources(owner)
+            for sibling_owner_usage in semantic_graph.incoming_typing_or_specializes_sources(owner)
             {
                 collect_definition_uris_for_subtree(
                     semantic_graph,
@@ -339,9 +338,8 @@ mod tests {
 }"#,
         );
         let context_uri = context_doc.uri.clone();
-        let (graph, _) =
-            build_semantic_graph_from_documents(&[module_doc, robot_doc, context_doc])
-                .expect("graph");
+        let (graph, _) = build_semantic_graph_from_documents(&[module_doc, robot_doc, context_doc])
+            .expect("graph");
         let mut exposed = HashSet::new();
         exposed.insert("Robot::Robot::base".to_string());
         let closure = ibd_uri_closure_for_exposed_ids(&graph, &exposed);
