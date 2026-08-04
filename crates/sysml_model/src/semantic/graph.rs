@@ -321,10 +321,12 @@ impl SemanticGraphData {
     }
 
     fn query_indexes(&self) -> Arc<GraphQueryIndexes> {
+        // Recover from poison instead of panicking the whole analysis pipeline;
+        // a poisoned cache is rebuilt below just like an empty one.
         let mut guard = self
             .query_indexes
             .lock()
-            .expect("semantic graph query indexes lock");
+            .unwrap_or_else(|poisoned| poisoned.into_inner());
         if let Some(indexes) = guard.as_ref() {
             return Arc::clone(indexes);
         }
