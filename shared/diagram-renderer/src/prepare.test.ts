@@ -84,6 +84,26 @@ describe("shared prepareViewData", () => {
     expect(groups?.map((g) => g.name).sort()).toEqual(["PkgA", "PkgB"]);
   });
 
+  it("builds package container groups when the raw payload has no separate qualifiedName field", () => {
+    // Regression test for O-4: graph nodes coming off the Rust side never carry a top-level or
+    // `attributes.qualifiedName` field -- `id` *is* the qualified name (e.g.
+    // "PhysicalArchitecture::BaseModule"). Without falling back to `id`, package grouping (and
+    // the compact-layout chunking it enables) silently never activated for any real payload.
+    const prepared = prepareViewData({
+      view: "general-view",
+      graph: {
+        nodes: [
+          { id: "PkgA::A", name: "A", type: "part def" },
+          { id: "PkgB::B", name: "B", type: "part def" },
+        ],
+        edges: [],
+      },
+    });
+    const groups = prepared.meta?.packageContainerGroups as Array<{ name: string; memberIds: string[] }>;
+    expect(groups).toHaveLength(2);
+    expect(groups?.map((g) => g.name).sort()).toEqual(["PkgA", "PkgB"]);
+  });
+
   it("marks reference usages on prepared nodes", () => {
     const prepared = prepareViewData({
       view: "general-view",

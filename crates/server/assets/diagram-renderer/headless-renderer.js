@@ -711,7 +711,7 @@ var Spec42HeadlessRendererBundle = (() => {
   function buildGeneralPackageContainerGroups(nodes) {
     const byPackage = /* @__PURE__ */ new Map();
     for (const node of nodes) {
-      const qn = asString(asRecord(node.attributes).qualifiedName);
+      const qn = asString(asRecord(node.attributes).qualifiedName) || node.id;
       const sep = qn.indexOf("::");
       if (sep <= 0) continue;
       const pkg = qn.slice(0, sep);
@@ -6810,9 +6810,27 @@ var Spec42HeadlessRendererBundle = (() => {
         height: Math.max(height, computeNodeHeight(compartments, { maxLinesPerCompartment: 8 }))
       };
     };
+    const WIDE_SIBLING_THRESHOLD = 8;
+    const chunkedElkChildren = (idPrefix, elkNodes) => {
+      if (elkNodes.length <= WIDE_SIBLING_THRESHOLD) return elkNodes;
+      const chunkSize = Math.max(1, Math.ceil(Math.sqrt(elkNodes.length) / 2));
+      const chunks = [];
+      for (let i = 0; i < elkNodes.length; i += chunkSize) {
+        chunks.push({
+          id: `${idPrefix}#chunk${chunks.length}`,
+          layoutOptions: {
+            "elk.direction": "DOWN",
+            "elk.padding": "[top=8,left=8,bottom=8,right=8]"
+          },
+          children: elkNodes.slice(i, i + chunkSize)
+        });
+      }
+      return chunks;
+    };
     const packageGroups = prepared.meta?.packageContainerGroups ?? [];
     const useHierarchy = packageGroups.length >= 2;
     let children2;
+    let flatChildrenWereChunked = false;
     if (useHierarchy) {
       const memberToPackage = /* @__PURE__ */ new Map();
       for (const group of packageGroups) {
@@ -6837,16 +6855,18 @@ var Spec42HeadlessRendererBundle = (() => {
           "elk.direction": "DOWN",
           "elk.padding": "[top=36,left=20,bottom=20,right=20]"
         },
-        children: byPackage.get(group.id) ?? []
+        children: chunkedElkChildren(group.id, byPackage.get(group.id) ?? [])
       }));
       children2 = [...containers, ...orphans];
     } else {
-      children2 = diagramNodes.map(leafElkNode);
+      const flatChildren = diagramNodes.map(leafElkNode);
+      children2 = chunkedElkChildren("root", flatChildren);
+      flatChildrenWereChunked = children2 !== flatChildren;
     }
     const graph = {
       id: "root",
       layoutOptions: buildElkLayoutOptions("general", {
-        "elk.hierarchyHandling": useHierarchy ? "INCLUDE_CHILDREN" : void 0
+        "elk.hierarchyHandling": useHierarchy || flatChildrenWereChunked ? "INCLUDE_CHILDREN" : void 0
       }),
       children: children2,
       edges: diagramEdges.map((edge) => ({ id: edge.id, sources: [edge.source], targets: [edge.target] }))
