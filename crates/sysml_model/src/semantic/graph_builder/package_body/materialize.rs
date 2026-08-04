@@ -766,7 +766,7 @@ fn materialize_enumerated_values(
     }
 }
 
-pub(super) fn materialize_enum_usage(
+pub(crate) fn materialize_enum_usage(
     g: &mut SemanticGraph,
     uri: &Url,
     container_prefix: Option<&str>,
