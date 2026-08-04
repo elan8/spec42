@@ -127,7 +127,7 @@ fn multi_file_workspace_single_doc_edit_matches_full_rebuild() {
 }
 
 /// Regression test for a real bug found while designing Tier 2 Phase 3b (see
-/// `docs/engineering/TIER2-PHASE3B-SHARED-GRAPH-PATCH-DESIGN.md`): `workspace` crate's
+/// shared graph-patch consolidation): `workspace` crate's
 /// graph pipeline never called `evaluate_expressions`, in either the full-build or
 /// incremental-update path, so every attribute's `evaluatedValue`/`evaluationStatus` was
 /// silently absent. Fixed by routing both paths through `sysml_model::finalize_and_evaluate`

@@ -1,8 +1,8 @@
-# Diagnostic checks roadmap
+# Diagnostic catalog
 
-This document inventories the diagnostic checks currently surfaced by Spec42 and
-captures candidate generic SysML v2 checks to add next. Domain-specific checks
-are intentionally out of scope here.
+This document inventories the diagnostic checks currently surfaced by Spec42.
+It is a **catalog / reference**, not a work tracker — open diagnostic work lives in
+[GitHub Issues](https://github.com/elan8/spec42/issues) (label `diagnostics`).
 
 Primary local reference used for the candidate list:
 `C:\Git\elan8-monorepo\library\SysML_v2.txt`.
@@ -198,7 +198,7 @@ Spec areas: 7.26-7.27, 8.3.26, 8.4.22-8.4.23.
 - Done: `view_rendering_invalid_target` — view rendering membership target kind validation.
 - Done: `view_expose_empty` — view body without expose members.
 - Done: `view_expose_unresolved` — expose target/feature chain does not resolve.
-- Done: `view_expose_empty_result` — reserved for filters removing all exposed elements (catalog entry; emit when filter-aware evaluation is wired in diagnostics).
+- Done: `view_expose_empty_result` — catalog entry reserved for filters removing all exposed elements; emission tracked in [#31](https://github.com/elan8/spec42/issues/31).
 - Done: `view_filter_non_boolean` — view body filter expression Boolean validation.
 - Done: `viewpoint_reference_unresolved` / `viewpoint_rep_language_unresolved` — viewpoint frame/import/stakeholder/purpose targets and missing rep language.
 - Done: `metadata_annotation_unresolved` — metadata annotation target resolution when untyped.
@@ -219,13 +219,15 @@ Tracked limitations (`S42-LIM-*`) addressed in this cycle:
 - `S42-LIM-008`: cyclic state machines suppress `missing_final_state` guidance (`behavior_conformance.rs`).
 - `S42-LIM-009`: bundled `MonetaryUnits` indexed for `[EUR]` (`evaluation/units.rs`).
 - `S42-LIM-010`: remove implicit redefines heuristic false positives (`kind_compatibility.rs`).
-- `S42-LIM-015`: named and `about`-bound metadata usages rejected inside a `part def` body — **Open**, see below.
+- `S42-LIM-015`: named and `about`-bound metadata usages rejected inside a `part def` body — tracked in [#24](https://github.com/elan8/spec42/issues/24).
 
 Optional env-gated integration baseline: `SYSML_ROBOT_VACUUM_DIR` → `robot_vacuum_baseline.rs`.
 
 Done: `S42-LIM-005` — generic `FlowUsage` in parser and semantic graph (`flow` / `message` / `succession flow` in structure-usage bodies including part def/usage, package, occurrence def, action, use case).
 
 ### S42-LIM-015: named/`about`-bound metadata usages unsupported in part-definition bodies
+
+**Status:** tracked in [#24](https://github.com/elan8/spec42/issues/24) (not maintained as a TODO in this doc).
 
 **Symptom**: applying the same `metadata def` more than once inside one `part def` body — which requires giving each usage a distinct name or explicit target so they don't collide as anonymous same-named members — has no working syntax today. Two forms were tried, both rejected:
 
@@ -255,20 +257,11 @@ The unnamed, unbound form (`@PowerRailBudget { ... }` with no name and no `about
 
 **Expected behavior**: per the SysML v2 spec, a prefix metadata annotation is sugar for a `metadata` usage, which should support an explicit name (`@MetadataDef usageName { ... }`) and/or an explicit `about` target the same way a standalone `metadata` declaration does at the package level. Neither form should be scoped out specifically inside a `part def`/`port` body.
 
-**Suggested fix**: grammar support likely belongs in `sysml-v2-parser` (pinned at `0.47.1` in this repo's `Cargo.toml`) — check its handling of the prefix-annotation and `about`-binding productions inside structure-usage bodies (parts, ports), analogous to how `S42-LIM-007`/`S42-LIM-005` needed `sysml-v2-parser` grammar changes for structure-usage-body constructs. Once the parser accepts either form, `duplicate_namespace_member` needs to *not* fire when the (now-named, or `about`-bound) usages are distinguishable.
-
-**Regression test**: a `part def` with 3+ usages of the same `metadata def`, each named or `about`-bound differently, should validate with 0 errors/warnings and each usage should resolve to its own distinct member.
-
 **Current workaround** (used in `sysml-robot-vacuum-cleaner/model/30_architecture/PhysicalArchitecture.sysml`): model the would-be metadata def as a plain `attribute def` instead, and declare one `attribute <name> : <def> { attribute :>> field = value; ... }` per port as a sibling attribute — same data, no annotation/binding syntax required, but it's an `attribute` rather than the more semantically precise `metadata` relationship to the port it characterizes.
 
 ## Suggested implementation order
 
-1. Normalize diagnostic metadata first: catalog completeness, severity alignment, tests that emitted codes are cataloged.
-2. Improve reference diagnostics: ambiguous names, invalid qualified-name segments, better unresolved ranges.
-3. Add kind-compatibility checks for typing/specialization/redefinition. These will make everyday modeling mistakes much more visible.
-4. Deepen connection/interface/flow checks because they directly improve the visualizer and structural modeling workflow.
-5. Add expression/value/unit checks incrementally as the expression model becomes stronger.
-6. Add behavior/case/view/metadata checks after the core name/type system is dependable.
+Historical sequencing notes from the original diagnostic rollout (most categories are now shipped). New diagnostic work should be filed as GitHub issues rather than appended here.
 
 ## Notes
 
@@ -315,4 +308,4 @@ Fixes applied against `SysML_v2.txt` after drone-example and vacuum-corpus audit
 
 ### Catalog audit (other codes)
 
-Spot-checked against spec examples and the MBSE vacuum corpus. No additional systematic false positives found beyond the fixes above. Connection, port, flow, import-resolution, and state-machine hint diagnostics remain as documented in `MBSE-VACUUM-CHECK-ANALYSIS.md`.
+Spot-checked against spec examples and the MBSE vacuum corpus. No additional systematic false positives found beyond the fixes above.

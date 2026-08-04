@@ -1,9 +1,8 @@
 # Spec42 Roadmap
 
-**Current version:** 0.44.19 (2026-07-23)
 **Target:** 1.0.0
 
-This document describes what needs to be true for Spec42 1.0, tracks the remaining work, and lists what is deliberately deferred beyond 1.0. It is the single authoritative planning reference; engineering detail lives in the linked documents.
+This document describes what Spec42 1.0 means, summarizes the shipped baseline, and lists capabilities deliberately deferred beyond 1.0. It is a **product reference**, not a work tracker — open work lives in [GitHub Issues](https://github.com/elan8/spec42/issues) (milestone [1.0](https://github.com/elan8/spec42/milestone/1)). Live package and parser pins live in `Cargo.toml` / `Cargo.lock`, not here.
 
 ---
 
@@ -25,7 +24,7 @@ The 1.0 bar is:
 
 ---
 
-## Current state (as of 0.44.19)
+## Current state
 
 The table below shows what is **already complete** and will ship in 1.0 without additional work.
 
@@ -115,92 +114,18 @@ All five phases of the embedding plan are complete. See [ADR 0003](adr/0003-spec
 
 ---
 
-## Remaining work for 1.0
+## 1.0 gates (tracked on GitHub)
 
-### ~~R1 — Remove `domain_rules` placeholder crate~~ ✓ done
+Open 1.0 work is tracked in GitHub Issues, not in this file:
 
-`crates/domain_rules/` was an empty placeholder (no code, not a workspace member). Removed 2026-06-29.
+| Item | Issue |
+|------|-------|
+| R7 — `sysml-v2-parser` pin and graph coverage for 1.0 | [#18](https://github.com/elan8/spec42/issues/18) |
+| R8 — Ship 1.0.0 (version, release notes, `elan8/spec42@v1`) | [#19](https://github.com/elan8/spec42/issues/19) |
 
-### ~~R2 — Promote Sequence View from experimental to stable~~ ✓ done
+Completed release-prep items (R1–R6, R9) are historical only: domain_rules removal, Sequence View promotion, perf-budget CI, conformance-matrix CI check, crate-name doc refresh, marketplace readiness, and robot-vacuum false-positive elimination (0.45.0). See git history / CHANGELOG for detail.
 
-The Sequence View projection is complete per the conformance matrix, but the code path carries an experimental marker. Before 1.0:
-
-- Remove or document the experimental flag.
-- Ensure the sequence-view rendering path has regression fixtures alongside General/IBD/Action/State.
-- Update `SUPPORTED-WORKFLOWS.md` to include sequence diagrams as a release-gating workflow.
-
-### ~~R3 — Enforce performance guardrails in CI~~ ✓ done
-
-`scripts/check-perf-budgets.mjs` reads a perf report JSON and exits non-zero on any budget violation. Added to the nightly `large-workspace-performance` job (2026-06-29): covers large-workspace and drone-interconnection fixtures. Budgets are nightly gates; to promote to PR gates move the relevant test into `ci.yml`. See `PERFORMANCE-GUARDRAILS.md` for current thresholds.
-
-### ~~R4 — Conformance matrix CI enforcement~~ ✓ done (was already in place)
-
-`ci.yml` already blocks on `node scripts/generate-conformance-matrix.mjs --check` in the `rust-core` job (line 87-88). The script throws if `docs/reference/CONFORMANCE-MATRIX.md` is stale relative to `docs/reference/conformance-metadata.json`.
-
-### ~~R5 — Fix stale crate names in engineering documentation~~ ✓ done
-
-Several engineering documents still reference pre-refactor crate names:
-
-| Old name | Current name |
-|----------|-------------|
-| `semantic_core` | `sysml_model` |
-| `kernel` | `lsp_server` |
-| `spec42_host` | `workspace` |
-
-Affected files (see individual update notes below):
-- `docs/engineering/DIAGNOSTIC-CHECKS-ROADMAP.md`
-- `docs/engineering/VIEW-EXPOSE-ROADMAP.md`
-- `docs/engineering/AST-SEMANTIC-COVERAGE.md`
-- `docs/engineering/PERFORMANCE-GUARDRAILS.md`
-- `docs/architecture/SEMANTIC_CORE_ARCHITECTURE.md`
-- `docs/adr/0003-spec42-host-embedding-crate.md`
-
-### ~~R6 — VS Code extension marketplace readiness~~ ✓ done
-
-- The extension must be published or ready to publish to the VS Code Marketplace under a stable publisher ID.
-- `vscode/README.md` must reflect current features without references to in-progress work.
-- The extension package must pass the marketplace smoke-test checklist (icon, description, category, keywords, changelog).
-
-### R7 — sysml-v2-parser alignment
-
-Track the OMG SysML v2 specification release cycle. The parser is currently at **0.46.0**
-(crates.io; locked 2026-07-24), with the bundled OMG library baseline at **2026-04**. Before 1.0:
-
-- Confirm the final parser pin covers the OMG submission/library baseline targeted by Spec42 1.0.
-- Update graph builders for any new AST body/member enums introduced after 0.46.0.
-- Run the parser's full OMG validation suite (`cargo test --test validation -- --include-ignored`)
-  and triage any new informational failures after every parser bump.
-
-**0.46.0 slice (done):** part-body `ref action` / `ref state` / nested action·state are real
-graph nodes with reference ownership — not `opaque member`. Full P5+ unified definition/usage
-rewrite remains deferred.
-
-See [AST-SEMANTIC-COVERAGE.md](engineering/AST-SEMANTIC-COVERAGE.md) for the current AST-to-graph coverage matrix.
-
-### R8 — Release version and changelog
-
-- Bump workspace version from the final `0.x` release to `1.0.0`; synchronize the VS Code and
-  Zed manifests from `[workspace.package]` with `scripts/sync-workspace-version.mjs`.
-- Write a `CHANGELOG.md` (or `RELEASE-NOTES.md`) covering the major 0.x milestones for users upgrading from earlier versions.
-- Tag the release in git and publish the GitHub Action at `elan8/spec42@v1`.
-
-### ~~R9 — Eliminate robot-vacuum diagnostic false positives~~ ✓ done (0.45.0)
-
-The 0.44.19 baseline contained 191 warnings:
-
-| Baseline count | Diagnostic | Resolution |
-|---------------:|------------|------------|
-| 80 | `incompatible_type_kind` | Fixed: KerML `datatype` declarations are valid attribute typing targets without hard-coded built-in names. |
-| 63 | `unresolved_redefines_target` | Fixed: package- and part-level `ConnectionUsage` elements share a complete builder and cross-document connection typing. |
-| 35 | `incompatible_unit_dimension` | Fixed: quantity resolution prefers the specific declared/local `mRef`; multi-dimension units such as kelvin match any compatible declared dimension. |
-| 10 | `unresolved_import_target` | Fixed: expose diagnostics use the typed-feature-chain resolver used by view evaluation. |
-| 3 | `unknown_unit_symbol` | Correct diagnostic: `mAh` is undeclared by the standard library and must be declared by the model. |
-
-Spec42 no longer synthesizes prefixed compound unit symbols. The showcase model declares
-`Ah` / `mAh` / `ms` in `VacuumCleanerQuantitiesAndUnits`. Pin:
-`config/robot-vacuum-cleaner.json` → `2a08e9007319a45ef5a4c65c78423eab18e4fe5e`. CI fetches the
-pin and asserts zero errors / zero warnings via `perform_check` (`robot_vacuum_check`, same path
-as `spec42 check`).
+**Parser note:** part-body `ref action` / `ref state` / nested action·state are real graph nodes (not `opaque member`). Full P5+ unified definition/usage rewrite remains deferred.
 
 ---
 
@@ -227,7 +152,7 @@ The following capabilities are explicitly out of scope for 1.0. They may appear 
 
 `sysml-v2-parser` is an external crate (crates.io primary, `.cargo/config.toml` patch for pre-publish testing). Spec42's semantic quality is directly coupled to parser coverage.
 
-**Current manifest requirement / lock:** `0.46.0`
+**Current pin:** see `sysml-v2-parser` in the workspace `Cargo.toml` / `Cargo.lock` (do not duplicate the version here).
 
 **Coupling policy:**
 
@@ -244,10 +169,8 @@ The following capabilities are explicitly out of scope for 1.0. They may appear 
 
 | Document | Purpose |
 |----------|---------|
-| [SUPPORTED-WORKFLOWS.md](../docs/SUPPORTED-WORKFLOWS.md) | Release-gating editor and CLI workflows |
+| [SUPPORTED-WORKFLOWS.md](user/SUPPORTED-WORKFLOWS.md) | Release-gating editor and CLI workflows |
 | [CONFORMANCE-MATRIX.md](reference/CONFORMANCE-MATRIX.md) | Generated SysML v2 feature coverage |
-| [COMPETITIVE-ROADMAP.md](engineering/COMPETITIVE-ROADMAP.md) | Competitive positioning and 1.0 acceptance criteria |
-| [DIAGNOSTIC-CHECKS-ROADMAP.md](engineering/DIAGNOSTIC-CHECKS-ROADMAP.md) | Diagnostic check inventory and status |
-| [AST-SEMANTIC-COVERAGE.md](engineering/AST-SEMANTIC-COVERAGE.md) | Parser AST to semantic graph coverage matrix |
+| [DIAGNOSTIC-CATALOG.md](engineering/DIAGNOSTIC-CATALOG.md) | Diagnostic check inventory |
 | [PERFORMANCE-GUARDRAILS.md](engineering/PERFORMANCE-GUARDRAILS.md) | Performance budgets and CI reporting |
-| [VIEW-EXPOSE-ROADMAP.md](engineering/VIEW-EXPOSE-ROADMAP.md) | View expose and rendering resolution implementation notes |
+| [SHARED-DIAGRAM-RENDERER-AND-SPEC-CONFORMANCE.md](architecture/SHARED-DIAGRAM-RENDERER-AND-SPEC-CONFORMANCE.md) | Shared renderer contract |

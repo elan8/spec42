@@ -40,10 +40,6 @@ Budget violations exit non-zero and fail the nightly job. Budgets are embedded i
 
 Optional grid drill-down in nightly CI: set repository variable `SYSML_POWERSYSTEMS_DIR` to a checkout path on the runner (or mount via self-hosted runner).
 
-See [POWER-SYSTEMS-PERFORMANCE-ANALYSIS.md](./POWER-SYSTEMS-PERFORMANCE-ANALYSIS.md) for findings and improvement plan.
-
-See [ROBOT-VACUUM-PERFORMANCE-ANALYSIS.md](./ROBOT-VACUUM-PERFORMANCE-ANALYSIS.md) for embedding-host cold-path profiling on the robot-vacuum showcase fixture.
-
 ## Enforced Budgets
 
 Budgets are embedded in the Rust test that emits each report (not in this document). The values below reflect the current embedded budgets.

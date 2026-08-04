@@ -6,12 +6,7 @@ Related docs:
 
 - [`shared/diagram-renderer/README.md`](../../shared/diagram-renderer/README.md)
 - [`docs/user/SUPPORTED-WORKFLOWS.md`](../user/SUPPORTED-WORKFLOWS.md)
-- [`docs/archive/SHARED-RENDERER-PARITY.md`](../archive/SHARED-RENDERER-PARITY.md)
-- [`docs/archive/GENERAL-VIEW-ELEMENT-AUDIT.md`](../archive/GENERAL-VIEW-ELEMENT-AUDIT.md)
 - [`docs/reference/SYSML-NOTATION-INVENTORY.md`](../reference/SYSML-NOTATION-INVENTORY.md)
-- [`docs/archive/GENERAL-IBD-BNF-SIGNOFF.md`](../archive/GENERAL-IBD-BNF-SIGNOFF.md)
-- [`docs/archive/LEGACY-RENDERER-SUNSET.md`](../archive/LEGACY-RENDERER-SUNSET.md)
-- [`docs/engineering/DIAGRAM-EXPORT-QUALITY-ANALYSIS.md`](../engineering/DIAGRAM-EXPORT-QUALITY-ANALYSIS.md) — VS Code vs CLI/API export vs BNF graphical notation
 
 ## Current Renderer Contract
 
@@ -30,7 +25,7 @@ The removed `spec42.visualization.useSharedRenderer` setting must not be reintro
 | `general-view` | General View | `renderer.ts` + `sysml-node-builder.ts` | Complete for shipped structural workflows |
 | `interconnection-view` | Interconnection View | `renderer.ts` IBD path | Complete for shipped structural workflows |
 | `action-flow-view` | Action Flow View | `views/action-flow.ts` | Complete — decision/merge/fork/join, assign/for-loop, parameters, swim lanes, and conditional succession |
-| `state-transition-view` | State Transition View | `views/state-transition.ts` | Complete — `RegionDto`, terminate vs final, guard/effect/accept/send; see [ACTION-STATE-BNF-SIGNOFF.md](../archive/ACTION-STATE-BNF-SIGNOFF.md) |
+| `state-transition-view` | State Transition View | `views/state-transition.ts` | Complete — `RegionDto`, terminate vs final, guard/effect/accept/send |
 | `sequence-view` | Sequence View | `views/sequence.ts` | Shared behavior renderer with lifelines, messages, activations, fragments, return messages, and self messages |
 | `browser-view` | Browser View | `views/standard-views-render.ts` | Complete — exposed-root membership hierarchy + collapsible tree |
 | `grid-view` | Grid View | `views/standard-views-render.ts` | Complete — exact exposed set as element table or relationship matrix |

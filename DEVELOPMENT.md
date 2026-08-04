@@ -31,7 +31,7 @@ Protocol-neutral editor APIs live in `crates/language_service`.
 
 Headless tests: `crates/language_service/tests/` (`navigation/`, `completion/`, `outline/`, `inmemory_workspace`, `dto_roundtrip`, `dependency_guardrails`).
 
-Design rationale: [docs/adr/0002-language-service-crate.md](docs/adr/0002-language-service-crate.md).
+Protocol-neutral editor intelligence stays in the language-service crate; hosts map its DTOs to LSP/HTTP/Monaco.
 
 ## LSP Server Structure
 
@@ -60,7 +60,7 @@ spec42 api serve --workspace-root ./my-model
 - OpenAPI contract: `docs/api/spec42-readonly-v1.openapi.yaml` (served at `GET /openapi.json`).
 - Integration tests: `crates/server/tests/api_http.rs`.
 
-Design rationale: [docs/adr/0001-read-only-systems-modeling-http-api.md](docs/adr/0001-read-only-systems-modeling-http-api.md).
+See [docs/api/README.md](docs/api/README.md) for the HTTP API surface and OpenAPI contract.
 
 ## Building
 
@@ -80,7 +80,7 @@ The binary is at `target/release/spec42` (Windows: `target/release/spec42.exe`).
 "spec42.serverPath": "c:\\Git\\spec42\\target\\release\\spec42.exe"
 ```
 
-See [docs/engineering/POWER-SYSTEMS-PERFORMANCE-ANALYSIS.md](docs/engineering/POWER-SYSTEMS-PERFORMANCE-ANALYSIS.md) for measured impact.
+See [docs/engineering/PERFORMANCE-GUARDRAILS.md](docs/engineering/PERFORMANCE-GUARDRAILS.md) for nightly budgets and optional power-systems drill-down.
 
 ### Embedded standard library bundle
 
@@ -151,7 +151,7 @@ Cross-repo notes for real-model diagnostic quality live in the parser repo: [`do
 
 - `spec42 check` post-processes diagnostics: deduplication and one root parse error per file (cascades in `relatedInformation`). By default, semantic checks still run on files with parse errors; use `--strict-diagnostics` for the legacy mode that skips semantic checks after a parse error and suppresses shadowed `unresolved_*` warnings.
 - Parser-side cascade suppression and dialect-specific codes come from `sysml-v2-parser`; post-processing lives in `crates/kernel/src/analysis/diagnostics_postprocess.rs`.
-- Corpus regression: set `MBSE_VACUUM_EXAMPLE_DIR` to a checkout of the public vacuum-cleaner example and run `cargo test -p kernel --test lsp_integration mbse_vacuum -- --ignored`. See [docs/engineering/MBSE-VACUUM-CHECK-ANALYSIS.md](docs/engineering/MBSE-VACUUM-CHECK-ANALYSIS.md).
+- Corpus regression: set `MBSE_VACUUM_EXAMPLE_DIR` to a checkout of the public vacuum-cleaner example and run `cargo test -p kernel --test lsp_integration mbse_vacuum -- --ignored`.
 
 ## Workspace indexing limits
 
@@ -176,7 +176,7 @@ Authoritative semantic shaping for diagram payloads lives in `semantic_core` (`c
 | Slim interconnection LSP payload (`ibd` omitted) | `VisualizationBuildOptions::slim_interconnection_payload`; tested in `interconnection_visualization.rs` |
 | `viewCandidates` | `explicit_views::build_view_candidates` |
 
-See [docs/architecture/PREPARE-PIPELINE-OVERLAP.md](docs/architecture/PREPARE-PIPELINE-OVERLAP.md).
+Authoritative shaping stays in the semantic visualization pipeline; the shared renderer does not re-implement it.
 
 ## Running Tests
 
@@ -280,8 +280,7 @@ cargo test -p spec42_host --test incremental_benchmark -- --ignored --nocapture
 The benchmark stays `#[ignore]` in CI (`experimental_incremental_updates` now defaults to
 `true`, so no builder change is needed to measure it). As of 2026-07-13 this benchmark does
 not show a measurable win — the graph patch skips re-parsing but `update_snapshot`'s
-downstream snapshot assembly is not scoped — see
-`docs/engineering/TIER2-UNIFIED-INCREMENTAL-ENGINE-DESIGN.md` for the open follow-up.
+downstream snapshot assembly is not scoped. Follow-ups are tracked in GitHub Issues.
 
 ### Robot vacuum performance analysis (local only)
 
@@ -301,9 +300,9 @@ cargo build -p spec42_host --profile profiling --example profile_robot_vacuum
 target/profiling/examples/profile_robot_vacuum --embedded-libs
 ```
 
-CPU flamegraphs need `kernel.perf_event_paranoid <= 1` (see [ROBOT-VACUUM-PERFORMANCE-ANALYSIS.md](docs/engineering/ROBOT-VACUUM-PERFORMANCE-ANALYSIS.md)).
+CPU flamegraphs need `kernel.perf_event_paranoid <= 1`.
 
-The perf harness uses `ValidationTiming::Deferred` (view-first embedding). Release regression ceilings are enforced in `robot_vacuum_host_phase_performance_report` via `release_perf_thresholds()` (load ≤ 3 s, prepare ≤ 2.5 s, total ≤ 5.5 s). Validation completion scenarios (`validation_eager_at_load`, `validation_deferred_ensure`, `view_then_validation`) are in `robot_vacuum_host_validation_performance_report`. Use a **release** or **profiling** binary for IDE integration — debug builds are ~5.8× slower on the same path (see analysis doc).
+The perf harness uses `ValidationTiming::Deferred` (view-first embedding). Release regression ceilings are enforced in `robot_vacuum_host_phase_performance_report` via `release_perf_thresholds()` (load ≤ 3 s, prepare ≤ 2.5 s, total ≤ 5.5 s). Validation completion scenarios (`validation_eager_at_load`, `validation_deferred_ensure`, `view_then_validation`) are in `robot_vacuum_host_validation_performance_report`. Use a **release** or **profiling** binary for IDE integration — debug builds are much slower on the same path.
 
 ### SysML v2 validation suite
 
@@ -368,7 +367,7 @@ Current report-only budgets are documented in `docs/engineering/PERFORMANCE-GUAR
 
 **VS Code extension (Copilot Agent):** requires `engines.vscode` **^1.99.0** for Language Model Tools. Four tools in `vscode/package.json` `contributes.languageModelTools` are registered from `vscode/src/lmTools/` and invoke the same `spec42` binary as the LSP (`check`, `doctor`, `explain-diagnostic`, `model-summary` with `--format json`). No extra MCP config in VS Code for these tools.
 
-**MCP and HTTP API:** `spec42-mcp` and `spec42 api serve` expose the same validation and semantic projections as the CLI. Setup: [`docs/user/AI-ASSISTANTS.md`](docs/user/AI-ASSISTANTS.md), HTTP design: [`docs/adr/0001-read-only-systems-modeling-http-api.md`](docs/adr/0001-read-only-systems-modeling-http-api.md).
+**MCP and HTTP API:** `spec42-mcp` and `spec42 api serve` expose the same validation and semantic projections as the CLI. Setup: [`docs/user/AI-ASSISTANTS.md`](docs/user/AI-ASSISTANTS.md); HTTP API: [`docs/api/README.md`](docs/api/README.md).
 
 Tests (see [Running Tests](#running-tests) → agent/API surfaces):
 

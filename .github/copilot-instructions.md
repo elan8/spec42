@@ -26,4 +26,4 @@ This repository uses **Spec42** for SysML v2 and KerML. Follow these rules when 
 - Do not “fix” parse errors by deleting valid spec-aligned structure without re-running validation.
 - Do not commit secrets or local absolute paths into shared models.
 
-See [docs/AI-ASSISTANTS.md](../docs/AI-ASSISTANTS.md) for MCP setup and tool details.
+See [docs/user/AI-ASSISTANTS.md](../docs/user/AI-ASSISTANTS.md) for MCP setup and tool details.

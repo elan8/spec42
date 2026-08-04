@@ -1,10 +1,9 @@
-//! Shared incremental workspace engine (Tier 2 unified-incremental-engine).
+//! Shared incremental workspace engine.
 //!
 //! Wraps a [`SemanticGraph`] plus the documents currently indexed into it, and exposes a
 //! full-load operation and a single-document incremental patch operation, both delegating to
 //! `sysml_model`'s shared pipeline primitives (`build_and_link_graph_parallel`,
-//! `patch_graph_for_document`) rather than re-implementing the build/link sequence — see
-//! `docs/engineering/TIER2-UNIFIED-INCREMENTAL-ENGINE-DESIGN.md`.
+//! `patch_graph_for_document`) rather than re-implementing the build/link sequence.
 //!
 //! This is the one engine every live consumer uses directly: `lsp_server`'s `ServerState`
 //! (`rebuild_all_document_links` / `rebuild_semantic_graph_staged`) and Babel42's
@@ -338,8 +337,7 @@ impl IncrementalWorkspace {
 /// Exists so embedders that hold an [`IncrementalWorkspace`] directly (rather than going
 /// through the `snapshot` pipeline) can still get diagnostics, without paying for the rest of
 /// a snapshot's eager derived fields (`language_workspace`/`render_snapshot`/
-/// `semantic_projection`) they don't need. See
-/// `docs/engineering/TIER2-UNIFIED-INCREMENTAL-ENGINE-DESIGN.md`'s "Phase 5" write-up.
+/// `semantic_projection`) they don't need.
 ///
 /// # Errors
 ///

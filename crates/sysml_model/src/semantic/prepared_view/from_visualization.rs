@@ -8,7 +8,7 @@
 //! exporter (`shared/diagram-renderer/src/headless-export.ts`) already recompute a correct
 //! prepared view from that raw data whenever this field is absent. A Rust-side duplicate of that
 //! TS logic used to exist for those view kinds and drifted out of parity with it (see
-//! `docs/VIEW-RENDERING-ISSUES.md`, F-9) — it was removed rather than kept in sync by hand.
+//! F-9) — it was removed rather than kept in sync by hand.
 
 use crate::semantic::dto::SysmlVisualizationResultDto;
 use crate::semantic::prepared_view::dto::PreparedViewDto;

@@ -14,7 +14,7 @@ use super::types::{DiagnosticSeverity, DiagnosticsOptions, SemanticDiagnostic};
 /// semantic graph diagnostics (skipped when `skip_semantic_on_parse_error` and a parse error was
 /// found), and a missing-library-context hint. Shared by `workspace`'s `HostValidationReport`
 /// and `lsp_server`'s LSP-typed diagnostics (batch validation and live editing) — previously two
-/// independently-maintained implementations, see `docs/architecture-audit.md` P1-2.
+/// independently-maintained implementations.
 pub fn collect_document_diagnostics(
     graph: &SemanticGraph,
     unit_registry: &UnitRegistry,

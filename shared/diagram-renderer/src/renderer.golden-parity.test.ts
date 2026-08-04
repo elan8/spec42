@@ -14,7 +14,7 @@ import interconnectionViewGolden from "./test-support/golden-parity/interconnect
  * headless virtual DOM used by `spec42 diagrams export` / `POST /v1/diagrams/export` and
  * asserts against the same golden files. A mismatch between the two suites means the
  * headless bundle has silently diverged from the webview's shared-renderer output --
- * see DIAGRAM-EXPORT-QUALITY-ANALYSIS.md's "CLI vs VS Code golden parity tests" item.
+ * CLI vs VS Code golden parity structural markers.
  */
 async function renderToSvg(payload: Record<string, unknown>): Promise<string> {
   const target = document.createElement("div");

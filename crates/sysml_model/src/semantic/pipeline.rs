@@ -1,4 +1,4 @@
-//! Orchestrates semantic graph materialize → link → pending resolve.
+﻿//! Orchestrates semantic graph materialize â†’ link â†’ pending resolve.
 
 use std::collections::HashSet;
 use std::time::Instant;
@@ -22,7 +22,7 @@ use crate::semantic::source::{SysmlDocument, SysmlDocumentSourceKind};
 use crate::semantic::workspace_graph::WorkspaceParsedDocument;
 
 /// A parsed document paired with the source kind (workspace/library/external) needed to
-/// decide how it merges — see [`link_parsed_documents_parallel`].
+/// decide how it merges â€” see [`link_parsed_documents_parallel`].
 type SourceTaggedDocument = (SysmlDocumentSourceKind, WorkspaceParsedDocument);
 
 /// Packages that are not merely namespace ancestors of another workspace package.
@@ -118,10 +118,7 @@ fn parse_document(document: &SysmlDocument) -> WorkspaceParsedDocument {
 /// full-workspace equivalent of [`patch_graph_for_document`]. Same end result as
 /// [`build_and_link_graph`] (same nodes, same edges), computed differently: parsing runs in
 /// parallel, then [`link_parsed_documents_parallel`] does the rest — see its doc comment for
-/// the merge/link phases.
-///
-/// See `docs/engineering/TIER2-PHASE3B-STEP5-FULL-REBUILD-DESIGN.md` for why this exists
-/// and the equivalence testing this function's own test module is expected to carry.
+/// the merge/link phases. Equivalence testing lives in this module's tests.
 pub fn build_and_link_graph_parallel(
     documents: &[SysmlDocument],
 ) -> (SemanticGraph, Vec<WorkspaceParsedDocument>) {
@@ -132,7 +129,7 @@ pub fn build_and_link_graph_parallel(
     link_parsed_documents_parallel(entries, true)
 }
 
-/// Merges and links already-parsed documents in parallel — the merge/link half of
+/// Merges and links already-parsed documents in parallel â€” the merge/link half of
 /// [`build_and_link_graph_parallel`], factored out so a caller that already has parsed
 /// documents (e.g. served from a disk parse cache, or an editor's live in-memory index) can
 /// skip the parse step `build_and_link_graph_parallel` otherwise always does internally.
@@ -147,10 +144,10 @@ pub fn build_and_link_graph_parallel(
 /// Starts from an empty graph. Use [`link_parsed_documents_parallel_from`] to merge onto an
 /// existing graph instead (e.g. a cached library subgraph).
 ///
-/// `evaluate: false` skips `evaluate_expressions` (structural relink only — typing/specializes/
+/// `evaluate: false` skips `evaluate_expressions` (structural relink only â€” typing/specializes/
 /// subject/derivation resolution still run); pass `true` for the same behavior as before this
 /// parameter existed. See [`evaluate_workspace_graph`] to run evaluation as a separate, later
-/// step on a graph built with `evaluate: false` — this is what lets a caller (e.g. `lsp_server`'s
+/// step on a graph built with `evaluate: false` â€” this is what lets a caller (e.g. `lsp_server`'s
 /// live-edit relink) publish structural diagnostics immediately and defer the more expensive
 /// evaluation pass without blocking on it.
 pub fn link_parsed_documents_parallel(
@@ -161,7 +158,7 @@ pub fn link_parsed_documents_parallel(
 }
 
 /// [`link_parsed_documents_parallel`], but merging `documents` onto `base_graph` instead of
-/// starting from an empty graph — for callers that already have part of the graph built
+/// starting from an empty graph â€” for callers that already have part of the graph built
 /// (typically a cached library subgraph) and only want to merge/link the rest. Cross-document
 /// edge resolution covers `base_graph`'s existing URIs as well as `documents`', so a document
 /// being merged can still resolve references into whatever was already in `base_graph`.
@@ -224,7 +221,7 @@ pub fn link_parsed_documents_parallel_from(
         .collect();
     for (src_id, tgt_id, kind) in resolved_edges {
         // `resolve_cross_document_edges_for_uri` resolves typing/specializes/subject refs
-        // for every node in the URI, not just ones whose target lives in another document —
+        // for every node in the URI, not just ones whose target lives in another document â€”
         // for a same-document reference, `build_graph_from_doc` may already have wired the
         // identical edge. Use `add_semantic_edge_once` (not a raw `add_edge`) so this phase
         // dedupes the same way `link_workspace_relationships`'s per-node loop does.
@@ -239,7 +236,7 @@ pub fn link_parsed_documents_parallel_from(
         evaluate_expressions(&mut graph);
     }
     graph.invalidate_query_indexes();
-    // See the matching comment in `finalize_and_evaluate` — this path resolves cross-document
+    // See the matching comment in `finalize_and_evaluate` â€” this path resolves cross-document
     // edges via `add_semantic_edge_once`, not `add_cross_document_edges_for_uri`, so the
     // relationship-frontier index needs an explicit rebuild here too.
     rebuild_static_dependency_index(&mut graph);
@@ -247,7 +244,7 @@ pub fn link_parsed_documents_parallel_from(
     (graph, parsed_docs)
 }
 
-/// Runs expression evaluation on `graph` in place and invalidates query indexes — the
+/// Runs expression evaluation on `graph` in place and invalidates query indexes â€” the
 /// deferred "Wave 2" step for a graph previously built with `evaluate: false` (see
 /// [`link_parsed_documents_parallel_from`]). Exists so callers outside this crate don't need
 /// to reach into `semantic::evaluation` internals directly for what is otherwise exactly
@@ -270,7 +267,7 @@ pub fn finalize_workspace_graph(graph: &mut SemanticGraph) {
 
 /// [`finalize_workspace_graph`] plus expression evaluation. Use this (not
 /// `finalize_workspace_graph` directly) wherever a graph needs to end up in a fully
-/// up-to-date, query-ready state — i.e. after a full build or a settled incremental
+/// up-to-date, query-ready state â€” i.e. after a full build or a settled incremental
 /// update. Callers that want a fast, low-latency patch during rapid live edits (deferring
 /// evaluation to a later catch-up pass) should call `finalize_workspace_graph` directly
 /// instead, the same way `patch_graph_for_document`'s `evaluate: false` path does.
@@ -281,7 +278,7 @@ pub fn finalize_and_evaluate(graph: &mut SemanticGraph) {
     // Whole-graph relink doesn't go through `add_cross_document_edges_for_uri`'s incremental
     // index maintenance, so rebuild the relationship-frontier index from scratch here. Cheap
     // (O(all nodes' attributes)) relative to the relink/evaluate work above. The scoped
-    // `finalize_and_evaluate_frontier` path deliberately does NOT do this — it relies on
+    // `finalize_and_evaluate_frontier` path deliberately does NOT do this â€” it relies on
     // incremental maintenance to stay cheap.
     rebuild_static_dependency_index(graph);
 }
@@ -317,10 +314,10 @@ pub fn patch_graph_for_document(
 /// [`finalize_and_evaluate`], but scoped: relinks only `changed_uri` and the other URIs whose
 /// own content statically depends on it (via [`refresh_relationship_frontier`]) instead of the
 /// whole-graph [`link_workspace_relationships`]. Expression evaluation and pending-
-/// relationship resolution remain whole-graph — see the Track B Phase 1 plan
+/// relationship resolution remain whole-graph â€” see the Track B Phase 1 plan
 /// (`docs/engineering/`) for the reasoning and the explicit non-goals this leaves for a
 /// follow-up. Relies on `graph.document_dependents` being incrementally maintained rather than
-/// rebuilt from scratch — do not call this on a graph that only ever went through the
+/// rebuilt from scratch â€” do not call this on a graph that only ever went through the
 /// whole-graph paths without first confirming the index is populated (it always is after any
 /// full build or prior `patch_graph_for_document`/`patch_graph_for_document_scoped` call).
 pub fn finalize_and_evaluate_frontier(graph: &mut SemanticGraph, changed_uri: &Url) {
@@ -333,12 +330,12 @@ pub fn finalize_and_evaluate_frontier(graph: &mut SemanticGraph, changed_uri: &U
 }
 
 /// [`patch_graph_for_document`], but using [`finalize_and_evaluate_frontier`] instead of
-/// [`finalize_and_evaluate`] when `evaluate` is `true` — scopes relationship relinking to the
+/// [`finalize_and_evaluate`] when `evaluate` is `true` â€” scopes relationship relinking to the
 /// affected frontier instead of the whole graph. Opt-in sibling function rather than a change
 /// to `patch_graph_for_document`'s existing behavior/callers: wire real callers
 /// (`IncrementalWorkspace::apply_document`, `try_incremental_update`) to this only once the
 /// differential correctness tests and benchmark in the Track B Phase 1 plan confirm it's both
-/// correct and actually faster — do not assume either.
+/// correct and actually faster â€” do not assume either.
 pub fn patch_graph_for_document_scoped(
     graph: &mut SemanticGraph,
     uri: &Url,

@@ -89,11 +89,11 @@ fn benchmark_single_document_incremental_vs_full_rebuild() {
 
 /// CI-enforced regression guard: the incremental single-document update path must stay
 /// meaningfully cheaper than a full rebuild. Sized similarly to the 21-file workspace
-/// measured in `docs/engineering/ROBOT-VACUUM-PERFORMANCE-ANALYSIS.md`. Runs several
+/// Runs several
 /// iterations and compares summed durations rather than a single sample, since individual
 /// sub-millisecond timings on a small fixture are noisy — this is the load-bearing evidence
 /// gating `experimental_incremental_updates`'s default (see
-/// `docs/engineering/TIER2-UNIFIED-INCREMENTAL-ENGINE-DESIGN.md`).
+/// incremental update design history in git).
 #[test]
 #[ignore = "currently fails: try_incremental_update shows no measurable win over full rebuild \
             on this fixture (see plan discussion, 2026-07-13) — kept as a regression guard to \

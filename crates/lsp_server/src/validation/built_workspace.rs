@@ -3,7 +3,7 @@
 //! `ValidationRequest`. Both `crates/server/src/host_snapshot.rs` (the production `spec42
 //! check`/MCP/HTTP-API path) and this crate's own test suite build a `workspace::Spec42Engine`
 //! and end up here — there is exactly one implementation of "turn a built graph into a
-//! validation report" (see `docs/architecture-audit.md` P1-2).
+//! validation report".
 
 use std::collections::{BTreeSet, HashMap};
 use std::path::PathBuf;

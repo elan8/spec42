@@ -60,7 +60,7 @@ let view = snapshot.prepare_view("general-view", Some("productStructure"))?;
 let report = snapshot.ensure_validation()?; // collect diagnostics on demand
 ```
 
-`prepare_view` reuses the load-time `WorkspaceRenderSnapshot` and scoped IBD for `general-view` / `interconnection-view`. See [ROBOT-VACUUM-PERFORMANCE-ANALYSIS.md](../../docs/engineering/ROBOT-VACUUM-PERFORMANCE-ANALYSIS.md) for before/after timings on the robot-vacuum fixture (~8.6 s → ~2.8 s release cold path).
+`prepare_view` reuses the load-time `WorkspaceRenderSnapshot` and scoped IBD for `general-view` / `interconnection-view`. See GitHub Issues / git history for past robot-vacuum embedding cold-path timings.
 
 Snapshots are immutable after construction. Share them across worker threads with `Arc`; types are `Send + Sync`. `update_snapshot` always returns a **new** `Arc`; existing readers keep the previous snapshot until they adopt the new one.
 
@@ -100,7 +100,7 @@ Pass the same `WorkspaceLoadRequest` used for the initial load (`targets`, `work
 **Performance note:** the graph-patch itself skips re-parsing unchanged documents, but
 `update_snapshot`'s snapshot assembly (`language_workspace`, `render_snapshot`, eager
 `validation_report`, `semantic_projection`) is currently recomputed in full regardless of
-the patch — see `docs/engineering/TIER2-UNIFIED-INCREMENTAL-ENGINE-DESIGN.md`. Benchmarking
+the patch. Benchmarking
 (`workspace/tests/incremental_benchmark.rs`) has not yet shown a measurable end-to-end win at
 this layer; the default was flipped to `true` for single-code-path correctness (no more
 `try_incremental_update` drifting from `build_workspace_snapshot`), not a proven speedup.

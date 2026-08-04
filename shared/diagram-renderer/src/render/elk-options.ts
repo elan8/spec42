@@ -5,7 +5,7 @@
  * (`views/behavior-common.ts`, action-flow/state-transition/sequence). Each previously hand-wrote
  * a similar-but-drifted option object; this module preserves every value exactly as it was live
  * at each call site (verified per-kind before consolidating — see
- * docs/VIEW-RENDERING-ISSUES.md Phase 4 entry) and only removes true duplication.
+ * Phase 4 layout consolidation) and only removes true duplication.
  *
  * Options that were IDENTICAL across every live call site become `COMMON_ELK_OPTIONS`. Anything
  * that differs per kind — even by one value — stays as an explicit per-kind default, not a

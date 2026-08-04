@@ -11,7 +11,7 @@ pub(crate) use handle::WorkspaceHandle;
 pub(crate) use scan::scan_sysml_files;
 // Relocated to `workspace` crate (Tier 2 unified-incremental-engine Phase 1): the disk
 // caches are portable, protocol-neutral logic — see
-// docs/engineering/TIER2-UNIFIED-INCREMENTAL-ENGINE-DESIGN.md.
+// Incremental workspace consolidation history lives in git.
 pub(crate) use services::{
     indexed_text_or_empty, parse_scanned_entries, rebuild_semantic_graph_staged,
 };

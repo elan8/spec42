@@ -138,7 +138,7 @@ fn link_parsed_documents_parallel_from_respects_evaluate_flag() {
 }
 
 /// Equivalence fixture for `build_and_link_graph` vs. `build_and_link_graph_parallel`
-/// (Tier 2 Phase 3b Step 5a — see `docs/engineering/TIER2-PHASE3B-STEP5-FULL-REBUILD-DESIGN.md`).
+/// Equivalence fixture for sequential vs parallel full-graph rebuild.
 /// Exercises cross-document typing (`part mobility : MobilitySubsystem` resolved via
 /// import) and cross-document subject edges (`subject robot : AutonomousFloorCleaningRobot`,
 /// resolved via `private import Architecture::*`) — the two edge kinds

@@ -5,7 +5,7 @@
 //! This generalizes the token/generation state-machine pattern already proven in
 //! production by `lsp_server`'s `SemanticCoordinator`
 //! (`crates/lsp_server/src/workspace/coordinator.rs`). See
-//! `docs/engineering/TIER2-LSP-WORKSPACE-CONSOLIDATION.md` for the migration plan.
+//! Migration history lives in git.
 //!
 //! `workspace` is deliberately protocol/runtime-neutral (see
 //! `tests/dependency_guardrails.rs` — no `tokio`, `clap`, `axum`, etc.), so this type has

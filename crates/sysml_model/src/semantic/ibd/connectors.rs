@@ -150,7 +150,7 @@ fn instance_def_mapping_for_part(
     // member chain through an inherited type). `extend_instance_def_mappings_with_specializations`
     // then propagates a bogus seed like that across every sibling subtype of the shared
     // definition, cross-contaminating unrelated components' instance paths (see O-8 in
-    // docs/VIEW-RENDERING-ISSUES.md). The sibling loop in `collect_instance_def_mappings` already
+    // sibling loop in `collect_instance_def_mappings` already
     // guards against this same case for its own candidates; this is the same guard for this path.
     if node
         .element_kind
@@ -504,7 +504,7 @@ mod tests {
         .expect("doc")
     }
 
-    /// Regression test for O-8 (docs/VIEW-RENDERING-ISSUES.md): if a `part def` node ever ends up
+    /// Regression test: if a `part def` node ever ends up
     /// represented as an `IbdPartDto` entry (which extraction can do when walking a member chain
     /// through a usage's inherited type — e.g. resolving `mainElectronics.mainControlPcb` reaches
     /// into `MainElectronicsAssembly`'s own definition body), `instance_def_mapping_for_part` must
