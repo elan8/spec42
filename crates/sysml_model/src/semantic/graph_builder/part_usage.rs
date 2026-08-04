@@ -209,7 +209,16 @@ pub(super) fn build_from_part_usage_body_element(
         PUBE::Doc(doc) => {
             super::attach_doc_comment(g, parent_id, &doc.value.text);
         }
-        PUBE::EnumerationUsage(_) | PUBE::Annotation(_) | PUBE::Error(_) => {}
+        PUBE::EnumerationUsage(enum_node) => {
+            super::package_body::materialize_enum_usage(
+                g,
+                uri,
+                container_prefix,
+                Some(parent_id),
+                enum_node,
+            );
+        }
+        PUBE::Annotation(_) | PUBE::Error(_) => {}
         _ => {}
     }
 }

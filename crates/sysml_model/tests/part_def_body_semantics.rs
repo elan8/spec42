@@ -85,6 +85,43 @@ fn part_def_enum_usage_materializes_inner_attribute() {
 }
 
 #[test]
+fn part_usage_enum_usage_materializes_inner_attribute() {
+    // Issue #25: `enum` inside a `part` *usage* body (as opposed to a `part def` body, covered
+    // by `part_def_enum_usage_materializes_inner_attribute` above) was silently dropped by
+    // `PartUsageBodyElement::EnumerationUsage(_) => {}` in part_usage.rs.
+    let doc = workspace_doc(
+        "enum_in_part_usage.sysml",
+        r#"package P {
+  enum def Status;
+  part def Vehicle;
+  part vehicle : Vehicle {
+    enum status : Status {
+      attribute code : String;
+    }
+  }
+}"#,
+    );
+    let (graph, _parsed) = build_semantic_graph_from_documents(&[doc]).expect("graph");
+    let vehicle = graph
+        .nodes_named("vehicle")
+        .into_iter()
+        .find(|node| node.element_kind == "part")
+        .expect("part usage");
+    let enum_usage = graph
+        .children_of(vehicle)
+        .into_iter()
+        .find(|child| child.element_kind == "enumeration" && child.name == "status")
+        .expect("enumeration usage");
+    assert!(
+        graph.children_of(enum_usage).iter().any(|child| {
+            (child.element_kind == "attribute" || child.element_kind == "attribute def")
+                && child.name == "code"
+        }),
+        "expected attribute under enumeration usage"
+    );
+}
+
+#[test]
 fn part_def_item_usage_materializes_inner_attribute() {
     let doc = workspace_doc(
         "item.sysml",
