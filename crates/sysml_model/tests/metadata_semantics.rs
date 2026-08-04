@@ -238,6 +238,104 @@ fn metadata_usage_about_clause_wires_annotation_edges() {
 }
 
 #[test]
+fn part_def_body_allows_multiple_named_about_bound_usages_of_the_same_metadata_def() {
+    // Issue #24 / S42-LIM-015: applying the same `metadata def` more than once inside one
+    // `part def` body needs each usage to have a distinct name (and, typically, an `about`
+    // binding to the specific member it characterizes) so the usages don't collide as anonymous
+    // same-named members (`duplicate_namespace_member`). Both the `@name : Type about target
+    // { ... }` prefix form and the equivalent `metadata name : Type about target { ... }` form
+    // are BNF-legal (`MetadataUsage = ('@' | 'metadata') MetadataUsageDeclaration ('about'
+    // Annotation)? MetadataBody`, §8.2.2.27) and already parse cleanly -- the two forms
+    // previously written up as failing in DIAGNOSTIC-CATALOG.md's S42-LIM-015 entry used
+    // non-BNF syntax (`@Type name { ... }` with the type and name in the wrong order, and
+    // `about` placed *after* the body instead of before it), not a real parser or graph gap.
+    let doc = SysmlDocument::from_memory_path(
+        "metadata-part-def-multiple-usages",
+        "power_module.sysml",
+        r#"package P {
+  metadata def PowerRailBudget {
+    attribute nominalVoltage;
+  }
+  port def PowerRailPort;
+  part def PowerModule {
+    port batteryRail : PowerRailPort;
+    port logicRail : PowerRailPort;
+
+    @batteryRailBudget : PowerRailBudget about batteryRail {
+      nominalVoltage = 14.4;
+    }
+    @logicRailBudget : PowerRailBudget about logicRail {
+      nominalVoltage = 3.3;
+    }
+  }
+}"#
+        .to_string(),
+        SysmlDocumentSourceKind::Workspace,
+        None,
+        None,
+    )
+    .expect("document uri");
+    let uri = doc.uri.clone();
+    let (graph, _parsed) = build_semantic_graph_from_documents(&[doc]).expect("graph");
+
+    let power_module = graph
+        .nodes_named("PowerModule")
+        .into_iter()
+        .find(|node| node.element_kind == "part def")
+        .expect("PowerModule part def");
+    let battery_rail = graph
+        .children_of(power_module)
+        .into_iter()
+        .find(|child| child.name == "batteryRail")
+        .expect("batteryRail port");
+    let logic_rail = graph
+        .children_of(power_module)
+        .into_iter()
+        .find(|child| child.name == "logicRail")
+        .expect("logicRail port");
+
+    let battery_budget = graph
+        .children_of(power_module)
+        .into_iter()
+        .find(|child| child.element_kind == "metadata usage" && child.name == "batteryRailBudget")
+        .expect("batteryRailBudget metadata usage");
+    let logic_budget = graph
+        .children_of(power_module)
+        .into_iter()
+        .find(|child| child.element_kind == "metadata usage" && child.name == "logicRailBudget")
+        .expect("logicRailBudget metadata usage");
+
+    assert!(
+        graph
+            .outgoing_targets_by_kind(battery_budget, RelationshipKind::Annotation)
+            .iter()
+            .any(|target| target.id == battery_rail.id),
+        "expected batteryRailBudget's annotation edge to point at batteryRail, not logicRail"
+    );
+    assert!(
+        graph
+            .outgoing_targets_by_kind(logic_budget, RelationshipKind::Annotation)
+            .iter()
+            .any(|target| target.id == logic_rail.id),
+        "expected logicRailBudget's annotation edge to point at logicRail, not batteryRail"
+    );
+
+    let diagnostics = collect_diagnostics_from_graph(&graph, &uri, DiagnosticsOptions::default());
+    let unexpected: Vec<_> = diagnostics
+        .iter()
+        .filter(|diag| {
+            diag.code == "duplicate_namespace_member"
+                || diag.code == "unsupported_annotation_syntax"
+        })
+        .map(|diag| format!("{}: {}", diag.code, diag.message))
+        .collect();
+    assert!(
+        unexpected.is_empty(),
+        "unexpected diagnostics for distinct named/about-bound metadata usages: {unexpected:?}"
+    );
+}
+
+#[test]
 fn metadata_keyword_usage_resolves_with_typing_edge() {
     let doc = SysmlDocument::from_memory_path(
         "metadata-keyword-typed",
