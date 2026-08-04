@@ -80,7 +80,10 @@ pub fn normalize_ibd_to_instance_paths(ibd: &mut IbdDataDto) {
         }
         parts_by_qn.insert(part.qualified_name.clone(), part);
     }
+    // O-6: `.into_values()` yields entries in the HashMap's hash-randomized bucket order --
+    // re-sort by the DTO's own natural key so this doesn't undo merge.rs's determinism fix.
     ibd.parts = parts_by_qn.into_values().collect();
+    ibd.parts.sort_by(|a, b| a.id.cmp(&b.id));
 
     let mut ports_by_id: std::collections::HashMap<String, IbdPortDto> =
         std::collections::HashMap::new();
@@ -91,6 +94,8 @@ pub fn normalize_ibd_to_instance_paths(ibd: &mut IbdDataDto) {
         ports_by_id.insert(port.port_id.clone(), port);
     }
     ibd.ports = ports_by_id.into_values().collect();
+    ibd.ports
+        .sort_by(|a, b| (&a.parent_id, &a.name).cmp(&(&b.parent_id, &b.name)));
 
     for group in &mut ibd.container_groups {
         group.member_part_ids = group
@@ -109,7 +114,7 @@ pub fn normalize_ibd_to_instance_paths(ibd: &mut IbdDataDto) {
 
 #[cfg(test)]
 mod tests {
-    use std::collections::HashMap;
+    use std::collections::{BTreeMap, HashMap};
 
     use super::normalize_ibd_to_instance_paths;
     use crate::semantic::ibd::{
@@ -161,7 +166,7 @@ mod tests {
             container_groups: Vec::new(),
             package_container_groups: Vec::new(),
             root_candidates: Vec::new(),
-            root_views: HashMap::new(),
+            root_views: BTreeMap::new(),
             default_root: None,
             def_instance_mappings: vec![
                 DefInstanceMappingDto {
@@ -179,5 +184,95 @@ mod tests {
 
         assert_eq!(ibd.parts[0].qualified_name, architecture_part);
         assert_eq!(ibd.ports[0].parent_id, architecture_part);
+    }
+
+    fn part_with_id(qualified_name: &str) -> IbdPartDto {
+        IbdPartDto {
+            id: qualified_name.replace('.', "::"),
+            node_id: qualified_name.to_string(),
+            name: qualified_name
+                .rsplit('.')
+                .next()
+                .unwrap_or(qualified_name)
+                .to_string(),
+            qualified_name: qualified_name.to_string(),
+            uri: None,
+            container_id: None,
+            element_type: "part".to_string(),
+            attributes: HashMap::new(),
+            range: None,
+        }
+    }
+
+    fn port_with_parent(qualified_parent: &str, name: &str) -> IbdPortDto {
+        IbdPortDto {
+            id: format!("{qualified_parent}.{name}").replace('.', "::"),
+            port_id: format!("{qualified_parent}.{name}"),
+            name: name.to_string(),
+            parent_id: qualified_parent.to_string(),
+            direction: None,
+            port_type: None,
+            multiplicity: None,
+            port_side: None,
+            uri: None,
+            range: None,
+        }
+    }
+
+    /// O-6 regression: like `merge_ibd_payloads_inner`, `normalize_ibd_to_instance_paths` dedups
+    /// remapped parts/ports through a `HashMap` before collecting into the final `Vec`s
+    /// (`parts_by_qn.into_values()`/`ports_by_id.into_values()`), which would otherwise leak that
+    /// HashMap's hash-randomized bucket order into the output. Asserts the actual fix -- sorted
+    /// output -- rather than trying to reproduce cross-process hash randomization (which a
+    /// same-process test structurally cannot do; see the equivalent comment on
+    /// `merge_output_is_sorted_by_natural_key_regardless_of_input_order` in `merge.rs`).
+    #[test]
+    fn normalized_parts_and_ports_are_sorted_by_natural_key() {
+        let definition_root = "Architecture.Widget";
+        let instance_root = "Context.system.widget";
+        let mut ibd = IbdDataDto {
+            parts: vec![
+                part_with_id(&format!("{definition_root}.zebra")),
+                part_with_id(&format!("{definition_root}.apple")),
+                part_with_id(&format!("{definition_root}.mango")),
+            ],
+            ports: vec![
+                port_with_parent(&format!("{definition_root}.zebra"), "out"),
+                port_with_parent(&format!("{definition_root}.apple"), "out"),
+            ],
+            connectors: Vec::new(),
+            container_groups: Vec::new(),
+            package_container_groups: Vec::new(),
+            root_candidates: Vec::new(),
+            root_views: BTreeMap::new(),
+            default_root: None,
+            def_instance_mappings: vec![DefInstanceMappingDto {
+                def_root: definition_root.to_string(),
+                instance_root: instance_root.to_string(),
+            }],
+        };
+
+        normalize_ibd_to_instance_paths(&mut ibd);
+
+        let part_names: Vec<String> = ibd.parts.iter().map(|p| p.qualified_name.clone()).collect();
+        assert_eq!(
+            part_names,
+            vec![
+                format!("{instance_root}.apple"),
+                format!("{instance_root}.mango"),
+                format!("{instance_root}.zebra"),
+            ],
+            "remapped parts must be sorted by qualified_name (id)"
+        );
+
+        let port_parents: Vec<String> = ibd.ports.iter().map(|p| p.parent_id.clone()).collect();
+        assert_eq!(
+            port_parents,
+            vec![
+                format!("{instance_root}.apple"),
+                format!("{instance_root}.zebra"),
+            ],
+            "remapped ports must be sorted by (parent_id, name)"
+        );
     }
 }

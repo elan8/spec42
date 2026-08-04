@@ -383,7 +383,7 @@ pub fn build_interconnection_scene(
 mod tests {
     use super::*;
     use crate::semantic::ibd::{IbdConnectorDto, IbdPartDto};
-    use std::collections::HashMap;
+    use std::collections::{BTreeMap, HashMap};
 
     fn test_part(name: &str, qn: &str, container: Option<&str>) -> IbdPartDto {
         IbdPartDto {
@@ -453,7 +453,7 @@ mod tests {
             package_container_groups: Vec::new(),
             root_candidates: vec!["Grid.northSouthRing".to_string()],
             default_root: None,
-            root_views: HashMap::new(),
+            root_views: BTreeMap::new(),
             def_instance_mappings: Vec::new(),
         };
 
@@ -507,7 +507,7 @@ mod tests {
             package_container_groups: Vec::new(),
             root_candidates: vec!["Grid.mainElectronics".to_string()],
             default_root: None,
-            root_views: HashMap::new(),
+            root_views: BTreeMap::new(),
             def_instance_mappings: Vec::new(),
         };
 
@@ -580,7 +580,7 @@ mod tests {
             }],
             root_candidates: vec!["PhysicalArchitecture.AutonomousFloorCleaningRobot".to_string()],
             default_root: None,
-            root_views: HashMap::new(),
+            root_views: BTreeMap::new(),
             def_instance_mappings: Vec::new(),
         };
 
