@@ -219,45 +219,39 @@ Tracked limitations (`S42-LIM-*`) addressed in this cycle:
 - `S42-LIM-008`: cyclic state machines suppress `missing_final_state` guidance (`behavior_conformance.rs`).
 - `S42-LIM-009`: bundled `MonetaryUnits` indexed for `[EUR]` (`evaluation/units.rs`).
 - `S42-LIM-010`: remove implicit redefines heuristic false positives (`kind_compatibility.rs`).
-- `S42-LIM-015`: named and `about`-bound metadata usages rejected inside a `part def` body — tracked in [#24](https://github.com/elan8/spec42/issues/24).
+- `S42-LIM-015`: named and `about`-bound metadata usages inside a `part def` body — closed, see below.
 
 Optional env-gated integration baseline: `SYSML_ROBOT_VACUUM_DIR` → `robot_vacuum_baseline.rs`.
 
 Done: `S42-LIM-005` — generic `FlowUsage` in parser and semantic graph (`flow` / `message` / `succession flow` in structure-usage bodies including part def/usage, package, occurrence def, action, use case).
 
-### S42-LIM-015: named/`about`-bound metadata usages unsupported in part-definition bodies
+### S42-LIM-015: named/`about`-bound metadata usages in part-definition bodies
 
-**Status:** tracked in [#24](https://github.com/elan8/spec42/issues/24) (not maintained as a TODO in this doc).
+**Status:** closed. [#24](https://github.com/elan8/spec42/issues/24) investigated this and found the parser and semantic graph already handle the BNF-legal named/`about`-bound forms correctly — the two forms originally written up below as failing both use syntax the BNF (§8.2.2.27) never allowed in the first place, not a real parser or graph gap. No parser or graph change was needed; regression coverage
+(`part_def_body_allows_multiple_named_about_bound_usages_of_the_same_metadata_def`, `crates/sysml_model/tests/metadata_semantics.rs`) now locks in the correct behavior.
 
-**Symptom**: applying the same `metadata def` more than once inside one `part def` body — which requires giving each usage a distinct name or explicit target so they don't collide as anonymous same-named members — has no working syntax today. Two forms were tried, both rejected:
+**Original symptom**: applying the same `metadata def` more than once inside one `part def` body — which requires giving each usage a distinct name or explicit target so they don't collide as anonymous same-named members — appeared to have no working syntax. Two forms were tried, both rejected:
 
-1. Named prefix-annotation form:
-   ```sysml
-   part def PowerModule {
-     @PowerRailBudget batteryRailBudget {
-       nominalVoltage = 14.4 [V];
-     }
-     port batteryRail : PowerRailPort;
-   }
-   ```
-   Result: `warning [unsupported_annotation_syntax] unsupported annotation syntax in part definition body`.
+1. `@PowerRailBudget batteryRailBudget { ... }` — invalid: per `MetadataUsageDeclaration = (Identification (':' | 'typed' 'by'))? OwnedFeatureTyping`, a name must be followed by `:` (or `typed by`) *before* the type, not placed after it as a bare second word.
+2. `metadata batteryRailBudget : PowerRailBudget { ... } about batteryRail;` — invalid: `about` comes *before* `MetadataBody` per the BNF (`MetadataUsageDeclaration ('about' Annotation...)? MetadataBody`), not after the closing `}`.
 
-2. Explicit `metadata ... about ...;` binding form:
-   ```sysml
-   part def PowerModule {
-     port batteryRail : PowerRailPort;
-     metadata batteryRailBudget : PowerRailBudget {
-       nominalVoltage = 14.4 [V];
-     } about batteryRail;
-   }
-   ```
-   Result: `error [unexpected_keyword_in_scope] unexpected keyword 'about' in part definition body`.
+**Correct syntax** (BNF-legal, confirmed parsing and materializing cleanly on the graph with distinct `Annotation` edges per usage and no `duplicate_namespace_member`):
 
-The unnamed, unbound form (`@PowerRailBudget { ... }` with no name and no `about`) parses fine for a *single* occurrence per definition — the failure only appears once a second occurrence of the same metadata def is needed in the same namespace, which then hits `duplicate_namespace_member` instead (three anonymous usages of `@PowerRailBudget` in one `part def` all default to the member name `PowerRailBudget`).
+```sysml
+part def PowerModule {
+  port batteryRail : PowerRailPort;
+  port logicRail : PowerRailPort;
 
-**Expected behavior**: per the SysML v2 spec, a prefix metadata annotation is sugar for a `metadata` usage, which should support an explicit name (`@MetadataDef usageName { ... }`) and/or an explicit `about` target the same way a standalone `metadata` declaration does at the package level. Neither form should be scoped out specifically inside a `part def`/`port` body.
+  @batteryRailBudget : PowerRailBudget about batteryRail {
+    nominalVoltage = 14.4 [V];
+  }
+  @logicRailBudget : PowerRailBudget about logicRail {
+    nominalVoltage = 3.3 [V];
+  }
+}
+```
 
-**Current workaround** (used in `sysml-robot-vacuum-cleaner/model/30_architecture/PhysicalArchitecture.sysml`): model the would-be metadata def as a plain `attribute def` instead, and declare one `attribute <name> : <def> { attribute :>> field = value; ... }` per port as a sibling attribute — same data, no annotation/binding syntax required, but it's an `attribute` rather than the more semantically precise `metadata` relationship to the port it characterizes.
+The equivalent `metadata batteryRailBudget : PowerRailBudget about batteryRail { ... }` (explicit keyword instead of `@`) works identically. Real-usage precedent for the unnamed `@Type about target { ... }` shape: OMG spec Annex `Vehicle Example/SysML v2 Spec Annex A SimpleVehicleModel.sysml` (`@Rationale about ...`, `@Risk about ...`).
 
 ## Suggested implementation order
 
