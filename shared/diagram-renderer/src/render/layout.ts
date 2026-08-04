@@ -125,6 +125,47 @@ export async function layoutPrepared(prepared: PreparedView): Promise<LayoutResu
     };
   };
 
+  // O-4: a same-depth sibling set large enough to dominate a single ELK layer (e.g. a def with
+  // many members and few edges between them, robot-vacuum PhysicalArchitecture -- specifically
+  // BaseModule's 11 direct members exposed by the `baseDecomposition` view -- being the motivating
+  // case) otherwise lays out as one very wide row: `elk.layered.wrapping.strategy` does not split a
+  // single edge-sparse layer into multiple rows (confirmed empirically against that fixture: no
+  // effect at any wrapping strategy/aspect ratio combination tried, because the graph only has ~3
+  // real rank tiers -- too few for ELK's wrap cutting to find a useful cut point). Chunk any node
+  // set above the threshold into roughly-square synthetic sub-containers so ELK's hierarchical
+  // layered algorithm treats each chunk as its own compact block instead of one flat row; edges
+  // crossing chunk boundaries still route correctly via `elk.hierarchyHandling: INCLUDE_CHILDREN`
+  // at the root, the same mechanism already used for real package containers below. Chunking by
+  // containment ("hierarchy" edge) siblings only, keeping same-rank members together, was tried
+  // first and produced a *wider* result than plain array-order chunking on the motivating fixture
+  // (2792px vs 2273px bounding-box width) -- grouping every sibling set under its own container
+  // left the surrounding rank-1/rank-2 nodes (a shared def's own type-def targets, still one per
+  // distinct type) needing to route edges into several different chunks at once, which spread the
+  // layout back out; plain order-based chunking doesn't have that failure mode since everything
+  // (including those less-numerous neighbors) gets folded into the same compact chunk set.
+  // `baseDecomposition`'s 19-node bounding box went from 3600x820 (aspect ratio 4.4) unchunked to
+  // 2273x1158 (aspect ratio 2.0) with chunk size `ceil(sqrt(n)/2)` -- a fixed chunk size of 3 or
+  // the unhalved `ceil(sqrt(n))` were both tried and came out wider on this fixture. Synthetic
+  // chunk ids are never added to `packageContainerGroups`, so no extra frame is drawn around them
+  // -- this is layout-only and mustn't be confused with real package containment.
+  const WIDE_SIBLING_THRESHOLD = 8;
+  const chunkedElkChildren = (idPrefix: string, elkNodes: unknown[]): unknown[] => {
+    if (elkNodes.length <= WIDE_SIBLING_THRESHOLD) return elkNodes;
+    const chunkSize = Math.max(1, Math.ceil(Math.sqrt(elkNodes.length) / 2));
+    const chunks: unknown[] = [];
+    for (let i = 0; i < elkNodes.length; i += chunkSize) {
+      chunks.push({
+        id: `${idPrefix}#chunk${chunks.length}`,
+        layoutOptions: {
+          "elk.direction": "DOWN",
+          "elk.padding": "[top=8,left=8,bottom=8,right=8]",
+        },
+        children: elkNodes.slice(i, i + chunkSize),
+      });
+    }
+    return chunks;
+  };
+
   // General-view: give ELK real package containment (mirroring the IBD hierarchy pattern in
   // interconnection-elk-input.ts) so each package lays out as a compact block instead of a flat
   // layered graph scattering package members anywhere, which otherwise produces very wide,
@@ -135,6 +176,7 @@ export async function layoutPrepared(prepared: PreparedView): Promise<LayoutResu
       | undefined) ?? [];
   const useHierarchy = packageGroups.length >= 2;
   let children: unknown[];
+  let flatChildrenWereChunked = false;
   if (useHierarchy) {
     const memberToPackage = new Map<string, string>();
     for (const group of packageGroups) {
@@ -161,17 +203,19 @@ export async function layoutPrepared(prepared: PreparedView): Promise<LayoutResu
           "elk.direction": "DOWN",
           "elk.padding": "[top=36,left=20,bottom=20,right=20]",
         },
-        children: byPackage.get(group.id) ?? [],
+        children: chunkedElkChildren(group.id, byPackage.get(group.id) ?? []),
       }));
     children = [...containers, ...orphans];
   } else {
-    children = diagramNodes.map(leafElkNode);
+    const flatChildren = diagramNodes.map(leafElkNode);
+    children = chunkedElkChildren("root", flatChildren);
+    flatChildrenWereChunked = children !== flatChildren;
   }
 
   const graph = {
     id: "root",
     layoutOptions: buildElkLayoutOptions("general", {
-      "elk.hierarchyHandling": useHierarchy ? "INCLUDE_CHILDREN" : undefined,
+      "elk.hierarchyHandling": useHierarchy || flatChildrenWereChunked ? "INCLUDE_CHILDREN" : undefined,
     }),
     children,
     edges: diagramEdges.map((edge) => ({ id: edge.id, sources: [edge.source], targets: [edge.target] }))
