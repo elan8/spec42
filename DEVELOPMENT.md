@@ -6,14 +6,19 @@ Guidance for building, testing, and contributing to Spec42.
 
 Spec42 is a Rust workspace plus a VS Code extension.
 
-- `crates/spec42_host` owns the host embedding API: library catalog resolution, engine builder, and immutable snapshot construction (Phase 2).
-- `crates/server` (`spec42`) owns the CLI, LSP binary, MCP binary, read-only HTTP API, and thin adapters over `spec42_host`.
-- `crates/kernel` owns the LSP/runtime host: document lifecycle, workspace orchestration, LSP handlers, validation wiring, DTO assembly, and host adapters.
+- `crates/sysml_model` owns reusable semantic logic: graph construction, cross-document linking, resolution, evaluation, and graph-first visualization helpers.
+- `crates/sysml_diagnostics` owns the semantic diagnostics engine: rule evaluation over the graph built by `sysml_model`.
+- `crates/sysml_tokens` owns SysML v2 semantic tokenization for editor highlighting, neutral over WASM and LSP hosts.
+- `crates/diagram` owns shared diagram projection utilities used by Spec42 and other consumers.
+- `crates/kpar` owns KerML Project Archive (KPAR) read, pack, and validate support.
 - `crates/language_service` owns protocol-neutral editor intelligence: navigation, completion, document outline/folding, workspace symbol search, rename, formatting, and neutral quick-fix edits. Hosts map its DTOs to LSP, HTTP, or Monaco contracts.
-- `crates/semantic_core` owns reusable semantic logic: graph construction, cross-document linking, resolution, evaluation, diagnostics, and graph-first visualization helpers.
+- `crates/workspace` owns the host embedding API: library catalog resolution, engine building, snapshot construction/comparison, and workspace session lifecycle.
+- `crates/workspace_session` owns a protocol-neutral, tokio-actor concurrency wrapper (lock-free reads, superseded-rebuild handling) over embedder-owned session state; currently a standalone scaffold not yet wired into a host.
+- `crates/lsp_server` owns the LSP/runtime host: document lifecycle, workspace orchestration, LSP handlers, validation wiring, DTO assembly, and host adapters.
+- `crates/server` (`spec42`) owns the CLI, LSP binary, MCP binary, read-only HTTP API, and thin adapters over `workspace` and `lsp_server`.
 - `vscode` owns the VS Code client, webviews, tests, packaging, and bundled asset staging.
 
-Keep reusable semantic/model behavior in `semantic_core`; keep editor intelligence that is shared across hosts in `language_service`; keep protocol, filesystem runtime, and editor-specific behavior in `kernel` or the host crate that owns it.
+Keep reusable semantic/model behavior in `sysml_model` (and diagnostics rules in `sysml_diagnostics`); keep editor intelligence that is shared across hosts in `language_service`; keep protocol, filesystem runtime, and editor-specific behavior in `lsp_server` or the host crate that owns it.
 
 ## Language Service Structure
 
