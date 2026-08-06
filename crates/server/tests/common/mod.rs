@@ -11,7 +11,8 @@
 /// ```bash
 /// cargo test -p spec42 --test cli_ai_tools -- --include-ignored
 /// ```
-pub const AGENT_SURFACE_IGNORE: &str = "agent CLI integration; run: cargo test -p spec42 -- --include-ignored";
+pub const AGENT_SURFACE_IGNORE: &str =
+    "agent CLI integration; run: cargo test -p spec42 -- --include-ignored";
 
 use tempfile::TempDir;
 use tokio::sync::Mutex;
