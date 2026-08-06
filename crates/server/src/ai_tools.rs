@@ -1,4 +1,4 @@
-//! Shared agent surfaces (MCP tools and CLI) for explain-diagnostic and model-summary.
+//! CLI agent surfaces for explain-diagnostic and model-summary.
 
 use std::path::PathBuf;
 
@@ -6,7 +6,7 @@ use serde::Serialize;
 use tower_lsp::lsp_types::NumberOrString;
 
 use crate::cli::{CheckArgs, Cli, OutputFormat};
-use crate::mcp::diagnostic_catalog;
+use crate::diagnostic_catalog;
 use crate::{
     build_model_summary, perform_check, perform_check_with_semantics, ModelSummaryResponse,
 };

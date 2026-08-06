@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- **Removed the MCP server and read-only HTTP API** ([#51](https://github.com/elan8/spec42/issues/51)) —
+  `spec42-mcp` (stdio MCP server) and `spec42 api serve` (read-only HTTP API, `docs/api/`) are gone.
+  Investigation found no AI host actually depended on either surface: VS Code Language Model Tools
+  and Cursor already call the `spec42` CLI directly, and no external/partner consumer of the HTTP
+  API was found. CLI JSON output (`check`, `model-summary`, `explain-diagnostic`, `doctor`) plus a
+  documented per-host skill/instructions pattern (see `docs/user/AI-ASSISTANTS.md`) is now the sole
+  AI-integration surface for 1.0. `diagnostic_catalog` (shared by the CLI and the removed MCP tools)
+  moved from `crates/server/src/mcp/` to `crates/server/src/diagnostic_catalog.rs`.
+
 - **Fixed interconnection-view layout non-determinism** (O-6, tracked since 0.35.0's Known Issues below and [#22](https://github.com/elan8/spec42/issues/22)) — repeated `spec42 diagrams export` for the same unchanged model could produce different node coordinates each run. Root cause: `merge_ibd_payloads_inner` and `normalize_ibd_to_instance_paths` (`crates/sysml_model/src/semantic/ibd/{merge,instance_paths}.rs`) deduplicate parts/ports/connectors through a `HashMap`, then collect the deduped values straight into the output `Vec` via `.into_values()` — `HashMap`'s default hasher is randomly seeded per process, so that order (stable within one run) differed across separate CLI invocations, silently propagating into `finalize_merged_ibd_connectors`'s instance/def remap and from there into which of several structurally-equal-but-differently-worded connector representations survived dedup, and ultimately into ELK's node/edge order. Fixed by sorting every `HashMap`-derived collection by its DTO's own natural key right after collection, and switching `IbdDataDto.root_views` from `HashMap` to `BTreeMap` (it serializes directly to a JSON object, so its hash-randomized key order was a second, independent source of byte-level non-determinism). Verified byte-identical SVG output across repeated exports of both `examples/webshop` and the larger `sysml-robot-vacuum-cleaner` fixture; action-flow-view was independently re-verified deterministic on both fixtures too (the underlying `activity_graph.rs` extraction doesn't use the `HashMap`-to-`Vec` pattern that caused the interconnection-view bug). Remaining known non-determinism: `stats.modelBuildTimeMs` in the JSON payload is a real wall-clock measurement and legitimately varies run to run — structural (not byte) comparison is still required for that one field.
 
 - **Supports typed numeric analysis results and objective evaluation.** Analysis `return attribute`

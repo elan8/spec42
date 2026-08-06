@@ -32,9 +32,9 @@ pub enum Command {
     Lsp,
     Check(CheckArgs),
     Doctor(DoctorArgs),
-    /// Explain a diagnostic code (same as MCP `spec42_explain_diagnostic`).
+    /// Explain a diagnostic code.
     ExplainDiagnostic(ExplainDiagnosticArgs),
-    /// Compact semantic graph summary (same as MCP `spec42_model_summary`).
+    /// Compact semantic graph summary.
     ModelSummary(ModelSummaryArgs),
     Sysand {
         #[command(subcommand)]
@@ -53,17 +53,6 @@ pub enum Command {
         #[command(subcommand)]
         command: DiagramsCommand,
     },
-    /// Read-only HTTP API for workspace semantics.
-    Api {
-        #[command(subcommand)]
-        command: ApiCommand,
-    },
-}
-
-#[derive(Debug, Clone, Subcommand)]
-pub enum ApiCommand {
-    /// Start the read-only HTTP API server.
-    Serve(crate::api::ApiServeArgs),
 }
 
 #[derive(Debug, Clone, Args)]
@@ -329,29 +318,6 @@ mod tests {
                 assert_eq!(args.format, OutputFormat::Json);
             }
             other => panic!("expected model-summary command, got {other:?}"),
-        }
-    }
-
-    #[test]
-    fn api_serve_command_parses() {
-        let cli = Cli::parse_from([
-            "spec42",
-            "api",
-            "serve",
-            "--workspace-root",
-            "workspace",
-            "--bind",
-            "127.0.0.1:9999",
-        ]);
-        match cli.command {
-            Some(Command::Api {
-                command: ApiCommand::Serve(args),
-            }) => {
-                assert_eq!(args.workspace_root, PathBuf::from("workspace"));
-                assert_eq!(args.bind, "127.0.0.1:9999".parse().expect("socket addr"));
-                assert!(!args.allow_remote);
-            }
-            other => panic!("expected api serve command, got {other:?}"),
         }
     }
 

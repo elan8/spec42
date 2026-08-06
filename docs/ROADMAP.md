@@ -17,7 +17,7 @@ The 1.0 bar is:
 - **CI integration is first-class.** `spec42 check` emits text/JSON/SARIF/JUnit, supports baseline-driven suppression and warnings-as-errors, and the GitHub Action is published at `elan8/spec42@v1`.
 - **All five standard SysML v2 diagram types render.** General, IBD, Action, State, and Sequence views project from the semantic graph through the shared renderer. Browser, Grid, and Geometry views ship at documented partial coverage.
 - **Diagram export is deterministic.** `spec42 diagrams export` produces stable JSON and SVG via the shared renderer for all release-gating views.
-- **AI assistant integration works out of the box.** MCP server, VS Code LM Tools, and HTTP API ship in the binary and are documented.
+- **AI assistant integration works out of the box.** The CLI's JSON output (`check`, `model-summary`, `explain-diagnostic`, `doctor`) plus VS Code LM Tools and per-host skill/instructions docs cover assistant workflows without a network surface.
 - **Libraries are bundled.** The OMG standard library and Elan8 domain libraries materialize from the binary; no external download or manual setup is required.
 - **The conformance matrix is generated and enforced by CI.**
 - **Documentation is accurate and references current crate names.**
@@ -77,7 +77,7 @@ the zero-unexpected-warning gate (`robot_vacuum_snapshot`).
 | Grid View | partial (element table; relationship matrix via `projectionHints`) |
 | Geometry View | partial (2D spatial defaults; 3D deferred post-1.0) |
 
-### CLI, HTTP API, and AI integration
+### CLI and AI integration
 
 | Surface | Status |
 |---------|--------|
@@ -86,14 +86,16 @@ the zero-unexpected-warning gate (`robot_vacuum_snapshot`).
 | `spec42 diagrams export` (JSON + SVG via shared renderer) | complete |
 | `spec42 explain-diagnostic` | complete |
 | `spec42 model-summary` | complete |
-| HTTP API (`spec42 api serve`) | complete |
-| MCP server (`spec42-mcp`) | complete |
 | VS Code LM Tools (`#spec42Check`, `#spec42Doctor`, `#spec42ModelSummary`, `#spec42ExplainDiagnostic`) | complete |
 | GitHub Action (`elan8/spec42@vX.Y.Z`) | complete |
 
+The MCP server (`spec42-mcp`) and read-only HTTP API (`spec42 api serve`) were removed before
+1.0 — see [#51](https://github.com/elan8/spec42/issues/51). CLI + per-host skill/instructions
+(VS Code LM Tools, Copilot, Cursor, …) is the sole AI-integration surface.
+
 ### Embedding API (`workspace` crate)
 
-All five phases of the embedding plan are complete. See [ADR 0003](adr/0003-spec42-host-embedding-crate.md) for the design rationale.
+All five phases of the embedding plan are complete.
 
 | Phase | Description | Status |
 |-------|-------------|--------|
@@ -143,7 +145,6 @@ The following capabilities are explicitly out of scope for 1.0. They may appear 
 | 3D Geometry View | Backend spatial model is partial; full 3D deferred |
 | Sysand package install / update orchestration | Status detection ships in 1.0; package management requires Sysand CLI integration |
 | Full KerML OwnedExpression (`if` / `let` / lambda in constraints) | Incremental tranches only; remaining forms deferred |
-| HTTP API caching / in-memory state across requests | Stateless design serves 1.0 use cases |
 | Incremental snapshot updates (stable, non-experimental) | Experimental flag ships in 1.0; stable graduation requires benchmark targets |
 
 ---

@@ -162,7 +162,7 @@ Host-facing APIs return `HostResult<T>` (`Result<T, Spec42HostError>`). Use `err
 | `resource_limit_exceeded` | Document count, bytes, or graph size limit hit | Reject oversized workspaces or raise limits |
 | `internal_invariant_failure` | Unexpected empty state after prior checks | Log and treat as bug |
 
-The CLI/HTTP/MCP server maps errors to strings via `Display`; embedding hosts should match on `code()` instead.
+The CLI maps errors to strings via `Display`; embedding hosts should match on `code()` instead.
 
 ## HostContext
 
@@ -258,7 +258,7 @@ Example (abbreviated):
 | Consumer | Diagnostics source |
 | --- | --- |
 | Embedding host (`snapshot.validation()`) | portable `SemanticDiagnostic` DTOs from `semantic_core` |
-| CLI / HTTP / MCP | kernel `semantic_report_from_built_workspace` on the same pre-built graph for full parity |
+| CLI | kernel `semantic_report_from_built_workspace` on the same pre-built graph for full parity |
 
 ## Concurrency contract
 
