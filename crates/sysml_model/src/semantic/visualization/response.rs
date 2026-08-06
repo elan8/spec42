@@ -1,6 +1,6 @@
 //! Visualization response assembly (artifacts, slim payload, DTO output).
 
-use std::collections::{HashMap, HashSet};
+use std::collections::{BTreeMap, HashMap, HashSet};
 use std::time::Instant;
 
 use url::Url;
@@ -130,7 +130,7 @@ pub fn build_merged_workspace_ibd(
             package_container_groups: Vec::new(),
             root_candidates: Vec::new(),
             default_root: None,
-            root_views: HashMap::new(),
+            root_views: BTreeMap::new(),
             def_instance_mappings: Vec::new(),
         };
     }
@@ -172,7 +172,7 @@ pub fn empty_merged_ibd() -> IbdDataDto {
         package_container_groups: Vec::new(),
         root_candidates: Vec::new(),
         default_root: None,
-        root_views: HashMap::new(),
+        root_views: BTreeMap::new(),
         def_instance_mappings: Vec::new(),
     }
 }

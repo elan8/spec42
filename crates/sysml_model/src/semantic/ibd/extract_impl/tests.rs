@@ -399,7 +399,7 @@ fn normalize_ibd_remaps_non_regional_architecture_ports_to_instance_paths() {
             package_container_groups: Vec::new(),
             root_candidates: Vec::new(),
             default_root: None,
-            root_views: std::collections::HashMap::new(),
+            root_views: std::collections::BTreeMap::new(),
             // In production this is always populated by `build_instance_def_mappings` from real
             // typing edges (see `ibd/connectors.rs`); this hand-built fixture supplies the
             // equivalent mapping directly since it doesn't go through `build_ibd_for_uri`.

@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- **Fixed interconnection-view layout non-determinism** (O-6, tracked since 0.35.0's Known Issues below and [#22](https://github.com/elan8/spec42/issues/22)) — repeated `spec42 diagrams export` for the same unchanged model could produce different node coordinates each run. Root cause: `merge_ibd_payloads_inner` and `normalize_ibd_to_instance_paths` (`crates/sysml_model/src/semantic/ibd/{merge,instance_paths}.rs`) deduplicate parts/ports/connectors through a `HashMap`, then collect the deduped values straight into the output `Vec` via `.into_values()` — `HashMap`'s default hasher is randomly seeded per process, so that order (stable within one run) differed across separate CLI invocations, silently propagating into `finalize_merged_ibd_connectors`'s instance/def remap and from there into which of several structurally-equal-but-differently-worded connector representations survived dedup, and ultimately into ELK's node/edge order. Fixed by sorting every `HashMap`-derived collection by its DTO's own natural key right after collection, and switching `IbdDataDto.root_views` from `HashMap` to `BTreeMap` (it serializes directly to a JSON object, so its hash-randomized key order was a second, independent source of byte-level non-determinism). Verified byte-identical SVG output across repeated exports of both `examples/webshop` and the larger `sysml-robot-vacuum-cleaner` fixture; action-flow-view was independently re-verified deterministic on both fixtures too (the underlying `activity_graph.rs` extraction doesn't use the `HashMap`-to-`Vec` pattern that caused the interconnection-view bug). Remaining known non-determinism: `stats.modelBuildTimeMs` in the JSON payload is a real wall-clock measurement and legitimately varies run to run — structural (not byte) comparison is still required for that one field.
+
 - **Supports typed numeric analysis results and objective evaluation.** Analysis `return attribute`
   declarations are materialized with their type and expression, inherited by typed analysis usages,
   evaluated as numeric values rather than Boolean verdicts, and checked against typed objective
@@ -1006,7 +1008,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Known Issues
 
-- **Interconnection-view and action-flow-view layout is non-deterministic run-to-run** — re-exporting the same unchanged model can produce different node coordinates each time (same node/edge content). Byte-diff-based regression checking is unreliable for these 2 of 8 view kinds specifically; not a new issue in this release.
+- ~~**Interconnection-view and action-flow-view layout is non-deterministic run-to-run**~~ — fixed in `[Unreleased]`, see the O-6 entry above.
 - **Scoped/incremental IBD builds can resolve a different (but still valid) root than a full-workspace build** for some views in workspaces that use SysML variant-selection — a parity gap, not a correctness bug, but scoped and full-workspace exports of the same view can disagree.
 
 ## [0.34.0] - 2026-06-30

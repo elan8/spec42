@@ -201,7 +201,7 @@ pub fn prepare_interconnection_scene(
 
 #[cfg(test)]
 mod tests {
-    use std::collections::HashMap;
+    use std::collections::{BTreeMap, HashMap};
 
     use crate::semantic::dto::{PositionDto, RangeDto, SysmlVisualizationResultDto};
     use crate::semantic::ibd::{IbdDataDto, IbdPartDto, IbdPortDto};
@@ -280,7 +280,7 @@ mod tests {
             package_container_groups: Vec::new(),
             root_candidates: vec!["Grid.mainElectronics".to_string()],
             default_root: None,
-            root_views: HashMap::new(),
+            root_views: BTreeMap::new(),
             def_instance_mappings: Vec::new(),
         };
         let scene = build_interconnection_scene(

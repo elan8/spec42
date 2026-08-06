@@ -1,0 +1,7 @@
+# Generated/vendored files that must stay byte-identical to what the tools that produce them
+# emit (ts-rs, esbuild), regardless of the checking-out platform's core.autocrlf setting.
+# Without this, a Windows checkout with autocrlf=true silently converts these LF-generated files
+# to CRLF, and typescript_bindings.rs's byte-for-byte comparison against a freshly regenerated
+# (LF) copy then fails on every run even though the content hasn't actually changed.
+vscode/src/generated/** text eol=lf
+crates/server/assets/** text eol=lf

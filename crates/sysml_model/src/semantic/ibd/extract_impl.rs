@@ -531,8 +531,8 @@ pub fn build_ibd_for_uri(graph: &SemanticGraph, uri: &Url) -> IbdDataDto {
         .map(|(p, _, _, _)| p.name.clone())
         .collect();
     let default_root = root_candidates.first().cloned();
-    let mut root_views: std::collections::HashMap<String, IbdRootViewDto> =
-        std::collections::HashMap::new();
+    let mut root_views: std::collections::BTreeMap<String, IbdRootViewDto> =
+        std::collections::BTreeMap::new();
     for (p, _, _, _) in &roots_with_metrics {
         let root_prefix = p.qualified_name.as_str();
         let focused_connectors: Vec<IbdConnectorDto> = connectors
