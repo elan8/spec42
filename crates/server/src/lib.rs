@@ -1,8 +1,8 @@
 //! Spec42 CLI and MCP shared implementation.
 
 pub mod ai_tools;
-pub mod api;
 pub mod cli;
+pub mod diagnostic_catalog;
 pub mod diagrams;
 #[cfg(test)]
 pub mod elk_layout;
@@ -12,7 +12,6 @@ pub mod host_snapshot;
 pub mod kpar_libraries;
 pub mod library_bundle;
 pub mod library_status_rpc;
-pub mod mcp;
 pub mod reports;
 pub mod stdlib;
 pub mod sysand;
@@ -31,10 +30,8 @@ use lsp_server::{
     validate_paths_with_semantics, SemanticValidationReport, ValidationReport, ValidationRequest,
     ValidationSummary,
 };
-use mcp::schemas::Spec42GlobalParams;
 use reports::{apply_baseline, emit_validation_report};
 use serde::Serialize;
-use std::path::PathBuf;
 use stdlib::{managed_status, remove_standard_library};
 use workspace::{HostSemanticModelNode, HostSemanticModelRelationship};
 
@@ -70,26 +67,6 @@ pub fn perform_check(cli: &Cli, args: &CheckArgs) -> Result<ValidationReport, St
         );
     }
     Ok(report)
-}
-
-/// Build a CLI value from MCP global parameters.
-pub fn cli_from_global(global: &Spec42GlobalParams) -> Cli {
-    Cli {
-        config_path: global.config_path.as_ref().map(PathBuf::from),
-        library_paths: global
-            .library_paths
-            .clone()
-            .unwrap_or_default()
-            .into_iter()
-            .map(PathBuf::from)
-            .collect(),
-        stdlib_path: global.stdlib_path.as_ref().map(PathBuf::from),
-        kpar_library_paths: Vec::new(),
-        disabled_kpar_libraries: Vec::new(),
-        no_stdlib: global.no_stdlib,
-        stdio: false,
-        command: None,
-    }
 }
 
 /// Environment report (same as `spec42 doctor`).
@@ -198,9 +175,6 @@ pub async fn run_cli(cli: Cli) -> Result<ExitCode, String> {
     if cli.stdio && cli.command.is_none() {
         return run_lsp(&cli).await;
     }
-    if let Some(Command::Api { command }) = cli.command.clone() {
-        return run_api(cli, &command).await;
-    }
     match cli.command.as_ref() {
         None => run_lsp(&cli).await,
         Some(Command::Lsp) => run_lsp(&cli).await,
@@ -212,16 +186,6 @@ pub async fn run_cli(cli: Cli) -> Result<ExitCode, String> {
         Some(Command::Stdlib { command }) => run_stdlib(&cli, command),
         Some(Command::Libraries { command }) => run_libraries(&cli, command),
         Some(Command::Diagrams { command }) => run_diagrams(&cli, command),
-        Some(Command::Api { .. }) => unreachable!("api command handled above"),
-    }
-}
-
-async fn run_api(cli: Cli, command: &cli::ApiCommand) -> Result<ExitCode, String> {
-    match command {
-        cli::ApiCommand::Serve(args) => {
-            api::run_api_serve(cli, args.clone()).await?;
-            Ok(ExitCode::SUCCESS)
-        }
     }
 }
 

@@ -7,7 +7,7 @@ Guidance for building, testing, and contributing to Spec42.
 Spec42 is a Rust workspace plus a VS Code extension.
 
 - `crates/spec42_host` owns the host embedding API: library catalog resolution, engine builder, and immutable snapshot construction (Phase 2).
-- `crates/server` (`spec42`) owns the CLI, LSP binary, MCP binary, read-only HTTP API, and thin adapters over `spec42_host`.
+- `crates/server` (`spec42`) owns the CLI, LSP binary, and thin adapters over `spec42_host`.
 - `crates/kernel` owns the LSP/runtime host: document lifecycle, workspace orchestration, LSP handlers, validation wiring, DTO assembly, and host adapters.
 - `crates/language_service` owns protocol-neutral editor intelligence: navigation, completion, document outline/folding, workspace symbol search, rename, formatting, and neutral quick-fix edits. Hosts map its DTOs to LSP, HTTP, or Monaco contracts.
 - `crates/semantic_core` owns reusable semantic logic: graph construction, cross-document linking, resolution, evaluation, diagnostics, and graph-first visualization helpers.
@@ -46,21 +46,6 @@ The LSP implementation lives under `crates/kernel/src/lsp_runtime`.
 - `mod.rs`: `tower-lsp` trait entrypoint that delegates to the modules above
 
 Semantic diagnostics rule evaluation is owned by `semantic_core::semantic::diagnostics`; kernel code maps neutral diagnostics at the LSP boundary.
-
-## HTTP API
-
-Read-only workspace access lives in `crates/server/src/api` and ships as:
-
-```bash
-spec42 api serve --workspace-root ./my-model
-```
-
-- Default bind: `127.0.0.1:3842` (loopback only; use `--allow-remote` for other interfaces).
-- Endpoints mirror CLI/MCP (`/v1/validate`, `/v1/model/summary`, `/v1/doctor`, …).
-- OpenAPI contract: `docs/api/spec42-readonly-v1.openapi.yaml` (served at `GET /openapi.json`).
-- Integration tests: `crates/server/tests/api_http.rs`.
-
-See [docs/api/README.md](docs/api/README.md) for the HTTP API surface and OpenAPI contract.
 
 ## Building
 
@@ -185,7 +170,7 @@ Spec42 uses two Rust integration layers in CI:
 | Layer | Scope | Typical runtime |
 | --- | --- | --- |
 | **Core (fast path)** | Workspace crates except slow `spec42` integration binaries; `spec42` unit tests; `multi_file_check` | Minutes |
-| **Agent/API surfaces** | CLI, MCP, and HTTP parity/integration tests on real fixtures | Several minutes (stdlib materialization) |
+| **Agent CLI surfaces** | CLI agent-tool integration tests on real fixtures | Several minutes (stdlib materialization) |
 
 ### Rust (core, fast path)
 
@@ -208,33 +193,25 @@ Without embedded stdlib:
 cargo test --workspace --no-default-features
 ```
 
-### Rust (agent/API surfaces)
+### Rust (agent CLI surfaces)
 
-CLI, MCP, and HTTP tests share the same `perform_*` engine and KitchenTimer fixtures. They are **`#[ignore]` by default** so plain `cargo test` stays fast; run them with `--include-ignored` when changing `crates/server` agent or API code:
+CLI agent-tool tests share the same `perform_*` engine and KitchenTimer fixtures. They are **`#[ignore]` by default** so plain `cargo test` stays fast; run them with `--include-ignored` when changing `crates/server` agent CLI code:
 
 ```bash
 cargo test -p spec42 \
-  --test api_http \
-  --test mcp_tools \
   --test cli_ai_tools \
-  --test mcp_protocol \
-  --test mcp_binary \
   --test kitchen_timer_check \
   -- --include-ignored
 ```
 
 | Integration test | Surface |
 | --- | --- |
-| `api_http` | Read-only HTTP API (`spec42 api serve` router) |
-| `mcp_tools` | MCP tool handlers (`spec42_check`, `spec42_doctor`, …) |
-| `mcp_protocol` | MCP JSON-RPC over in-memory transport |
-| `mcp_binary` | `spec42-mcp` stdio binary |
-| `cli_ai_tools` | CLI JSON parity with MCP |
+| `cli_ai_tools` | CLI JSON output for `explain-diagnostic` / `model-summary` |
 | `kitchen_timer_check` | `perform_check` smoke on bundled example |
 | `kpar_stdlib_embed_smoke` | Embedded OMG KPAR stdlib resolves `ScalarValues::Real` |
 | `multi_file_check` | Multi-file workspace import smoke |
 
-CI runs core and agent/API layers as separate jobs (see `.github/workflows/ci.yml`).
+CI runs core and agent CLI layers as separate jobs (see `.github/workflows/ci.yml`).
 
 Focused LSP integration tests:
 
@@ -365,29 +342,25 @@ Current report-only budgets are documented in `docs/engineering/PERFORMANCE-GUAR
 
 ## AI assistants
 
-**VS Code extension (Copilot Agent):** requires `engines.vscode` **^1.99.0** for Language Model Tools. Four tools in `vscode/package.json` `contributes.languageModelTools` are registered from `vscode/src/lmTools/` and invoke the same `spec42` binary as the LSP (`check`, `doctor`, `explain-diagnostic`, `model-summary` with `--format json`). No extra MCP config in VS Code for these tools.
+**VS Code extension (Copilot Agent):** requires `engines.vscode` **^1.99.0** for Language Model Tools. Four tools in `vscode/package.json` `contributes.languageModelTools` are registered from `vscode/src/lmTools/` and invoke the same `spec42` binary as the LSP (`check`, `doctor`, `explain-diagnostic`, `model-summary` with `--format json`).
 
-**MCP and HTTP API:** `spec42-mcp` and `spec42 api serve` expose the same validation and semantic projections as the CLI. Setup: [`docs/user/AI-ASSISTANTS.md`](docs/user/AI-ASSISTANTS.md); HTTP API: [`docs/api/README.md`](docs/api/README.md).
+**Other AI hosts (Copilot, Cursor, …):** use the CLI directly plus a per-host skill/instructions doc. Setup: [`docs/user/AI-ASSISTANTS.md`](docs/user/AI-ASSISTANTS.md).
 
-Tests (see [Running Tests](#running-tests) → agent/API surfaces):
+Tests (see [Running Tests](#running-tests) → agent CLI surfaces):
 
 ```bash
 cargo test -p spec42 \
-  --test api_http \
-  --test mcp_tools \
   --test cli_ai_tools \
-  --test mcp_protocol \
-  --test mcp_binary \
   --test kitchen_timer_check \
   -- --include-ignored
 cd vscode && npm run compile && npm run test:lm-cli-unit
 ```
 
-MCP protocol tests use the `rmcp` client dev-dependency with an in-memory duplex transport; `mcp_binary` exercises `spec42-mcp` via stdio; `cli_ai_tools` and `api_http` assert JSON parity with MCP handlers on the KitchenTimer fixture.
+`cli_ai_tools` asserts CLI JSON output for `explain-diagnostic` / `model-summary` on the KitchenTimer fixture.
 
 ## Validation Pipeline
 
-`spec42 check` and MCP `spec42_check` use the same validation engine as the editor host.
+`spec42 check` uses the same validation engine as the editor host.
 
 Diagnostics are published in two stages:
 
