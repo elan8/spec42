@@ -1,7 +1,7 @@
 //! Sandboxed runtime for Spec42 core WebAssembly generator modules.
 
 use std::sync::atomic::{AtomicBool, Ordering};
-use std::sync::{mpsc, Arc};
+use std::sync::Arc;
 use std::time::{Duration, Instant};
 
 use generator_api::{
@@ -15,6 +15,11 @@ use sha2::{Digest, Sha256};
 use spec42_generator_protocol as protocol;
 use thiserror::Error;
 use wasmparser::Parser;
+
+mod epoch;
+
+pub use epoch::{Clock, EpochController, ManualClock, SystemClock};
+use epoch::{Deadline, Expiry, TICK_INTERVAL};
 use wasmtime::{
     Caller, Config, Engine, Extern, ExternType, Linker, Memory, Module, ResourceLimiter, Store,
     StoreLimits, StoreLimitsBuilder, Trap, UpdateDeadline, ValType,
@@ -176,6 +181,11 @@ impl CancellationHandle {
     pub fn is_cancelled(&self) -> bool {
         self.0.load(Ordering::Acquire)
     }
+
+    /// The shared flag, for a store's epoch callback to observe directly.
+    pub(crate) fn flag(&self) -> Arc<AtomicBool> {
+        Arc::clone(&self.0)
+    }
 }
 
 impl Default for CancellationHandle {
@@ -187,6 +197,9 @@ impl Default for CancellationHandle {
 pub struct GeneratorRuntime {
     engine: Engine,
     options: RuntimeOptions,
+    clock: Arc<dyn Clock>,
+    /// One ticker for the whole runtime. Dropped with it, which stops the thread.
+    _epoch: EpochController,
 }
 
 #[derive(Debug)]
@@ -201,6 +214,18 @@ impl GeneratorRuntime {
     }
 
     pub fn with_options(options: RuntimeOptions) -> Result<Self, GeneratorHostError> {
+        Self::with_options_and_clock(options, Arc::new(SystemClock), TICK_INTERVAL)
+    }
+
+    /// Builds a runtime with an injected clock and tick cadence.
+    ///
+    /// Tests supply a [`ManualClock`] and a long interval, then drive expiry by advancing the
+    /// clock and ticking explicitly, so no test depends on sleeping or on the scheduler.
+    pub fn with_options_and_clock(
+        options: RuntimeOptions,
+        clock: Arc<dyn Clock>,
+        tick_interval: Duration,
+    ) -> Result<Self, GeneratorHostError> {
         let mut config = Config::new();
         config.consume_fuel(options.fuel_metering);
         // Kept on unconditionally: it is how a cancelled or timed-out run interrupts guest
@@ -219,11 +244,26 @@ impl GeneratorRuntime {
             phase: GenerationPhase::RuntimeConfiguration,
             message: error.to_string(),
         })?;
-        Ok(Self { engine, options })
+        let epoch = EpochController::spawn(&engine, tick_interval);
+        Ok(Self {
+            engine,
+            options,
+            clock,
+            _epoch: epoch,
+        })
     }
 
     pub fn options(&self) -> RuntimeOptions {
         self.options
+    }
+
+    /// Advances the engine epoch once.
+    ///
+    /// Exists so deterministic tests can drive expiry themselves: pair it with a
+    /// [`ManualClock`] and a long tick interval and no test needs to sleep or guess at
+    /// scheduling. Production ticking is the runtime's own [`EpochController`].
+    pub fn tick_epoch(&self) {
+        self.engine.increment_epoch();
     }
 
     pub fn execute(
@@ -356,29 +396,20 @@ impl GeneratorRuntime {
                 message: error.to_string(),
             })?;
         }
-        // `increment_epoch` is engine-global: a tick raised for one execution is seen by
-        // every store sharing this runtime. Rather than trying to arm each store so that
-        // only its own tick reaches it -- there is no such delta, and `set_epoch_deadline` is
-        // relative to the current epoch so a large one simply overflows -- each store decides
-        // for itself what a tick means. A tick that is not this run's deadline or
-        // cancellation just extends, so unrelated executions are unaffected.
+        // Ticks come from the runtime's single ticker and are seen by every store sharing
+        // the engine, so each store decides for itself what one means. A tick that is neither
+        // this run's cancellation nor its elapsed deadline simply re-arms, which is what
+        // makes concurrent executions -- including concurrent deadlines -- independent.
         store.set_epoch_deadline(1);
-        let interrupt_cancellation = cancellation.clone();
-        store.epoch_deadline_callback(move |_| {
-            if interrupt_cancellation.is_cancelled() {
-                return Err(wasmtime::Error::new(GuestInterrupt::Cancelled));
+        let store_deadline = Deadline::new(deadline, cancellation.flag());
+        let clock = Arc::clone(&self.clock);
+        store.epoch_deadline_callback(move |_| match store_deadline.evaluate(clock.now()) {
+            Some(Expiry::Cancelled) => Err(wasmtime::Error::new(GuestInterrupt::Cancelled)),
+            Some(Expiry::DeadlineExceeded) => {
+                Err(wasmtime::Error::new(GuestInterrupt::DeadlineExceeded))
             }
-            if deadline.is_some_and(|deadline| Instant::now() >= deadline) {
-                return Err(wasmtime::Error::new(GuestInterrupt::DeadlineExceeded));
-            }
-            Ok(UpdateDeadline::Continue(1))
+            None => Ok(UpdateDeadline::Continue(1)),
         });
-
-        // Only when a deadline was requested: `increment_epoch` is engine-global, so a
-        // Ticks for every execution, not only deadline ones: a tick is what gives a
-        // compute-bound guest an opportunity to observe cancellation, and the callback above
-        // makes a tick harmless to any store it does not concern.
-        let watchdog = Watchdog::spawn(&self.engine, &cancellation, deadline);
 
         let started = Instant::now();
         let guest_result = execute_guest(
@@ -389,7 +420,6 @@ impl GeneratorRuntime {
             artifact_limits,
             &cancellation,
         );
-        watchdog.stop();
         let artifacts = guest_result?;
         let duration = started.elapsed();
         let fuel_consumed = runtime_limits.fuel.map(|fuel| {
@@ -406,73 +436,6 @@ impl GeneratorRuntime {
             fuel_consumed,
             peak_memory_bytes: state.limits.peak_memory_bytes,
         })
-    }
-}
-
-/// Interrupts guest execution when the run is cancelled or its deadline passes.
-///
-/// Bumping the engine epoch only takes effect at a loop back-edge or a function entry, so
-/// this is a backstop for compute-bound guests; host calls are interrupted directly by
-/// [`HostState::guard`], which does not depend on where wasmtime placed its check points.
-struct Watchdog {
-    stop: Option<mpsc::Sender<()>>,
-    thread: Option<std::thread::JoinHandle<()>>,
-}
-
-impl Watchdog {
-    fn spawn(
-        engine: &Engine,
-        cancellation: &CancellationHandle,
-        deadline: Option<Instant>,
-    ) -> Self {
-        let (stop_tx, stop_rx) = mpsc::channel();
-        let engine = engine.clone();
-        let cancelled = cancellation.clone();
-        let thread = std::thread::spawn(move || loop {
-            if cancelled.is_cancelled() {
-                engine.increment_epoch();
-                break;
-            }
-            engine.increment_epoch();
-            let poll = Duration::from_millis(10);
-            let wait = match deadline {
-                Some(deadline) => {
-                    let remaining = deadline.saturating_duration_since(Instant::now());
-                    if remaining.is_zero() {
-                        engine.increment_epoch();
-                        break;
-                    }
-                    remaining.min(poll)
-                }
-                // No deadline: keep ticking so a cancelled compute loop can be interrupted.
-                None => poll,
-            };
-            match stop_rx.recv_timeout(wait) {
-                Ok(()) => break,
-                Err(mpsc::RecvTimeoutError::Timeout) => continue,
-                Err(mpsc::RecvTimeoutError::Disconnected) => break,
-            }
-        });
-        Self {
-            stop: Some(stop_tx),
-            thread: Some(thread),
-        }
-    }
-
-    fn stop(mut self) {
-        drop(self.stop.take());
-        if let Some(thread) = self.thread.take() {
-            let _ = thread.join();
-        }
-    }
-}
-
-impl Drop for Watchdog {
-    fn drop(&mut self) {
-        drop(self.stop.take());
-        if let Some(thread) = self.thread.take() {
-            let _ = thread.join();
-        }
     }
 }
 

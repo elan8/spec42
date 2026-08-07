@@ -117,13 +117,17 @@ per-process, and this repo has already shipped a bug of exactly that shape.
 
 ## Concurrency
 
-Cases may run in parallel on one `GeneratorRuntime`, including cases with deadlines. Epoch
-ticks are engine-global, but each store installs an epoch callback that decides whether a
-tick is its own deadline or cancellation and otherwise extends, so a timing-out execution
-does not disturb its siblings. `crates/generator_host/tests/guest_abi.rs` covers this both
-sequentially and concurrently.
+Cases may run in parallel on one `GeneratorRuntime`, including cases with deadlines. Each
+runtime owns a single epoch ticker; each store installs a callback that decides whether a
+tick is its own deadline or cancellation and otherwise re-arms. A timing-out execution
+therefore does not disturb its siblings.
+
+`crates/generator_host/tests/epoch_scenarios.rs` covers this deterministically: a manual
+clock supplies "now", the ticker's interval is set beyond any test's lifetime so it never
+fires on its own, and expiry happens only when a test advances the clock and ticks. Guests
+announce entry through a host query rather than the test guessing. No sleeps.
 
 Note what does *not* work, in case it looks tempting: arming non-deadline stores with a large
-delta. `set_epoch_deadline` is relative to the current epoch and Wasmtime adds the two, so
-`u64::MAX` panics in debug and wraps to an already-expired deadline in release as soon as the
-epoch has advanced at all.
+delta so only their own tick reaches them. `set_epoch_deadline` is relative to the current
+epoch and Wasmtime adds the two, so `u64::MAX` panics in debug and wraps to an
+already-expired deadline in release as soon as the epoch has advanced at all.
