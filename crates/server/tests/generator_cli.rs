@@ -258,15 +258,20 @@ fn resource_exhaustion_exits_thirteen() {
     });
 }
 
-/// NTFS alternate data streams address a different stream of an existing file, so a name
-/// comparison alone lets one reach the reserved manifest.
+/// Names that alias something else on Windows. Alternate data streams address a different
+/// stream of an existing file, so a name comparison alone lets one reach the reserved
+/// manifest; superscript digits make COM#/LPT# device names reserved in every directory.
 #[test]
-fn an_alternate_data_stream_path_is_refused() {
+fn windows_reserved_paths_are_refused() {
     with_plugin!(artifact_paths, |plugin| {
         let temp = tempfile::tempdir().unwrap();
         for payload in [
             "path=.spec42-generator-manifest.json::$DATA",
             "path=report.txt:hidden",
+            // Windows reads superscripts as digits in COM# and LPT# device names, so these
+            // are reserved in every directory.
+            "path=COM\u{b9}.txt",
+            "path=LPT\u{b2}.log",
         ] {
             let output = temp.path().join("generated");
             let run = generate(&plugin, &model("minimal"), &output, &[], &[payload]);

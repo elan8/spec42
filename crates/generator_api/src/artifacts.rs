@@ -222,9 +222,41 @@ fn fold_artifact_path(path: &str) -> String {
 }
 
 /// Names Windows reserves regardless of extension: `NUL.txt` is still the null device.
+///
+/// `COM` and `LPT` are reserved for the superscript digits as well as the ASCII ones --
+/// Windows treats `COM\u{b9}`, `COM\u{b2}` and `COM\u{b3}` as `COM1`-`COM3`. Per
+/// <https://learn.microsoft.com/en-us/windows/win32/fileio/naming-a-file#naming-conventions>.
 const WINDOWS_DEVICE_NAMES: &[&str] = &[
-    "con", "prn", "aux", "nul", "com1", "com2", "com3", "com4", "com5", "com6", "com7", "com8",
-    "com9", "lpt1", "lpt2", "lpt3", "lpt4", "lpt5", "lpt6", "lpt7", "lpt8", "lpt9",
+    "con",
+    "prn",
+    "aux",
+    "nul",
+    "conin$",
+    "conout$",
+    "com1",
+    "com2",
+    "com3",
+    "com4",
+    "com5",
+    "com6",
+    "com7",
+    "com8",
+    "com9",
+    "com\u{b9}",
+    "com\u{b2}",
+    "com\u{b3}",
+    "lpt1",
+    "lpt2",
+    "lpt3",
+    "lpt4",
+    "lpt5",
+    "lpt6",
+    "lpt7",
+    "lpt8",
+    "lpt9",
+    "lpt\u{b9}",
+    "lpt\u{b2}",
+    "lpt\u{b3}",
 ];
 
 /// Characters Windows forbids in a filename.
@@ -368,6 +400,11 @@ mod tests {
             "nul.txt",
             "com1",
             "dir/AUX.log",
+            // Windows reads superscripts as digits in COM# and LPT# device names.
+            "COM\u{b9}.txt",
+            "LPT\u{b2}.log",
+            "com\u{b3}",
+            "CONIN$",
             // NTFS alternate data streams. The second addresses the default stream of the
             // reserved manifest, so a name comparison alone would not catch it.
             "report.txt:hidden",

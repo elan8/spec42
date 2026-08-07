@@ -17,7 +17,7 @@ use thiserror::Error;
 use wasmparser::Parser;
 use wasmtime::{
     Caller, Config, Engine, Extern, ExternType, Linker, Memory, Module, ResourceLimiter, Store,
-    StoreLimits, StoreLimitsBuilder, Trap, ValType,
+    StoreLimits, StoreLimitsBuilder, Trap, UpdateDeadline, ValType,
 };
 
 pub const GENERATOR_ABI_VERSION: u32 = protocol::ABI_VERSION;
@@ -291,10 +291,9 @@ impl GeneratorRuntime {
 
     /// Runs a prepared module against a model snapshot.
     ///
-    /// Concurrency caveat: epoch interruption is engine-global. Executions that set a
-    /// wall-clock deadline must not run concurrently on one `GeneratorRuntime`, because the
-    /// expiring one interrupts every other store sharing the engine. Executions without a
-    /// deadline never touch the epoch and are safe to run in parallel.
+    /// Safe to call concurrently on one `GeneratorRuntime`. Epoch ticks are engine-global,
+    /// but each store's epoch callback decides whether a tick is its own deadline or
+    /// cancellation, so an execution that times out does not disturb its siblings.
     pub fn execute_prepared(
         &self,
         prepared: &PreparedGenerator,
@@ -357,22 +356,29 @@ impl GeneratorRuntime {
                 message: error.to_string(),
             })?;
         }
-        // `increment_epoch` is engine-global, so a sibling execution's expiring watchdog
-        // advances the counter for every store sharing this runtime. A run that asked for no
-        // deadline is therefore given one it can never reach, rather than being left unarmed:
-        // with epoch interruption enabled a store with no deadline set is already expired and
-        // traps on entry. This makes isolation arithmetic rather than a rule callers must
-        // follow.
-        store.set_epoch_deadline(if deadline.is_some() { 1 } else { u64::MAX });
-        store.epoch_deadline_trap();
+        // `increment_epoch` is engine-global: a tick raised for one execution is seen by
+        // every store sharing this runtime. Rather than trying to arm each store so that
+        // only its own tick reaches it -- there is no such delta, and `set_epoch_deadline` is
+        // relative to the current epoch so a large one simply overflows -- each store decides
+        // for itself what a tick means. A tick that is not this run's deadline or
+        // cancellation just extends, so unrelated executions are unaffected.
+        store.set_epoch_deadline(1);
+        let interrupt_cancellation = cancellation.clone();
+        store.epoch_deadline_callback(move |_| {
+            if interrupt_cancellation.is_cancelled() {
+                return Err(wasmtime::Error::new(GuestInterrupt::Cancelled));
+            }
+            if deadline.is_some_and(|deadline| Instant::now() >= deadline) {
+                return Err(wasmtime::Error::new(GuestInterrupt::DeadlineExceeded));
+            }
+            Ok(UpdateDeadline::Continue(1))
+        });
 
         // Only when a deadline was requested: `increment_epoch` is engine-global, so a
-        // watchdog started for one execution would interrupt every other store sharing this
-        // runtime. Cancellation without a deadline is still honoured at host-call
-        // boundaries by `HostState::guard`, which is the path that works for a guest whose
-        // entrypoint never reaches a wasm check point anyway.
-        let watchdog =
-            deadline.map(|deadline| Watchdog::spawn(&self.engine, &cancellation, deadline));
+        // Ticks for every execution, not only deadline ones: a tick is what gives a
+        // compute-bound guest an opportunity to observe cancellation, and the callback above
+        // makes a tick harmless to any store it does not concern.
+        let watchdog = Watchdog::spawn(&self.engine, &cancellation, deadline);
 
         let started = Instant::now();
         let guest_result = execute_guest(
@@ -383,9 +389,7 @@ impl GeneratorRuntime {
             artifact_limits,
             &cancellation,
         );
-        if let Some(watchdog) = watchdog {
-            watchdog.stop();
-        }
+        watchdog.stop();
         let artifacts = guest_result?;
         let duration = started.elapsed();
         let fuel_consumed = runtime_limits.fuel.map(|fuel| {
@@ -416,7 +420,11 @@ struct Watchdog {
 }
 
 impl Watchdog {
-    fn spawn(engine: &Engine, cancellation: &CancellationHandle, deadline: Instant) -> Self {
+    fn spawn(
+        engine: &Engine,
+        cancellation: &CancellationHandle,
+        deadline: Option<Instant>,
+    ) -> Self {
         let (stop_tx, stop_rx) = mpsc::channel();
         let engine = engine.clone();
         let cancelled = cancellation.clone();
@@ -425,12 +433,20 @@ impl Watchdog {
                 engine.increment_epoch();
                 break;
             }
-            let remaining = deadline.saturating_duration_since(Instant::now());
-            if remaining.is_zero() {
-                engine.increment_epoch();
-                break;
-            }
-            let wait = remaining.min(Duration::from_millis(10));
+            engine.increment_epoch();
+            let poll = Duration::from_millis(10);
+            let wait = match deadline {
+                Some(deadline) => {
+                    let remaining = deadline.saturating_duration_since(Instant::now());
+                    if remaining.is_zero() {
+                        engine.increment_epoch();
+                        break;
+                    }
+                    remaining.min(poll)
+                }
+                // No deadline: keep ticking so a cancelled compute loop can be interrupted.
+                None => poll,
+            };
             match stop_rx.recv_timeout(wait) {
                 Ok(()) => break,
                 Err(mpsc::RecvTimeoutError::Timeout) => continue,

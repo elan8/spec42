@@ -217,7 +217,8 @@ backslash, an empty segment, `.` or `..`, or exceed 4 KiB.
 Segments are also rejected for anything that aliases another name on Windows, on every
 platform, so an output set does not depend on where the generator runs: the reserved
 characters `< > : " | ? *`, control characters, trailing dots or spaces, and device names such
-as `NUL.txt`. `:` matters most — on NTFS it opens an alternate data stream, so
+as `NUL.txt` — including `COM¹`–`COM³` and `LPT¹`–`LPT³`, since Windows reads those
+superscripts as digits. `:` matters most — on NTFS it opens an alternate data stream, so
 `manifest.json::$DATA` addresses an existing file's default stream. Returning the same path
 twice fails the run, as does colliding with `.spec42-generator-manifest.json`. Contents are
 written byte for byte.

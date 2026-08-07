@@ -115,10 +115,15 @@ It also has to run after `scripts/build-generator-plugins.sh`, or it skips itsel
 Determinism is checked across two *processes*, not two calls: `std`'s `HashMap` seed is
 per-process, and this repo has already shipped a bug of exactly that shape.
 
-## Concurrency constraint
+## Concurrency
 
-Epoch interruption is engine-global. An execution that sets a wall-clock deadline must not
-run concurrently with others on the same `GeneratorRuntime`, because the expiring one
-interrupts every store sharing the engine. Executions without a deadline never touch the
-epoch, which is why the corpus can run them in parallel; a case needing a deadline must be
-given its own runtime or run serially.
+Cases may run in parallel on one `GeneratorRuntime`, including cases with deadlines. Epoch
+ticks are engine-global, but each store installs an epoch callback that decides whether a
+tick is its own deadline or cancellation and otherwise extends, so a timing-out execution
+does not disturb its siblings. `crates/generator_host/tests/guest_abi.rs` covers this both
+sequentially and concurrently.
+
+Note what does *not* work, in case it looks tempting: arming non-deadline stores with a large
+delta. `set_epoch_deadline` is relative to the current epoch and Wasmtime adds the two, so
+`u64::MAX` panics in debug and wraps to an already-expired deadline in release as soon as the
+epoch has advanced at all.

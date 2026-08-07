@@ -256,3 +256,178 @@ fn cancellation_before_execution_is_reported_as_cancelled() {
         .expect_err("cancelled run");
     assert_eq!(error.category, GeneratorFailureCategory::Cancelled);
 }
+
+/// A timed-out execution must not disturb others sharing the runtime.
+///
+/// Epoch ticks are engine-global, so this used to be a rule callers had to follow. Arming
+/// non-deadline stores with a huge delta does not work either: `set_epoch_deadline` is
+/// relative to the current epoch and Wasmtime adds the two, so `u64::MAX` panics in debug and
+/// wraps to an already-expired value in release once the epoch has advanced at all.
+#[test]
+fn a_timed_out_execution_does_not_affect_later_runs_on_the_same_runtime() {
+    use generator_host::RuntimeOptions;
+
+    let runtime = GeneratorRuntime::with_options(RuntimeOptions::default()).expect("runtime");
+    let spin = runtime
+        .prepare(&guest(
+            COMPATIBILITY_TOKEN,
+            "(loop $forever (br $forever))",
+            "",
+        ))
+        .expect("spin prepares");
+    let conforming = runtime
+        .prepare(&conforming_guest())
+        .expect("conforming prepares");
+
+    // Time one out, which advances the engine epoch.
+    let timed_out = runtime.execute_prepared(
+        &spin,
+        model(),
+        &[],
+        RuntimeLimits {
+            wall_time: Some(std::time::Duration::from_millis(50)),
+            ..RuntimeLimits::default()
+        },
+        ArtifactLimits::default(),
+        CancellationHandle::new(),
+    );
+    assert_eq!(
+        timed_out
+            .expect_err("the spin loop should time out")
+            .category,
+        GeneratorFailureCategory::ResourceExhausted
+    );
+
+    // Every later run on this runtime must be unaffected, repeatedly.
+    for attempt in 0..3 {
+        runtime
+            .execute_prepared(
+                &conforming,
+                model(),
+                &[],
+                RuntimeLimits::default(),
+                ArtifactLimits::default(),
+                CancellationHandle::new(),
+            )
+            .unwrap_or_else(|error| {
+                panic!("run {attempt} after a timeout failed: {error}");
+            });
+    }
+}
+
+/// The same, concurrently: one execution times out while others are mid-flight.
+#[test]
+fn a_concurrent_timeout_does_not_interrupt_its_siblings() {
+    use generator_host::RuntimeOptions;
+    use std::sync::Arc as StdArc;
+
+    let runtime =
+        StdArc::new(GeneratorRuntime::with_options(RuntimeOptions::default()).expect("runtime"));
+    let spin = StdArc::new(
+        runtime
+            .prepare(&guest(
+                COMPATIBILITY_TOKEN,
+                "(loop $forever (br $forever))",
+                "",
+            ))
+            .expect("spin prepares"),
+    );
+    let conforming = StdArc::new(runtime.prepare(&conforming_guest()).expect("prepares"));
+    let shared_model = model();
+
+    let timeout_thread = {
+        let (runtime, spin, model) = (
+            StdArc::clone(&runtime),
+            StdArc::clone(&spin),
+            Arc::clone(&shared_model),
+        );
+        std::thread::spawn(move || {
+            runtime.execute_prepared(
+                &spin,
+                model,
+                &[],
+                RuntimeLimits {
+                    wall_time: Some(std::time::Duration::from_millis(50)),
+                    ..RuntimeLimits::default()
+                },
+                ArtifactLimits::default(),
+                CancellationHandle::new(),
+            )
+        })
+    };
+
+    let siblings: Vec<_> = (0..4)
+        .map(|index| {
+            let (runtime, conforming, model) = (
+                StdArc::clone(&runtime),
+                StdArc::clone(&conforming),
+                Arc::clone(&shared_model),
+            );
+            std::thread::spawn(move || {
+                // Keep running across the whole window in which the sibling times out.
+                for _ in 0..40 {
+                    runtime
+                        .execute_prepared(
+                            &conforming,
+                            Arc::clone(&model),
+                            &[],
+                            RuntimeLimits::default(),
+                            ArtifactLimits::default(),
+                            CancellationHandle::new(),
+                        )
+                        .unwrap_or_else(|error| {
+                            panic!("sibling {index} was interrupted by another run: {error}")
+                        });
+                    std::thread::sleep(std::time::Duration::from_millis(2));
+                }
+            })
+        })
+        .collect();
+
+    assert_eq!(
+        timeout_thread
+            .join()
+            .expect("timeout thread")
+            .expect_err("the spin loop should time out")
+            .category,
+        GeneratorFailureCategory::ResourceExhausted
+    );
+    for sibling in siblings {
+        sibling.join().expect("a sibling execution panicked");
+    }
+}
+
+/// Cancellation must reach a guest that never returns to the host.
+#[test]
+fn a_compute_bound_guest_can_be_cancelled_without_a_deadline() {
+    let runtime = GeneratorRuntime::new().expect("runtime");
+    let spin = runtime
+        .prepare(&guest(
+            COMPATIBILITY_TOKEN,
+            "(loop $forever (br $forever))",
+            "",
+        ))
+        .expect("spin prepares");
+    let cancellation = CancellationHandle::new();
+
+    let canceller = {
+        let cancellation = cancellation.clone();
+        std::thread::spawn(move || {
+            std::thread::sleep(std::time::Duration::from_millis(100));
+            cancellation.cancel();
+        })
+    };
+
+    let error = runtime
+        .execute_prepared(
+            &spin,
+            model(),
+            &[],
+            RuntimeLimits::default(),
+            ArtifactLimits::default(),
+            cancellation,
+        )
+        .expect_err("a cancelled spin loop should stop");
+    assert_eq!(error.category, GeneratorFailureCategory::Cancelled);
+    canceller.join().unwrap();
+}
