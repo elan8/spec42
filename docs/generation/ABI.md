@@ -4,7 +4,13 @@ The wire contract between Spec42 and a generator module. This document is the
 specification; `crates/generator_sdk` is one implementation of it, not its definition. A
 guest written in any language that can emit the imports and exports below is equally valid.
 
-Current version: **ABI 4**. Compatibility token: `0x322ef653e366a5aa`.
+<!-- generated:abi-header -->
+Current version: **ABI 4**. Compatibility token: `0xa18f24b386a7570d`.
+<!-- /generated:abi-header -->
+
+The tables below and `generator-abi.json` are generated from the contract declaration in
+`crates/generator_protocol/src/contract.rs`; run `node scripts/sync-generator-abi.mjs` after
+changing it.
 
 A generator is plain **core WebAssembly** — not a component. No metadata, no
 post-processing, no `wasm-tools` step. Pass the `.wasm` straight to `spec42 generate`.
@@ -95,16 +101,18 @@ Reads a Postcard request, writes a Postcard response into the guest buffer, and 
 The response is always a Postcard `Result<T, String>`, so a zero-length response is
 impossible and `0` unambiguously means "success, nothing written".
 
+<!-- generated:abi-operations -->
 | Op | Name | Request | Response `T` |
 | --: | --- | --- | --- |
 | 0 | `info` | `()` | `ModelInfo` |
 | 1 | `roots` | `()` | `Vec<ElementSummary>` |
-| 2 | `find` | `Option<String>` (metaclass filter) | `Vec<ElementSummary>` |
-| 3 | `children` | `String` (owner handle) | `Vec<ElementSummary>` |
-| 4 | `element` | `String` (handle) | `ElementDetail` |
-| 5 | `typed_by` | `String` (feature handle) | `Option<ElementSummary>` |
-| 6 | `relationships` | `String` (handle) | `Vec<Relationship>` |
-| 7 | `effective_features` | `String` (handle) | `Vec<ElementSummary>` |
+| 2 | `find` | `Option<String>` | `Vec<ElementSummary>` |
+| 3 | `children` | `String` | `Vec<ElementSummary>` |
+| 4 | `element` | `String` | `ElementDetail` |
+| 5 | `typed_by` | `String` | `Option<ElementSummary>` |
+| 6 | `relationships` | `String` | `Vec<Relationship>` |
+| 7 | `effective_features` | `String` | `Vec<ElementSummary>` |
+<!-- /generated:abi-operations -->
 
 Note that `find` takes `Option<String>`: `None` means "every element". An empty string is
 *not* the same thing, and the two are one byte apart on the wire — `None` encodes as `0x00`,
@@ -114,7 +122,18 @@ Any other operation code is a contract violation and fails the run.
 
 ### `diagnostic(level, message_ptr, message_len, element_ptr, element_len)`
 
-Records a message. `level` is `0` debug, `1` info, `2` warning, `3` error. Pass
+Records a message, at one of these levels:
+
+<!-- generated:abi-levels -->
+| Level | Code |
+| --- | --: |
+| `debug` | 0 |
+| `info` | 1 |
+| `warning` | 2 |
+| `error` | 3 |
+<!-- /generated:abi-levels -->
+
+Pass
 `element_ptr = 0, element_len = 0` for a message not tied to an element; otherwise pass a
 handle obtained from a query.
 

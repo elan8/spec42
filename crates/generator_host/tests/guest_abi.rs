@@ -11,7 +11,7 @@ use generator_host::{
     CancellationHandle, GeneratorFailureCategory, GeneratorHostError, GeneratorRuntime,
     RuntimeLimits,
 };
-use spec42_generator_protocol::{operation, COMPATIBILITY_TOKEN};
+use spec42_generator_protocol::{Operation, COMPATIBILITY_TOKEN};
 
 /// Postcard encoding of `Ok::<Vec<Artifact>, String>(vec![])`: variant 0, then length 0.
 const EMPTY_RESULT: &str = "\\00\\00";
@@ -148,7 +148,7 @@ fn an_out_of_bounds_query_pointer_is_an_abi_violation() {
     let body = format!(
         "(drop (call $query (i32.const {}) (i32.const 999999) (i32.const 16) \
          (i32.const 4096) (i32.const 64)))",
-        operation::FIND
+        Operation::Find.code()
     );
     let error = run(&guest(COMPATIBILITY_TOKEN, &body, "")).expect_err("out of bounds read");
     assert_eq!(error.category, GeneratorFailureCategory::ApiIncompatible);
@@ -159,7 +159,7 @@ fn an_oversized_transfer_is_refused_by_the_abi_limit() {
     let body = format!(
         "(drop (call $query (i32.const {}) (i32.const 0) (i32.const 2000000000) \
          (i32.const 4096) (i32.const 64)))",
-        operation::FIND
+        Operation::Find.code()
     );
     let error = run(&guest(COMPATIBILITY_TOKEN, &body, "")).expect_err("oversized transfer");
     assert_eq!(error.category, GeneratorFailureCategory::ApiIncompatible);

@@ -103,6 +103,12 @@ jobs:
       - name: Conformance matrix is current
         run: node scripts/generate-conformance-matrix.mjs --check
 
+      - name: Generator ABI manifest and specification are current
+        run: |
+          cargo run -p spec42-generator-protocol --example abi-manifest > docs/generation/generator-abi.json
+          git diff --exit-code docs/generation/generator-abi.json
+          node scripts/sync-generator-abi.mjs --check
+
       - name: Requirements slice integration checks
         run: |
           cargo test -p lsp_server --test lsp_integration integration::model::lsp_sysml_model_graph_resolves_requirement_usage_typing_same_file

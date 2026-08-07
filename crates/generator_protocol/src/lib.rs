@@ -6,17 +6,23 @@
 use postcard_schema::Schema;
 use serde::{Deserialize, Serialize};
 
-pub const ABI_VERSION: u32 = 4;
-pub const IMPORT_MODULE: &str = "spec42";
+mod contract;
 
-/// Every type that crosses the guest boundary, in one place.
+pub use contract::{
+    contract_manifest, Level, Operation, OperationSpec, UnknownCode, ABI_VERSION,
+    COMPATIBILITY_TOKEN, IMPORT_MODULE, SCHEMA_PATH, SEMANTIC_API_VERSION,
+};
+
+/// Structural fingerprint of the wire *types*.
 ///
-/// This exists only to be hashed. Postcard is positional and carries no field names, no
-/// type tags and no version, so a host and a guest built against different revisions of
-/// this crate will happily misread each other's bytes -- a reordered or inserted field
-/// shifts every subsequent field and still decodes, producing plausible but wrong output.
-/// Naming all the wire types here means [`SCHEMA_FINGERPRINT`] changes automatically
-/// whenever any of them changes, with no version number for anyone to forget to bump.
+/// Covers field order, names and shapes. It does not cover anything defined outside the type
+/// definitions -- operation codes, level codes, semantics -- which is why it is an input to
+/// [`COMPATIBILITY_TOKEN`] rather than the value guests report.
+pub const SCHEMA_FINGERPRINT: u64 =
+    u64::from_le_bytes(postcard_schema::key::hash::fnv1a64::hash_ty_path::<
+        WireSchema,
+    >(SCHEMA_PATH));
+
 #[derive(Schema)]
 #[allow(dead_code)]
 struct WireSchema {
@@ -38,113 +44,10 @@ struct WireSchema {
     generator_result: Result<Vec<Artifact>, String>,
 }
 
-/// Structural fingerprint of the wire *types*.
-///
-/// Covers field order, names and shapes. It does not cover anything defined outside the type
-/// definitions, which is why it is an input to [`COMPATIBILITY_TOKEN`] rather than the value
-/// guests report.
-pub const SCHEMA_FINGERPRINT: u64 =
-    u64::from_le_bytes(postcard_schema::key::hash::fnv1a64::hash_ty_path::<
-        WireSchema,
-    >(SCHEMA_PATH));
-
-/// Namespace for the fingerprint hash. Bumping [`ABI_VERSION`] alone changes the
-/// fingerprint even if no type changed, so an intentional break is always observable.
-const SCHEMA_PATH: &str = "spec42:generator-abi/4";
-
-/// Version of the semantic contract: result ordering, defaulting, and what each query means.
-///
-/// Bump this whenever behaviour changes in a way a generator could observe even though no
-/// type changed -- a different ordering, a query that starts including implied facts, a
-/// change to effective-feature shadowing. It feeds [`COMPATIBILITY_TOKEN`], so a bump
-/// rejects stale guests at load instead of silently altering their output.
-pub const SEMANTIC_API_VERSION: &str = "0.1.0";
-
-/// What a guest reports and the host compares: the whole behavioural contract, not just the
-/// wire types.
-///
-/// The type fingerprint alone is insufficient in two ways. Operation codes are plain
-/// constants, invisible to a type-level hash, so renumbering one would leave the fingerprint
-/// untouched while routing an old guest's `children` request to `element`. And semantics --
-/// ordering, defaulting, query meaning -- can change with every type byte-identical.
-///
-/// The token therefore mixes type shapes, the operation numbering and the semantic version.
-/// Before 1.0 the rule is deliberately blunt: any breaking change moves the token, and an
-/// incompatible guest is refused. Capability negotiation and supporting several versions at
-/// once can come later.
-pub const COMPATIBILITY_TOKEN: u64 = compute_compatibility_token();
-
-const fn compute_compatibility_token() -> u64 {
-    // FNV-1a, written as a const fn so both sides get a compile-time constant.
-    const OFFSET: u64 = 0xcbf2_9ce4_8422_2325;
-    const PRIME: u64 = 0x0000_0100_0000_01b3;
-
-    const fn mix_bytes(mut hash: u64, bytes: &[u8]) -> u64 {
-        let mut index = 0;
-        while index < bytes.len() {
-            hash ^= bytes[index] as u64;
-            hash = hash.wrapping_mul(PRIME);
-            index += 1;
-        }
-        hash
-    }
-
-    const fn mix_u64(hash: u64, value: u64) -> u64 {
-        mix_bytes(hash, &value.to_le_bytes())
-    }
-
-    let mut hash = OFFSET;
-    hash = mix_bytes(hash, SCHEMA_PATH.as_bytes());
-    hash = mix_u64(hash, ABI_VERSION as u64);
-    hash = mix_u64(hash, SCHEMA_FINGERPRINT);
-    hash = mix_bytes(hash, SEMANTIC_API_VERSION.as_bytes());
-    let mut index = 0;
-    while index < operation::ALL.len() {
-        let (name, code) = operation::ALL[index];
-        hash = mix_bytes(hash, name.as_bytes());
-        hash = mix_u64(hash, code as u64);
-        index += 1;
-    }
-    // Diagnostic levels cross as raw integers rather than through Postcard, so their numeric
-    // codes are contract too and are equally invisible to the type-level schema hash.
-    let mut index = 0;
-    while index < Level::ALL.len() {
-        let (name, code) = Level::ALL[index];
-        hash = mix_bytes(hash, name.as_bytes());
-        hash = mix_u64(hash, code as u64);
-        index += 1;
-    }
-    hash
-}
-
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Schema)]
 pub struct Artifact {
     pub file_path: String,
     pub contents: Vec<u8>,
-}
-
-pub mod operation {
-    pub const INFO: i32 = 0;
-    pub const ROOTS: i32 = 1;
-    pub const FIND: i32 = 2;
-    pub const CHILDREN: i32 = 3;
-    pub const ELEMENT: i32 = 4;
-    pub const TYPED_BY: i32 = 5;
-    pub const RELATIONSHIPS: i32 = 6;
-    pub const EFFECTIVE_FEATURES: i32 = 7;
-
-    /// Every operation, paired with its wire code, so the compatibility token covers the
-    /// numbering. Keep in step with the constants above; the pinned token test is the guard.
-    pub const ALL: &[(&str, i32)] = &[
-        ("info", INFO),
-        ("roots", ROOTS),
-        ("find", FIND),
-        ("children", CHILDREN),
-        ("element", ELEMENT),
-        ("typed_by", TYPED_BY),
-        ("relationships", RELATIONSHIPS),
-        ("effective_features", EFFECTIVE_FEATURES),
-    ];
 }
 
 /// SysML v2 metaclass of an element.
@@ -654,50 +557,6 @@ pub struct Relationship {
     pub target: ElementSummary,
     pub implied: bool,
 }
-
-/// Declares a wire enum together with the numeric codes it crosses the boundary as.
-///
-/// One source for both, so the discriminants and the compatibility-token table cannot
-/// diverge. That matters because these values are sent as raw integers, not through Postcard:
-/// a type-level schema hash sees variant *names and order*, so renumbering a discriminant
-/// would silently reinterpret existing guests while leaving the schema fingerprint identical.
-macro_rules! wire_enum {
-    (
-        $(#[$meta:meta])*
-        pub enum $name:ident { $( $(#[$variant_meta:meta])* $variant:ident = $code:expr ),* $(,)? }
-    ) => {
-        $(#[$meta])*
-        #[repr(i32)]
-        pub enum $name {
-            $( $(#[$variant_meta])* $variant = $code ),*
-        }
-
-        impl $name {
-            /// Every variant with the integer it is transmitted as. Mixed into
-            /// [`COMPATIBILITY_TOKEN`], so renaming, renumbering, adding or removing one is a
-            /// breaking change that stale guests are refused for.
-            pub const ALL: &'static [(&'static str, i32)] =
-                &[ $( (stringify!($variant), $code) ),* ];
-
-            pub const fn code(self) -> i32 {
-                self as i32
-            }
-        }
-    };
-}
-
-wire_enum! {
-    /// Severity of a generator diagnostic.
-    #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, Schema)]
-    #[serde(rename_all = "lowercase")]
-    pub enum Level {
-        Debug = 0,
-        Info = 1,
-        Warning = 2,
-        Error = 3,
-    }
-}
-
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -707,12 +566,12 @@ mod tests {
         u64::from_le_bytes(hash_ty_path::<T>(SCHEMA_PATH))
     }
 
-    /// The load-time compatibility check is only worth anything if the fingerprint moves
-    /// when the schema moves. These stand in for the three ways the wire format can drift.
+    /// The load-time compatibility check is only worth anything if the fingerprint moves when
+    /// the schema moves. These stand in for the three ways the wire format can drift.
     #[test]
-    #[allow(dead_code)]
     fn the_fingerprint_detects_every_shape_of_schema_drift() {
         #[derive(Schema)]
+        #[allow(dead_code)]
         struct Baseline {
             handle: String,
             name: Option<String>,
@@ -720,6 +579,7 @@ mod tests {
         }
 
         #[derive(Schema)]
+        #[allow(dead_code)]
         struct FieldAdded {
             handle: String,
             name: Option<String>,
@@ -728,6 +588,7 @@ mod tests {
         }
 
         #[derive(Schema)]
+        #[allow(dead_code)]
         struct FieldsReordered {
             handle: String,
             library: bool,
@@ -735,6 +596,7 @@ mod tests {
         }
 
         #[derive(Schema)]
+        #[allow(dead_code)]
         struct TypeChanged {
             handle: String,
             name: String,
@@ -754,103 +616,28 @@ mod tests {
         }
     }
 
-    /// The token must move for every class of breaking change, not just type edits. Without
-    /// this, renumbering an operation would leave the token identical and route an old
-    /// guest's `children` call to `element`.
+    /// The checked-in manifest must match the contract this build derives.
+    ///
+    /// It is what makes a token change reviewable: the diff names exactly which type,
+    /// operation, level or version moved, rather than showing an opaque number. Downstream
+    /// guests read it to see what they have to adapt to.
     #[test]
-    fn the_compatibility_token_covers_operations_and_semantics() {
-        const PRIME: u64 = 0x0000_0100_0000_01b3;
-        fn mix(mut hash: u64, bytes: &[u8]) -> u64 {
-            for byte in bytes {
-                hash ^= *byte as u64;
-                hash = hash.wrapping_mul(PRIME);
-            }
-            hash
-        }
-        // Recompute the token with one input perturbed at a time and confirm each differs.
-        let baseline = COMPATIBILITY_TOKEN;
-        assert_ne!(baseline, mix(baseline, b"schema"), "sanity");
-
-        // Renumbering an operation.
-        let renumbered = {
-            let mut hash = 0xcbf2_9ce4_8422_2325u64;
-            hash = mix(hash, SCHEMA_PATH.as_bytes());
-            hash = mix(hash, &(ABI_VERSION as u64).to_le_bytes());
-            hash = mix(hash, &SCHEMA_FINGERPRINT.to_le_bytes());
-            hash = mix(hash, SEMANTIC_API_VERSION.as_bytes());
-            for (name, code) in operation::ALL {
-                hash = mix(hash, name.as_bytes());
-                // Shift every code by one, as a renumbering would.
-                hash = mix(hash, &((*code as u64) + 1).to_le_bytes());
-            }
-            hash
-        };
-        assert_ne!(
-            baseline, renumbered,
-            "renumbering an operation left the token unchanged"
-        );
-
-        // Bumping the semantic version with no type change.
-        let resemanticked = {
-            let mut hash = 0xcbf2_9ce4_8422_2325u64;
-            hash = mix(hash, SCHEMA_PATH.as_bytes());
-            hash = mix(hash, &(ABI_VERSION as u64).to_le_bytes());
-            hash = mix(hash, &SCHEMA_FINGERPRINT.to_le_bytes());
-            hash = mix(hash, b"0.2.0");
-            for (name, code) in operation::ALL {
-                hash = mix(hash, name.as_bytes());
-                hash = mix(hash, &(*code as u64).to_le_bytes());
-            }
-            hash
-        };
-        assert_ne!(
-            baseline, resemanticked,
-            "bumping the semantic API version left the token unchanged"
-        );
-
-        // Renumbering a diagnostic level. These cross as raw integers, so a changed
-        // discriminant reinterprets existing guests without touching the schema hash.
-        let relevelled = {
-            let mut hash = 0xcbf2_9ce4_8422_2325u64;
-            hash = mix(hash, SCHEMA_PATH.as_bytes());
-            hash = mix(hash, &(ABI_VERSION as u64).to_le_bytes());
-            hash = mix(hash, &SCHEMA_FINGERPRINT.to_le_bytes());
-            hash = mix(hash, SEMANTIC_API_VERSION.as_bytes());
-            for (name, code) in operation::ALL {
-                hash = mix(hash, name.as_bytes());
-                hash = mix(hash, &(*code as u64).to_le_bytes());
-            }
-            for (name, code) in Level::ALL {
-                hash = mix(hash, name.as_bytes());
-                hash = mix(hash, &((*code as u64) + 1).to_le_bytes());
-            }
-            hash
-        };
-        assert_ne!(
-            baseline, relevelled,
-            "renumbering a diagnostic level left the token unchanged"
-        );
-    }
-
-    /// The codes the SDK transmits must be the enum's own discriminants. They come from one
-    /// macro, so this asserts the macro did what it claims rather than guarding a hand-kept
-    /// second list.
-    #[test]
-    fn diagnostic_level_codes_match_their_discriminants() {
+    fn the_checked_in_manifest_matches_the_contract() {
+        let path = std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
+            .join("../../docs/generation/generator-abi.json");
+        let checked_in = std::fs::read_to_string(&path).unwrap_or_default();
         assert_eq!(
-            Level::ALL,
-            &[
-                ("Debug", Level::Debug.code()),
-                ("Info", Level::Info.code()),
-                ("Warning", Level::Warning.code()),
-                ("Error", Level::Error.code()),
-            ]
+            checked_in,
+            contract_manifest(),
+            "\n{} is stale; regenerate it with\n    \
+             cargo run -p spec42-generator-protocol --example abi-manifest > docs/generation/generator-abi.json\n",
+            path.display(),
         );
     }
 
-    /// A deliberate tripwire. Changing any wire type changes this value; update it in the
-    /// same commit as the schema change, and treat an unexpected diff here as a warning
-    /// that existing guests are about to be rejected.
+    /// Deliberate tripwires. Neither guards against drift -- the contract macro makes drift
+    /// impossible -- they exist so that changing the contract is an explicit act acknowledged
+    /// in review, since every existing guest is about to be refused at load.
     #[test]
     fn the_wire_schema_fingerprint_is_pinned() {
         assert_eq!(
@@ -859,12 +646,10 @@ mod tests {
         );
     }
 
-    /// The value guests actually report. Pinned separately from the schema fingerprint
-    /// because it can move without any type changing.
     #[test]
     fn the_compatibility_token_is_pinned() {
         assert_eq!(
-            COMPATIBILITY_TOKEN, 0x322e_f653_e366_a5aa,
+            COMPATIBILITY_TOKEN, 0xa18f_24b3_86a7_570d,
             "the generator ABI contract changed; every guest must be rebuilt"
         );
     }

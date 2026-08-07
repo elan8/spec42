@@ -128,38 +128,38 @@ pub mod model {
     };
 
     use super::call_query;
-    use spec42_generator_protocol::operation;
+    use spec42_generator_protocol::Operation;
 
     pub fn info() -> Result<ModelInfo, String> {
-        call_query(operation::INFO, &())
+        call_query(Operation::Info.code(), &())
     }
 
     pub fn roots() -> Result<Vec<ElementSummary>, String> {
-        call_query(operation::ROOTS, &())
+        call_query(Operation::Roots.code(), &())
     }
 
     pub fn find(metaclass: Option<&str>) -> Result<Vec<ElementSummary>, String> {
-        call_query(operation::FIND, &metaclass)
+        call_query(Operation::Find.code(), &metaclass)
     }
 
     pub fn children(owner: &str) -> Result<Vec<ElementSummary>, String> {
-        call_query(operation::CHILDREN, &owner)
+        call_query(Operation::Children.code(), &owner)
     }
 
     pub fn element(handle: &str) -> Result<ElementDetail, String> {
-        call_query(operation::ELEMENT, &handle)
+        call_query(Operation::Element.code(), &handle)
     }
 
     pub fn typed_by(feature: &str) -> Result<Option<ElementSummary>, String> {
-        call_query(operation::TYPED_BY, &feature)
+        call_query(Operation::TypedBy.code(), &feature)
     }
 
     pub fn relationships(element: &str) -> Result<Vec<Relationship>, String> {
-        call_query(operation::RELATIONSHIPS, &element)
+        call_query(Operation::Relationships.code(), &element)
     }
 
     pub fn effective_features(element: &str) -> Result<Vec<ElementSummary>, String> {
-        call_query(operation::EFFECTIVE_FEATURES, &element)
+        call_query(Operation::EffectiveFeatures.code(), &element)
     }
 }
 

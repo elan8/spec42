@@ -1,0 +1,24 @@
+{
+  "abiVersion": 4,
+  "semanticApiVersion": "0.1.0",
+  "namespace": "spec42:generator-abi/4",
+  "importModule": "spec42",
+  "schemaFingerprint": "0x3a46578ab105445f",
+  "compatibilityToken": "0xa18f24b386a7570d",
+  "operations": [
+    { "name": "Info", "code": 0, "request": "()", "response": "ModelInfo" },
+    { "name": "Roots", "code": 1, "request": "()", "response": "Vec<ElementSummary>" },
+    { "name": "Find", "code": 2, "request": "Option<String>", "response": "Vec<ElementSummary>" },
+    { "name": "Children", "code": 3, "request": "String", "response": "Vec<ElementSummary>" },
+    { "name": "Element", "code": 4, "request": "String", "response": "ElementDetail" },
+    { "name": "TypedBy", "code": 5, "request": "String", "response": "Option<ElementSummary>" },
+    { "name": "Relationships", "code": 6, "request": "String", "response": "Vec<Relationship>" },
+    { "name": "EffectiveFeatures", "code": 7, "request": "String", "response": "Vec<ElementSummary>" }
+  ],
+  "diagnosticLevels": [
+    { "name": "Debug", "code": 0 },
+    { "name": "Info", "code": 1 },
+    { "name": "Warning", "code": 2 },
+    { "name": "Error", "code": 3 }
+  ]
+}

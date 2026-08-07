@@ -886,28 +886,30 @@ fn handle_query(
     operation: i32,
     request: &[u8],
 ) -> wasmtime::Result<Vec<u8>> {
-    use protocol::operation;
-
     // A capacity probe repeats the previous query verbatim; serve it from the last result
     // rather than recomputing, and do not count it as a second logical query.
     if let Some(cached) = state.cached_response(operation, request) {
         return Ok(cached);
     }
     state.queried();
+    // Resolve the code once; an operation this ABI does not define is a contract breach, not
+    // a fallthrough arm in the dispatch below.
+    let operation = protocol::Operation::try_from_code(operation)
+        .map_err(|unknown| AbiViolation::error(unknown.to_string()))?;
     let response = match operation {
-        operation::INFO => encode_result(Ok(protocol::ModelInfo {
+        protocol::Operation::Info => encode_result(Ok(protocol::ModelInfo {
             model_digest: state.model.model_digest(),
             spec42_version: state.model.spec42_version().to_owned(),
             semantic_api_version: state.model.semantic_api_version().to_owned(),
         })),
-        operation::ROOTS => encode_result(
+        protocol::Operation::Roots => encode_result(
             state
                 .model
                 .roots()
                 .map(|values| values.into_iter().map(summary).collect::<Vec<_>>())
                 .map_err(|error| error.to_string()),
         ),
-        operation::FIND => {
+        protocol::Operation::Find => {
             let metaclass: Option<String> = decode_request(request)?;
             encode_result(
                 state
@@ -917,7 +919,7 @@ fn handle_query(
                     .map_err(|error| error.to_string()),
             )
         }
-        operation::CHILDREN => {
+        protocol::Operation::Children => {
             let owner: String = decode_request(request)?;
             encode_result(
                 state
@@ -927,7 +929,7 @@ fn handle_query(
                     .map_err(|error| error.to_string()),
             )
         }
-        operation::ELEMENT => {
+        protocol::Operation::Element => {
             let handle: String = decode_request(request)?;
             encode_result(
                 state
@@ -937,7 +939,7 @@ fn handle_query(
                     .map_err(|error| error.to_string()),
             )
         }
-        operation::TYPED_BY => {
+        protocol::Operation::TypedBy => {
             let feature: String = decode_request(request)?;
             encode_result(
                 state
@@ -947,7 +949,7 @@ fn handle_query(
                     .map_err(|error| error.to_string()),
             )
         }
-        operation::RELATIONSHIPS => {
+        protocol::Operation::Relationships => {
             let element: String = decode_request(request)?;
             encode_result(
                 state
@@ -957,7 +959,7 @@ fn handle_query(
                     .map_err(|error| error.to_string()),
             )
         }
-        operation::EFFECTIVE_FEATURES => {
+        protocol::Operation::EffectiveFeatures => {
             let element: String = decode_request(request)?;
             encode_result(
                 state
@@ -967,11 +969,8 @@ fn handle_query(
                     .map_err(|error| error.to_string()),
             )
         }
-        _ => Err(AbiViolation::error(format!(
-            "unknown Spec42 query operation {operation}"
-        ))),
     }?;
-    state.remember_response(operation, request, &response);
+    state.remember_response(operation.code(), request, &response);
     Ok(response)
 }
 
@@ -1110,13 +1109,14 @@ fn relationship(value: RelationshipSummary) -> protocol::Relationship {
 }
 
 fn diagnostic_level(level: i32) -> wasmtime::Result<GeneratorDiagnosticLevel> {
-    match level {
-        value if value == protocol::Level::Debug as i32 => Ok(GeneratorDiagnosticLevel::Debug),
-        value if value == protocol::Level::Info as i32 => Ok(GeneratorDiagnosticLevel::Info),
-        value if value == protocol::Level::Warning as i32 => Ok(GeneratorDiagnosticLevel::Warning),
-        value if value == protocol::Level::Error as i32 => Ok(GeneratorDiagnosticLevel::Error),
-        _ => Err(AbiViolation::error("invalid diagnostic level")),
-    }
+    let level = protocol::Level::try_from_code(level)
+        .map_err(|unknown| AbiViolation::error(unknown.to_string()))?;
+    Ok(match level {
+        protocol::Level::Debug => GeneratorDiagnosticLevel::Debug,
+        protocol::Level::Info => GeneratorDiagnosticLevel::Info,
+        protocol::Level::Warning => GeneratorDiagnosticLevel::Warning,
+        protocol::Level::Error => GeneratorDiagnosticLevel::Error,
+    })
 }
 
 fn digest(bytes: &[u8]) -> String {
