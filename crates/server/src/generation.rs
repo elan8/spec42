@@ -402,8 +402,8 @@ fn manifest_for(
             .flat_map(|manifest| manifest.artifacts.clone())
             .chain(
                 artifacts
-                    .iter()
-                    .map(|artifact| (artifact.path, digest(&artifact.content))),
+                    .entries()
+                    .map(|(path, content)| (path.to_string(), digest(content))),
             )
             .collect(),
     }
@@ -424,39 +424,40 @@ fn plan_outputs(
         conflicting: Vec::new(),
         adopted: Vec::new(),
     };
-    for artifact in artifacts.iter() {
-        reject_symlink_chain(output, &artifact.path)?;
-        let target = artifact_path(output, &artifact.path);
+    for (path, content) in artifacts.entries() {
+        let name = path.as_str();
+        reject_symlink_chain(output, name)?;
+        let target = artifact_path(output, name);
         match fs::symlink_metadata(&target) {
             Err(error) if error.kind() == io::ErrorKind::NotFound => {
-                operations.created.push(artifact.path)
+                operations.created.push(name.to_owned())
             }
             Err(error) => return Err(format!("failed to inspect {}: {error}", target.display())),
             Ok(metadata) if !metadata.file_type().is_file() => {
-                operations.conflicting.push(artifact.path)
+                operations.conflicting.push(name.to_owned())
             }
             Ok(_) => {
                 let current = fs::read(&target)
                     .map_err(|error| format!("failed to read {}: {error}", target.display()))?;
                 let previously_owned = previous
                     .as_ref()
-                    .and_then(|manifest| manifest.artifacts.get(&artifact.path))
+                    .and_then(|manifest| manifest.artifacts.get(name))
                     .is_some_and(|prior_hash| *prior_hash == digest(&current));
-                if current == artifact.content {
+                if current == content {
                     // Byte equality alone must not grant ownership: an unowned file the
                     // generator happens to reproduce (an empty `__init__.py`, say) would
                     // otherwise be recorded as ours and overwritten on the next run.
                     if previously_owned || force {
-                        operations.unchanged.push(artifact.path);
+                        operations.unchanged.push(name.to_owned());
                     } else {
-                        operations.adopted.push(artifact.path);
+                        operations.adopted.push(name.to_owned());
                     }
                     continue;
                 }
                 if force || previously_owned {
-                    operations.changed.push(artifact.path);
+                    operations.changed.push(name.to_owned());
                 } else {
-                    operations.conflicting.push(artifact.path);
+                    operations.conflicting.push(name.to_owned());
                 }
             }
         }
@@ -497,8 +498,8 @@ fn commit_outputs(
     if output.exists() {
         copy_tree(output, stage.path())?;
     }
-    for artifact in artifacts.iter() {
-        let target = artifact_path(stage.path(), &artifact.path);
+    for (path, content) in artifacts.entries() {
+        let target = artifact_path(stage.path(), path.as_str());
         if let Some(parent) = target.parent() {
             fs::create_dir_all(parent).map_err(|error| {
                 format!(
@@ -507,8 +508,7 @@ fn commit_outputs(
                 )
             })?;
         }
-        fs::write(&target, &artifact.content)
-            .map_err(|error| format!("failed to stage {}: {error}", artifact.path))?;
+        fs::write(&target, content).map_err(|error| format!("failed to stage {path}: {error}"))?;
     }
     let manifest_bytes = serde_json::to_vec_pretty(manifest)
         .map_err(|error| format!("failed to encode generation manifest: {error}"))?;

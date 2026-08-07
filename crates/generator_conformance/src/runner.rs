@@ -220,8 +220,8 @@ fn run_one(
         Ok(execution) => {
             let artifacts: BTreeMap<String, Vec<u8>> = execution
                 .artifacts
-                .iter()
-                .map(|artifact| (artifact.path, artifact.content))
+                .entries()
+                .map(|(path, content)| (path.to_string(), content.to_vec()))
                 .collect();
             let report = CaseReport {
                 outcome: Outcome::Success,

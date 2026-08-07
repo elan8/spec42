@@ -1211,7 +1211,7 @@ mod tests {
         assert_eq!(
             artifacts
                 .iter()
-                .map(|artifact| artifact.path)
+                .map(|artifact| artifact.path.to_string())
                 .collect::<Vec<_>>(),
             ["a/report.txt", "z.bin"]
         );
