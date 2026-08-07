@@ -19,18 +19,23 @@ workspace engine.
 
 ## Guest contract
 
-The public contract is the versioned core WebAssembly ABI defined by
-[`spec42-generator-protocol`](../../crates/generator_protocol). A module imports only two
-functions from the `spec42` module:
+The public contract is the core WebAssembly ABI specified in [ABI.md](./ABI.md), which is
+complete enough to implement a guest in any language without reading the Rust SDK. A module
+imports only two functions from the `spec42` module:
 
 - `query`: deterministic, read-only semantic queries encoded with Postcard;
 - `diagnostic`: bounded logs and element-associated diagnostics.
 
-It exports `memory`, `spec42_alloc`, `spec42_dealloc`, and `spec42_generate`. Arguments after CLI
-`--` are passed verbatim. The entrypoint returns a Postcard-encoded result containing a list of
-records with a UTF-8 `file_path` and binary `contents`. Modules requiring WASI, filesystem, sockets,
-environment variables, clocks, random, or subprocess imports fail compatibility checking because
-those imports are never linked.
+It exports `memory`, `spec42_abi_version`, `spec42_alloc`, and `spec42_generate`. Arguments
+after CLI `--` are passed verbatim. The entrypoint returns a Postcard-encoded result containing
+a list of records with a UTF-8 `file_path` and binary `contents`. Modules requiring WASI,
+filesystem, sockets, environment variables, clocks, random, or subprocess imports fail
+compatibility checking because those imports are never linked.
+
+`spec42_abi_version` reports a structural fingerprint of the wire schema. Because Postcard is
+positional and carries no field names or version marker, a guest built against a different
+revision would otherwise misread every payload rather than fail; the host compares the
+fingerprint and refuses a mismatched module before running it.
 
 Any language or toolchain that can produce the required core WebAssembly imports and exports can
 implement this contract. Pass the resulting core module directly to Spec42; no metadata or
