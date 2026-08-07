@@ -1778,8 +1778,8 @@ fn lsp_sysml_model_ibd_surveillance_drone_is_complete_enough_for_interconnection
     let default_root = ibd["defaultRoot"].as_str().expect("default root");
 
     assert_eq!(
-        default_root, "droneInstance",
-        "expected instance root to be selected by default"
+        default_root, "SurveillanceDrone.droneInstance",
+        "expected instance root to be selected by default, keyed by qualified name"
     );
     assert!(
         connectors.len() >= 14,
