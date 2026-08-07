@@ -27,6 +27,53 @@ const EXIT_RESOURCE_EXHAUSTED: u8 = 13;
 const EXIT_OUTPUT_POLICY: u8 = 14;
 const EXIT_CHECK_DIFFERENT: u8 = 15;
 
+/// Outcome of a generation run, as reported to the user and to CI.
+///
+/// These values are a public interface -- scripts branch on them -- so they are an enum
+/// with one serialized spelling rather than string literals scattered across call sites.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize)]
+#[serde(rename_all = "snake_case")]
+pub enum GenerationStatus {
+    Generated,
+    Unchanged,
+    Different,
+    DryRun,
+    ArtifactInvalid,
+    ApiIncompatible,
+    GeneratorError,
+    GeneratorTrap,
+    ResourceExhausted,
+    Cancelled,
+    ModelValidationFailure,
+    OutputPolicyFailure,
+}
+
+impl std::fmt::Display for GenerationStatus {
+    fn fmt(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        // One spelling for JSON and for humans, derived from the serde name so the two
+        // cannot drift apart.
+        let rendered = serde_json::to_value(self)
+            .ok()
+            .and_then(|value| value.as_str().map(str::to_owned))
+            .unwrap_or_default();
+        formatter.write_str(&rendered)
+    }
+}
+
+impl GenerationStatus {
+    fn from_failure(category: GeneratorFailureCategory) -> Self {
+        match category {
+            GeneratorFailureCategory::ArtifactInvalid => Self::ArtifactInvalid,
+            GeneratorFailureCategory::ApiIncompatible => Self::ApiIncompatible,
+            GeneratorFailureCategory::GeneratorError => Self::GeneratorError,
+            GeneratorFailureCategory::Trap => Self::GeneratorTrap,
+            GeneratorFailureCategory::ResourceExhausted => Self::ResourceExhausted,
+            GeneratorFailureCategory::Cancelled => Self::Cancelled,
+            GeneratorFailureCategory::OutputPolicy => Self::OutputPolicyFailure,
+        }
+    }
+}
+
 #[derive(Debug, Clone, Serialize)]
 pub struct ModelDiagnosticRecord {
     pub uri: String,
@@ -83,7 +130,7 @@ impl GenerationOperations {
 
 #[derive(Debug, Clone, Serialize)]
 pub struct GenerationReport {
-    pub status: String,
+    pub status: GenerationStatus,
     pub model_digest: String,
     pub generator_digest: String,
     pub api_version: String,
@@ -123,7 +170,7 @@ pub fn run_generate(cli: &Cli, args: &GenerateArgs) -> Result<ExitCode, String> 
         Err(error) => {
             emit_simple_failure(
                 args.format,
-                "artifact_invalid",
+                GenerationStatus::ArtifactInvalid,
                 &format!(
                     "failed to read generator {}: {error}",
                     args.generator.display()
@@ -157,7 +204,11 @@ pub fn run_generate(cli: &Cli, args: &GenerateArgs) -> Result<ExitCode, String> 
     ) {
         Ok(snapshot) => snapshot,
         Err(message) => {
-            emit_simple_failure(args.format, "model_validation_failure", &message)?;
+            emit_simple_failure(
+                args.format,
+                GenerationStatus::ModelValidationFailure,
+                &message,
+            )?;
             return Ok(ExitCode::from(EXIT_MODEL_INVALID));
         }
     };
@@ -166,7 +217,11 @@ pub fn run_generate(cli: &Cli, args: &GenerateArgs) -> Result<ExitCode, String> 
     let validation = match snapshot.ensure_validation() {
         Ok(validation) => validation,
         Err(error) => {
-            emit_simple_failure(args.format, "model_validation_failure", &error.to_string())?;
+            emit_simple_failure(
+                args.format,
+                GenerationStatus::ModelValidationFailure,
+                &error.to_string(),
+            )?;
             return Ok(ExitCode::from(EXIT_MODEL_INVALID));
         }
     };
@@ -224,7 +279,7 @@ pub fn run_generate(cli: &Cli, args: &GenerateArgs) -> Result<ExitCode, String> 
     let previous_manifest = match read_manifest(&args.output) {
         Ok(manifest) => manifest,
         Err(message) => {
-            emit_simple_failure(args.format, "output_policy_failure", &message)?;
+            emit_simple_failure(args.format, GenerationStatus::OutputPolicyFailure, &message)?;
             return Ok(ExitCode::from(EXIT_OUTPUT_POLICY));
         }
     };
@@ -239,7 +294,7 @@ pub fn run_generate(cli: &Cli, args: &GenerateArgs) -> Result<ExitCode, String> 
     let operations = match plan_outputs(&args.output, &execution.artifacts, args.force) {
         Ok(operations) => operations,
         Err(message) => {
-            emit_simple_failure(args.format, "output_policy_failure", &message)?;
+            emit_simple_failure(args.format, GenerationStatus::OutputPolicyFailure, &message)?;
             return Ok(ExitCode::from(EXIT_OUTPUT_POLICY));
         }
     };
@@ -249,27 +304,27 @@ pub fn run_generate(cli: &Cli, args: &GenerateArgs) -> Result<ExitCode, String> 
             "refusing to take over {} unowned or locally modified file(s); use --force to authorize replacement",
             operations.conflicting.len() + operations.adopted.len()
         );
-        emit_simple_failure(args.format, "output_policy_failure", &message)?;
+        emit_simple_failure(args.format, GenerationStatus::OutputPolicyFailure, &message)?;
         return Ok(ExitCode::from(EXIT_OUTPUT_POLICY));
     }
 
     let mut output_commit_ms = 0;
     let status = if args.check {
         if operations.has_differences() {
-            "different"
+            GenerationStatus::Different
         } else {
-            "unchanged"
+            GenerationStatus::Unchanged
         }
     } else if args.dry_run {
-        "dry_run"
+        GenerationStatus::DryRun
     } else {
         let output_commit_started = Instant::now();
         if let Err(message) = commit_outputs(&args.output, &execution.artifacts, &manifest) {
-            emit_simple_failure(args.format, "output_policy_failure", &message)?;
+            emit_simple_failure(args.format, GenerationStatus::OutputPolicyFailure, &message)?;
             return Ok(ExitCode::from(EXIT_OUTPUT_POLICY));
         }
         output_commit_ms = output_commit_started.elapsed().as_millis();
-        "generated"
+        GenerationStatus::Generated
     };
 
     let generator_diagnostics = execution
@@ -293,7 +348,7 @@ pub fn run_generate(cli: &Cli, args: &GenerateArgs) -> Result<ExitCode, String> 
         })
         .collect();
     let report = GenerationReport {
-        status: status.to_owned(),
+        status,
         model_digest,
         generator_digest: execution.generator_digest,
         api_version: GENERATOR_ABI_VERSION.to_string(),
@@ -712,7 +767,12 @@ fn emit_validation_failure(
     Ok(())
 }
 
-fn emit_simple_failure(format: OutputFormat, status: &str, message: &str) -> Result<(), String> {
+fn emit_simple_failure(
+    format: OutputFormat,
+    status: GenerationStatus,
+    message: &str,
+) -> Result<(), String> {
+    let status = status.to_string();
     if format == OutputFormat::Json {
         println!(
             "{}",
@@ -729,15 +789,7 @@ fn emit_simple_failure(format: OutputFormat, status: &str, message: &str) -> Res
 }
 
 fn emit_host_failure(format: OutputFormat, error: &GeneratorHostError) -> Result<ExitCode, String> {
-    let status = match error.category {
-        GeneratorFailureCategory::ArtifactInvalid => "artifact_invalid",
-        GeneratorFailureCategory::ApiIncompatible => "api_incompatible",
-        GeneratorFailureCategory::GeneratorError => "generator_error",
-        GeneratorFailureCategory::Trap => "generator_trap",
-        GeneratorFailureCategory::ResourceExhausted => "resource_exhausted",
-        GeneratorFailureCategory::Cancelled => "cancelled",
-        GeneratorFailureCategory::OutputPolicy => "output_policy_failure",
-    };
+    let status = GenerationStatus::from_failure(error.category);
     if format == OutputFormat::Json {
         println!(
             "{}",

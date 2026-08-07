@@ -80,6 +80,42 @@ pub enum GeneratorFailureCategory {
     OutputPolicy,
 }
 
+/// Where a failure happened. An enum rather than a string because these values reach the
+/// user through the JSON report and are matched on by the conformance suite, so a typo or a
+/// silently renamed stage should be a compile error.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "kebab-case")]
+pub enum GenerationPhase {
+    RuntimeConfiguration,
+    ModuleValidation,
+    ModuleCompilation,
+    ApiCompatibility,
+    ApiLinking,
+    ResourceConfiguration,
+    BeforeExecution,
+    GuestInstantiation,
+    GuestExecution,
+    ArtifactValidation,
+}
+
+impl std::fmt::Display for GenerationPhase {
+    fn fmt(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        let name = match self {
+            Self::RuntimeConfiguration => "runtime-configuration",
+            Self::ModuleValidation => "module-validation",
+            Self::ModuleCompilation => "module-compilation",
+            Self::ApiCompatibility => "api-compatibility",
+            Self::ApiLinking => "api-linking",
+            Self::ResourceConfiguration => "resource-configuration",
+            Self::BeforeExecution => "before-execution",
+            Self::GuestInstantiation => "guest-instantiation",
+            Self::GuestExecution => "guest-execution",
+            Self::ArtifactValidation => "artifact-validation",
+        };
+        formatter.write_str(name)
+    }
+}
+
 /// Raised from a host call to unwind a run that must stop.
 ///
 /// A distinct type so classification does not depend on message text.
@@ -108,7 +144,7 @@ impl AbiViolation {
 #[error("{category:?} during {phase}: {message}")]
 pub struct GeneratorHostError {
     pub category: GeneratorFailureCategory,
-    pub phase: &'static str,
+    pub phase: GenerationPhase,
     pub message: String,
 }
 
@@ -180,7 +216,7 @@ impl GeneratorRuntime {
         config.cranelift_nan_canonicalization(true);
         let engine = Engine::new(&config).map_err(|error| GeneratorHostError {
             category: GeneratorFailureCategory::ArtifactInvalid,
-            phase: "runtime-configuration",
+            phase: GenerationPhase::RuntimeConfiguration,
             message: error.to_string(),
         })?;
         Ok(Self { engine, options })
@@ -216,7 +252,7 @@ impl GeneratorRuntime {
         if !Parser::is_core_wasm(module_bytes) {
             return Err(GeneratorHostError {
                 category: GeneratorFailureCategory::ArtifactInvalid,
-                phase: "module-validation",
+                phase: GenerationPhase::ModuleValidation,
                 message: "not a core WebAssembly module".to_owned(),
             });
         }
@@ -224,25 +260,25 @@ impl GeneratorRuntime {
         let module =
             Module::new(&self.engine, module_bytes).map_err(|error| GeneratorHostError {
                 category: GeneratorFailureCategory::ArtifactInvalid,
-                phase: "module-compilation",
+                phase: GenerationPhase::ModuleCompilation,
                 message: format!("failed to compile WebAssembly module: {error}"),
             })?;
         validate_module_exports(&module).map_err(|message| GeneratorHostError {
             category: GeneratorFailureCategory::ApiIncompatible,
-            phase: "api-compatibility",
+            phase: GenerationPhase::ApiCompatibility,
             message,
         })?;
         let mut linker = Linker::<HostState>::new(&self.engine);
         add_host_functions(&mut linker).map_err(|error| GeneratorHostError {
             category: GeneratorFailureCategory::ApiIncompatible,
-            phase: "api-linking",
+            phase: GenerationPhase::ApiLinking,
             message: error.to_string(),
         })?;
         linker
             .instantiate_pre(&module)
             .map_err(|error| GeneratorHostError {
                 category: GeneratorFailureCategory::ApiIncompatible,
-                phase: "api-compatibility",
+                phase: GenerationPhase::ApiCompatibility,
                 message: format!(
                     "module does not implement the Spec42 generator ABI v{GENERATOR_ABI_VERSION}: {error}"
                 ),
@@ -265,7 +301,7 @@ impl GeneratorRuntime {
         if cancellation.is_cancelled() {
             return Err(GeneratorHostError {
                 category: GeneratorFailureCategory::Cancelled,
-                phase: "before-execution",
+                phase: GenerationPhase::BeforeExecution,
                 message: "generation was cancelled".to_owned(),
             });
         }
@@ -273,13 +309,13 @@ impl GeneratorRuntime {
         let mut linker = Linker::new(&self.engine);
         add_host_functions(&mut linker).map_err(|error| GeneratorHostError {
             category: GeneratorFailureCategory::ApiIncompatible,
-            phase: "api-linking",
+            phase: GenerationPhase::ApiLinking,
             message: error.to_string(),
         })?;
         if runtime_limits.fuel.is_some() && !self.options.fuel_metering {
             return Err(GeneratorHostError {
                 category: GeneratorFailureCategory::ResourceExhausted,
-                phase: "resource-configuration",
+                phase: GenerationPhase::ResourceConfiguration,
                 message: "a fuel limit requires a runtime built with fuel metering enabled"
                     .to_owned(),
             });
@@ -288,7 +324,7 @@ impl GeneratorRuntime {
         let mut linker = Linker::new(&self.engine);
         add_host_functions(&mut linker).map_err(|error| GeneratorHostError {
             category: GeneratorFailureCategory::ApiIncompatible,
-            phase: "api-linking",
+            phase: GenerationPhase::ApiLinking,
             message: error.to_string(),
         })?;
         let deadline = runtime_limits
@@ -310,7 +346,7 @@ impl GeneratorRuntime {
         if let Some(fuel) = runtime_limits.fuel {
             store.set_fuel(fuel).map_err(|error| GeneratorHostError {
                 category: GeneratorFailureCategory::ResourceExhausted,
-                phase: "resource-configuration",
+                phase: GenerationPhase::ResourceConfiguration,
                 message: error.to_string(),
             })?;
         }
@@ -535,32 +571,34 @@ fn execute_guest(
     artifact_limits: ArtifactLimits,
     cancellation: &CancellationHandle,
 ) -> Result<ArtifactSet, GeneratorHostError> {
-    let instance = linker
-        .instantiate(&mut *store, module)
-        .map_err(|error| classify_wasmtime_error("guest-instantiation", error, cancellation))?;
-    let memory = instance
-        .get_memory(&mut *store, "memory")
-        .ok_or_else(|| incompatible("guest-instantiation", "module does not export memory"))?;
+    let instance = linker.instantiate(&mut *store, module).map_err(|error| {
+        classify_wasmtime_error(GenerationPhase::GuestInstantiation, error, cancellation)
+    })?;
+    let memory = instance.get_memory(&mut *store, "memory").ok_or_else(|| {
+        incompatible(
+            GenerationPhase::GuestInstantiation,
+            "module does not export memory",
+        )
+    })?;
     let alloc = instance
         .get_typed_func::<i32, i32>(&mut *store, "spec42_alloc")
-        .map_err(|error| incompatible("guest-instantiation", error.to_string()))?;
+        .map_err(|error| incompatible(GenerationPhase::GuestInstantiation, error.to_string()))?;
     let generate = instance
         .get_typed_func::<(i32, i32), i64>(&mut *store, "spec42_generate")
-        .map_err(|error| incompatible("guest-instantiation", error.to_string()))?;
+        .map_err(|error| incompatible(GenerationPhase::GuestInstantiation, error.to_string()))?;
     let abi_version = instance
         .get_typed_func::<(), i64>(&mut *store, "spec42_abi_version")
-        .map_err(|error| incompatible("guest-instantiation", error.to_string()))?;
+        .map_err(|error| incompatible(GenerationPhase::GuestInstantiation, error.to_string()))?;
 
     // Before anything else, confirm both sides agree on the wire schema. Postcard payloads
     // are positional, so a mismatch here would otherwise surface as plausible-looking but
     // wrongly-offset data rather than an error.
-    let reported = abi_version
-        .call(&mut *store, ())
-        .map_err(|error| classify_wasmtime_error("guest-instantiation", error, cancellation))?
-        as u64;
+    let reported = abi_version.call(&mut *store, ()).map_err(|error| {
+        classify_wasmtime_error(GenerationPhase::GuestInstantiation, error, cancellation)
+    })? as u64;
     if reported != protocol::SCHEMA_FINGERPRINT {
         return Err(incompatible(
-            "api-compatibility",
+            GenerationPhase::ApiCompatibility,
             format!(
                 "generator was built against a different Spec42 wire schema \
                  (generator {reported:#018x}, host {:#018x}); rebuild it against generator ABI v{}",
@@ -572,37 +610,38 @@ fn execute_guest(
 
     let args_bytes = postcard::to_allocvec(args).map_err(|error| GeneratorHostError {
         category: GeneratorFailureCategory::GeneratorError,
-        phase: "guest-execution",
+        phase: GenerationPhase::GuestExecution,
         message: format!("failed to encode generator arguments: {error}"),
     })?;
     let args_len = i32::try_from(args_bytes.len()).map_err(|_| {
         incompatible(
-            "guest-execution",
+            GenerationPhase::GuestExecution,
             "generator arguments exceed the ABI limit",
         )
     })?;
-    let args_ptr = alloc
-        .call(&mut *store, args_len)
-        .map_err(|error| classify_wasmtime_error("guest-execution", error, cancellation))?;
+    let args_ptr = alloc.call(&mut *store, args_len).map_err(|error| {
+        classify_wasmtime_error(GenerationPhase::GuestExecution, error, cancellation)
+    })?;
     if args_ptr == 0 && args_len != 0 {
         return Err(incompatible(
-            "guest-execution",
+            GenerationPhase::GuestExecution,
             "spec42_alloc returned a null pointer",
         ));
     }
     memory
         .write(&mut *store, args_ptr as usize, &args_bytes)
-        .map_err(|error| incompatible("guest-execution", error.to_string()))?;
+        .map_err(|error| incompatible(GenerationPhase::GuestExecution, error.to_string()))?;
     let packed = generate
         .call(&mut *store, (args_ptr, args_len))
-        .map_err(|error| classify_wasmtime_error("guest-execution", error, cancellation))?
-        as u64;
+        .map_err(|error| {
+            classify_wasmtime_error(GenerationPhase::GuestExecution, error, cancellation)
+        })? as u64;
     let output_ptr = (packed & u32::MAX as u64) as u32 as usize;
     let output_len = (packed >> 32) as usize;
     if output_len > max_artifact_result_bytes(artifact_limits) {
         return Err(GeneratorHostError {
             category: GeneratorFailureCategory::OutputPolicy,
-            phase: "artifact-validation",
+            phase: GenerationPhase::ArtifactValidation,
             message: "generator result exceeds the configured artifact limits".to_owned(),
         });
     }
@@ -614,14 +653,14 @@ fn execute_guest(
         .is_none_or(|end| end > available)
     {
         return Err(incompatible(
-            "guest-execution",
+            GenerationPhase::GuestExecution,
             "generator result lies outside guest memory",
         ));
     }
     let mut output = vec![0; output_len];
     memory
         .read(&mut *store, output_ptr, &mut output)
-        .map_err(|error| incompatible("guest-execution", error.to_string()))?;
+        .map_err(|error| incompatible(GenerationPhase::GuestExecution, error.to_string()))?;
     // The guest's result buffer is deliberately not freed: the store is dropped immediately
     // below, so a `spec42_dealloc` call would only give a completed run another chance to
     // trap. That is why the export is not part of the ABI.
@@ -629,19 +668,19 @@ fn execute_guest(
     let (result, remaining): (Result<Vec<protocol::Artifact>, String>, _) =
         postcard::take_from_bytes(&output).map_err(|error| {
             incompatible(
-                "guest-execution",
+                GenerationPhase::GuestExecution,
                 format!("generator returned an invalid result: {error}"),
             )
         })?;
     if !remaining.is_empty() {
         return Err(incompatible(
-            "guest-execution",
+            GenerationPhase::GuestExecution,
             "generator result contains trailing bytes",
         ));
     }
     let returned = result.map_err(|message| GeneratorHostError {
         category: GeneratorFailureCategory::GeneratorError,
-        phase: "guest-execution",
+        phase: GenerationPhase::GuestExecution,
         message,
     })?;
     validate_returned_artifacts(returned, artifact_limits)
@@ -677,7 +716,7 @@ fn validate_artifact_result_header(
     if count > max_files {
         return Err(GeneratorHostError {
             category: GeneratorFailureCategory::OutputPolicy,
-            phase: "artifact-validation",
+            phase: GenerationPhase::ArtifactValidation,
             message: format!("generator returned {count} files; the limit is {max_files}"),
         });
     }
@@ -694,7 +733,7 @@ fn validate_returned_artifacts(
             .emit(&artifact.file_path, artifact.contents)
             .map_err(|error| GeneratorHostError {
                 category: GeneratorFailureCategory::OutputPolicy,
-                phase: "artifact-validation",
+                phase: GenerationPhase::ArtifactValidation,
                 message: error.to_string(),
             })?;
     }
@@ -1043,7 +1082,7 @@ fn bounded_message(mut message: String) -> String {
     message
 }
 
-fn incompatible(phase: &'static str, message: impl Into<String>) -> GeneratorHostError {
+fn incompatible(phase: GenerationPhase, message: impl Into<String>) -> GeneratorHostError {
     GeneratorHostError {
         category: GeneratorFailureCategory::ApiIncompatible,
         phase,
@@ -1062,7 +1101,7 @@ fn incompatible(phase: &'static str, message: impl Into<String>) -> GeneratorHos
 ///
 /// [`WasmBacktrace`]: wasmtime::WasmBacktrace
 fn classify_wasmtime_error(
-    phase: &'static str,
+    phase: GenerationPhase,
     error: wasmtime::Error,
     cancellation: &CancellationHandle,
 ) -> GeneratorHostError {
@@ -1118,7 +1157,7 @@ mod tests {
             Err(error) => error,
         };
         assert_eq!(error.category, GeneratorFailureCategory::ArtifactInvalid);
-        assert_eq!(error.phase, "module-validation");
+        assert_eq!(error.phase, GenerationPhase::ModuleValidation);
         assert_eq!(error.message, "not a core WebAssembly module");
     }
 
@@ -1131,7 +1170,7 @@ mod tests {
             Err(error) => error,
         };
         assert_eq!(error.category, GeneratorFailureCategory::ApiIncompatible);
-        assert_eq!(error.phase, "api-compatibility");
+        assert_eq!(error.phase, GenerationPhase::ApiCompatibility);
         assert_eq!(error.message, "module does not export `memory`");
     }
 
@@ -1179,7 +1218,7 @@ mod tests {
         .expect_err("duplicate path should fail");
 
         assert_eq!(error.category, GeneratorFailureCategory::OutputPolicy);
-        assert_eq!(error.phase, "artifact-validation");
+        assert_eq!(error.phase, GenerationPhase::ArtifactValidation);
         assert!(error.message.contains("returned more than once"));
     }
 
@@ -1188,7 +1227,7 @@ mod tests {
     /// both bare and contexted: the contexted form is what production actually sees.
     fn classify(error: wasmtime::Error) -> (GeneratorFailureCategory, String) {
         let cancellation = CancellationHandle::new();
-        let bare = classify_wasmtime_error("guest-execution", error, &cancellation);
+        let bare = classify_wasmtime_error(GenerationPhase::GuestExecution, error, &cancellation);
         (bare.category, bare.message)
     }
 
@@ -1246,7 +1285,7 @@ mod tests {
         let cancellation = CancellationHandle::new();
         cancellation.cancel();
         let cancelled = classify_wasmtime_error(
-            "guest-execution",
+            GenerationPhase::GuestExecution,
             wasmtime::Error::new(Trap::Interrupt),
             &cancellation,
         );
@@ -1270,7 +1309,7 @@ mod tests {
         let error = validate_artifact_result_header(&encoded, 1)
             .expect_err("artifact count over the limit should fail");
         assert_eq!(error.category, GeneratorFailureCategory::OutputPolicy);
-        assert_eq!(error.phase, "artifact-validation");
+        assert_eq!(error.phase, GenerationPhase::ArtifactValidation);
         assert_eq!(error.message, "generator returned 2 files; the limit is 1");
     }
 }
