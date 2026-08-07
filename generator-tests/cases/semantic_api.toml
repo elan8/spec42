@@ -1,0 +1,28 @@
+# Pins the observable shape of the semantic query surface.
+
+[defaults]
+model = "coverage"
+plugin = "query_all"
+expect = "success"
+
+[[case]]
+id = "semantic-api/all-operations"
+description = """
+Calls every query operation over the coverage model and writes a normalised transcript.
+This is the primary golden for the semantic API: a change to result ordering, metaclass
+strings, relationship kinds or ElementDetail defaulting shows up here as a reviewable diff.
+"""
+assert = { output_files = 1 }
+
+[[case]]
+id = "semantic-api/effective-feature-shadowing"
+model = "inheritance"
+description = """
+Direct features precede inherited ones, inheritance is nearest-first, and a same-named
+nearer feature shadows a farther one. This case is that rule, executable.
+"""
+
+[[case]]
+id = "semantic-api/minimal-model"
+model = "minimal"
+description = "The smallest model that still exercises every operation."

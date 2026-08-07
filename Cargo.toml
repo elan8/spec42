@@ -3,6 +3,7 @@ resolver = "2"
 members = [
   "crates/diagram",
   "crates/generator_api",
+  "crates/generator_conformance",
   "crates/generator_host",
   "crates/generator_protocol",
   "crates/generator_sdk",

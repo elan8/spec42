@@ -1,0 +1,48 @@
+{
+  "outcome": {
+    "kind": "success"
+  },
+  "artifacts": {
+    "diagnostics.txt": {
+      "bytes": 15,
+      "text": "see the report\n"
+    }
+  },
+  "diagnostics": [
+    {
+      "level": "debug",
+      "message": "debug, unscoped",
+      "scoped": false
+    },
+    {
+      "level": "info",
+      "message": "info, unscoped",
+      "scoped": false
+    },
+    {
+      "level": "warning",
+      "message": "warning, unscoped",
+      "scoped": false
+    },
+    {
+      "level": "error",
+      "message": "error, unscoped",
+      "scoped": false
+    },
+    {
+      "level": "warning",
+      "message": "warning, scoped to a real element",
+      "scoped": true
+    },
+    {
+      "level": "info",
+      "message": "info, scoped to a handle that does not resolve",
+      "scoped": false
+    }
+  ],
+  "query_count": 1,
+  "fuel_consumed": null,
+  "peak_memory_bytes": 1310720,
+  "output_files": 1,
+  "output_bytes": 15
+}

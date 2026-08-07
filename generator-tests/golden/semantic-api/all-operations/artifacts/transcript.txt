@@ -1,0 +1,166 @@
+info: model_digest=<present> spec42_version=<present> semantic_api_version=0.1.0
+roots: 1 element(s)
+  Coverage [Package] name=Coverage library=false
+find(None): 16 element(s)
+  Coverage [Package] name=Coverage library=false
+  Coverage::Component [PartDefinition] name=Component library=false
+  Coverage::Component::_documentation [Documentation] name=<none> library=false
+  Coverage::Component::mass [AttributeUsage] name=mass library=false
+  Coverage::Engine [PartDefinition] name=Engine library=false
+  Coverage::Engine::mass [AttributeUsage] name=mass library=false
+  Coverage::Engine::speed [AttributeUsage] name=speed library=false
+  Coverage::Mass [AttributeDefinition] name=Mass library=false
+  Coverage::Powered [PartDefinition] name=Powered library=false
+  Coverage::Powered::power [AttributeUsage] name=power library=false
+  Coverage::Speed [AttributeDefinition] name=Speed library=false
+  Coverage::Vehicle [PartDefinition] name=Vehicle library=false
+  Coverage::Vehicle::engine [PartUsage] name=engine library=false
+  Coverage::Vehicle::spare [ReferenceUsage] name=spare library=false
+  Coverage::_documentation [Documentation] name=<none> library=false
+  Coverage::vehicle [PartUsage] name=vehicle library=false
+find(PartDefinition): 4 element(s)
+  Coverage::Component [PartDefinition] name=Component library=false
+  Coverage::Engine [PartDefinition] name=Engine library=false
+  Coverage::Powered [PartDefinition] name=Powered library=false
+  Coverage::Vehicle [PartDefinition] name=Vehicle library=false
+children(Coverage): 8 element(s)
+  Coverage::Component [PartDefinition] name=Component library=false
+  Coverage::Engine [PartDefinition] name=Engine library=false
+  Coverage::Mass [AttributeDefinition] name=Mass library=false
+  Coverage::Powered [PartDefinition] name=Powered library=false
+  Coverage::Speed [AttributeDefinition] name=Speed library=false
+  Coverage::Vehicle [PartDefinition] name=Vehicle library=false
+  Coverage::_documentation [Documentation] name=<none> library=false
+  Coverage::vehicle [PartUsage] name=vehicle library=false
+element(Coverage): definition=false abstract=false derived=false end=false multiplicity=<none>
+typed_by(Coverage): <untyped>
+relationships(Coverage): 8 edge(s)
+  reference Coverage -> Coverage::Component implied=false
+  reference Coverage -> Coverage::Engine implied=false
+  reference Coverage -> Coverage::Mass implied=false
+  reference Coverage -> Coverage::Powered implied=false
+  reference Coverage -> Coverage::Speed implied=false
+  reference Coverage -> Coverage::Vehicle implied=false
+  reference Coverage -> Coverage::_documentation implied=false
+  reference Coverage -> Coverage::vehicle implied=false
+effective_features(Coverage): 1 element(s)
+  Coverage::vehicle [PartUsage] name=vehicle library=false
+children(Coverage::Component): 2 element(s)
+  Coverage::Component::_documentation [Documentation] name=<none> library=false
+  Coverage::Component::mass [AttributeUsage] name=mass library=false
+element(Coverage::Component): definition=true abstract=false derived=false end=false multiplicity=<none>
+typed_by(Coverage::Component): <untyped>
+relationships(Coverage::Component): 2 edge(s)
+  reference Coverage::Component -> Coverage::Component::_documentation implied=false
+  reference Coverage::Component -> Coverage::Component::mass implied=false
+effective_features(Coverage::Component): 1 element(s)
+  Coverage::Component::mass [AttributeUsage] name=mass library=false
+children(Coverage::Component::_documentation): 0 element(s)
+element(Coverage::Component::_documentation): definition=false abstract=false derived=false end=false multiplicity=<none>
+typed_by(Coverage::Component::_documentation): <untyped>
+relationships(Coverage::Component::_documentation): 1 edge(s)
+  annotation Coverage::Component::_documentation -> Coverage::Component implied=false
+effective_features(Coverage::Component::_documentation): 0 element(s)
+children(Coverage::Component::mass): 0 element(s)
+element(Coverage::Component::mass): definition=false abstract=false derived=false end=false multiplicity=<none>
+typed_by(Coverage::Component::mass): Coverage::Mass
+relationships(Coverage::Component::mass): 1 edge(s)
+  typing Coverage::Component::mass -> Coverage::Mass implied=false
+effective_features(Coverage::Component::mass): 0 element(s)
+children(Coverage::Engine): 2 element(s)
+  Coverage::Engine::mass [AttributeUsage] name=mass library=false
+  Coverage::Engine::speed [AttributeUsage] name=speed library=false
+element(Coverage::Engine): definition=true abstract=false derived=false end=false multiplicity=<none>
+typed_by(Coverage::Engine): <untyped>
+relationships(Coverage::Engine): 3 edge(s)
+  reference Coverage::Engine -> Coverage::Engine::mass implied=false
+  reference Coverage::Engine -> Coverage::Engine::speed implied=false
+  specializes Coverage::Engine -> Coverage::Powered implied=false
+effective_features(Coverage::Engine): 3 element(s)
+  Coverage::Engine::mass [AttributeUsage] name=mass library=false
+  Coverage::Engine::speed [AttributeUsage] name=speed library=false
+  Coverage::Powered::power [AttributeUsage] name=power library=false
+children(Coverage::Engine::mass): 0 element(s)
+element(Coverage::Engine::mass): definition=false abstract=false derived=false end=false multiplicity=<none>
+typed_by(Coverage::Engine::mass): Coverage::Mass
+relationships(Coverage::Engine::mass): 1 edge(s)
+  typing Coverage::Engine::mass -> Coverage::Mass implied=false
+effective_features(Coverage::Engine::mass): 0 element(s)
+children(Coverage::Engine::speed): 0 element(s)
+element(Coverage::Engine::speed): definition=false abstract=false derived=false end=false multiplicity={"kind":"integerLiteral","range":{"start":{"line":20,"character":32},"end":{"line":20,"character":33}},"literal":0,"reference":null,"operator":null,"children":[],"arguments":[]}..?
+typed_by(Coverage::Engine::speed): Coverage::Speed
+relationships(Coverage::Engine::speed): 1 edge(s)
+  typing Coverage::Engine::speed -> Coverage::Speed implied=false
+effective_features(Coverage::Engine::speed): 0 element(s)
+children(Coverage::Mass): 0 element(s)
+element(Coverage::Mass): definition=true abstract=false derived=false end=false multiplicity=<none>
+typed_by(Coverage::Mass): <untyped>
+relationships(Coverage::Mass): 0 edge(s)
+effective_features(Coverage::Mass): 0 element(s)
+children(Coverage::Powered): 1 element(s)
+  Coverage::Powered::power [AttributeUsage] name=power library=false
+element(Coverage::Powered): definition=true abstract=true derived=false end=false multiplicity=<none>
+typed_by(Coverage::Powered): <untyped>
+relationships(Coverage::Powered): 2 edge(s)
+  reference Coverage::Powered -> Coverage::Powered::power implied=false
+  specializes Coverage::Powered -> Coverage::Component implied=false
+effective_features(Coverage::Powered): 2 element(s)
+  Coverage::Powered::power [AttributeUsage] name=power library=false
+  Coverage::Component::mass [AttributeUsage] name=mass library=false
+children(Coverage::Powered::power): 0 element(s)
+element(Coverage::Powered::power): definition=false abstract=false derived=false end=false multiplicity=<none>
+typed_by(Coverage::Powered::power): <untyped>
+relationships(Coverage::Powered::power): 0 edge(s)
+effective_features(Coverage::Powered::power): 0 element(s)
+children(Coverage::Speed): 0 element(s)
+element(Coverage::Speed): definition=true abstract=false derived=false end=false multiplicity=<none>
+typed_by(Coverage::Speed): <untyped>
+relationships(Coverage::Speed): 0 edge(s)
+effective_features(Coverage::Speed): 0 element(s)
+children(Coverage::Vehicle): 2 element(s)
+  Coverage::Vehicle::engine [PartUsage] name=engine library=false
+  Coverage::Vehicle::spare [ReferenceUsage] name=spare library=false
+element(Coverage::Vehicle): definition=true abstract=false derived=false end=false multiplicity=<none>
+typed_by(Coverage::Vehicle): <untyped>
+relationships(Coverage::Vehicle): 3 edge(s)
+  reference Coverage::Vehicle -> Coverage::Vehicle::engine implied=false
+  reference Coverage::Vehicle -> Coverage::Vehicle::spare implied=false
+  specializes Coverage::Vehicle -> Coverage::Component implied=false
+effective_features(Coverage::Vehicle): 3 element(s)
+  Coverage::Vehicle::engine [PartUsage] name=engine library=false
+  Coverage::Vehicle::spare [ReferenceUsage] name=spare library=false
+  Coverage::Component::mass [AttributeUsage] name=mass library=false
+children(Coverage::Vehicle::engine): 0 element(s)
+element(Coverage::Vehicle::engine): definition=false abstract=false derived=false end=false multiplicity={"kind":"integerLiteral","range":{"start":{"line":24,"character":29},"end":{"line":24,"character":30}},"literal":1,"reference":null,"operator":null,"children":[],"arguments":[]}..{"kind":"integerLiteral","range":{"start":{"line":24,"character":29},"end":{"line":24,"character":30}},"literal":1,"reference":null,"operator":null,"children":[],"arguments":[]}
+typed_by(Coverage::Vehicle::engine): Coverage::Engine
+relationships(Coverage::Vehicle::engine): 1 edge(s)
+  typing Coverage::Vehicle::engine -> Coverage::Engine implied=false
+effective_features(Coverage::Vehicle::engine): 3 element(s)
+  Coverage::Engine::mass [AttributeUsage] name=mass library=false
+  Coverage::Engine::speed [AttributeUsage] name=speed library=false
+  Coverage::Powered::power [AttributeUsage] name=power library=false
+children(Coverage::Vehicle::spare): 0 element(s)
+element(Coverage::Vehicle::spare): definition=false abstract=false derived=false end=false multiplicity={"kind":"integerLiteral","range":{"start":{"line":25,"character":32},"end":{"line":25,"character":33}},"literal":0,"reference":null,"operator":null,"children":[],"arguments":[]}..{"kind":"integerLiteral","range":{"start":{"line":25,"character":35},"end":{"line":25,"character":36}},"literal":1,"reference":null,"operator":null,"children":[],"arguments":[]}
+typed_by(Coverage::Vehicle::spare): Coverage::Engine
+relationships(Coverage::Vehicle::spare): 1 edge(s)
+  typing Coverage::Vehicle::spare -> Coverage::Engine implied=false
+effective_features(Coverage::Vehicle::spare): 3 element(s)
+  Coverage::Engine::mass [AttributeUsage] name=mass library=false
+  Coverage::Engine::speed [AttributeUsage] name=speed library=false
+  Coverage::Powered::power [AttributeUsage] name=power library=false
+children(Coverage::_documentation): 0 element(s)
+element(Coverage::_documentation): definition=false abstract=false derived=false end=false multiplicity=<none>
+typed_by(Coverage::_documentation): <untyped>
+relationships(Coverage::_documentation): 1 edge(s)
+  annotation Coverage::_documentation -> Coverage implied=false
+effective_features(Coverage::_documentation): 0 element(s)
+children(Coverage::vehicle): 0 element(s)
+element(Coverage::vehicle): definition=false abstract=false derived=false end=false multiplicity=<none>
+typed_by(Coverage::vehicle): Coverage::Vehicle
+relationships(Coverage::vehicle): 1 edge(s)
+  typing Coverage::vehicle -> Coverage::Vehicle implied=false
+effective_features(Coverage::vehicle): 3 element(s)
+  Coverage::Vehicle::engine [PartUsage] name=engine library=false
+  Coverage::Vehicle::spare [ReferenceUsage] name=spare library=false
+  Coverage::Component::mass [AttributeUsage] name=mass library=false
+element(<bogus>): error

@@ -1,0 +1,15 @@
+{
+  "outcome": {
+    "kind": "failure",
+    "category": "outputpolicy",
+    "phase": "artifact-validation",
+    "message": "artifact `readme.md` collides with `README.md` on case- or normalization-insensitive filesystems; they would be the same file on disk"
+  },
+  "artifacts": {},
+  "diagnostics": [],
+  "query_count": 0,
+  "fuel_consumed": null,
+  "peak_memory_bytes": 0,
+  "output_files": 0,
+  "output_bytes": 0
+}

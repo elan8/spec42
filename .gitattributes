@@ -5,3 +5,6 @@
 # (LF) copy then fails on every run even though the content hasn't actually changed.
 vscode/src/generated/** text eol=lf
 crates/server/assets/** text eol=lf
+
+# Golden artifacts are compared byte for byte; autocrlf would rewrite them.
+generator-tests/golden/** -text

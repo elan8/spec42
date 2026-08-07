@@ -793,6 +793,21 @@ dependencies = [
 ]
 
 [[package]]
+name = "generator_conformance"
+version = "0.49.0"
+dependencies = [
+ "clap",
+ "generator_api",
+ "generator_host",
+ "rayon",
+ "serde",
+ "serde_json",
+ "tempfile",
+ "toml",
+ "workspace",
+]
+
+[[package]]
 name = "generator_host"
 version = "0.49.0"
 dependencies = [
