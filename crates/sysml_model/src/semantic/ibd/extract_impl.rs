@@ -528,7 +528,7 @@ pub fn build_ibd_for_uri(graph: &SemanticGraph, uri: &Url) -> IbdDataDto {
 
     let root_candidates: Vec<String> = roots_with_metrics
         .iter()
-        .map(|(p, _, _, _)| p.name.clone())
+        .map(|(p, _, _, _)| p.qualified_name.clone())
         .collect();
     let default_root = root_candidates.first().cloned();
     let mut root_views: std::collections::BTreeMap<String, IbdRootViewDto> =
@@ -579,7 +579,7 @@ pub fn build_ibd_for_uri(graph: &SemanticGraph, uri: &Url) -> IbdDataDto {
             .cloned()
             .collect();
         root_views.insert(
-            p.name.clone(),
+            p.qualified_name.clone(),
             IbdRootViewDto {
                 parts: focused_parts,
                 ports: focused_ports,

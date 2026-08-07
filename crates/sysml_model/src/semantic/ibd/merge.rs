@@ -215,7 +215,7 @@ fn merge_ibd_payloads_inner(ibds: Vec<IbdDataDto>, enrich_connectors: bool) -> I
             let is_instance = view
                 .parts
                 .iter()
-                .find(|part| part.name == **name)
+                .find(|part| part.qualified_name == **name)
                 .map(|part| is_part_instance_kind(&part.element_type))
                 .unwrap_or(false);
             let instance_bonus = if is_instance { 1usize } else { 0usize };
@@ -377,6 +377,89 @@ mod tests {
             connector_keys,
             vec![(port_c_out.port_id.as_str(), port_a_in.port_id.as_str())],
             "connectors must be sorted by (source_id, target_id, rel_type)"
+        );
+    }
+
+    /// #27 regression: `root_views` is keyed by each root's `qualified_name`, not its bare local
+    /// name. Two roots in different packages sharing the same local name ("System") must stay
+    /// distinct entries after merge instead of additively combining into one.
+    #[test]
+    fn merge_keeps_root_views_distinct_for_same_local_name_in_different_packages() {
+        let pkg1_system = part("Pkg1::System");
+        let pkg1_child = part("Pkg1::System::partA");
+        let pkg2_system = part("Pkg2::System");
+        let pkg2_child = part("Pkg2::System::partB");
+
+        let root_view = |root: &IbdPartDto, child: &IbdPartDto| IbdRootViewDto {
+            parts: vec![root.clone(), child.clone()],
+            ports: Vec::new(),
+            connectors: Vec::new(),
+            container_groups: Vec::new(),
+            package_container_groups: Vec::new(),
+        };
+
+        let ibd_pkg1 = IbdDataDto {
+            parts: vec![pkg1_system.clone(), pkg1_child.clone()],
+            ports: Vec::new(),
+            connectors: Vec::new(),
+            container_groups: Vec::new(),
+            package_container_groups: Vec::new(),
+            root_candidates: vec![pkg1_system.qualified_name.clone()],
+            default_root: Some(pkg1_system.qualified_name.clone()),
+            root_views: [(
+                pkg1_system.qualified_name.clone(),
+                root_view(&pkg1_system, &pkg1_child),
+            )]
+            .into_iter()
+            .collect(),
+            def_instance_mappings: Vec::new(),
+        };
+        let ibd_pkg2 = IbdDataDto {
+            parts: vec![pkg2_system.clone(), pkg2_child.clone()],
+            ports: Vec::new(),
+            connectors: Vec::new(),
+            container_groups: Vec::new(),
+            package_container_groups: Vec::new(),
+            root_candidates: vec![pkg2_system.qualified_name.clone()],
+            default_root: Some(pkg2_system.qualified_name.clone()),
+            root_views: [(
+                pkg2_system.qualified_name.clone(),
+                root_view(&pkg2_system, &pkg2_child),
+            )]
+            .into_iter()
+            .collect(),
+            def_instance_mappings: Vec::new(),
+        };
+
+        let merged = merge_ibd_payloads_for_workspace_finalize(vec![ibd_pkg1, ibd_pkg2]);
+
+        assert_eq!(
+            merged.root_views.len(),
+            2,
+            "expected two distinct root views, got {:?}",
+            merged.root_views.keys().collect::<Vec<_>>()
+        );
+
+        let pkg1_view = merged
+            .root_views
+            .get(&pkg1_system.qualified_name)
+            .expect("Pkg1.System root view");
+        let pkg1_ids: HashSet<&str> = pkg1_view.parts.iter().map(|p| p.id.as_str()).collect();
+        assert_eq!(
+            pkg1_ids,
+            HashSet::from(["Pkg1::System", "Pkg1::System::partA"]),
+            "Pkg1.System root view must not pick up Pkg2's child part"
+        );
+
+        let pkg2_view = merged
+            .root_views
+            .get(&pkg2_system.qualified_name)
+            .expect("Pkg2.System root view");
+        let pkg2_ids: HashSet<&str> = pkg2_view.parts.iter().map(|p| p.id.as_str()).collect();
+        assert_eq!(
+            pkg2_ids,
+            HashSet::from(["Pkg2::System", "Pkg2::System::partB"]),
+            "Pkg2.System root view must not pick up Pkg1's child part"
         );
     }
 }

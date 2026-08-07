@@ -291,7 +291,9 @@ fn build_ibd_mirrors_definition_connections_onto_cross_file_instance() {
 
     let root_view = merged
         .root_views
-        .get("webshopSystem")
+        .iter()
+        .find(|(key, _)| key.ends_with("webshopSystem"))
+        .map(|(_, view)| view)
         .expect("webshopSystem root view");
     assert!(
         root_view.connectors.iter().any(|connector| {
@@ -576,7 +578,9 @@ fn build_ibd_expands_library_typed_part_usage() {
         .expect("semantic graph should build");
     let ibd = build_ibd_for_uri(&graph, &uri);
     assert!(
-        ibd.root_candidates.iter().any(|root| root == "robot"),
+        ibd.root_candidates
+            .iter()
+            .any(|root| root.ends_with("robot")),
         "expected robot as IBD root, got {:?}",
         ibd.root_candidates
     );
@@ -648,9 +652,10 @@ fn build_ibd_surveillance_drone_instance_has_nested_parts_and_connectors() {
     let uri = Url::parse("memory://workspace/surveillance_drone_full.sysml").expect("uri");
     let ibd = build_ibd_for_uri(&graph, &uri);
 
-    assert_eq!(
-        ibd.default_root.as_deref(),
-        Some("droneInstance"),
+    assert!(
+        ibd.default_root
+            .as_deref()
+            .is_some_and(|root| root.ends_with("droneInstance")),
         "expected drone instance as default root, got {:?}",
         ibd.default_root
     );
@@ -826,7 +831,9 @@ fn build_ibd_resolves_connectors_with_bare_own_port_endpoint_and_no_phantom_pack
 
     let view = ibd
         .root_views
-        .get("driveModule")
+        .iter()
+        .find(|(key, _)| key.ends_with("driveModule"))
+        .map(|(_, view)| view)
         .expect("expected a driveModule root view");
 
     assert_eq!(
