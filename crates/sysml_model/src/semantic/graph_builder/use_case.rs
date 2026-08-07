@@ -480,6 +480,77 @@ pub(super) fn wire_extended_case_body_element(
             }
             false
         }
+        // Nested `action` usage in analysis/verification case bodies (validation `09`).
+        UCBE::ActionUsage(au) => {
+            super::action::materialize_top_level_action_usage(
+                g,
+                uri,
+                container_prefix,
+                Some(parent_id),
+                au.as_ref(),
+            );
+            true
+        }
+        // Nested `analysis` usage in analysis case bodies (validation `10a`).
+        UCBE::AnalysisCaseUsage(n) => {
+            super::package_body::materialize_analysis_case_usage(
+                g,
+                uri,
+                container_prefix,
+                Some(parent_id),
+                n,
+            );
+            true
+        }
+        // Nested `calc` usage in analysis case bodies (validation `10b`).
+        UCBE::CalcUsage(n) => {
+            super::calc_constraint_def::materialize_calc_usage(
+                g,
+                uri,
+                container_prefix,
+                parent_id,
+                n,
+            );
+            true
+        }
+        // `attribute` usage / directed `in attribute …` (validation `10c`/`10d`).
+        UCBE::AttributeUsage(n) => {
+            super::usage_builders::materialize_attribute_usage(
+                n,
+                uri,
+                container_prefix,
+                parent_id,
+                g,
+            );
+            true
+        }
+        // Directed `in requirement …` parameter (validation `10c`).
+        UCBE::RequirementUsage(n) => {
+            super::usage_builders::materialize_requirement_usage(
+                n,
+                uri,
+                container_prefix,
+                Some(parent_id),
+                g,
+            );
+            true
+        }
+        // Directed `in part …` / nested part usage in analysis bodies.
+        UCBE::PartUsage(n) => {
+            super::usage_builders::materialize_part_usage(
+                n,
+                uri,
+                container_prefix,
+                Some(parent_id),
+                g,
+            );
+            true
+        }
+        // Bare result expression in analysis case bodies (validation `10a`: `vehicle.mass`) --
+        // analysis-specific semantics (feeds `analysis_result_qualified`/
+        // `inherited_case_result_qualified`), left to each caller's own body walker rather than
+        // handled generically here.
+        UCBE::Expression(_) => false,
         _ => false,
     }
 }

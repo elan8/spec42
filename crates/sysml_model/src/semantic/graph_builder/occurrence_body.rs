@@ -167,6 +167,12 @@ pub(super) fn build_from_occurrence_body_element(
         OBE::Error(_) | OBE::Annotation(_) | OBE::Other(_) => {}
         // Not yet modeled in the semantic graph.
         OBE::SuccessionUsage(_) | OBE::Satisfy(_) => {}
+        // `end name : Type;` (or `::>`/nested forms) inside allocation/connection-like
+        // definition bodies (OMG Annex `12b-Allocation-1.sysml`). Same end-declaration shape
+        // `interface_def::add_end_decl` already builds for interface/connection def bodies.
+        OBE::EndDecl(end_node) => {
+            super::interface_def::add_end_decl(g, uri, container_prefix, parent_id, end_node);
+        }
     }
 }
 

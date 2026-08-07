@@ -1,8 +1,6 @@
 use std::collections::HashMap;
 
-use sysml_v2_parser::ast::{
-    CalcDefBody, CalcDefBodyElement, InterfaceDefBody, PartDefBody, PartDefBodyElement,
-};
+use sysml_v2_parser::ast::{InterfaceDefBody, PartDefBody, PartDefBodyElement};
 use url::Url;
 
 use crate::semantic::ast_util::{
@@ -307,92 +305,13 @@ pub(super) fn build_from_part_def_body_element(
             );
         }
         PDBE::CalcUsage(calc_node) => {
-            let name = identification_name(&calc_node.value.identification);
-            let qualified = qualified_name_for_node(g, uri, container_prefix, &name, "calc");
-            let range = span_to_range(&calc_node.span);
-            let mut attrs = HashMap::new();
-            attach_short_name_attribute(&mut attrs, &calc_node.value.identification);
-            attach_membership_visibility(&mut attrs, &calc_node.value.membership);
-            if let Some(ref t) = calc_node.value.type_name {
-                attrs.insert("calcType".to_string(), serde_json::json!(t));
-            }
-            add_node_and_recurse(
+            super::calc_constraint_def::materialize_calc_usage(
                 g,
                 uri,
-                &qualified,
-                "calc",
-                name,
-                range,
-                attrs,
-                Some(parent_id),
+                container_prefix,
+                parent_id,
+                calc_node,
             );
-            if let Some(ref t) = calc_node.value.type_name {
-                add_typing_edge_if_exists(g, uri, &qualified, t, container_prefix);
-            }
-            if let CalcDefBody::Brace { elements } = &calc_node.value.body {
-                let calc_node_id = NodeId::new(uri, &qualified);
-                for element in elements {
-                    match &element.value {
-                        CalcDefBodyElement::InOutDecl(in_out) => {
-                            super::action::add_in_out_decl(
-                                g,
-                                uri,
-                                container_prefix,
-                                &calc_node_id,
-                                in_out,
-                            );
-                        }
-                        CalcDefBodyElement::ReturnDecl(ret) => {
-                            let ret_qualified = qualified_name_for_node(
-                                g,
-                                uri,
-                                Some(calc_node_id.qualified_name.as_str()),
-                                &ret.value.name,
-                                "return parameter",
-                            );
-                            let mut attrs = HashMap::new();
-                            attrs.insert("direction".to_string(), serde_json::json!("return"));
-                            attrs.insert(
-                                "parameterType".to_string(),
-                                serde_json::json!(&ret.value.type_name),
-                            );
-                            add_node_and_recurse(
-                                g,
-                                uri,
-                                &ret_qualified,
-                                "return parameter",
-                                ret.value.name.clone(),
-                                span_to_range(&ret.span),
-                                attrs,
-                                Some(&calc_node_id),
-                            );
-                            add_typing_edge_if_exists(
-                                g,
-                                uri,
-                                &ret_qualified,
-                                &ret.value.type_name,
-                                container_prefix,
-                            );
-                        }
-                        CalcDefBodyElement::Doc(doc) => {
-                            super::attach_doc_comment(g, &calc_node_id, &doc.value.text);
-                        }
-                        CalcDefBodyElement::MetadataAnnotation(meta) => {
-                            super::metadata_def::add_metadata_annotation_node(
-                                g,
-                                uri,
-                                container_prefix,
-                                &calc_node_id,
-                                &meta.value,
-                                &meta.span,
-                            );
-                        }
-                        CalcDefBodyElement::Expression(_)
-                        | CalcDefBodyElement::Other(_)
-                        | CalcDefBodyElement::Error(_) => {}
-                    }
-                }
-            }
         }
         // A `case`/`case def` nested inside a `part def { ... }` body was previously dropped
         // entirely -- no dispatch arm existed here, unlike the sibling `PDBE::CalcUsage` arm

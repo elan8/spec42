@@ -105,6 +105,17 @@ pub(crate) fn expression_children(node: &Node<Expression>) -> Vec<ExpressionChil
             }));
             children
         }
+        Expression::Conditional {
+            test,
+            then_expr,
+            else_expr,
+        } => vec![
+            ExpressionChild::Sub(test),
+            ExpressionChild::Sub(then_expr),
+            ExpressionChild::Sub(else_expr),
+        ],
+        // `target` is a plain qualified-name string (`all QualifiedName`), not a sub-expression.
+        Expression::Extent { .. } => Vec::new(),
     }
 }
 

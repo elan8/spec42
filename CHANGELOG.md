@@ -7,6 +7,39 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- **Bumped `sysml-v2-parser` 0.53.0 → 0.54.0** ([#18](https://github.com/elan8/spec42/issues/18)) —
+  pulls in #70 (`parse()`/`parse_for_editor()` equivalence), the #78 follow-up (full-library
+  strict-diagnostics gaps: `in`/`ref`/`calc` redefinition forms, nested `calc def`, `abstract
+  calc`), and #85 (connector-end/interface/flow shorthand gaps). `PARSE_AST_VERSION` moved 70 → 71
+  for this release's AST-shape changes, which broke exhaustive matches across `sysml_model` and
+  `sysml_tokens`: new `InOutDecl.is_redefinition`, `CalcDefBodyElement::{CalcUsage,CalcDef,
+  PartUsage}`, `ConstraintDefBodyElement::{Constraint,AttributeUsage}`,
+  `RequirementDefBodyElement::{SubjectRef,VariantUsage,Constraint}`,
+  `StateDefBodyElement::InOutDecl`, `OccurrenceBodyElement::EndDecl`,
+  `InterfaceDefBodyElement::FlowUsage`, `InterfaceUsageBodyElement::EndDecl`,
+  `InterfaceUsage::TypedConnect.name`, `EndDecl.crosses`, `UseCaseDefBodyElement::{ActionUsage,
+  AnalysisCaseUsage,CalcUsage,AttributeUsage,RequirementUsage,PartUsage,Expression}`, and
+  `Expression::{Conditional,Extent}`. Each new variant got real graph-builder/semantic-token
+  handling (not stub catch-alls) by mirroring the closest existing sibling variant's
+  materialization, reusing shared helpers where one already existed (`materialize_part_usage`,
+  `materialize_attribute_usage`, `materialize_requirement_usage`,
+  `materialize_top_level_action_usage`, `materialize_analysis_case_usage`, `collect_semantic_
+  ranges_ref_decl`) and factoring two new ones where duplication would otherwise have tripled
+  (`calc_constraint_def::{build_calc_def_body_elements,materialize_calc_usage}`, now shared by
+  `part_def.rs`'s top-level `calc` usage arm, this module's own nested-calc-in-calc rollups, and
+  analysis/verification case bodies' nested `calc` usages). Also fixed two independent breaking
+  changes from the same bump: `RefBody::Brace`'s `elements` are now `RefBodyElement`-wrapped
+  (`action.rs`'s `add_ref_decl` now filters to the `Action(..)` variant before recursing), and
+  `CaseReturnDecl.value_expression` was renamed/retyped to `value: Option<Node<FeatureValue>>`
+  (`analysis_case.rs` now unwraps `.value.expression`). A few genuinely new constructs
+  (`RequirementDefBodyElement::Expression`'s bare analysis-case result expression,
+  `AssertConstraint` in the newly-reachable body contexts) were left as documented no-ops rather
+  than guessed at, matching this codebase's existing "not yet modeled" precedent for the same
+  constructs elsewhere. Full workspace (`cargo test --workspace`, 130 suites) green; `cargo fmt`,
+  `cargo clippy --workspace --all-targets -- -D warnings`, and `cargo doc --no-deps --workspace`
+  all clean. This is a partial step on #18, not a 1.0 pin confirmation -- the OMG-library-baseline
+  and roadmap-documentation acceptance criteria are still open.
+
 - **Removed the MCP server and read-only HTTP API** ([#51](https://github.com/elan8/spec42/issues/51)) —
   `spec42-mcp` (stdio MCP server) and `spec42 api serve` (read-only HTTP API, `docs/api/`) are gone.
   Investigation found no AI host actually depended on either surface: VS Code Language Model Tools

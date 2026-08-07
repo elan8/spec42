@@ -165,6 +165,33 @@ pub(super) fn build_from_attribute_body(
                     &mk_node.span,
                 );
             }
+            // Also shared with `item def`/`item` usage bodies: `ref`/`ref part` members
+            // (validation `15_11`/`15_19`/`17a`/`17b`). Same materialization interface_def.rs/
+            // action.rs already use for `ref` in their own body contexts.
+            AttributeBodyElement::RefDecl(ref_node) => {
+                super::ref_decl::materialize_ref_decl(
+                    g,
+                    uri,
+                    container_prefix,
+                    parent_id,
+                    ref_node,
+                    super::ref_decl::RefDeclOptions::default(),
+                );
+            }
+            // Nested `part` usage inside an item/attribute body (validation `3e`/`14c`).
+            AttributeBodyElement::PartUsage(part) => {
+                usage_builders::materialize_part_usage(
+                    part,
+                    uri,
+                    container_prefix,
+                    Some(parent_id),
+                    g,
+                );
+            }
+            // `assert constraint` here mirrors `part_def.rs`'s/`action.rs`'s existing
+            // `AssertConstraint(_) => {}` precedent -- no dedicated graph projection yet for any
+            // body kind except `occurrence_body.rs`'s.
+            AttributeBodyElement::AssertConstraint(_) => {}
             AttributeBodyElement::Error(_) | AttributeBodyElement::Other(_) => {}
         }
     }
