@@ -10,7 +10,7 @@ use generator_api::{
     GeneratorModelView, MultiplicitySummary as ApiMultiplicity, RelationshipSummary,
     MAX_ARTIFACT_PATH_BYTES,
 };
-use serde::{de::DeserializeOwned, Deserialize, Serialize};
+use serde::{Deserialize, Serialize};
 use sha2::{Digest, Sha256};
 use spec42_generator_protocol as protocol;
 use thiserror::Error;
@@ -873,7 +873,7 @@ fn handle_query(
                 .map_err(|error| error.to_string()),
         ),
         protocol::Operation::Find => {
-            let metaclass: Option<String> = decode_request(request)?;
+            let metaclass = decode_for::<protocol::query::Find>(request)?;
             encode_result(
                 state
                     .model
@@ -883,7 +883,7 @@ fn handle_query(
             )
         }
         protocol::Operation::Children => {
-            let owner: String = decode_request(request)?;
+            let owner = decode_for::<protocol::query::Children>(request)?;
             encode_result(
                 state
                     .model
@@ -893,7 +893,7 @@ fn handle_query(
             )
         }
         protocol::Operation::Element => {
-            let handle: String = decode_request(request)?;
+            let handle = decode_for::<protocol::query::Element>(request)?;
             encode_result(
                 state
                     .model
@@ -903,7 +903,7 @@ fn handle_query(
             )
         }
         protocol::Operation::TypedBy => {
-            let feature: String = decode_request(request)?;
+            let feature = decode_for::<protocol::query::TypedBy>(request)?;
             encode_result(
                 state
                     .model
@@ -913,7 +913,7 @@ fn handle_query(
             )
         }
         protocol::Operation::Relationships => {
-            let element: String = decode_request(request)?;
+            let element = decode_for::<protocol::query::Relationships>(request)?;
             encode_result(
                 state
                     .model
@@ -923,7 +923,7 @@ fn handle_query(
             )
         }
         protocol::Operation::EffectiveFeatures => {
-            let element: String = decode_request(request)?;
+            let element = decode_for::<protocol::query::EffectiveFeatures>(request)?;
             encode_result(
                 state
                     .model
@@ -937,7 +937,11 @@ fn handle_query(
     Ok(response)
 }
 
-fn decode_request<T: DeserializeOwned>(bytes: &[u8]) -> wasmtime::Result<T> {
+/// Decodes a request as the type the ABI declares for that operation.
+///
+/// Going through the marker type is what keeps the host's choice of payload type tied to the
+/// operation code: picking one independently is no longer expressible.
+fn decode_for<Q: protocol::Query>(bytes: &[u8]) -> wasmtime::Result<Q::Request> {
     postcard::from_bytes(bytes)
         .map_err(|error| AbiViolation::error(format!("invalid Spec42 query request: {error}")))
 }

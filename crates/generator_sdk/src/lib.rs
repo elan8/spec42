@@ -4,8 +4,8 @@
 //! implementation of it, not the definition — a guest in any language that can produce the
 //! documented imports and exports is equally valid.
 
-use serde::de::DeserializeOwned;
-use serde::Serialize;
+#[cfg(target_arch = "wasm32")]
+use serde::{de::DeserializeOwned, Serialize};
 
 pub use spec42_generator_protocol as protocol;
 pub use spec42_generator_protocol::{
@@ -70,6 +70,20 @@ thread_local! {
         const { core::cell::RefCell::new(Vec::new()) };
 }
 
+/// Issues one query, typed by its marker.
+///
+/// `Q::Request` and `Q::Response` come from the ABI declaration, so a caller cannot pick a
+/// payload type independently of the operation code it is sent with.
+#[cfg(target_arch = "wasm32")]
+fn call<Q: protocol::Query>(request: &Q::Request) -> Result<Q::Response, String> {
+    call_query(Q::OPERATION.code(), request)
+}
+
+#[cfg(not(target_arch = "wasm32"))]
+fn call<Q: protocol::Query>(_: &Q::Request) -> Result<Q::Response, String> {
+    panic!("Spec42 generator queries are only available in WebAssembly guests")
+}
+
 #[cfg(target_arch = "wasm32")]
 fn call_query<T: DeserializeOwned>(operation: i32, request: &impl Serialize) -> Result<T, String> {
     let request = postcard::to_allocvec(request).map_err(|error| error.to_string())?;
@@ -117,49 +131,44 @@ fn call_query<T: DeserializeOwned>(operation: i32, request: &impl Serialize) -> 
     })
 }
 
-#[cfg(not(target_arch = "wasm32"))]
-fn call_query<T: DeserializeOwned>(_: i32, _: &impl Serialize) -> Result<T, String> {
-    panic!("Spec42 generator queries are only available in WebAssembly guests")
-}
-
 pub mod model {
     pub use spec42_generator_protocol::{
         ElementDetail, ElementSummary, ModelInfo, Multiplicity, Relationship, SourceRange,
     };
 
-    use super::call_query;
-    use spec42_generator_protocol::Operation;
+    use super::call;
+    use spec42_generator_protocol::query;
 
     pub fn info() -> Result<ModelInfo, String> {
-        call_query(Operation::Info.code(), &())
+        call::<query::Info>(&())
     }
 
     pub fn roots() -> Result<Vec<ElementSummary>, String> {
-        call_query(Operation::Roots.code(), &())
+        call::<query::Roots>(&())
     }
 
     pub fn find(metaclass: Option<&str>) -> Result<Vec<ElementSummary>, String> {
-        call_query(Operation::Find.code(), &metaclass)
+        call::<query::Find>(&metaclass.map(str::to_owned))
     }
 
     pub fn children(owner: &str) -> Result<Vec<ElementSummary>, String> {
-        call_query(Operation::Children.code(), &owner)
+        call::<query::Children>(&owner.to_owned())
     }
 
     pub fn element(handle: &str) -> Result<ElementDetail, String> {
-        call_query(Operation::Element.code(), &handle)
+        call::<query::Element>(&handle.to_owned())
     }
 
     pub fn typed_by(feature: &str) -> Result<Option<ElementSummary>, String> {
-        call_query(Operation::TypedBy.code(), &feature)
+        call::<query::TypedBy>(&feature.to_owned())
     }
 
     pub fn relationships(element: &str) -> Result<Vec<Relationship>, String> {
-        call_query(Operation::Relationships.code(), &element)
+        call::<query::Relationships>(&element.to_owned())
     }
 
     pub fn effective_features(element: &str) -> Result<Vec<ElementSummary>, String> {
-        call_query(Operation::EffectiveFeatures.code(), &element)
+        call::<query::EffectiveFeatures>(&element.to_owned())
     }
 }
 

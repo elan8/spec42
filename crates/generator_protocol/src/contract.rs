@@ -29,7 +29,7 @@ macro_rules! abi_contract {
 
         $(#[$op_meta:meta])*
         operations {
-            $( $(#[doc = $op_doc:expr])* $op:ident = $op_code:expr => ($op_request:expr, $op_response:expr) ),* $(,)?
+            $( $(#[doc = $op_doc:expr])* $op:ident = $op_code:expr => ($op_request:ty, $op_response:ty) ),* $(,)?
         }
 
         $(#[$level_meta:meta])*
@@ -71,8 +71,12 @@ macro_rules! abi_contract {
                 $( OperationSpec {
                     name: stringify!($op),
                     code: $op_code,
-                    request: $op_request,
-                    response: $op_response,
+                    // Rendered from the same type tokens the marker types use, so a
+                    // description cannot drift from the type it describes.
+                    // Rendered from the same type tokens the marker types use, so a
+                    // description cannot drift from the type it describes.
+                    request: stringify!($op_request),
+                    response: stringify!($op_response),
                 } ),*
             ];
 
@@ -113,6 +117,31 @@ macro_rules! abi_contract {
                     other => Err(UnknownCode { kind: "diagnostic level", code: other }),
                 }
             }
+        }
+
+        /// One marker type per operation, binding its code to its payload types.
+        ///
+        /// Host decoding and SDK calls both go through these, so the request and response
+        /// types are chosen once. Previously the declaration named them as strings while the
+        /// host and SDK independently picked actual types: changing `Find` from
+        /// `Option<String>` to `String` on both sides would have left the token unchanged,
+        /// because both types already appear elsewhere in the wire schema.
+        pub mod query {
+            use super::{Operation, Query};
+            #[allow(unused_imports)]
+            use crate::*;
+
+            $(
+                $(#[doc = $op_doc])*
+                #[derive(Debug, Clone, Copy, PartialEq, Eq)]
+                pub struct $op;
+
+                impl Query for $op {
+                    type Request = $op_request;
+                    type Response = $op_response;
+                    const OPERATION: Operation = Operation::$op;
+                }
+            )*
         }
 
         /// Renders the contract as JSON.
@@ -220,6 +249,17 @@ macro_rules! abi_contract {
     };
 }
 
+/// Binds an operation to the types it carries.
+///
+/// Implemented by the marker types in [`query`], generated from the same declaration that
+/// produces the operation codes, so a payload type and its wire code cannot be chosen
+/// independently.
+pub trait Query {
+    type Request: serde::Serialize + serde::de::DeserializeOwned;
+    type Response: serde::Serialize + serde::de::DeserializeOwned;
+    const OPERATION: Operation;
+}
+
 /// One operation's full declaration.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct OperationSpec {
@@ -256,21 +296,21 @@ abi_contract! {
     #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
     operations {
         /// Snapshot provenance and versions.
-        Info = 0 => ("()", "ModelInfo"),
+        Info = 0 => ((), ModelInfo),
         /// Elements with no owner in the projection.
-        Roots = 1 => ("()", "Vec<ElementSummary>"),
+        Roots = 1 => ((), Vec<ElementSummary>),
         /// Every element, or those of one metaclass. `None` means every element.
-        Find = 2 => ("Option<String>", "Vec<ElementSummary>"),
+        Find = 2 => (Option<String>, Vec<ElementSummary>),
         /// Direct children of an element.
-        Children = 3 => ("String", "Vec<ElementSummary>"),
+        Children = 3 => (String, Vec<ElementSummary>),
         /// Full detail for one element.
-        Element = 4 => ("String", "ElementDetail"),
+        Element = 4 => (String, ElementDetail),
         /// The type of a feature, if it has one.
-        TypedBy = 5 => ("String", "Option<ElementSummary>"),
+        TypedBy = 5 => (String, Option<ElementSummary>),
         /// Outgoing relationships of an element.
-        Relationships = 6 => ("String", "Vec<Relationship>"),
+        Relationships = 6 => (String, Vec<Relationship>),
         /// Direct features first, then inherited nearest-first, with shadowing applied.
-        EffectiveFeatures = 7 => ("String", "Vec<ElementSummary>"),
+        EffectiveFeatures = 7 => (String, Vec<ElementSummary>),
     }
 
     /// Severity of a generator diagnostic.

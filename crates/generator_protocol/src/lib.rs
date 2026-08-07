@@ -9,7 +9,7 @@ use serde::{Deserialize, Serialize};
 mod contract;
 
 pub use contract::{
-    contract_manifest, Level, Operation, OperationSpec, UnknownCode, ABI_VERSION,
+    contract_manifest, query, Level, Operation, OperationSpec, Query, UnknownCode, ABI_VERSION,
     COMPATIBILITY_TOKEN, IMPORT_MODULE, SCHEMA_PATH, SEMANTIC_API_VERSION,
 };
 
