@@ -153,6 +153,7 @@ pub struct GeneratorRuntime {
     options: RuntimeOptions,
 }
 
+#[derive(Debug)]
 pub struct PreparedGenerator {
     module: Module,
     generator_digest: String,
@@ -485,8 +486,8 @@ fn validate_module_exports(module: &Module) -> Result<(), String> {
         None => return Err("module does not export `memory`".to_owned()),
     }
 
+    require_function(module, "spec42_abi_version", &[], &[ValType::I64])?;
     require_function(module, "spec42_alloc", &[ValType::I32], &[ValType::I32])?;
-    require_function(module, "spec42_dealloc", &[ValType::I32, ValType::I32], &[])?;
     require_function(
         module,
         "spec42_generate",
@@ -543,12 +544,31 @@ fn execute_guest(
     let alloc = instance
         .get_typed_func::<i32, i32>(&mut *store, "spec42_alloc")
         .map_err(|error| incompatible("guest-instantiation", error.to_string()))?;
-    let dealloc = instance
-        .get_typed_func::<(i32, i32), ()>(&mut *store, "spec42_dealloc")
-        .map_err(|error| incompatible("guest-instantiation", error.to_string()))?;
     let generate = instance
         .get_typed_func::<(i32, i32), i64>(&mut *store, "spec42_generate")
         .map_err(|error| incompatible("guest-instantiation", error.to_string()))?;
+    let abi_version = instance
+        .get_typed_func::<(), i64>(&mut *store, "spec42_abi_version")
+        .map_err(|error| incompatible("guest-instantiation", error.to_string()))?;
+
+    // Before anything else, confirm both sides agree on the wire schema. Postcard payloads
+    // are positional, so a mismatch here would otherwise surface as plausible-looking but
+    // wrongly-offset data rather than an error.
+    let reported = abi_version
+        .call(&mut *store, ())
+        .map_err(|error| classify_wasmtime_error("guest-instantiation", error, cancellation))?
+        as u64;
+    if reported != protocol::SCHEMA_FINGERPRINT {
+        return Err(incompatible(
+            "api-compatibility",
+            format!(
+                "generator was built against a different Spec42 wire schema \
+                 (generator {reported:#018x}, host {:#018x}); rebuild it against generator ABI v{}",
+                protocol::SCHEMA_FINGERPRINT,
+                GENERATOR_ABI_VERSION
+            ),
+        ));
+    }
 
     let args_bytes = postcard::to_allocvec(args).map_err(|error| GeneratorHostError {
         category: GeneratorFailureCategory::GeneratorError,
@@ -564,6 +584,12 @@ fn execute_guest(
     let args_ptr = alloc
         .call(&mut *store, args_len)
         .map_err(|error| classify_wasmtime_error("guest-execution", error, cancellation))?;
+    if args_ptr == 0 && args_len != 0 {
+        return Err(incompatible(
+            "guest-execution",
+            "spec42_alloc returned a null pointer",
+        ));
+    }
     memory
         .write(&mut *store, args_ptr as usize, &args_bytes)
         .map_err(|error| incompatible("guest-execution", error.to_string()))?;
@@ -580,13 +606,25 @@ fn execute_guest(
             message: "generator result exceeds the configured artifact limits".to_owned(),
         });
     }
+    // Confirm the range is really in guest memory before allocating a host buffer to match
+    // it: the length is guest-supplied, and a bad one should cost an error, not 128 MiB.
+    let available = memory.data_size(&mut *store);
+    if output_ptr
+        .checked_add(output_len)
+        .is_none_or(|end| end > available)
+    {
+        return Err(incompatible(
+            "guest-execution",
+            "generator result lies outside guest memory",
+        ));
+    }
     let mut output = vec![0; output_len];
     memory
         .read(&mut *store, output_ptr, &mut output)
         .map_err(|error| incompatible("guest-execution", error.to_string()))?;
-    dealloc
-        .call(&mut *store, (output_ptr as i32, output_len as i32))
-        .map_err(|error| classify_wasmtime_error("guest-execution", error, cancellation))?;
+    // The guest's result buffer is deliberately not freed: the store is dropped immediately
+    // below, so a `spec42_dealloc` call would only give a completed run another chance to
+    // trap. That is why the export is not part of the ABI.
     validate_artifact_result_header(&output, artifact_limits.max_files)?;
     let (result, remaining): (Result<Vec<protocol::Artifact>, String>, _) =
         postcard::take_from_bytes(&output).map_err(|error| {

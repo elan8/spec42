@@ -4,12 +4,19 @@ struct ExampleGenerator;
 
 impl Guest for ExampleGenerator {
     fn generate(args: Vec<String>) -> Result<Vec<Artifact>, String> {
-        let info = model::info();
+        let info = model::info()?;
         let parts = model::find(Some("PartDefinition"))?;
 
+        // Deliberately not written into an artifact: `model_digest` includes the engine
+        // version, so embedding it makes generated output differ on every Spec42 release
+        // and defeats `--check`. Provenance belongs in the manifest, which records it.
+        diagnostics::log(
+            diagnostics::Level::Debug,
+            &format!("model {}", info.model_digest),
+        );
+
         let mut markdown = format!(
-            "# Generated model\n\nModel: `{}`\n\nArguments: `{}`\n\n",
-            info.model_digest,
+            "# Generated model\n\nArguments: `{}`\n\n",
             args.join(" ")
         );
         for part in &parts {
