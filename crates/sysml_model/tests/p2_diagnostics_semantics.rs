@@ -146,6 +146,66 @@ fn view_without_expose_emits_empty_expose_diagnostic() {
 }
 
 #[test]
+fn view_filters_removing_all_resolved_exposes_emit_empty_result() {
+    let doc = workspace_doc(
+        "view_empty_result.sysml",
+        r#"package Demo {
+  part def Engine;
+  part engine : Engine;
+  view structure : GeneralView {
+    expose Demo::engine;
+    filter @SysML::RequirementUsage;
+  }
+}"#,
+    );
+    let uri = doc.uri.clone();
+    let (graph, _parsed) = build_semantic_graph_from_documents(&[doc]).expect("graph");
+    let diagnostics = collect_diagnostics_from_graph(&graph, &uri, DiagnosticsOptions::default());
+    assert!(
+        has_code(&diagnostics, "view_expose_empty_result"),
+        "expected view_expose_empty_result, got: {:?}",
+        diagnostics
+            .iter()
+            .map(|d| (&d.code, &d.message))
+            .collect::<Vec<_>>()
+    );
+    assert!(
+        !has_code(&diagnostics, "view_expose_unresolved"),
+        "expose should resolve; empty result is a filter outcome, got: {:?}",
+        diagnostics
+            .iter()
+            .map(|d| (&d.code, &d.message))
+            .collect::<Vec<_>>()
+    );
+}
+
+#[test]
+fn view_filters_that_keep_resolved_exposes_do_not_emit_empty_result() {
+    let doc = workspace_doc(
+        "view_kept_result.sysml",
+        r#"package Demo {
+  part def Engine;
+  part engine : Engine;
+  view structure : GeneralView {
+    expose Demo::engine;
+    filter @SysML::PartUsage;
+  }
+}"#,
+    );
+    let uri = doc.uri.clone();
+    let (graph, _parsed) = build_semantic_graph_from_documents(&[doc]).expect("graph");
+    let diagnostics = collect_diagnostics_from_graph(&graph, &uri, DiagnosticsOptions::default());
+    assert!(
+        !has_code(&diagnostics, "view_expose_empty_result"),
+        "PartUsage filter should keep the exposed part, got: {:?}",
+        diagnostics
+            .iter()
+            .map(|d| (&d.code, &d.message))
+            .collect::<Vec<_>>()
+    );
+}
+
+#[test]
 fn untyped_metadata_annotation_emits_unresolved_diagnostic() {
     let doc = workspace_doc(
         "metadata_unresolved.sysml",
