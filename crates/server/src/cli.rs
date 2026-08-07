@@ -81,12 +81,16 @@ pub struct GenerateArgs {
     pub force: bool,
     #[arg(long = "strict-diagnostics", default_value_t = false)]
     pub strict_diagnostics: bool,
+    /// Ceiling on guest linear memory, to contain a runaway allocation.
     #[arg(long = "max-memory-bytes", default_value_t = 268_435_456)]
     pub max_memory_bytes: usize,
-    #[arg(long = "max-fuel", default_value_t = 100_000_000)]
-    pub max_fuel: u64,
-    #[arg(long = "timeout-seconds", default_value_t = 30)]
-    pub timeout_seconds: u64,
+    /// Guest instruction budget. Omitted, the generator runs unmetered; supplying it also
+    /// enables fuel accounting, so `fuel_consumed` appears in the report.
+    #[arg(long = "max-fuel")]
+    pub max_fuel: Option<u64>,
+    /// Wall-clock budget. Omitted, a slow generator runs to completion.
+    #[arg(long = "timeout-seconds")]
+    pub timeout_seconds: Option<u64>,
     #[arg(long = "max-files", default_value_t = 1_000)]
     pub max_files: usize,
     #[arg(long = "max-file-bytes", default_value_t = 16_777_216)]

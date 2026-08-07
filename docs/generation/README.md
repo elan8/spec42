@@ -61,9 +61,20 @@ must still never delete a path absent from the prior manifest.
 
 ## Limits and exit codes
 
-Defaults are 256 MiB guest memory, 100 million fuel units, 30 seconds wall time, 1,000 files,
-4 KiB per returned path, 16 MiB per file, 128 MiB total output, and 50,000 elements per query
-result. CLI limit flags can reduce or increase the configurable values explicitly.
+A generator is build tooling: the user selected the module and invoked it, the same way they
+invoke a compiler plugin. Execution is therefore **unmetered by default** — a slow generator
+runs to completion, and `--max-fuel` and `--timeout-seconds` are opt-in rather than defaults
+to be raised. The limits that always apply exist to contain accidents and to bound output:
+256 MiB guest memory, 1,000 files, 4 KiB per returned path, 16 MiB per file, 128 MiB total
+output, and 50,000 elements per query result.
+
+Supplying `--max-fuel` also switches on fuel accounting, which is what makes `fuel_consumed`
+appear in the report. Fuel is an exact, reproducible instruction count, so it is the useful
+signal for comparing the cost of two runs; it is instrumentation first and a limit second.
+
+The engine is configured for reproducibility: deterministic relaxed SIMD and NaN
+canonicalization are both enabled, so a generator that does floating-point work produces the
+same bytes on every host architecture. Reproducibility is guaranteed per Wasmtime version.
 
 | Code | Meaning |
 | ---: | --- |

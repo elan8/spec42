@@ -453,6 +453,17 @@ impl GeneratorModelView {
         Ok(result)
     }
 
+    /// Whether `handle` names an element this view has exposed.
+    ///
+    /// Cheaper than `element()` for callers that only need validity, such as attaching a
+    /// diagnostic to an element, which would otherwise build and discard a full detail.
+    pub fn is_valid_handle(&self, handle: &str) -> bool {
+        self.exposed
+            .lock()
+            .expect("generator handle index poisoned")
+            .contains_key(handle)
+    }
+
     fn resolve_handle(&self, handle: &str) -> Result<NodeId, ModelQueryError> {
         self.exposed
             .lock()

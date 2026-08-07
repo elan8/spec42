@@ -11,7 +11,7 @@ use generator_api::{
 };
 use generator_host::{
     CancellationHandle, GeneratorFailureCategory, GeneratorHostError, GeneratorRuntime,
-    RuntimeLimits, GENERATOR_ABI_VERSION,
+    RuntimeLimits, RuntimeOptions, GENERATOR_ABI_VERSION,
 };
 use serde::{Deserialize, Serialize};
 use sha2::{Digest, Sha256};
@@ -61,6 +61,8 @@ pub struct GenerationTimings {
     pub workspace_load_ms: u128,
     pub validation_ms: u128,
     pub guest_execution_ms: u128,
+    /// Microseconds, because a guest run routinely rounds to 0 ms.
+    pub guest_execution_us: u128,
     pub output_plan_ms: u128,
     pub output_commit_ms: u128,
 }
@@ -78,7 +80,6 @@ pub struct GenerationReport {
     pub generator_digest: String,
     pub api_version: String,
     pub spec42_version: String,
-    pub invalid_model: bool,
     pub validation_errors: usize,
     pub validation_warnings: usize,
     pub model_diagnostics: Vec<ModelDiagnosticRecord>,
@@ -89,8 +90,9 @@ pub struct GenerationReport {
     pub duration_ms: u128,
     pub timings: GenerationTimings,
     pub query_count: u64,
-    pub fuel_consumed: u64,
-    pub resource_limit_status: String,
+    /// Absent unless a fuel budget was requested, which is what enables metering.
+    pub fuel_consumed: Option<u64>,
+    pub peak_memory_bytes: usize,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -123,7 +125,11 @@ pub fn run_generate(cli: &Cli, args: &GenerateArgs) -> Result<ExitCode, String> 
         }
     };
     let module_prepare_started = Instant::now();
-    let runtime = match GeneratorRuntime::new() {
+    // Fuel accounting is instrumentation, not policy: it is enabled only when the caller
+    // asked for a budget, which is also what makes `fuel_consumed` reportable.
+    let runtime = match GeneratorRuntime::with_options(RuntimeOptions {
+        fuel_metering: args.max_fuel.is_some(),
+    }) {
         Ok(runtime) => runtime,
         Err(error) => return emit_host_failure(args.format, &error),
     };
@@ -192,7 +198,7 @@ pub fn run_generate(cli: &Cli, args: &GenerateArgs) -> Result<ExitCode, String> 
         RuntimeLimits {
             memory_bytes: args.max_memory_bytes,
             fuel: args.max_fuel,
-            wall_time: Duration::from_secs(args.timeout_seconds),
+            wall_time: args.timeout_seconds.map(Duration::from_secs),
         },
         ArtifactLimits {
             max_files: args.max_files,
@@ -274,7 +280,6 @@ pub fn run_generate(cli: &Cli, args: &GenerateArgs) -> Result<ExitCode, String> 
         generator_digest: execution.generator_digest,
         api_version: GENERATOR_ABI_VERSION.to_string(),
         spec42_version,
-        invalid_model: false,
         validation_errors,
         validation_warnings,
         model_diagnostics,
@@ -288,12 +293,13 @@ pub fn run_generate(cli: &Cli, args: &GenerateArgs) -> Result<ExitCode, String> 
             workspace_load_ms,
             validation_ms,
             guest_execution_ms: execution.duration.as_millis(),
+            guest_execution_us: execution.duration.as_micros(),
             output_plan_ms,
             output_commit_ms,
         },
         query_count: execution.query_count,
         fuel_consumed: execution.fuel_consumed,
-        resource_limit_status: "within_limits".to_owned(),
+        peak_memory_bytes: execution.peak_memory_bytes,
     };
     emit_report(&report, args.format)?;
     Ok(if args.check && report.operations.has_differences() {
