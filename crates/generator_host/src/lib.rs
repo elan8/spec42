@@ -597,13 +597,13 @@ fn execute_guest(
     let reported = abi_version.call(&mut *store, ()).map_err(|error| {
         classify_wasmtime_error(GenerationPhase::GuestInstantiation, error, cancellation)
     })? as u64;
-    if reported != protocol::SCHEMA_FINGERPRINT {
+    if reported != protocol::COMPATIBILITY_TOKEN {
         return Err(incompatible(
             GenerationPhase::ApiCompatibility,
             format!(
-                "generator was built against a different Spec42 wire schema \
-                 (generator {reported:#018x}, host {:#018x}); rebuild it against generator ABI v{}",
-                protocol::SCHEMA_FINGERPRINT,
+                "generator was built against an incompatible Spec42 generator ABI \
+                 (generator {reported:#018x}, host {:#018x}); rebuild it against ABI v{}",
+                protocol::COMPATIBILITY_TOKEN,
                 GENERATOR_ABI_VERSION
             ),
         ));

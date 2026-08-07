@@ -38,11 +38,11 @@ struct WireSchema {
     generator_result: Result<Vec<Artifact>, String>,
 }
 
-/// Structural fingerprint of the wire schema, checked at load time.
+/// Structural fingerprint of the wire *types*.
 ///
-/// A guest reports this via its `spec42_abi_version` export; the host refuses any module
-/// whose value differs from its own. That turns every schema change -- deliberate or
-/// accidental -- into a clean load-time rejection instead of a silent misparse.
+/// Covers field order, names and shapes. It does not cover anything defined outside the type
+/// definitions, which is why it is an input to [`COMPATIBILITY_TOKEN`] rather than the value
+/// guests report.
 pub const SCHEMA_FINGERPRINT: u64 =
     u64::from_le_bytes(postcard_schema::key::hash::fnv1a64::hash_ty_path::<
         WireSchema,
@@ -51,6 +51,62 @@ pub const SCHEMA_FINGERPRINT: u64 =
 /// Namespace for the fingerprint hash. Bumping [`ABI_VERSION`] alone changes the
 /// fingerprint even if no type changed, so an intentional break is always observable.
 const SCHEMA_PATH: &str = "spec42:generator-abi/4";
+
+/// Version of the semantic contract: result ordering, defaulting, and what each query means.
+///
+/// Bump this whenever behaviour changes in a way a generator could observe even though no
+/// type changed -- a different ordering, a query that starts including implied facts, a
+/// change to effective-feature shadowing. It feeds [`COMPATIBILITY_TOKEN`], so a bump
+/// rejects stale guests at load instead of silently altering their output.
+pub const SEMANTIC_API_VERSION: &str = "0.1.0";
+
+/// What a guest reports and the host compares: the whole behavioural contract, not just the
+/// wire types.
+///
+/// The type fingerprint alone is insufficient in two ways. Operation codes are plain
+/// constants, invisible to a type-level hash, so renumbering one would leave the fingerprint
+/// untouched while routing an old guest's `children` request to `element`. And semantics --
+/// ordering, defaulting, query meaning -- can change with every type byte-identical.
+///
+/// The token therefore mixes type shapes, the operation numbering and the semantic version.
+/// Before 1.0 the rule is deliberately blunt: any breaking change moves the token, and an
+/// incompatible guest is refused. Capability negotiation and supporting several versions at
+/// once can come later.
+pub const COMPATIBILITY_TOKEN: u64 = compute_compatibility_token();
+
+const fn compute_compatibility_token() -> u64 {
+    // FNV-1a, written as a const fn so both sides get a compile-time constant.
+    const OFFSET: u64 = 0xcbf2_9ce4_8422_2325;
+    const PRIME: u64 = 0x0000_0100_0000_01b3;
+
+    const fn mix_bytes(mut hash: u64, bytes: &[u8]) -> u64 {
+        let mut index = 0;
+        while index < bytes.len() {
+            hash ^= bytes[index] as u64;
+            hash = hash.wrapping_mul(PRIME);
+            index += 1;
+        }
+        hash
+    }
+
+    const fn mix_u64(hash: u64, value: u64) -> u64 {
+        mix_bytes(hash, &value.to_le_bytes())
+    }
+
+    let mut hash = OFFSET;
+    hash = mix_bytes(hash, SCHEMA_PATH.as_bytes());
+    hash = mix_u64(hash, ABI_VERSION as u64);
+    hash = mix_u64(hash, SCHEMA_FINGERPRINT);
+    hash = mix_bytes(hash, SEMANTIC_API_VERSION.as_bytes());
+    let mut index = 0;
+    while index < operation::ALL.len() {
+        let (name, code) = operation::ALL[index];
+        hash = mix_bytes(hash, name.as_bytes());
+        hash = mix_u64(hash, code as u64);
+        index += 1;
+    }
+    hash
+}
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Schema)]
 pub struct Artifact {
@@ -67,6 +123,19 @@ pub mod operation {
     pub const TYPED_BY: i32 = 5;
     pub const RELATIONSHIPS: i32 = 6;
     pub const EFFECTIVE_FEATURES: i32 = 7;
+
+    /// Every operation, paired with its wire code, so the compatibility token covers the
+    /// numbering. Keep in step with the constants above; the pinned token test is the guard.
+    pub const ALL: &[(&str, i32)] = &[
+        ("info", INFO),
+        ("roots", ROOTS),
+        ("find", FIND),
+        ("children", CHILDREN),
+        ("element", ELEMENT),
+        ("typed_by", TYPED_BY),
+        ("relationships", RELATIONSHIPS),
+        ("effective_features", EFFECTIVE_FEATURES),
+    ];
 }
 
 /// SysML v2 metaclass of an element.
@@ -131,6 +200,50 @@ pub enum Metaclass {
     ViewUsage,
     ViewpointDefinition,
     ViewpointUsage,
+    TransitionUsage,
+    TransitionTrigger,
+    TransitionGuard,
+    TransitionEffect,
+    FinalState,
+    ActorUsage,
+    StakeholderUsage,
+    SubjectUsage,
+    PerformUsage,
+    IncludeUseCaseUsage,
+    ViewRendering,
+    ViewColumn,
+    Alias,
+    KermlDeclaration,
+    AnalysisResultUsage,
+    AssertConstraintUsage,
+    AssertUsage,
+    AssignmentActionUsage,
+    BindingConnectorUsage,
+    ConjugatedPortDefinition,
+    DecisionNodeUsage,
+    Dependency,
+    DerivationConnectorUsage,
+    Diagnostic,
+    ElseActionUsage,
+    FilterUsage,
+    FlowPayload,
+    ForLoopActionUsage,
+    ForkNodeUsage,
+    IfActionUsage,
+    Import,
+    InterfaceEndUsage,
+    JoinNodeUsage,
+    MergeNodeUsage,
+    NeedUsage,
+    ObjectiveUsage,
+    ParameterUsage,
+    PurposeUsage,
+    RequireConstraintUsage,
+    TerminateActionUsage,
+    TextualRepresentation,
+    VerdictUsage,
+    VerifyUsage,
+    WhileLoopActionUsage,
     /// A value this Spec42 produced that the enumeration above does not name.
     ///
     /// Carrying it explicitly means a guest can tell "I have never heard of this"
@@ -196,6 +309,50 @@ impl Metaclass {
             Self::ViewUsage => "ViewUsage",
             Self::ViewpointDefinition => "ViewpointDefinition",
             Self::ViewpointUsage => "ViewpointUsage",
+            Self::TransitionUsage => "TransitionUsage",
+            Self::TransitionTrigger => "TransitionTrigger",
+            Self::TransitionGuard => "TransitionGuard",
+            Self::TransitionEffect => "TransitionEffect",
+            Self::FinalState => "FinalState",
+            Self::ActorUsage => "ActorUsage",
+            Self::StakeholderUsage => "StakeholderUsage",
+            Self::SubjectUsage => "SubjectUsage",
+            Self::PerformUsage => "PerformUsage",
+            Self::IncludeUseCaseUsage => "IncludeUseCaseUsage",
+            Self::ViewRendering => "ViewRendering",
+            Self::ViewColumn => "ViewColumn",
+            Self::Alias => "Alias",
+            Self::KermlDeclaration => "KermlDeclaration",
+            Self::AnalysisResultUsage => "AnalysisResultUsage",
+            Self::AssertConstraintUsage => "AssertConstraintUsage",
+            Self::AssertUsage => "AssertUsage",
+            Self::AssignmentActionUsage => "AssignmentActionUsage",
+            Self::BindingConnectorUsage => "BindingConnectorUsage",
+            Self::ConjugatedPortDefinition => "ConjugatedPortDefinition",
+            Self::DecisionNodeUsage => "DecisionNodeUsage",
+            Self::Dependency => "Dependency",
+            Self::DerivationConnectorUsage => "DerivationConnectorUsage",
+            Self::Diagnostic => "Diagnostic",
+            Self::ElseActionUsage => "ElseActionUsage",
+            Self::FilterUsage => "FilterUsage",
+            Self::FlowPayload => "FlowPayload",
+            Self::ForLoopActionUsage => "ForLoopActionUsage",
+            Self::ForkNodeUsage => "ForkNodeUsage",
+            Self::IfActionUsage => "IfActionUsage",
+            Self::Import => "Import",
+            Self::InterfaceEndUsage => "InterfaceEndUsage",
+            Self::JoinNodeUsage => "JoinNodeUsage",
+            Self::MergeNodeUsage => "MergeNodeUsage",
+            Self::NeedUsage => "NeedUsage",
+            Self::ObjectiveUsage => "ObjectiveUsage",
+            Self::ParameterUsage => "ParameterUsage",
+            Self::PurposeUsage => "PurposeUsage",
+            Self::RequireConstraintUsage => "RequireConstraintUsage",
+            Self::TerminateActionUsage => "TerminateActionUsage",
+            Self::TextualRepresentation => "TextualRepresentation",
+            Self::VerdictUsage => "VerdictUsage",
+            Self::VerifyUsage => "VerifyUsage",
+            Self::WhileLoopActionUsage => "WhileLoopActionUsage",
             Self::Unrecognized(value) => value,
         }
     }
@@ -256,6 +413,50 @@ impl Metaclass {
             "ViewUsage" => Self::ViewUsage,
             "ViewpointDefinition" => Self::ViewpointDefinition,
             "ViewpointUsage" => Self::ViewpointUsage,
+            "TransitionUsage" => Self::TransitionUsage,
+            "TransitionTrigger" => Self::TransitionTrigger,
+            "TransitionGuard" => Self::TransitionGuard,
+            "TransitionEffect" => Self::TransitionEffect,
+            "FinalState" => Self::FinalState,
+            "ActorUsage" => Self::ActorUsage,
+            "StakeholderUsage" => Self::StakeholderUsage,
+            "SubjectUsage" => Self::SubjectUsage,
+            "PerformUsage" => Self::PerformUsage,
+            "IncludeUseCaseUsage" => Self::IncludeUseCaseUsage,
+            "ViewRendering" => Self::ViewRendering,
+            "ViewColumn" => Self::ViewColumn,
+            "Alias" => Self::Alias,
+            "KermlDeclaration" => Self::KermlDeclaration,
+            "AnalysisResultUsage" => Self::AnalysisResultUsage,
+            "AssertConstraintUsage" => Self::AssertConstraintUsage,
+            "AssertUsage" => Self::AssertUsage,
+            "AssignmentActionUsage" => Self::AssignmentActionUsage,
+            "BindingConnectorUsage" => Self::BindingConnectorUsage,
+            "ConjugatedPortDefinition" => Self::ConjugatedPortDefinition,
+            "DecisionNodeUsage" => Self::DecisionNodeUsage,
+            "Dependency" => Self::Dependency,
+            "DerivationConnectorUsage" => Self::DerivationConnectorUsage,
+            "Diagnostic" => Self::Diagnostic,
+            "ElseActionUsage" => Self::ElseActionUsage,
+            "FilterUsage" => Self::FilterUsage,
+            "FlowPayload" => Self::FlowPayload,
+            "ForLoopActionUsage" => Self::ForLoopActionUsage,
+            "ForkNodeUsage" => Self::ForkNodeUsage,
+            "IfActionUsage" => Self::IfActionUsage,
+            "Import" => Self::Import,
+            "InterfaceEndUsage" => Self::InterfaceEndUsage,
+            "JoinNodeUsage" => Self::JoinNodeUsage,
+            "MergeNodeUsage" => Self::MergeNodeUsage,
+            "NeedUsage" => Self::NeedUsage,
+            "ObjectiveUsage" => Self::ObjectiveUsage,
+            "ParameterUsage" => Self::ParameterUsage,
+            "PurposeUsage" => Self::PurposeUsage,
+            "RequireConstraintUsage" => Self::RequireConstraintUsage,
+            "TerminateActionUsage" => Self::TerminateActionUsage,
+            "TextualRepresentation" => Self::TextualRepresentation,
+            "VerdictUsage" => Self::VerdictUsage,
+            "VerifyUsage" => Self::VerifyUsage,
+            "WhileLoopActionUsage" => Self::WhileLoopActionUsage,
             other => Self::Unrecognized(other.to_owned()),
         }
     }
@@ -511,14 +712,79 @@ mod tests {
         }
     }
 
+    /// The token must move for every class of breaking change, not just type edits. Without
+    /// this, renumbering an operation would leave the token identical and route an old
+    /// guest's `children` call to `element`.
+    #[test]
+    fn the_compatibility_token_covers_operations_and_semantics() {
+        const PRIME: u64 = 0x0000_0100_0000_01b3;
+        fn mix(mut hash: u64, bytes: &[u8]) -> u64 {
+            for byte in bytes {
+                hash ^= *byte as u64;
+                hash = hash.wrapping_mul(PRIME);
+            }
+            hash
+        }
+        // Recompute the token with one input perturbed at a time and confirm each differs.
+        let baseline = COMPATIBILITY_TOKEN;
+        assert_ne!(baseline, mix(baseline, b"schema"), "sanity");
+
+        // Renumbering an operation.
+        let renumbered = {
+            let mut hash = 0xcbf2_9ce4_8422_2325u64;
+            hash = mix(hash, SCHEMA_PATH.as_bytes());
+            hash = mix(hash, &(ABI_VERSION as u64).to_le_bytes());
+            hash = mix(hash, &SCHEMA_FINGERPRINT.to_le_bytes());
+            hash = mix(hash, SEMANTIC_API_VERSION.as_bytes());
+            for (name, code) in operation::ALL {
+                hash = mix(hash, name.as_bytes());
+                // Shift every code by one, as a renumbering would.
+                hash = mix(hash, &((*code as u64) + 1).to_le_bytes());
+            }
+            hash
+        };
+        assert_ne!(
+            baseline, renumbered,
+            "renumbering an operation left the token unchanged"
+        );
+
+        // Bumping the semantic version with no type change.
+        let resemanticked = {
+            let mut hash = 0xcbf2_9ce4_8422_2325u64;
+            hash = mix(hash, SCHEMA_PATH.as_bytes());
+            hash = mix(hash, &(ABI_VERSION as u64).to_le_bytes());
+            hash = mix(hash, &SCHEMA_FINGERPRINT.to_le_bytes());
+            hash = mix(hash, b"0.2.0");
+            for (name, code) in operation::ALL {
+                hash = mix(hash, name.as_bytes());
+                hash = mix(hash, &(*code as u64).to_le_bytes());
+            }
+            hash
+        };
+        assert_ne!(
+            baseline, resemanticked,
+            "bumping the semantic API version left the token unchanged"
+        );
+    }
+
     /// A deliberate tripwire. Changing any wire type changes this value; update it in the
     /// same commit as the schema change, and treat an unexpected diff here as a warning
     /// that existing guests are about to be rejected.
     #[test]
     fn the_wire_schema_fingerprint_is_pinned() {
         assert_eq!(
-            SCHEMA_FINGERPRINT, 0x0550_8bec_442d_a0db,
+            SCHEMA_FINGERPRINT, 0x3a46_578a_b105_445f,
             "the generator wire schema changed; every guest must be rebuilt"
+        );
+    }
+
+    /// The value guests actually report. Pinned separately from the schema fingerprint
+    /// because it can move without any type changing.
+    #[test]
+    fn the_compatibility_token_is_pinned() {
+        assert_eq!(
+            COMPATIBILITY_TOKEN, 0x741a_de78_bb72_29f5,
+            "the generator ABI contract changed; every guest must be rebuilt"
         );
     }
 }

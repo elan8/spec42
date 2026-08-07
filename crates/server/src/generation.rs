@@ -1,7 +1,7 @@
 use std::collections::BTreeMap;
 use std::fs;
 use std::io;
-use std::path::{Path, PathBuf};
+use std::path::{Component, Path, PathBuf};
 use std::process::ExitCode;
 use std::sync::Arc;
 use std::time::{Duration, Instant};
@@ -480,6 +480,9 @@ fn commit_outputs(
             parent.display()
         )
     })?;
+    // Creating parents can change what the root resolves to, so check again now that the
+    // tree exists rather than trusting the pre-mutation answer.
+    validate_output_root(output)?;
     reject_symlink(output)?;
     if output.exists() && !output.is_dir() {
         return Err(format!(
@@ -641,30 +644,86 @@ fn reject_symlink(path: &Path) -> Result<(), String> {
     }
 }
 
+/// Rejects an output root that would place generated files over the workspace.
+///
+/// Called before any filesystem mutation *and* again after parent directories are created,
+/// because the two see different things: `scratch/..` cannot be canonicalized while
+/// `scratch` does not exist, so an existence-gated check passed it and the transaction then
+/// created `scratch`, resolved the root to the current directory, and staged a copy of the
+/// whole workspace inside the workspace.
 fn validate_output_root(output: &Path) -> Result<(), String> {
-    if output.as_os_str().is_empty() || output == Path::new(".") || output.parent().is_none() {
+    if output.as_os_str().is_empty() || output.parent().is_none() {
         return Err(format!(
             "refusing broad output root {}; choose a dedicated generation directory",
             output.display()
         ));
     }
-    if output.exists() {
-        let canonical = output.canonicalize().map_err(|error| {
-            format!(
-                "failed to resolve output root {}: {error}",
-                output.display()
-            )
-        })?;
-        let current = std::env::current_dir()
-            .and_then(|path| path.canonicalize())
-            .map_err(|error| format!("failed to resolve current directory: {error}"))?;
-        if canonical == current {
-            return Err(
-                "refusing to use the workspace/current directory as generated output".to_owned(),
-            );
+    // Reject traversal syntactically, before anything on disk is consulted. `..` cannot be
+    // resolved safely against a path that does not exist yet, and a root that needs it is
+    // not a dedicated generation directory.
+    for component in output.components() {
+        match component {
+            Component::CurDir | Component::ParentDir => {
+                return Err(format!(
+                    "refusing output root {} containing `.` or `..`; give an explicit path",
+                    output.display()
+                ));
+            }
+            _ => {}
         }
     }
+
+    let current = std::env::current_dir()
+        .and_then(|path| path.canonicalize())
+        .map_err(|error| format!("failed to resolve current directory: {error}"))?;
+    // Resolve against the nearest ancestor that exists, so the check works before the
+    // directory has been created as well as after.
+    let resolved = resolve_against_existing_ancestor(output)?;
+    if resolved == current {
+        return Err(
+            "refusing to use the workspace/current directory as generated output".to_owned(),
+        );
+    }
+    if current.starts_with(&resolved) {
+        return Err(format!(
+            "refusing output root {}; it contains the current directory",
+            output.display()
+        ));
+    }
     Ok(())
+}
+
+/// Absolute form of `path`, resolved through the closest ancestor that exists.
+fn resolve_against_existing_ancestor(path: &Path) -> Result<PathBuf, String> {
+    let absolute = if path.is_absolute() {
+        path.to_path_buf()
+    } else {
+        std::env::current_dir()
+            .map_err(|error| format!("failed to resolve current directory: {error}"))?
+            .join(path)
+    };
+
+    let mut existing = absolute.as_path();
+    let mut trailing = Vec::new();
+    loop {
+        if existing.exists() {
+            break;
+        }
+        match (existing.file_name(), existing.parent()) {
+            (Some(name), Some(parent)) => {
+                trailing.push(name.to_owned());
+                existing = parent;
+            }
+            _ => return Ok(absolute),
+        }
+    }
+    let mut resolved = existing
+        .canonicalize()
+        .map_err(|error| format!("failed to resolve output root {}: {error}", path.display()))?;
+    for name in trailing.into_iter().rev() {
+        resolved.push(name);
+    }
+    Ok(resolved)
 }
 
 fn reject_symlink_chain(output: &Path, artifact: &str) -> Result<(), String> {
@@ -993,6 +1052,29 @@ mod tests {
         let plan = plan_outputs(&output, &again, false).unwrap();
         assert_eq!(plan.changed, ["a.rs"]);
         assert!(plan.conflicting.is_empty());
+    }
+
+    #[test]
+    fn output_roots_that_escape_to_the_workspace_are_refused() {
+        // `scratch/..` resolves to the current directory once `scratch` is created, so the
+        // pre-mutation check must reject it syntactically rather than waiting for the path
+        // to exist.
+        for root in ["scratch/..", "..", "../..", "a/b/../..", "."] {
+            let error = validate_output_root(Path::new(root))
+                .expect_err(&format!("accepted escaping output root `{root}`"));
+            assert!(
+                error.contains("refusing"),
+                "unexpected message for `{root}`: {error}"
+            );
+        }
+    }
+
+    #[test]
+    fn a_dedicated_output_root_is_accepted_before_it_exists() {
+        let temp = tempfile::tempdir().unwrap();
+        let root = temp.path().join("generated/nested");
+        assert!(!root.exists());
+        validate_output_root(&root).expect("a fresh dedicated directory should be allowed");
     }
 
     #[cfg(unix)]

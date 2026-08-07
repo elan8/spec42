@@ -226,11 +226,12 @@ pub fn run_guest<T: Guest>(args_ptr: i32, args_len: i32) -> u64 {
 #[macro_export]
 macro_rules! export {
     ($guest:ty) => {
-        /// Structural fingerprint of the wire schema this guest was built against. The host
-        /// refuses to run a module whose fingerprint differs from its own.
+        /// Compatibility token of the ABI this guest was built against: wire types,
+        /// operation numbering and semantic version together. The host refuses to run a
+        /// module whose token differs from its own.
         #[unsafe(no_mangle)]
         pub extern "C" fn spec42_abi_version() -> i64 {
-            $crate::protocol::SCHEMA_FINGERPRINT as i64
+            $crate::protocol::COMPATIBILITY_TOKEN as i64
         }
 
         #[unsafe(no_mangle)]

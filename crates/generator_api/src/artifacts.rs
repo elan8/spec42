@@ -104,7 +104,7 @@ impl ArtifactSet {
                 existing: existing.clone(),
             });
         }
-        if normalized == RESERVED_MANIFEST_NAME {
+        if folded == fold_artifact_path(RESERVED_MANIFEST_NAME) {
             return Err(ArtifactError::ReservedPath(normalized));
         }
         if content.len() > self.limits.max_file_bytes {
@@ -189,6 +189,9 @@ pub fn normalize_artifact_path(path: &str) -> Result<String, ArtifactError> {
                 if value.is_empty() || value == "." || value == ".." {
                     return Err(ArtifactError::ForbiddenComponent(path.to_owned()));
                 }
+                if is_windows_alias(value) {
+                    return Err(ArtifactError::ReservedPath(path.to_owned()));
+                }
                 segments.push(value);
             }
             _ => return Err(ArtifactError::ForbiddenComponent(path.to_owned())),
@@ -216,6 +219,28 @@ pub fn normalize_artifact_path(path: &str) -> Result<String, ArtifactError> {
 /// converge, which is what a missed collision produces.
 fn fold_artifact_path(path: &str) -> String {
     path.nfd().flat_map(char::to_lowercase).collect()
+}
+
+/// Names Windows reserves regardless of extension: `NUL.txt` is still the null device.
+const WINDOWS_DEVICE_NAMES: &[&str] = &[
+    "con", "prn", "aux", "nul", "com1", "com2", "com3", "com4", "com5", "com6", "com7", "com8",
+    "com9", "lpt1", "lpt2", "lpt3", "lpt4", "lpt5", "lpt6", "lpt7", "lpt8", "lpt9",
+];
+
+/// Whether a path component would alias another name on Windows.
+///
+/// Trailing dots and spaces are silently stripped when creating a file, so `report.` and
+/// `report` are the same file; device names are intercepted before they reach the
+/// filesystem at all. Both are rejected on every platform so a generator's output set does
+/// not depend on where it runs.
+fn is_windows_alias(segment: &str) -> bool {
+    if segment.ends_with('.') || segment.ends_with(' ') {
+        return true;
+    }
+    let stem = segment.split('.').next().unwrap_or(segment);
+    WINDOWS_DEVICE_NAMES
+        .iter()
+        .any(|device| stem.eq_ignore_ascii_case(device))
 }
 
 fn has_windows_prefix(path: &str) -> bool {
@@ -294,6 +319,42 @@ mod tests {
         set.emit("a/report.txt", b"a".to_vec()).unwrap();
         set.emit("b/report.txt", b"b".to_vec()).unwrap();
         assert_eq!(set.len(), 2);
+    }
+
+    #[test]
+    fn rejects_case_variants_of_the_reserved_manifest() {
+        for variant in [
+            ".SPEC42-GENERATOR-MANIFEST.JSON",
+            ".Spec42-Generator-Manifest.json",
+        ] {
+            let mut set = ArtifactSet::new(ArtifactLimits::default());
+            assert!(
+                matches!(
+                    set.emit(variant, b"{}".to_vec()),
+                    Err(ArtifactError::ReservedPath(_))
+                ),
+                "accepted `{variant}`, which aliases the manifest on a case-folding filesystem"
+            );
+        }
+    }
+
+    #[test]
+    fn rejects_windows_aliasing_names() {
+        for path in [
+            "report.",
+            "report ",
+            "nested/report.",
+            "NUL",
+            "nul.txt",
+            "com1",
+            "dir/AUX.log",
+        ] {
+            let mut set = ArtifactSet::new(ArtifactLimits::default());
+            assert!(
+                set.emit(path, b"x".to_vec()).is_err(),
+                "accepted `{path}`, which aliases another name on Windows"
+            );
+        }
     }
 
     #[test]

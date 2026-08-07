@@ -6,7 +6,8 @@ use sha2::{Digest, Sha256};
 use spec42_generator_protocol::{Metaclass, RelationshipKind as ApiRelationshipKind};
 use thiserror::Error;
 use workspace::{
-    HostSemanticModelNode, HostWorkspaceSnapshot, NodeId, RelationshipKind, SemanticNode,
+    ElementKind, HostSemanticModelNode, HostWorkspaceSnapshot, NodeId, RelationshipKind,
+    SemanticNode,
 };
 
 pub const GENERATOR_SEMANTIC_API_VERSION: &str = "0.1.0";
@@ -494,7 +495,7 @@ impl GeneratorModelView {
             metaclass: projected
                 .and_then(|value| value.facts.element_type.as_deref())
                 .map(Metaclass::parse)
-                .unwrap_or_else(|| api_metaclass(node.element_kind.as_str())),
+                .unwrap_or_else(|| api_metaclass(&node.element_kind)),
             name: (!node.name.is_empty()).then(|| node.name.clone()),
             qualified_name: node.id.qualified_name.clone(),
             library_element: workspace::semantic::uri_under_any_library(
@@ -605,7 +606,7 @@ fn portable_path(path: &std::path::Path) -> String {
 
 fn metaclass_matches(node: &HostSemanticModelNode, requested: &str) -> bool {
     node.element_kind.as_str().eq_ignore_ascii_case(requested)
-        || api_metaclass(node.element_kind.as_str())
+        || api_metaclass(&node.element_kind)
             .as_str()
             .eq_ignore_ascii_case(requested)
         || node
@@ -615,65 +616,121 @@ fn metaclass_matches(node: &HostSemanticModelNode, requested: &str) -> bool {
             .is_some_and(|value| value.eq_ignore_ascii_case(requested))
 }
 
-fn api_metaclass(kind: &str) -> Metaclass {
+/// Maps Spec42's internal element kind onto the published metaclass.
+///
+/// Exhaustive on purpose: there is no catch-all, so adding a variant to `ElementKind` is a
+/// compile error here rather than something that silently reaches generators as
+/// `Unrecognized`. That matters because `Metaclass` is advertised as a closed enumeration
+/// downstream guests can match exhaustively -- a fallback arm would quietly break that
+/// promise, as it did for state-machine models before this was made total.
+///
+/// `ElementKind::Unknown` is the one honest fallthrough: the parser itself did not recognise
+/// the spelling, so Spec42 has nothing better to publish than the raw text.
+fn api_metaclass(kind: &ElementKind) -> Metaclass {
     match kind {
-        "package" => Metaclass::Package,
-        "part def" => Metaclass::PartDefinition,
-        "part" => Metaclass::PartUsage,
-        "port def" => Metaclass::PortDefinition,
-        "port" => Metaclass::PortUsage,
-        "item def" => Metaclass::ItemDefinition,
-        "item" => Metaclass::ItemUsage,
-        "attribute def" => Metaclass::AttributeDefinition,
-        "attribute" => Metaclass::AttributeUsage,
-        "action def" => Metaclass::ActionDefinition,
-        "action" => Metaclass::ActionUsage,
-        "occurrence def" => Metaclass::OccurrenceDefinition,
-        "occurrence" => Metaclass::OccurrenceUsage,
-        "flow def" => Metaclass::FlowDefinition,
-        "flow" => Metaclass::FlowUsage,
-        "allocation def" => Metaclass::AllocationDefinition,
-        "allocation" => Metaclass::AllocationUsage,
-        "state def" => Metaclass::StateDefinition,
-        "state" => Metaclass::StateUsage,
-        "requirement def" => Metaclass::RequirementDefinition,
-        "requirement" | "verified requirement" => Metaclass::RequirementUsage,
-        "use case def" => Metaclass::UseCaseDefinition,
-        "use case" => Metaclass::UseCaseUsage,
-        "concern def" => Metaclass::ConcernDefinition,
-        "concern" => Metaclass::ConcernUsage,
-        "verification def" => Metaclass::VerificationCaseDefinition,
-        "verification" => Metaclass::VerificationCaseUsage,
-        "analysis def" => Metaclass::AnalysisCaseDefinition,
-        "analysis" => Metaclass::AnalysisCaseUsage,
-        "case def" => Metaclass::CaseDefinition,
-        "case" => Metaclass::CaseUsage,
-        "constraint def" => Metaclass::ConstraintDefinition,
-        "constraint" => Metaclass::ConstraintUsage,
-        "calc def" => Metaclass::CalculationDefinition,
-        "calc" => Metaclass::CalculationUsage,
-        "enum def" => Metaclass::EnumerationDefinition,
-        "enumerated value" => Metaclass::EnumerationUsage,
-        "connection def" => Metaclass::ConnectionDefinition,
-        "connection" => Metaclass::ConnectionUsage,
-        "interface def" => Metaclass::InterfaceDefinition,
-        "interface" => Metaclass::InterfaceUsage,
-        "individual def" => Metaclass::IndividualDefinition,
-        "individual" => Metaclass::IndividualUsage,
-        "view def" => Metaclass::ViewDefinition,
-        "view" => Metaclass::ViewUsage,
-        "viewpoint def" => Metaclass::ViewpointDefinition,
-        "viewpoint" => Metaclass::ViewpointUsage,
-        "rendering def" => Metaclass::RenderingDefinition,
-        "rendering" => Metaclass::RenderingUsage,
-        "metadata def" => Metaclass::MetadataDefinition,
-        "metadata usage" | "metadata keyword" => Metaclass::MetadataUsage,
-        "ref" => Metaclass::ReferenceUsage,
-        "documentation" => Metaclass::Documentation,
-        other => Metaclass::Unrecognized(other.to_owned()),
+        ElementKind::Package => Metaclass::Package,
+        ElementKind::PartDef => Metaclass::PartDefinition,
+        ElementKind::PortDef => Metaclass::PortDefinition,
+        ElementKind::Interface => Metaclass::InterfaceUsage,
+        ElementKind::InterfaceDef => Metaclass::InterfaceDefinition,
+        ElementKind::ItemDef => Metaclass::ItemDefinition,
+        ElementKind::AttributeDef => Metaclass::AttributeDefinition,
+        ElementKind::ActionDef => Metaclass::ActionDefinition,
+        ElementKind::OccurrenceDef => Metaclass::OccurrenceDefinition,
+        ElementKind::FlowDef => Metaclass::FlowDefinition,
+        ElementKind::AllocationDef => Metaclass::AllocationDefinition,
+        ElementKind::StateDef => Metaclass::StateDefinition,
+        ElementKind::RequirementDef => Metaclass::RequirementDefinition,
+        ElementKind::UseCaseDef => Metaclass::UseCaseDefinition,
+        ElementKind::ConcernDef => Metaclass::ConcernDefinition,
+        ElementKind::AnalysisDef => Metaclass::AnalysisCaseDefinition,
+        ElementKind::VerificationDef => Metaclass::VerificationCaseDefinition,
+        ElementKind::ViewDef => Metaclass::ViewDefinition,
+        ElementKind::ViewpointDef => Metaclass::ViewpointDefinition,
+        ElementKind::RenderingDef => Metaclass::RenderingDefinition,
+        ElementKind::MetadataDef => Metaclass::MetadataDefinition,
+        ElementKind::EnumDef => Metaclass::EnumerationDefinition,
+        ElementKind::ConstraintDef => Metaclass::ConstraintDefinition,
+        ElementKind::CalcDef => Metaclass::CalculationDefinition,
+        ElementKind::CaseDef => Metaclass::CaseDefinition,
+        ElementKind::IndividualDef => Metaclass::IndividualDefinition,
+        ElementKind::ConnectionDef => Metaclass::ConnectionDefinition,
+        ElementKind::Alias => Metaclass::Alias,
+        ElementKind::KermlDecl => Metaclass::KermlDeclaration,
+        ElementKind::Part => Metaclass::PartUsage,
+        ElementKind::Port => Metaclass::PortUsage,
+        ElementKind::Item => Metaclass::ItemUsage,
+        ElementKind::Attribute => Metaclass::AttributeUsage,
+        ElementKind::Action => Metaclass::ActionUsage,
+        ElementKind::Actor => Metaclass::ActorUsage,
+        ElementKind::Stakeholder => Metaclass::StakeholderUsage,
+        ElementKind::State => Metaclass::StateUsage,
+        ElementKind::Requirement => Metaclass::RequirementUsage,
+        ElementKind::Case => Metaclass::CaseUsage,
+        ElementKind::UseCase => Metaclass::UseCaseUsage,
+        ElementKind::Concern => Metaclass::ConcernUsage,
+        ElementKind::Analysis => Metaclass::AnalysisCaseUsage,
+        ElementKind::Verification => Metaclass::VerificationCaseUsage,
+        ElementKind::View => Metaclass::ViewUsage,
+        ElementKind::Viewpoint => Metaclass::ViewpointUsage,
+        ElementKind::Rendering => Metaclass::RenderingUsage,
+        ElementKind::ViewRendering => Metaclass::ViewRendering,
+        ElementKind::ViewColumn => Metaclass::ViewColumn,
+        ElementKind::MetadataUsage => Metaclass::MetadataUsage,
+        ElementKind::MetadataKeyword => Metaclass::MetadataUsage,
+        ElementKind::Flow => Metaclass::FlowUsage,
+        ElementKind::Allocation => Metaclass::AllocationUsage,
+        ElementKind::Perform => Metaclass::PerformUsage,
+        ElementKind::Subject => Metaclass::SubjectUsage,
+        ElementKind::VerifiedRequirement => Metaclass::RequirementUsage,
+        ElementKind::IncludeUseCase => Metaclass::IncludeUseCaseUsage,
+        ElementKind::Ref => Metaclass::ReferenceUsage,
+        ElementKind::Constraint => Metaclass::ConstraintUsage,
+        ElementKind::Connection => Metaclass::ConnectionUsage,
+        ElementKind::Individual => Metaclass::IndividualUsage,
+        ElementKind::Occurrence => Metaclass::OccurrenceUsage,
+        ElementKind::Calc => Metaclass::CalculationUsage,
+        ElementKind::Enumeration => Metaclass::EnumerationUsage,
+        ElementKind::Transition => Metaclass::TransitionUsage,
+        ElementKind::TransitionTrigger => Metaclass::TransitionTrigger,
+        ElementKind::TransitionGuard => Metaclass::TransitionGuard,
+        ElementKind::TransitionEffect => Metaclass::TransitionEffect,
+        ElementKind::FinalState => Metaclass::FinalState,
+        ElementKind::EnumeratedValue => Metaclass::EnumerationUsage,
+        ElementKind::Binding => Metaclass::BindingConnectorUsage,
+        ElementKind::Import => Metaclass::Import,
+        ElementKind::Dependency => Metaclass::Dependency,
+        ElementKind::Documentation => Metaclass::Documentation,
+        ElementKind::TextualRepresentation => Metaclass::TextualRepresentation,
+        ElementKind::ConjugatedPortDefinition => Metaclass::ConjugatedPortDefinition,
+        ElementKind::FlowPayload => Metaclass::FlowPayload,
+        ElementKind::DerivationConnection => Metaclass::DerivationConnectorUsage,
+        ElementKind::InterfaceEnd => Metaclass::InterfaceEndUsage,
+        ElementKind::InOutParameter => Metaclass::ParameterUsage,
+        ElementKind::AnalysisResult => Metaclass::AnalysisResultUsage,
+        ElementKind::Verdict => Metaclass::VerdictUsage,
+        ElementKind::Diagnostic => Metaclass::Diagnostic,
+        ElementKind::Need => Metaclass::NeedUsage,
+        ElementKind::Objective => Metaclass::ObjectiveUsage,
+        ElementKind::Purpose => Metaclass::PurposeUsage,
+        ElementKind::Verify => Metaclass::VerifyUsage,
+        ElementKind::AssertConstraint => Metaclass::AssertConstraintUsage,
+        ElementKind::RequireConstraint => Metaclass::RequireConstraintUsage,
+        ElementKind::Assert => Metaclass::AssertUsage,
+        ElementKind::ForLoop => Metaclass::ForLoopActionUsage,
+        ElementKind::While => Metaclass::WhileLoopActionUsage,
+        ElementKind::If => Metaclass::IfActionUsage,
+        ElementKind::Else => Metaclass::ElseActionUsage,
+        ElementKind::Assign => Metaclass::AssignmentActionUsage,
+        ElementKind::Merge => Metaclass::MergeNodeUsage,
+        ElementKind::Decide => Metaclass::DecisionNodeUsage,
+        ElementKind::Join => Metaclass::JoinNodeUsage,
+        ElementKind::Fork => Metaclass::ForkNodeUsage,
+        ElementKind::Terminate => Metaclass::TerminateActionUsage,
+        ElementKind::Filter => Metaclass::FilterUsage,
+        ElementKind::Unknown(other) => Metaclass::Unrecognized(other.clone()),
     }
 }
-
 fn summary_order(left: &ElementSummary, right: &ElementSummary) -> std::cmp::Ordering {
     left.qualified_name
         .cmp(&right.qualified_name)
@@ -784,30 +841,58 @@ package P {
         );
     }
 
-    /// The escape hatch must stay unused in practice. If Spec42's upstream model gains an
-    /// element kind or relationship kind the ABI has not mapped, this fails here rather than
-    /// leaking a raw internal spelling to generators as though it were a metaclass.
+    /// `Unrecognized` must be reachable only when Spec42's own parser failed to classify the
+    /// construct. Every kind the parser *does* model has to map to a published metaclass.
+    ///
+    /// Completeness itself is enforced by the compiler, not by this test: `api_metaclass`
+    /// matches `ElementKind` exhaustively with no catch-all, so adding a variant upstream
+    /// breaks the build here. That is deliberate -- the previous version of this test asserted
+    /// "no unrecognized values" against a three-element fixture, which passed while ordinary
+    /// state-machine models produced 36 of them.
     #[test]
-    fn no_element_or_relationship_maps_to_the_unrecognized_escape_hatch() {
-        let view = test_view();
-        let elements = view.find(None).expect("find");
-        assert!(!elements.is_empty(), "the fixture should expose elements");
+    fn unrecognized_metaclasses_come_only_from_kinds_the_parser_did_not_model() {
+        assert_eq!(
+            api_metaclass(&ElementKind::Unknown("something new".to_owned())),
+            Metaclass::Unrecognized("something new".to_owned()),
+        );
 
-        for element in &elements {
+        // A spread of kinds across the definition/usage/action-node/annotation families; the
+        // exhaustive match covers the rest.
+        for kind in [
+            ElementKind::Package,
+            ElementKind::PartDef,
+            ElementKind::Part,
+            ElementKind::Attribute,
+            ElementKind::Transition,
+            ElementKind::TransitionTrigger,
+            ElementKind::TransitionGuard,
+            ElementKind::TransitionEffect,
+            ElementKind::FinalState,
+            ElementKind::ForLoop,
+            ElementKind::While,
+            ElementKind::If,
+            ElementKind::Merge,
+            ElementKind::Fork,
+            ElementKind::Join,
+            ElementKind::Decide,
+            ElementKind::Terminate,
+            ElementKind::Assign,
+            ElementKind::Binding,
+            ElementKind::Import,
+            ElementKind::Dependency,
+            ElementKind::Documentation,
+            ElementKind::TextualRepresentation,
+            ElementKind::ConjugatedPortDefinition,
+            ElementKind::EnumeratedValue,
+            ElementKind::Verdict,
+            ElementKind::Need,
+            ElementKind::Objective,
+        ] {
             assert!(
-                !element.metaclass.is_unrecognized(),
-                "`{}` has an unmapped metaclass `{}`",
-                element.qualified_name,
-                element.metaclass
+                !api_metaclass(&kind).is_unrecognized(),
+                "`{}` is modelled by the parser but has no published metaclass",
+                kind.as_str()
             );
-            for edge in view.relationships(&element.handle).expect("relationships") {
-                assert!(
-                    !edge.kind.is_unrecognized(),
-                    "`{}` has an unmapped relationship kind `{}`",
-                    element.qualified_name,
-                    edge.kind
-                );
-            }
         }
     }
 
