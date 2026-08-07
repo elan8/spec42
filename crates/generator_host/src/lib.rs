@@ -17,7 +17,7 @@ use thiserror::Error;
 use wasmparser::Parser;
 use wasmtime::{
     Caller, Config, Engine, Extern, ExternType, Linker, Memory, Module, ResourceLimiter, Store,
-    StoreLimits, StoreLimitsBuilder, ValType,
+    StoreLimits, StoreLimitsBuilder, Trap, ValType,
 };
 
 pub const GENERATOR_ABI_VERSION: u32 = protocol::ABI_VERSION;
@@ -78,6 +78,30 @@ pub enum GeneratorFailureCategory {
     ResourceExhausted,
     Cancelled,
     OutputPolicy,
+}
+
+/// Raised from a host call to unwind a run that must stop.
+///
+/// A distinct type so classification does not depend on message text.
+#[derive(Debug, Clone, Copy, Error)]
+enum GuestInterrupt {
+    #[error("generation was cancelled")]
+    Cancelled,
+    #[error("generation exceeded its wall-clock budget")]
+    DeadlineExceeded,
+}
+
+/// A guest that broke the ABI contract: a bad pointer, an unknown operation, a malformed
+/// payload. Distinct from a trap, because the module is incompatible rather than buggy, and
+/// the message names precisely what the guest got wrong.
+#[derive(Debug, Error)]
+#[error("{0}")]
+struct AbiViolation(String);
+
+impl AbiViolation {
+    fn error(message: impl Into<String>) -> wasmtime::Error {
+        wasmtime::Error::new(Self(message.into()))
+    }
 }
 
 #[derive(Debug, Error)]
@@ -510,9 +534,9 @@ fn execute_guest(
     artifact_limits: ArtifactLimits,
     cancellation: &CancellationHandle,
 ) -> Result<ArtifactSet, GeneratorHostError> {
-    let instance = linker.instantiate(&mut *store, module).map_err(|error| {
-        classify_wasmtime_error("guest-instantiation", error.to_string(), cancellation)
-    })?;
+    let instance = linker
+        .instantiate(&mut *store, module)
+        .map_err(|error| classify_wasmtime_error("guest-instantiation", error, cancellation))?;
     let memory = instance
         .get_memory(&mut *store, "memory")
         .ok_or_else(|| incompatible("guest-instantiation", "module does not export memory"))?;
@@ -537,17 +561,16 @@ fn execute_guest(
             "generator arguments exceed the ABI limit",
         )
     })?;
-    let args_ptr = alloc.call(&mut *store, args_len).map_err(|error| {
-        classify_wasmtime_error("guest-execution", error.to_string(), cancellation)
-    })?;
+    let args_ptr = alloc
+        .call(&mut *store, args_len)
+        .map_err(|error| classify_wasmtime_error("guest-execution", error, cancellation))?;
     memory
         .write(&mut *store, args_ptr as usize, &args_bytes)
         .map_err(|error| incompatible("guest-execution", error.to_string()))?;
     let packed = generate
         .call(&mut *store, (args_ptr, args_len))
-        .map_err(|error| {
-            classify_wasmtime_error("guest-execution", error.to_string(), cancellation)
-        })? as u64;
+        .map_err(|error| classify_wasmtime_error("guest-execution", error, cancellation))?
+        as u64;
     let output_ptr = (packed & u32::MAX as u64) as u32 as usize;
     let output_len = (packed >> 32) as usize;
     if output_len > max_artifact_result_bytes(artifact_limits) {
@@ -563,9 +586,7 @@ fn execute_guest(
         .map_err(|error| incompatible("guest-execution", error.to_string()))?;
     dealloc
         .call(&mut *store, (output_ptr as i32, output_len as i32))
-        .map_err(|error| {
-            classify_wasmtime_error("guest-execution", error.to_string(), cancellation)
-        })?;
+        .map_err(|error| classify_wasmtime_error("guest-execution", error, cancellation))?;
     validate_artifact_result_header(&output, artifact_limits.max_files)?;
     let (result, remaining): (Result<Vec<protocol::Artifact>, String>, _) =
         postcard::take_from_bytes(&output).map_err(|error| {
@@ -664,15 +685,13 @@ impl HostState {
     /// bounds that shape too, and does not depend on wasmtime's check-point placement.
     fn guard(&self) -> wasmtime::Result<()> {
         if self.cancellation.is_cancelled() {
-            return Err(wasmtime::Error::msg("generation was cancelled"));
+            return Err(wasmtime::Error::new(GuestInterrupt::Cancelled));
         }
         if self
             .deadline
             .is_some_and(|deadline| Instant::now() >= deadline)
         {
-            return Err(wasmtime::Error::msg(
-                "generation exceeded its wall-clock budget",
-            ));
+            return Err(wasmtime::Error::new(GuestInterrupt::DeadlineExceeded));
         }
         Ok(())
     }
@@ -819,7 +838,7 @@ fn handle_query(
                     .map_err(|error| error.to_string()),
             )
         }
-        _ => Err(wasmtime::Error::msg(format!(
+        _ => Err(AbiViolation::error(format!(
             "unknown Spec42 query operation {operation}"
         ))),
     }
@@ -827,7 +846,7 @@ fn handle_query(
 
 fn decode_request<T: DeserializeOwned>(bytes: &[u8]) -> wasmtime::Result<T> {
     postcard::from_bytes(bytes)
-        .map_err(|error| wasmtime::Error::msg(format!("invalid Spec42 query request: {error}")))
+        .map_err(|error| AbiViolation::error(format!("invalid Spec42 query request: {error}")))
 }
 
 fn encode_result<T: Serialize>(result: Result<T, String>) -> wasmtime::Result<Vec<u8>> {
@@ -839,16 +858,16 @@ fn guest_memory(caller: &mut Caller<'_, HostState>) -> wasmtime::Result<Memory> 
     caller
         .get_export("memory")
         .and_then(Extern::into_memory)
-        .ok_or_else(|| wasmtime::Error::msg("generator does not export memory"))
+        .ok_or_else(|| AbiViolation::error("generator does not export memory"))
 }
 
 fn transfer_range(pointer: i32, length: i32) -> wasmtime::Result<(usize, usize)> {
     let pointer = usize::try_from(pointer)
-        .map_err(|_| wasmtime::Error::msg("negative guest memory pointer"))?;
-    let length = usize::try_from(length)
-        .map_err(|_| wasmtime::Error::msg("negative guest memory length"))?;
+        .map_err(|_| AbiViolation::error("negative guest memory pointer"))?;
+    let length =
+        usize::try_from(length).map_err(|_| AbiViolation::error("negative guest memory length"))?;
     if length > MAX_QUERY_TRANSFER_BYTES {
-        return Err(wasmtime::Error::msg("guest transfer exceeds the ABI limit"));
+        return Err(AbiViolation::error("guest transfer exceeds the ABI limit"));
     }
     Ok((pointer, length))
 }
@@ -863,7 +882,7 @@ fn read_guest(
     let mut bytes = vec![0; length];
     memory
         .read(caller, pointer, &mut bytes)
-        .map_err(|error| wasmtime::Error::msg(error.to_string()))?;
+        .map_err(|error| AbiViolation::error(error.to_string()))?;
     Ok(bytes)
 }
 
@@ -873,7 +892,7 @@ fn read_guest_string(
     length: i32,
 ) -> wasmtime::Result<String> {
     String::from_utf8(read_guest(caller, pointer, length)?)
-        .map_err(|error| wasmtime::Error::msg(format!("guest string is not UTF-8: {error}")))
+        .map_err(|error| AbiViolation::error(format!("guest string is not UTF-8: {error}")))
 }
 
 fn write_guest_response(
@@ -884,7 +903,7 @@ fn write_guest_response(
 ) -> wasmtime::Result<i64> {
     let (pointer, capacity) = transfer_range(pointer, capacity)?;
     if bytes.len() > MAX_QUERY_TRANSFER_BYTES {
-        return Err(wasmtime::Error::msg("host response exceeds the ABI limit"));
+        return Err(AbiViolation::error("host response exceeds the ABI limit"));
     }
     if bytes.len() > capacity {
         return Ok(-(bytes.len() as i64));
@@ -892,7 +911,7 @@ fn write_guest_response(
     let memory = guest_memory(caller)?;
     memory
         .write(caller, pointer, bytes)
-        .map_err(|error| wasmtime::Error::msg(error.to_string()))?;
+        .map_err(|error| AbiViolation::error(error.to_string()))?;
     Ok(bytes.len() as i64)
 }
 
@@ -965,7 +984,7 @@ fn diagnostic_level(level: i32) -> wasmtime::Result<GeneratorDiagnosticLevel> {
         value if value == protocol::Level::Info as i32 => Ok(GeneratorDiagnosticLevel::Info),
         value if value == protocol::Level::Warning as i32 => Ok(GeneratorDiagnosticLevel::Warning),
         value if value == protocol::Level::Error as i32 => Ok(GeneratorDiagnosticLevel::Error),
-        _ => Err(wasmtime::Error::msg("invalid diagnostic level")),
+        _ => Err(AbiViolation::error("invalid diagnostic level")),
     }
 }
 
@@ -994,34 +1013,54 @@ fn incompatible(phase: &'static str, message: impl Into<String>) -> GeneratorHos
     }
 }
 
+/// Classifies a failure from Wasmtime by inspecting the error, not its rendered text.
+///
+/// Wasmtime attaches a [`WasmBacktrace`] as the outermost context of any error raised while
+/// guest code is on the stack, and `Display` for an `anyhow::Error` shows only that outermost
+/// layer. So `to_string()` on a fuel exhaustion is the backtrace, not "all fuel consumed" --
+/// which is why matching on message substrings classified the two most important failures
+/// wrongly and discarded every message the host itself produced. Downcasting sees through the
+/// context, and `root_cause` recovers the message the caller should read.
+///
+/// [`WasmBacktrace`]: wasmtime::WasmBacktrace
 fn classify_wasmtime_error(
     phase: &'static str,
-    mut message: String,
+    error: wasmtime::Error,
     cancellation: &CancellationHandle,
 ) -> GeneratorHostError {
-    let lower = message.to_ascii_lowercase();
-    let category = if cancellation.is_cancelled() {
-        GeneratorFailureCategory::Cancelled
-    } else if lower.contains("fuel")
-        || lower.contains("epoch")
-        || lower.contains("deadline")
-        || lower.contains("memory")
-        || lower.contains("resource limit")
-    {
-        GeneratorFailureCategory::ResourceExhausted
-    } else if phase == "guest-instantiation" {
-        GeneratorFailureCategory::ApiIncompatible
-    } else {
-        GeneratorFailureCategory::Trap
-    };
-    if category == GeneratorFailureCategory::Cancelled {
-        message = "generation was cancelled".to_owned();
-    } else if category == GeneratorFailureCategory::Trap && lower.contains("wasm backtrace") {
-        message =
-            "WebAssembly guest trapped; guest backtrace omitted from normal output".to_owned();
-    } else if let Some(first_line) = message.lines().next() {
-        message = first_line.to_owned();
+    if cancellation.is_cancelled() {
+        return GeneratorHostError {
+            category: GeneratorFailureCategory::Cancelled,
+            phase,
+            message: "generation was cancelled".to_owned(),
+        };
     }
+    let message = bounded_message(error.root_cause().to_string());
+    if let Some(interrupt) = error.downcast_ref::<GuestInterrupt>() {
+        return GeneratorHostError {
+            category: match interrupt {
+                GuestInterrupt::Cancelled => GeneratorFailureCategory::Cancelled,
+                GuestInterrupt::DeadlineExceeded => GeneratorFailureCategory::ResourceExhausted,
+            },
+            phase,
+            message,
+        };
+    }
+    if error.downcast_ref::<AbiViolation>().is_some() {
+        return GeneratorHostError {
+            category: GeneratorFailureCategory::ApiIncompatible,
+            phase,
+            message,
+        };
+    }
+    let category = match error.downcast_ref::<Trap>() {
+        // `Interrupt` is the epoch firing, which for this host means the wall-clock deadline;
+        // cancellation was already handled above.
+        Some(Trap::OutOfFuel | Trap::Interrupt) => GeneratorFailureCategory::ResourceExhausted,
+        Some(_) => GeneratorFailureCategory::Trap,
+        // Not a trap and not one of ours: a link or instantiation failure.
+        None => GeneratorFailureCategory::ApiIncompatible,
+    };
     GeneratorHostError {
         category,
         phase,
@@ -1104,6 +1143,76 @@ mod tests {
         assert_eq!(error.category, GeneratorFailureCategory::OutputPolicy);
         assert_eq!(error.phase, "artifact-validation");
         assert!(error.message.contains("returned more than once"));
+    }
+
+    /// Wasmtime attaches a backtrace as the outermost context whenever guest code is on the
+    /// stack, so every classification has to survive that wrapping. Each case is asserted
+    /// both bare and contexted: the contexted form is what production actually sees.
+    fn classify(error: wasmtime::Error) -> (GeneratorFailureCategory, String) {
+        let cancellation = CancellationHandle::new();
+        let bare = classify_wasmtime_error("guest-execution", error, &cancellation);
+        (bare.category, bare.message)
+    }
+
+    fn classify_with_backtrace(error: wasmtime::Error) -> (GeneratorFailureCategory, String) {
+        let contexted = error.context("error while executing at wasm backtrace:\n  0: 0x2f");
+        classify(contexted)
+    }
+
+    #[test]
+    fn fuel_exhaustion_is_resource_exhausted_even_behind_a_backtrace() {
+        for classified in [
+            classify(wasmtime::Error::new(Trap::OutOfFuel)),
+            classify_with_backtrace(wasmtime::Error::new(Trap::OutOfFuel)),
+        ] {
+            assert_eq!(classified.0, GeneratorFailureCategory::ResourceExhausted);
+            assert!(
+                classified.1.contains("fuel"),
+                "message lost the cause: {}",
+                classified.1
+            );
+        }
+    }
+
+    #[test]
+    fn epoch_interruption_is_resource_exhausted_not_incompatibility() {
+        assert_eq!(
+            classify_with_backtrace(wasmtime::Error::new(Trap::Interrupt)).0,
+            GeneratorFailureCategory::ResourceExhausted
+        );
+    }
+
+    #[test]
+    fn guest_traps_stay_traps_and_keep_their_reason() {
+        let (category, message) =
+            classify_with_backtrace(wasmtime::Error::new(Trap::MemoryOutOfBounds));
+        assert_eq!(category, GeneratorFailureCategory::Trap);
+        assert_eq!(message, "wasm trap: out of bounds memory access");
+    }
+
+    #[test]
+    fn abi_violations_report_what_the_guest_got_wrong() {
+        let (category, message) =
+            classify_with_backtrace(AbiViolation::error("unknown Spec42 query operation 8"));
+        assert_eq!(category, GeneratorFailureCategory::ApiIncompatible);
+        assert_eq!(message, "unknown Spec42 query operation 8");
+    }
+
+    #[test]
+    fn deadline_is_resource_exhausted_and_cancellation_is_cancelled() {
+        assert_eq!(
+            classify_with_backtrace(wasmtime::Error::new(GuestInterrupt::DeadlineExceeded)).0,
+            GeneratorFailureCategory::ResourceExhausted
+        );
+
+        let cancellation = CancellationHandle::new();
+        cancellation.cancel();
+        let cancelled = classify_wasmtime_error(
+            "guest-execution",
+            wasmtime::Error::new(Trap::Interrupt),
+            &cancellation,
+        );
+        assert_eq!(cancelled.category, GeneratorFailureCategory::Cancelled);
     }
 
     #[test]
