@@ -420,29 +420,58 @@ fn commit_outputs(
         .map_err(|error| format!("failed to stage generation manifest: {error}"))?;
 
     let stage_path = stage.keep();
+    install_staged_output(output, &stage_path, parent, &|from, to| {
+        fs::rename(from, to)
+    })
+}
+
+/// Swaps `stage_path` into `output`, keeping the displaced tree until the swap succeeds.
+///
+/// Every rename goes through `rename` so tests can drive the rollback branch, which is
+/// otherwise unreachable. The backup directory is deliberately *not* a `TempDir`: if
+/// rollback fails, the caller is told where the previous output is, and that path has to
+/// outlive this function.
+fn install_staged_output(
+    output: &Path,
+    stage_path: &Path,
+    parent: &Path,
+    rename: &dyn Fn(&Path, &Path) -> io::Result<()>,
+) -> Result<(), String> {
     if !output.exists() {
-        return fs::rename(&stage_path, output)
-            .map_err(|error| format!("failed to install generated output: {error}"));
+        return rename(stage_path, output).map_err(|error| {
+            let _ = fs::remove_dir_all(stage_path);
+            format!("failed to install generated output: {error}")
+        });
     }
 
-    let backup = tempfile::Builder::new()
+    let backup_path = tempfile::Builder::new()
         .prefix(".spec42-backup-")
         .tempdir_in(parent)
-        .map_err(|error| format!("failed to create transactional backup: {error}"))?;
-    let previous_path = backup.path().join("previous");
-    fs::rename(output, &previous_path).map_err(|error| {
-        format!("failed to move existing output into transaction backup: {error}")
-    })?;
-    if let Err(error) = fs::rename(&stage_path, output) {
-        let rollback = fs::rename(&previous_path, output);
-        return Err(match rollback {
-            Ok(()) => format!("failed to install generated output; previous output restored: {error}"),
+        .map_err(|error| format!("failed to create transactional backup: {error}"))?
+        .keep();
+    let previous_path = backup_path.join("previous");
+    if let Err(error) = rename(output, &previous_path) {
+        // Nothing was displaced, so the backup has no value to preserve.
+        let _ = fs::remove_dir_all(&backup_path);
+        let _ = fs::remove_dir_all(stage_path);
+        return Err(format!(
+            "failed to move existing output into transaction backup: {error}"
+        ));
+    }
+    if let Err(error) = rename(stage_path, output) {
+        return Err(match rename(&previous_path, output) {
+            Ok(()) => {
+                let _ = fs::remove_dir_all(&backup_path);
+                let _ = fs::remove_dir_all(stage_path);
+                format!("failed to install generated output; previous output restored: {error}")
+            }
             Err(rollback_error) => format!(
                 "failed to install generated output ({error}) and rollback failed ({rollback_error}); previous output remains at {}",
                 previous_path.display()
             ),
         });
     }
+    let _ = fs::remove_dir_all(&backup_path);
     Ok(())
 }
 
@@ -733,6 +762,90 @@ mod tests {
         assert_eq!(plan.conflicting, ["a.txt"]);
         let forced = plan_outputs(temp.path(), &set, true).unwrap();
         assert_eq!(forced.changed, ["a.txt"]);
+    }
+
+    fn staged_tree(parent: &Path, name: &str, contents: &[(&str, &[u8])]) -> PathBuf {
+        let path = parent.join(name);
+        fs::create_dir(&path).unwrap();
+        for (file, bytes) in contents {
+            fs::write(path.join(file), bytes).unwrap();
+        }
+        path
+    }
+
+    fn sibling_debris(parent: &Path) -> Vec<String> {
+        let mut names = fs::read_dir(parent)
+            .unwrap()
+            .map(|entry| entry.unwrap().file_name().to_string_lossy().into_owned())
+            .filter(|name| {
+                name.starts_with(".spec42-backup-") || name.starts_with(".spec42-stage-")
+            })
+            .collect::<Vec<_>>();
+        names.sort();
+        names
+    }
+
+    #[test]
+    fn failed_install_restores_the_previous_output_and_leaves_no_debris() {
+        let temp = tempfile::tempdir().unwrap();
+        let parent = temp.path();
+        let output = staged_tree(parent, "generated", &[("keep.txt", b"original")]);
+        let stage = staged_tree(parent, ".spec42-stage-test", &[("keep.txt", b"generated")]);
+
+        let error = install_staged_output(&output, &stage, parent, &|from, to| {
+            if from == stage {
+                Err(io::Error::other("install refused"))
+            } else {
+                fs::rename(from, to)
+            }
+        })
+        .expect_err("install should fail");
+
+        assert!(error.contains("previous output restored"), "{error}");
+        assert_eq!(fs::read(output.join("keep.txt")).unwrap(), b"original");
+        assert_eq!(sibling_debris(parent), Vec::<String>::new());
+    }
+
+    #[test]
+    fn failed_rollback_preserves_the_backup_it_reports() {
+        let temp = tempfile::tempdir().unwrap();
+        let parent = temp.path();
+        let output = staged_tree(parent, "generated", &[("keep.txt", b"original")]);
+        let stage = staged_tree(parent, ".spec42-stage-test", &[("keep.txt", b"generated")]);
+
+        // Only the displacement rename is allowed, so both the install and the rollback fail.
+        let error = install_staged_output(&output, &stage, parent, &|from, to| {
+            if from == output {
+                fs::rename(from, to)
+            } else {
+                Err(io::Error::other("rename refused"))
+            }
+        })
+        .expect_err("install should fail");
+
+        let reported = error
+            .rsplit_once("previous output remains at ")
+            .map(|(_, path)| PathBuf::from(path))
+            .expect("error should report the backup location");
+        assert!(
+            reported.is_dir(),
+            "reported backup {} does not exist",
+            reported.display()
+        );
+        assert_eq!(fs::read(reported.join("keep.txt")).unwrap(), b"original");
+    }
+
+    #[test]
+    fn successful_install_removes_the_backup() {
+        let temp = tempfile::tempdir().unwrap();
+        let parent = temp.path();
+        let output = staged_tree(parent, "generated", &[("keep.txt", b"original")]);
+        let stage = staged_tree(parent, ".spec42-stage-test", &[("keep.txt", b"generated")]);
+
+        install_staged_output(&output, &stage, parent, &|from, to| fs::rename(from, to)).unwrap();
+
+        assert_eq!(fs::read(output.join("keep.txt")).unwrap(), b"generated");
+        assert_eq!(sibling_debris(parent), Vec::<String>::new());
     }
 
     #[cfg(unix)]
