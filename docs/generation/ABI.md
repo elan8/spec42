@@ -4,7 +4,7 @@ The wire contract between Spec42 and a generator module. This document is the
 specification; `crates/generator_sdk` is one implementation of it, not its definition. A
 guest written in any language that can emit the imports and exports below is equally valid.
 
-Current version: **ABI 4**. Wire schema fingerprint: `0x05508bec442da0db`.
+Current version: **ABI 4**. Compatibility token: `0x741ade78bb7229f5`.
 
 A generator is plain **core WebAssembly** — not a component. No metadata, no
 post-processing, no `wasm-tools` step. Pass the `.wasm` straight to `spec42 generate`.
@@ -14,7 +14,7 @@ post-processing, no `wasm-tools` step. Pass the `.wasm` straight to `spec42 gene
 | Export | Signature | Purpose |
 | --- | --- | --- |
 | `memory` | linear memory | All data crosses through this |
-| `spec42_abi_version` | `() -> i64` | Wire schema fingerprint (see below) |
+| `spec42_abi_version` | `() -> i64` | Compatibility token (see below) |
 | `spec42_alloc` | `(i32) -> i32` | Allocate `n` bytes, return a pointer |
 | `spec42_generate` | `(i32, i32) -> i64` | Entrypoint |
 
@@ -23,19 +23,31 @@ module otherwise. Memory must be 32-bit.
 
 ### `spec42_abi_version`
 
-Returns the fingerprint of the wire schema the guest was built against, as a bit pattern in
-an `i64`. The host compares it against its own and refuses the module if they differ. This
-is checked before the entrypoint runs, so a mismatch costs nothing but a clear error.
+Returns the compatibility token of the ABI the guest was built against, as a bit pattern in
+an `i64`. The host compares it against its own and refuses the module if they differ, before
+the entrypoint runs, so a mismatch costs nothing but a clear error.
 
-The value is a structural hash of every type in this document. It changes automatically when
-any field is added, removed, reordered or retyped — including changes nobody thought were
-breaking. Do not compute it yourself: take it from the protocol crate, or copy the constant
-above and update it when you rebuild against a newer Spec42.
+The token covers the **whole** contract, not just the types:
+
+- a structural hash of every type in this document, so adding, removing, reordering or
+  retyping any field moves it, including changes nobody thought were breaking;
+- the operation numbering, because operation codes are plain constants that no type-level
+  hash can see — renumbering one would otherwise route an old guest's `children` request to
+  `element` with every type identical;
+- a semantic API version, bumped when observable behaviour changes with no type change at
+  all: result ordering, defaulting, what a query means, effective-feature shadowing.
+
+Do not compute it yourself: take `COMPATIBILITY_TOKEN` from the protocol crate, or copy the
+constant above and update it when you rebuild against a newer Spec42.
 
 The reason this exists is that Postcard is positional. There is no field name, type tag or
 length prefix to disagree about at runtime: an extra field in a struct shifts every later
 field by one, and because most of them are `bool` and `Option`, the shifted bytes still
 decode. Without this check the failure mode is not an error, it is wrong output.
+
+Before 1.0 the rule is deliberately blunt: any breaking change moves the token and an
+incompatible guest is refused. Negotiation, and supporting more than one version at once,
+can come later.
 
 ### `spec42_alloc`
 
@@ -185,11 +197,15 @@ addresses an element for the duration of one run; `semantic_id` is the stable pr
 identity and is what to embed in generated output. Do not persist handles between runs.
 
 `metaclass` and `kind` are closed enumerations, so a guest can match them exhaustively and
-the compiler will point out variants it has not handled. Each carries an `Unrecognized(String)`
-variant for a value this Spec42 produced but the enumeration does not name; Spec42's own
-conformance suite asserts it is never produced, so encountering one means the upstream model
-gained a concept the ABI has not yet mapped. Adding a real variant changes the fingerprint,
-so older guests are refused at load rather than silently mishandling it.
+the compiler will point out variants it has not handled. The mapping from Spec42's internal
+element kinds is itself an exhaustive match with no fallback, so a new internal kind is a
+compile error rather than something that reaches guests unannounced.
+
+Each still carries an `Unrecognized(String)` variant, reachable in exactly one case: Spec42's
+parser did not classify the construct either, so there is nothing better to publish than the
+raw spelling. Encountering one means a parser gap, not an ABI gap. Adding a real variant
+moves the compatibility token, so older guests are refused at load rather than silently
+mishandling a value they cannot name.
 
 ## Artifact paths
 
