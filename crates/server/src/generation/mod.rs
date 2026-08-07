@@ -484,45 +484,27 @@ fn commit_outputs(
             output.display()
         ));
     }
-    let stage = tempfile::Builder::new()
-        .prefix(".spec42-stage-")
-        .tempdir_in(parent)
-        .map_err(|error| format!("failed to create private output staging directory: {error}"))?;
-    if output.exists() {
-        copy_tree(output, stage.path())?;
-    }
-    for (path, content) in artifacts.entries() {
-        let target = artifact_path(stage.path(), path.as_str());
-        if let Some(parent) = target.parent() {
-            fs::create_dir_all(parent).map_err(|error| {
-                format!(
-                    "failed to create staging directory {}: {error}",
-                    parent.display()
-                )
-            })?;
-        }
-        fs::write(&target, content).map_err(|error| format!("failed to stage {path}: {error}"))?;
-    }
+    // Staging and the swap both go through the executor, so what production runs is exactly
+    // what the fault sweep covers. A unique suffix keeps concurrent runs from colliding.
+    let unique = std::process::id();
+    let stage_path = parent.join(format!(".spec42-stage-{unique}"));
+    let backup_root = parent.join(format!(".spec42-backup-{unique}"));
     let manifest_bytes = serde_json::to_vec_pretty(manifest)
         .map_err(|error| format!("failed to encode generation manifest: {error}"))?;
-    fs::write(stage.path().join(MANIFEST_NAME), manifest_bytes)
-        .map_err(|error| format!("failed to stage generation manifest: {error}"))?;
+    let staged: Vec<(String, Vec<u8>)> = artifacts
+        .entries()
+        .map(|(path, content)| (path.to_string(), content.to_vec()))
+        .collect();
 
-    let stage_path = stage.keep();
-    let output_exists = output.exists();
-    let backup_root = parent.join(format!(
-        ".spec42-backup-{}",
-        stage_path
-            .file_name()
-            .map(|name| name.to_string_lossy().into_owned())
-            .unwrap_or_else(|| "stage".to_owned())
-    ));
-    apply::install(
+    apply::stage_and_install(
         &apply::RealFileSystem,
         output,
         &stage_path,
         &backup_root,
-        output_exists,
+        output.exists(),
+        &staged,
+        MANIFEST_NAME,
+        &manifest_bytes,
     )
     .map_err(|error| error.to_string())
 }

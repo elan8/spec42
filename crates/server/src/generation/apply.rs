@@ -83,6 +83,61 @@ impl std::fmt::Display for ApplyError {
     }
 }
 
+/// Stages the artifacts and the manifest, then swaps them into place.
+///
+/// The whole operation goes through `filesystem`, so a fault sweep reaches the staging writes
+/// and the tree copy as well as the swap. Previously staging used `std::fs` directly and only
+/// the swap was injectable, leaving the larger half of the transaction uncovered.
+#[allow(clippy::too_many_arguments)]
+pub fn stage_and_install(
+    filesystem: &dyn FileSystem,
+    output: &Path,
+    staged: &Path,
+    backup_root: &Path,
+    output_exists: bool,
+    artifacts: &[(String, Vec<u8>)],
+    manifest_name: &str,
+    manifest: &[u8],
+) -> Result<(), ApplyError> {
+    let staging = |message: String| ApplyError::BeforeDisplacement(message);
+
+    if let Err(error) = filesystem.create_dir_all(staged) {
+        return Err(staging(format!(
+            "failed to create private output staging directory: {error}"
+        )));
+    }
+    if output_exists {
+        if let Err(error) = filesystem.copy_tree(output, staged) {
+            let _ = filesystem.remove_dir_all(staged);
+            return Err(staging(error.to_string()));
+        }
+    }
+    for (path, content) in artifacts {
+        let target = staged.join(path);
+        if let Some(parent) = target.parent() {
+            if let Err(error) = filesystem.create_dir_all(parent) {
+                let _ = filesystem.remove_dir_all(staged);
+                return Err(staging(format!(
+                    "failed to create staging directory {}: {error}",
+                    parent.display()
+                )));
+            }
+        }
+        if let Err(error) = filesystem.write(&target, content) {
+            let _ = filesystem.remove_dir_all(staged);
+            return Err(staging(format!("failed to stage {path}: {error}")));
+        }
+    }
+    if let Err(error) = filesystem.write(&staged.join(manifest_name), manifest) {
+        let _ = filesystem.remove_dir_all(staged);
+        return Err(staging(format!(
+            "failed to stage generation manifest: {error}"
+        )));
+    }
+
+    install(filesystem, output, staged, backup_root, output_exists)
+}
+
 /// Swaps `staged` into `output`, keeping the displaced tree until the swap succeeds.
 ///
 /// The backup is deliberately not a `TempDir`: if rollback fails, the caller is told where
@@ -143,34 +198,63 @@ mod tests {
     use std::cell::RefCell;
     use std::collections::BTreeSet;
 
-    /// Records every mutation and fails the nth one.
+    /// Records every mutation and fails the ones in its schedule.
+    ///
+    /// A schedule rather than a single index: reaching `Unrecovered` needs *two* failures --
+    /// the install must fail and the rollback that follows must fail too -- so a one-shot
+    /// injector could never reach that branch, and the assertion for it was dead.
     struct Failing {
         inner: RealFileSystem,
-        fail_at: usize,
+        schedule: BTreeSet<usize>,
         seen: RefCell<usize>,
-        log: RefCell<Vec<String>>,
+        trace: RefCell<Vec<String>>,
+        /// Operations the schedule actually failed, so the sweep can tell a leak from a
+        /// cleanup that was itself sabotaged.
+        failed: RefCell<Vec<String>>,
     }
 
     impl Failing {
-        fn new(fail_at: usize) -> Self {
+        fn with_schedule(schedule: impl IntoIterator<Item = usize>) -> Self {
             Self {
                 inner: RealFileSystem,
-                fail_at,
+                schedule: schedule.into_iter().collect(),
                 seen: RefCell::new(0),
-                log: RefCell::new(Vec::new()),
+                trace: RefCell::new(Vec::new()),
+                failed: RefCell::new(Vec::new()),
             }
         }
 
-        /// `true` when this call is the one to fail.
         fn should_fail(&self, what: &str) -> bool {
             let mut seen = self.seen.borrow_mut();
             *seen += 1;
-            self.log.borrow_mut().push(format!("{}: {what}", *seen));
-            *seen == self.fail_at
+            self.trace.borrow_mut().push(format!("{}:{what}", *seen));
+            let failing = self.schedule.contains(&*seen);
+            if failing {
+                self.failed.borrow_mut().push(what.to_owned());
+            }
+            failing
         }
 
+        /// Whether the schedule sabotaged a cleanup. If it did, the thing that cleanup would
+        /// have removed is expected to survive -- that is the injected failure, not a leak.
+        fn sabotaged_cleanup(&self) -> bool {
+            self.failed
+                .borrow()
+                .iter()
+                .any(|operation| operation == "remove_dir_all")
+        }
+
+        /// How many mutations this run actually performed.
+        ///
+        /// The count depends on the schedule: failing early exposes cleanup and rollback
+        /// operations that a successful run never performs, which is why mutation points
+        /// cannot be discovered from the success trace alone.
         fn mutations(&self) -> usize {
             *self.seen.borrow()
+        }
+
+        fn trace(&self) -> Vec<String> {
+            self.trace.borrow().clone()
         }
     }
 
@@ -230,9 +314,6 @@ mod tests {
             fs::create_dir_all(&output).unwrap();
             fs::write(output.join("owned.txt"), b"original").unwrap();
             fs::write(output.join("handwritten.txt"), b"mine").unwrap();
-            fs::create_dir_all(&staged).unwrap();
-            fs::write(staged.join("owned.txt"), b"regenerated").unwrap();
-            fs::write(staged.join("handwritten.txt"), b"mine").unwrap();
             Self {
                 _temp: temp,
                 root: root.clone(),
@@ -240,6 +321,20 @@ mod tests {
                 staged,
                 backup: root.join(".spec42-backup-test"),
             }
+        }
+
+        /// Runs the full transaction: stage the artifacts and manifest, then swap.
+        fn run(&self, filesystem: &dyn FileSystem) -> Result<(), ApplyError> {
+            stage_and_install(
+                filesystem,
+                &self.output,
+                &self.staged,
+                &self.backup,
+                true,
+                &[("owned.txt".to_owned(), b"regenerated".to_vec())],
+                ".spec42-generator-manifest.json",
+                b"{}",
+            )
         }
 
         fn original_is_intact(&self) -> bool {
@@ -275,111 +370,130 @@ mod tests {
         }
     }
 
-    /// Fails each mutation point in turn and checks the invariants after every one.
+    /// Explores failure schedules, checking the invariants after every one.
     ///
-    /// The count is discovered rather than asserted, so adding a mutation to `install`
-    /// extends the sweep automatically instead of silently leaving the new point uncovered.
+    /// Single failures are not enough. Reaching `Unrecovered` requires the install to fail
+    /// *and* the rollback after it to fail, so a one-shot injector left that branch dead
+    /// while an assertion for it sat in the sweep looking like coverage.
+    ///
+    /// Mutation points also cannot be discovered from a successful run: failing early exposes
+    /// cleanup and rollback operations that a clean install never performs. So the search is
+    /// recursive -- run a schedule, observe how many mutations that trace reached, and extend
+    /// the schedule into the newly exposed positions.
     #[test]
-    fn every_injected_failure_leaves_a_consistent_tree() {
-        let mutation_points = {
-            let scene = Scene::new();
-            let filesystem = Failing::new(usize::MAX);
-            let _ = install(
-                &filesystem,
-                &scene.output,
-                &scene.staged,
-                &scene.backup,
-                true,
-            );
-            filesystem.mutations()
-        };
-        assert!(mutation_points >= 3, "expected several mutation points");
+    fn every_failure_schedule_leaves_a_consistent_tree() {
+        let mut queue: Vec<BTreeSet<usize>> = vec![BTreeSet::new()];
+        let mut explored: BTreeSet<Vec<usize>> = BTreeSet::new();
+        let mut unrecovered_seen = false;
+        let mut rolled_back_seen = false;
+        let mut before_displacement_seen = false;
 
-        for failure in 1..=mutation_points {
-            let scene = Scene::new();
-            let filesystem = Failing::new(failure);
-            let result = install(
-                &filesystem,
-                &scene.output,
-                &scene.staged,
-                &scene.backup,
-                true,
-            );
+        while let Some(schedule) = queue.pop() {
+            let key: Vec<usize> = schedule.iter().copied().collect();
+            if !explored.insert(key.clone()) {
+                continue;
+            }
+            // Two simultaneous failures is enough to reach every branch here, and keeps the
+            // search finite; deeper schedules would only repeat the same outcomes.
+            if key.len() > 2 {
+                continue;
+            }
 
-            match result {
+            let scene = Scene::new();
+            let filesystem = Failing::with_schedule(schedule.iter().copied());
+            let result = scene.run(&filesystem);
+            let reached = filesystem.mutations();
+            let trace = filesystem.trace();
+
+            match &result {
                 Ok(()) => {
-                    // The mutations after the swap are cleanup only, so failing one still
-                    // leaves a correct output tree. What it must not do is lose the new
-                    // content or strand a staged copy; a backup that survives its own failed
-                    // removal is acceptable precisely because it is still recoverable.
                     assert_eq!(
                         fs::read(scene.output.join("owned.txt")).unwrap(),
                         b"regenerated",
-                        "failure {failure} succeeded without installing the new content"
+                        "schedule {key:?} succeeded without installing the new content\n{trace:?}"
                     );
                     assert!(
-                        scene.stage_debris().is_empty(),
-                        "failure {failure} stranded a staged copy: {:?}",
+                        scene.stage_debris().is_empty() || filesystem.sabotaged_cleanup(),
+                        "schedule {key:?} stranded a staged copy: {:?}\n{trace:?}",
                         scene.stage_debris()
                     );
                     assert!(
                         scene.surviving_backup_is_recoverable(),
-                        "failure {failure} left a backup that no longer holds the old tree"
+                        "schedule {key:?} left an unrecoverable backup\n{trace:?}"
                     );
                 }
                 Err(ApplyError::BeforeDisplacement(_)) => {
+                    before_displacement_seen = true;
                     assert!(
                         scene.original_is_intact(),
-                        "failure {failure} damaged the output before displacing it"
+                        "schedule {key:?} damaged the output before displacing it\n{trace:?}"
                     );
                     assert!(
-                        scene.debris().is_empty(),
-                        "failure {failure} left {:?}",
-                        scene.debris()
+                        scene.stage_debris().is_empty() || filesystem.sabotaged_cleanup(),
+                        "schedule {key:?} left {:?}\n{trace:?}",
+                        scene.stage_debris()
                     );
                 }
                 Err(ApplyError::RolledBack(_)) => {
+                    rolled_back_seen = true;
                     assert!(
                         scene.original_is_intact(),
-                        "failure {failure} rolled back but the original is not intact"
+                        "schedule {key:?} rolled back but the original is not intact\n{trace:?}"
                     );
                     assert!(
-                        scene.stage_debris().is_empty(),
-                        "failure {failure} rolled back but stranded a staged copy"
+                        scene.stage_debris().is_empty() || filesystem.sabotaged_cleanup(),
+                        "schedule {key:?} rolled back but stranded a staged copy\n{trace:?}"
                     );
                 }
                 Err(ApplyError::Unrecovered { backup, .. }) => {
-                    // Rollback failed: the data must still be where the message says.
+                    unrecovered_seen = true;
                     assert!(
                         backup.0.is_dir(),
-                        "failure {failure} reported a backup that does not exist"
+                        "schedule {key:?} reported a backup that does not exist\n{trace:?}"
                     );
                     assert_eq!(
                         fs::read(backup.0.join("owned.txt")).unwrap(),
                         b"original",
-                        "failure {failure} lost the previous output"
+                        "schedule {key:?} lost the previous output\n{trace:?}"
                     );
                     assert_eq!(
                         fs::read(backup.0.join("handwritten.txt")).unwrap(),
                         b"mine",
-                        "failure {failure} lost an unowned file"
+                        "schedule {key:?} lost an unowned file\n{trace:?}"
                     );
                 }
             }
+
+            // Extend into every position this trace reached, including ones only a failing
+            // run performs.
+            for position in 1..=reached {
+                if schedule.contains(&position) {
+                    continue;
+                }
+                let mut next = schedule.clone();
+                next.insert(position);
+                queue.push(next);
+            }
         }
+
+        assert!(explored.len() > 10, "the search barely explored anything");
+        assert!(
+            before_displacement_seen,
+            "no schedule failed before displacement"
+        );
+        assert!(rolled_back_seen, "no schedule exercised rollback");
+        assert!(
+            unrecovered_seen,
+            "no schedule reached an unrecovered rollback failure, so that branch is untested"
+        );
     }
 
     #[test]
     fn a_clean_install_replaces_the_tree_and_removes_the_backup() {
         let scene = Scene::new();
-        install(
-            &RealFileSystem,
-            &scene.output,
-            &scene.staged,
-            &scene.backup,
-            true,
-        )
-        .expect("a clean install should succeed");
+        scene
+            .run(&RealFileSystem)
+            .expect("a clean install should succeed");
 
         assert_eq!(
             fs::read(scene.output.join("owned.txt")).unwrap(),
@@ -392,12 +506,15 @@ mod tests {
     fn installing_into_an_absent_output_needs_no_backup() {
         let scene = Scene::new();
         fs::remove_dir_all(&scene.output).unwrap();
-        install(
+        stage_and_install(
             &RealFileSystem,
             &scene.output,
             &scene.staged,
             &scene.backup,
             false,
+            &[("owned.txt".to_owned(), b"regenerated".to_vec())],
+            ".spec42-generator-manifest.json",
+            b"{}",
         )
         .expect("installing into an absent root should succeed");
         assert_eq!(
