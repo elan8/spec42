@@ -15,7 +15,7 @@ use sysml_model::semantic::relationships::{
 };
 use sysml_model::semantic::standard_views::is_non_standard_explicit_view_type;
 use sysml_model::semantic::text_span::TextRange;
-use sysml_model::SemanticGraph;
+use sysml_model::{element_type_matches_all_filters, parse_filter_text, FilterExpr, SemanticGraph};
 
 const BUILTIN_MODELED_DECL_KEYWORDS: &[&str] = &[
     "feature",
@@ -179,6 +179,74 @@ pub(crate) fn collect_view_metadata_conformance_diagnostics(
                 ExposeTargetResolution::Resolved(_) => {}
             }
         }
+    }
+
+    for node in graph.nodes_for_uri(uri) {
+        if node.element_kind != ElementKind::View || is_synthetic(node) {
+            continue;
+        }
+        let Some(targets) = node
+            .attributes
+            .get("exposeTargets")
+            .and_then(|value| value.as_array())
+        else {
+            continue;
+        };
+        let filters = collect_view_body_filters(graph, node);
+        if filters.is_empty() {
+            continue;
+        }
+        let container_prefix = node
+            .id
+            .qualified_name
+            .rsplit_once("::")
+            .map(|(prefix, _)| prefix);
+        let mut resolved_any = false;
+        let mut surviving = false;
+        for target in targets {
+            let Some(target_text) = target.get("target").and_then(|value| value.as_str()) else {
+                continue;
+            };
+            let ExposeTargetResolution::Resolved(names) =
+                resolve_expose_target(graph, Some(uri), container_prefix, target_text)
+            else {
+                continue;
+            };
+            if names.is_empty() {
+                continue;
+            }
+            resolved_any = true;
+            for name in names {
+                let Some(element_type) = element_type_for_qualified_name(graph, &name) else {
+                    continue;
+                };
+                if element_type_matches_all_filters(element_type, &filters) {
+                    surviving = true;
+                    break;
+                }
+            }
+            if surviving {
+                break;
+            }
+        }
+        if !resolved_any || surviving {
+            continue;
+        }
+        let key = format!("expose_empty_result|{}", node.id.qualified_name);
+        if !seen.insert(key) {
+            continue;
+        }
+        diagnostics.push(diag(
+            uri,
+            diagnostic_range(graph, node, None),
+            DiagnosticSeverity::Information,
+            "semantic",
+            "view_expose_empty_result",
+            format!(
+                "View '{}' expose targets resolve, but view filters remove all exposed elements.",
+                node.name
+            ),
+        ));
     }
 
     for node in graph.nodes_for_uri(uri) {
@@ -696,6 +764,33 @@ fn expose_target_entry_range(
         }
     }
     node.range
+}
+
+fn collect_view_body_filters(
+    graph: &SemanticGraph,
+    view: &sysml_model::semantic::model::SemanticNode,
+) -> Vec<FilterExpr> {
+    graph
+        .children_of(view)
+        .into_iter()
+        .filter(|child| child.element_kind == ElementKind::Filter)
+        .filter_map(|child| {
+            child
+                .attributes
+                .get("condition")
+                .and_then(|value| value.as_str())
+                .map(|text| parse_filter_text(text.trim()))
+        })
+        .collect()
+}
+
+fn element_type_for_qualified_name<'a>(
+    graph: &'a SemanticGraph,
+    qualified_name: &str,
+) -> Option<&'a str> {
+    let ids = graph.node_ids_for_qualified_name(qualified_name)?;
+    let id = ids.first()?;
+    Some(graph.get_node(id)?.element_kind.as_str())
 }
 
 fn annotated_element_matches_restriction(

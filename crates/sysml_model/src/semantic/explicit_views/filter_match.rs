@@ -5,9 +5,9 @@ pub(crate) fn node_matches_all_filters(
     node_by_id: &HashMap<&str, &crate::semantic::dto::GraphNodeDto>,
     filters: &[FilterExpr],
 ) -> bool {
-    filters
-        .iter()
-        .all(|filter| match_filter_expr(filter, node_id, node_by_id))
+    node_by_id
+        .get(node_id)
+        .is_some_and(|node| element_type_matches_all_filters(&node.element_type, filters))
 }
 
 pub(crate) fn node_matches_expose_filter(
@@ -15,42 +15,43 @@ pub(crate) fn node_matches_expose_filter(
     node_by_id: &HashMap<&str, &crate::semantic::dto::GraphNodeDto>,
     filter: Option<&FilterExpr>,
 ) -> bool {
-    filter.is_none_or(|expr| match_filter_expr(expr, node_id, node_by_id))
+    filter.is_none_or(|expr| {
+        node_by_id
+            .get(node_id)
+            .is_some_and(|node| element_type_matches_filter(&node.element_type, expr))
+    })
 }
 
-pub(crate) fn match_filter_expr(
-    filter: &FilterExpr,
-    node_id: &str,
-    node_by_id: &HashMap<&str, &crate::semantic::dto::GraphNodeDto>,
-) -> bool {
+/// Whether `element_type` (a semantic `element_kind` string) survives every filter.
+pub fn element_type_matches_all_filters(element_type: &str, filters: &[FilterExpr]) -> bool {
+    filters
+        .iter()
+        .all(|filter| element_type_matches_filter(element_type, filter))
+}
+
+pub(crate) fn element_type_matches_filter(element_type: &str, filter: &FilterExpr) -> bool {
     match filter {
-        FilterExpr::Matches(qualified) => node_matches_kind(node_id, qualified, node_by_id),
-        FilterExpr::Not(inner) => !match_filter_expr(inner, node_id, node_by_id),
+        FilterExpr::Matches(qualified) => element_type_matches_kind(element_type, qualified),
+        FilterExpr::Not(inner) => !element_type_matches_filter(element_type, inner),
         FilterExpr::And(left, right) => {
-            match_filter_expr(left, node_id, node_by_id)
-                && match_filter_expr(right, node_id, node_by_id)
+            element_type_matches_filter(element_type, left)
+                && element_type_matches_filter(element_type, right)
         }
         FilterExpr::Or(left, right) => {
-            match_filter_expr(left, node_id, node_by_id)
-                || match_filter_expr(right, node_id, node_by_id)
+            element_type_matches_filter(element_type, left)
+                || element_type_matches_filter(element_type, right)
         }
         FilterExpr::Unsupported(_) => false,
     }
 }
 
-pub(crate) fn node_matches_kind(
-    node_id: &str,
-    qualified: &str,
-    node_by_id: &HashMap<&str, &crate::semantic::dto::GraphNodeDto>,
-) -> bool {
+pub(crate) fn element_type_matches_kind(element_type: &str, qualified: &str) -> bool {
     let wanted = normalize_kind_name(qualified);
-    node_by_id.get(node_id).is_some_and(|node| {
-        let actual = node.element_type.to_lowercase();
-        actual == wanted
-            || actual.contains(&wanted)
-            || wanted.contains(actual.as_str())
-            || actual == map_sysml_kind_alias(&wanted)
-    })
+    let actual = element_type.to_lowercase();
+    actual == wanted
+        || actual.contains(&wanted)
+        || wanted.contains(actual.as_str())
+        || actual == map_sysml_kind_alias(&wanted)
 }
 
 pub(crate) fn map_sysml_kind_alias(wanted: &str) -> String {

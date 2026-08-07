@@ -18,9 +18,9 @@ pub use semantic::evaluation::{
     evaluate_expressions, evaluate_expressions_with_unit_catalogs, UnitRegistry,
 };
 pub use semantic::explicit_views::{
-    build_view_candidates, build_view_catalog, evaluate_views, project_ids_for_renderer,
-    renderer_view_for_view_type, EvaluatedView, ExposeSpec, FilterExpr, ViewCatalog,
-    ViewDefinitionSpec, ViewUsageSpec,
+    build_view_candidates, build_view_catalog, element_type_matches_all_filters, evaluate_views,
+    parse_filter_text, project_ids_for_renderer, renderer_view_for_view_type, EvaluatedView,
+    ExposeSpec, FilterExpr, ViewCatalog, ViewDefinitionSpec, ViewUsageSpec,
 };
 pub use semantic::extracted_model::extract_activity_diagrams;
 pub use semantic::graph::{PendingExpressionRelationship, PendingRelationship, SemanticGraph};
