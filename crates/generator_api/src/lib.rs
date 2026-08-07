@@ -11,4 +11,7 @@ pub use model::{
     ElementDetail, ElementSummary, GeneratorModelView, ModelQueryError, MultiplicitySummary,
     QueryLimits, RelationshipSummary, SourceRange, GENERATOR_SEMANTIC_API_VERSION,
 };
-pub use path::{ArtifactPath, ArtifactPathError, MAX_ARTIFACT_PATH_BYTES, RESERVED_MANIFEST_NAME};
+pub use path::{
+    ArtifactPath, ArtifactPathError, MAX_ARTIFACT_PATH_BYTES, MAX_ARTIFACT_SEGMENT_BYTES,
+    RESERVED_MANIFEST_NAME,
+};

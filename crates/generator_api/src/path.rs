@@ -15,6 +15,16 @@ use unicode_normalization::UnicodeNormalization;
 
 pub const MAX_ARTIFACT_PATH_BYTES: usize = 4 * 1024;
 
+/// Longest single path component.
+///
+/// Windows filesystems cap each component at 255 characters independently of the total path
+/// length, so a 4 KiB single segment is within the path budget and still impossible to
+/// create. Applied on every platform, conservatively in bytes rather than characters, so a
+/// generator's output set does not depend on where it ran.
+///
+/// <https://learn.microsoft.com/en-us/windows/win32/fileio/filesystem-functionality-comparison#limits>
+pub const MAX_ARTIFACT_SEGMENT_BYTES: usize = 255;
+
 /// The host writes its ownership manifest here; a generator must not also claim it.
 pub const RESERVED_MANIFEST_NAME: &str = ".spec42-generator-manifest.json";
 
@@ -47,6 +57,14 @@ pub enum ArtifactPathError {
     Nul,
     #[error("artifact path is {actual} bytes; the path limit is {limit}")]
     TooLong { actual: usize, limit: usize },
+    #[error(
+        "artifact path component `{segment}` is {actual} bytes; the component limit is {limit}"
+    )]
+    SegmentTooLong {
+        segment: String,
+        actual: usize,
+        limit: usize,
+    },
     #[error("artifact path `{0}` is reserved by Spec42 or by the filesystem")]
     Reserved(String),
 }
@@ -85,6 +103,13 @@ impl ArtifactPath {
         for segment in &segments {
             if segment.is_empty() || *segment == "." || *segment == ".." {
                 return Err(ArtifactPathError::ForbiddenComponent(raw.to_owned()));
+            }
+            if segment.len() > MAX_ARTIFACT_SEGMENT_BYTES {
+                return Err(ArtifactPathError::SegmentTooLong {
+                    segment: (*segment).to_owned(),
+                    actual: segment.len(),
+                    limit: MAX_ARTIFACT_SEGMENT_BYTES,
+                });
             }
             if is_reserved_segment(segment) {
                 return Err(ArtifactPathError::Reserved(raw.to_owned()));
@@ -270,16 +295,46 @@ mod tests {
 
     #[test]
     fn length_boundaries_are_exact() {
-        let longest = "a".repeat(MAX_ARTIFACT_PATH_BYTES);
-        assert!(accepted(&longest), "rejected a path at exactly the limit");
+        assert_eq!(ArtifactPath::parse(""), Err(ArtifactPathError::Empty));
+
+        // Component boundary: 255 accepted, 256 refused. Independent of the path budget --
+        // a single 4 KiB segment fits the path limit and is still impossible to create.
+        let longest_segment = "a".repeat(MAX_ARTIFACT_SEGMENT_BYTES);
+        assert!(
+            accepted(&longest_segment),
+            "rejected a component at the limit"
+        );
+        assert!(
+            accepted(&format!("{longest_segment}/{longest_segment}")),
+            "rejected two components that are each within the limit"
+        );
         assert_eq!(
-            ArtifactPath::parse(&"a".repeat(MAX_ARTIFACT_PATH_BYTES + 1)),
-            Err(ArtifactPathError::TooLong {
-                actual: MAX_ARTIFACT_PATH_BYTES + 1,
-                limit: MAX_ARTIFACT_PATH_BYTES,
+            ArtifactPath::parse(&"a".repeat(MAX_ARTIFACT_SEGMENT_BYTES + 1)),
+            Err(ArtifactPathError::SegmentTooLong {
+                segment: "a".repeat(MAX_ARTIFACT_SEGMENT_BYTES + 1),
+                actual: MAX_ARTIFACT_SEGMENT_BYTES + 1,
+                limit: MAX_ARTIFACT_SEGMENT_BYTES,
             })
         );
-        assert_eq!(ArtifactPath::parse(""), Err(ArtifactPathError::Empty));
+
+        // Total-path boundary, reached with components that are each legal.
+        let component = "a".repeat(MAX_ARTIFACT_SEGMENT_BYTES);
+        let mut within = Vec::new();
+        while within.join("/").len() + 1 + component.len() <= MAX_ARTIFACT_PATH_BYTES {
+            within.push(component.clone());
+        }
+        assert!(
+            accepted(&within.join("/")),
+            "rejected a path within the total limit"
+        );
+        within.push(component);
+        assert!(
+            matches!(
+                ArtifactPath::parse(&within.join("/")),
+                Err(ArtifactPathError::TooLong { .. })
+            ),
+            "accepted a path over the total limit"
+        );
     }
 
     /// Traversal and separator forms, in every component position.
@@ -372,40 +427,123 @@ mod tests {
         );
     }
 
-    /// Windows is its own oracle: a path this validator accepts must produce a regular
-    /// directory entry with exactly that name. Catches device and stream behaviour without
-    /// restating the policy in a second table.
+    /// Windows is its own oracle: what the validator accepts must be creatable, and what it
+    /// rejects must be something Windows would not have stored faithfully anyway.
+    ///
+    /// The stored name is read back by *enumerating the directory*, not from the path that was
+    /// requested. Asking `target.file_name()` would only echo the input and prove nothing --
+    /// the whole risk is that Windows silently stores something other than what was asked for.
     #[cfg(windows)]
     #[test]
-    fn accepted_paths_create_regular_files_on_windows() {
+    fn accepted_paths_are_stored_under_exactly_the_requested_name() {
         let temp = tempfile::tempdir().unwrap();
-        for representative in [
+
+        // Chosen to sit next to the rules rather than comfortably inside them: names that
+        // resemble devices without being them, boundary lengths, and non-ASCII.
+        let representatives = [
             "README.md",
             "nested/dir/file.txt",
             "com10",
             "comx",
+            "com",
+            "lpt0",
+            "nulls.txt",
+            "auxiliary",
             "a.b.c",
             "caf\u{e9}.txt",
-        ] {
+            "\u{301}",
+            &"a".repeat(MAX_ARTIFACT_SEGMENT_BYTES),
+        ];
+
+        for representative in representatives {
             let parsed = ArtifactPath::parse(representative)
                 .unwrap_or_else(|error| panic!("{representative}: {error}"));
-            let target = temp.path().join(parsed.as_str());
-            std::fs::create_dir_all(target.parent().unwrap()).unwrap();
+            let directory = temp.path().join("case").join(
+                parsed
+                    .segments()
+                    .take(parsed.segments().count() - 1)
+                    .collect::<Vec<_>>()
+                    .join("/"),
+            );
+            std::fs::create_dir_all(&directory).unwrap();
+            let expected = parsed.segments().next_back().unwrap();
+            let target = directory.join(expected);
             std::fs::write(&target, b"x")
-                .unwrap_or_else(|error| panic!("{representative} was not writable: {error}"));
+                .unwrap_or_else(|error| panic!("`{representative}` was not writable: {error}"));
 
-            let metadata = std::fs::symlink_metadata(&target)
-                .unwrap_or_else(|error| panic!("{representative} did not appear: {error}"));
+            // Enumerate: this is what Windows actually stored, not what we asked for.
+            let stored: Vec<String> = std::fs::read_dir(&directory)
+                .unwrap()
+                .map(|entry| entry.unwrap().file_name().to_string_lossy().into_owned())
+                .collect();
+            assert!(
+                stored.iter().any(|name| name == expected),
+                "`{representative}` was stored as {stored:?}, not `{expected}`"
+            );
+            let metadata = std::fs::symlink_metadata(&target).unwrap();
             assert!(
                 metadata.is_file(),
-                "`{representative}` did not become a regular file"
+                "`{representative}` is not a regular file"
             );
-            let name = target.file_name().unwrap().to_string_lossy();
-            let expected = parsed.segments().next_back().unwrap();
-            assert_eq!(
-                name, expected,
-                "`{representative}` landed under a different name"
+            std::fs::remove_file(&target).unwrap();
+        }
+    }
+
+    /// The other direction: a rejected name must be one Windows would not have stored as
+    /// asked. Independently written rather than derived from the validator's own rules, so a
+    /// mistake in those rules cannot make this pass vacuously.
+    #[cfg(windows)]
+    #[test]
+    fn rejected_paths_would_not_have_been_stored_faithfully() {
+        let temp = tempfile::tempdir().unwrap();
+        let dangerous = [
+            "NUL",
+            "nul.txt",
+            "COM1",
+            "COM\u{b9}.txt",
+            "LPT\u{b2}.log",
+            "CONIN$",
+            "report.",
+            "report ",
+            "a:b",
+            ".spec42-generator-manifest.json::$DATA",
+            "a<b",
+            "a>b",
+            "a|b",
+            "a?b",
+            "a*b",
+            "bell\u{7}",
+            &"a".repeat(MAX_ARTIFACT_SEGMENT_BYTES + 1),
+        ];
+
+        for candidate in dangerous {
+            assert!(
+                ArtifactPath::parse(candidate).is_err(),
+                "validator accepted `{candidate}`"
             );
+
+            // And confirm Windows agrees it is not an ordinary name: either the write fails,
+            // or what lands on disk is not what was asked for.
+            let target = temp.path().join(candidate);
+            let before: std::collections::BTreeSet<String> = std::fs::read_dir(temp.path())
+                .map(|entries| {
+                    entries
+                        .map(|entry| entry.unwrap().file_name().to_string_lossy().into_owned())
+                        .collect()
+                })
+                .unwrap_or_default();
+            if std::fs::write(&target, b"x").is_ok() {
+                let after: std::collections::BTreeSet<String> = std::fs::read_dir(temp.path())
+                    .unwrap()
+                    .map(|entry| entry.unwrap().file_name().to_string_lossy().into_owned())
+                    .collect();
+                let appeared: Vec<&String> = after.difference(&before).collect();
+                assert!(
+                    !appeared.iter().any(|name| name.as_str() == candidate),
+                    "`{candidate}` was stored verbatim, so rejecting it may be too strict"
+                );
+                let _ = std::fs::remove_file(&target);
+            }
         }
     }
 }
