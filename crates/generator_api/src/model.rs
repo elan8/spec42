@@ -479,7 +479,10 @@ impl GeneratorModelView {
     }
 
     fn expose_node(&self, node: &SemanticNode) -> ElementSummary {
-        let handle = handle_for(&self.snapshot, node);
+        // Derive both identities from one hash of the origin: `handle_for` used to recompute
+        // the semantic id internally, so every exposed element paid for it twice.
+        let semantic_id = generator_semantic_id(&self.snapshot, node);
+        let handle = handle_from_semantic_id(&semantic_id);
         self.exposed
             .lock()
             .expect("generator handle index poisoned")
@@ -487,7 +490,7 @@ impl GeneratorModelView {
         let projected = self.projected(node);
         ElementSummary {
             handle,
-            semantic_id: generator_semantic_id(&self.snapshot, node),
+            semantic_id,
             metaclass: projected
                 .and_then(|value| value.facts.element_type.as_deref())
                 .map(Metaclass::parse)
@@ -548,9 +551,13 @@ fn node_id_for_projected(
 }
 
 fn handle_for(snapshot: &HostWorkspaceSnapshot, node: &SemanticNode) -> String {
+    handle_from_semantic_id(&generator_semantic_id(snapshot, node))
+}
+
+fn handle_from_semantic_id(semantic_id: &str) -> String {
     let mut hasher = Sha256::new();
     hasher.update(b"spec42-generator-handle-v1\0");
-    hasher.update(generator_semantic_id(snapshot, node).as_bytes());
+    hasher.update(semantic_id.as_bytes());
     format!("h:{:x}", hasher.finalize())
 }
 

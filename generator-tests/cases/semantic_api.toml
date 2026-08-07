@@ -26,3 +26,12 @@ nearer feature shadows a farther one. This case is that rule, executable.
 id = "semantic-api/minimal-model"
 model = "minimal"
 description = "The smallest model that still exercises every operation."
+
+[[case]]
+id = "semantic-api/wide-find-all"
+model = "wide"
+plugin = "find_all"
+description = """
+A single find(None) over ~1200 elements. Exists to make the cost of the element-exposure
+path visible: every element crossing the boundary is hashed, allocated and copied.
+"""

@@ -208,6 +208,13 @@ dependencies = [
 ]
 
 [[package]]
+name = "spec42-conformance-find_all"
+version = "0.1.0"
+dependencies = [
+ "spec42-generator-sdk",
+]
+
+[[package]]
 name = "spec42-conformance-query_all"
 version = "0.1.0"
 dependencies = [

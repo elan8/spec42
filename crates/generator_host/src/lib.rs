@@ -336,6 +336,7 @@ impl GeneratorRuntime {
                 model,
                 diagnostics: Vec::new(),
                 diagnostic_bytes: 0,
+                last_response: None,
                 limits: MeteredLimits::new(runtime_limits.memory_bytes),
                 query_count: 0,
                 deadline,
@@ -746,6 +747,13 @@ struct HostState {
     diagnostic_bytes: usize,
     limits: MeteredLimits,
     query_count: u64,
+    /// The most recent (operation, request) and its encoded response.
+    ///
+    /// The capacity-probe protocol has a guest call the same query twice: once to discover
+    /// the size, once to receive it. Without this, the second call re-walks the model,
+    /// re-hashes every element and re-serialises -- doubling the cost of every response
+    /// larger than the guest's initial buffer, which for a whole-model query is all of them.
+    last_response: Option<(i32, Vec<u8>, Vec<u8>)>,
     deadline: Option<Instant>,
     cancellation: CancellationHandle,
 }
@@ -753,6 +761,19 @@ struct HostState {
 impl HostState {
     fn queried(&mut self) {
         self.query_count = self.query_count.saturating_add(1);
+    }
+
+    fn cached_response(&self, operation: i32, request: &[u8]) -> Option<Vec<u8>> {
+        self.last_response
+            .as_ref()
+            .filter(|(cached_op, cached_request, _)| {
+                *cached_op == operation && cached_request == request
+            })
+            .map(|(_, _, response)| response.clone())
+    }
+
+    fn remember_response(&mut self, operation: i32, request: &[u8], response: &[u8]) {
+        self.last_response = Some((operation, request.to_vec(), response.to_vec()));
     }
 
     /// Refuses to service a host call once the run is cancelled or past its deadline.
@@ -841,8 +862,13 @@ fn handle_query(
 ) -> wasmtime::Result<Vec<u8>> {
     use protocol::operation;
 
+    // A capacity probe repeats the previous query verbatim; serve it from the last result
+    // rather than recomputing, and do not count it as a second logical query.
+    if let Some(cached) = state.cached_response(operation, request) {
+        return Ok(cached);
+    }
     state.queried();
-    match operation {
+    let response = match operation {
         operation::INFO => encode_result(Ok(protocol::ModelInfo {
             model_digest: state.model.model_digest(),
             spec42_version: state.model.spec42_version().to_owned(),
@@ -918,7 +944,9 @@ fn handle_query(
         _ => Err(AbiViolation::error(format!(
             "unknown Spec42 query operation {operation}"
         ))),
-    }
+    }?;
+    state.remember_response(operation, request, &response);
+    Ok(response)
 }
 
 fn decode_request<T: DeserializeOwned>(bytes: &[u8]) -> wasmtime::Result<T> {
