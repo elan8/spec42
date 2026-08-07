@@ -126,6 +126,10 @@ jobs:
           cargo run -p generator_conformance --bin generator-conformance
           # A blessed golden must be committed, never produced by CI.
           git diff --exit-code generator-tests/golden
+          # Subprocess layer: exit codes, the output transaction and cross-process
+          # determinism, none of which the in-process corpus can observe. Must run after the
+          # plugins are built or it skips itself.
+          cargo test -p server --test generator_cli
 
       - name: Sandboxed Rust generator smoke
         run: |

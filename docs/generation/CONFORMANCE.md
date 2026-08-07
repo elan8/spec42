@@ -98,6 +98,27 @@ a case. Plugins must be deterministic: no clock, no randomness, no iteration ord
 map, and nothing derived from the Spec42 version.
 
 Some failure modes cannot be produced through the Rust SDK, because `export!` always emits a
-correct module — a stale schema fingerprint, a bad pointer, an unknown operation code. Those
+correct module — a stale compatibility token, a bad pointer, an unknown operation code. Those
 are covered by hand-written WAT fixtures in `crates/generator_host/tests/guest_abi.rs`
 instead, which assemble modules at test time rather than committing opaque binaries.
+
+## The subprocess layer
+
+`crates/server/tests/generator_cli.rs` drives the real `spec42` binary. The in-process corpus
+structurally cannot see above `GeneratorRuntime`, so exit codes, the output transaction, the
+manifest, `--check`/`--dry-run`/`--force`, symlink refusal and cross-process determinism live
+here. That gap is not hypothetical: an output-root escape and a reserved-name alias both
+shipped because nothing exercised those paths.
+
+It also has to run after `scripts/build-generator-plugins.sh`, or it skips itself.
+
+Determinism is checked across two *processes*, not two calls: `std`'s `HashMap` seed is
+per-process, and this repo has already shipped a bug of exactly that shape.
+
+## Concurrency constraint
+
+Epoch interruption is engine-global. An execution that sets a wall-clock deadline must not
+run concurrently with others on the same `GeneratorRuntime`, because the expiring one
+interrupts every store sharing the engine. Executions without a deadline never touch the
+epoch, which is why the corpus can run them in parallel; a case needing a deadline must be
+given its own runtime or run serially.

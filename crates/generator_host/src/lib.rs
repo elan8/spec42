@@ -289,6 +289,12 @@ impl GeneratorRuntime {
         })
     }
 
+    /// Runs a prepared module against a model snapshot.
+    ///
+    /// Concurrency caveat: epoch interruption is engine-global. Executions that set a
+    /// wall-clock deadline must not run concurrently on one `GeneratorRuntime`, because the
+    /// expiring one interrupts every other store sharing the engine. Executions without a
+    /// deadline never touch the epoch and are safe to run in parallel.
     pub fn execute_prepared(
         &self,
         prepared: &PreparedGenerator,
@@ -354,7 +360,13 @@ impl GeneratorRuntime {
         store.set_epoch_deadline(1);
         store.epoch_deadline_trap();
 
-        let watchdog = Watchdog::spawn(&self.engine, &cancellation, deadline);
+        // Only when a deadline was requested: `increment_epoch` is engine-global, so a
+        // watchdog started for one execution would interrupt every other store sharing this
+        // runtime. Cancellation without a deadline is still honoured at host-call
+        // boundaries by `HostState::guard`, which is the path that works for a guest whose
+        // entrypoint never reaches a wasm check point anyway.
+        let watchdog =
+            deadline.map(|deadline| Watchdog::spawn(&self.engine, &cancellation, deadline));
 
         let started = Instant::now();
         let guest_result = execute_guest(
@@ -365,7 +377,9 @@ impl GeneratorRuntime {
             artifact_limits,
             &cancellation,
         );
-        watchdog.stop();
+        if let Some(watchdog) = watchdog {
+            watchdog.stop();
+        }
         let artifacts = guest_result?;
         let duration = started.elapsed();
         let fuel_consumed = runtime_limits.fuel.map(|fuel| {
@@ -396,11 +410,7 @@ struct Watchdog {
 }
 
 impl Watchdog {
-    fn spawn(
-        engine: &Engine,
-        cancellation: &CancellationHandle,
-        deadline: Option<Instant>,
-    ) -> Self {
+    fn spawn(engine: &Engine, cancellation: &CancellationHandle, deadline: Instant) -> Self {
         let (stop_tx, stop_rx) = mpsc::channel();
         let engine = engine.clone();
         let cancelled = cancellation.clone();
@@ -409,18 +419,12 @@ impl Watchdog {
                 engine.increment_epoch();
                 break;
             }
-            let poll = Duration::from_millis(10);
-            let wait = match deadline {
-                Some(deadline) => {
-                    let remaining = deadline.saturating_duration_since(Instant::now());
-                    if remaining.is_zero() {
-                        engine.increment_epoch();
-                        break;
-                    }
-                    remaining.min(poll)
-                }
-                None => poll,
-            };
+            let remaining = deadline.saturating_duration_since(Instant::now());
+            if remaining.is_zero() {
+                engine.increment_epoch();
+                break;
+            }
+            let wait = remaining.min(Duration::from_millis(10));
             match stop_rx.recv_timeout(wait) {
                 Ok(()) => break,
                 Err(mpsc::RecvTimeoutError::Timeout) => continue,

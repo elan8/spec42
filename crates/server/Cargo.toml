@@ -38,6 +38,7 @@ sha2 = { workspace = true }
 tempfile = "3"
 
 [dev-dependencies]
+wat = "1"
 lsp_server = { path = "../lsp_server" }
 sysml-v2-parser = { workspace = true }
 serde_json = { workspace = true }
