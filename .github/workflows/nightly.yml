@@ -283,3 +283,42 @@ jobs:
 
       - name: Check drone interconnection performance budgets
         run: node scripts/check-perf-budgets.mjs target/spec42-perf/drone-interconnection-performance.json
+
+  generator-exploratory:
+    name: Generator fuzzing and mutation (exploratory)
+    runs-on: ubuntu-latest
+    # Exploratory only. Neither fuzzing nor a mutation score gates a PR: they are not
+    # reproducible from the same inputs twice, and required CI must be. What they produce
+    # that lasts is a minimal input -- convert every useful finding into a deterministic
+    # regression in crates/generator_api/tests/path_fuzz_corpus.rs and let that gate instead.
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Install Rust nightly
+        uses: dtolnay/rust-toolchain@nightly
+
+      - name: Cache cargo
+        uses: Swatinem/rust-cache@v2
+
+      - name: Install tools
+        run: |
+          cargo install cargo-fuzz --locked || true
+          cargo install cargo-mutants --locked || true
+
+      - name: Fuzz artifact path parsing
+        run: |
+          if [ -d fuzz ]; then
+            cargo fuzz run artifact_path -- -max_total_time=300 || true
+          else
+            echo "no fuzz targets yet; skipping"
+          fi
+
+      - name: Mutation-test the transaction planner
+        run: |
+          cargo mutants --package server --file 'src/generation/plan.rs' --timeout 60 || true
+
+      - name: Report
+        run: |
+          echo "Exploratory results are advisory. Convert findings into deterministic"
+          echo "regressions rather than tightening a threshold here."
