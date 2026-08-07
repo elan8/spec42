@@ -6,6 +6,7 @@ mod model;
 
 pub use artifacts::{
     Artifact, ArtifactError, ArtifactLimits, ArtifactSet, MAX_ARTIFACT_PATH_BYTES,
+    RESERVED_MANIFEST_NAME,
 };
 pub use diagnostics::{GeneratorDiagnostic, GeneratorDiagnosticLevel};
 pub use model::{

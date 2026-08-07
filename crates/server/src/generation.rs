@@ -19,7 +19,7 @@ use sha2::{Digest, Sha256};
 use crate::cli::{Cli, GenerateArgs, OutputFormat};
 use crate::host_snapshot::load_snapshot_for_paths;
 
-const MANIFEST_NAME: &str = ".spec42-generator-manifest.json";
+use generator_api::RESERVED_MANIFEST_NAME as MANIFEST_NAME;
 const EXIT_MODEL_INVALID: u8 = 10;
 const EXIT_API_INCOMPATIBLE: u8 = 11;
 const EXIT_GENERATOR_FAILED: u8 = 12;
@@ -43,6 +43,10 @@ pub struct GenerationOperations {
     pub changed: Vec<String>,
     pub unchanged: Vec<String>,
     pub conflicting: Vec<String>,
+    /// Existing unowned files whose bytes already match what the generator produced.
+    /// Writing them would change nothing, but recording them as owned would silently
+    /// license a future overwrite, so they need `--force` like any other unowned file.
+    pub adopted: Vec<String>,
 }
 
 #[derive(Debug, Clone, Serialize)]
@@ -70,6 +74,10 @@ pub struct GenerationTimings {
 impl GenerationOperations {
     fn has_differences(&self) -> bool {
         !self.created.is_empty() || !self.changed.is_empty() || !self.conflicting.is_empty()
+    }
+
+    fn blocked(&self) -> bool {
+        !self.conflicting.is_empty() || !self.adopted.is_empty()
     }
 }
 
@@ -211,11 +219,21 @@ pub fn run_generate(cli: &Cli, args: &GenerateArgs) -> Result<ExitCode, String> 
         Err(error) => return emit_host_failure(args.format, &error),
     };
 
+    // Carry forward ownership of files this run did not regenerate, so a generator that
+    // stops emitting a path does not forfeit the right to replace it later.
+    let previous_manifest = match read_manifest(&args.output) {
+        Ok(manifest) => manifest,
+        Err(message) => {
+            emit_simple_failure(args.format, "output_policy_failure", &message)?;
+            return Ok(ExitCode::from(EXIT_OUTPUT_POLICY));
+        }
+    };
     let manifest = manifest_for(
         &execution.artifacts,
         &execution.generator_digest,
         &model_digest,
         &spec42_version,
+        previous_manifest.as_ref(),
     );
     let output_plan_started = Instant::now();
     let operations = match plan_outputs(&args.output, &execution.artifacts, args.force) {
@@ -226,10 +244,10 @@ pub fn run_generate(cli: &Cli, args: &GenerateArgs) -> Result<ExitCode, String> 
         }
     };
     let output_plan_ms = output_plan_started.elapsed().as_millis();
-    if !operations.conflicting.is_empty() && !args.check && !args.dry_run {
+    if operations.blocked() && !args.check && !args.dry_run {
         let message = format!(
-            "refusing to overwrite {} unowned or locally modified file(s); use --force to authorize replacement",
-            operations.conflicting.len()
+            "refusing to take over {} unowned or locally modified file(s); use --force to authorize replacement",
+            operations.conflicting.len() + operations.adopted.len()
         );
         emit_simple_failure(args.format, "output_policy_failure", &message)?;
         return Ok(ExitCode::from(EXIT_OUTPUT_POLICY));
@@ -316,6 +334,7 @@ fn manifest_for(
     generator_digest: &str,
     model_digest: &str,
     spec42_version: &str,
+    retained: Option<&GenerationManifest>,
 ) -> GenerationManifest {
     GenerationManifest {
         schema_version: 1,
@@ -323,9 +342,14 @@ fn manifest_for(
         model_digest: model_digest.to_owned(),
         generator_api_version: GENERATOR_ABI_VERSION.to_string(),
         spec42_version: spec42_version.to_owned(),
-        artifacts: artifacts
+        artifacts: retained
             .iter()
-            .map(|artifact| (artifact.path, digest(&artifact.content)))
+            .flat_map(|manifest| manifest.artifacts.clone())
+            .chain(
+                artifacts
+                    .iter()
+                    .map(|artifact| (artifact.path, digest(&artifact.content))),
+            )
             .collect(),
     }
 }
@@ -343,6 +367,7 @@ fn plan_outputs(
         changed: Vec::new(),
         unchanged: Vec::new(),
         conflicting: Vec::new(),
+        adopted: Vec::new(),
     };
     for artifact in artifacts.iter() {
         reject_symlink_chain(output, &artifact.path)?;
@@ -358,14 +383,21 @@ fn plan_outputs(
             Ok(_) => {
                 let current = fs::read(&target)
                     .map_err(|error| format!("failed to read {}: {error}", target.display()))?;
-                if current == artifact.content {
-                    operations.unchanged.push(artifact.path);
-                    continue;
-                }
                 let previously_owned = previous
                     .as_ref()
                     .and_then(|manifest| manifest.artifacts.get(&artifact.path))
                     .is_some_and(|prior_hash| *prior_hash == digest(&current));
+                if current == artifact.content {
+                    // Byte equality alone must not grant ownership: an unowned file the
+                    // generator happens to reproduce (an empty `__init__.py`, say) would
+                    // otherwise be recorded as ours and overwritten on the next run.
+                    if previously_owned || force {
+                        operations.unchanged.push(artifact.path);
+                    } else {
+                        operations.adopted.push(artifact.path);
+                    }
+                    continue;
+                }
                 if force || previously_owned {
                     operations.changed.push(artifact.path);
                 } else {
@@ -752,7 +784,7 @@ mod tests {
         fs::create_dir(&output).unwrap();
         fs::write(output.join("keep.txt"), b"keep").unwrap();
         let set = artifacts(&[("nested/a.bin", &[0, 255]), ("b.txt", b"new")]);
-        let manifest = manifest_for(&set, "generator", "model", "spec42");
+        let manifest = manifest_for(&set, "generator", "model", "spec42", None);
         commit_outputs(&output, &set, &manifest).unwrap();
         assert_eq!(fs::read(output.join("keep.txt")).unwrap(), b"keep");
         assert_eq!(fs::read(output.join("nested/a.bin")).unwrap(), [0, 255]);
@@ -852,6 +884,63 @@ mod tests {
 
         assert_eq!(fs::read(output.join("keep.txt")).unwrap(), b"generated");
         assert_eq!(sibling_debris(parent), Vec::<String>::new());
+    }
+
+    #[test]
+    fn matching_bytes_do_not_grant_ownership_of_an_unowned_file() {
+        let temp = tempfile::tempdir().unwrap();
+        // A file the user already had, which the generator happens to reproduce exactly.
+        fs::write(temp.path().join("__init__.py"), b"").unwrap();
+        let set = artifacts(&[("__init__.py", b"")]);
+
+        let plan = plan_outputs(temp.path(), &set, false).unwrap();
+        assert_eq!(plan.adopted, ["__init__.py"]);
+        assert!(plan.unchanged.is_empty());
+        assert!(plan.blocked(), "adoption must require --force");
+
+        let forced = plan_outputs(temp.path(), &set, true).unwrap();
+        assert_eq!(forced.unchanged, ["__init__.py"]);
+        assert!(!forced.blocked());
+    }
+
+    #[test]
+    fn ownership_survives_a_run_that_stops_emitting_a_file() {
+        let temp = tempfile::tempdir().unwrap();
+        let output = temp.path().join("generated");
+
+        let first = artifacts(&[("keep.rs", b"one"), ("dropped.rs", b"two")]);
+        commit_outputs(&output, &first, &manifest_for(&first, "g", "m", "s", None)).unwrap();
+
+        // A later run emits only one of them; the other stays on disk.
+        let previous = read_manifest(&output).unwrap();
+        let second = artifacts(&[("keep.rs", b"one")]);
+        let manifest = manifest_for(&second, "g", "m", "s", previous.as_ref());
+        commit_outputs(&output, &second, &manifest).unwrap();
+
+        // The dropped file must still be ours, so regenerating it later is not a conflict.
+        let third = artifacts(&[("keep.rs", b"one"), ("dropped.rs", b"changed")]);
+        let plan = plan_outputs(&output, &third, false).unwrap();
+        assert_eq!(plan.changed, ["dropped.rs"]);
+        assert!(plan.conflicting.is_empty(), "{:?}", plan.conflicting);
+    }
+
+    #[test]
+    fn an_empty_run_does_not_forfeit_the_ownership_record() {
+        let temp = tempfile::tempdir().unwrap();
+        let output = temp.path().join("generated");
+
+        let first = artifacts(&[("a.rs", b"one")]);
+        commit_outputs(&output, &first, &manifest_for(&first, "g", "m", "s", None)).unwrap();
+
+        let previous = read_manifest(&output).unwrap();
+        let empty = artifacts(&[]);
+        let manifest = manifest_for(&empty, "g", "m", "s", previous.as_ref());
+        commit_outputs(&output, &empty, &manifest).unwrap();
+
+        let again = artifacts(&[("a.rs", b"two")]);
+        let plan = plan_outputs(&output, &again, false).unwrap();
+        assert_eq!(plan.changed, ["a.rs"]);
+        assert!(plan.conflicting.is_empty());
     }
 
     #[cfg(unix)]

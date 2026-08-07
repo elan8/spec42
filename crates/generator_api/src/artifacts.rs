@@ -3,8 +3,12 @@ use std::path::{Component, Path};
 
 use serde::{Deserialize, Serialize};
 use thiserror::Error;
+use unicode_normalization::UnicodeNormalization;
 
 pub const MAX_ARTIFACT_PATH_BYTES: usize = 4 * 1024;
+
+/// The host writes its ownership manifest here; a generator must not also claim it.
+pub const RESERVED_MANIFEST_NAME: &str = ".spec42-generator-manifest.json";
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 pub struct ArtifactLimits {
@@ -45,6 +49,13 @@ pub enum ArtifactError {
     PathTooLong { actual: usize, limit: usize },
     #[error("artifact `{0}` was returned more than once")]
     Duplicate(String),
+    #[error(
+        "artifact `{path}` collides with `{existing}` on case- or normalization-insensitive \
+         filesystems; they would be the same file on disk"
+    )]
+    CollidingPaths { path: String, existing: String },
+    #[error("artifact path `{0}` is reserved by Spec42")]
+    ReservedPath(String),
     #[error("artifact `{path}` is {actual} bytes; the per-file limit is {limit}")]
     FileTooLarge {
         path: String,
@@ -62,6 +73,8 @@ pub struct ArtifactSet {
     limits: ArtifactLimits,
     total_bytes: usize,
     files: BTreeMap<String, Vec<u8>>,
+    /// Case- and normalization-folded paths, to catch collisions the `files` key cannot.
+    folded: BTreeMap<String, String>,
 }
 
 impl ArtifactSet {
@@ -70,6 +83,7 @@ impl ArtifactSet {
             limits,
             total_bytes: 0,
             files: BTreeMap::new(),
+            folded: BTreeMap::new(),
         }
     }
 
@@ -77,6 +91,21 @@ impl ArtifactSet {
         let normalized = normalize_artifact_path(path)?;
         if self.files.contains_key(&normalized) {
             return Err(ArtifactError::Duplicate(normalized));
+        }
+        // Byte inequality is not enough: macOS and Windows filesystems fold case, and APFS
+        // also folds Unicode normalization, so `README.md` and `readme.md` are one file on
+        // disk. Two such artifacts would write over each other, and the survivor would then
+        // conflict on every subsequent run -- a directory that never converges and that
+        // `--force` cannot repair. Refuse the set instead.
+        let folded = fold_artifact_path(&normalized);
+        if let Some(existing) = self.folded.get(&folded) {
+            return Err(ArtifactError::CollidingPaths {
+                path: normalized,
+                existing: existing.clone(),
+            });
+        }
+        if normalized == RESERVED_MANIFEST_NAME {
+            return Err(ArtifactError::ReservedPath(normalized));
         }
         if content.len() > self.limits.max_file_bytes {
             return Err(ArtifactError::FileTooLarge {
@@ -100,6 +129,7 @@ impl ArtifactSet {
             });
         }
         self.total_bytes = next_total;
+        self.folded.insert(folded, normalized.clone());
         self.files.insert(normalized, content);
         Ok(())
     }
@@ -174,6 +204,20 @@ pub fn normalize_artifact_path(path: &str) -> Result<String, ArtifactError> {
     Ok(segments.join("/"))
 }
 
+/// Folds a path the way a case- and normalization-insensitive filesystem would.
+///
+/// APFS and NTFS both compare case-insensitively, and APFS additionally treats composed and
+/// decomposed forms of the same character as one name. Decomposing to NFD before lowercasing
+/// makes `café` and `cafe\u{301}` fold together, which byte comparison cannot see.
+///
+/// This is a conservative approximation, not the exact algorithm of any one filesystem: it
+/// may report a collision where a given filesystem would allow both names. Refusing an
+/// unusual pair of paths is a much better outcome than an output directory that can never
+/// converge, which is what a missed collision produces.
+fn fold_artifact_path(path: &str) -> String {
+    path.nfd().flat_map(char::to_lowercase).collect()
+}
+
 fn has_windows_prefix(path: &str) -> bool {
     let bytes = path.as_bytes();
     bytes.len() >= 2 && bytes[0].is_ascii_alphabetic() && bytes[1] == b':'
@@ -217,6 +261,39 @@ mod tests {
         let paths = set.iter().map(|file| file.path).collect::<Vec<_>>();
         assert_eq!(paths, ["a/file.txt", "z.bin"]);
         assert_eq!(set.total_bytes(), 7);
+    }
+
+    #[test]
+    fn rejects_paths_that_collide_on_a_case_folding_filesystem() {
+        let mut set = ArtifactSet::new(ArtifactLimits::default());
+        set.emit("README.md", b"a".to_vec()).unwrap();
+        assert!(matches!(
+            set.emit("readme.md", b"b".to_vec()),
+            Err(ArtifactError::CollidingPaths { .. })
+        ));
+        // Same file, composed versus decomposed.
+        set.emit("caf\u{e9}.txt", b"a".to_vec()).unwrap();
+        assert!(matches!(
+            set.emit("cafe\u{301}.txt", b"b".to_vec()),
+            Err(ArtifactError::CollidingPaths { .. })
+        ));
+    }
+
+    #[test]
+    fn rejects_the_reserved_manifest_path() {
+        let mut set = ArtifactSet::new(ArtifactLimits::default());
+        assert!(matches!(
+            set.emit(RESERVED_MANIFEST_NAME, b"{}".to_vec()),
+            Err(ArtifactError::ReservedPath(_))
+        ));
+    }
+
+    #[test]
+    fn distinct_paths_that_only_look_similar_are_still_allowed() {
+        let mut set = ArtifactSet::new(ArtifactLimits::default());
+        set.emit("a/report.txt", b"a".to_vec()).unwrap();
+        set.emit("b/report.txt", b"b".to_vec()).unwrap();
+        assert_eq!(set.len(), 2);
     }
 
     #[test]
