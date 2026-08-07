@@ -15,9 +15,7 @@ use sysml_model::semantic::relationships::{
 };
 use sysml_model::semantic::standard_views::is_non_standard_explicit_view_type;
 use sysml_model::semantic::text_span::TextRange;
-use sysml_model::{
-    element_type_matches_all_filters, parse_filter_text, FilterExpr, SemanticGraph,
-};
+use sysml_model::{element_type_matches_all_filters, parse_filter_text, FilterExpr, SemanticGraph};
 
 const BUILTIN_MODELED_DECL_KEYWORDS: &[&str] = &[
     "feature",
