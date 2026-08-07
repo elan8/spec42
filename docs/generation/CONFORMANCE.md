@@ -131,3 +131,32 @@ Note what does *not* work, in case it looks tempting: arming non-deadline stores
 delta so only their own tick reaches them. `set_epoch_deadline` is relative to the current
 epoch and Wasmtime adds the two, so `u64::MAX` panics in debug and wraps to an
 already-expired deadline in release as soon as the epoch has advanced at all.
+
+## Test layers
+
+Each layer answers one kind of question, and nothing is tested at a layer that cannot see it.
+
+1. **Compiler-enforced structure.** The exhaustive `ElementKind` match, the generated
+   contract enums, `ArtifactPath`. Divergence is a build error, so there is no runtime test.
+2. **Pure deterministic contract tests.** Path partitions, the token and manifest snapshots,
+   the semantic mapping, the transaction planner's decision table. No filesystem, no timing.
+3. **Deterministic stateful tests.** Manual epoch ticks in
+   `generator_host/tests/epoch_scenarios.rs`; injected filesystem failures in
+   `generation::apply`. Both drive the state themselves rather than waiting on the world.
+4. **Hostile WAT integration tests.** `generator_host/tests/guest_abi.rs`, for genuine
+   WebAssembly boundary behaviour only: signatures, pointers, lengths, malformed payloads,
+   traps.
+5. **Golden conformance corpus.** Stable semantic examples and artifact bytes. Goldens pin
+   *behaviour*; they are not used to prove input coverage — that is layer 1 and 2's job.
+6. **Small subprocess matrix.** `server/tests/generator_cli.rs`: exit codes, argument
+   parsing, real commit and check behaviour, cross-process determinism.
+
+There is deliberately no TOML DSL for concurrency or transaction scenarios. Those need types,
+barriers and failure injection to stay readable, so they live in ordinary Rust tests.
+
+## Platforms
+
+The main suite runs on Linux. A focused `generator-policy-platforms` job runs the artifact
+path and transaction tests on Windows and macOS, where filesystem behaviour genuinely differs
+— case folding, Unicode normalization, device names, alternate data streams. Running the
+whole workspace three times would cost far more than it finds.

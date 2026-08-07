@@ -593,3 +593,32 @@ jobs:
 
       - name: cargo check (zed extension)
         run: cargo check --manifest-path zed/Cargo.toml --target wasm32-wasip2 --release
+
+  generator-policy-platforms:
+    name: Generator policy (${{ matrix.os }})
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: ${{ env.RUST_TOOLCHAIN_VERSION }}
+
+      - name: Cache cargo
+        uses: Swatinem/rust-cache@v2
+
+      # Only the crates whose behaviour depends on the filesystem: artifact path validation
+      # (case folding, Unicode normalization, device names, alternate data streams) and the
+      # transaction planner and executor. On Windows this also runs the differential test
+      # that uses the platform itself as the oracle for what a valid filename is.
+      - name: Artifact path and transaction policy
+        run: |
+          cargo test -p generator_api --lib path
+          cargo test -p generator_api --lib artifacts
+          cargo test -p server --lib generation::plan
+          cargo test -p server --lib generation::apply
