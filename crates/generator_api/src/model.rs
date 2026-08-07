@@ -10,7 +10,13 @@ use workspace::{
     SemanticNode,
 };
 
-pub const GENERATOR_SEMANTIC_API_VERSION: &str = "0.1.0";
+/// Re-exported from the protocol crate rather than declared again.
+///
+/// It feeds two things that must agree: the compatibility token guests are checked against,
+/// and the semantic version reported through `model.info` and mixed into `model_digest`. Two
+/// constants meant a maintainer could bump one and get either a silent semantic change or
+/// stale reported metadata.
+pub use spec42_generator_protocol::SEMANTIC_API_VERSION as GENERATOR_SEMANTIC_API_VERSION;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct QueryLimits {
@@ -492,9 +498,15 @@ impl GeneratorModelView {
         ElementSummary {
             handle,
             semantic_id,
+            // The projection may carry an explicit element type. Accept it only when it
+            // names a metaclass this ABI publishes: an unrecognised raw string would
+            // otherwise reach guests as `Unrecognized`, bypassing the exhaustive
+            // `ElementKind` match that is supposed to make that impossible for a kind Spec42
+            // models. `ElementKind` stays authoritative.
             metaclass: projected
                 .and_then(|value| value.facts.element_type.as_deref())
                 .map(Metaclass::parse)
+                .filter(|metaclass| !metaclass.is_unrecognized())
                 .unwrap_or_else(|| api_metaclass(&node.element_kind)),
             name: (!node.name.is_empty()).then(|| node.name.clone()),
             qualified_name: node.id.qualified_name.clone(),

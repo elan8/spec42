@@ -5,15 +5,27 @@ semantic model API reported by `model.info` remains version `0.1.0`.
 
 ## How compatibility is enforced
 
-Every guest exports `spec42_abi_version`, returning a structural fingerprint of the wire
-schema. The host compares it against its own before running the module and refuses a
-mismatch with exit 11. Compatibility is therefore checked mechanically, at load time, and
-never depends on anyone remembering to bump a number.
+Every guest exports `spec42_abi_version`, returning `COMPATIBILITY_TOKEN`. The host compares
+it against its own before running the module and refuses a mismatch with exit 11.
+Compatibility is therefore checked mechanically, at load time.
 
-The fingerprint is derived from the types themselves — `SCHEMA_FINGERPRINT` in
-`crates/generator_protocol`. Adding, removing, reordering or retyping any field of any wire
-type changes it, as does bumping `ABI_VERSION`, which is mixed into the hash so an
-intentional break is observable even when no type changed.
+The token covers the whole behavioural contract, because a hash of the wire types alone
+leaves three classes of breaking change invisible:
+
+| Input | Catches |
+| --- | --- |
+| `SCHEMA_FINGERPRINT` | any field added, removed, reordered or retyped |
+| `operation::ALL` | an operation renamed, renumbered, added or removed |
+| `Level::ALL` | a diagnostic level renumbered — these cross as raw integers, not through Postcard |
+| `SEMANTIC_API_VERSION` | ordering, defaulting, query meaning, effective-feature shadowing |
+| `ABI_VERSION` | an intentional break where nothing else moved |
+
+Only the first is derived automatically from the types. The rest exist because operation
+codes and level codes are plain constants that no type-level hash can see, and because
+semantics can change with every byte of every type identical. `Level` and its code table come
+from one macro so the discriminants and the table cannot diverge; `SEMANTIC_API_VERSION` is
+declared once in `generator_protocol` and re-exported by `generator_api`, so the value feeding
+the token and the value reported through `model.info` are the same constant.
 
 This replaces the previous policy of giving each incompatible ABI a distinct import
 namespace or entrypoint name. That rule was never implemented: ABI 1 to 2 changed the
@@ -30,11 +42,14 @@ for declaring 1.0 stable.
 
 When changing the schema:
 
-1. Make the change in `crates/generator_protocol`.
-2. Update the pinned value in `the_wire_schema_fingerprint_is_pinned`, which fails
-   deliberately so the break is acknowledged in review rather than discovered downstream.
-3. Update the fingerprint quoted in [ABI.md](./ABI.md).
-4. Rebuild the example generator and the conformance plugin corpus.
+1. Make the change in `crates/generator_protocol`. A semantic change with no type change
+   means bumping `SEMANTIC_API_VERSION`; nothing else will detect it.
+2. Update the pinned values in `the_wire_schema_fingerprint_is_pinned` and
+   `the_compatibility_token_is_pinned`. Both fail deliberately so the break is acknowledged
+   in review rather than discovered downstream.
+3. Update the token quoted in [ABI.md](./ABI.md).
+4. Rebuild the example generator and the conformance plugin corpus — they will be refused
+   until they are.
 5. Tell downstream guests — `roc-spec42` pins a Spec42 revision and needs a matching bump.
 
 ## What is not breaking

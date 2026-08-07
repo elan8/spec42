@@ -105,6 +105,15 @@ const fn compute_compatibility_token() -> u64 {
         hash = mix_u64(hash, code as u64);
         index += 1;
     }
+    // Diagnostic levels cross as raw integers rather than through Postcard, so their numeric
+    // codes are contract too and are equally invisible to the type-level schema hash.
+    let mut index = 0;
+    while index < Level::ALL.len() {
+        let (name, code) = Level::ALL[index];
+        hash = mix_bytes(hash, name.as_bytes());
+        hash = mix_u64(hash, code as u64);
+        index += 1;
+    }
     hash
 }
 
@@ -646,14 +655,47 @@ pub struct Relationship {
     pub implied: bool,
 }
 
-#[repr(i32)]
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, Schema)]
-#[serde(rename_all = "lowercase")]
-pub enum Level {
-    Debug = 0,
-    Info = 1,
-    Warning = 2,
-    Error = 3,
+/// Declares a wire enum together with the numeric codes it crosses the boundary as.
+///
+/// One source for both, so the discriminants and the compatibility-token table cannot
+/// diverge. That matters because these values are sent as raw integers, not through Postcard:
+/// a type-level schema hash sees variant *names and order*, so renumbering a discriminant
+/// would silently reinterpret existing guests while leaving the schema fingerprint identical.
+macro_rules! wire_enum {
+    (
+        $(#[$meta:meta])*
+        pub enum $name:ident { $( $(#[$variant_meta:meta])* $variant:ident = $code:expr ),* $(,)? }
+    ) => {
+        $(#[$meta])*
+        #[repr(i32)]
+        pub enum $name {
+            $( $(#[$variant_meta])* $variant = $code ),*
+        }
+
+        impl $name {
+            /// Every variant with the integer it is transmitted as. Mixed into
+            /// [`COMPATIBILITY_TOKEN`], so renaming, renumbering, adding or removing one is a
+            /// breaking change that stale guests are refused for.
+            pub const ALL: &'static [(&'static str, i32)] =
+                &[ $( (stringify!($variant), $code) ),* ];
+
+            pub const fn code(self) -> i32 {
+                self as i32
+            }
+        }
+    };
+}
+
+wire_enum! {
+    /// Severity of a generator diagnostic.
+    #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, Schema)]
+    #[serde(rename_all = "lowercase")]
+    pub enum Level {
+        Debug = 0,
+        Info = 1,
+        Warning = 2,
+        Error = 3,
+    }
 }
 
 #[cfg(test)]
@@ -765,6 +807,45 @@ mod tests {
             baseline, resemanticked,
             "bumping the semantic API version left the token unchanged"
         );
+
+        // Renumbering a diagnostic level. These cross as raw integers, so a changed
+        // discriminant reinterprets existing guests without touching the schema hash.
+        let relevelled = {
+            let mut hash = 0xcbf2_9ce4_8422_2325u64;
+            hash = mix(hash, SCHEMA_PATH.as_bytes());
+            hash = mix(hash, &(ABI_VERSION as u64).to_le_bytes());
+            hash = mix(hash, &SCHEMA_FINGERPRINT.to_le_bytes());
+            hash = mix(hash, SEMANTIC_API_VERSION.as_bytes());
+            for (name, code) in operation::ALL {
+                hash = mix(hash, name.as_bytes());
+                hash = mix(hash, &(*code as u64).to_le_bytes());
+            }
+            for (name, code) in Level::ALL {
+                hash = mix(hash, name.as_bytes());
+                hash = mix(hash, &((*code as u64) + 1).to_le_bytes());
+            }
+            hash
+        };
+        assert_ne!(
+            baseline, relevelled,
+            "renumbering a diagnostic level left the token unchanged"
+        );
+    }
+
+    /// The codes the SDK transmits must be the enum's own discriminants. They come from one
+    /// macro, so this asserts the macro did what it claims rather than guarding a hand-kept
+    /// second list.
+    #[test]
+    fn diagnostic_level_codes_match_their_discriminants() {
+        assert_eq!(
+            Level::ALL,
+            &[
+                ("Debug", Level::Debug.code()),
+                ("Info", Level::Info.code()),
+                ("Warning", Level::Warning.code()),
+                ("Error", Level::Error.code()),
+            ]
+        );
     }
 
     /// A deliberate tripwire. Changing any wire type changes this value; update it in the
@@ -783,7 +864,7 @@ mod tests {
     #[test]
     fn the_compatibility_token_is_pinned() {
         assert_eq!(
-            COMPATIBILITY_TOKEN, 0x741a_de78_bb72_29f5,
+            COMPATIBILITY_TOKEN, 0x322e_f653_e366_a5aa,
             "the generator ABI contract changed; every guest must be rebuilt"
         );
     }

@@ -4,7 +4,7 @@ The wire contract between Spec42 and a generator module. This document is the
 specification; `crates/generator_sdk` is one implementation of it, not its definition. A
 guest written in any language that can emit the imports and exports below is equally valid.
 
-Current version: **ABI 4**. Compatibility token: `0x741ade78bb7229f5`.
+Current version: **ABI 4**. Compatibility token: `0x322ef653e366a5aa`.
 
 A generator is plain **core WebAssembly** — not a component. No metadata, no
 post-processing, no `wasm-tools` step. Pass the `.wasm` straight to `spec42 generate`.
@@ -34,6 +34,8 @@ The token covers the **whole** contract, not just the types:
 - the operation numbering, because operation codes are plain constants that no type-level
   hash can see — renumbering one would otherwise route an old guest's `children` request to
   `element` with every type identical;
+- the diagnostic level codes, which cross as raw integers rather than through Postcard and
+  are equally invisible to a type-level hash;
 - a semantic API version, bumped when observable behaviour changes with no type change at
   all: result ordering, defaulting, what a query means, effective-feature shadowing.
 
@@ -210,7 +212,13 @@ mishandling a value they cannot name.
 ## Artifact paths
 
 Relative, `/`-separated, and rejected if they are empty, absolute, contain a drive prefix, a
-backslash, a NUL, an empty segment, `.` or `..`, or exceed 4 KiB. Returning the same path
+backslash, an empty segment, `.` or `..`, or exceed 4 KiB.
+
+Segments are also rejected for anything that aliases another name on Windows, on every
+platform, so an output set does not depend on where the generator runs: the reserved
+characters `< > : " | ? *`, control characters, trailing dots or spaces, and device names such
+as `NUL.txt`. `:` matters most — on NTFS it opens an alternate data stream, so
+`manifest.json::$DATA` addresses an existing file's default stream. Returning the same path
 twice fails the run, as does colliding with `.spec42-generator-manifest.json`. Contents are
 written byte for byte.
 

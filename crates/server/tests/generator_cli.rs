@@ -240,6 +240,42 @@ fn a_case_variant_of_the_manifest_name_is_refused() {
     });
 }
 
+/// Completes the exit-code matrix: 0, 10, 11, 12, 13, 14 and 15 are now all covered here.
+#[test]
+fn resource_exhaustion_exits_thirteen() {
+    with_plugin!(query_all, |plugin| {
+        let temp = tempfile::tempdir().unwrap();
+        let output = temp.path().join("generated");
+        let run = generate(
+            &plugin,
+            &model("coverage"),
+            &output,
+            &["--max-fuel", "1"],
+            &[],
+        );
+        assert_eq!(code(&run), 13, "{}", stderr(&run));
+        assert!(!output.exists(), "an exhausted run created output");
+    });
+}
+
+/// NTFS alternate data streams address a different stream of an existing file, so a name
+/// comparison alone lets one reach the reserved manifest.
+#[test]
+fn an_alternate_data_stream_path_is_refused() {
+    with_plugin!(artifact_paths, |plugin| {
+        let temp = tempfile::tempdir().unwrap();
+        for payload in [
+            "path=.spec42-generator-manifest.json::$DATA",
+            "path=report.txt:hidden",
+        ] {
+            let output = temp.path().join("generated");
+            let run = generate(&plugin, &model("minimal"), &output, &[], &[payload]);
+            assert_eq!(code(&run), 14, "accepted `{payload}`: {}", stderr(&run));
+            assert!(!output.exists());
+        }
+    });
+}
+
 #[cfg(unix)]
 #[test]
 fn a_symlink_in_the_existing_output_tree_is_refused() {

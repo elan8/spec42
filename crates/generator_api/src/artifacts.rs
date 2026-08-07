@@ -227,14 +227,34 @@ const WINDOWS_DEVICE_NAMES: &[&str] = &[
     "com9", "lpt1", "lpt2", "lpt3", "lpt4", "lpt5", "lpt6", "lpt7", "lpt8", "lpt9",
 ];
 
-/// Whether a path component would alias another name on Windows.
+/// Characters Windows forbids in a filename.
+///
+/// `:` is the sharpest of these: on NTFS it introduces an alternate data stream, so
+/// `report.txt:hidden` and `manifest.json::$DATA` both address a *different* stream of an
+/// existing file. The latter aliases a file's default stream, which is how a generator could
+/// otherwise reach the reserved manifest past a name comparison.
+const WINDOWS_FORBIDDEN_CHARACTERS: &[char] = &['<', '>', ':', '"', '|', '?', '*'];
+
+/// Whether a path component would alias another name, or be rejected outright, on Windows.
 ///
 /// Trailing dots and spaces are silently stripped when creating a file, so `report.` and
-/// `report` are the same file; device names are intercepted before they reach the
-/// filesystem at all. Both are rejected on every platform so a generator's output set does
-/// not depend on where it runs.
+/// `report` are the same file; device names are intercepted before they reach the filesystem
+/// at all; and the reserved characters above either name a different stream or are refused.
+/// All are rejected on every platform so a generator's output set does not depend on where it
+/// runs, and so validation cannot be sidestepped by generating on one platform for another.
+///
+/// Rules per Microsoft's file naming documentation:
+/// <https://learn.microsoft.com/en-us/windows/win32/fileio/naming-a-file>
 fn is_windows_alias(segment: &str) -> bool {
     if segment.ends_with('.') || segment.ends_with(' ') {
+        return true;
+    }
+    if segment.contains(WINDOWS_FORBIDDEN_CHARACTERS) {
+        return true;
+    }
+    // Control characters are invalid in a filename and are invisible in any report of what
+    // was written, so a path containing one cannot be reviewed.
+    if segment.chars().any(|character| character.is_control()) {
         return true;
     }
     let stem = segment.split('.').next().unwrap_or(segment);
@@ -348,6 +368,18 @@ mod tests {
             "nul.txt",
             "com1",
             "dir/AUX.log",
+            // NTFS alternate data streams. The second addresses the default stream of the
+            // reserved manifest, so a name comparison alone would not catch it.
+            "report.txt:hidden",
+            ".spec42-generator-manifest.json::$DATA",
+            // Remaining reserved characters and a control character.
+            "a<b",
+            "a>b",
+            "a\"b",
+            "a|b",
+            "a?b",
+            "a*b",
+            "bell\u{7}",
         ] {
             let mut set = ArtifactSet::new(ArtifactLimits::default());
             assert!(

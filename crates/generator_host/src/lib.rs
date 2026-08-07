@@ -357,7 +357,13 @@ impl GeneratorRuntime {
                 message: error.to_string(),
             })?;
         }
-        store.set_epoch_deadline(1);
+        // `increment_epoch` is engine-global, so a sibling execution's expiring watchdog
+        // advances the counter for every store sharing this runtime. A run that asked for no
+        // deadline is therefore given one it can never reach, rather than being left unarmed:
+        // with epoch interruption enabled a store with no deadline set is already expired and
+        // traps on entry. This makes isolation arithmetic rather than a rule callers must
+        // follow.
+        store.set_epoch_deadline(if deadline.is_some() { 1 } else { u64::MAX });
         store.epoch_deadline_trap();
 
         // Only when a deadline was requested: `increment_epoch` is engine-global, so a
