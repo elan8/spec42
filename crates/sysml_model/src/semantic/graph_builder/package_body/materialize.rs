@@ -10,10 +10,14 @@ pub(super) fn materialize_part_def(
     parent_id: Option<&NodeId>,
     pd_node: &Node<PartDef>,
 ) {
-    let name = identification_name(&pd_node.identification);
+    let mut attrs = HashMap::new();
+    let name = resolve_addressable_name(
+        &identification_name(&pd_node.identification),
+        "part def",
+        &mut attrs,
+    );
     let qualified = qualified_name_for_node(g, uri, container_prefix, &name, "part def");
     let range = span_to_range(&pd_node.span);
-    let mut attrs = HashMap::new();
     attach_short_name_attribute(&mut attrs, &pd_node.identification);
     attach_membership_visibility(&mut attrs, &pd_node.membership);
     if let Some(ref p) = pd_node.definition_prefix {
@@ -139,10 +143,14 @@ pub(crate) fn materialize_port_def(
     parent_id: Option<&NodeId>,
     pd_node: &Node<PortDef>,
 ) {
-    let name = identification_name(&pd_node.identification);
+    let mut attrs = HashMap::new();
+    let name = resolve_addressable_name(
+        &identification_name(&pd_node.identification),
+        "port def",
+        &mut attrs,
+    );
     let qualified = qualified_name_for_node(g, uri, container_prefix, &name, "port def");
     let range = span_to_range(&pd_node.span);
-    let mut attrs = HashMap::new();
     attach_short_name_attribute(&mut attrs, &pd_node.identification);
     attach_membership_visibility(&mut attrs, &pd_node.membership);
     insert_def_specialization_attr(&mut attrs, pd_node.specializes.as_deref());
@@ -339,10 +347,14 @@ pub(super) fn materialize_requirement_def(
     parent_id: Option<&NodeId>,
     rd_node: &Node<RequirementDef>,
 ) {
-    let name = identification_name(&rd_node.identification);
+    let mut attrs = HashMap::new();
+    let name = resolve_addressable_name(
+        &identification_name(&rd_node.identification),
+        "requirement def",
+        &mut attrs,
+    );
     let qualified = qualified_name_for_node(g, uri, container_prefix, &name, "requirement def");
     let range = span_to_range(&rd_node.span);
-    let mut attrs = HashMap::new();
     attach_short_name_attribute(&mut attrs, &rd_node.identification);
     attach_membership_visibility(&mut attrs, &rd_node.membership);
     insert_def_specialization_attr(&mut attrs, rd_node.specializes.as_deref());
@@ -588,12 +600,13 @@ pub(crate) fn materialize_item_def(
     parent_id: Option<&NodeId>,
     item_node: &Node<ItemDef>,
 ) {
-    let name = identification_name(&item_node.identification);
-    if name.is_empty() {
-        return;
-    }
-    let qualified = qualified_name_for_node(g, uri, container_prefix, &name, "item def");
     let mut attrs = HashMap::new();
+    let name = resolve_addressable_name(
+        &identification_name(&item_node.identification),
+        "item def",
+        &mut attrs,
+    );
+    let qualified = qualified_name_for_node(g, uri, container_prefix, &name, "item def");
     attach_short_name_attribute(&mut attrs, &item_node.identification);
     attach_membership_visibility(&mut attrs, &item_node.membership);
     insert_def_specialization_attr(&mut attrs, item_node.specializes.as_deref());
@@ -625,12 +638,13 @@ pub(super) fn materialize_individual_def(
     parent_id: Option<&NodeId>,
     ind_node: &Node<IndividualDef>,
 ) {
-    let name = identification_name(&ind_node.identification);
-    if name.is_empty() {
-        return;
-    }
-    let qualified = qualified_name_for_node(g, uri, container_prefix, &name, "individual def");
     let mut attrs = HashMap::new();
+    let name = resolve_addressable_name(
+        &identification_name(&ind_node.identification),
+        "individual def",
+        &mut attrs,
+    );
+    let qualified = qualified_name_for_node(g, uri, container_prefix, &name, "individual def");
     attach_short_name_attribute(&mut attrs, &ind_node.identification);
     attach_membership_visibility(&mut attrs, &ind_node.membership);
     insert_def_specialization_attr(&mut attrs, ind_node.specializes.as_deref());
@@ -662,12 +676,13 @@ pub(super) fn materialize_metadata_def(
     parent_id: Option<&NodeId>,
     md_node: &Node<MetadataDef>,
 ) {
-    let name = identification_name(&md_node.identification);
-    if name.is_empty() {
-        return;
-    }
-    let qualified = qualified_name_for_node(g, uri, container_prefix, &name, "metadata def");
     let mut attrs = HashMap::new();
+    let name = resolve_addressable_name(
+        &identification_name(&md_node.identification),
+        "metadata def",
+        &mut attrs,
+    );
+    let qualified = qualified_name_for_node(g, uri, container_prefix, &name, "metadata def");
     attach_short_name_attribute(&mut attrs, &md_node.identification);
     attach_membership_visibility(&mut attrs, &md_node.membership);
     insert_def_specialization_attr(&mut attrs, md_node.specializes.as_deref());
@@ -705,12 +720,13 @@ pub(super) fn materialize_enum_def(
     parent_id: Option<&NodeId>,
     enum_node: &Node<EnumDef>,
 ) {
-    let name = identification_name(&enum_node.identification);
-    if name.is_empty() {
-        return;
-    }
-    let qualified = qualified_name_for_node(g, uri, container_prefix, &name, "enum def");
     let mut attrs = HashMap::new();
+    let name = resolve_addressable_name(
+        &identification_name(&enum_node.identification),
+        "enum def",
+        &mut attrs,
+    );
+    let qualified = qualified_name_for_node(g, uri, container_prefix, &name, "enum def");
     attach_short_name_attribute(&mut attrs, &enum_node.identification);
     attach_membership_visibility(&mut attrs, &enum_node.membership);
     insert_def_specialization_attr(&mut attrs, enum_node.specializes.as_deref());
@@ -747,10 +763,8 @@ fn materialize_enumerated_values(
 ) {
     let parent_id = NodeId::new(uri, enum_def_qualified);
     for value_node in values {
-        let name = value_node.value.name.clone();
-        if name.is_empty() {
-            continue;
-        }
+        let mut attrs = HashMap::new();
+        let name = resolve_addressable_name(&value_node.value.name, "enumerated value", &mut attrs);
         let qualified =
             qualified_name_for_node(g, uri, Some(enum_def_qualified), &name, "enumerated value");
         add_node_and_recurse(
@@ -760,7 +774,7 @@ fn materialize_enumerated_values(
             "enumerated value",
             name,
             span_to_range(&value_node.span),
-            HashMap::new(),
+            attrs,
             Some(&parent_id),
         );
     }
@@ -808,12 +822,13 @@ pub(super) fn materialize_occurrence_def(
     parent_id: Option<&NodeId>,
     occ_node: &Node<OccurrenceDef>,
 ) {
-    let name = identification_name(&occ_node.identification);
-    if name.is_empty() {
-        return;
-    }
-    let qualified = qualified_name_for_node(g, uri, container_prefix, &name, "occurrence def");
     let mut attrs = HashMap::new();
+    let name = resolve_addressable_name(
+        &identification_name(&occ_node.identification),
+        "occurrence def",
+        &mut attrs,
+    );
+    let qualified = qualified_name_for_node(g, uri, container_prefix, &name, "occurrence def");
     attach_short_name_attribute(&mut attrs, &occ_node.identification);
     attach_membership_visibility(&mut attrs, &occ_node.membership);
     insert_def_specialization_attr(&mut attrs, occ_node.specializes.as_deref());
@@ -859,18 +874,15 @@ pub(super) fn materialize_connection_def(
     parent_id: Option<&NodeId>,
     conn_node: &Node<ConnectionDef>,
 ) {
-    let name = identification_name(&conn_node.identification);
     let annotation = conn_node.annotation.as_deref();
-    let base_name = if name.is_empty() {
-        if annotation == Some("derivation") {
-            "_derivationConnection"
-        } else {
-            "_connectionDef"
-        }
-    } else {
-        name.as_str()
-    };
     let mut attrs = HashMap::new();
+    let declared = identification_name(&conn_node.identification);
+    let base_name = if declared.is_empty() && annotation == Some("derivation") {
+        attrs.insert("isAnonymous".to_string(), serde_json::json!(true));
+        "_derivationConnection".to_string()
+    } else {
+        resolve_addressable_name(&declared, "connection def", &mut attrs)
+    };
     attach_short_name_attribute(&mut attrs, &conn_node.identification);
     attach_membership_visibility(&mut attrs, &conn_node.membership);
     if let Some(annotation) = annotation {
@@ -880,7 +892,7 @@ pub(super) fn materialize_connection_def(
         );
     }
     insert_def_specialization_attr(&mut attrs, conn_node.specializes.as_deref());
-    let qualified = qualified_name_for_node(g, uri, container_prefix, base_name, "connection def");
+    let qualified = qualified_name_for_node(g, uri, container_prefix, &base_name, "connection def");
     add_node_and_recurse(
         g,
         uri,
@@ -890,7 +902,7 @@ pub(super) fn materialize_connection_def(
         } else {
             "connection def"
         },
-        base_name.to_string(),
+        base_name,
         span_to_range(&conn_node.span),
         attrs,
         parent_id,
@@ -918,12 +930,13 @@ pub(super) fn materialize_flow_def(
     parent_id: Option<&NodeId>,
     flow_node: &Node<sysml_v2_parser::ast::FlowDef>,
 ) {
-    let name = identification_name(&flow_node.identification);
-    if name.is_empty() {
-        return;
-    }
-    let qualified = qualified_name_for_node(g, uri, container_prefix, &name, "flow def");
     let mut attrs = HashMap::new();
+    let name = resolve_addressable_name(
+        &identification_name(&flow_node.identification),
+        "flow def",
+        &mut attrs,
+    );
+    let qualified = qualified_name_for_node(g, uri, container_prefix, &name, "flow def");
     attach_short_name_attribute(&mut attrs, &flow_node.identification);
     attach_membership_visibility(&mut attrs, &flow_node.membership);
     insert_def_specialization_attr(&mut attrs, flow_node.specializes.as_deref());
@@ -961,12 +974,13 @@ pub(super) fn materialize_allocation_def(
     parent_id: Option<&NodeId>,
     alloc_node: &Node<AllocationDef>,
 ) {
-    let name = identification_name(&alloc_node.identification);
-    if name.is_empty() {
-        return;
-    }
-    let qualified = qualified_name_for_node(g, uri, container_prefix, &name, "allocation def");
     let mut attrs = HashMap::new();
+    let name = resolve_addressable_name(
+        &identification_name(&alloc_node.identification),
+        "allocation def",
+        &mut attrs,
+    );
+    let qualified = qualified_name_for_node(g, uri, container_prefix, &name, "allocation def");
     attach_short_name_attribute(&mut attrs, &alloc_node.identification);
     attach_membership_visibility(&mut attrs, &alloc_node.membership);
     insert_def_specialization_attr(&mut attrs, alloc_node.specializes.as_deref());
@@ -1057,12 +1071,13 @@ pub(crate) fn materialize_case_def(
     parent_id: Option<&NodeId>,
     c_node: &Node<CaseDef>,
 ) {
-    let name = identification_name(&c_node.identification);
-    if name.is_empty() {
-        return;
-    }
-    let qualified = qualified_name_for_node(g, uri, container_prefix, &name, "case def");
     let mut attrs = HashMap::new();
+    let name = resolve_addressable_name(
+        &identification_name(&c_node.identification),
+        "case def",
+        &mut attrs,
+    );
+    let qualified = qualified_name_for_node(g, uri, container_prefix, &name, "case def");
     attach_short_name_attribute(&mut attrs, &c_node.identification);
     attach_membership_visibility(&mut attrs, &c_node.membership);
     insert_def_specialization_attr(&mut attrs, c_node.specializes.as_deref());
@@ -1142,12 +1157,13 @@ pub(crate) fn materialize_analysis_case_def(
     parent_id: Option<&NodeId>,
     c_node: &Node<AnalysisCaseDef>,
 ) {
-    let name = identification_name(&c_node.identification);
-    if name.is_empty() {
-        return;
-    }
-    let qualified = qualified_name_for_node(g, uri, container_prefix, &name, "analysis def");
     let mut attrs = HashMap::new();
+    let name = resolve_addressable_name(
+        &identification_name(&c_node.identification),
+        "analysis def",
+        &mut attrs,
+    );
+    let qualified = qualified_name_for_node(g, uri, container_prefix, &name, "analysis def");
     attach_short_name_attribute(&mut attrs, &c_node.identification);
     attach_membership_visibility(&mut attrs, &c_node.membership);
     insert_def_specialization_attr(&mut attrs, c_node.specializes.as_deref());
@@ -1217,12 +1233,13 @@ pub(crate) fn materialize_verification_case_def(
     parent_id: Option<&NodeId>,
     c_node: &Node<VerificationCaseDef>,
 ) {
-    let name = identification_name(&c_node.identification);
-    if name.is_empty() {
-        return;
-    }
-    let qualified = qualified_name_for_node(g, uri, container_prefix, &name, "verification def");
     let mut attrs = HashMap::new();
+    let name = resolve_addressable_name(
+        &identification_name(&c_node.identification),
+        "verification def",
+        &mut attrs,
+    );
+    let qualified = qualified_name_for_node(g, uri, container_prefix, &name, "verification def");
     attach_short_name_attribute(&mut attrs, &c_node.identification);
     attach_membership_visibility(&mut attrs, &c_node.membership);
     insert_def_specialization_attr(&mut attrs, c_node.specializes.as_deref());

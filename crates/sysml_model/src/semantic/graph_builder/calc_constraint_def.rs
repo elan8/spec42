@@ -12,7 +12,7 @@ use url::Url;
 
 use super::{
     add_node_and_recurse, insert_def_specialization_attr, qualified_name_for_node,
-    wire_def_specialization_edge,
+    resolve_addressable_name, wire_def_specialization_edge,
 };
 use crate::semantic::ast_util::{
     attach_membership_visibility, attach_short_name_attribute, identification_name, span_to_range,
@@ -162,13 +162,14 @@ pub(super) fn build_constraint_def(
     parent_id: Option<&NodeId>,
     c_node: &Node<ConstraintDef>,
 ) {
-    let name = identification_name(&c_node.value.identification);
-    if name.is_empty() {
-        return;
-    }
+    let mut attrs = HashMap::new();
+    let name = resolve_addressable_name(
+        &identification_name(&c_node.value.identification),
+        "constraint def",
+        &mut attrs,
+    );
     let qualified = qualified_name_for_node(g, uri, container_prefix, &name, "constraint def");
     let (params, expression) = extract_constraint_metadata(uri, &c_node.value.body);
-    let mut attrs = HashMap::new();
     attrs.insert(
         "analysisKind".to_string(),
         serde_json::json!("constraint_def"),
@@ -222,13 +223,10 @@ pub(super) fn build_constraint_usage(
     parent_id: Option<&NodeId>,
     c_node: &Node<ConstraintUsage>,
 ) {
-    let name = c_node.value.name.clone();
-    if name.is_empty() {
-        return;
-    }
+    let mut attrs = HashMap::new();
+    let name = resolve_addressable_name(&c_node.value.name, "constraint", &mut attrs);
     let qualified = qualified_name_for_node(g, uri, container_prefix, &name, "constraint");
     let (params, expression) = extract_constraint_metadata(uri, &c_node.value.body);
-    let mut attrs = HashMap::new();
     attach_membership_visibility(&mut attrs, &c_node.value.membership);
     attrs.insert(
         "analysisKind".to_string(),
@@ -274,13 +272,14 @@ pub(super) fn build_calc_def(
     parent_id: Option<&NodeId>,
     c_node: &Node<CalcDef>,
 ) {
-    let name = identification_name(&c_node.value.identification);
-    if name.is_empty() {
-        return;
-    }
+    let mut attrs = HashMap::new();
+    let name = resolve_addressable_name(
+        &identification_name(&c_node.value.identification),
+        "calc def",
+        &mut attrs,
+    );
     let qualified = qualified_name_for_node(g, uri, container_prefix, &name, "calc def");
     let (params, return_decl, expression) = extract_calc_metadata(uri, &c_node.value.body);
-    let mut attrs = HashMap::new();
     attrs.insert("analysisKind".to_string(), serde_json::json!("calc_def"));
     let params_json = serde_json::Value::Array(params.clone());
     attrs.insert("analysisParams".to_string(), params_json.clone());
