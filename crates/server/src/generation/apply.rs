@@ -23,6 +23,12 @@ pub trait FileSystem {
     fn rename(&self, from: &Path, to: &Path) -> io::Result<()>;
     fn remove_dir_all(&self, path: &Path) -> io::Result<()>;
     fn copy_tree(&self, source: &Path, destination: &Path) -> io::Result<()>;
+
+    /// Content digest of a file, or `None` when it is absent or not a regular file.
+    ///
+    /// A read rather than a mutation, but it belongs here so a test can perturb the tree at
+    /// the exact moment the check runs.
+    fn digest_of(&self, path: &Path) -> Option<String>;
 }
 
 /// The real filesystem.
@@ -48,6 +54,15 @@ impl FileSystem for RealFileSystem {
     fn copy_tree(&self, source: &Path, destination: &Path) -> io::Result<()> {
         super::copy_tree(source, destination).map_err(io::Error::other)
     }
+
+    fn digest_of(&self, path: &Path) -> Option<String> {
+        let metadata = fs::symlink_metadata(path).ok()?;
+        metadata
+            .file_type()
+            .is_file()
+            .then(|| fs::read(path).ok().map(|bytes| super::digest(&bytes)))
+            .flatten()
+    }
 }
 
 /// Where the previous output went when a swap failed and rollback could not restore it.
@@ -65,6 +80,8 @@ pub enum ApplyError {
         message: String,
         backup: RecoverableBackup,
     },
+    /// The tree changed under us between planning and the swap. Nothing was displaced.
+    Stale { path: String },
 }
 
 impl std::fmt::Display for ApplyError {
@@ -79,7 +96,34 @@ impl std::fmt::Display for ApplyError {
                 "{message}, and rollback failed; previous output remains at {}",
                 backup.0.display()
             ),
+            Self::Stale { path } => write!(
+                formatter,
+                "`{path}` changed while generating; nothing was written. Re-run to pick up \
+                 the change"
+            ),
         }
+    }
+}
+
+/// What the planner saw, so the executor can confirm it still holds before displacing.
+///
+/// Between planning and the swap the transaction copies the tree and writes artifacts, a
+/// window in which an editor or a second process can change a file. Without this the swap
+/// would replace the whole directory and silently discard that edit -- the planner's decision
+/// to leave a file alone having been made against a version that no longer exists.
+pub struct ObservedVersions {
+    /// Path relative to the output root, and the content digest planning saw. Absent means
+    /// planning saw no file there.
+    pub entries: Vec<(String, Option<String>)>,
+}
+
+impl ObservedVersions {
+    /// Re-reads the tree and reports the first path that no longer matches.
+    fn first_change(&self, filesystem: &dyn FileSystem, output: &Path) -> Option<String> {
+        self.entries.iter().find_map(|(path, expected)| {
+            let actual = filesystem.digest_of(&output.join(path));
+            (actual != *expected).then(|| path.clone())
+        })
     }
 }
 
@@ -98,6 +142,7 @@ pub fn stage_and_install(
     artifacts: &[(String, Vec<u8>)],
     manifest_name: &str,
     manifest: &[u8],
+    observed: &ObservedVersions,
 ) -> Result<(), ApplyError> {
     let staging = |message: String| ApplyError::BeforeDisplacement(message);
 
@@ -133,6 +178,14 @@ pub fn stage_and_install(
         return Err(staging(format!(
             "failed to stage generation manifest: {error}"
         )));
+    }
+
+    // Optimistic concurrency: confirm the tree still matches what planning saw, immediately
+    // before displacing it. Anything that changed in the meantime would otherwise be
+    // overwritten by a swap decided against a version that no longer exists.
+    if let Some(path) = observed.first_change(filesystem, output) {
+        let _ = filesystem.remove_dir_all(staged);
+        return Err(ApplyError::Stale { path });
     }
 
     install(filesystem, output, staged, backup_root, output_exists)
@@ -293,6 +346,53 @@ mod tests {
             }
             self.inner.copy_tree(source, destination)
         }
+
+        fn digest_of(&self, path: &Path) -> Option<String> {
+            self.inner.digest_of(path)
+        }
+    }
+
+    /// Changes a file in the output tree at the moment the staleness check reads it.
+    ///
+    /// Deterministic where a real concurrent editor would not be: the mutation happens on the
+    /// first `digest_of` call, which is exactly the window between planning and the swap.
+    struct MutatesDuringCheck {
+        inner: RealFileSystem,
+        target: PathBuf,
+        replacement: Vec<u8>,
+        fired: RefCell<bool>,
+    }
+
+    impl FileSystem for MutatesDuringCheck {
+        fn create_dir_all(&self, path: &Path) -> io::Result<()> {
+            self.inner.create_dir_all(path)
+        }
+
+        fn write(&self, path: &Path, contents: &[u8]) -> io::Result<()> {
+            self.inner.write(path, contents)
+        }
+
+        fn rename(&self, from: &Path, to: &Path) -> io::Result<()> {
+            self.inner.rename(from, to)
+        }
+
+        fn remove_dir_all(&self, path: &Path) -> io::Result<()> {
+            self.inner.remove_dir_all(path)
+        }
+
+        fn copy_tree(&self, source: &Path, destination: &Path) -> io::Result<()> {
+            self.inner.copy_tree(source, destination)
+        }
+
+        fn digest_of(&self, path: &Path) -> Option<String> {
+            let mut fired = self.fired.borrow_mut();
+            if !*fired {
+                *fired = true;
+                let _ = fs::write(&self.target, &self.replacement);
+            }
+            drop(fired);
+            self.inner.digest_of(path)
+        }
     }
 
     struct Scene {
@@ -334,7 +434,24 @@ mod tests {
                 &[("owned.txt".to_owned(), b"regenerated".to_vec())],
                 ".spec42-generator-manifest.json",
                 b"{}",
+                &self.observed(),
             )
+        }
+
+        /// What planning saw: the original contents of both files.
+        fn observed(&self) -> ObservedVersions {
+            ObservedVersions {
+                entries: vec![
+                    (
+                        "owned.txt".to_owned(),
+                        Some(super::super::digest(b"original")),
+                    ),
+                    (
+                        "handwritten.txt".to_owned(),
+                        Some(super::super::digest(b"mine")),
+                    ),
+                ],
+            }
         }
 
         fn original_is_intact(&self) -> bool {
@@ -445,6 +562,11 @@ mod tests {
                         "schedule {key:?} rolled back but stranded a staged copy\n{trace:?}"
                     );
                 }
+                // The sweep's scene never mutates the tree, so a stale result would mean the
+                // check itself is wrong rather than that a concurrent edit occurred.
+                Err(ApplyError::Stale { path }) => {
+                    panic!("schedule {key:?} reported `{path}` as stale spuriously\n{trace:?}")
+                }
                 Err(ApplyError::Unrecovered { backup, .. }) => {
                     unrecovered_seen = true;
                     assert!(
@@ -515,6 +637,9 @@ mod tests {
             &[("owned.txt".to_owned(), b"regenerated".to_vec())],
             ".spec42-generator-manifest.json",
             b"{}",
+            &ObservedVersions {
+                entries: Vec::new(),
+            },
         )
         .expect("installing into an absent root should succeed");
         assert_eq!(
@@ -522,5 +647,49 @@ mod tests {
             b"regenerated"
         );
         assert!(scene.debris().is_empty());
+    }
+
+    /// An edit landing between planning and the swap must be refused, not overwritten.
+    #[test]
+    fn a_concurrent_edit_between_planning_and_the_swap_is_refused() {
+        let scene = Scene::new();
+        let filesystem = MutatesDuringCheck {
+            inner: RealFileSystem,
+            target: scene.output.join("handwritten.txt"),
+            replacement: b"edited while generating".to_vec(),
+            fired: RefCell::new(false),
+        };
+
+        let error = stage_and_install(
+            &filesystem,
+            &scene.output,
+            &scene.staged,
+            &scene.backup,
+            true,
+            &[("owned.txt".to_owned(), b"regenerated".to_vec())],
+            ".spec42-generator-manifest.json",
+            b"{}",
+            &scene.observed(),
+        )
+        .expect_err("a tree that changed under us must not be displaced");
+
+        assert!(
+            matches!(&error, ApplyError::Stale { path } if path == "handwritten.txt"),
+            "unexpected error: {error}"
+        );
+        // The edit survives, and nothing was written.
+        assert_eq!(
+            fs::read(scene.output.join("handwritten.txt")).unwrap(),
+            b"edited while generating"
+        );
+        assert_eq!(
+            fs::read(scene.output.join("owned.txt")).unwrap(),
+            b"original"
+        );
+        assert!(
+            scene.stage_debris().is_empty(),
+            "{:?}",
+            scene.stage_debris()
+        );
     }
 }

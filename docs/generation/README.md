@@ -88,7 +88,7 @@ same bytes on every host architecture. Reproducibility is guaranteed per Wasmtim
 | 11 | malformed module or generator ABI incompatibility |
 | 12 | guest error, trap, or cancellation |
 | 13 | fuel, wall-time, memory, or runtime resource exhaustion |
-| 14 | artifact path, output limit, conflict, symlink, or commit-policy failure |
+| 14 | artifact path, output limit, conflict, symlink, commit-policy failure, or a source file that changed while generating |
 | 15 | `--check` found byte differences |
 
 JSON reports include snapshot and module digests, API and Spec42 versions, query count, output

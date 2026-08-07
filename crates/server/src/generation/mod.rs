@@ -294,8 +294,9 @@ pub fn run_generate(cli: &Cli, args: &GenerateArgs) -> Result<ExitCode, String> 
         previous_manifest.as_ref(),
     );
     let output_plan_started = Instant::now();
-    let operations = match plan_outputs(&args.output, &execution.artifacts, args.force) {
-        Ok(operations) => operations,
+    let (operations, observed) = match plan_outputs(&args.output, &execution.artifacts, args.force)
+    {
+        Ok(planned) => planned,
         Err(message) => {
             emit_simple_failure(args.format, GenerationStatus::OutputPolicyFailure, &message)?;
             return Ok(ExitCode::from(EXIT_OUTPUT_POLICY));
@@ -322,7 +323,9 @@ pub fn run_generate(cli: &Cli, args: &GenerateArgs) -> Result<ExitCode, String> 
         GenerationStatus::DryRun
     } else {
         let output_commit_started = Instant::now();
-        if let Err(message) = commit_outputs(&args.output, &execution.artifacts, &manifest) {
+        if let Err(message) =
+            commit_outputs(&args.output, &execution.artifacts, &manifest, &observed)
+        {
             emit_simple_failure(args.format, GenerationStatus::OutputPolicyFailure, &message)?;
             return Ok(ExitCode::from(EXIT_OUTPUT_POLICY));
         }
@@ -420,7 +423,7 @@ fn plan_outputs(
     output: &Path,
     artifacts: &ArtifactSet,
     force: bool,
-) -> Result<GenerationOperations, String> {
+) -> Result<(GenerationOperations, apply::ObservedVersions), String> {
     validate_output_root(output)?;
     reject_symlink(output)?;
     let previous = read_manifest(output)?;
@@ -448,20 +451,39 @@ fn plan_outputs(
         entries.push((path.clone(), content.to_vec()));
     }
 
+    // What planning saw, so the commit can confirm it still holds.
+    let versions = apply::ObservedVersions {
+        entries: observation
+            .existing
+            .iter()
+            .map(|(path, existing)| {
+                let seen = match existing {
+                    plan::Existing::File { content } => Some(digest(content)),
+                    _ => None,
+                };
+                (path.to_string(), seen)
+            })
+            .collect(),
+    };
+
     let planned = plan::plan(&entries, &observation, force, &digest);
-    Ok(GenerationOperations {
-        created: planned.paths_with(plan::Operation::Create),
-        changed: planned.paths_with(plan::Operation::Change),
-        unchanged: planned.paths_with(plan::Operation::Unchanged),
-        conflicting: planned.paths_with(plan::Operation::Conflict),
-        adopted: planned.paths_with(plan::Operation::Adopt),
-    })
+    Ok((
+        GenerationOperations {
+            created: planned.paths_with(plan::Operation::Create),
+            changed: planned.paths_with(plan::Operation::Change),
+            unchanged: planned.paths_with(plan::Operation::Unchanged),
+            conflicting: planned.paths_with(plan::Operation::Conflict),
+            adopted: planned.paths_with(plan::Operation::Adopt),
+        },
+        versions,
+    ))
 }
 
 fn commit_outputs(
     output: &Path,
     artifacts: &ArtifactSet,
     manifest: &GenerationManifest,
+    observed: &apply::ObservedVersions,
 ) -> Result<(), String> {
     validate_output_root(output)?;
     let parent = output
@@ -505,6 +527,7 @@ fn commit_outputs(
         &staged,
         MANIFEST_NAME,
         &manifest_bytes,
+        observed,
     )
     .map_err(|error| error.to_string())
 }
@@ -818,6 +841,25 @@ fn emit_host_failure(format: OutputFormat, error: &GeneratorHostError) -> Result
 mod tests {
     use super::*;
 
+    /// Plans, discarding the observed versions the commit path needs.
+    fn plan_only(
+        output: &Path,
+        artifacts: &ArtifactSet,
+        force: bool,
+    ) -> Result<GenerationOperations, String> {
+        plan_outputs(output, artifacts, force).map(|(operations, _)| operations)
+    }
+
+    /// Plans and commits in one step, as `run_generate` does.
+    fn commit(
+        output: &Path,
+        artifacts: &ArtifactSet,
+        manifest: &GenerationManifest,
+    ) -> Result<(), String> {
+        let (_, observed) = plan_outputs(output, artifacts, true)?;
+        commit_outputs(output, artifacts, manifest, &observed)
+    }
+
     fn artifacts(entries: &[(&str, &[u8])]) -> ArtifactSet {
         let mut set = ArtifactSet::new(ArtifactLimits::default());
         for (path, bytes) in entries {
@@ -834,7 +876,7 @@ mod tests {
         fs::write(output.join("keep.txt"), b"keep").unwrap();
         let set = artifacts(&[("nested/a.bin", &[0, 255]), ("b.txt", b"new")]);
         let manifest = manifest_for(&set, "generator", "model", "spec42", None);
-        commit_outputs(&output, &set, &manifest).unwrap();
+        commit(&output, &set, &manifest).unwrap();
         assert_eq!(fs::read(output.join("keep.txt")).unwrap(), b"keep");
         assert_eq!(fs::read(output.join("nested/a.bin")).unwrap(), [0, 255]);
         assert!(output.join(MANIFEST_NAME).is_file());
@@ -845,9 +887,9 @@ mod tests {
         let temp = tempfile::tempdir().unwrap();
         fs::write(temp.path().join("a.txt"), b"local").unwrap();
         let set = artifacts(&[("a.txt", b"generated")]);
-        let plan = plan_outputs(temp.path(), &set, false).unwrap();
+        let plan = plan_only(temp.path(), &set, false).unwrap();
         assert_eq!(plan.conflicting, ["a.txt"]);
-        let forced = plan_outputs(temp.path(), &set, true).unwrap();
+        let forced = plan_only(temp.path(), &set, true).unwrap();
         assert_eq!(forced.changed, ["a.txt"]);
     }
 
@@ -858,12 +900,12 @@ mod tests {
         fs::write(temp.path().join("__init__.py"), b"").unwrap();
         let set = artifacts(&[("__init__.py", b"")]);
 
-        let plan = plan_outputs(temp.path(), &set, false).unwrap();
+        let plan = plan_only(temp.path(), &set, false).unwrap();
         assert_eq!(plan.adopted, ["__init__.py"]);
         assert!(plan.unchanged.is_empty());
         assert!(plan.blocked(), "adoption must require --force");
 
-        let forced = plan_outputs(temp.path(), &set, true).unwrap();
+        let forced = plan_only(temp.path(), &set, true).unwrap();
         assert_eq!(forced.unchanged, ["__init__.py"]);
         assert!(!forced.blocked());
     }
@@ -874,17 +916,17 @@ mod tests {
         let output = temp.path().join("generated");
 
         let first = artifacts(&[("keep.rs", b"one"), ("dropped.rs", b"two")]);
-        commit_outputs(&output, &first, &manifest_for(&first, "g", "m", "s", None)).unwrap();
+        commit(&output, &first, &manifest_for(&first, "g", "m", "s", None)).unwrap();
 
         // A later run emits only one of them; the other stays on disk.
         let previous = read_manifest(&output).unwrap();
         let second = artifacts(&[("keep.rs", b"one")]);
         let manifest = manifest_for(&second, "g", "m", "s", previous.as_ref());
-        commit_outputs(&output, &second, &manifest).unwrap();
+        commit(&output, &second, &manifest).unwrap();
 
         // The dropped file must still be ours, so regenerating it later is not a conflict.
         let third = artifacts(&[("keep.rs", b"one"), ("dropped.rs", b"changed")]);
-        let plan = plan_outputs(&output, &third, false).unwrap();
+        let plan = plan_only(&output, &third, false).unwrap();
         assert_eq!(plan.changed, ["dropped.rs"]);
         assert!(plan.conflicting.is_empty(), "{:?}", plan.conflicting);
     }
@@ -895,15 +937,15 @@ mod tests {
         let output = temp.path().join("generated");
 
         let first = artifacts(&[("a.rs", b"one")]);
-        commit_outputs(&output, &first, &manifest_for(&first, "g", "m", "s", None)).unwrap();
+        commit(&output, &first, &manifest_for(&first, "g", "m", "s", None)).unwrap();
 
         let previous = read_manifest(&output).unwrap();
         let empty = artifacts(&[]);
         let manifest = manifest_for(&empty, "g", "m", "s", previous.as_ref());
-        commit_outputs(&output, &empty, &manifest).unwrap();
+        commit(&output, &empty, &manifest).unwrap();
 
         let again = artifacts(&[("a.rs", b"two")]);
-        let plan = plan_outputs(&output, &again, false).unwrap();
+        let plan = plan_only(&output, &again, false).unwrap();
         assert_eq!(plan.changed, ["a.rs"]);
         assert!(plan.conflicting.is_empty());
     }
@@ -940,7 +982,7 @@ mod tests {
         let outside = tempfile::tempdir().unwrap();
         symlink(outside.path(), temp.path().join("escape")).unwrap();
         let set = artifacts(&[("escape/file.txt", b"bad")]);
-        assert!(plan_outputs(temp.path(), &set, false)
+        assert!(plan_only(temp.path(), &set, false)
             .unwrap_err()
             .contains("symlink"));
     }
