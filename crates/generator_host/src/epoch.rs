@@ -204,3 +204,29 @@ mod tests {
         );
     }
 }
+
+/// Observes the moment a guest first calls into the host.
+///
+/// Entry is signalled by the host-call path itself, so a scenario waiting on it knows the
+/// guest is executing rather than merely that a thread started.
+#[derive(Debug, Clone, Default)]
+pub struct EntryObserver(Arc<AtomicBool>);
+
+impl EntryObserver {
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    /// An observer nobody is watching.
+    pub fn unobserved() -> Self {
+        Self::default()
+    }
+
+    pub fn has_entered(&self) -> bool {
+        self.0.load(Ordering::Acquire)
+    }
+
+    pub(crate) fn flag(&self) -> Arc<AtomicBool> {
+        Arc::clone(&self.0)
+    }
+}

@@ -18,7 +18,7 @@ use wasmparser::Parser;
 
 mod epoch;
 
-pub use epoch::{Clock, EpochController, ManualClock, SystemClock};
+pub use epoch::{Clock, EntryObserver, EpochController, ManualClock, SystemClock};
 use epoch::{Deadline, Expiry, TICK_INTERVAL};
 use wasmtime::{
     Caller, Config, Engine, Extern, ExternType, Linker, Memory, Module, ResourceLimiter, Store,
@@ -343,6 +343,35 @@ impl GeneratorRuntime {
         artifact_limits: ArtifactLimits,
         cancellation: CancellationHandle,
     ) -> Result<GeneratorExecution, GeneratorHostError> {
+        self.execute_prepared_observed(
+            prepared,
+            model,
+            args,
+            runtime_limits,
+            artifact_limits,
+            cancellation,
+            &EntryObserver::unobserved(),
+        )
+    }
+
+    /// As [`Self::execute_prepared`], reporting when the guest first calls into the host.
+    ///
+    /// Tests use the observer to establish that WebAssembly is actually running before they
+    /// cancel or advance the clock. Signalling before `execute` would prove only that a
+    /// thread was spawned, which a pre-cancelled handle satisfies without the guest ever
+    /// entering.
+    #[allow(clippy::too_many_arguments)]
+    pub fn execute_prepared_observed(
+        &self,
+        prepared: &PreparedGenerator,
+        model: Arc<GeneratorModelView>,
+        args: &[String],
+        runtime_limits: RuntimeLimits,
+        artifact_limits: ArtifactLimits,
+        cancellation: CancellationHandle,
+        observer: &EntryObserver,
+    ) -> Result<GeneratorExecution, GeneratorHostError> {
+        let entered = observer.flag();
         if cancellation.is_cancelled() {
             return Err(GeneratorHostError {
                 category: GeneratorFailureCategory::Cancelled,
@@ -374,7 +403,7 @@ impl GeneratorRuntime {
         })?;
         let deadline = runtime_limits
             .wall_time
-            .and_then(|wall_time| Instant::now().checked_add(wall_time));
+            .and_then(|wall_time| self.clock.now().checked_add(wall_time));
         let mut store = Store::new(
             &self.engine,
             HostState {
@@ -385,7 +414,9 @@ impl GeneratorRuntime {
                 limits: MeteredLimits::new(runtime_limits.memory_bytes),
                 query_count: 0,
                 deadline,
+                clock: Arc::clone(&self.clock),
                 cancellation: cancellation.clone(),
+                entered: entered.clone(),
             },
         );
         store.limiter(|state| &mut state.limits);
@@ -744,11 +775,16 @@ struct HostState {
     /// larger than the guest's initial buffer, which for a whole-model query is all of them.
     last_response: Option<(i32, Vec<u8>, Vec<u8>)>,
     deadline: Option<Instant>,
+    clock: Arc<dyn Clock>,
     cancellation: CancellationHandle,
+    /// Set the first time the guest calls into the host, so an observer can tell that
+    /// WebAssembly is genuinely executing rather than merely that a thread was spawned.
+    entered: Arc<AtomicBool>,
 }
 
 impl HostState {
     fn queried(&mut self) {
+        self.entered.store(true, Ordering::Release);
         self.query_count = self.query_count.saturating_add(1);
     }
 
@@ -776,7 +812,7 @@ impl HostState {
         }
         if self
             .deadline
-            .is_some_and(|deadline| Instant::now() >= deadline)
+            .is_some_and(|deadline| self.clock.now() >= deadline)
         {
             return Err(wasmtime::Error::new(GuestInterrupt::DeadlineExceeded));
         }
