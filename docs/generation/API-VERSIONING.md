@@ -1,6 +1,6 @@
 # Generator API compatibility policy
 
-The core WebAssembly protocol is **ABI version 3**, specified in [ABI.md](./ABI.md). The
+The core WebAssembly protocol is **ABI version 4**, specified in [ABI.md](./ABI.md). The
 semantic model API reported by `model.info` remains version `0.1.0`.
 
 ## How compatibility is enforced
@@ -39,9 +39,13 @@ When changing the schema:
 
 ## What is not breaking
 
-String-valued `metaclass` and relationship `kind` values may grow without changing the
-binary schema, because they are strings precisely so an older guest can ignore concepts it
-does not recognise. Guests must skip unknown values rather than failing on them.
+Nothing in the wire schema. `metaclass` and relationship `kind` were previously strings, on
+the argument that an older guest could then ignore unfamiliar values. That argument does not
+survive contact with the failure mode: a guest cannot distinguish a value it has never heard
+of from one it forgot to handle, because both are just strings, so it silently produces wrong
+output — exactly what the fingerprint exists to prevent. Both are now closed enumerations
+whose `Unrecognized` variant labels the unknown case explicitly, and adding a real variant is
+a breaking change like any other.
 
 ## Ordering guarantees
 

@@ -3,6 +3,7 @@ use std::sync::{Arc, Mutex};
 
 use serde::{Deserialize, Serialize};
 use sha2::{Digest, Sha256};
+use spec42_generator_protocol::{Metaclass, RelationshipKind as ApiRelationshipKind};
 use thiserror::Error;
 use workspace::{
     HostSemanticModelNode, HostWorkspaceSnapshot, NodeId, RelationshipKind, SemanticNode,
@@ -37,7 +38,7 @@ pub struct ElementSummary {
     pub handle: String,
     /// Deterministic semantic identity suitable for provenance.
     pub semantic_id: String,
-    pub metaclass: String,
+    pub metaclass: Metaclass,
     pub name: Option<String>,
     pub qualified_name: String,
     pub library_element: bool,
@@ -81,7 +82,7 @@ pub struct ElementDetail {
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct RelationshipSummary {
-    pub kind: String,
+    pub kind: ApiRelationshipKind,
     pub source: ElementSummary,
     pub target: ElementSummary,
     pub implied: bool,
@@ -358,11 +359,11 @@ impl GeneratorModelView {
             .into_iter()
             .map(|(target, kind)| {
                 let target = self.expose_node(target);
-                let kind = kind.as_str().to_owned();
+                let kind = ApiRelationshipKind::parse(kind.as_str());
                 let implied = projection.relationships.iter().any(|relationship| {
                     relationship.source == node.id.qualified_name
                         && relationship.target == target.qualified_name
-                        && relationship.kind.as_str() == kind
+                        && relationship.kind.as_str() == kind.as_str()
                         && relationship.is_implied
                 });
                 seen.insert((kind.clone(), target.semantic_id.clone()));
@@ -389,7 +390,7 @@ impl GeneratorModelView {
                 continue;
             };
             let target = self.expose_node(target_node);
-            let kind = relationship.kind.as_str().to_owned();
+            let kind = ApiRelationshipKind::parse(relationship.kind.as_str());
             if seen.insert((kind.clone(), target.semantic_id.clone())) {
                 values.push(RelationshipSummary {
                     kind,
@@ -399,9 +400,13 @@ impl GeneratorModelView {
                 });
             }
         }
+        // Order by the kind's wire spelling, not by the enum's derived `Ord`. Deriving would
+        // tie the documented result order to variant declaration order, so inserting a
+        // variant would silently reorder every generator's output.
         values.sort_by(|a, b| {
             a.kind
-                .cmp(&b.kind)
+                .as_str()
+                .cmp(b.kind.as_str())
                 .then_with(|| summary_order(&a.target, &b.target))
         });
         self.enforce_limit(values.len())?;
@@ -484,7 +489,8 @@ impl GeneratorModelView {
             handle,
             semantic_id: generator_semantic_id(&self.snapshot, node),
             metaclass: projected
-                .and_then(|value| value.facts.element_type.clone())
+                .and_then(|value| value.facts.element_type.as_deref())
+                .map(Metaclass::parse)
                 .unwrap_or_else(|| api_metaclass(node.element_kind.as_str())),
             name: (!node.name.is_empty()).then(|| node.name.clone()),
             qualified_name: node.id.qualified_name.clone(),
@@ -592,7 +598,9 @@ fn portable_path(path: &std::path::Path) -> String {
 
 fn metaclass_matches(node: &HostSemanticModelNode, requested: &str) -> bool {
     node.element_kind.as_str().eq_ignore_ascii_case(requested)
-        || api_metaclass(node.element_kind.as_str()).eq_ignore_ascii_case(requested)
+        || api_metaclass(node.element_kind.as_str())
+            .as_str()
+            .eq_ignore_ascii_case(requested)
         || node
             .facts
             .element_type
@@ -600,69 +608,69 @@ fn metaclass_matches(node: &HostSemanticModelNode, requested: &str) -> bool {
             .is_some_and(|value| value.eq_ignore_ascii_case(requested))
 }
 
-fn api_metaclass(kind: &str) -> String {
+fn api_metaclass(kind: &str) -> Metaclass {
     match kind {
-        "package" => "Package".to_owned(),
-        "part def" => "PartDefinition".to_owned(),
-        "part" => "PartUsage".to_owned(),
-        "port def" => "PortDefinition".to_owned(),
-        "port" => "PortUsage".to_owned(),
-        "item def" => "ItemDefinition".to_owned(),
-        "item" => "ItemUsage".to_owned(),
-        "attribute def" => "AttributeDefinition".to_owned(),
-        "attribute" => "AttributeUsage".to_owned(),
-        "action def" => "ActionDefinition".to_owned(),
-        "action" => "ActionUsage".to_owned(),
-        "occurrence def" => "OccurrenceDefinition".to_owned(),
-        "occurrence" => "OccurrenceUsage".to_owned(),
-        "flow def" => "FlowDefinition".to_owned(),
-        "flow" => "FlowUsage".to_owned(),
-        "allocation def" => "AllocationDefinition".to_owned(),
-        "allocation" => "AllocationUsage".to_owned(),
-        "state def" => "StateDefinition".to_owned(),
-        "state" => "StateUsage".to_owned(),
-        "requirement def" => "RequirementDefinition".to_owned(),
-        "requirement" | "verified requirement" => "RequirementUsage".to_owned(),
-        "use case def" => "UseCaseDefinition".to_owned(),
-        "use case" => "UseCaseUsage".to_owned(),
-        "concern def" => "ConcernDefinition".to_owned(),
-        "concern" => "ConcernUsage".to_owned(),
-        "verification def" => "VerificationCaseDefinition".to_owned(),
-        "verification" => "VerificationCaseUsage".to_owned(),
-        "analysis def" => "AnalysisCaseDefinition".to_owned(),
-        "analysis" => "AnalysisCaseUsage".to_owned(),
-        "case def" => "CaseDefinition".to_owned(),
-        "case" => "CaseUsage".to_owned(),
-        "constraint def" => "ConstraintDefinition".to_owned(),
-        "constraint" => "ConstraintUsage".to_owned(),
-        "calc def" => "CalculationDefinition".to_owned(),
-        "calc" => "CalculationUsage".to_owned(),
-        "enum def" => "EnumerationDefinition".to_owned(),
-        "enumerated value" => "EnumerationUsage".to_owned(),
-        "connection def" => "ConnectionDefinition".to_owned(),
-        "connection" => "ConnectionUsage".to_owned(),
-        "interface def" => "InterfaceDefinition".to_owned(),
-        "interface" => "InterfaceUsage".to_owned(),
-        "individual def" => "IndividualDefinition".to_owned(),
-        "individual" => "IndividualUsage".to_owned(),
-        "view def" => "ViewDefinition".to_owned(),
-        "view" => "ViewUsage".to_owned(),
-        "viewpoint def" => "ViewpointDefinition".to_owned(),
-        "viewpoint" => "ViewpointUsage".to_owned(),
-        "rendering def" => "RenderingDefinition".to_owned(),
-        "rendering" => "RenderingUsage".to_owned(),
-        "metadata def" => "MetadataDefinition".to_owned(),
-        "metadata usage" | "metadata keyword" => "MetadataUsage".to_owned(),
-        "ref" => "ReferenceUsage".to_owned(),
-        "documentation" => "Documentation".to_owned(),
-        other => other.to_owned(),
+        "package" => Metaclass::Package,
+        "part def" => Metaclass::PartDefinition,
+        "part" => Metaclass::PartUsage,
+        "port def" => Metaclass::PortDefinition,
+        "port" => Metaclass::PortUsage,
+        "item def" => Metaclass::ItemDefinition,
+        "item" => Metaclass::ItemUsage,
+        "attribute def" => Metaclass::AttributeDefinition,
+        "attribute" => Metaclass::AttributeUsage,
+        "action def" => Metaclass::ActionDefinition,
+        "action" => Metaclass::ActionUsage,
+        "occurrence def" => Metaclass::OccurrenceDefinition,
+        "occurrence" => Metaclass::OccurrenceUsage,
+        "flow def" => Metaclass::FlowDefinition,
+        "flow" => Metaclass::FlowUsage,
+        "allocation def" => Metaclass::AllocationDefinition,
+        "allocation" => Metaclass::AllocationUsage,
+        "state def" => Metaclass::StateDefinition,
+        "state" => Metaclass::StateUsage,
+        "requirement def" => Metaclass::RequirementDefinition,
+        "requirement" | "verified requirement" => Metaclass::RequirementUsage,
+        "use case def" => Metaclass::UseCaseDefinition,
+        "use case" => Metaclass::UseCaseUsage,
+        "concern def" => Metaclass::ConcernDefinition,
+        "concern" => Metaclass::ConcernUsage,
+        "verification def" => Metaclass::VerificationCaseDefinition,
+        "verification" => Metaclass::VerificationCaseUsage,
+        "analysis def" => Metaclass::AnalysisCaseDefinition,
+        "analysis" => Metaclass::AnalysisCaseUsage,
+        "case def" => Metaclass::CaseDefinition,
+        "case" => Metaclass::CaseUsage,
+        "constraint def" => Metaclass::ConstraintDefinition,
+        "constraint" => Metaclass::ConstraintUsage,
+        "calc def" => Metaclass::CalculationDefinition,
+        "calc" => Metaclass::CalculationUsage,
+        "enum def" => Metaclass::EnumerationDefinition,
+        "enumerated value" => Metaclass::EnumerationUsage,
+        "connection def" => Metaclass::ConnectionDefinition,
+        "connection" => Metaclass::ConnectionUsage,
+        "interface def" => Metaclass::InterfaceDefinition,
+        "interface" => Metaclass::InterfaceUsage,
+        "individual def" => Metaclass::IndividualDefinition,
+        "individual" => Metaclass::IndividualUsage,
+        "view def" => Metaclass::ViewDefinition,
+        "view" => Metaclass::ViewUsage,
+        "viewpoint def" => Metaclass::ViewpointDefinition,
+        "viewpoint" => Metaclass::ViewpointUsage,
+        "rendering def" => Metaclass::RenderingDefinition,
+        "rendering" => Metaclass::RenderingUsage,
+        "metadata def" => Metaclass::MetadataDefinition,
+        "metadata usage" | "metadata keyword" => Metaclass::MetadataUsage,
+        "ref" => Metaclass::ReferenceUsage,
+        "documentation" => Metaclass::Documentation,
+        other => Metaclass::Unrecognized(other.to_owned()),
     }
 }
 
 fn summary_order(left: &ElementSummary, right: &ElementSummary) -> std::cmp::Ordering {
     left.qualified_name
         .cmp(&right.qualified_name)
-        .then_with(|| left.metaclass.cmp(&right.metaclass))
+        .then_with(|| left.metaclass.as_str().cmp(right.metaclass.as_str()))
         .then_with(|| left.semantic_id.cmp(&right.semantic_id))
 }
 
@@ -767,6 +775,33 @@ package P {
                 .collect::<Vec<_>>(),
             ["P::Vehicle::speed", "P::Base::mass"]
         );
+    }
+
+    /// The escape hatch must stay unused in practice. If Spec42's upstream model gains an
+    /// element kind or relationship kind the ABI has not mapped, this fails here rather than
+    /// leaking a raw internal spelling to generators as though it were a metaclass.
+    #[test]
+    fn no_element_or_relationship_maps_to_the_unrecognized_escape_hatch() {
+        let view = test_view();
+        let elements = view.find(None).expect("find");
+        assert!(!elements.is_empty(), "the fixture should expose elements");
+
+        for element in &elements {
+            assert!(
+                !element.metaclass.is_unrecognized(),
+                "`{}` has an unmapped metaclass `{}`",
+                element.qualified_name,
+                element.metaclass
+            );
+            for edge in view.relationships(&element.handle).expect("relationships") {
+                assert!(
+                    !edge.kind.is_unrecognized(),
+                    "`{}` has an unmapped relationship kind `{}`",
+                    element.qualified_name,
+                    edge.kind
+                );
+            }
+        }
     }
 
     #[test]

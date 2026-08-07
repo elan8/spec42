@@ -43,9 +43,14 @@ fn summarise(out: &mut String, label: &str, result: Result<Vec<model::ElementSum
             for item in items {
                 let _ = writeln!(
                     out,
-                    "  {} [{}] name={} library={}",
+                    "  {} [{}{}] name={} library={}",
                     item.qualified_name,
                     item.metaclass,
+                    if item.metaclass.is_unrecognized() {
+                        " UNRECOGNIZED"
+                    } else {
+                        ""
+                    },
                     item.name.as_deref().unwrap_or("<none>"),
                     item.library_element
                 );

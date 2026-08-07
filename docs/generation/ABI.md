@@ -4,7 +4,7 @@ The wire contract between Spec42 and a generator module. This document is the
 specification; `crates/generator_sdk` is one implementation of it, not its definition. A
 guest written in any language that can emit the imports and exports below is equally valid.
 
-Current version: **ABI 3**. Wire schema fingerprint: `0x7615ab8194e90b5c`.
+Current version: **ABI 4**. Wire schema fingerprint: `0x05508bec442da0db`.
 
 A generator is plain **core WebAssembly** — not a component. No metadata, no
 post-processing, no `wasm-tools` step. Pass the `.wasm` straight to `spec42 generate`.
@@ -146,9 +146,15 @@ order below is normative.
 struct ModelInfo { model_digest: String, spec42_version: String, semantic_api_version: String }
 
 struct ElementSummary {
-    handle: String, semantic_id: String, metaclass: String,
+    handle: String, semantic_id: String, metaclass: Metaclass,
     name: Option<String>, qualified_name: String, library_element: bool,
 }
+
+/// Closed enumeration; see the protocol crate for the full variant list. Encoded as a
+/// Postcard enum: a varint variant index, and for `Unrecognized` a trailing string.
+enum Metaclass { Package, PartDefinition, PartUsage, /* ... */ Unrecognized(String) }
+
+enum RelationshipKind { Typing, Specializes, Subsetting, /* ... */ Unrecognized(String) }
 
 struct SourceRange { start_line: u32, start_character: u32, end_line: u32, end_character: u32 }
 
@@ -169,7 +175,7 @@ struct ElementDetail {
     multiplicity: Option<Multiplicity>, evaluated_value: Option<String>,
 }
 
-struct Relationship { kind: String, source: ElementSummary, target: ElementSummary, implied: bool }
+struct Relationship { kind: RelationshipKind, source: ElementSummary, target: ElementSummary, implied: bool }
 
 struct Artifact { file_path: String, contents: Vec<u8> }
 ```
@@ -178,9 +184,12 @@ struct Artifact { file_path: String, contents: Vec<u8> }
 addresses an element for the duration of one run; `semantic_id` is the stable provenance
 identity and is what to embed in generated output. Do not persist handles between runs.
 
-`metaclass` and `kind` are strings rather than enums so a guest built against an older Spec42
-keeps working when the model grows concepts it does not recognise — an unknown value should
-be skipped, not treated as an error.
+`metaclass` and `kind` are closed enumerations, so a guest can match them exhaustively and
+the compiler will point out variants it has not handled. Each carries an `Unrecognized(String)`
+variant for a value this Spec42 produced but the enumeration does not name; Spec42's own
+conformance suite asserts it is never produced, so encountering one means the upstream model
+gained a concept the ABI has not yet mapped. Adding a real variant changes the fingerprint,
+so older guests are refused at load rather than silently mishandling it.
 
 ## Artifact paths
 

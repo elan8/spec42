@@ -786,6 +786,7 @@ dependencies = [
  "serde",
  "serde_json",
  "sha2",
+ "spec42-generator-protocol",
  "tempfile",
  "thiserror 2.0.19",
  "unicode-normalization",
