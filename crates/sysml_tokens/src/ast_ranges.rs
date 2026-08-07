@@ -648,6 +648,29 @@ fn collect_semantic_ranges_attribute_body(
             AttributeBodyElement::Doc(_)
             | AttributeBodyElement::Error(_)
             | AttributeBodyElement::Other(_) => {}
+            // `ref`/`ref part` members (validation `15_11`/`15_19`/`17a`/`17b`) -- same
+            // collector every other body kind's `RefDecl` arm already uses.
+            AttributeBodyElement::RefDecl(ref_decl) => {
+                collect_semantic_ranges_ref_decl(ref_decl, out);
+            }
+            // Nested `part` usage inside an item/attribute body (validation `3e`/`14c`) -- same
+            // shape `OBE::PartUsage` above already highlights.
+            AttributeBodyElement::PartUsage(part_usage) => {
+                if let Some(ref span) = part_usage.value.name_span {
+                    out.push((span_to_source_range(span), TYPE_PROPERTY));
+                }
+                if let Some(ref span) = part_usage.value.type_ref_span {
+                    out.push((span_to_source_range(span), TYPE_TYPE));
+                }
+                if let PartUsageBody::Brace { elements } = &part_usage.value.body {
+                    for child in elements {
+                        collect_semantic_ranges_part_usage_body_element(ctx, child, out);
+                    }
+                }
+            }
+            // No dedicated highlighting yet (mirrors every other body kind's `AssertConstraint`
+            // arm in this file).
+            AttributeBodyElement::AssertConstraint(_) => {}
         }
     }
 }
@@ -763,6 +786,7 @@ fn collect_semantic_ranges_state_def_body_element(
                 }
             }
         }
+        SDBE::InOutDecl(in_out) => out.push((span_to_source_range(&in_out.span), TYPE_PROPERTY)),
         SDBE::Entry(_)
         | SDBE::Do(_)
         | SDBE::Exit(_)
@@ -817,6 +841,16 @@ fn collect_semantic_ranges_occurrence_body_element(
             collect_semantic_ranges_definition_body(ctx, &flow.value.body, out);
         }
         OBE::StateUsage(state_usage) => collect_semantic_ranges_state_usage(ctx, state_usage, out),
+        // `end name : Type;` (or nested forms) inside allocation/connection-like definition
+        // bodies -- same highlighting `CDBE::EndDecl`/`IDBE::EndDecl` already use.
+        OBE::EndDecl(end_decl) => {
+            if let Some(ref span) = end_decl.name_span {
+                out.push((span_to_source_range(span), TYPE_PROPERTY));
+            }
+            if let Some(ref span) = end_decl.type_ref_span {
+                out.push((span_to_source_range(span), TYPE_TYPE));
+            }
+        }
         OBE::Doc(_)
         | OBE::Error(_)
         | OBE::Annotation(_)
@@ -1321,6 +1355,20 @@ fn collect_semantic_ranges_requirement_def_body_element(
         }
         RDBE::Doc(_) | RDBE::Error(_) | RDBE::Other(_) | RDBE::Annotation(_) => {}
         RDBE::MetadataAnnotation(meta) => collect_semantic_ranges_metadata_annotation(meta, out),
+        // `subject;` shorthand (concern/viewpoint bodies, validation `11a`) -- mirrors
+        // `RDBE::SubjectDecl`'s simple whole-span highlight (no separate name to point at).
+        RDBE::SubjectRef(subject_ref) => {
+            out.push((span_to_source_range(&subject_ref.span), TYPE_PROPERTY));
+        }
+        // `variant name;` inside a `variation requirement` body (validation `7b`) -- same
+        // whole-span highlight `PDBE::VariantUsage` already uses.
+        RDBE::VariantUsage(variant) => {
+            out.push((span_to_source_range(&variant.span), TYPE_PROPERTY));
+        }
+        // Bare `constraint` member nested in a requirement def body.
+        RDBE::Constraint(constraint) => {
+            out.push((span_to_source_range(&constraint.span), TYPE_PROPERTY));
+        }
     }
 }
 

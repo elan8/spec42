@@ -513,6 +513,14 @@ impl ExpressionAlgebra for DeclaredExpressionAlgebra {
                 expression.reference = Some(type_name.clone());
                 expression.children = subs;
             }
+            Expr::Conditional { .. } => {
+                expression.kind = "conditional".into();
+                expression.children = subs;
+            }
+            Expr::Extent { target } => {
+                expression.kind = "extent".into();
+                expression.reference = Some(target.clone());
+            }
         }
         expression
     }

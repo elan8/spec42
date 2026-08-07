@@ -130,6 +130,10 @@ fn require_constraint_display_lines(body: &RequireConstraintBody) -> Vec<String>
                     }
                     ConstraintDefBodyElement::Error(_) | ConstraintDefBodyElement::Other(_) => {}
                     ConstraintDefBodyElement::MetadataAnnotation(_) => {}
+                    // Not surfaced in this flat display-line summary (mirrors the `Other`/`Error`
+                    // arms above -- nested content isn't rendered here today).
+                    ConstraintDefBodyElement::Constraint(_)
+                    | ConstraintDefBodyElement::AttributeUsage(_) => {}
                 }
             }
             if lines.is_empty() {
@@ -183,6 +187,10 @@ fn require_constraint_structured(
                 metadata_names.push(meta.value.name.clone());
             }
             ConstraintDefBodyElement::Error(_) | ConstraintDefBodyElement::Other(_) => {}
+            // Not surfaced in this flat structured summary (mirrors the `Other`/`Error` arms
+            // above -- nested content isn't rendered here today).
+            ConstraintDefBodyElement::Constraint(_)
+            | ConstraintDefBodyElement::AttributeUsage(_) => {}
         }
     }
     let expression = compact_whitespace(&expression_fragments.join(" "));
@@ -799,6 +807,34 @@ pub(super) fn walk_requirement_def_body(
             RequirementDefBodyElement::Annotation(_)
             | RequirementDefBodyElement::Error(_)
             | RequirementDefBodyElement::Other(_) => {}
+            // `subject;` shorthand (concern/viewpoint bodies, validation `11a`): the parser's
+            // own `SubjectRef` is a zero-field marker -- it doesn't declare a new subject, it
+            // just acknowledges inheriting the enclosing one, which
+            // `inherit_requirement_subjects` already wires separately. Nothing to build here.
+            RequirementDefBodyElement::SubjectRef(_) => {}
+            // `variant name;` inside a `variation requirement` body (validation `7b`) -- same
+            // materializer `part_def.rs`/`part_usage.rs` already use for `variant` members.
+            RequirementDefBodyElement::VariantUsage(variant) => {
+                super::usage_builders::materialize_variant_usage(
+                    variant,
+                    uri,
+                    type_resolution_prefix,
+                    parent_id,
+                    g,
+                );
+            }
+            // Bare `constraint` member nested in a requirement def body (distinct from
+            // `RequireConstraint`'s `assume`/`require`-prefixed forms) -- same
+            // `build_constraint_usage` package-level constraint usages already use.
+            RequirementDefBodyElement::Constraint(constraint) => {
+                super::calc_constraint_def::build_constraint_usage(
+                    g,
+                    uri,
+                    type_resolution_prefix,
+                    Some(parent_id),
+                    constraint,
+                );
+            }
         }
     }
 }

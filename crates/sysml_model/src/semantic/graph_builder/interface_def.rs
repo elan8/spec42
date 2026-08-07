@@ -18,7 +18,7 @@ use super::expressions;
 use super::{add_node_and_recurse, qualified_name_for_node};
 use crate::semantic::resolution::resolve_expression_endpoint_qualified;
 
-fn add_end_decl(
+pub(super) fn add_end_decl(
     g: &mut SemanticGraph,
     uri: &Url,
     container_prefix: Option<&str>,
@@ -213,6 +213,11 @@ pub(super) fn build_from_interface_def_body_element(
             Some(parent_id),
             port,
         ),
+        // GH-85 (sysml-v2-parser): bare `flow <a> to <b>;` shorthand connecting two of this
+        // interface's own ends.
+        E::FlowUsage(flow) => {
+            super::flow_usage::materialize_flow_usage(flow, uri, container_prefix, parent_id, g);
+        }
     }
 }
 

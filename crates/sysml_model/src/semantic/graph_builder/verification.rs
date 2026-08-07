@@ -361,7 +361,19 @@ pub(super) fn build_from_verification_body(
             | UseCaseDefBodyElement::FirstSuccession(_)
             | UseCaseDefBodyElement::ThenUseCaseUsage(_)
             | UseCaseDefBodyElement::RefRedefinition(_)
-            | UseCaseDefBodyElement::SubjectRef(_) => {}
+            | UseCaseDefBodyElement::SubjectRef(_)
+            // Nested action/analysis/calc/attribute/requirement/part usages: already fully
+            // materialized by `wire_extended_case_body_element` above (which returns `true` and
+            // `continue`s before this match runs) -- these arms are unreachable, kept only for
+            // exhaustiveness.
+            | UseCaseDefBodyElement::ActionUsage(_)
+            | UseCaseDefBodyElement::AnalysisCaseUsage(_)
+            | UseCaseDefBodyElement::CalcUsage(_)
+            | UseCaseDefBodyElement::AttributeUsage(_)
+            | UseCaseDefBodyElement::RequirementUsage(_)
+            | UseCaseDefBodyElement::PartUsage(_)
+            // Bare result expression -- not modeled in verification-case bodies.
+            | UseCaseDefBodyElement::Expression(_) => {}
             UseCaseDefBodyElement::Doc(doc) => {
                 super::attach_doc_comment(g, parent_id, &doc.value.text);
             }

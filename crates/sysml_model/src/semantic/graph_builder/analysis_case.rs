@@ -142,9 +142,9 @@ pub(super) fn build_from_analysis_body(
                     attrs.insert("returnType".to_string(), serde_json::json!(type_name));
                 }
                 let expression = value
-                    .value_expression
+                    .value
                     .as_ref()
-                    .map(expressions::expression_to_debug_string);
+                    .map(|v| expressions::expression_to_debug_string(&v.value.expression));
                 if let Some(expression) = expression.as_deref() {
                     attrs.insert("value".to_string(), serde_json::json!(expression));
                 }
@@ -338,7 +338,22 @@ pub(super) fn build_from_analysis_body(
             | UseCaseDefBodyElement::FirstSuccession(_)
             | UseCaseDefBodyElement::ThenUseCaseUsage(_)
             | UseCaseDefBodyElement::RefRedefinition(_)
-            | UseCaseDefBodyElement::SubjectRef(_) => {}
+            | UseCaseDefBodyElement::SubjectRef(_)
+            // Nested action/analysis/calc/attribute/requirement/part usages: already fully
+            // materialized by `wire_extended_case_body_element` above (which returns `true` and
+            // `continue`s before this match runs) -- these arms are unreachable, kept only for
+            // exhaustiveness.
+            | UseCaseDefBodyElement::ActionUsage(_)
+            | UseCaseDefBodyElement::AnalysisCaseUsage(_)
+            | UseCaseDefBodyElement::CalcUsage(_)
+            | UseCaseDefBodyElement::AttributeUsage(_)
+            | UseCaseDefBodyElement::RequirementUsage(_)
+            | UseCaseDefBodyElement::PartUsage(_) => {}
+            // Bare result expression (validation `10a`: `vehicle.mass`) -- not yet wired into
+            // `analysis_result_qualified`; needs a qualified-name resolution strategy for a raw
+            // expression (as opposed to `CaseReturnDecl`/`AttributeUsage`, which declare their
+            // own name). Not a regression: this content wasn't reachable AST at all before.
+            UseCaseDefBodyElement::Expression(_) => {}
             UseCaseDefBodyElement::Doc(doc) => {
                 super::attach_doc_comment(g, parent_id, &doc.value.text);
             }

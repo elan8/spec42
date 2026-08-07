@@ -75,10 +75,14 @@ fn extract_constraint_metadata(
                         expression = Some(rendered);
                     }
                 }
+                // Nested constraint/attribute content isn't summarized here -- this function
+                // only extracts the flat params/expression pair for the `analysis*` attrs below.
                 ConstraintDefBodyElement::Error(_)
                 | ConstraintDefBodyElement::Doc(_)
                 | ConstraintDefBodyElement::MetadataAnnotation(_)
-                | ConstraintDefBodyElement::Other(_) => {}
+                | ConstraintDefBodyElement::Other(_)
+                | ConstraintDefBodyElement::Constraint(_)
+                | ConstraintDefBodyElement::AttributeUsage(_) => {}
             }
         }
     }
@@ -137,9 +141,14 @@ fn extract_calc_metadata(
                         expression = Some(rendered);
                     }
                 }
+                // Nested calc/part content isn't summarized here -- this function only extracts
+                // the flat params/return/expression triple for the `analysis*` attrs below.
                 CalcDefBodyElement::Error(_)
                 | CalcDefBodyElement::Doc(_)
-                | CalcDefBodyElement::MetadataAnnotation(_) => {}
+                | CalcDefBodyElement::MetadataAnnotation(_)
+                | CalcDefBodyElement::CalcUsage(_)
+                | CalcDefBodyElement::CalcDef(_)
+                | CalcDefBodyElement::PartUsage(_) => {}
             }
         }
     }
@@ -294,63 +303,134 @@ pub(super) fn build_calc_def(
         attrs,
         parent_id,
     );
-    // Wire InOutDecl / ReturnDecl as typed child graph nodes.
-    if let CalcDefBody::Brace { elements } = &c_node.value.body {
-        let calc_id = NodeId::new(uri, &qualified);
-        for element in elements {
-            match &element.value {
-                CalcDefBodyElement::InOutDecl(in_out) => {
-                    super::action::add_in_out_decl(g, uri, container_prefix, &calc_id, in_out);
-                }
-                CalcDefBodyElement::ReturnDecl(ret) => {
-                    let ret_qualified = qualified_name_for_node(
-                        g,
-                        uri,
-                        Some(calc_id.qualified_name.as_str()),
-                        &ret.value.name,
-                        "return parameter",
-                    );
-                    let mut ret_attrs = HashMap::new();
-                    ret_attrs.insert("direction".to_string(), serde_json::json!("return"));
-                    ret_attrs.insert(
-                        "parameterType".to_string(),
-                        serde_json::json!(&ret.value.type_name),
-                    );
-                    add_node_and_recurse(
-                        g,
-                        uri,
-                        &ret_qualified,
-                        "return parameter",
-                        ret.value.name.clone(),
-                        span_to_range(&ret.span),
-                        ret_attrs,
-                        Some(&calc_id),
-                    );
-                    add_typing_edge_if_exists(
-                        g,
-                        uri,
-                        &ret_qualified,
-                        &ret.value.type_name,
-                        container_prefix,
-                    );
-                }
-                CalcDefBodyElement::Doc(doc) => {
-                    super::attach_doc_comment(g, &calc_id, &doc.value.text);
-                }
-                CalcDefBodyElement::MetadataAnnotation(meta) => {
-                    super::metadata_def::add_metadata_annotation_node(
-                        g,
-                        uri,
-                        container_prefix,
-                        &calc_id,
-                        &meta.value,
-                        &meta.span,
-                    );
-                }
-                CalcDefBodyElement::Expression(_)
-                | CalcDefBodyElement::Other(_)
-                | CalcDefBodyElement::Error(_) => {}
+    let calc_id = NodeId::new(uri, &qualified);
+    build_calc_def_body_elements(g, uri, container_prefix, &calc_id, &c_node.value.body);
+}
+
+/// Shared child-element walker for a `calc`/`calc def`'s own body: `in`/`out`/`return`
+/// parameters, doc/metadata annotations, nested `part`/`calc`/`calc def` content. Used by both
+/// [`build_calc_def`] (top-level `calc def`) and `part_def.rs`'s `PDBE::CalcUsage` arm (a `calc`
+/// usage nested inside a `part def` body) so the two don't hand-roll the same loop twice.
+pub(super) fn build_calc_def_body_elements(
+    g: &mut SemanticGraph,
+    uri: &Url,
+    container_prefix: Option<&str>,
+    calc_id: &NodeId,
+    body: &CalcDefBody,
+) {
+    let CalcDefBody::Brace { elements } = body else {
+        return;
+    };
+    for element in elements {
+        match &element.value {
+            CalcDefBodyElement::InOutDecl(in_out) => {
+                super::action::add_in_out_decl(g, uri, container_prefix, calc_id, in_out);
             }
+            CalcDefBodyElement::ReturnDecl(ret) => {
+                let ret_qualified = qualified_name_for_node(
+                    g,
+                    uri,
+                    Some(calc_id.qualified_name.as_str()),
+                    &ret.value.name,
+                    "return parameter",
+                );
+                let mut ret_attrs = HashMap::new();
+                ret_attrs.insert("direction".to_string(), serde_json::json!("return"));
+                ret_attrs.insert(
+                    "parameterType".to_string(),
+                    serde_json::json!(&ret.value.type_name),
+                );
+                add_node_and_recurse(
+                    g,
+                    uri,
+                    &ret_qualified,
+                    "return parameter",
+                    ret.value.name.clone(),
+                    span_to_range(&ret.span),
+                    ret_attrs,
+                    Some(calc_id),
+                );
+                add_typing_edge_if_exists(
+                    g,
+                    uri,
+                    &ret_qualified,
+                    &ret.value.type_name,
+                    container_prefix,
+                );
+            }
+            CalcDefBodyElement::Doc(doc) => {
+                super::attach_doc_comment(g, calc_id, &doc.value.text);
+            }
+            CalcDefBodyElement::MetadataAnnotation(meta) => {
+                super::metadata_def::add_metadata_annotation_node(
+                    g,
+                    uri,
+                    container_prefix,
+                    calc_id,
+                    &meta.value,
+                    &meta.span,
+                );
+            }
+            // Directed `in part …` parameter (validation `10b`) -- materialize the same way
+            // every other calc/action/attribute body already does.
+            CalcDefBodyElement::PartUsage(part) => {
+                super::usage_builders::materialize_part_usage(
+                    part,
+                    uri,
+                    container_prefix,
+                    Some(calc_id),
+                    g,
+                );
+            }
+            // Nested `calc` usage inside a calc body (validation `10b` rollups).
+            CalcDefBodyElement::CalcUsage(nested) => {
+                materialize_calc_usage(g, uri, container_prefix, calc_id, nested);
+            }
+            // Nested `calc def` inside a calc body.
+            CalcDefBodyElement::CalcDef(nested) => {
+                build_calc_def(g, uri, container_prefix, Some(calc_id), nested);
+            }
+            CalcDefBodyElement::Expression(_)
+            | CalcDefBodyElement::Other(_)
+            | CalcDefBodyElement::Error(_) => {}
         }
     }
+}
+
+/// Materializes a `calc` usage (named, optionally typed, with its own body) as a child of
+/// `parent_id`: a "calc" node plus recursion into its body via [`build_calc_def_body_elements`].
+/// Shared by every body kind a `calc` usage can nest in directly -- `part_def.rs`'s top-level
+/// `PDBE::CalcUsage`, this module's own nested-`calc`-inside-`calc` rollups (validation `10b`),
+/// and analysis/verification case bodies' `UseCaseDefBodyElement::CalcUsage`.
+pub(super) fn materialize_calc_usage(
+    g: &mut SemanticGraph,
+    uri: &Url,
+    container_prefix: Option<&str>,
+    parent_id: &NodeId,
+    calc_node: &Node<sysml_v2_parser::ast::CalcUsage>,
+) {
+    let name = identification_name(&calc_node.value.identification);
+    let qualified = qualified_name_for_node(g, uri, Some(&parent_id.qualified_name), &name, "calc");
+    let range = span_to_range(&calc_node.span);
+    let mut attrs = HashMap::new();
+    attach_short_name_attribute(&mut attrs, &calc_node.value.identification);
+    attach_membership_visibility(&mut attrs, &calc_node.value.membership);
+    if let Some(ref t) = calc_node.value.type_name {
+        attrs.insert("calcType".to_string(), serde_json::json!(t));
+    }
+    add_node_and_recurse(
+        g,
+        uri,
+        &qualified,
+        "calc",
+        name,
+        range,
+        attrs,
+        Some(parent_id),
+    );
+    if let Some(ref t) = calc_node.value.type_name {
+        add_typing_edge_if_exists(g, uri, &qualified, t, container_prefix);
+    }
+    let calc_id = NodeId::new(uri, &qualified);
+    build_calc_def_body_elements(g, uri, container_prefix, &calc_id, &calc_node.value.body);
 }

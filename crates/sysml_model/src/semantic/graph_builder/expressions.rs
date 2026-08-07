@@ -493,6 +493,8 @@ pub(super) fn classify_expression(
                 | Expression::Collect { .. }
                 | Expression::Constructor { .. }
                 | Expression::CollectionOp { .. }
+                | Expression::Conditional { .. }
+                | Expression::Extent { .. }
                 | Expression::Null => results.push(ExprClass::Unknown),
             },
             Frame::AfterUnaryOperand => {
@@ -624,6 +626,10 @@ impl ExpressionAlgebra for DebugStringAlgebra {
             }
             Expression::MetadataAccess(_) => format!("{}.metadata", subs[0]),
             Expression::Null => "()".to_string(),
+            Expression::Conditional { .. } => {
+                format!("if {} ? {} else {}", subs[0], subs[1], subs[2])
+            }
+            Expression::Extent { target } => format!("all {target}"),
         }
     }
 }

@@ -288,8 +288,18 @@ fn add_ref_decl(
         super::ref_decl::RefDeclOptions::default(),
     );
     if let RefBody::Brace { elements } = &wrap.value.body {
-        if !elements.is_empty() {
-            build_from_action_def_body(elements, uri, container_prefix, &ref_node_id, g);
+        // `RefBody::Brace` elements are `RefBodyElement`-wrapped (shared across action/part/state
+        // ref-body contexts); this caller only recurses the action-shaped ones, since
+        // `build_from_action_def_body` graph-builds `ActionDefBodyElement` content specifically.
+        let action_elements: Vec<sysml_v2_parser::Node<ActionDefBodyElement>> = elements
+            .iter()
+            .filter_map(|el| match &el.value {
+                sysml_v2_parser::ast::RefBodyElement::Action(action_el) => Some(action_el.clone()),
+                _ => None,
+            })
+            .collect();
+        if !action_elements.is_empty() {
+            build_from_action_def_body(&action_elements, uri, container_prefix, &ref_node_id, g);
         }
     }
 }

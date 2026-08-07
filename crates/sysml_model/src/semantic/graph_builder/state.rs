@@ -519,6 +519,9 @@ pub(super) fn build_from_state_body(
             SDBE::Doc(doc) => {
                 super::attach_doc_comment(g, parent_id, &doc.value.text);
             }
+            SDBE::InOutDecl(in_out) => {
+                super::action::add_in_out_decl(g, uri, container_prefix, parent_id, in_out);
+            }
             SDBE::Error(_) | SDBE::Annotation(_) | SDBE::Other(_) => {}
         }
     }
