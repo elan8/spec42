@@ -19,7 +19,10 @@ use super::interface_def;
 use super::port_def::materialize_port_usage;
 use super::state;
 use super::usage_builders;
-use super::{add_node_and_recurse, attach_feature_properties, qualified_name_for_node};
+use super::{
+    add_node_and_recurse, attach_feature_properties, qualified_name_for_node,
+    resolve_addressable_name,
+};
 
 pub(super) fn build_from_part_def_body_element(
     node: &sysml_v2_parser::Node<PartDefBodyElement>,
@@ -103,10 +106,14 @@ pub(super) fn build_from_part_def_body_element(
             materialize_port_usage(n, uri, container_prefix, parent_id, g);
         }
         PDBE::PartDef(pd_node) => {
-            let name = identification_name(&pd_node.identification);
+            let mut attrs = HashMap::new();
+            let name = resolve_addressable_name(
+                &identification_name(&pd_node.identification),
+                "part def",
+                &mut attrs,
+            );
             let qualified = qualified_name_for_node(g, uri, container_prefix, &name, "part def");
             let range = span_to_range(&pd_node.span);
-            let mut attrs = HashMap::new();
             attach_short_name_attribute(&mut attrs, &pd_node.identification);
             attach_membership_visibility(&mut attrs, &pd_node.membership);
             if let Some(ref p) = pd_node.definition_prefix {
@@ -162,38 +169,39 @@ pub(super) fn build_from_part_def_body_element(
             );
         }
         PDBE::ItemDef(item_node) => {
-            let name = identification_name(&item_node.identification);
-            if !name.is_empty() {
-                let qualified =
-                    qualified_name_for_node(g, uri, container_prefix, &name, "item def");
-                let mut attrs = HashMap::new();
-                attach_short_name_attribute(&mut attrs, &item_node.identification);
-                attach_membership_visibility(&mut attrs, &item_node.membership);
-                if let Some(ref s) = item_node.specializes {
-                    attrs.insert("specializes".to_string(), serde_json::json!(s));
-                }
-                add_node_and_recurse(
-                    g,
-                    uri,
-                    &qualified,
-                    "item def",
-                    name,
-                    span_to_range(&item_node.span),
-                    attrs,
-                    Some(parent_id),
-                );
-                for target in typing_targets(item_node.specializes.as_deref()) {
-                    add_specializes_edge_if_exists(g, uri, &qualified, target, container_prefix);
-                }
-                let node_id = NodeId::new(uri, &qualified);
-                attribute_body::build_from_attribute_body(
-                    &item_node.body,
-                    uri,
-                    Some(&qualified),
-                    &node_id,
-                    g,
-                );
+            let mut attrs = HashMap::new();
+            let name = resolve_addressable_name(
+                &identification_name(&item_node.identification),
+                "item def",
+                &mut attrs,
+            );
+            let qualified = qualified_name_for_node(g, uri, container_prefix, &name, "item def");
+            attach_short_name_attribute(&mut attrs, &item_node.identification);
+            attach_membership_visibility(&mut attrs, &item_node.membership);
+            if let Some(ref s) = item_node.specializes {
+                attrs.insert("specializes".to_string(), serde_json::json!(s));
             }
+            add_node_and_recurse(
+                g,
+                uri,
+                &qualified,
+                "item def",
+                name,
+                span_to_range(&item_node.span),
+                attrs,
+                Some(parent_id),
+            );
+            for target in typing_targets(item_node.specializes.as_deref()) {
+                add_specializes_edge_if_exists(g, uri, &qualified, target, container_prefix);
+            }
+            let node_id = NodeId::new(uri, &qualified);
+            attribute_body::build_from_attribute_body(
+                &item_node.body,
+                uri,
+                Some(&qualified),
+                &node_id,
+                g,
+            );
         }
         PDBE::ItemUsage(item_node) => {
             usage_builders::materialize_item_usage(item_node, uri, container_prefix, parent_id, g);

@@ -38,7 +38,7 @@ use super::verification;
 use super::view_def;
 use super::{
     add_node_and_recurse, attach_feature_properties, insert_def_specialization_attr,
-    qualified_name_for_node, wire_def_specialization_edge,
+    qualified_name_for_node, resolve_addressable_name, wire_def_specialization_edge,
 };
 use super::{interface_def, part_def, port_def, state, usage_builders, use_case};
 

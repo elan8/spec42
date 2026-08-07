@@ -142,6 +142,45 @@ pub(super) fn effective_usage_name<'a>(
     }
 }
 
+/// Kind-tagged synthetic base name for anonymous elements (`"item def"` → `"_itemDef"`).
+///
+/// Used with [`qualified_name_for_node`], which appends `#kind` / `#kindN` on sibling collisions.
+pub(super) fn anonymous_element_base_name(kind: &str) -> String {
+    let mut camel = String::from("_");
+    for (i, part) in kind.split_whitespace().enumerate() {
+        if i == 0 {
+            camel.push_str(part);
+            continue;
+        }
+        let mut chars = part.chars();
+        if let Some(first) = chars.next() {
+            camel.extend(first.to_uppercase());
+            camel.push_str(chars.as_str());
+        }
+    }
+    if camel == "_" {
+        "_element".to_string()
+    } else {
+        camel
+    }
+}
+
+/// Prefer a declared identification name; when empty, return a kind-tagged synthetic name and
+/// mark `attrs["isAnonymous"] = true` so anonymous-but-legal defs/usages stay addressable
+/// ([#32](https://github.com/elan8/spec42/issues/32)).
+pub(super) fn resolve_addressable_name(
+    declared: &str,
+    kind: &str,
+    attrs: &mut HashMap<String, serde_json::Value>,
+) -> String {
+    let declared = declared.trim();
+    if !declared.is_empty() {
+        return declared.to_string();
+    }
+    attrs.insert("isAnonymous".to_string(), serde_json::json!(true));
+    anonymous_element_base_name(kind)
+}
+
 /// Returns a qualified name that is unique among siblings. When a node with the same
 /// base qualified name already exists (e.g. package and part def with same name), appends
 /// #kind to disambiguate.
@@ -387,5 +426,39 @@ mod short_name_tests {
              removed, got {:#?}",
             graph.node_ids_by_qualified_name.get("Demo::CB")
         );
+    }
+}
+
+#[cfg(test)]
+mod anonymous_name_tests {
+    use super::{anonymous_element_base_name, resolve_addressable_name};
+    use std::collections::HashMap;
+
+    #[test]
+    fn kind_tagged_base_names() {
+        assert_eq!(anonymous_element_base_name("item def"), "_itemDef");
+        assert_eq!(
+            anonymous_element_base_name("constraint def"),
+            "_constraintDef"
+        );
+        assert_eq!(anonymous_element_base_name("calc def"), "_calcDef");
+        assert_eq!(anonymous_element_base_name("constraint"), "_constraint");
+        assert_eq!(anonymous_element_base_name(""), "_element");
+    }
+
+    #[test]
+    fn resolve_marks_anonymous_and_preserves_declared() {
+        let mut attrs = HashMap::new();
+        assert_eq!(
+            resolve_addressable_name("Widget", "item def", &mut attrs),
+            "Widget"
+        );
+        assert!(attrs.is_empty());
+
+        assert_eq!(
+            resolve_addressable_name("", "item def", &mut attrs),
+            "_itemDef"
+        );
+        assert_eq!(attrs.get("isAnonymous"), Some(&serde_json::json!(true)));
     }
 }
