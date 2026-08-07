@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.50.0] - 2026-08-07
+
 - **Bumped `sysml-v2-parser` 0.53.0 → 0.54.0** ([#18](https://github.com/elan8/spec42/issues/18)) —
   pulls in #70 (`parse()`/`parse_for_editor()` equivalence), the #78 follow-up (full-library
   strict-diagnostics gaps: `in`/`ref`/`calc` redefinition forms, nested `calc def`, `abstract
