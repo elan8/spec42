@@ -269,3 +269,54 @@ pub fn push_usage_name_type_spans<T: TypeNameRef + ?Sized>(
         }
     }
 }
+
+/// Best-effort declared name from a KerML modeled declaration (`FeatureDecl` /
+/// `ClassifierDecl` / similar), mirroring graph-builder name extraction.
+pub fn modeled_decl_name(keyword: &str, text: &str) -> Option<String> {
+    let t = text.trim().trim_end_matches(';').trim();
+    let tokens: Vec<&str> = t.split_whitespace().collect();
+    let kw = keyword.trim();
+    if let Some(pos) = tokens.iter().position(|tok| tok.eq_ignore_ascii_case(kw)) {
+        let mut i = pos + 1;
+        while i < tokens.len() {
+            let tok = tokens[i].trim_end_matches([';', ',', ')', '{']);
+            if tok.eq_ignore_ascii_case("def")
+                || tok.eq_ignore_ascii_case("id")
+                || tok.eq_ignore_ascii_case("case")
+                || tok.starts_with('\'')
+            {
+                i += 1;
+                continue;
+            }
+            if tok.eq_ignore_ascii_case("specializes") {
+                break;
+            }
+            let name: String = tok
+                .chars()
+                .filter(|c| c.is_alphanumeric() || *c == '_')
+                .collect();
+            if !name.is_empty() {
+                return Some(name);
+            }
+            break;
+        }
+    }
+    None
+}
+
+/// Push a whole-word occurrence of `name` inside `span` when present in `source`.
+pub fn push_word_token(
+    source: &str,
+    span: &Span,
+    name: &str,
+    token_type: u32,
+    out: &mut Vec<(SourceRange, u32)>,
+) {
+    if name.is_empty() {
+        return;
+    }
+    let local = name.rsplit("::").next().unwrap_or(name);
+    if let Some(r) = word_range_within_span(source, &span_to_source_range(span), local) {
+        out.push((r, token_type));
+    }
+}

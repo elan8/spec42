@@ -14,10 +14,11 @@ use sysml_v2_parser::ast::{
 use sysml_v2_parser::RootNamespace;
 
 use crate::ast_util::{
-    identification_name, push_ident_definition_spans, push_usage_name_type_spans,
-    span_to_source_range, SourceRange,
+    identification_name, modeled_decl_name, push_ident_definition_spans,
+    push_usage_name_type_spans, push_word_token, span_to_source_range, SourceRange,
 };
 use crate::types::*;
+use sysml_v2_parser::ast::{Dependency, Satisfy};
 
 struct RangeCtx<'a> {
     source: &'a str,
@@ -583,8 +584,112 @@ fn collect_semantic_ranges_package_body_element(
                 push_ident_definition_spans(&actor_node.span, None, TYPE_PROPERTY, out);
             }
         }
+        PBE::Satisfy(satisfy_node) => collect_semantic_ranges_satisfy(ctx, satisfy_node, out),
+        PBE::Dependency(dep_node) => collect_semantic_ranges_dependency(ctx, dep_node, out),
+        PBE::FeatureDecl(feature_node) => {
+            collect_semantic_ranges_modeled_decl(
+                ctx,
+                &feature_node.span,
+                &feature_node.value.keyword,
+                &feature_node.value.text,
+                TYPE_PROPERTY,
+                out,
+            );
+        }
+        PBE::ClassifierDecl(classifier_node) => {
+            collect_semantic_ranges_modeled_decl(
+                ctx,
+                &classifier_node.span,
+                &classifier_node.value.keyword,
+                &classifier_node.value.text,
+                TYPE_CLASS,
+                out,
+            );
+        }
+        PBE::KermlFeatureDecl(decl) => {
+            collect_semantic_ranges_modeled_decl(
+                ctx,
+                &decl.span,
+                &decl.value.bnf_production,
+                &decl.value.text,
+                TYPE_PROPERTY,
+                out,
+            );
+        }
+        PBE::KermlSemanticDecl(decl) => {
+            collect_semantic_ranges_modeled_decl(
+                ctx,
+                &decl.span,
+                &decl.value.bnf_production,
+                &decl.value.text,
+                TYPE_CLASS,
+                out,
+            );
+        }
+        PBE::ExtendedLibraryDecl(decl) => {
+            collect_semantic_ranges_modeled_decl(
+                ctx,
+                &decl.span,
+                &decl.value.bnf_production,
+                &decl.value.text,
+                TYPE_CLASS,
+                out,
+            );
+        }
         _ => {}
     }
+}
+
+fn collect_semantic_ranges_satisfy(
+    ctx: &RangeCtx<'_>,
+    satisfy: &sysml_v2_parser::Node<Satisfy>,
+    out: &mut Vec<(SourceRange, u32)>,
+) {
+    out.push((
+        span_to_source_range(&satisfy.value.source.span),
+        TYPE_PROPERTY,
+    ));
+    out.push((
+        span_to_source_range(&satisfy.value.target.span),
+        TYPE_PROPERTY,
+    ));
+    if let Some(inline) = &satisfy.value.inline_requirement {
+        push_word_token(ctx.source, &satisfy.span, &inline.name, TYPE_PROPERTY, out);
+        if let Some(type_name) = inline.type_name.as_deref() {
+            push_word_token(ctx.source, &satisfy.span, type_name, TYPE_TYPE, out);
+        }
+    }
+}
+
+fn collect_semantic_ranges_dependency(
+    ctx: &RangeCtx<'_>,
+    dependency: &sysml_v2_parser::Node<Dependency>,
+    out: &mut Vec<(SourceRange, u32)>,
+) {
+    if let Some(ident) = &dependency.value.identification {
+        let name = identification_name(ident);
+        push_word_token(ctx.source, &dependency.span, &name, TYPE_PROPERTY, out);
+    }
+    for client in &dependency.value.clients {
+        push_word_token(ctx.source, &dependency.span, client, TYPE_PROPERTY, out);
+    }
+    for supplier in &dependency.value.suppliers {
+        push_word_token(ctx.source, &dependency.span, supplier, TYPE_PROPERTY, out);
+    }
+}
+
+fn collect_semantic_ranges_modeled_decl(
+    ctx: &RangeCtx<'_>,
+    span: &sysml_v2_parser::Span,
+    keyword: &str,
+    text: &str,
+    token_type: u32,
+    out: &mut Vec<(SourceRange, u32)>,
+) {
+    let Some(name) = modeled_decl_name(keyword, text) else {
+        return;
+    };
+    push_word_token(ctx.source, span, &name, token_type, out);
 }
 
 fn collect_semantic_ranges_definition_body(
@@ -851,14 +956,14 @@ fn collect_semantic_ranges_occurrence_body_element(
                 out.push((span_to_source_range(span), TYPE_TYPE));
             }
         }
+        OBE::Satisfy(satisfy) => collect_semantic_ranges_satisfy(ctx, satisfy, out),
         OBE::Doc(_)
         | OBE::Error(_)
         | OBE::Annotation(_)
         | OBE::AssertConstraint(_)
         | OBE::Allocate(_)
         | OBE::Other(_)
-        | OBE::SuccessionUsage(_)
-        | OBE::Satisfy(_) => {}
+        | OBE::SuccessionUsage(_) => {}
     }
 }
 
@@ -1046,6 +1151,8 @@ fn collect_semantic_ranges_part_def_body_element(
         }
         PDBE::ActionUsage(usage) => collect_semantic_ranges_action_usage(ctx, usage.as_ref(), out),
         PDBE::StateUsage(state_usage) => collect_semantic_ranges_state_usage(ctx, state_usage, out),
+        PDBE::Satisfy(satisfy) => collect_semantic_ranges_satisfy(ctx, satisfy, out),
+        PDBE::Dependency(dep) => collect_semantic_ranges_dependency(ctx, dep, out),
         PDBE::Connect(_)
         | PDBE::InterfaceUsage(_)
         | PDBE::Allocate(_)
@@ -1056,7 +1163,6 @@ fn collect_semantic_ranges_part_def_body_element(
         | PDBE::Doc(_)
         | PDBE::Comment(_)
         | PDBE::AssertConstraint(_)
-        | PDBE::Satisfy(_)
         | PDBE::Other(_) => {}
         PDBE::VariantUsage(n) => {
             out.push((span_to_source_range(&n.span), TYPE_PROPERTY));
@@ -1109,6 +1215,7 @@ fn collect_semantic_ranges_part_usage_body_element(
         }
         PUBE::ActionUsage(usage) => collect_semantic_ranges_action_usage(ctx, usage.as_ref(), out),
         PUBE::StateUsage(state_usage) => collect_semantic_ranges_state_usage(ctx, state_usage, out),
+        PUBE::Satisfy(satisfy) => collect_semantic_ranges_satisfy(ctx, satisfy, out),
         _ => {}
     }
 }
