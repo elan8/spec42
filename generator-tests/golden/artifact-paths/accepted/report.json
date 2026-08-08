@@ -1,0 +1,21 @@
+{
+  "outcome": {
+    "kind": "success"
+  },
+  "artifacts": {
+    "README.md": {
+      "bytes": 11,
+      "text": "artifact 0\n"
+    },
+    "nested/dir/file.txt": {
+      "bytes": 11,
+      "text": "artifact 1\n"
+    }
+  },
+  "diagnostics": [],
+  "query_count": 0,
+  "fuel_consumed": null,
+  "peak_memory_bytes": 1179648,
+  "output_files": 2,
+  "output_bytes": 22
+}

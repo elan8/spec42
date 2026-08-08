@@ -1,0 +1,10 @@
+[package]
+name = "spec42-generator-protocol"
+version.workspace = true
+edition.workspace = true
+description = "Core WebAssembly ABI data types for Spec42 generators"
+license.workspace = true
+
+[dependencies]
+serde = { workspace = true }
+postcard-schema = { workspace = true }
