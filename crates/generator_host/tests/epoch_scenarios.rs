@@ -21,9 +21,23 @@ use spec42_generator_protocol::{Operation, COMPATIBILITY_TOKEN};
 /// A tick interval longer than any test run, so the only ticks are the ones tests raise.
 const NEVER: Duration = Duration::from_secs(86_400);
 
-/// Upper bound on how long a scenario will drive before declaring the interrupt broken.
-/// Generous enough to absorb scheduling, small enough to fail rather than hang.
-const MAX_TICKS: usize = 20_000;
+/// How long a scenario will drive before declaring the interrupt broken.
+///
+/// Wall-clock rather than a tick count. A count is the wrong bound: ticks spin at CPU speed
+/// while the thread being waited on does real work, so on a loaded machine any count can be
+/// exhausted by scheduling alone -- a scenario failing for want of CPU rather than because an
+/// interrupt failed to land. This bound exists only to fail instead of hanging, and "has too
+/// much time elapsed" is the question it should be asking.
+///
+/// Note this is real time, not the manual clock: the guest's deadline is still driven
+/// entirely by the test, so scenario *semantics* remain independent of timing.
+const DRIVE_TIMEOUT: Duration = Duration::from_secs(60);
+
+/// Pause between ticks, so the driver does not starve the thread it is waiting for.
+///
+/// Spinning on `yield_now` across every core is what made the previous version contend with
+/// its own worker.
+const TICK_PAUSE: Duration = Duration::from_millis(1);
 
 /// A running scenario and the observer reporting when its guest entered WebAssembly.
 struct Running {
@@ -154,15 +168,24 @@ impl Harness {
         wall_time: Option<Duration>,
         cancellation: CancellationHandle,
     ) -> Running {
+        // Compile the module and load the model before spawning, so the driven region holds
+        // only guest execution. Both are slow -- Cranelift, then a workspace parse and
+        // validate -- and leaving either inside meant the driver was waiting on setup rather
+        // than on the interrupt it exists to observe.
+        let prepared = Arc::new(
+            self.runtime
+                .prepare(&module)
+                .expect("the fixture should prepare"),
+        );
+        let model = model();
         let observer = EntryObserver::new();
         let runtime = Arc::clone(&self.runtime);
         let thread_observer = observer.clone();
         let handle = std::thread::spawn(move || {
-            let prepared = runtime.prepare(&module)?;
             runtime
                 .execute_prepared_observed(
-                    &prepared,
-                    model(),
+                    prepared.as_ref(),
+                    model,
                     &[],
                     RuntimeLimits {
                         wall_time,
@@ -181,7 +204,8 @@ impl Harness {
     ///
     /// Bounded: a guest that never enters fails the scenario rather than hanging CI.
     fn await_entry(&self, running: &Running) {
-        for _ in 0..MAX_TICKS {
+        let give_up_at = std::time::Instant::now() + DRIVE_TIMEOUT;
+        while std::time::Instant::now() < give_up_at {
             if running.observer.has_entered() {
                 return;
             }
@@ -190,9 +214,9 @@ impl Harness {
                 "the run finished before the guest entered WebAssembly"
             );
             self.runtime.tick_epoch();
-            std::thread::yield_now();
+            std::thread::sleep(TICK_PAUSE);
         }
-        panic!("the guest never entered WebAssembly within {MAX_TICKS} ticks");
+        panic!("the guest never entered WebAssembly within {DRIVE_TIMEOUT:?}");
     }
 
     /// Advances the clock and ticks until the run finishes.
@@ -201,15 +225,16 @@ impl Harness {
     /// the job. On timeout the wedged thread is left detached deliberately -- joining it
     /// would reintroduce the hang this bound exists to prevent.
     fn drive_until_done(&self, running: Running, step: Duration) -> Result<(), GeneratorHostError> {
-        for _ in 0..MAX_TICKS {
+        let give_up_at = std::time::Instant::now() + DRIVE_TIMEOUT;
+        while std::time::Instant::now() < give_up_at {
             if running.handle.is_finished() {
                 return running.handle.join().expect("scenario thread panicked");
             }
             self.clock.advance(step);
             self.runtime.tick_epoch();
-            std::thread::yield_now();
+            std::thread::sleep(TICK_PAUSE);
         }
-        panic!("the run did not finish within {MAX_TICKS} ticks; the interrupt did not land");
+        panic!("the run did not finish within {DRIVE_TIMEOUT:?}; the interrupt did not land");
     }
 }
 
