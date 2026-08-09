@@ -1,5 +1,8 @@
 use super::*;
-use crate::semantic::model::{DeclaredExpression, DeclaredExpressionKind, RelationshipKind};
+use crate::semantic::model::{
+    DeclaredBinaryOperator, DeclaredExpression, DeclaredExpressionKind, DeclaredExpressionOperator,
+    DeclaredLiteral, DeclaredUnaryOperator, EvaluatedValue, RelationshipKind,
+};
 
 pub(crate) struct EvalEngine<'a> {
     pub(crate) graph: &'a SemanticGraph,
@@ -113,27 +116,36 @@ impl<'a> EvalEngine<'a> {
         expression: &DeclaredExpression,
     ) -> Result<EvalOutcome, EvalStatus> {
         match expression.kind {
-            DeclaredExpressionKind::IntegerLiteral => expression
-                .literal
-                .clone()
-                .filter(|value| value.is_number())
-                .map(|value| EvalOutcome::ok(value, None))
-                .ok_or(EvalStatus::Malformed),
+            DeclaredExpressionKind::IntegerLiteral => match expression.literal.as_ref() {
+                Some(DeclaredLiteral::Integer(value)) => {
+                    Ok(EvalOutcome::ok(EvaluatedValue::Integer(*value), None))
+                }
+                _ => Err(EvalStatus::Malformed),
+            },
             DeclaredExpressionKind::RealLiteral => expression
                 .literal
                 .as_ref()
-                .and_then(real_literal)
+                .and_then(|literal| match literal {
+                    DeclaredLiteral::Real(value) => real_literal(value),
+                    DeclaredLiteral::Integer(_)
+                    | DeclaredLiteral::String(_)
+                    | DeclaredLiteral::Boolean(_) => None,
+                })
                 .map(Quantity::scalar)
                 .map(EvalOutcome::from_quantity)
                 .ok_or(EvalStatus::Malformed),
-            DeclaredExpressionKind::StringLiteral | DeclaredExpressionKind::BooleanLiteral => {
-                expression
-                    .literal
-                    .clone()
-                    .filter(|value| value.is_string() || value.is_boolean())
-                    .map(|value| EvalOutcome::ok(value, None))
-                    .ok_or(EvalStatus::Malformed)
-            }
+            DeclaredExpressionKind::StringLiteral => match expression.literal.as_ref() {
+                Some(DeclaredLiteral::String(value)) => {
+                    Ok(EvalOutcome::ok(EvaluatedValue::String(value.clone()), None))
+                }
+                _ => Err(EvalStatus::Malformed),
+            },
+            DeclaredExpressionKind::BooleanLiteral => match expression.literal.as_ref() {
+                Some(DeclaredLiteral::Boolean(value)) => {
+                    Ok(EvalOutcome::ok(EvaluatedValue::Boolean(*value), None))
+                }
+                _ => Err(EvalStatus::Malformed),
+            },
             DeclaredExpressionKind::Null => Err(EvalStatus::Incomplete),
             DeclaredExpressionKind::FeatureReference | DeclaredExpressionKind::FeatureChain => {
                 let reference = expression
@@ -186,13 +198,11 @@ impl<'a> EvalEngine<'a> {
         };
         let value = outcome_quantity(self.evaluate_value(node_id, value)?)?;
         let unit = unit_reference(unit).ok_or(EvalStatus::Malformed)?;
-        if !self.units.has_symbol(&unit) {
-            return Err(EvalStatus::Unresolved);
-        }
-        Ok(EvalOutcome::from_quantity(Quantity {
-            value: value.value,
-            unit: Some(unit),
-        }))
+        // Typed unit metadata has not been published on the semantic graph yet. The default
+        // registry deliberately has no display-attribute fallback, so any otherwise valid
+        // unit-bearing literal is a capability boundary rather than an unknown reference.
+        let _ = (value, unit);
+        Err(EvalStatus::Unsupported)
     }
 
     fn evaluate_unary(
@@ -201,21 +211,24 @@ impl<'a> EvalEngine<'a> {
         expression: &DeclaredExpression,
     ) -> Result<EvalOutcome, EvalStatus> {
         let value = self.evaluate_single_child(node_id, expression)?;
-        match expression.operator.as_deref() {
-            Some("+") => Ok(value),
-            Some("-") => {
+        match expression.operator.as_ref() {
+            Some(DeclaredExpressionOperator::Unary(DeclaredUnaryOperator::Plus)) => Ok(value),
+            Some(DeclaredExpressionOperator::Unary(DeclaredUnaryOperator::Minus)) => {
                 let value = outcome_quantity(value)?;
                 Ok(EvalOutcome::from_quantity(Quantity {
                     value: -value.value,
                     unit: value.unit,
                 }))
             }
-            Some("!") | Some("not") => value
+            Some(DeclaredExpressionOperator::Unary(DeclaredUnaryOperator::Not)) => value
                 .value
-                .and_then(|value| value.as_bool())
-                .map(|value| EvalOutcome::ok(Value::Bool(!value), None))
+                .as_ref()
+                .and_then(EvaluatedValue::as_boolean)
+                .map(|value| EvalOutcome::ok(EvaluatedValue::Boolean(!value), None))
                 .ok_or(EvalStatus::TypeError),
-            _ => Err(EvalStatus::Unsupported),
+            Some(DeclaredExpressionOperator::Unary(_)) => Err(EvalStatus::Unsupported),
+            Some(_) => Err(EvalStatus::Malformed),
+            None => Err(EvalStatus::Malformed),
         }
     }
 
@@ -227,43 +240,55 @@ impl<'a> EvalEngine<'a> {
         let [left, right] = expression.children.as_slice() else {
             return Err(EvalStatus::Malformed);
         };
-        let operator = expression
-            .operator
-            .as_deref()
-            .ok_or(EvalStatus::Malformed)?;
-        if matches!(operator, "and" | "or" | "&&" | "||") {
+        let Some(DeclaredExpressionOperator::Binary(binary_operator)) =
+            expression.operator.as_ref()
+        else {
+            return Err(EvalStatus::Malformed);
+        };
+        if matches!(
+            binary_operator,
+            DeclaredBinaryOperator::And | DeclaredBinaryOperator::Or
+        ) {
             let left = bool_outcome(self.evaluate_value(node_id, left)?)?;
-            if matches!(operator, "and" | "&&") && !left {
-                return Ok(EvalOutcome::ok(Value::Bool(false), None));
+            if matches!(binary_operator, DeclaredBinaryOperator::And) && !left {
+                return Ok(EvalOutcome::ok(EvaluatedValue::Boolean(false), None));
             }
-            if matches!(operator, "or" | "||") && left {
-                return Ok(EvalOutcome::ok(Value::Bool(true), None));
+            if matches!(binary_operator, DeclaredBinaryOperator::Or) && left {
+                return Ok(EvalOutcome::ok(EvaluatedValue::Boolean(true), None));
             }
             return Ok(EvalOutcome::ok(
-                Value::Bool(bool_outcome(self.evaluate_value(node_id, right)?)?),
+                EvaluatedValue::Boolean(bool_outcome(self.evaluate_value(node_id, right)?)?),
                 None,
             ));
         }
         let left = self.evaluate_value(node_id, left)?;
         let right = self.evaluate_value(node_id, right)?;
-        match operator {
-            "+" | "-" | "*" | "/" => self.arithmetic(operator, left, right),
-            "<" | "<=" | ">" | ">=" | "==" | "!=" => self.comparison(operator, left, right),
+        match binary_operator {
+            DeclaredBinaryOperator::Add
+            | DeclaredBinaryOperator::Subtract
+            | DeclaredBinaryOperator::Multiply
+            | DeclaredBinaryOperator::Divide => self.arithmetic(binary_operator, left, right),
+            DeclaredBinaryOperator::Less
+            | DeclaredBinaryOperator::LessOrEqual
+            | DeclaredBinaryOperator::Greater
+            | DeclaredBinaryOperator::GreaterOrEqual
+            | DeclaredBinaryOperator::Equal
+            | DeclaredBinaryOperator::NotEqual => self.comparison(binary_operator, left, right),
             _ => Err(EvalStatus::Unsupported),
         }
     }
 
     fn arithmetic(
         &self,
-        operator: &str,
+        binary_operator: &DeclaredBinaryOperator,
         left: EvalOutcome,
         right: EvalOutcome,
     ) -> Result<EvalOutcome, EvalStatus> {
         let left = outcome_quantity(left)?;
         let right = outcome_quantity(right)?;
-        let value = match operator {
-            "+" => add_quantities(&self.units, left, right)?,
-            "-" => add_quantities(
+        let value = match binary_operator {
+            DeclaredBinaryOperator::Add => add_quantities(&self.units, left, right)?,
+            DeclaredBinaryOperator::Subtract => add_quantities(
                 &self.units,
                 left,
                 Quantity {
@@ -271,8 +296,8 @@ impl<'a> EvalEngine<'a> {
                     unit: right.unit,
                 },
             )?,
-            "*" | "/" => {
-                if operator == "/" && right.value == 0.0 {
+            DeclaredBinaryOperator::Multiply | DeclaredBinaryOperator::Divide => {
+                if matches!(binary_operator, DeclaredBinaryOperator::Divide) && right.value == 0.0 {
                     return Err(EvalStatus::DivByZero);
                 }
                 let (value, unit) = self
@@ -282,7 +307,7 @@ impl<'a> EvalEngine<'a> {
                         left.unit.as_deref(),
                         right.value,
                         right.unit.as_deref(),
-                        operator == "/",
+                        matches!(binary_operator, DeclaredBinaryOperator::Divide),
                     )
                     .map_err(unit_error)?;
                 Quantity { value, unit }
@@ -294,14 +319,25 @@ impl<'a> EvalEngine<'a> {
 
     fn comparison(
         &self,
-        operator: &str,
+        binary_operator: &DeclaredBinaryOperator,
         left: EvalOutcome,
         right: EvalOutcome,
     ) -> Result<EvalOutcome, EvalStatus> {
-        if matches!(operator, "==" | "!=") && left.unit.is_none() && right.unit.is_none() {
+        if matches!(
+            binary_operator,
+            DeclaredBinaryOperator::Equal | DeclaredBinaryOperator::NotEqual
+        ) && left.unit.is_none()
+            && right.unit.is_none()
+        {
             let equal = left.value == right.value;
             return Ok(EvalOutcome::ok(
-                Value::Bool(if operator == "==" { equal } else { !equal }),
+                EvaluatedValue::Boolean(
+                    if matches!(binary_operator, DeclaredBinaryOperator::Equal) {
+                        equal
+                    } else {
+                        !equal
+                    },
+                ),
                 None,
             ));
         }
@@ -315,16 +351,16 @@ impl<'a> EvalEngine<'a> {
                 .map_err(unit_error)?,
             _ => return Err(EvalStatus::TypeError),
         };
-        let value = match operator {
-            "<" => left.value < right,
-            "<=" => left.value <= right,
-            ">" => left.value > right,
-            ">=" => left.value >= right,
-            "==" => (left.value - right).abs() < 1e-9,
-            "!=" => (left.value - right).abs() >= 1e-9,
+        let value = match binary_operator {
+            DeclaredBinaryOperator::Less => left.value < right,
+            DeclaredBinaryOperator::LessOrEqual => left.value <= right,
+            DeclaredBinaryOperator::Greater => left.value > right,
+            DeclaredBinaryOperator::GreaterOrEqual => left.value >= right,
+            DeclaredBinaryOperator::Equal => (left.value - right).abs() < 1e-9,
+            DeclaredBinaryOperator::NotEqual => (left.value - right).abs() >= 1e-9,
             _ => return Err(EvalStatus::Unsupported),
         };
-        Ok(EvalOutcome::ok(Value::Bool(value), None))
+        Ok(EvalOutcome::ok(EvaluatedValue::Boolean(value), None))
     }
 
     fn evaluate_invocation(
@@ -454,7 +490,7 @@ impl<'a> EvalEngine<'a> {
                 &invocation.arguments[index]
             };
             bindings.insert(
-                parameter.clone(),
+                parameter.to_string(),
                 BoundValue(outcome_quantity(
                     self.evaluate_value(context_id, &argument.value)?,
                 )?),
@@ -520,7 +556,7 @@ impl<'a> EvalEngine<'a> {
                         ResolveResult::Unresolved => return Err(EvalStatus::Unresolved),
                     }
                 } else {
-                    choose_candidate(self.graph, candidates)?
+                    resolve_unique(candidates)?
                 };
             }
             return Ok(current);
@@ -529,7 +565,9 @@ impl<'a> EvalEngine<'a> {
             .graph
             .get_node(current_id)
             .ok_or(EvalStatus::Unresolved)?;
-        let mut candidates = Vec::new();
+        if reference.contains("::") {
+            return resolve_unique(self.lookup_candidates(reference));
+        }
         let mut scopes = scope_prefixes(self.graph, current);
         scopes.insert(0, current.id.qualified_name.clone());
         scopes.extend(typed_case_definition_scope_prefixes(self.graph, current));
@@ -537,23 +575,20 @@ impl<'a> EvalEngine<'a> {
             self.graph, current,
         ));
         for scope in scopes {
-            candidates.extend(self.lookup_candidates(&format!("{scope}::{reference}")));
-        }
-        if candidates.is_empty() {
-            if reference.contains("::") {
-                candidates.extend(self.lookup_candidates(reference));
-            } else {
-                candidates.extend(
-                    self.graph
-                        .nodes_for_uri(&current.id.uri)
-                        .into_iter()
-                        .filter(|node| node.name == reference)
-                        .map(|node| node.id.clone()),
-                );
-                candidates.extend(self.lookup_candidates(reference));
+            let candidates = dedupe(self.lookup_candidates(&format!("{scope}::{reference}")));
+            if !candidates.is_empty() {
+                return resolve_unique(candidates);
             }
         }
-        choose_candidate(self.graph, dedupe(candidates))
+        let mut fallback = self
+            .graph
+            .nodes_for_uri(&current.id.uri)
+            .into_iter()
+            .filter(|node| node.name == reference)
+            .map(|node| node.id.clone())
+            .collect::<Vec<_>>();
+        fallback.extend(self.lookup_candidates(reference));
+        resolve_unique(dedupe(fallback))
     }
 
     fn lookup_candidates(&self, qualified: &str) -> Vec<NodeId> {
@@ -575,13 +610,14 @@ fn child_expression(node: &SemanticNode) -> Option<DeclaredExpression> {
         .or_else(|| node.declared_facts.own_expression.clone())
 }
 
-fn real_literal(value: &Value) -> Option<f64> {
-    value.as_f64().or_else(|| value.as_str()?.parse().ok())
+fn real_literal(value: &str) -> Option<f64> {
+    value.parse().ok().filter(|value: &f64| value.is_finite())
 }
 fn bool_outcome(outcome: EvalOutcome) -> Result<bool, EvalStatus> {
     outcome_result(outcome)?
         .value
-        .and_then(|value| value.as_bool())
+        .as_ref()
+        .and_then(EvaluatedValue::as_boolean)
         .ok_or(EvalStatus::TypeError)
 }
 fn outcome_result(outcome: EvalOutcome) -> Result<EvalOutcome, EvalStatus> {
@@ -597,7 +633,7 @@ fn outcome_quantity(outcome: EvalOutcome) -> Result<Quantity, EvalStatus> {
         value: outcome
             .value
             .as_ref()
-            .and_then(json_value_to_f64)
+            .and_then(EvaluatedValue::as_f64)
             .ok_or(EvalStatus::TypeError)?,
         unit: outcome.unit,
     })
@@ -668,40 +704,12 @@ fn typed_requirement_definition_id(graph: &SemanticGraph, usage: &SemanticNode) 
         .flatten()
 }
 
-fn choose_candidate(
-    graph: &SemanticGraph,
-    mut candidates: Vec<NodeId>,
-) -> Result<NodeId, EvalStatus> {
-    if candidates.is_empty() {
-        return Err(EvalStatus::Unresolved);
+fn resolve_unique(candidates: Vec<NodeId>) -> Result<NodeId, EvalStatus> {
+    match candidates.as_slice() {
+        [] => Err(EvalStatus::Unresolved),
+        [candidate] => Ok(candidate.clone()),
+        _ => Err(EvalStatus::Ambiguous),
     }
-    candidates.sort_by(|left, right| {
-        candidate_score(graph, right)
-            .cmp(&candidate_score(graph, left))
-            .then_with(|| left.qualified_name.len().cmp(&right.qualified_name.len()))
-    });
-    let best = candidates[0].clone();
-    let score = candidate_score(graph, &best);
-    let length = best.qualified_name.len();
-    if candidates.iter().skip(1).any(|candidate| {
-        candidate_score(graph, candidate) == score && candidate.qualified_name.len() == length
-    }) {
-        Err(EvalStatus::Ambiguous)
-    } else {
-        Ok(best)
-    }
-}
-
-fn candidate_score(graph: &SemanticGraph, candidate: &NodeId) -> u8 {
-    graph
-        .get_node(candidate)
-        .map(|node| {
-            u8::from(
-                node.declared_facts.feature_value.is_some()
-                    || node.declared_facts.own_expression.is_some(),
-            )
-        })
-        .unwrap_or_default()
 }
 fn dedupe(ids: Vec<NodeId>) -> Vec<NodeId> {
     let mut seen = HashSet::new();

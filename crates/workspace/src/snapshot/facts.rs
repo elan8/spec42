@@ -6,8 +6,8 @@ use sha2::{Digest, Sha256};
 
 use sysml_diagnostics::{DiagnosticSeverity, SemanticDiagnostic};
 use sysml_model::{
-    typed_by_reference, EvaluationStatus, ExpressionEvaluationQuery, SemanticGraph, SysmlDocument,
-    UnitRegistry,
+    typed_by_reference, DeclaredLiteral, EvaluationStatus, ExpressionEvaluationQuery,
+    SemanticGraph, SysmlDocument, UnitRegistry,
 };
 use url::Url;
 
@@ -718,9 +718,12 @@ fn project_expression(
                     semantic_id: id,
                     kind: node.kind.as_str().to_owned(),
                     range: node.range,
-                    literal: node.literal.clone(),
+                    literal: node.literal.as_ref().map(project_declared_literal),
                     reference: node.reference.clone(),
-                    operator: node.operator.clone(),
+                    operator: node
+                        .operator
+                        .as_ref()
+                        .map(|operator| operator.as_str().to_owned()),
                     operand_ids,
                     arguments: argument_ids
                         .into_iter()
@@ -732,6 +735,18 @@ fn project_expression(
     }
 
     root_id
+}
+
+/// JSON is a workspace projection concern. The semantic graph keeps declared literals closed and
+/// typed; this adapter preserves the existing host expression protocol without leaking JSON back
+/// into the evaluator.
+fn project_declared_literal(literal: &DeclaredLiteral) -> serde_json::Value {
+    match literal {
+        DeclaredLiteral::Integer(value) => serde_json::Value::Number((*value).into()),
+        DeclaredLiteral::Real(value) => serde_json::Value::String(value.clone()),
+        DeclaredLiteral::String(value) => serde_json::Value::String(value.clone()),
+        DeclaredLiteral::Boolean(value) => serde_json::Value::Bool(*value),
+    }
 }
 
 fn derived_fact_id(kind: &str, owner_id: &str, path: &str) -> String {
@@ -2363,14 +2378,16 @@ package Demo {
     #[test]
     fn project_expression_handles_deeply_nested_declared_expression_without_overflowing_the_stack()
     {
-        use sysml_model::{DeclaredExpression, DeclaredExpressionKind, TextPosition, TextRange};
+        use sysml_model::{
+            DeclaredExpression, DeclaredExpressionKind, DeclaredLiteral, TextPosition, TextRange,
+        };
 
         const DEPTH: usize = 200_000;
         let range = TextRange::new(TextPosition::new(0, 0), TextPosition::new(0, 1));
         let mut tree = DeclaredExpression {
             kind: DeclaredExpressionKind::IntegerLiteral,
             range,
-            literal: Some(serde_json::json!(1)),
+            literal: Some(DeclaredLiteral::Integer(1)),
             reference: None,
             operator: None,
             children: Vec::new(),

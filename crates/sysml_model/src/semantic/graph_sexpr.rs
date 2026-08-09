@@ -180,6 +180,7 @@ fn render_node(
     }
     render_declared_facts(node, output);
     render_effective_facts(graph, identities, node, output);
+    render_evaluation_facts(graph, node, output);
 
     let mut children = graph.children_of(node);
     children.sort_by_key(|child| (node_sort_key(child), identities.node(child)));
@@ -345,6 +346,52 @@ fn render_effective_facts(
             identities.node_id(&binding.expression_result.owner_id),
             expression_result_role(binding.expression_result.role)
         );
+    }
+    output.push(')');
+}
+
+fn render_evaluation_facts(graph: &SemanticGraph, node: &SemanticNode, output: &mut String) {
+    let Some(facts) = graph.evaluation_facts_for(node) else {
+        return;
+    };
+    output.push_str(" (evaluation");
+    if let Some(expression) = &facts.expression {
+        let _ = write!(
+            output,
+            " (expression (status {})",
+            atom(expression.status.as_str())
+        );
+        if let Some(value) = &expression.value {
+            let _ = write!(output, " (value {})", atom(&render_evaluated_value(value)));
+        }
+        if let Some(unit) = &expression.unit {
+            let _ = write!(output, " (unit {})", atom(unit));
+        }
+        if let Some(error) = &expression.error {
+            let _ = write!(output, " (error {})", atom(error));
+        }
+        output.push(')');
+    }
+    if let Some(analysis) = &facts.analysis {
+        let _ = write!(
+            output,
+            " (analysis (status {})",
+            atom(analysis.expression.status.as_str())
+        );
+        if let Some(passed) = analysis.passed {
+            let _ = write!(output, " (passed {passed})");
+        }
+        if let Some(value) = &analysis.computed_value {
+            let _ = write!(
+                output,
+                " (computed-value {})",
+                atom(&render_evaluated_value(value))
+            );
+        }
+        if let Some(unit) = &analysis.computed_unit {
+            let _ = write!(output, " (computed-unit {})", atom(unit));
+        }
+        output.push(')');
     }
     output.push(')');
 }
@@ -534,6 +581,17 @@ fn render_pending_relationships(
     render_block("pending-relationships", &pending, output);
 }
 
+fn render_evaluated_value(value: &crate::semantic::model::EvaluatedValue) -> String {
+    use crate::semantic::model::EvaluatedValue;
+
+    match value {
+        EvaluatedValue::Integer(value) => value.to_string(),
+        EvaluatedValue::Real(value) => value.to_string(),
+        EvaluatedValue::Boolean(value) => value.to_string(),
+        EvaluatedValue::String(value) => serde_json::to_string(value).expect("strings serialize"),
+    }
+}
+
 fn render_pending_expression_relationships(
     identities: &CanonicalIdentities,
     pending: &[PendingExpressionRelationship],
@@ -585,13 +643,13 @@ fn render_expression(expression: &DeclaredExpression, output: &mut String) {
         atom(expression.kind.as_str())
     );
     if let Some(literal) = &expression.literal {
-        let _ = write!(output, " (literal {})", canonical_json(literal));
+        let _ = write!(output, " (literal {})", render_declared_literal(literal));
     }
     if let Some(reference) = &expression.reference {
         let _ = write!(output, " (reference {})", atom(reference));
     }
     if let Some(operator) = &expression.operator {
-        let _ = write!(output, " (operator {})", atom(operator));
+        let _ = write!(output, " (operator {})", atom(operator.as_str()));
     }
     if !expression.children.is_empty() {
         output.push_str(" (children");
@@ -617,6 +675,16 @@ fn render_expression(expression: &DeclaredExpression, output: &mut String) {
     output.push(')');
 }
 
+fn render_declared_literal(literal: &crate::semantic::model::DeclaredLiteral) -> String {
+    use crate::semantic::model::DeclaredLiteral;
+
+    match literal {
+        DeclaredLiteral::Integer(value) => value.to_string(),
+        DeclaredLiteral::Real(value) | DeclaredLiteral::String(value) => atom(value),
+        DeclaredLiteral::Boolean(value) => value.to_string(),
+    }
+}
+
 fn render_bound(bound: DeclaredMultiplicityBound) -> String {
     match bound {
         DeclaredMultiplicityBound::Unbounded => "unbounded".to_string(),
@@ -638,36 +706,6 @@ fn feature_value_kind(kind: DeclaredFeatureValueKind) -> &'static str {
 fn expression_result_role(role: ExpressionResultRole) -> &'static str {
     match role {
         ExpressionResultRole::FeatureValue => "feature-value",
-    }
-}
-
-fn canonical_json(value: &serde_json::Value) -> String {
-    match value {
-        serde_json::Value::Null => "null".to_string(),
-        serde_json::Value::Bool(value) => value.to_string(),
-        serde_json::Value::Number(value) => value.to_string(),
-        serde_json::Value::String(value) => atom(value),
-        serde_json::Value::Array(values) => {
-            let values = values
-                .iter()
-                .map(canonical_json)
-                .collect::<Vec<_>>()
-                .join(" ");
-            if values.is_empty() {
-                "(array)".to_string()
-            } else {
-                format!("(array {values})")
-            }
-        }
-        serde_json::Value::Object(values) => {
-            let mut entries = values.iter().collect::<Vec<_>>();
-            entries.sort_by_key(|(key, _)| *key);
-            let values = entries
-                .into_iter()
-                .map(|(key, value)| format!(" ({} {})", atom(key), canonical_json(value)))
-                .collect::<String>();
-            format!("(object{values})")
-        }
     }
 }
 

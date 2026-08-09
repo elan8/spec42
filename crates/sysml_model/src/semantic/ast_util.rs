@@ -4,10 +4,12 @@ use std::collections::HashMap;
 
 use crate::semantic::expression_fold::{fold_expression, ExpressionAlgebra, FoldedChild};
 use crate::semantic::model::{
-    DeclaredExpression, DeclaredExpressionArgument, DeclaredExpressionKind,
+    DeclaredBinaryOperator, DeclaredCollectionOperator, DeclaredExpression,
+    DeclaredExpressionArgument, DeclaredExpressionKind, DeclaredExpressionOperator,
     DeclaredFeatureProperties, DeclaredFeatureValue, DeclaredFeatureValueKind, DeclaredImportFacts,
-    DeclaredImportTarget, DeclaredMembershipFacts, DeclaredMembershipKind, DeclaredMultiplicity,
-    DeclaredRelationshipTarget, ImportOrigin, ImportShape, VisibilityKind,
+    DeclaredImportTarget, DeclaredLiteral, DeclaredMembershipFacts, DeclaredMembershipKind,
+    DeclaredMultiplicity, DeclaredRelationshipTarget, DeclaredTypeCheckOperator,
+    DeclaredUnaryOperator, ImportOrigin, ImportShape, VisibilityKind,
 };
 use crate::semantic::text_span::{TextPosition, TextRange};
 use sysml_v2_parser::ast::{
@@ -467,6 +469,93 @@ fn split_children(
 
 struct DeclaredExpressionAlgebra;
 
+fn declared_unary_operator(
+    operator: &sysml_v2_parser::ast::UnaryOperator,
+) -> DeclaredExpressionOperator {
+    use sysml_v2_parser::ast::UnaryOperator;
+
+    DeclaredExpressionOperator::Unary(match operator {
+        UnaryOperator::Plus => DeclaredUnaryOperator::Plus,
+        UnaryOperator::Minus => DeclaredUnaryOperator::Minus,
+        UnaryOperator::Not => DeclaredUnaryOperator::Not,
+        UnaryOperator::BitNot => DeclaredUnaryOperator::BitNot,
+        UnaryOperator::Other(value) => DeclaredUnaryOperator::Other(value.clone()),
+    })
+}
+
+fn declared_binary_operator(
+    operator: &sysml_v2_parser::ast::BinaryOperator,
+) -> DeclaredExpressionOperator {
+    use sysml_v2_parser::ast::BinaryOperator;
+
+    DeclaredExpressionOperator::Binary(match operator {
+        BinaryOperator::Eq => DeclaredBinaryOperator::Equal,
+        BinaryOperator::Ne => DeclaredBinaryOperator::NotEqual,
+        BinaryOperator::StrictEq => DeclaredBinaryOperator::StrictEqual,
+        BinaryOperator::StrictNe => DeclaredBinaryOperator::StrictNotEqual,
+        BinaryOperator::Lt => DeclaredBinaryOperator::Less,
+        BinaryOperator::Le => DeclaredBinaryOperator::LessOrEqual,
+        BinaryOperator::Gt => DeclaredBinaryOperator::Greater,
+        BinaryOperator::Ge => DeclaredBinaryOperator::GreaterOrEqual,
+        BinaryOperator::Add => DeclaredBinaryOperator::Add,
+        BinaryOperator::Sub => DeclaredBinaryOperator::Subtract,
+        BinaryOperator::Mul => DeclaredBinaryOperator::Multiply,
+        BinaryOperator::Div => DeclaredBinaryOperator::Divide,
+        BinaryOperator::Mod => DeclaredBinaryOperator::Modulo,
+        BinaryOperator::Exp => DeclaredBinaryOperator::Exponent,
+        BinaryOperator::Pow => DeclaredBinaryOperator::Power,
+        BinaryOperator::And => DeclaredBinaryOperator::And,
+        BinaryOperator::Or => DeclaredBinaryOperator::Or,
+        BinaryOperator::Xor => DeclaredBinaryOperator::Xor,
+        BinaryOperator::Implies => DeclaredBinaryOperator::Implies,
+        BinaryOperator::Range => DeclaredBinaryOperator::Range,
+        BinaryOperator::BitOr => DeclaredBinaryOperator::BitOr,
+        BinaryOperator::BitAnd => DeclaredBinaryOperator::BitAnd,
+        BinaryOperator::Other(value) => DeclaredBinaryOperator::Other(value.clone()),
+    })
+}
+
+fn declared_collection_operator(
+    operator: &sysml_v2_parser::ast::CollectionOperator,
+) -> DeclaredExpressionOperator {
+    use sysml_v2_parser::ast::CollectionOperator;
+
+    DeclaredExpressionOperator::Collection(match operator {
+        CollectionOperator::Collect => DeclaredCollectionOperator::Collect,
+        CollectionOperator::Select => DeclaredCollectionOperator::Select,
+        CollectionOperator::SelectOne => DeclaredCollectionOperator::SelectOne,
+        CollectionOperator::Size => DeclaredCollectionOperator::Size,
+        CollectionOperator::IsEmpty => DeclaredCollectionOperator::IsEmpty,
+        CollectionOperator::NotEmpty => DeclaredCollectionOperator::NotEmpty,
+        CollectionOperator::Includes => DeclaredCollectionOperator::Includes,
+        CollectionOperator::Including => DeclaredCollectionOperator::Including,
+        CollectionOperator::Excludes => DeclaredCollectionOperator::Excludes,
+        CollectionOperator::Excluding => DeclaredCollectionOperator::Excluding,
+        CollectionOperator::ExcludingAt => DeclaredCollectionOperator::ExcludingAt,
+        CollectionOperator::ExcludingOnce => DeclaredCollectionOperator::ExcludingOnce,
+        CollectionOperator::Equals => DeclaredCollectionOperator::Equals,
+        CollectionOperator::ForAll => DeclaredCollectionOperator::ForAll,
+        CollectionOperator::Exists => DeclaredCollectionOperator::Exists,
+        CollectionOperator::Sum => DeclaredCollectionOperator::Sum,
+        CollectionOperator::Sort => DeclaredCollectionOperator::Sort,
+        CollectionOperator::Filter => DeclaredCollectionOperator::Filter,
+        CollectionOperator::Reduce => DeclaredCollectionOperator::Reduce,
+        CollectionOperator::Other(value) => DeclaredCollectionOperator::Other(value.clone()),
+    })
+}
+
+fn declared_type_check_operator(
+    kind: &sysml_v2_parser::ast::TypeCheckKind,
+) -> DeclaredExpressionOperator {
+    use sysml_v2_parser::ast::TypeCheckKind;
+
+    DeclaredExpressionOperator::TypeCheck(match kind {
+        TypeCheckKind::Istype => DeclaredTypeCheckOperator::IsType,
+        TypeCheckKind::Hastype => DeclaredTypeCheckOperator::HasType,
+        TypeCheckKind::As => DeclaredTypeCheckOperator::As,
+    })
+}
+
 impl ExpressionAlgebra for DeclaredExpressionAlgebra {
     type Output = DeclaredExpression;
 
@@ -493,19 +582,19 @@ impl ExpressionAlgebra for DeclaredExpressionAlgebra {
         match &node.value {
             Expr::LiteralInteger(value) => {
                 expression.kind = DeclaredExpressionKind::IntegerLiteral;
-                expression.literal = Some(serde_json::json!(value));
+                expression.literal = Some(DeclaredLiteral::Integer(*value));
             }
             Expr::LiteralReal(value) => {
                 expression.kind = DeclaredExpressionKind::RealLiteral;
-                expression.literal = Some(serde_json::json!(value));
+                expression.literal = Some(DeclaredLiteral::Real(value.clone()));
             }
             Expr::LiteralString(value) => {
                 expression.kind = DeclaredExpressionKind::StringLiteral;
-                expression.literal = Some(serde_json::json!(value));
+                expression.literal = Some(DeclaredLiteral::String(value.clone()));
             }
             Expr::LiteralBoolean(value) => {
                 expression.kind = DeclaredExpressionKind::BooleanLiteral;
-                expression.literal = Some(serde_json::json!(value));
+                expression.literal = Some(DeclaredLiteral::Boolean(*value));
             }
             Expr::Null => expression.kind = DeclaredExpressionKind::Null,
             Expr::FeatureRef(value) => {
@@ -549,12 +638,12 @@ impl ExpressionAlgebra for DeclaredExpressionAlgebra {
             }
             Expr::UnaryOp { op, .. } => {
                 expression.kind = DeclaredExpressionKind::Unary;
-                expression.operator = Some(op.as_str().into());
+                expression.operator = Some(declared_unary_operator(op));
                 expression.children = subs;
             }
             Expr::BinaryOp { op, .. } => {
                 expression.kind = DeclaredExpressionKind::Binary;
-                expression.operator = Some(op.as_str().into());
+                expression.operator = Some(declared_binary_operator(op));
                 expression.children = subs;
             }
             Expr::Index { .. } => {
@@ -581,7 +670,7 @@ impl ExpressionAlgebra for DeclaredExpressionAlgebra {
             }
             Expr::CollectionOp { op, .. } => {
                 expression.kind = DeclaredExpressionKind::CollectionOperation;
-                expression.operator = Some(op.as_str().into());
+                expression.operator = Some(declared_collection_operator(op));
                 expression.children = subs;
                 expression.arguments = arguments;
             }
@@ -594,14 +683,7 @@ impl ExpressionAlgebra for DeclaredExpressionAlgebra {
                 kind, type_name, ..
             } => {
                 expression.kind = DeclaredExpressionKind::TypeCheck;
-                expression.operator = Some(
-                    match kind {
-                        sysml_v2_parser::ast::TypeCheckKind::Istype => "istype",
-                        sysml_v2_parser::ast::TypeCheckKind::Hastype => "hastype",
-                        sysml_v2_parser::ast::TypeCheckKind::As => "as",
-                    }
-                    .into(),
-                );
+                expression.operator = Some(declared_type_check_operator(kind));
                 expression.reference = Some(type_name.clone());
                 expression.children = subs;
             }
@@ -779,5 +861,45 @@ mod tests {
             }
         }
         assert_eq!(depth, DEPTH);
+    }
+
+    #[test]
+    fn declared_expression_maps_parser_literals_and_operators_to_closed_facts() {
+        use sysml_v2_parser::ast::{BinaryOperator, Node, Span, UnaryOperator};
+
+        let literal = Node::new(Span::dummy(), Expression::LiteralReal("12.5".to_string()));
+        assert!(matches!(
+            &declared_expression(&literal).literal,
+            Some(DeclaredLiteral::Real(value)) if value == "12.5"
+        ));
+
+        let unary = Node::new(
+            Span::dummy(),
+            Expression::UnaryOp {
+                op: UnaryOperator::Not,
+                operand: Box::new(Node::new(Span::dummy(), Expression::LiteralBoolean(true))),
+            },
+        );
+        assert!(matches!(
+            declared_expression(&unary).operator,
+            Some(DeclaredExpressionOperator::Unary(
+                DeclaredUnaryOperator::Not
+            ))
+        ));
+
+        let binary = Node::new(
+            Span::dummy(),
+            Expression::BinaryOp {
+                op: BinaryOperator::And,
+                left: Box::new(Node::new(Span::dummy(), Expression::LiteralBoolean(true))),
+                right: Box::new(Node::new(Span::dummy(), Expression::LiteralBoolean(false))),
+            },
+        );
+        assert!(matches!(
+            declared_expression(&binary).operator,
+            Some(DeclaredExpressionOperator::Binary(
+                DeclaredBinaryOperator::And
+            ))
+        ));
     }
 }

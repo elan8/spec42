@@ -1,12 +1,13 @@
 use std::collections::{HashMap, HashSet};
 
-use serde_json::Value;
-
 use crate::semantic::analysis_typing::{
     typed_case_definition_scope_prefixes, typed_requirement_definition_scope_prefixes,
 };
 use crate::semantic::graph::SemanticGraph;
-use crate::semantic::model::{ElementKind, NodeId, SemanticNode};
+use crate::semantic::model::{
+    AnalysisEvaluation, ElementKind, EvaluatedValue, EvaluationPublicationState,
+    NodeEvaluationFacts, NodeId, SemanticNode,
+};
 use crate::semantic::reference_resolution::{resolve_member_via_type, ResolveResult};
 
 mod units;
@@ -21,20 +22,6 @@ use outcome::*;
 
 #[derive(Debug, Clone)]
 pub(crate) struct BoundValue(pub(crate) Quantity);
-
-fn json_value_to_f64(value: &Value) -> Option<f64> {
-    value.as_f64().filter(|value| value.is_finite())
-}
-
-fn number_to_json(value: f64) -> Value {
-    if value.fract() == 0.0 {
-        Value::Number(serde_json::Number::from(value as i64))
-    } else {
-        serde_json::Number::from_f64(value)
-            .map(Value::Number)
-            .unwrap_or(Value::Null)
-    }
-}
 
 fn unit_error(error: UnitError) -> EvalStatus {
     match error {
@@ -77,12 +64,21 @@ pub fn evaluate_expressions(graph: &mut SemanticGraph) {
 }
 
 pub fn evaluate_expressions_with_unit_catalogs(graph: &mut SemanticGraph) {
-    let units = UnitRegistry::from_graph(graph);
+    // Unit metadata has not yet been published as typed semantic facts. Do not let evaluation
+    // reinterpret display attributes through the graph-derived unit registry; unit-bearing expressions
+    // stay explicitly unsupported until that owner exists.
+    let units = UnitRegistry::default();
     let outcomes = {
         let mut engine = EvalEngine::new(graph, units.clone());
-        graph
-            .node_index_by_id
-            .keys()
+        let mut node_ids = graph.node_index_by_id.keys().cloned().collect::<Vec<_>>();
+        node_ids.sort_by(|left, right| {
+            left.uri
+                .as_str()
+                .cmp(right.uri.as_str())
+                .then_with(|| left.qualified_name.cmp(&right.qualified_name))
+        });
+        node_ids
+            .iter()
             .filter_map(|node_id| {
                 if engine.node_expression(node_id).is_some() {
                     Some((node_id.clone(), engine.evaluate_node(node_id)))
@@ -92,32 +88,25 @@ pub fn evaluate_expressions_with_unit_catalogs(graph: &mut SemanticGraph) {
             })
             .collect::<Vec<(NodeId, EvalOutcome)>>()
     };
-    for (node_id, outcome) in outcomes {
-        let Some(node) = graph.get_node_mut(&node_id) else {
-            continue;
-        };
-        node.attributes.remove(EVALUATED_VALUE_KEY);
-        node.attributes.remove(EVALUATED_UNIT_KEY);
-        node.attributes.remove(EVALUATION_STATUS_KEY);
-        node.attributes.remove(EVALUATION_ERROR_KEY);
-        node.attributes.insert(
-            EVALUATION_STATUS_KEY.to_string(),
-            Value::String(outcome.status.as_str().to_string()),
-        );
-        if let Some(value) = outcome.value {
-            node.attributes
-                .insert(EVALUATED_VALUE_KEY.to_string(), value);
-        }
-        if let Some(unit) = outcome.unit {
-            node.attributes
-                .insert(EVALUATED_UNIT_KEY.to_string(), Value::String(unit));
-        }
-        if let Some(error) = outcome.error {
-            node.attributes
-                .insert(EVALUATION_ERROR_KEY.to_string(), Value::String(error));
-        }
+    let mut published = outcomes
+        .into_iter()
+        .map(|(node_id, outcome)| {
+            (
+                node_id,
+                NodeEvaluationFacts {
+                    expression: Some(outcome.into_expression_evaluation()),
+                    analysis: None,
+                },
+            )
+        })
+        .collect::<HashMap<_, _>>();
+    for (node_id, analysis) in evaluate_analysis_results(graph, units) {
+        published.entry(node_id).or_default().analysis = Some(analysis);
     }
-    evaluate_analysis_results(graph, units);
+    // One atomic owner-scoped publication replaces all prior results. No result is inferred
+    // from, or written into, a presentation attribute map.
+    graph.evaluation_facts_by_node_id = published;
+    graph.evaluation_publication = EvaluationPublicationState::Complete;
 }
 
 /// Project analysis results from the same declared expression evaluator used for feature values.
@@ -125,10 +114,19 @@ pub fn evaluate_expressions_with_unit_catalogs(graph: &mut SemanticGraph) {
 /// A Boolean result is a constraint verdict. A numeric result is an evaluated analysis value, not
 /// a verdict: assigning pass/fail from its sign would invent a semantic rule that was never
 /// authored.
-fn evaluate_analysis_results(graph: &mut SemanticGraph, units: UnitRegistry) {
-    let outcomes = {
+fn evaluate_analysis_results(
+    graph: &SemanticGraph,
+    units: UnitRegistry,
+) -> Vec<(NodeId, AnalysisEvaluation)> {
+    {
         let mut engine = EvalEngine::new(graph, units);
-        let node_ids: Vec<NodeId> = graph.node_index_by_id.keys().cloned().collect();
+        let mut node_ids: Vec<NodeId> = graph.node_index_by_id.keys().cloned().collect();
+        node_ids.sort_by(|left, right| {
+            left.uri
+                .as_str()
+                .cmp(right.uri.as_str())
+                .then_with(|| left.qualified_name.cmp(&right.qualified_name))
+        });
         let mut outcomes = Vec::new();
         for node_id in node_ids {
             let Some(node) = graph.get_node(&node_id) else {
@@ -155,79 +153,41 @@ fn evaluate_analysis_results(graph: &mut SemanticGraph, units: UnitRegistry) {
                 continue;
             };
             let outcome = engine.evaluate_declared_expression(&node_id, &expression);
-            let (status, value, error, passed, computed) = if outcome.status == EvalStatus::Ok {
-                let passed = outcome.value.as_ref().and_then(Value::as_bool);
-                let status = match passed {
-                    Some(false) => "failed_constraint".to_string(),
-                    Some(true) | None => STATUS_OK.to_string(),
-                };
-                let computed = outcome
-                    .value
-                    .as_ref()
-                    .and_then(json_value_to_f64)
-                    .map(|value| Quantity {
-                        value,
-                        unit: outcome.unit.clone(),
-                    });
-                (status, outcome.value, None, passed, computed)
+            let (passed, computed) = if outcome.status == EvalStatus::Ok {
+                let passed = outcome.value.as_ref().and_then(EvaluatedValue::as_boolean);
+                let computed =
+                    outcome
+                        .value
+                        .as_ref()
+                        .and_then(EvaluatedValue::as_f64)
+                        .map(|value| Quantity {
+                            value,
+                            unit: outcome.unit.clone(),
+                        });
+                (passed, computed)
             } else {
-                (
-                    outcome.status.as_str().to_string(),
-                    None,
-                    outcome.error,
-                    None,
-                    None,
-                )
+                (None, None)
             };
-            outcomes.push((node_id, status, value, error, passed, computed));
+            outcomes.push((
+                node_id,
+                AnalysisEvaluation {
+                    expression: outcome.into_expression_evaluation(),
+                    passed,
+                    computed_value: computed.as_ref().map(|quantity| {
+                        if quantity.value.fract() == 0.0
+                            && quantity.value >= i64::MIN as f64
+                            && quantity.value <= i64::MAX as f64
+                        {
+                            EvaluatedValue::Integer(quantity.value as i64)
+                        } else {
+                            EvaluatedValue::Real(quantity.value)
+                        }
+                    }),
+                    computed_unit: computed.and_then(|quantity| quantity.unit),
+                },
+            ));
         }
         outcomes
-    };
-
-    for (node_id, status, value, error, passed, computed) in outcomes {
-        let Some(node_mut) = graph.get_node_mut(&node_id) else {
-            continue;
-        };
-        for key in [
-            ANALYSIS_EVAL_STATUS_KEY,
-            ANALYSIS_EVAL_VALUE_KEY,
-            ANALYSIS_EVAL_ERROR_KEY,
-            ANALYSIS_CONSTRAINT_PASSED_KEY,
-            ANALYSIS_COMPUTED_VALUE_KEY,
-            ANALYSIS_COMPUTED_UNIT_KEY,
-        ] {
-            node_mut.attributes.remove(key);
-        }
-        node_mut.attributes.insert(
-            ANALYSIS_EVAL_STATUS_KEY.to_string(),
-            Value::String(status.clone()),
-        );
-        if let Some(v) = value {
-            node_mut
-                .attributes
-                .insert(ANALYSIS_EVAL_VALUE_KEY.to_string(), v);
-        }
-        if let Some(err) = error {
-            node_mut
-                .attributes
-                .insert(ANALYSIS_EVAL_ERROR_KEY.to_string(), Value::String(err));
-        }
-        if let Some(p) = passed {
-            node_mut
-                .attributes
-                .insert(ANALYSIS_CONSTRAINT_PASSED_KEY.to_string(), Value::Bool(p));
-        }
-        if let Some(quantity) = computed {
-            node_mut.attributes.insert(
-                ANALYSIS_COMPUTED_VALUE_KEY.to_string(),
-                number_to_json(quantity.value),
-            );
-            if let Some(unit) = quantity.unit {
-                node_mut
-                    .attributes
-                    .insert(ANALYSIS_COMPUTED_UNIT_KEY.to_string(), Value::String(unit));
-            }
-        }
     }
 }
 

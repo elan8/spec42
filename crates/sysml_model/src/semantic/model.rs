@@ -1270,6 +1270,121 @@ pub struct EffectiveSemanticFacts {
     pub implied_feature_ownership: Option<ImpliedFeatureOwnership>,
 }
 
+/// The explicit outcome of evaluating a declared expression.
+///
+/// `NotRun` is represented only by [`EvaluationPublicationState`] and
+/// [`ExpressionEvaluationQuery`], never by a published per-expression result.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub enum EvaluationStatus {
+    Ok,
+    Unresolved,
+    Ambiguous,
+    Malformed,
+    Incomplete,
+    TypeError,
+    DivByZero,
+    Unsupported,
+    Cycle,
+}
+
+/// Whether the current graph revision has reached the evaluation publication barrier.
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub enum EvaluationPublicationState {
+    #[default]
+    NotRun,
+    Complete,
+}
+
+/// Exhaustive result of querying expression evaluation for one node.
+#[derive(Debug, Clone, Copy, PartialEq)]
+pub enum ExpressionEvaluationQuery<'a> {
+    NotRun,
+    NotApplicable,
+    Result(&'a ExpressionEvaluation),
+}
+
+impl EvaluationStatus {
+    pub const fn as_str(self) -> &'static str {
+        match self {
+            Self::Ok => "ok",
+            Self::Unresolved => "unresolved",
+            Self::Ambiguous => "ambiguous",
+            Self::Malformed => "malformed",
+            Self::Incomplete => "incomplete",
+            Self::TypeError => "type_error",
+            Self::DivByZero => "div_by_zero",
+            Self::Unsupported => "unsupported",
+            Self::Cycle => "cycle",
+        }
+    }
+}
+
+/// A value published by the evaluator.
+///
+/// This intentionally is not a JSON value: JSON is a transport concern, while the semantic graph
+/// owns the finite set of values which its typed expression evaluator can currently produce.
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase", tag = "kind", content = "value")]
+pub enum EvaluatedValue {
+    Integer(i64),
+    Real(f64),
+    Boolean(bool),
+    String(String),
+}
+
+impl EvaluatedValue {
+    pub const fn as_boolean(&self) -> Option<bool> {
+        match self {
+            Self::Boolean(value) => Some(*value),
+            Self::Integer(_) | Self::Real(_) | Self::String(_) => None,
+        }
+    }
+
+    pub fn as_f64(&self) -> Option<f64> {
+        match self {
+            Self::Integer(value) => Some(*value as f64),
+            Self::Real(value) if value.is_finite() => Some(*value),
+            Self::Real(_) | Self::Boolean(_) | Self::String(_) => None,
+        }
+    }
+}
+
+/// Canonical evaluation data for one expression. `value` is present only for [`EvaluationStatus::Ok`].
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct ExpressionEvaluation {
+    pub status: EvaluationStatus,
+    #[serde(default)]
+    pub value: Option<EvaluatedValue>,
+    #[serde(default)]
+    pub unit: Option<String>,
+    #[serde(default)]
+    pub error: Option<String>,
+}
+
+/// Canonical evaluation data for an analysis or constraint owner. A false `passed` is distinct
+/// from an evaluation failure; a numeric computed value is distinct from a Boolean verdict.
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct AnalysisEvaluation {
+    pub expression: ExpressionEvaluation,
+    #[serde(default)]
+    pub passed: Option<bool>,
+    #[serde(default)]
+    pub computed_value: Option<EvaluatedValue>,
+    #[serde(default)]
+    pub computed_unit: Option<String>,
+}
+
+/// Evaluation facts atomically published by the evaluation phase for one semantic node.
+#[derive(Debug, Clone, Default, PartialEq, Serialize, Deserialize)]
+pub struct NodeEvaluationFacts {
+    #[serde(default)]
+    pub expression: Option<ExpressionEvaluation>,
+    #[serde(default)]
+    pub analysis: Option<AnalysisEvaluation>,
+}
+
 /// An effective multiplicity with no source range because it was not authored.
 #[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, Eq)]
 pub struct ImpliedMultiplicity {
@@ -1417,17 +1532,21 @@ fn direct_multiplicity_bound(expression: Option<&DeclaredExpression>) -> Declare
         return expression
             .literal
             .as_ref()
-            .and_then(serde_json::Value::as_i64)
+            .and_then(DeclaredLiteral::as_integer)
             .map(DeclaredMultiplicityBound::Integer)
             .unwrap_or(DeclaredMultiplicityBound::NonIntegerLiteral);
     }
     if expression.kind == DeclaredExpressionKind::Unary && expression.children.len() == 1 {
         let child = direct_multiplicity_bound(expression.children.first());
-        return match (expression.operator.as_deref(), child) {
-            (Some("+"), DeclaredMultiplicityBound::Integer(value)) => {
-                DeclaredMultiplicityBound::Integer(value)
-            }
-            (Some("-"), DeclaredMultiplicityBound::Integer(value)) => value
+        return match (expression.operator.as_ref(), child) {
+            (
+                Some(DeclaredExpressionOperator::Unary(DeclaredUnaryOperator::Plus)),
+                DeclaredMultiplicityBound::Integer(value),
+            ) => DeclaredMultiplicityBound::Integer(value),
+            (
+                Some(DeclaredExpressionOperator::Unary(DeclaredUnaryOperator::Minus)),
+                DeclaredMultiplicityBound::Integer(value),
+            ) => value
                 .checked_neg()
                 .map(DeclaredMultiplicityBound::Integer)
                 .unwrap_or(DeclaredMultiplicityBound::NonIntegerLiteral),
@@ -1467,15 +1586,214 @@ pub struct DeclaredExpression {
     pub kind: DeclaredExpressionKind,
     pub range: TextRange,
     #[serde(default)]
-    pub literal: Option<serde_json::Value>,
+    pub literal: Option<DeclaredLiteral>,
     #[serde(default)]
     pub reference: Option<String>,
     #[serde(default)]
-    pub operator: Option<String>,
+    pub operator: Option<DeclaredExpressionOperator>,
     #[serde(default)]
     pub children: Vec<DeclaredExpression>,
     #[serde(default)]
     pub arguments: Vec<DeclaredExpressionArgument>,
+}
+
+/// Parser-authored literal retained without admitting an unbounded transport value into the
+/// semantic graph. Real text stays lexical here; evaluation performs the finite numeric parse.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase", tag = "kind", content = "value")]
+pub enum DeclaredLiteral {
+    Integer(i64),
+    Real(String),
+    String(String),
+    Boolean(bool),
+}
+
+impl DeclaredLiteral {
+    pub const fn as_integer(&self) -> Option<i64> {
+        match self {
+            Self::Integer(value) => Some(*value),
+            Self::Real(_) | Self::String(_) | Self::Boolean(_) => None,
+        }
+    }
+
+    pub const fn as_boolean(&self) -> Option<bool> {
+        match self {
+            Self::Boolean(value) => Some(*value),
+            Self::Integer(_) | Self::Real(_) | Self::String(_) => None,
+        }
+    }
+}
+
+/// Normalized parser operator. Its family is explicit so an operator for one expression shape
+/// cannot be accepted accidentally by another.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase", tag = "family", content = "operator")]
+pub enum DeclaredExpressionOperator {
+    Unary(DeclaredUnaryOperator),
+    Binary(DeclaredBinaryOperator),
+    Collection(DeclaredCollectionOperator),
+    TypeCheck(DeclaredTypeCheckOperator),
+}
+
+impl DeclaredExpressionOperator {
+    pub fn as_str(&self) -> &str {
+        match self {
+            Self::Unary(operator) => operator.as_str(),
+            Self::Binary(operator) => operator.as_str(),
+            Self::Collection(operator) => operator.as_str(),
+            Self::TypeCheck(operator) => operator.as_str(),
+        }
+    }
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub enum DeclaredUnaryOperator {
+    Plus,
+    Minus,
+    Not,
+    BitNot,
+    Other(String),
+}
+
+impl DeclaredUnaryOperator {
+    pub fn as_str(&self) -> &str {
+        match self {
+            Self::Plus => "+",
+            Self::Minus => "-",
+            Self::Not => "not",
+            Self::BitNot => "~",
+            Self::Other(value) => value,
+        }
+    }
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub enum DeclaredBinaryOperator {
+    Equal,
+    NotEqual,
+    StrictEqual,
+    StrictNotEqual,
+    Less,
+    LessOrEqual,
+    Greater,
+    GreaterOrEqual,
+    Add,
+    Subtract,
+    Multiply,
+    Divide,
+    Modulo,
+    Exponent,
+    Power,
+    And,
+    Or,
+    Xor,
+    Implies,
+    Range,
+    BitOr,
+    BitAnd,
+    Other(String),
+}
+
+impl DeclaredBinaryOperator {
+    pub fn as_str(&self) -> &str {
+        match self {
+            Self::Equal => "==",
+            Self::NotEqual => "!=",
+            Self::StrictEqual => "===",
+            Self::StrictNotEqual => "!==",
+            Self::Less => "<",
+            Self::LessOrEqual => "<=",
+            Self::Greater => ">",
+            Self::GreaterOrEqual => ">=",
+            Self::Add => "+",
+            Self::Subtract => "-",
+            Self::Multiply => "*",
+            Self::Divide => "/",
+            Self::Modulo => "%",
+            Self::Exponent => "**",
+            Self::Power => "^",
+            Self::And => "&&",
+            Self::Or => "||",
+            Self::Xor => "xor",
+            Self::Implies => "implies",
+            Self::Range => "..",
+            Self::BitOr => "|",
+            Self::BitAnd => "&",
+            Self::Other(value) => value,
+        }
+    }
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub enum DeclaredCollectionOperator {
+    Collect,
+    Select,
+    SelectOne,
+    Size,
+    IsEmpty,
+    NotEmpty,
+    Includes,
+    Including,
+    Excludes,
+    Excluding,
+    ExcludingAt,
+    ExcludingOnce,
+    Equals,
+    ForAll,
+    Exists,
+    Sum,
+    Sort,
+    Filter,
+    Reduce,
+    Other(String),
+}
+
+impl DeclaredCollectionOperator {
+    pub fn as_str(&self) -> &str {
+        match self {
+            Self::Collect => "collect",
+            Self::Select => "select",
+            Self::SelectOne => "selectOne",
+            Self::Size => "size",
+            Self::IsEmpty => "isEmpty",
+            Self::NotEmpty => "notEmpty",
+            Self::Includes => "includes",
+            Self::Including => "including",
+            Self::Excludes => "excludes",
+            Self::Excluding => "excluding",
+            Self::ExcludingAt => "excludingAt",
+            Self::ExcludingOnce => "excludingOnce",
+            Self::Equals => "equals",
+            Self::ForAll => "forAll",
+            Self::Exists => "exists",
+            Self::Sum => "sum",
+            Self::Sort => "sort",
+            Self::Filter => "filter",
+            Self::Reduce => "reduce",
+            Self::Other(value) => value,
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub enum DeclaredTypeCheckOperator {
+    IsType,
+    HasType,
+    As,
+}
+
+impl DeclaredTypeCheckOperator {
+    pub const fn as_str(self) -> &'static str {
+        match self {
+            Self::IsType => "istype",
+            Self::HasType => "hastype",
+            Self::As => "as",
+        }
+    }
 }
 
 /// Parser-normalized expression form. This is an exhaustive semantic contract rather than a

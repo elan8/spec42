@@ -13,7 +13,7 @@ use url::Url;
 
 use crate::semantic::graph::SemanticGraph;
 use crate::semantic::kinds::is_part_like;
-use crate::semantic::model::{ElementKind, NodeId, SemanticNode};
+use crate::semantic::model::{DeclaredLiteral, ElementKind, NodeId, SemanticNode};
 
 // Re-export the canonical port predicate for consumers of this module.
 pub use crate::semantic::kinds::is_port_like;
@@ -55,8 +55,9 @@ fn declared_expression_atom(
 ) -> Option<String> {
     if let Some(literal) = &expression.literal {
         return Some(match literal {
-            serde_json::Value::String(value) => value.clone(),
-            other => other.to_string(),
+            DeclaredLiteral::Integer(value) => value.to_string(),
+            DeclaredLiteral::Real(value) | DeclaredLiteral::String(value) => value.clone(),
+            DeclaredLiteral::Boolean(value) => value.to_string(),
         });
     }
     if let Some(reference) = expression.reference.as_deref() {
@@ -64,9 +65,9 @@ fn declared_expression_atom(
     }
     expression
         .operator
-        .as_deref()
+        .as_ref()
         .filter(|_| expression.children.is_empty())
-        .map(ToString::to_string)
+        .map(|operator| operator.as_str().to_owned())
 }
 
 pub(crate) fn port_multiplicity_label(graph: &SemanticGraph, node: &SemanticNode) -> String {
