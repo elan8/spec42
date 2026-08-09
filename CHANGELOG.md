@@ -1149,7 +1149,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- **KPAR crate (`crates/kpar`)** — Read, validate, and materialize KerML Project Archives (`.project.json`, `.meta.json`, SHA-256 checksums, textual `.sysml`/`.kerml` sources). `kpar-pack` binary packs Elan8 domain libraries for release; `extract_archive_subset` lives in `legacy.rs` for zip subset helpers used in tests.
+- **KPAR crate (`crates/kpar`)** — Read, validate, and materialize KerML Project Archives (`.project.json`, `.meta.json`, SHA-256 checksums, textual `.sysml`/`.kerml` sources). The top-level `spec42 bundle` command creates local archives, while `extract_archive_subset` lives in `legacy.rs` for zip subset helpers used in tests.
 - **Domain libraries via KPAR** — Bundled domain libraries ship as `elan8-domain-libraries-{version}.kpar`. `config/domain-libraries.json` pins `format`, `version`, and release `artifact`. Runtime materializes the embedded KPAR on first use; managed install path no longer uses a `tree/` subdirectory when `contentPath` is empty.
 - **Standard library via OMG KPAR** — Bundled stdlib embeds the OMG `sysml.library.kpar` archives from the pinned SysML v2 Release tag. Multiple KPAR subroots are materialized and mounted for semantic indexing (`stdlib_roots` in environment resolution).
 - **Domain library release automation** — GitHub Action on [elan8/sysml-domain-libraries](https://github.com/elan8/sysml-domain-libraries) (`release-kpar.yml`) builds and publishes the KPAR asset plus `SHA256SUMS.txt` on `v*` tags.
