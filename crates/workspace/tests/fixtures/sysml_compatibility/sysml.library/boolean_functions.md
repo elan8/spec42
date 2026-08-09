@@ -133,7 +133,8 @@ EndOfFile,
 # FORMAT
 ~~~sysml
 standard library package BooleanFunctions {
-    doc /*
+    doc
+    /*
 	 * This package defines functions on Boolean values, including those corresponding to 
 	 * (non-conditional) logical operators in the KerML expression notation.
 	 */
@@ -150,7 +151,9 @@ standard library package BooleanFunctions {
 
     function ToString specializes BaseFunctions::ToString { in x: Boolean[1]; return : String[1]; }
     function ToBoolean { in x: String[1]; return : Boolean[1]; }
+
 }
+
 ~~~
 # SMG
 ~~~

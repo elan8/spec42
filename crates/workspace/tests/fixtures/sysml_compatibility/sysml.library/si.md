@@ -1946,7 +1946,8 @@ CloseCurly,EndOfFile,
 # FORMAT
 ~~~sysml
 standard library package SI {
-    doc /*
+    doc
+    /*
 	 * International System of (Measurement) Units -- Système International d'Unités (SI), as defined in ISO/IEC 80000
 	 *
 	 * Note 1: In accordance with ISO/IEC 80000 en-GB spelling is used for the names and definitions of the units.
@@ -1966,16 +1967,11 @@ standard library package SI {
      * SI base units
      */
     attribute <m> metre : LengthUnit;
-    attribute <kg> kilogram : MassUnit {
-        :>> unitConversion : ConversionByPrefix {
-            :>> prefix = kilo;
-            :>> referenceUnit = g;
-        }
-    }
+    attribute <kg> kilogram : MassUnit { :>> unitConversion: ConversionByPrefix { :>> prefix = kilo; :>> referenceUnit = g; } }
     attribute <s> second : DurationUnit;
     attribute <A> ampere : ElectricCurrentUnit;
     attribute <K> kelvin : ThermodynamicTemperatureUnit, TemperatureDifferenceUnit {
-        attribute temperatureOfWaterAtTriplePointInK : DefinitionalQuantityValue {
+        attribute temperatureOfWaterAtTriplePointInK: DefinitionalQuantityValue {
             :>> num = 27316/100;
             :>> definition = "temperature in kelvin of pure water at the triple point";
         }
@@ -2039,105 +2035,23 @@ standard library package SI {
     /*
      * Units recognized in SI as specified in ISO 80000-1:2009
      */
-    attribute <'Å'> 'ångström' : LengthUnit {
-        :>> unitConversion : ConversionByConvention {
-            :>> referenceUnit = m;
-            :>> conversionFactor = 1.0e-10;
-        }
-    }
-    attribute <b> barn : AreaUnit {
-        :>> unitConversion : ConversionByConvention {
-            :>> referenceUnit = 'm²';
-            :>> conversionFactor = 1.0e-28;
-        }
-    }
-    attribute <d> day : DurationUnit {
-        :>> unitConversion : ConversionByConvention {
-            :>> referenceUnit = hour;
-            :>> conversionFactor = 24;
-        }
-    }
-    attribute <Da> dalton : MassUnit {
-        :>> unitConversion : ConversionByConvention {
-            :>> referenceUnit = kg;
-            :>> conversionFactor = 1.66053906660e-27;
-            :>> isExact = false;
-        }
-    }
-    attribute <eV> electronvolt : EnergyUnit {
-        :>> unitConversion : ConversionByConvention {
-            :>> referenceUnit = J;
-            :>> conversionFactor = 1.602176487e-19;
-            :>> isExact = false;
-        }
-    }
-    attribute <h> hour : DurationUnit {
-        :>> unitConversion : ConversionByConvention {
-            :>> referenceUnit = min;
-            :>> conversionFactor = 60;
-        }
-    }
-    attribute <min> minute : DurationUnit {
-        :>> unitConversion : ConversionByConvention {
-            :>> referenceUnit = s;
-            :>> conversionFactor = 60;
-        }
-    }
-    attribute <L> litre : VolumeUnit {
-        :>> unitConversion : ConversionByConvention {
-            :>> referenceUnit = 'm³';
-            :>> conversionFactor = 1.0e-3;
-        }
-    }
-    attribute tonne : MassUnit {
-        :>> unitConversion : ConversionByConvention {
-            :>> referenceUnit = kg;
-            :>> conversionFactor = 1.0e-3;
-        }
-    }
+    attribute <'Å'> 'ångström' : LengthUnit { :>> unitConversion: ConversionByConvention { :>> referenceUnit = m; :>> conversionFactor = 1.0e-10; } }
+    attribute <b> barn : AreaUnit { :>> unitConversion: ConversionByConvention { :>> referenceUnit = 'm²'; :>> conversionFactor = 1.0e-28; } }
+    attribute <d> day: DurationUnit { :>> unitConversion: ConversionByConvention { :>> referenceUnit = hour; :>> conversionFactor = 24; } }
+    attribute <Da> dalton : MassUnit { :>> unitConversion: ConversionByConvention { :>> referenceUnit = kg; :>> conversionFactor = 1.66053906660e-27; :>> isExact = false; } }
+    attribute <eV> electronvolt : EnergyUnit { :>> unitConversion: ConversionByConvention { :>> referenceUnit = J; :>> conversionFactor = 1.602176487e-19; :>> isExact = false; } }
+    attribute <h> hour: DurationUnit { :>> unitConversion: ConversionByConvention { :>> referenceUnit = min; :>> conversionFactor = 60; } }
+    attribute <min> minute : DurationUnit { :>> unitConversion: ConversionByConvention { :>> referenceUnit = s; :>> conversionFactor = 60; } }
+    attribute <L> litre : VolumeUnit { :>> unitConversion: ConversionByConvention { :>> referenceUnit = 'm³'; :>> conversionFactor = 1.0e-3; } }
+    attribute tonne : MassUnit { :>> unitConversion: ConversionByConvention { :>> referenceUnit = kg; :>> conversionFactor = 1.0e-3; } }
     alias 'metric ton' for tonne;
-    attribute <u> 'atomic mass unit' : MassUnit {
-        :>> unitConversion : ConversionByConvention {
-            :>> referenceUnit = Da;
-            :>> conversionFactor = 1.0;
-        }
-    }
-    attribute <ua> 'astronomical unit' : LengthUnit {
-        :>> unitConversion : ConversionByConvention {
-            :>> referenceUnit = m;
-            :>> conversionFactor = 149597870691e11;
-            :>> isExact = false;
-        }
-    }
-    attribute <var> 'volt ampere reactive' : PowerUnit {
-        :>> unitConversion : ConversionByConvention {
-            :>> referenceUnit = V*A;
-            :>> conversionFactor = 1.0;
-        }
-    }
-    attribute <'°'> degree : AngularMeasureUnit {
-        :>> unitConversion : ConversionByConvention {
-            :>> referenceUnit = rad;
-            :>> conversionFactor = 1.745329E-02;
-            :>> isExact = false;
-        }
-    }
-    // conversionFactor should become pi/180
-    attribute <'′'> 'minute (angle)' : AngularMeasureUnit {
-        :>> unitConversion : ConversionByConvention {
-            :>> referenceUnit = rad;
-            :>> conversionFactor = 2.908882E-04;
-            :>> isExact = false;
-        }
-    }
+    attribute <u> 'atomic mass unit' : MassUnit { :>> unitConversion: ConversionByConvention { :>> referenceUnit = Da; :>> conversionFactor = 1.0; } }
+    attribute <ua> 'astronomical unit' : LengthUnit { :>> unitConversion: ConversionByConvention { :>> referenceUnit = m; :>> conversionFactor = 149597870691e11; :>> isExact = false; } }
+    attribute <var> 'volt ampere reactive' : PowerUnit { :>> unitConversion: ConversionByConvention { :>> referenceUnit = V*A; :>> conversionFactor = 1.0; } }
+    attribute <'°'> degree : AngularMeasureUnit { :>> unitConversion: ConversionByConvention { :>> referenceUnit = rad; :>> conversionFactor = 1.745329E-02; :>> isExact = false; } } // conversionFactor should become pi/180
+    attribute <'′'> 'minute (angle)' : AngularMeasureUnit { :>> unitConversion: ConversionByConvention { :>> referenceUnit = rad; :>> conversionFactor = 2.908882E-04; :>> isExact = false; } }
     alias arcmin for '′';
-    attribute <'″'> 'second (angle)' : AngularMeasureUnit {
-        :>> unitConversion : ConversionByConvention {
-            :>> referenceUnit = rad;
-            :>> conversionFactor = 4.848137E-06;
-            :>> isExact = false;
-        }
-    }
+    attribute <'″'> 'second (angle)' : AngularMeasureUnit { :>> unitConversion: ConversionByConvention { :>> referenceUnit = rad; :>> conversionFactor = 4.848137E-06; :>> isExact = false; } }
     alias arcsec for '″';
 
     /*
@@ -2344,95 +2258,44 @@ standard library package SI {
      */
 
     /* Length */
-    attribute <nm> nanometre : LengthUnit {
-        :>> unitConversion : ConversionByPrefix {
-            :>> prefix = nano;
-            :>> referenceUnit = m;
-        }
-    }
-    attribute <mm> millimetre : LengthUnit {
-        :>> unitConversion : ConversionByPrefix {
-            :>> prefix = milli;
-            :>> referenceUnit = m;
-        }
-    }
-    attribute <cm> centimetre : LengthUnit {
-        :>> unitConversion : ConversionByPrefix {
-            :>> prefix = centi;
-            :>> referenceUnit = m;
-        }
-    }
-    attribute <km> kilometre : LengthUnit {
-        :>> unitConversion : ConversionByPrefix {
-            :>> prefix = kilo;
-            :>> referenceUnit = m;
-        }
-    }
+    attribute <nm> nanometre : LengthUnit { :>> unitConversion: ConversionByPrefix { :>> prefix = nano; :>> referenceUnit = m; } }
+    attribute <mm> millimetre : LengthUnit { :>> unitConversion: ConversionByPrefix { :>> prefix = milli; :>> referenceUnit = m; } }
+    attribute <cm> centimetre : LengthUnit { :>> unitConversion: ConversionByPrefix { :>> prefix = centi; :>> referenceUnit = m; } }
+    attribute <km> kilometre : LengthUnit { :>> unitConversion: ConversionByPrefix { :>> prefix = kilo; :>> referenceUnit = m; } }
 
     /* Volume */
-    attribute <mL> millilitre : VolumeUnit {
-        :>> unitConversion : ConversionByPrefix {
-            :>> prefix = milli;
-            :>> referenceUnit = L;
-        }
-    }
+    attribute <mL> millilitre : VolumeUnit { :>> unitConversion: ConversionByPrefix { :>> prefix = milli; :>> referenceUnit = L; } }
 
     /* Force */
-    attribute <mN> millinewton : ForceUnit {
-        :>> unitConversion : ConversionByPrefix {
-            :>> prefix = milli;
-            :>> referenceUnit = N;
-        }
-    }
+    attribute <mN> millinewton : ForceUnit { :>> unitConversion: ConversionByPrefix { :>> prefix = milli; :>> referenceUnit = N; } }
 
     /* Energy */
-    attribute <kJ> kilojoule : EnergyUnit {
-        :>> unitConversion : ConversionByPrefix {
-            :>> prefix = kilo;
-            :>> referenceUnit = J;
-        }
-    }
-    attribute <MJ> megajoule : EnergyUnit {
-        :>> unitConversion : ConversionByPrefix {
-            :>> prefix = mega;
-            :>> referenceUnit = J;
-        }
-    }
-    attribute <GJ> gigajoule : EnergyUnit {
-        :>> unitConversion : ConversionByPrefix {
-            :>> prefix = giga;
-            :>> referenceUnit = J;
-        }
-    }
+    attribute <kJ> kilojoule : EnergyUnit { :>> unitConversion: ConversionByPrefix { :>> prefix = kilo; :>> referenceUnit = J; } }
+    attribute <MJ> megajoule : EnergyUnit { :>> unitConversion: ConversionByPrefix { :>> prefix = mega; :>> referenceUnit = J; } }
+    attribute <GJ> gigajoule : EnergyUnit { :>> unitConversion: ConversionByPrefix { :>> prefix = giga; :>> referenceUnit = J; } }
 
     /* Power */
-    attribute <kW> kilowatt : PowerUnit {
-        :>> unitConversion : ConversionByPrefix {
-            :>> prefix = kilo;
-            :>> referenceUnit = W;
-        }
-    }
+    attribute <kW> kilowatt : PowerUnit { :>> unitConversion: ConversionByPrefix { :>> prefix = kilo; :>> referenceUnit = W; } }
 
     /* Speed */
-    attribute <'km/h'> 'kilometre per hour' : SpeedUnit = km/h;
+    attribute <'km/h'> 'kilometre per hour': SpeedUnit = km/h;
 
     /* 
 	 * Celsius units
 	 */
 
     attribute <'°C'> 'degree celsius (temperature difference)' : TemperatureDifferenceUnit {
-        doc /*
+        doc
+        /*
 	     * degree Celsius unit for temperature interval (i.e. temperature difference) quantities
 	     */
 
-        attribute :>> unitConversion : ConversionByConvention {
-            :>> referenceUnit = K;
-            :>> conversionFactor = 1;
-        }
+        attribute :>> unitConversion: ConversionByConvention { :>> referenceUnit = K; :>> conversionFactor = 1; }
     }
 
     attribute <'°C_abs'> 'degree celsius (absolute temperature scale)' : IntervalScale {
-        doc /*
+        doc
+        /*
 	     * degree Celsius interval scale for absolute (thermodynamic) temperature quantities
 	     *
 	     * The interval scale is defined with an explicit transformation with respect to 
@@ -2440,15 +2303,13 @@ standard library package SI {
 	     */
 
         attribute :>> unit = '°C';
-        attribute temperatureWaterAtFreezingPointInC : DefinitionalQuantityValue {
-            :>> num = 0;
-            :>> definition = "temperature in degree Celsius of pure water at freezing point";
+        attribute temperatureWaterAtFreezingPointInC: DefinitionalQuantityValue {
+            :>> num = 0; :>> definition = "temperature in degree Celsius of pure water at freezing point";
         }
-        private attribute temperatureWaterAtTriplePointInC : DefinitionalQuantityValue {
-            :>> num = 1/100;
-            :>> definition = "temperature in degree Celsius of pure water at the triple point";
+        private attribute temperatureWaterAtTriplePointInC: DefinitionalQuantityValue {
+            :>> num = 1/100; :>> definition = "temperature in degree Celsius of pure water at the triple point";
         }
-        private attribute celsiusToKelvinScaleMapping : QuantityValueMapping {
+        private attribute celsiusToKelvinScaleMapping: QuantityValueMapping {
             :>> mappedQuantityValue = temperatureWaterAtTriplePointInC;
             :>> referenceQuantityValue = K.temperatureOfWaterAtTriplePointInK;
         }
@@ -2456,13 +2317,13 @@ standard library package SI {
         attribute :>> quantityValueMapping = celsiusToKelvinScaleMapping;
 
         /* CoordinateFramePlacement (zero shift) w.r.t. the kelvin thermodynamic temperature scale */
-        private attribute zeroDegreeCelsiusInKelvin : ThermodynamicTemperatureValue = 273.15 [K];
+        private attribute zeroDegreeCelsiusInKelvin: ThermodynamicTemperatureValue = 273.15 [K];
         attribute zeroDegreeCelsiusToKelvinShift : CoordinateFramePlacement :>> transformation {
-            :>> source = K;
-            :>> origin = zeroDegreeCelsiusInKelvin;
+            :>> source = K; :>> origin = zeroDegreeCelsiusInKelvin;
         }
     }
 }
+
 ~~~
 # SMG
 ~~~

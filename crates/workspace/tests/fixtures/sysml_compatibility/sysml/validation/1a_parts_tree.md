@@ -254,7 +254,8 @@ package '1a-Parts Tree' {
     package Definitions {
         part def Vehicle {
             attribute mass :> ISQ::mass {
-                doc /*
+                doc
+                /*
 			 * The 'mass' attribute property is declared here to be a 
 			 * specialization (subset) of the general 'mass' quantity 
 			 * from the 'ISQ' (International System of Quantities) 
@@ -267,7 +268,7 @@ package '1a-Parts Tree' {
             attribute mass :> ISQ::mass;
         }
         part def FrontAxle :> Axle {
-            attribute steeringAngle : ScalarValues::Real;
+            attribute steeringAngle: ScalarValues::Real;
         }
         part def Wheel;
     }
@@ -280,7 +281,7 @@ package '1a-Parts Tree' {
 			 */
         }
 
-        part vehicle1 : Vehicle {
+        part vehicle1: Vehicle {
             /*
 			 * 'vehicle1' is a package-owned part of type Vehicle.
 			 */
@@ -292,7 +293,7 @@ package '1a-Parts Tree' {
 				 */
             }
 
-            part frontAxleAssembly : AxleAssembly {
+            part frontAxleAssembly: AxleAssembly {
                 /*
 				 * 'frontAxleAssembly' is a nested part of part 'vehicle1'.
 				 * It is a composite part of the containing part.
@@ -300,9 +301,9 @@ package '1a-Parts Tree' {
 				 * (And similarly for 'rearAxleAssembly'.)
 				 */
 
-                part frontAxle : Axle;
+                part frontAxle: Axle;
 
-                part frontWheel : Wheel [2] ordered {
+                part frontWheel: Wheel[2] ordered {
                     /*
 					 * 'frontWheel' is a nested part of type 'Wheel' with
 					 * multiplicity "2". This means that this axle assembly
@@ -314,18 +315,19 @@ package '1a-Parts Tree' {
                 }
             }
 
-            part rearAxleAssembly : AxleAssembly {
-                part rearAxle : Axle;
-                part rearWheel : Wheel [2] ordered;
+            part rearAxleAssembly: AxleAssembly {
+                part rearAxle: Axle;
+                part rearWheel: Wheel[2] ordered;
             }
+
         }
 
-        part vehicle1_c1 : Vehicle {
+        part vehicle1_c1: Vehicle {
             /*
 			 * 'vehicle1_c1' is a modified copy of 'vehicle1'. There is no
 			 * connection between this copy and the original version in the
 			 * model.
-			 */
+			 */			
 
             attribute mass redefines Vehicle::mass = 2000 [kg] {
                 /*
@@ -333,14 +335,15 @@ package '1a-Parts Tree' {
 				 */
             }
 
-            part frontAxleAssembly : AxleAssembly {
-                part frontAxle : FrontAxle {
+            part frontAxleAssembly: AxleAssembly {
+
+                part frontAxle: FrontAxle {
                     /*
 					 * The part 'frontAxle' has been modified to have type 'FrontAxle'.
 					 */
                 }
 
-                part frontWheel : Wheel [2] ordered {
+                part frontWheel: Wheel[2] ordered {
                     /*
 					 * The parts 'frontWheel_1' and 'frontWheel_2' have been added
 					 * as subsets of 'frontWheel'. These are separate parts from
@@ -352,21 +355,25 @@ package '1a-Parts Tree' {
                 part frontWheel_2 subsets frontWheel = frontWheel#(2);
             }
 
-            part rearAxleAssembly : AxleAssembly {
+            part rearAxleAssembly: AxleAssembly {
                 /*
 				 * 'rearAxleAssembly' has also been modified to add subsetting parts
 				 * for 'rearWheel'.
 				 */
 
-                part rearAxle : Axle;
+                part rearAxle: Axle;
 
-                part rearWheel : Wheel [2] ordered;
+                part rearWheel: Wheel[2] ordered;
                 part rearWheel_1 subsets rearWheel = rearWheel#(1);
                 part rearWheel_2 subsets rearWheel = rearWheel#(2);
             }
+
         }
+
     }
+
 }
+
 ~~~
 # EXPECTED
 ~~~

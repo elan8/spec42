@@ -58,6 +58,7 @@ package AliasImport {
         part vehicle : Car;
     }
 }
+
 ~~~
 # EXPECTED
 ~~~

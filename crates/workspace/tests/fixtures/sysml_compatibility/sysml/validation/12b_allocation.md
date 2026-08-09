@@ -91,14 +91,14 @@ package '12b-Allocation' {
         }
 
         part torqueGenerator {
-            perform :>> providePower.generateTorque;
+            perform providePower.generateTorque;
         }
     }
 
     package PhysicalModel {
         part powerTrain {
             part engine {
-                perform :>> providePower.generateTorque;
+                perform providePower.generateTorque;
             }
         }
     }
@@ -107,6 +107,7 @@ package '12b-Allocation' {
         allocate torqueGenerator.generateTorque to powerTrain.engine.generateTorque;
     }
 }
+
 ~~~
 # EXPECTED
 ~~~

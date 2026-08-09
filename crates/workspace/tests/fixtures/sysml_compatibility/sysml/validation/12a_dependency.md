@@ -53,6 +53,7 @@ CloseCurly,EndOfFile,
 # FORMAT
 ~~~sysml
 package '12a-Dependency' {
+
     package 'Application Layer';
     package 'Service Layer';
     package 'Data Layer';
@@ -64,8 +65,10 @@ package '12a-Dependency' {
     attribute y;
     attribute z;
 
-    dependency from z to x, y;
+    dependency z to x, y;
+
 }
+
 ~~~
 # EXPECTED
 ~~~

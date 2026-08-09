@@ -77,6 +77,7 @@ package FuncSpec {
     predicate PI specializes Base::Q intersects Base::R, Base::S { }
     inv I { not x }
 }
+
 ~~~
 # SMG
 ~~~

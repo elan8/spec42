@@ -98,6 +98,7 @@ package 'Event Occurrence Example' {
     }
 
     part vehicle : Vehicle {
+
         part cruiseController : CruiseController {
             event occurrence setSpeedReceived;
             then event occurrence sensedSpeedReceived;
@@ -111,8 +112,10 @@ package 'Event Occurrence Example' {
         part engine : Engine {
             event occurrence fuelCommandReceived;
         }
+
     }
 }
+
 ~~~
 # EXPECTED
 ~~~

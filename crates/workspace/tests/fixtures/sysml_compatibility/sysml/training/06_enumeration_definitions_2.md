@@ -108,28 +108,29 @@ package 'Enumeration Definitions-2' {
     }
 
     enum def ClassificationKind specializes ClassificationLevel {
-        enum unclassified {
+        unclassified {
             :>> code = "uncl";
             :>> color = TrafficLightColor::green;
         }
-        enum confidential {
+        confidential {
             :>> code = "conf";
             :>> color = TrafficLightColor::yellow;
         }
-        enum secret {
+        secret {
             :>> code = "secr";
             :>> color = TrafficLightColor::red;
         }
     }
 
     enum def GradePoints :> Real {
-        enum A = 4.0;
-        enum B = 3.0;
-        enum C = 2.0;
-        enum D = 1.0;
-        enum F = 0.0;
+        A = 4.0;
+        B = 3.0;
+        C = 2.0;
+        D = 1.0;
+        F = 0.0;
     }
 }
+
 ~~~
 # EXPECTED
 ~~~

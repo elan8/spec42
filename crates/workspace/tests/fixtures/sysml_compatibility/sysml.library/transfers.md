@@ -702,7 +702,8 @@ CloseCurly,EndOfFile,
 # FORMAT
 ~~~sysml
 standard library package Transfers {
-    doc /*
+    doc
+    /*
      * This package defines the transfer interactions used to type flows.
      */
 
@@ -715,7 +716,7 @@ standard library package Transfers {
     private import ScalarValues::Boolean;
     private import ScalarValues::Natural;
     private import SequenceFunctions::*;
-
+    
     interaction Transfer specializes Performance, BinaryLink {
         doc
         /*
@@ -765,7 +766,7 @@ standard library package Transfers {
              */
         }
     }
-
+    
     interaction MessageTransfer specializes Transfer {
         doc
         /*
@@ -774,7 +775,7 @@ standard library package Transfers {
          * accepted by AcceptPerformances.
          */
     }
-
+     
     interaction FlowTransfer specializes Transfer disjoint from MessageTransfer {
         doc
         /*
@@ -852,7 +853,7 @@ standard library package Transfers {
              */
         }
     }
-
+    
     interaction TransferBefore specializes Transfer, HappensBefore intersects Transfer, HappensBefore {
         doc
         /*
@@ -868,7 +869,7 @@ standard library package Transfers {
         private succession source then self;
         private succession self then target;
     }
-
+    
     interaction FlowTransferBefore specializes TransferBefore, FlowTransfer intersects FlowTransfer, TransferBefore {
         doc
         /*
@@ -878,7 +879,7 @@ standard library package Transfers {
         end feature source: Occurrence redefines Transfer::source, TransferBefore::source;
         end feature target: Occurrence redefines Transfer::target, TransferBefore::target;         
     }
-
+    
     abstract step transfers: Transfer[0..*] nonunique subsets performances, binaryLinks {
         doc
         /*
@@ -889,7 +890,7 @@ standard library package Transfers {
         end feature source: Occurrence redefines Transfer::source, binaryLinks::source;
         end feature target: Occurrence redefines Transfer::target, binaryLinks::target;
     }
-
+    
     abstract step messageTransfers: MessageTransfer[0..*] nonunique subsets transfers {
         doc
         /*
@@ -899,61 +900,71 @@ standard library package Transfers {
         end feature source: Occurrence redefines MessageTransfer::source, transfers::source;
         end feature target: Occurrence redefines MessageTransfer::target, transfers::target;      
     }
-
-    abstract flow flowTransfers : FlowTransfer subsets transfers [0..*] {
-        doc /*
+    
+    abstract flow flowTransfers: FlowTransfer[0..*] nonunique subsets transfers {
+        doc
+        /*
          * flowTransfers is a specialization of transfers restricted to type FlowTransfers.
          * It is the default subsetting for non-succession flows.
          */
-        end source : Occurrence redefines FlowTransfer::source, transfers::source;
-        end target : Occurrence redefines FlowTransfer::target, transfers::target;
+         
+        end feature source: Occurrence redefines FlowTransfer::source, transfers::source;
+        end feature target: Occurrence redefines FlowTransfer::target, transfers::target;
     }
-
-    abstract flow transfersBefore : TransferBefore subsets transfers, happensBeforeLinks [0..*] {
-        doc /*
+      
+    abstract flow transfersBefore: TransferBefore[0..*] nonunique subsets transfers, happensBeforeLinks
+        intersects transfers, happensBeforeLinks {
+        doc
+        /*
          * transfersBefore is a specialization of transfers and happensBeforeLinks restricted to
          * type TransferBefore.
          */
-        end source : Occurrence redefines TransferBefore::source, transfers::source, happensBeforeLinks::earlierOccurrence;
-        end target : Occurrence redefines TransferBefore::target, transfers::target, happensBeforeLinks::laterOccurrence;
+    
+        end feature source: Occurrence redefines TransferBefore::source, transfers::source, happensBeforeLinks::earlierOccurrence;
+        end feature target: Occurrence redefines TransferBefore::target, transfers::target, happensBeforeLinks::laterOccurrence;
     }
-
-    abstract flow flowTransfersBefore : FlowTransferBefore subsets flowTransfers, transfersBefore [0..*] {
-        doc /*
+    
+    abstract flow flowTransfersBefore: FlowTransferBefore[0..*] nonunique subsets flowTransfers, transfersBefore
+        intersects flowTransfers, transfersBefore {
+        doc
+        /*
          * flowTransfersBefore is a specialization of flowTransfers and transfersBefore that is restricted
          * to type FlowTransferBefore. IT is the default subsetting for succession flows.
          */
-        end source : Occurrence redefines FlowTransferBefore::source, flowTransfers::source, transfersBefore::source;
-        end target : Occurrence redefines FlowTransferBefore::target, flowTransfers::target, transfersBefore::target;
+    
+        end feature source: Occurrence redefines FlowTransferBefore::source, flowTransfers::source, transfersBefore::source;
+        end feature target: Occurrence redefines FlowTransferBefore::target, flowTransfers::target, transfersBefore::target;
     }
 
-    behavior SendPerformance specializes Performance {
-        doc /*
+    behavior SendPerformance specializes Performance  {
+        doc
+        /*
          * SendPerformances are Performance that require an outgoingTransferFromSelf 
          * from a designated sender Occurrence carrying a given payload, optionally to a designated receiver.
          */
-
-        in feature payload[0..*];
-        in feature sender : Occurrence [1] default = this;
-        in feature receiver : Occurrence [0..1];
-        feature sentTransfer : MessageTransfer [1] subsets sender.outgoingTransfersFromSelf {
+    
+        in feature payload [0..*];
+        in feature sender: Occurrence[1] default this;
+        in feature receiver: Occurrence[0..1];
+        feature sentTransfer: MessageTransfer [1] subsets sender.outgoingTransfersFromSelf {
             feature redefines payload = SendPerformance::payload;
         }
         binding [0..1] receiver.incomingTransfersToSelf = [1] sentTransfer;
 
         succession self then sentTransfer;
     }
-
+    
     behavior AcceptPerformance specializes Performance {
-        doc /*
+        doc
+        /*
          * AcceptPerformance is a performance that requires an incomingTransferToSelf
          * of a desigated receiver Occurrence, providing its payload as output.
          */
         inout feature payload[0..*];
-        in feature receiver : Occurrence [1] default = this;
-        feature acceptedTransfer : MessageTransfer [1] subsets receiver.incomingTransfersToSelf;
+        in feature receiver: Occurrence[1] default this;
+        feature acceptedTransfer: MessageTransfer[1] subsets receiver.incomingTransfersToSelf;
         succession acceptedTransfer then self.endShot;
-
+        
         binding payload = acceptedTransfer.payload;
     }
 
@@ -963,7 +974,7 @@ standard library package Transfers {
          * sendPerformances is a specialization of performances for SendPerformances.
          */
     }
-
+        
     abstract step acceptPerformances: AcceptPerformance[0..*] nonunique subsets performances {
         doc
         /*

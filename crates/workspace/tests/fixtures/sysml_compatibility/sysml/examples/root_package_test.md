@@ -62,6 +62,7 @@ private import P2::*;
 package P3 {
     part b subsets a;
 }
+
 ~~~
 # EXPECTED
 ~~~

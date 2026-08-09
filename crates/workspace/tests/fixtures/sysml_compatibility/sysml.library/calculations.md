@@ -107,7 +107,8 @@ CloseCurly,EndOfFile,
 # FORMAT
 ~~~sysml
 standard library package Calculations {
-    doc /*
+    doc
+    /*
 	 * This package defines the base types for calculations and related behavioral elements in the
 	 * SysML language.
 	 */
@@ -118,26 +119,31 @@ standard library package Calculations {
     private import Actions::actions;
 
     abstract calc def Calculation :> Action, Evaluation {
-        doc /*
+        doc
+        /*
 		 * Calculation is the most general class of evaluations of CalculationDefinitions in a
 		 * system or part of a system. Calculation is the base class of all CalculationDefinitions.
 		 */
 
-        ref calc self : Calculation :>> Action::self, Evaluation::self;
+        ref calc self: Calculation :>> Action::self, Evaluation::self;
 
-        abstract calc subcalculations : Calculation :> calculations, subactions {
-            doc /*
+        abstract calc subcalculations: Calculation :> calculations, subactions {
+            doc
+            /*
 			 * The subactions of this Calculation that are Calculations.
 			 */
         }
+
     }
 
-    abstract calc calculations : Calculation [0..*] :> actions, evaluations nonunique {
-        doc /*
+    abstract calc calculations: Calculation[0..*] nonunique :> actions, evaluations {
+        doc
+        /*
 		 * calculations is the base Feature for all CalculationUsages.
 		 */
     }
 }
+
 ~~~
 # SMG
 ~~~

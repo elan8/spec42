@@ -62,6 +62,7 @@ CloseCurly,EndOfFile,
 # FORMAT
 ~~~sysml
 package 'Port Conjugation Example' {
+
     attribute def Temp;
 
     part def Fuel;
@@ -80,6 +81,7 @@ package 'Port Conjugation Example' {
         port engineFuelPort : ~FuelPort;
     }
 }
+
 ~~~
 # EXPECTED
 ~~~

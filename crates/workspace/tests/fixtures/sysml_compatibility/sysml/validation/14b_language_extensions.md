@@ -133,11 +133,15 @@ CloseCurly,EndOfFile,
 # FORMAT
 ~~~sysml
 package '14b-Language-Extensions' {
+
     package LibraryModel {
+
         part def ECU;
+
     }
 
     package UserModel {
+
         package Definitions {
             private import LibraryModel::*;
 
@@ -154,30 +158,32 @@ package '14b-Language-Extensions' {
         package Usages {
             private import Definitions::*;
 
-            part vehicle1 : Vehicle {
+            part vehicle1: Vehicle {
                 part vehicleControlUnit : VehicleControlUnit {
-                    port busIF : ~BusIF;
+                    port busIF: ~BusIF;
                 }
 
                 connect vehicleControlUnit.busIF to canBus.vehicleControlIF;
 
-                part canBus : CanBus {
-                    port vehicleControlIF : BusIF;
-                    port engineControlIF : BusIF;
-                    port sensorIF : BusIF;
+                part canBus: CanBus {
+                    port vehicleControlIF: BusIF;
+                    port engineControlIF: BusIF;
+                    port sensorIF: BusIF;
                 }
 
                 connect engine.engineControlUnit.busIF to canBus.engineControlIF;
 
-                part engine : Engine {
-                    part engineControlUnit : EngineControlUnit {
-                        port busIF : ~BusIF;
+                part engine: Engine {
+                    part engineControlUnit: EngineControlUnit {
+                        port busIF: ~BusIF;
                     }
                 }
             }
         }
+
     }
 }
+
 ~~~
 # EXPECTED
 ~~~

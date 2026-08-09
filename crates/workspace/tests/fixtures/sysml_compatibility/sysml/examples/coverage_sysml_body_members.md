@@ -120,10 +120,7 @@ CloseCurly,EndOfFile,
 ~~~sysml
 part def Outer {
     attribute def InnerAttr;
-    enum def InnerEnum {
-        enum a;
-        enum b;
-    }
+    enum def InnerEnum { enum value a; enum value b; }
     occurrence def InnerOccurrence;
     individual def InnerIndividual;
     item def InnerItem;
@@ -149,8 +146,9 @@ part def Outer {
 
     derived attribute derivedAttr : Integer;
     const attribute constAttr : Integer = 42;
-    end endFeat;
+    end feature endFeat;
 }
+
 ~~~
 # SMG
 ~~~

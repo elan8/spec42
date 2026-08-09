@@ -68,7 +68,8 @@ package 'Comment Example' {
 
     comment Comment1 /* This is a named comment. */
 
-    comment about Automobile /* This is an unnamed comment, annotating an 
+    comment about Automobile
+    /* This is an unnamed comment, annotating an 
 	 * explicitly specified element. 
 	 */
 
@@ -81,10 +82,11 @@ package 'Comment Example' {
 		 */
     }
 
-    // This is a note. It is in the text, but not part 
+    // This is a note. It is in the text, but not part
     // of the model.
     alias Torque for ISQ::TorqueValue;
 }
+
 ~~~
 # EXPECTED
 ~~~

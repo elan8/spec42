@@ -251,17 +251,9 @@ package AnalysisIndividualExample {
         private import MeasurementReferences::*;
 
         attribute def DistancePerVolumeUnit :> DerivedUnit {
-            private attribute distancePF : QuantityPowerFactor [1] {
-                :>> quantity = isq.L;
-                :>> exponent = 1;
-            }
-            private attribute volumePF : QuantityPowerFactor [1] {
-                :>> quantity = isq.L;
-                :>> exponent = -3;
-            }
-            attribute :>> quantityDimension {
-                :>> quantityPowerFactors = (distancePF, volumePF);
-            }
+            private attribute distancePF: QuantityPowerFactor[1] { :>> quantity = isq.L; :>> exponent = 1; }
+            private attribute volumePF: QuantityPowerFactor[1] { :>> quantity = isq.L; :>> exponent = -3; }
+            attribute :>> quantityDimension { :>> quantityPowerFactors = (distancePF, volumePF); }
         }
 
         attribute def DistancePerVolumeValue :> ScalarQuantityValue {
@@ -288,7 +280,7 @@ package AnalysisIndividualExample {
 
         part vehicle_c1 : Vehicle {
             attribute :>> power = engine.peakPower;
-            part engine : Engine [1];
+            part engine : Engine[1];
         }
     }
 
@@ -300,12 +292,12 @@ package AnalysisIndividualExample {
         private import ControlFunctions::forAll;
 
         action def FuelConsumption {
-            in power : PowerValue [*];
+            in power : PowerValue[*];
             out fuelEconomy : DistancePerVolumeValue;
         }
 
         analysis def FuelEconomyAnalysis {
-            subject vehicle : Vehicle;
+            subject vehicle: Vehicle;
 
             action fuelConsumption : FuelConsumption {
                 in power = vehicle.power;
@@ -313,7 +305,7 @@ package AnalysisIndividualExample {
             }
 
             return calculatedFuelEconomy : DistancePerVolumeValue =
-				fuelConsumption.fuelEconomy;
+            fuelConsumption.fuelEconomy;
         }
     }
 
@@ -327,21 +319,24 @@ package AnalysisIndividualExample {
         individual analysis def FuelEconomyAnalysis_1 :> FuelEconomyAnalysis;
         individual action def FuelConsumption_1 :> FuelConsumption;
 
-        fuelEconomyAnalysis_1 : FuelEconomyAnalysis_1 {
-			subject vehicle : Vehicle_1 :> vehicle_c1 {
-				individual part :>> engine : Engine_1 {
-					attribute :>> peakPower = 200[hp];
-					attribute :>> fuelEfficiency = 0.4;
-				}
-			}
-			individual action :>> fuelConsumption : FuelEconomyAnalysis_1 {
-				snapshot :>> done :> fuelConsumption {
-					out :>> fuelEconomy = 35[mph];
-				}
-			}
-		}
+        individual analysis fuelEconomyAnalysis_1 : FuelEconomyAnalysis_1 {
+            subject vehicle : Vehicle_1 :> vehicle_c1 {
+                individual part :>> engine : Engine_1 {
+                    attribute :>> peakPower = 200[hp];
+                    attribute :>> fuelEfficiency = 0.4;
+                }
+            }
+            individual action :>> fuelConsumption : FuelEconomyAnalysis_1 {
+                snapshot :>> done :> fuelConsumption {
+                    out :>> fuelEconomy = 35[mph];
+                }
+            }
+        }
+
     }
+
 }
+
 ~~~
 # EXPECTED
 ~~~

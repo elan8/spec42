@@ -144,22 +144,10 @@ package 'Trade Study Analysis Example' {
     part engine4cyl : Engine;
     part engine6cyl : Engine;
 
-    calc def PowerRollup {
-        in engine : Engine;
-        return : ISQ::PowerValue;
-    }
-    calc def MassRollup {
-        in engine : Engine;
-        return : ISQ::MassValue;
-    }
-    calc def EfficiencyRollup {
-        in engine : Engine;
-        return : Real;
-    }
-    calc def CostRollup {
-        in engine : Engine;
-        return : Real;
-    }
+    calc def PowerRollup { in engine : Engine; return : ISQ::PowerValue; }
+    calc def MassRollup { in engine : Engine; return : ISQ::MassValue; }
+    calc def EfficiencyRollup { in engine : Engine; return : Real; }
+    calc def CostRollup { in engine : Engine; return : Real; }
 
     calc def EngineEvaluation {
         in power : ISQ::PowerValue;
@@ -177,31 +165,21 @@ package 'Trade Study Analysis Example' {
         calc :>> evaluationFunction {
             in part anEngine :>> alternative : Engine;
 
-            calc powerRollup : PowerRollup {
-                in engine = anEngine;
-                return power;
-            }
-            calc massRollup : MassRollup {
-                in engine = anEngine;
-                return mass;
-            }
-            calc efficiencyRollup : EfficiencyRollup {
-                in engine = anEngine;
-                return efficiency;
-            }
-            calc costRollup : CostRollup {
-                in engine = anEngine;
-                return cost;
-            }
+            calc powerRollup: PowerRollup { in engine = anEngine; return power; }
+            calc massRollup: MassRollup { in engine = anEngine; return mass; }
+            calc efficiencyRollup: EfficiencyRollup { in engine = anEngine; return efficiency; }
+            calc costRollup: CostRollup { in engine = anEngine; return cost; }
 
             return :>> result : Real = EngineEvaluation(
-				powerRollup.power, massRollup.mass, efficiencyRollup.efficiency, costRollup.cost
-			);
+            powerRollup.power, massRollup.mass, efficiencyRollup.efficiency, costRollup.cost
+            );
         }
 
         return part :>> selectedAlternative : Engine;
     }
+
 }
+
 ~~~
 # EXPECTED
 ~~~

@@ -494,42 +494,42 @@ package '2a-Parts Interconnection' {
 			 * A port definition can have nested ports.
 			 */
 
-            port wheelToRoadPort : WheelToRoadPort [2];
+            port wheelToRoadPort: WheelToRoadPort[2];
         }
 
         // Blocks
 
         part def VehicleA {
-            port fuelCmdPort : FuelCmdPort;
-            port vehicleToRoadPort : VehicleToRoadPort;
+            port fuelCmdPort: FuelCmdPort;
+            port vehicleToRoadPort: VehicleToRoadPort;
         }
 
         part def AxleAssembly;
         part def RearAxleAssembly :> AxleAssembly {
-            port shaftPort_d : ShaftPort_d;
+            port shaftPort_d: ShaftPort_d;
         }
 
         part def Axle;
         part def RearAxle :> Axle;
 
         part def HalfAxle {
-            port axleToDiffPort : AxlePort;
-            port axleToWheelPort : AxleToWheelPort;
+            port axleToDiffPort: AxlePort;
+            port axleToWheelPort: AxleToWheelPort;
         }
 
         part def Engine {
-            port fuelCmdPort : FuelCmdPort;
-            port drivePwrPort : DrivePwrPort;
+            port fuelCmdPort: FuelCmdPort;
+            port drivePwrPort: DrivePwrPort;
         }
 
         part def Transmission {
-            port clutchPort : ClutchPort;
-            port shaftPort_a : ShaftPort_a;
+            port clutchPort: ClutchPort;
+            port shaftPort_a: ShaftPort_a;
         }
 
         part def Driveshaft {
-            port shaftPort_b : ShaftPort_b;
-            port shaftPort_c : ShaftPort_c;
+            port shaftPort_b: ShaftPort_b;
+            port shaftPort_c: ShaftPort_c;
         }
 
         part def Differential {
@@ -547,15 +547,15 @@ package '2a-Parts Interconnection' {
 			 * The ends of an interface definition are always ports.
 			 */
 
-            end drivePwrPort : DrivePwrPort;
-            end clutchPort : ClutchPort;
+            end drivePwrPort: DrivePwrPort;
+            end clutchPort: ClutchPort;
         }
 
         interface def DriveshaftInterface {
-            end shaftPort_a : ShaftPort_a;
-            end shaftPort_d : ShaftPort_d;
+            end shaftPort_a: ShaftPort_a;
+            end shaftPort_d: ShaftPort_d;
 
-            ref driveshaft : Driveshaft {
+            ref driveshaft: Driveshaft {
                 /*
 				 * 'driveshaft' is a reference to the driveshaft that will
 				 * act as the "interface medium" for this interface.
@@ -570,31 +570,36 @@ package '2a-Parts Interconnection' {
             }
             connect driveshaft.shaftPort_c to shaftPort_d;
         }
+
     }
 
     package Usages {
-        part vehicle1_c1 : VehicleA {
+
+        part vehicle1_c1: VehicleA {
+
             bind fuelCmdPort = engine.fuelCmdPort;
 
-            part engine : Engine;
+            part engine: Engine;
 
-            interface : EngineToTransmissionInterface connect engine.drivePwrPort to transmission.clutchPort {
+            interface :EngineToTransmissionInterface
+            connect engine.drivePwrPort to transmission.clutchPort {
                 /*
 				 * A usage of an interface definition connects two ports relative to 
 				 * a containing context.
 				 */
             }
 
-            part transmission : Transmission;
+            part transmission: Transmission;
 
-            part driveshaft : Driveshaft {
+            part driveshaft: Driveshaft {
                 /*
 				 * This 'driveshaft' is the part of 'vehicle1_c1' that will act as the
 				 * interface medium in the following 'DriveshaftInterface' usage.
 				 */
             }
 
-            interface : DriveshaftInterface connect transmission.shaftPort_a to rearAxleAssembly.shaftPort_d {
+            interface :DriveshaftInterface
+            connect transmission.shaftPort_a to rearAxleAssembly.shaftPort_d {
                 ref :>> driveshaft = vehicle1_c1.driveshaft {
                     /*
 						 * The reference property from 'DriveshaftInterface' is redefined
@@ -603,36 +608,36 @@ package '2a-Parts Interconnection' {
                 }
             }
 
-            part rearAxleAssembly : RearAxleAssembly {
+            part rearAxleAssembly: RearAxleAssembly {
                 bind shaftPort_d = differential.shaftPort_d;
 
-                part differential : Differential {
-                    port shaftPort_d : ShaftPort_d {
+                part differential: Differential {
+                    port shaftPort_d: ShaftPort_d {
                         /*
 						 * If the part def has no ports, then they can be defined directly in
 						 * a usage of the part def.
 						 */
                     }
-                    port leftDiffPort : DiffPort;
-                    port rightDiffPort : DiffPort;
+                    port leftDiffPort: DiffPort;
+                    port rightDiffPort: DiffPort;
                 }
 
-                .leftDiffPort to rearAxle.leftHalfAxle.axleToDiffPort {
-					/*
+                interface differential.leftDiffPort to rearAxle.leftHalfAxle.axleToDiffPort {
+                    /*
 					 * A connection can be to a port that is arbitrarily deeply nested, on either end. 
 					 */
-				}
-                .rightDiffPort to rearAxle.rightHalfAxle.axleToDiffPort;
+                }
+                interface differential.rightDiffPort to rearAxle.rightHalfAxle.axleToDiffPort;
 
-                part rearAxle : RearAxle {
-                    part leftHalfAxle : HalfAxle;
-                    part rightHalfAxle : HalfAxle;
+                part rearAxle: RearAxle {
+                    part leftHalfAxle: HalfAxle;
+                    part rightHalfAxle: HalfAxle;
                 }
 
                 connect rearAxle.leftHalfAxle.axleToWheelPort to leftWheel.wheelToAxlePort;
                 connect rearAxle.rightHalfAxle.axleToWheelPort to rightWheel.wheelToAxlePort;
 
-                part rearWheel : Wheel [2] ordered;
+                part rearWheel: Wheel[2] ordered;
 
                 /* The two rear wheels of 'rearAxleAssembly' must be given
 				 * their own names in order to be referenced in connections.
@@ -640,27 +645,34 @@ package '2a-Parts Interconnection' {
 				 * (":>" is a shorthand here for "subsets".)
 				 */
                 part leftWheel :> rearWheel = rearWheel#(1) {
-                    port wheelToAxlePort : WheelToAxlePort;
-                    port wheelToRoadPort : WheelToRoadPort;
+                    port wheelToAxlePort: WheelToAxlePort;
+                    port wheelToRoadPort: WheelToRoadPort;
                 }
 
                 part rightWheel :> rearWheel = rearWheel#(2) {
-                    port wheelToAxlePort : WheelToAxlePort;
-                    port wheelToRoadPort : WheelToRoadPort;
+                    port wheelToAxlePort: WheelToAxlePort;
+                    port wheelToRoadPort: WheelToRoadPort;
                 }
+
             }
 
-            bind rearAxleAssembly.leftWheel.wheelToRoadPort = vehicleToRoadPort.leftWheelToRoadPort;
+            bind rearAxleAssembly.leftWheel.wheelToRoadPort =
+            vehicleToRoadPort.leftWheelToRoadPort;
 
-            bind rearAxleAssembly.rightWheel.wheelToRoadPort = vehicleToRoadPort.rightWheelToRoadPort;
+            bind rearAxleAssembly.rightWheel.wheelToRoadPort =
+            vehicleToRoadPort.rightWheelToRoadPort;
 
             port vehicleToRoadPort redefines VehicleA::vehicleToRoadPort {
                 port leftWheelToRoadPort :> wheelToRoadPort = wheelToRoadPort#(1);
                 port rightWheelToRoadPort :> wheelToRoadPort = wheelToRoadPort#(2);
             }
+
         }
+
     }
+
 }
+
 ~~~
 # EXPECTED
 ~~~

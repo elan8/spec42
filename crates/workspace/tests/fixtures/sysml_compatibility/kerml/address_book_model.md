@@ -47,14 +47,16 @@ CloseCurly,EndOfFile,
 ~~~sysml
 private import ScalarValues::*;
 package AddressBookModel {
-    class Entry {
-        name: String;
-        address: String;
-    }
-
-    class AddressBook {
-        entries: Entry [*];
-    }
+	
+	class Entry {
+		name: String;
+		address: String;
+	}
+	
+	class AddressBook {
+		entries: Entry[*];
+	}
+	
 }
 ~~~
 # EXPECTED

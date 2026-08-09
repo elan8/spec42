@@ -191,6 +191,7 @@ standard library package VectorValues {
 		 */
     }
 }
+
 ~~~
 # SMG
 ~~~

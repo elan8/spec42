@@ -60,8 +60,7 @@ package Classifiers {
     classifier B;
 
     specialization Super subclassifier A specializes B;
-    specialization
-    subclassifier B :> A;
+    specialization subclassifier B :> A;
 
     subclassifier C specializes A;
     subclassifier C specializes B;
@@ -72,6 +71,7 @@ package Classifiers {
     classifier E specializes C intersects A, B;
     classifier F unions A unions B;
 }
+
 ~~~
 # EXPECTED
 ~~~

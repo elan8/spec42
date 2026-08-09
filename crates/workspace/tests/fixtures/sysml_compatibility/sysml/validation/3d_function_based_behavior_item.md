@@ -207,10 +207,11 @@ package '3d-Function-based Behavior-item' {
     public import Usages::*;
 
     package Definitions {
+
         item def Fuel;
 
         port def FuelPort {
-            out item fuel : Fuel;
+            out item fuel: Fuel;
         }
 
         part def Pump {
@@ -234,17 +235,21 @@ package '3d-Function-based Behavior-item' {
             in fuelIn : Fuel;
             out fuelOut : Fuel;
         }
+
     }
 
     package Usages {
+
         part context {
+
             /* Storage Element */
             part storageTank : StorageTank;
 
-            flow of {
+            flow of  fuel : Fuel
+            from storageTank.fuelOutPort.fuel to pump.fuelInPort.fuel {
                 /*
 				 * Note: Explicitly notating that the flow is "of fuel : Fuel" is optional.
-				 */
+				 */					
             }
 
             part pump : Pump {
@@ -254,13 +259,14 @@ package '3d-Function-based Behavior-item' {
                 }
             }
 
-            flow of;
+            flow of fuel : Fuel
+            from pump.fuelOutPort.fuel to vehicle.fuelInPort.fuel;
 
             part vehicle : Vehicle {
-                flow fuelInPort {
+                flow fuelInPort.fuel to fuelTank.fuel {
                     /* 
 					 * Note: The semantics of flowing to a "stored item" is tentative.
-					 */
+					 */					
                 }
 
                 /* Storage Element */
@@ -278,6 +284,7 @@ package '3d-Function-based Behavior-item' {
         }
     }
 }
+
 ~~~
 # EXPECTED
 ~~~

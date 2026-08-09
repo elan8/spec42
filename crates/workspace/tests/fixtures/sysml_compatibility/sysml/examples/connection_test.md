@@ -171,6 +171,7 @@ CloseCurly,EndOfFile,
 # FORMAT
 ~~~sysml
 package ConnectionTest {
+
     part p {
         part x {
             part x1;
@@ -209,10 +210,10 @@ package ConnectionTest {
     }
 
     connection {
-		part q;
-		end ref end1 ::> d1 :> q;
-		end end2 ::> d2;
-	}
+        part q;
+        end ref end1 ::> d1 :> q;
+        end end2 ::> d2;
+    }
 
     abstract flow def F;
 
@@ -225,7 +226,7 @@ package ConnectionTest {
     part def B;
 
     connection def AB {
-        end [1] a : A {
+        end [1] item a : A {
             @M;
         }
         end b : B;
@@ -233,6 +234,7 @@ package ConnectionTest {
 
     metadata def M;
 }
+
 ~~~
 # EXPECTED
 ~~~

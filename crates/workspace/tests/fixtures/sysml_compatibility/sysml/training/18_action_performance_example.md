@@ -71,17 +71,20 @@ package 'Action Performance Example' {
     part def Imager;
 
     part camera : Camera {
-        perform action takePhoto references takePicture [*] ordered;
+
+        perform action takePhoto[*] ordered
+        references takePicture;
 
         part f : AutoFocus {
-            perform :>> takePhoto.focus;
+            perform takePhoto.focus;
         }
 
         part i : Imager {
-            perform :>> takePhoto.shoot;
+            perform takePhoto.shoot;
         }
     }
 }
+
 ~~~
 # EXPECTED
 ~~~

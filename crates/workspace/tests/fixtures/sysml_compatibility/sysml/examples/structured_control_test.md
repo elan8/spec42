@@ -96,14 +96,14 @@ CloseCurly,EndOfFile,
 # FORMAT
 ~~~sysml
 package StructuredControlTest {
+
     action {
         attribute i : ScalarValues::Integer := 0;
         attribute b : ScalarValues::Boolean;
 
         if i < 0 {
             assign i := 0;
-        }
-        if i == 0 {
+        } else if i == 0 {
             assign i := 1;
         } else {
             assign i := i + 1;
@@ -119,19 +119,19 @@ package StructuredControlTest {
         } until b;
 
         then while i > 0 {
-			assign i := i - 1;
-		}
+            assign i := i - 1;
+        }
 
         loop {
             assign i := i - 1;
         } until b;
 
-        for n in : ScalarValues::Integer { }
-        in (1, 2, 3) {
-			assign i := i * n;
-		}
+        for n : ScalarValues::Integer in (1, 2, 3) {
+            assign i := i * n;
+        }
     }
 }
+
 ~~~
 # EXPECTED
 ~~~

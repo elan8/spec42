@@ -46,6 +46,7 @@ package Classifications {
     a = x as T;
     b = x meta KerML::Feature;
 }
+
 ~~~
 # EXPECTED
 ~~~

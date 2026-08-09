@@ -94,6 +94,7 @@ package ClassifierCoverage {
     abstract assoc AbstractRel;
     abstract metaclass AbstractMeta;
 }
+
 ~~~
 # SMG
 ~~~

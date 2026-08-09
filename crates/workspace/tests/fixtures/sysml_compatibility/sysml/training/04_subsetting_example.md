@@ -53,12 +53,13 @@ CloseCurly,EndOfFile,
 # FORMAT
 ~~~sysml
 package 'Subsetting Example' {
+
     part def Vehicle {
-        part parts : VehiclePart [*];
+        part parts : VehiclePart[*];
 
         part eng : Engine subsets parts;
         part trans : Transmission subsets parts;
-        part wheels : Wheel :> parts [4];
+        part wheels : Wheel[4] :> parts;
     }
 
     abstract part def VehiclePart;
@@ -66,6 +67,7 @@ package 'Subsetting Example' {
     part def Transmission :> VehiclePart;
     part def Wheel :> VehiclePart;
 }
+
 ~~~
 # EXPECTED
 ~~~

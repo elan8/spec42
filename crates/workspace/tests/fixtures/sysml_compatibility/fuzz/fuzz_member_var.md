@@ -38,9 +38,10 @@ CloseCurly,EndOfFile,
 ~~~sysml
 package P {
     requirement r {
-        var x:>> y = 42;
+        var x :>> y = 42;
     }
 }
+
 ~~~
 # SMG
 ~~~

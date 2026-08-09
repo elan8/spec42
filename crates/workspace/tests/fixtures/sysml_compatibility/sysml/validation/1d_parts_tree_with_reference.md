@@ -121,6 +121,7 @@ CloseCurly,EndOfFile,
 # FORMAT
 ~~~sysml
 package '1d-Parts Tree with Reference' {
+
     package Definitions {
         part def Vehicle;
         part def Trailer;
@@ -133,7 +134,8 @@ package '1d-Parts Tree with Reference' {
         private import Definitions::*;
 
         part vehicle_trailer_system {
-            part vehicle1_c1 : Vehicle {
+
+            part vehicle1_c1: Vehicle {
                 ref hitchBall : HitchBall {
                     /*
 					 * 'vehicle1_c1'::'hitchBall' is a reference property that
@@ -148,15 +150,15 @@ package '1d-Parts Tree with Reference' {
                 /*
 				 * This is a binding connector between the 'hitchBall' in 'vehicle1_c1'
 				 * and the 'hitchBall' in 'trailerHitch'.
-				 */
+				 */			
             }
 
-            part trailerHitch : TrailerHitch {
-                part hitchBall : HitchBall;
-                part trailerCoupler : TrailerCoupler;
+            part trailerHitch: TrailerHitch {
+                part hitchBall: HitchBall;
+                part trailerCoupler: TrailerCoupler;
             }
 
-            part trailer1 : Trailer {
+            part trailer1: Trailer {
                 ref trailerCoupler : TrailerCoupler = trailerHitch.trailerCoupler {
                     /*
 					 * This is a shorthand for a binding connector between the
@@ -169,6 +171,7 @@ package '1d-Parts Tree with Reference' {
         }
     }
 }
+
 ~~~
 # EXPECTED
 ~~~

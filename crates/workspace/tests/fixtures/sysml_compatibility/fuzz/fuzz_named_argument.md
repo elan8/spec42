@@ -39,12 +39,11 @@ CloseCurly,EndOfFile,
 # FORMAT
 ~~~sysml
 package P {
-    calc def F {
-        in p : A;
-    }
+    calc def F { in p : A; }
     attribute f = F(q = 1, p = a);
     attribute b = new A(y = a, x = "");
 }
+
 ~~~
 # SMG
 ~~~

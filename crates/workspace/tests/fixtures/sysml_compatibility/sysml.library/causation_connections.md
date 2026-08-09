@@ -197,7 +197,8 @@ CloseCurly,EndOfFile,
 # FORMAT
 ~~~sysml
 standard library package CausationConnections {
-    doc /* 
+    doc
+    /* 
 	 * This package provides a library model modeling causes, effects, and causation connections 
 	 * between them.
 	 */
@@ -206,16 +207,17 @@ standard library package CausationConnections {
     private import SequenceFunctions::size;
     private import SequenceFunctions::intersection;
 
-    abstract occurrence causes [*] {
+    abstract occurrence causes[*] {
         doc /* Occurrences that are causes. */
     }
 
-    abstract occurrence effects [*] {
+    abstract occurrence effects[*]  {
         doc /* Occurrences that are effects. */
     }
 
     abstract connection def Multicausation {
-        doc /*
+        doc
+        /*
 		 * A Multicausation connection models the situation in which one set of
 		 * occurrences causes another.
 		 * 
@@ -225,13 +227,15 @@ standard library package CausationConnections {
 		 * There must be at least one cause and at least one effect.
 		 */
 
-        abstract const ref occurrence causes :>> causes :> participant [1..*] {
-            doc /* 
+        abstract constant ref occurrence causes[1..*] :>> causes :> participant {
+            doc
+            /* 
 			 * The causing occurrences. (Constant for each Multicausation instance.)
 			 */
         }
-        abstract const ref occurrence effects :>> effects :> participant [1..*] {
-            doc /* 
+        abstract constant ref occurrence effects[1..*] :>> effects :> participant {
+            doc
+            /* 
 			 * The effect occurrences caused by the causing occurrences. 
 			 * (Constant for each Multicausation instance.)
 			 */
@@ -239,7 +243,7 @@ standard library package CausationConnections {
 
         private assert constraint disjointCauseEffect {
             doc /* causes must be disjoint from effects. */
-            = isEmpty(intersection(causes, effects));
+            isEmpty(intersection(causes, effects))
         }
 
         private succession causalOrdering first [nCauses] causes.startShot then [nEffects] effects {
@@ -249,31 +253,33 @@ standard library package CausationConnections {
         }
     }
 
-    abstract connection multicausations : Multicausation [*] {
+    abstract connection multicausations : Multicausation[*] {
         doc /* multicausations is the base feature for Multicausation ConnectionUsages. */
     }
 
     connection def Causation :> Multicausation {
-        doc /*
+        doc
+        /*
 		 * A Causation is a binary Multicausation in which a single cause occurrence
 		 * causes a single effect occurrence. (However, a single cause can separately
 		 * have multiple effects, and a single effect can have separate Causation
 		 * connections with multiple causes.)
 		 */
 
-        end [*] theCauses :> causes :>> source {
+        end theCauses [*] occurrence theCause :> causes :>> source {
             doc /* The single causing occurrence. */
         }
 
-        end [*] theEffects :> effects :>> target {
+        end theEffects [*] occurrence theEffect :> effects :>> target {
             doc /* The single effect occurrence resulting from the cause. */
         }
     }
 
-    abstract connection causations : Causation :> multicausations [*] {
+    abstract connection causations : Causation[*] :> multicausations {
         doc /* causations is the base feature for Causation ConnectionUsages. */
     }
 }
+
 ~~~
 # SMG
 ~~~

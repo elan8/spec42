@@ -121,8 +121,7 @@ package Types {
     type B :> Base::Anything;
 
     specialization Gen subtype A specializes B;
-    specialization
-    subtype x :> Base::things;
+    specialization subtype x :> Base::things;
 
     type Original specializes Base::Anything {
         in feature Input;
@@ -141,6 +140,7 @@ package Types {
     type E :> Base::Anything intersects A, B;
     type F :> Base::Anything differences A, B;
 }
+
 ~~~
 # EXPECTED
 ~~~

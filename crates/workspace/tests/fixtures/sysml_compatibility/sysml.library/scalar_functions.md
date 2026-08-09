@@ -304,7 +304,8 @@ CloseCurly,EndOfFile,
 # FORMAT
 ~~~sysml
 standard library package ScalarFunctions {
-    doc /*
+    doc
+    /*
 	 * This package defines abstract functions that specialize the DataFunctions for use with ScalarValues. 
 	 */
 
@@ -335,6 +336,7 @@ standard library package ScalarFunctions {
 
     abstract function '..' specializes DataFunctions::'..' { in lower: ScalarValue[1]; in upper: ScalarValue[1]; return : ScalarValue[0..*]; }
 }
+
 ~~~
 # SMG
 ~~~

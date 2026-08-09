@@ -99,6 +99,7 @@ CloseCurly,EndOfFile,
 # FORMAT
 ~~~sysml
 package '3c-Function-based Behavior-structure mod-3' {
+
     part def Vehicle;
     part def VehicleFrame;
     part def HitchBall;
@@ -122,7 +123,7 @@ package '3c-Function-based Behavior-structure mod-3' {
 
     action {
         // Insert the vehicle HitchBall into the TrailerCoupler.
-        action 'connect trailer to vehicle';
+        action 'connect trailer to vehicle'
         assign trailer.trailerFrame.coupler.hitch := vehicle.vehicleFrame.hitch;
 
         // Remove the HitchBall from the TrailerCoupler.
@@ -130,6 +131,7 @@ package '3c-Function-based Behavior-structure mod-3' {
         assign trailer.trailerFrame.coupler.hitch := null;
     }
 }
+
 ~~~
 # EXPECTED
 ~~~

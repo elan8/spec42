@@ -61,7 +61,7 @@ metadata def Classified;
 metadata def Approval;
 
 package Annotated {
-    @Classified about Annotated;
+    @ Classified about Annotated;
 
     part def Vehicle;
     part def Engine;
@@ -72,6 +72,7 @@ package Annotated {
 
     #Approval #Classified part def MultiAnnotated;
 }
+
 ~~~
 # SMG
 ~~~

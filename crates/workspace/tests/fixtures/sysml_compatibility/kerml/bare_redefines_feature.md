@@ -56,13 +56,13 @@ CloseCurly,EndOfFile,
 # FORMAT
 ~~~sysml
 class A {
-    feature innerSpaceDimension : Natural [1];
-    portion feature all portions : Occurrence [1..*] {
-        portion redefines portionOfLife = (that as Occurrence).portionOfLife;
-    }
-    feature all spaceTimeEnclosedPoints : Occurrence [1..*] {
-        redefines innerSpaceDimension = 0;
-    }
+	feature innerSpaceDimension : Natural [1];
+	portion feature all portions: Occurrence[1..*] {
+		portion redefines portionOfLife = (that as Occurrence).portionOfLife;
+	}
+	feature all spaceTimeEnclosedPoints : Occurrence[1..*] {
+		redefines innerSpaceDimension = 0;
+	}
 }
 ~~~
 # SMG

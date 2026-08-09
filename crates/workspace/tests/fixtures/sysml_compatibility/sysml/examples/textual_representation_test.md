@@ -67,9 +67,10 @@ package TextualRepresentationTest {
     private import ScalarValues::Real;
 
     item def C {
-        attribute x : Real;
+        attribute x: Real;
         assert constraint x_constraint {
-            rep inOCL language "ocl" /* self.x > 0.0 */
+            rep inOCL language "ocl"
+            /* self.x > 0.0 */
         }
     }
 
@@ -77,11 +78,14 @@ package TextualRepresentationTest {
         in c : C;
         in newX : Real;
 
-        language "alf" /* c.x = newX;
+        language "alf"
+        /* c.x = newX;
 	         * WriteLine("Set new x");
 	         */
     }
+
 }
+
 ~~~
 # EXPECTED
 ~~~

@@ -419,11 +419,11 @@ package '6-Individual and Snapshots' {
             attribute velocity : Real;
             attribute acceleration : Real;
             exhibit state vehicleStates {
-				entry; then on;
-				state on;
-				then off;
-				state off;
-			}
+                entry; then on;
+                state on;
+                then off;
+                state off;
+            }
         }
 
         part def Road {
@@ -444,6 +444,7 @@ package '6-Individual and Snapshots' {
         individual def VehicleRoadContext_ID1 :> VehicleRoadContext;
         individual def VehicleA_ID1 :> VehicleA;
         individual def Road_ID1 :> Road;
+
     }
 
     package Values {
@@ -505,12 +506,12 @@ package '6-Individual and Snapshots' {
                     :>> acceleration = a0;
 
                     exhibit vehicleStates.on {
-						/*
+                        /*
 						 * This asserts that the snapshot exhibits the referenced 
 						 * state, which means that the vehicle must me in the state 
 						 * at the time of the snapshot.
 						 */
-					}
+                    }
                 }
 
                 snapshot road_ID1_t0 : Road_ID1 {
@@ -559,6 +560,7 @@ package '6-Individual and Snapshots' {
         }
     }
 }
+
 ~~~
 # EXPECTED
 ~~~

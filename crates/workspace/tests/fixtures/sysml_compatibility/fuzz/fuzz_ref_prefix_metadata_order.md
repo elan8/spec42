@@ -41,6 +41,7 @@ package P {
         ref #MyAnnotation self : C;
     }
 }
+
 ~~~
 # SMG
 ~~~

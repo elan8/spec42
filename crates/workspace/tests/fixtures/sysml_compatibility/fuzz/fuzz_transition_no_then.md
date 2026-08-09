@@ -46,12 +46,12 @@ CloseCurly,EndOfFile,
 ~~~sysml
 package P {
     state def S {
-        entry;
-        then off;
+        entry; then off;
         state off;
         transition t first off accept X state b;
     }
 }
+
 ~~~
 # SMG
 ~~~

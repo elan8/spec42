@@ -136,31 +136,34 @@ package 'Change and Time Triggers' {
 
     part def VehicleController;
 
-    action senseTemperature {
-        out temp : TemperatureValue;
-    }
+    action senseTemperature { out temp : TemperatureValue; }
 
     state healthStates {
         in vehicle : Vehicle;
         in controller : VehicleController;
 
-        entry;
-        then normal;
+        entry; then normal;
         do senseTemperature;
 
         state normal;
-        accept at vehicle . maintenanceTime then maintenance;
-        accept when senseTemperature . temp > vehicle . maxTemperature do send new OverTemp ( ) to controller then degraded;
+        accept at vehicle.maintenanceTime
+        then maintenance;
+        accept when senseTemperature.temp > vehicle.maxTemperature
+        do send new OverTemp() to controller
+        then degraded;
 
         state maintenance {
-            }
-            accept after 48 [ h ] then normal;
-
-            state degraded;
-            accept when senseTemperature . temp <= vehicle . maxTemperature then normal;
+            entry assign vehicle.maintenanceTime := vehicle.maintenanceTime + vehicle.maintenanceInterval;
         }
+        accept after 48 [h]
+        then normal;
+
+        state degraded;
+        accept when senseTemperature.temp <= vehicle.maxTemperature
+        then normal;
     }
 }
+
 ~~~
 # EXPECTED
 ~~~

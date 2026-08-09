@@ -281,15 +281,14 @@ package '9-Verification-simplified' {
     private import Definitions::*;
 
     package Definitions {
+
         requirement def <'2'> MassRequirement {
             attribute massActual :> ISQ::mass;
             attribute massReqd :> ISQ::mass;
 
             doc /* The actual mass shall be less than or equal to the required mass limit. */
 
-            require constraint {
-                = massActual <= massReqd;
-            }
+            require constraint { massActual <= massReqd }
         }
 
         part def Vehicle {
@@ -307,12 +306,14 @@ package '9-Verification-simplified' {
 
         verification def MassTest {
             objective massVerificationObjective {
-                verify massRequirement : MassRequirement;
+                verify requirement massRequirement : MassRequirement;
             }
         }
+
     }
 
     package Usages {
+
         requirement <'2.1'> vehicleMassRequirement : MassRequirement {
             subject vehicle : Vehicle;
             doc /* The vehicle mass shall be less than or equal to 2500 kg. */
@@ -344,15 +345,16 @@ package '9-Verification-simplified' {
 
             action evaluateData {
                 in massProcessed :> ISQ::mass = processData.massProcessed;
-                out verdict : VerdictKind = // Check that 'testVehicle' statisfies 'vehicleMassRequirement' if its mass equals 'massProcessed'.
-					PassIf(vehicleMassRequirement(vehicle = new testVehicle(mass = massProcessed)));
+                out verdict : VerdictKind =
+                // Check that 'testVehicle' statisfies 'vehicleMassRequirement' if its mass equals 'massProcessed'.
+                PassIf(vehicleMassRequirement(vehicle = new testVehicle(mass = massProcessed)));
             }
 
             return verdict : VerdictKind = evaluateData.verdict;
         }
 
         part massVerificationSystem : MassVerificationSystem {
-            perform :>> vehicleMassTest {
+            perform vehicleMassTest {
                 in part :>> testVehicle = vehicleUnderTest;
             }
 
@@ -361,7 +363,7 @@ package '9-Verification-simplified' {
             part testOperator : TestOperator;
 
             part scale : Scale {
-                perform :>> vehicleMassTest.collectData {
+                perform vehicleMassTest.collectData {
                     in part :>> testVehicle;
 
                     // In reality, this would be some more involved process.
@@ -380,13 +382,16 @@ package '9-Verification-simplified' {
             }
 
             then timeslice test2 {
-				ref individual :>> vehicleUnderTest : TestVehicle2 :> vehicle1_c2 {
-					:>> mass = 2500 [SI::kg];
-				}
-			}
+                ref individual :>> vehicleUnderTest : TestVehicle2 :> vehicle1_c2 {
+                    :>> mass = 2500 [SI::kg];
+                }
+            }
         }
+
     }
+
 }
+
 ~~~
 # EXPECTED
 ~~~

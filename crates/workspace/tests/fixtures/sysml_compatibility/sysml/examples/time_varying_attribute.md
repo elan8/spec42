@@ -151,7 +151,7 @@ package TimeVaryingAttribute {
     private import SI::s;
 
     item def PwrCmd {
-        attribute pwrLevel : ScalarValues::Integer;
+        attribute pwrLevel: ScalarValues::Integer;
     }
 
     part def Transport2 {
@@ -160,7 +160,7 @@ package TimeVaryingAttribute {
         attribute elapseTime :> ISQ::duration;
         attribute :>> localClock.currentTime = startTime + elapseTime;
 
-        out item pwrCmd : PwrCmd;
+        out item pwrCmd:PwrCmd;
         // Lifetime conditions
         timeslice :>> portionOfLife {
             snapshot :>> start {
@@ -181,7 +181,7 @@ package TimeVaryingAttribute {
         //       }
 
         timeslice transportPeriod {
-            snapshot :>> start {
+            snapshot :>> start{
                 :>> elapseTime = 1 [s];
             }
             snapshot :>> done {
@@ -198,6 +198,7 @@ package TimeVaryingAttribute {
         //        }
     }
 }
+
 ~~~
 # EXPECTED
 ~~~

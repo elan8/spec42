@@ -64,11 +64,16 @@ package 'Flow Usage Example' {
         part tankAssy : FuelTankAssembly;
         part eng : Engine;
 
-        flow of;
+        flow of Fuel
+        from tankAssy.fuelTankPort.fuelSupply
+        to eng.engineFuelPort.fuelSupply;
 
-        flow of;
+        flow of Fuel
+        from eng.engineFuelPort.fuelReturn
+        to tankAssy.fuelTankPort.fuelReturn;
     }
 }
+
 ~~~
 # EXPECTED
 ~~~

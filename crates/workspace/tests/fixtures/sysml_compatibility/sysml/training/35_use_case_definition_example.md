@@ -95,6 +95,7 @@ CloseCurly,EndOfFile,
 # FORMAT
 ~~~sysml
 package 'Use Case Definition Example' {
+
     part def Vehicle;
     part def Person;
     part def Environment;
@@ -104,11 +105,12 @@ package 'Use Case Definition Example' {
         subject vehicle : Vehicle;
 
         actor driver : Person;
-        actor passengers : Person [0..4];
+        actor passengers : Person[0..4];
         actor environment : Environment;
 
         objective {
-            doc /* Transport driver and passengers from starting location 
+            doc
+            /* Transport driver and passengers from starting location 
 			 * to ending location.
 			 */
         }
@@ -117,15 +119,16 @@ package 'Use Case Definition Example' {
     use case def 'Enter Vehicle' {
         subject vehicle : Vehicle;
         actor driver : Person;
-        actor passengers : Person [0..4];
+        actor passengers : Person[0..4];
     }
 
     use case def 'Exit Vehicle' {
         subject vehicle : Vehicle;
         actor driver : Person;
-        actor passengers : Person [0..4];
+        actor passengers : Person[0..4];
     }
 }
+
 ~~~
 # EXPECTED
 ~~~

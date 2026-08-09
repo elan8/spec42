@@ -20,6 +20,8 @@ Semicolon,KwIn,Ident,Colon,Ident,EndOfFile,
 ~~~
 # FORMAT
 ~~~sysml
+; in v : SpeedVal
+
 ~~~
 # EXPECTED
 ~~~

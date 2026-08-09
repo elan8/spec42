@@ -95,7 +95,9 @@ library package 'Semantic Metadata Example' {
     metadata def scenario :> SemanticMetadata {
         :>> baseType = scenarios meta SysML::Usage;
     }
+
 }
+
 ~~~
 # EXPECTED
 ~~~

@@ -5,14 +5,14 @@ pub struct FormatOptions {
     pub insert_spaces: bool,
 }
 
-/// Formats a whole SysML/KerML document without changing its token content.
+/// Formats a whole SysML/KerML document without changing its parsed meaning.
 ///
 /// This deliberately remains a lightweight formatter: Spec42 keeps the pinned
 /// parser as its only compiler frontend.  The lexical pass is nevertheless
 /// aware of strings and both comment forms, so braces in those regions do not
-/// affect layout.  It also preserves a source verbatim if its lexical structure
-/// is incomplete; editor recovery must never turn an unfinished string,
-/// unrestricted name, or comment into different source text.
+/// affect layout. Editor recovery must never turn malformed input into a
+/// different partial model, so a candidate layout is retained only when the
+/// parser's recovered tree and diagnostic kinds remain unchanged.
 pub fn format_document_text(source: &str, options: FormatOptions) -> String {
     let analysis = match analyze(source) {
         Some(analysis) => analysis,
@@ -77,11 +77,54 @@ pub fn format_document_text(source: &str, options: FormatOptions) -> String {
         collapsed.pop();
     }
 
-    if collapsed.is_empty() {
+    let candidate = if collapsed.is_empty() {
         "\n".to_string()
     } else {
         format!("{}\n", collapsed.join("\n"))
+    };
+
+    if preserves_parse_meaning(source, &candidate) {
+        candidate
+    } else {
+        source.to_string()
     }
+}
+
+fn preserves_parse_meaning(source: &str, candidate: &str) -> bool {
+    match sysml_v2_parser::parse(source) {
+        Ok(original) => sysml_v2_parser::parse(candidate).is_ok_and(|reparsed| {
+            original.normalize_for_test_comparison() == reparsed.normalize_for_test_comparison()
+        }),
+        Err(_) => recovery_equivalent(source, candidate),
+    }
+}
+
+fn recovery_equivalent(source: &str, candidate: &str) -> bool {
+    let source = sysml_v2_parser::parse_for_editor(source);
+    let candidate = sysml_v2_parser::parse_for_editor(candidate);
+    !candidate.is_ok()
+        && source.root.normalize_for_test_comparison()
+            == candidate.root.normalize_for_test_comparison()
+        && recovery_diagnostic_signature(&source.errors)
+            == recovery_diagnostic_signature(&candidate.errors)
+}
+
+fn recovery_diagnostic_signature(errors: &[sysml_v2_parser::ParseError]) -> Vec<String> {
+    errors
+        .iter()
+        .map(|error| {
+            format!(
+                "{:?}|{:?}|{:?}|{:?}|{:?}|{:?}|{:?}",
+                error.category,
+                error.severity,
+                error.code,
+                error.message,
+                error.expected,
+                error.found,
+                error.is_cascade,
+            )
+        })
+        .collect()
 }
 
 #[derive(Debug)]
@@ -103,9 +146,8 @@ enum LexState {
 }
 
 /// Returns `None` for incomplete lexical structure. This is a conservative
-/// recovery boundary: formatting an unbalanced block is useful in an editor,
-/// but an unfinished string, unrestricted name, or comment can contain
-/// whitespace payload.
+/// recovery boundary because an unfinished string, unrestricted name, or
+/// comment can contain whitespace payload.
 fn analyze(source: &str) -> Option<Vec<LineAnalysis<'_>>> {
     let mut state = LexState::Code;
     let mut lines = Vec::new();
@@ -281,6 +323,13 @@ part x;
     #[test]
     fn format_document_preserves_unfinished_unrestricted_name_verbatim() {
         let source = "package P {\n  feature 'brace { // unfinished";
+        assert_eq!(format_document_text(source, default_options()), source);
+    }
+
+    #[test]
+    fn format_document_preserves_source_when_layout_changes_the_strict_parse_tree() {
+        let source = "package ion {\n  class A {\n    in<f;\n  }\n\n  class A { in #su f;\n  }\n}";
+        assert!(sysml_v2_parser::parse(source).is_ok());
         assert_eq!(format_document_text(source, default_options()), source);
     }
 

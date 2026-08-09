@@ -122,18 +122,16 @@ package 'Requirement Definitions' {
     requirement def MassLimitationRequirement {
         doc /* The actual mass shall be less than or equal to the required mass. */
 
-        attribute massActual : MassValue;
-        attribute massReqd : MassValue;
+        attribute massActual: MassValue;
+        attribute massReqd: MassValue;
 
-        require constraint {
-            = massActual <= massReqd;
-        }
+        require constraint { massActual <= massReqd }
     }
 
     part def Vehicle {
-        attribute dryMass : MassValue;
-        attribute fuelMass : MassValue;
-        attribute fuelFullMass : MassValue;
+        attribute dryMass: MassValue;
+        attribute fuelMass: MassValue;
+        attribute fuelFullMass: MassValue;
     }
 
     requirement def <'1'> VehicleMassLimitationRequirement :> MassLimitationRequirement {
@@ -143,9 +141,7 @@ package 'Requirement Definitions' {
 
         attribute redefines massActual = vehicle.dryMass + vehicle.fuelMass;
 
-        assume constraint {
-            = vehicle.fuelMass > 0[kg];
-        }
+        assume constraint { vehicle.fuelMass > 0[kg] }
     }
 
     port def ClutchPort;
@@ -153,14 +149,15 @@ package 'Requirement Definitions' {
 
     requirement def <'2'> DrivePowerInterface {
         doc /* The engine shall transfer its generated torque to the transmission via the clutch interface. */
-        subject clutchPort : ClutchPort;
+        subject clutchPort: ClutchPort;
     }
 
     requirement def <'3'> TorqueGeneration {
         doc /* The engine shall generate torque as a function of RPM as shown in Table 1. */
-        subject generateTorque : GenerateTorque;
+        subject generateTorque: GenerateTorque;
     }
 }
+
 ~~~
 # EXPECTED
 ~~~

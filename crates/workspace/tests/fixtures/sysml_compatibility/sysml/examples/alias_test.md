@@ -73,8 +73,7 @@ CloseCurly,EndOfFile,
 # FORMAT
 ~~~sysml
 package AliasTest {
-    private import ISQSpaceTime::breadth;
-    // import of an alias
+    private import ISQSpaceTime::breadth; // import of an alias
     attribute b :> breadth;
 
     part def P1 {
@@ -94,6 +93,7 @@ package AliasTest {
     connect p1.po1 to p2.pdest;
     connect p1.po1 to p2.pd1;
 }
+
 ~~~
 # EXPECTED
 ~~~

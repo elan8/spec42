@@ -67,6 +67,7 @@ CloseCurly,EndOfFile,
 # FORMAT
 ~~~sysml
 package Dependencies {
+
     package System {
         package 'Application Layer';
         package 'Service Layer';
@@ -82,10 +83,12 @@ package Dependencies {
     feature y;
     feature z;
 
-    dependency from z to x, y {
+    dependency z to x, y {
         feature e;
     }
+
 }
+
 ~~~
 # EXPECTED
 ~~~

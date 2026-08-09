@@ -148,7 +148,8 @@ package '13a-Model Containment' {
     requirement PowerTrainRequirements;
 
     package 'Vehicle Model' {
-        doc /*
+        doc
+        /*
 		 * This package is used to represent a top-level "model".
 		 * There is no specific syntax for identifying a package
 		 * used in this way.
@@ -161,7 +162,8 @@ package '13a-Model Containment' {
         }
 
         package 'Vehicle Reference Model' {
-            doc /*
+            doc
+            /*
 			 * This package is used to represent a "model library".
 			 * There is no specific syntax for identifying a package
 			 * used in this way.
@@ -171,12 +173,12 @@ package '13a-Model Containment' {
             public import VehicleSubsystems;
 
             //*
-			// The following would transitively import all the
-			// members of the VehicleSubsystems package, rather
-			// then importing the package itself.
-			 
-			   public import VehicleSubsystems::*;
-			*/
+            // The following would transitively import all the
+            // members of the VehicleSubsystems package, rather
+            // then importing the package itself.
+
+            public import VehicleSubsystems::*;
+            */
         }
 
         package VehicleSubsystems {
@@ -194,7 +196,9 @@ package '13a-Model Containment' {
             public import PowerTrainRequirements;
         }
     }
+
 }
+
 ~~~
 # EXPECTED
 ~~~

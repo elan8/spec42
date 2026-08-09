@@ -126,12 +126,12 @@ package 'For Loop Example' {
     }
 
     action def ComputeMotion {
-        in attribute powerProfile :> ISQ::power [*];
+        in attribute powerProfile :> ISQ::power[*];
         in attribute vehicleMass :> ISQ::mass;
         in attribute initialPosition :> ISQ::length;
         in attribute initialSpeed :> ISQ::speed;
         in attribute deltaT :> ISQ::time;
-        out attribute positions :> ISQ::length [*] := ( );
+        out attribute positions :> ISQ::length[*] := ( );
 
         private attribute position := initialPosition;
         private attribute speed := initialSpeed;
@@ -151,7 +151,9 @@ package 'For Loop Example' {
             then assign positions := positions->including(position);
         }
     }
+
 }
+
 ~~~
 # EXPECTED
 ~~~

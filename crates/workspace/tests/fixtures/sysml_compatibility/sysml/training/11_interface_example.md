@@ -75,9 +75,12 @@ package 'Interface Example' {
         part tankAssy : FuelTankAssembly;
         part eng : Engine;
 
-        interface : FuelInterface connect supplierPort ::> tankAssy.fuelTankPort to consumerPort ::> eng.engineFuelPort;
+        interface : FuelInterface connect
+        supplierPort ::> tankAssy.fuelTankPort to
+        consumerPort ::> eng.engineFuelPort;
     }
 }
+
 ~~~
 # EXPECTED
 ~~~

@@ -71,6 +71,7 @@ package P {
         binding b bind lhs = rhs;
     }
 }
+
 ~~~
 # SMG
 ~~~

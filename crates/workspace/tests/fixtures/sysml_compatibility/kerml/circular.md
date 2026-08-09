@@ -49,7 +49,7 @@ CloseCurly,EndOfFile,
 ~~~sysml
 package Circular {
     class A { }
-    feature a : A;
+    feature a: A;
     alias Circ for Circular;
     package P {
         public import Circular::*;
@@ -59,6 +59,7 @@ package Circular {
     feature y :> x;
     feature z :> y;
 }
+
 ~~~
 # EXPECTED
 ~~~

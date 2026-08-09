@@ -104,6 +104,7 @@ package '15_06-System of Quantities' {
 	  *   attribute <isq> 'International System of Quantities': SystemOfQuantities in ISQBase
 	  */
 }
+
 ~~~
 # EXPECTED
 ~~~

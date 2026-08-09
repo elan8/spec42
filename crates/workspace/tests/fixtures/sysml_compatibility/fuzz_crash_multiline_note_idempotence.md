@@ -34,7 +34,7 @@ MalformedMultilineNote,EndOfFile,
 # FORMAT
 ~~~sysml
 package ers {
-    //*>> baseTyclassifier A;,	classifier B;
+	//*>> baseTyclassifier A;,	classifier B;
 
 	specializaaaaaaaaaaaaaaaaaaaaaaaaaaA specializes B;
 	specialization swbclassifier B :> A;
@@ -45,7 +45,6 @@ package ers {
 	cla[sifie Conjugation {
 er E specializes C intersects A, B;
 	classifier F union^ A unions B;
-}
 }
 ~~~
 # EXPECTED

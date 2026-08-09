@@ -100,6 +100,7 @@ CloseCurly,EndOfFile,
 # FORMAT
 ~~~sysml
 package AnalysisTest {
+
     part def V {
         m;
     }
@@ -117,7 +118,7 @@ package AnalysisTest {
             subject = result;
         }
 
-        = v.m;
+        v.m
     }
 
     analysis def AnalysisPlan {
@@ -127,9 +128,7 @@ package AnalysisTest {
             doc /* ... */
         }
 
-        analysis analysisCase : AnalysisCase {
-            return mass;
-        }
+        analysis analysisCase : AnalysisCase { return mass; }
     }
 
     part analysisContext {
@@ -138,6 +137,7 @@ package AnalysisTest {
         }
     }
 }
+
 ~~~
 # EXPECTED
 ~~~

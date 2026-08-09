@@ -43,21 +43,19 @@ fn every_rust_ignore_attribute_has_a_non_empty_reason() {
 }
 
 #[test]
-fn checked_in_semantic_graph_skip_metadata_has_a_complete_contract() {
+fn checked_in_fixture_skip_metadata_has_a_complete_contract() {
     let mut violations = Vec::new();
     visit_markdown(Path::new(FIXTURES), &mut |path| {
-        let Ok(fixture) = fs::read_to_string(path) else {
-            // The corpus runner owns the explicit non-UTF-8 fixture skip.
-            return;
-        };
-        if let Err(message) = validate_semantic_graph_skip_metadata(&fixture) {
+        let bytes = fs::read(path).expect("read fixture");
+        let fixture = String::from_utf8_lossy(&bytes);
+        if let Err(message) = validate_fixture_skip_metadata(&fixture) {
             violations.push(format!("{}: {message}", path.display()));
         }
     });
 
     assert!(
         violations.is_empty(),
-        "semantic graph skips require `semantic_graph=skip` and a concrete `semantic_graph_skip_reason` in META:\n{}",
+        "fixture skips require `<contract>=skip` and a concrete `<contract>_skip_reason` in META:\n{}",
         violations.join("\n")
     );
 }
@@ -105,6 +103,27 @@ fn semantic_graph_skip_metadata_rejects_missing_or_stale_reasons() {
         assert!(
             validate_semantic_graph_skip_metadata(invalid).is_err(),
             "invalid skip metadata was accepted: {invalid}"
+        );
+    }
+}
+
+#[test]
+fn formatter_skip_metadata_rejects_missing_or_stale_reasons() {
+    assert!(validate_fixture_skip_metadata(
+        "# META\n~~~ini\nformatter=skip\nformatter_skip_reason=formatter recovery cannot preserve this malformed source\n~~~\n"
+    )
+    .is_ok());
+
+    for invalid in [
+        "# META\n~~~ini\nformatter=skip\n~~~\n",
+        "# META\n~~~ini\nformatter=skip\nformatter_skip_reason=   \n~~~\n",
+        "# META\n~~~ini\nformatter_skip_reason=known formatter bug\n~~~\n",
+        "# META\n~~~ini\nformatter=assert\nformatter_skip_reason=known formatter bug\n~~~\n",
+        "# META\n~~~ini\nformatter=skip\nformatter=skip\nformatter_skip_reason=known formatter bug\n~~~\n",
+    ] {
+        assert!(
+            validate_fixture_skip_metadata(invalid).is_err(),
+            "invalid formatter skip metadata was accepted: {invalid}"
         );
     }
 }
@@ -187,8 +206,18 @@ fn visit_markdown(root: &Path, visit: &mut dyn FnMut(&Path)) {
     }
 }
 
+fn validate_fixture_skip_metadata(fixture: &str) -> Result<(), String> {
+    let metadata = fenced_section(fixture, "META").ok_or("fixture is missing a META section")?;
+    validate_skip_metadata(metadata, "semantic_graph", "semantic_graph_skip_reason")?;
+    validate_skip_metadata(metadata, "formatter", "formatter_skip_reason")
+}
+
 fn validate_semantic_graph_skip_metadata(fixture: &str) -> Result<(), String> {
     let metadata = fenced_section(fixture, "META").ok_or("fixture is missing a META section")?;
+    validate_skip_metadata(metadata, "semantic_graph", "semantic_graph_skip_reason")
+}
+
+fn validate_skip_metadata(metadata: &str, state_key: &str, reason_key: &str) -> Result<(), String> {
     let mut graph_statuses = Vec::new();
     let mut reasons = Vec::new();
     for line in metadata
@@ -197,33 +226,31 @@ fn validate_semantic_graph_skip_metadata(fixture: &str) -> Result<(), String> {
         .filter(|line| !line.is_empty())
     {
         let Some((key, value)) = line.split_once('=') else {
-            if matches!(line, "semantic_graph" | "semantic_graph_skip_reason") {
+            if line == state_key || line == reason_key {
                 return Err(format!("META field {line:?} requires `=` and a value"));
             }
             continue;
         };
         match key.trim() {
-            "semantic_graph" => graph_statuses.push(value.trim()),
-            "semantic_graph_skip_reason" => reasons.push(value.trim()),
+            key if key == state_key => graph_statuses.push(value.trim()),
+            key if key == reason_key => reasons.push(value.trim()),
             _ => {}
         }
     }
     if graph_statuses.len() > 1 {
-        return Err("META declares semantic_graph more than once".to_string());
+        return Err(format!("META declares {state_key} more than once"));
     }
     if reasons.len() > 1 {
-        return Err("META declares semantic_graph_skip_reason more than once".to_string());
+        return Err(format!("META declares {reason_key} more than once"));
     }
     match (graph_statuses.as_slice(), reasons.as_slice()) {
         ([], []) => Ok(()),
         (["skip"], [reason]) if !reason.is_empty() => Ok(()),
-        (["skip"], []) => {
-            Err("semantic_graph=skip requires semantic_graph_skip_reason".to_string())
-        }
-        (["skip"], [_]) => Err("semantic_graph_skip_reason must be non-empty".to_string()),
-        ([], [_]) => Err("semantic_graph_skip_reason requires semantic_graph=skip".to_string()),
+        (["skip"], []) => Err(format!("{state_key}=skip requires {reason_key}")),
+        (["skip"], [_]) => Err(format!("{reason_key} must be non-empty")),
+        ([], [_]) => Err(format!("{reason_key} requires {state_key}=skip")),
         ([status], _) => Err(format!(
-            "semantic_graph must be skip when declared, got {status:?}"
+            "{state_key} must be skip when declared, got {status:?}"
         )),
         _ => unreachable!("duplicate META fields were rejected above"),
     }

@@ -128,6 +128,7 @@ package CoverageIndividual {
     individual action a1;
     individual state s1;
 }
+
 ~~~
 # SMG
 ~~~

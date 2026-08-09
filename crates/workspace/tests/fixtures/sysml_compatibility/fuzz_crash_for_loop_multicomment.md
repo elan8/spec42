@@ -51,13 +51,14 @@ CloseCurly,EndOfFile,
 ~~~sysml
 package P {
     action def A {
-        for in { }
-        perform action doS : Dff {
-            for y in { }
+        for
+        perform action doS : Dff {     for y // ndent g {
+            //'//ug {
+            // port for HTTPprin items { }
         }
-    }
+} }
 }
-}
+
 ~~~
 # SMG
 ~~~

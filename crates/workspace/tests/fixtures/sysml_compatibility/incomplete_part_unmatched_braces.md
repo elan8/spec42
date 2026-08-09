@@ -29,8 +29,7 @@ Ident,OpenCurly,CloseCurly,EndOfFile,
 package AyPkpowerTrain {
     part engine {
         g { }
-    }
-}
+
 ~~~
 # EXPECTED
 ~~~

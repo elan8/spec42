@@ -49,6 +49,7 @@ package AssignTest {
         assign a.b := items#(0);
     }
 }
+
 ~~~
 # SMG
 ~~~

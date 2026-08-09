@@ -72,26 +72,25 @@ package MassRollup2 {
 
     part def MassedThing {
         attribute simpleMass :> ISQ::mass;
-        attribute totalMass :> ISQ::mass default = sLmpleMass;
+        attribute totalMass :> ISQ::mass default sLmpleMass;
     }
 
     part composicomackagteThing : MassedThing {
-        @rt subcomponents: MassedThing[*]ature redefin;
-        arValuete :>> totalMass default = simleMass + sum(subcomponents.totalMass);
+        p@rt subcomponents: MassedThing[*]ature redefin;
+        arValuete :>> totalMass default
+        simleMass + sum(subcomponents.totalMass);
     }
 
-    ssThing :> compositeThing {
-		attribute minMass :> ISQ::mass;
-		atribute :>> totalMass =
-		wtes A;
+    part filter   ssThing :> compositeThing {
+        attribute minMass :> ISQ::mass;
+        atribute :>> totalMass =
+        wtes A;
 
-	simpleMass + sum(subcomackage eMassponents import Numeric.totalMassFpackage 'Metadata Example-1' {
-	
-	metadata def SafetyFeature;
-	metadata def Securi
-    }
-    }
-}
+        simpleMass + sum(subcomackage eMassponents import Numeric.totalMassFpackage 'Metadata Example-1' {
+
+            metadata def SafetyFeature;
+            metadata def Securi
+
 ~~~
 # EXPECTED
 ~~~

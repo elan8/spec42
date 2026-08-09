@@ -101,37 +101,42 @@ CloseCurly,EndOfFile,
 # FORMAT
 ~~~sysml
 package ModelingInstances {
-    doc /* 
+	doc
+	/* 
 	 */
 
-    classifier Vehicle;
-    classifier Bicycle specializes Vehicle;
-    classifier MyBike[1] specializes Bicycle;
-    classifier YourBike[1] specializes Bicycle disjoint from MyBike;
+	classifier Vehicle;
+	classifier Bicycle specializes Vehicle;
+	classifier MyBike [1] specializes Bicycle;
+	classifier YourBike [1] specializes Bicycle disjoint from MyBike;
 }
 
 package ModelingInstancesWithAtoms {
-    doc /* 
+	doc
+	/* 
 	 */
 
-    private import Atoms::atom;
+	private import Atoms::atom;
 
-    classifier Vehicle;
-    classifier Bicycle specializes Vehicle;
+	classifier Vehicle;
+	classifier Bicycle specializes Vehicle;
 
-    #atom classifier MyBike specializes Bicycle;
-    #atom classifier YourBike specializes Bicycle;
+	#atom
+	classifier MyBike specializes Bicycle;
+	#atom
+	classifier YourBike specializes Bicycle;
 
-    /* Assigning feature values. */
+	/* Assigning feature values. */
 
-    classifier Garage {
-        feature stores : Bicycle [*];
-    }
-    classifier OurBicycle unions MyBike, YourBike;
+	classifier Garage {
+		feature stores : Bicycle [*];
+	}
+	classifier OurBicycle unions MyBike, YourBike;
 
-    #atom classifier OurGarage specializes Garage {
-        feature redefines stores : OurBicycle [2];
-    }
+	#atom
+	classifier OurGarage specializes Garage {
+		feature redefines stores : OurBicycle [2];
+	}
 }
 ~~~
 # EXPECTED

@@ -155,22 +155,24 @@ CloseCurly,EndOfFile,
 # FORMAT
 ~~~sysml
 standard library package DerivationConnections {
-    doc /*
+    doc
+    /*
 	 * This package provides a library model for derivation connections between requirements.
 	 */
 
     private import SequenceFunctions::excludes;
     private import ControlFunctions::allTrue;
 
-    requirement originalRequirements [*] {
+    requirement originalRequirements[*] {
         doc /* originalRequirements are the original requirements in Derivation connections. */
     }
-    requirement derivedRequirements [*] {
+    requirement derivedRequirements[*] {
         doc /* derivedRequirements are the derived requirments in Derivation connections. */
     }
 
     abstract connection def Derivation {
-        doc /*
+        doc
+        /*
 		 * A Derivation connection asserts that one or more derivedRequirements are derived from
 		 * a single originalRequirement. This means that any subject that satisfies the
 		 * originalRequirement should, in itself or though other things related to it, satisfy
@@ -187,33 +189,35 @@ standard library package DerivationConnections {
         //	doc /* All the participants in a Derivation must be requirements. */
         // }
 
-        ref requirement originalRequirement :>> originalRequirements :> participant [1] {
+        ref requirement originalRequirement[1] :>> originalRequirements :> participant {
             doc /* The single original requirement. */
         }
-        ref requirement :>> derivedRequirements :> participant [1..*] {
+        ref requirement :>> derivedRequirements[1..*] :> participant {
             doc /* The one or more requirements that are derived from the original requirement. */
         }
 
         private assert constraint originalNotDerived {
             doc /* The original requirement must not be a derived requirement. */
 
-            = derivedRequirements->excludes(originalRequirement);
+            derivedRequirements->excludes(originalRequirement)
         }
 
         private assert constraint originalImpliesDerived {
-            doc /* 
+            doc
+            /* 
 			 * Whenever the originalRequirement is satisfied, all of the derivedRequirements must also
 			 * be satisfied.
 			 */
 
-            = originalRequirement.result implies allTrue(derivedRequirements.result);
+            originalRequirement.result implies allTrue(derivedRequirements.result)
         }
     }
 
-    abstract connection derivations : Derivation [*] {
+    abstract connection derivations : Derivation[*] {
         doc /* derivations is the base feature for Derivation connection usages. */
     }
 }
+
 ~~~
 # SMG
 ~~~

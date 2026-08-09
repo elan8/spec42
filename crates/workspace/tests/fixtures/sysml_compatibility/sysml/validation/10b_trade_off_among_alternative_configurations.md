@@ -261,6 +261,7 @@ package '10b-Trade-off Among Alternative Configurations' {
     private import Usages::*;
 
     package Definitions {
+
         part def Vehicle;
 
         part def Engine {
@@ -278,13 +279,15 @@ package '10b-Trade-off Among Alternative Configurations' {
 
         part def '4CylCrankShaft' :> CrankShaft;
         part def '6CylCrankShaft' :> CrankShaft;
+
     }
 
     package Usages {
+
         part engine : Engine {
-            part cyl : Cylinder [*] {
-                part p : Piston [1];
-                part rod : ConnectingRod [1];
+            part cyl[*] : Cylinder {
+                part p[1] : Piston;
+                part rod[1] : ConnectingRod;
             }
 
             part cs : CrankShaft;
@@ -292,27 +295,29 @@ package '10b-Trade-off Among Alternative Configurations' {
 
         variation part engineChoice :> engine {
             variant part '4cylEngine' {
-				part :>> cyl[4];
-				part :>> cs : '4CylCrankShaft';
-			}
+                part :>> cyl[4];
+                part :>> cs : '4CylCrankShaft';
+            }
 
             variant part '6cylEngine' {
-				part :>> cyl[6];
-				part :>> cs : '6CylCrankShaft';
-			}
+                part :>> cyl[6];
+                part :>> cs : '6CylCrankShaft';
+            }
         }
 
         part vehicle : Vehicle {
-            part engine :> engineChoice [1] = engineChoice::'6cylEngine' {
+            part engine[1] :> engineChoice = engineChoice::'6cylEngine' {
                 assert constraint engineSelectionRational {
                     doc /* Selected the best engine based on the 'engineTradeStudy'. */
-                    = engine == Analysis::engineTradeStudy.selectedAlternative;
+                    engine == Analysis::engineTradeStudy.selectedAlternative
                 }
             }
+
         }
     }
 
     package Analysis {
+
         calc def EngineEvaluation {
             doc /* Evaluation function with criteria power, mass, efficency and cost. */
             in power : ISQ::PowerValue;
@@ -324,38 +329,29 @@ package '10b-Trade-off Among Alternative Configurations' {
         }
 
         analysis engineTradeStudy : TradeStudy {
-            subject : Engine [1..*] = all engineChoice;
+            subject : Engine[1..*] = all engineChoice;
             objective : MaximizeObjective;
 
             calc :>> evaluationFunction {
                 in part anEngine :>> alternative : Engine;
 
-                calc powerRollup {
-                    in engine = anEngine;
-                    return power:>ISQ::power;
-                }
-                calc massRollup {
-                    in engine = anEngine;
-                    return mass:>ISQ::mass;
-                }
-                calc efficiencyRollup {
-                    in engine = anEngine;
-                    return efficiency: Real;
-                }
-                calc costRollup {
-                    in engine = anEngine;
-                    return cost: Real;
-                }
+                calc powerRollup { in engine = anEngine; return power:>ISQ::power; }
+                calc massRollup { in engine = anEngine; return mass:>ISQ::mass; }
+                calc efficiencyRollup { in engine = anEngine; return efficiency: Real; }
+                calc costRollup { in engine = anEngine; return cost: Real; }
 
                 return :>> result : Real = EngineEvaluation(
-					powerRollup.power, massRollup.mass, efficiencyRollup.efficiency, costRollup.cost
-				);
+                powerRollup.power, massRollup.mass, efficiencyRollup.efficiency, costRollup.cost
+                );
             }
 
             return part :>> selectedAlternative : Engine;
         }
+
     }
+
 }
+
 ~~~
 # EXPECTED
 ~~~

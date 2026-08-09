@@ -62,6 +62,7 @@ CloseCurly,EndOfFile,
 # FORMAT
 ~~~sysml
 package DependencyTest {
+
     package System {
         package 'Application Layer';
         package 'Service Layer';
@@ -77,8 +78,10 @@ package DependencyTest {
     attribute y;
     attribute z;
 
-    dependency from z to x, y;
+    dependency z to x, y;
+
 }
+
 ~~~
 # EXPECTED
 ~~~

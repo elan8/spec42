@@ -32,6 +32,7 @@ part def Vehicle {
     part def Engine;
     part def Wheel;
 }
+
 ~~~
 # EXPECTED
 ~~~

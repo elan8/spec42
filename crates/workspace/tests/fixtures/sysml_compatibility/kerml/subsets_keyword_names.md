@@ -43,6 +43,7 @@ KwFeature,Ident,KwSubsets,KwDo,Comma,KwStep,Semicolon,EndOfFile,
 step s1 subsets step;
 feature f1 redefines step;
 feature f2 subsets do, step;
+
 ~~~
 # SMG
 ~~~

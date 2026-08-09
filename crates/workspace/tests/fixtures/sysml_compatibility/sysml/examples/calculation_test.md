@@ -105,19 +105,20 @@ package CalculationExample {
     }
 
     calc def MassSum {
-        in partMasses : MassValue [0..*];
+        in partMasses : MassValue[0..*];
         return totalMass : MassValue = sum(partMasses);
     }
 
-    calc ms : MassSum {
+    calc ms: MassSum {
         in partMasses = (vehicle.eng.m, vehicle.trans.m);
         return totalMass;
     }
 
-    part vehicles [*] = (vehicle, vehicle);
-    attribute masses1 [*] = (vehicles as VehiclePart).m;
-    attribute masses2 [*] = (vehicles as vehicle).m;
+    part vehicles[*] = (vehicle, vehicle);
+    attribute masses1[*] = (vehicles as VehiclePart).m;
+    attribute masses2[*] = (vehicles as vehicle).m;
 }
+
 ~~~
 # EXPECTED
 ~~~

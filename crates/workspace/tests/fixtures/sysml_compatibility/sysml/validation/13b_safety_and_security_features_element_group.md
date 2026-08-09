@@ -111,11 +111,12 @@ CloseCurly,EndOfFile,
 # FORMAT
 ~~~sysml
 package '13b-Safety and Security Features Element Group' {
+
     part vehicle1_c1 {
         part interior {
             part alarm;
-            part seatBelt [2];
-            part frontSeat [2];
+            part seatBelt[2];
+            part frontSeat[2];
             part driverAirBag;
         }
         part bodyAssy {
@@ -149,6 +150,7 @@ package '13b-Safety and Security Features Element Group' {
         public import 'Security Features'::*;
     }
 }
+
 ~~~
 # EXPECTED
 ~~~

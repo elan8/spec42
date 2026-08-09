@@ -116,7 +116,8 @@ CloseCurly,EndOfFile,
 # FORMAT
 ~~~sysml
 standard library package Constraints {
-    doc /*
+    doc
+    /*
 	 * This package defines the base types for constraints and related elements in the
 	 * SysML language.
 	 */
@@ -127,32 +128,38 @@ standard library package Constraints {
     private import Performances::falseEvaluations;
 
     abstract constraint def ConstraintCheck :> BooleanEvaluation {
-        doc /*
+        doc
+        /*
 		 * ConstraintCheck is the most general class for constraint checking. ConstraintCheck is the base
 		 * type of all ConstraintDefinitions.
 		 */
 
-        ref constraint self : ConstraintCheck :>> BooleanEvaluation::self;
+        ref constraint self: ConstraintCheck :>> BooleanEvaluation::self;
     }
 
-    abstract constraint constraintChecks : ConstraintCheck [0..*] :> booleanEvaluations nonunique {
-        doc /*
+    abstract constraint constraintChecks: ConstraintCheck[0..*] nonunique :> booleanEvaluations {
+        doc
+        /*
 		 * constraintChecks is the base feature of all ConstraintUsages.
 		 */
     }
 
     abstract constraint assertedConstraintChecks :> constraintChecks, trueEvaluations {
-        doc /*
+        doc
+        /*
 		 * assertedConstraintChecks is the subset of constraintChecks for ConstraintChecks asserted to be true.
 		 */
     }
 
     abstract constraint negatedConstraintChecks :> constraintChecks, falseEvaluations {
-        doc /*
+        doc
+        /*
 		 * negatedConstraintChecks is the subset of constraintChecks for ConstraintChecks asserted to be false.
 		 */
     }
+
 }
+
 ~~~
 # SMG
 ~~~

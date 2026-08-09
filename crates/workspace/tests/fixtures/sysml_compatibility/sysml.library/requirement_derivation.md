@@ -136,7 +136,8 @@ standard library package RequirementDerivation {
     private import Metaobjects::SemanticMetadata;
 
     metadata def <original> OriginalRequirementMetadata :> SemanticMetadata {
-        doc /*
+        doc
+        /*
 		 * OriginalRequirementMetadata identifies a usage as an original requirement.
 		 * It is intended to be used to tag the original requirement end of a Derivation.
 		 */
@@ -146,7 +147,8 @@ standard library package RequirementDerivation {
     }
 
     metadata def <derive> DerivedRequirementMetadata :> SemanticMetadata {
-        doc /*
+        doc
+        /*
 		 * DerivedRequirementMetadata identifies a usage as a derived requirement.
 		 * It is intended to be used to tag the derived requirement ends of a Derivation.
 		 */
@@ -156,7 +158,8 @@ standard library package RequirementDerivation {
     }
 
     metadata def <derivation> DerivationMetadata :> SemanticMetadata {
-        doc /*
+        doc
+        /*
 		 * DerivationMetadata is SemanticMetadata for a Derivation connection.
 		 */
 
@@ -165,6 +168,7 @@ standard library package RequirementDerivation {
         :>> baseType = derivations meta SysML::Usage;
     }
 }
+
 ~~~
 # SMG
 ~~~

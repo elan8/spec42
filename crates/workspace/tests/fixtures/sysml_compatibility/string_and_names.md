@@ -21,6 +21,7 @@ StringValue,UnrestrictedName,StringValue,EndOfFile,
 # FORMAT
 ~~~sysml
 "hello" 'world name' "with\nescapes"
+
 ~~~
 # EXPECTED
 ~~~

@@ -2,6 +2,8 @@
 ~~~ini
 description=Fuzzer crash #2: malformed SysML input
 type=file
+formatter=skip
+formatter_skip_reason=source fixture is not UTF-8 and the formatter accepts UTF-8 text only
 ~~~
 # SOURCE
 ~~~sysml

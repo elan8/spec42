@@ -19,8 +19,8 @@ KwPackage,Ident,OpenCurly,CloseCurly,Semicolon,KwIn,Ident,Colon,Ident,Semicolon,
 ~~~
 # FORMAT
 ~~~sysml
-package MyPkg { }
-in newX : Real;
+package MyPkg { }; in newX : Real;
+
 ~~~
 # EXPECTED
 ~~~

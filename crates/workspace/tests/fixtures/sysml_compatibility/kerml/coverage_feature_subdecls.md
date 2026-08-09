@@ -66,8 +66,8 @@ CloseCurly,EndOfFile,
 # FORMAT
 ~~~sysml
 package FeatureSubDeclCoverage {
-    feature a[1];
-    feature b[0..*];
+    feature a [1];
+    feature b [0..*];
     feature c = 42;
     feature d := 99;
     feature e default = 0;
@@ -80,6 +80,7 @@ package FeatureSubDeclCoverage {
     featuring f by T;
     featuring myFeat of f by T;
 }
+
 ~~~
 # SMG
 ~~~

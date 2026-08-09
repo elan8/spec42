@@ -218,7 +218,8 @@ CloseCurly,EndOfFile,
 # FORMAT
 ~~~sysml
 standard library package NaturalFunctions {
-    doc /*
+    doc
+    /*
 	 * This package defines functions on Natural values, including concrete specialization of the 
 	 * general arithmetic and comparison operations.
 	 */
@@ -243,6 +244,7 @@ standard library package NaturalFunctions {
     function ToString specializes IntegerFunctions::ToString { in x: Natural[1]; return : String[1]; }
     function ToNatural{ in x: String[1]; return : Natural[1]; }
 }
+
 ~~~
 # SMG
 ~~~

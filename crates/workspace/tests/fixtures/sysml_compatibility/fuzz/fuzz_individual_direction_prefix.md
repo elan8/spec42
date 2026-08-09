@@ -21,6 +21,7 @@ KwIn,KwIndividual,Ident,Semicolon,EndOfFile,
 # FORMAT
 ~~~sysml
 in individual it;
+
 ~~~
 # EXPECTED
 ~~~

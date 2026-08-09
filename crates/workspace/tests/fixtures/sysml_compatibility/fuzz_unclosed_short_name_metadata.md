@@ -53,14 +53,12 @@ CloseCurly,EndOfFile,
 # FORMAT
 ~~~sysml
 package ion {
-    class A {
-        in f;
-    }
+  class A {
+    in f;
+  }
 
-    class A {
-        in
-        #su<f;
-    }
+  class A { in #su<f;
+  }
 }
 ~~~
 # SMG

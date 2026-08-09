@@ -316,6 +316,7 @@ standard library package StandardViewDefinitions {
              */
     }
 }
+
 ~~~
 # SMG
 ~~~

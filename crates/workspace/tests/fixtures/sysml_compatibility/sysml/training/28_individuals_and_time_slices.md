@@ -81,6 +81,7 @@ package 'Individuals and Time Slices' {
     individual item def Bob :> Person;
 
     individual : Vehicle_1 {
+
         timeslice aliceDriving {
             ref individual item :>> driver : Alice;
 
@@ -94,10 +95,12 @@ package 'Individuals and Time Slices' {
         }
 
         then timeslice bobDriving {
-			ref individual item :>> driver : Bob;
-		}
+            ref individual item :>> driver : Bob;
+        }
+
     }
 }
+
 ~~~
 # EXPECTED
 ~~~

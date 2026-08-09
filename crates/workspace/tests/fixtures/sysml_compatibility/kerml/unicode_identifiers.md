@@ -31,13 +31,14 @@ CloseCurly,EndOfFile,
     (class_def ''Ω'' :> 'Pkg::'β'')))
 ~~~
 # FORMAT
-~~~kerml
+~~~sysml
 package 'αβ' {
     class '漢字';
     type '🧪' :> Base::Anything;
     class 'é';
     class 'Ω' :> Pkg::'β';
 }
+
 ~~~
 # EXPECTED
 ~~~

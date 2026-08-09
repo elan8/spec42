@@ -77,17 +77,20 @@ package 'Flow Interface Example' {
         end supplierPort : FuelOutPort;
         end consumerPort : FuelInPort;
 
-        flow supplierPort;
-        flow consumerPort;
+        flow supplierPort.fuelSupply to consumerPort.fuelSupply;
+        flow consumerPort.fuelReturn to supplierPort.fuelReturn;
     }
 
     part vehicle : Vehicle {
         part tankAssy : FuelTankAssembly;
         part eng : Engine;
 
-        interface : FuelInterface connect supplierPort ::> tankAssy.fuelTankPort to consumerPort ::> eng.engineFuelPort;
+        interface : FuelInterface connect
+        supplierPort ::> tankAssy.fuelTankPort to
+        consumerPort ::> eng.engineFuelPort;
     }
 }
+
 ~~~
 # EXPECTED
 ~~~

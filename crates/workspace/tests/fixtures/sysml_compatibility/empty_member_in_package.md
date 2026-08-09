@@ -18,7 +18,8 @@ KwPackage,Ident,OpenCurly,Semicolon,CloseCurly,EndOfFile,
 ~~~
 # FORMAT
 ~~~sysml
-package MyPkg { }
+package MyPkg {;}
+
 ~~~
 # EXPECTED
 ~~~

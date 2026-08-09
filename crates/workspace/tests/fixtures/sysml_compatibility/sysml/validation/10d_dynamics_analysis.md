@@ -212,12 +212,15 @@ package '10d-Dynamics Analysis' {
     private import ISQ::*;
 
     package VehicleModel {
+
         part def Vehicle {
             attribute mass :> ISQ::mass;
         }
+
     }
 
     package DynamicsModel {
+
         calc def Acceleration {
             in p : PowerValue;
             in m : MassValue;
@@ -260,7 +263,7 @@ package '10d-Dynamics Analysis' {
 
         analysis def DynamicsAnalysis {
             subject vehicle : Vehicle;
-            in attribute powerProfile :> ISQ::power [*];
+            in attribute powerProfile :> ISQ::power[*];
             in attribute initialPosition :> ISQ::length;
             in attribute initialSpeed :> ISQ::speed;
             in attribute deltaT :> ISQ::time;
@@ -283,7 +286,9 @@ package '10d-Dynamics Analysis' {
             }
         }
     }
+
 }
+
 ~~~
 # EXPECTED
 ~~~

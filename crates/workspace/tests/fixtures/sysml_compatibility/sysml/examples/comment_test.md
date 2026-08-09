@@ -107,7 +107,7 @@ package CommentTest {
     // inside package
     /*
 *AAA
- * BBB*/
+ * BBB*/	
     /*
     *
     *
@@ -117,7 +117,7 @@ package CommentTest {
 
     /*
  *       AAAA
- *       BBBB           */
+ *       BBBB           */	
     /* AAAA
  
  
@@ -125,7 +125,7 @@ package CommentTest {
  *
  * CCCC
  */
-    comment locale "en_US" /*
+    locale "en_US" /*
  * AAAA
  * BBBB
  *    CCC DDD    
@@ -145,6 +145,7 @@ package CommentTest {
     /* abc */
     part def A;
 }
+
 ~~~
 # EXPECTED
 ~~~

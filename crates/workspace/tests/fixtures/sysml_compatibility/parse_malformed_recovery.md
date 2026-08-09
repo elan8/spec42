@@ -30,6 +30,7 @@ package Foo {
     + bad stuff;
     part def Bar;
 }
+
 ~~~
 # EXPECTED
 ~~~

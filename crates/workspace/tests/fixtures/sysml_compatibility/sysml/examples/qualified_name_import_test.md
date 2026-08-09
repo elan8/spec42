@@ -60,9 +60,10 @@ package QualifiedNameImportTest {
         }
         // The following should not fail.
         // A is a member of P2a because of the import.
-        part x : P2a::A;
+        part x: P2a::A;
     }
 }
+
 ~~~
 # EXPECTED
 ~~~

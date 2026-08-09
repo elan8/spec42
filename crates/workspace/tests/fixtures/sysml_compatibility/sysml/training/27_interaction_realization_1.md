@@ -163,54 +163,48 @@ package 'Interaction Realization-1' {
 
     part driver_a : Driver {
         action driverBehavior {
-            action sendSetSpeed;
-            send new SetSpeed() to vehicle_a;
+            action sendSetSpeed send new SetSpeed() to vehicle_a;
         }
     }
 
     part vehicle_a : Vehicle {
         part cruiseController_a : CruiseController {
             action controllerBehavior {
-                action receiveSetSpeed;
-                accept SetSpeed via vehicle_a;
-                then action receiveSensedSpeed
-                accept SensedSpeed via cruiseController_a;
-                then action sendFuelCommand
-                send new FuelCommand() to engine_a;
+                action receiveSetSpeed accept SetSpeed via vehicle_a;
+                then action receiveSensedSpeed accept SensedSpeed via cruiseController_a;
+                then action sendFuelCommand send new FuelCommand() to engine_a;
             }
         }
 
         part speedometer_a : Speedometer {
             action speedometerBehavior {
-                action sendSensedSpeed;
-                send new SensedSpeed() to cruiseController_a;
+                action sendSensedSpeed send new SensedSpeed() to cruiseController_a;
             }
         }
 
         part engine_a : Engine {
             action engineBehavior {
-                action receiveFuelCommand;
-                accept FuelCommand via engine_a;
+                action receiveFuelCommand accept FuelCommand via engine_a;
             }
         }
     }
 
     occurrence cruiseControlInteraction_a : CruiseControlInteraction {
         part :>> driver :>> driver_a {
-            .sendSetSpeed[1] :>> setSpeedSent;
+            event driverBehavior.sendSetSpeed[1] :>> setSpeedSent;
         }
 
         part :>> vehicle :>> vehicle_a {
             part :>> cruiseController :>> cruiseController_a {
-                .receiveSetSpeed[1] :>> setSpeedReceived;
-                .receiveSensedSpeed[1] :>> sensedSpeedReceived;
-                .sendFuelCommand[1] :>> fuelCommandSent;
+                event controllerBehavior.receiveSetSpeed[1] :>> setSpeedReceived;
+                event controllerBehavior.receiveSensedSpeed[1] :>> sensedSpeedReceived;
+                event controllerBehavior.sendFuelCommand[1] :>> fuelCommandSent;
             }
             part :>> speedometer :>> speedometer_a {
-                .sendSensedSpeed[1] :>> sensedSpeedSent;
+                event speedometerBehavior.sendSensedSpeed[1] :>> sensedSpeedSent;
             }
             part :>> engine :>> engine_a {
-                .receiveFuelCommand[1] :>> fuelCommandReceived;
+                event engineBehavior.receiveFuelCommand[1] :>> fuelCommandReceived;
             }
         }
 
@@ -219,6 +213,7 @@ package 'Interaction Realization-1' {
         message :>> fuelCommandMessage = vehicle_a.cruiseController_a.controllerBehavior.sendFuelCommand.sentMessage;
     }
 }
+
 ~~~
 # EXPECTED
 ~~~

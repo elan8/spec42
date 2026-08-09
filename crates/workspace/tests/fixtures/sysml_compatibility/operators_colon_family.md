@@ -21,6 +21,7 @@ Colon,ColonColon,ColonGt,ColonColonGt,ColonGtGt,ColonEq,EndOfFile,
 # FORMAT
 ~~~sysml
 : :: :> ::> :>> :=
+
 ~~~
 # EXPECTED
 ~~~

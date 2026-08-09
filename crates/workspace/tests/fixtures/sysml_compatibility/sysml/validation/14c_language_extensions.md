@@ -499,78 +499,76 @@ package '14c-Language-Extensions' {
     private import ScalarValues::*;
 
     library package FMEALibrary {
+
         abstract occurrence def Situation;
 
-        abstract occurrence situations : Situation [*] nonunique;
+        abstract occurrence situations : Situation[*] nonunique;
 
         occurrence def Cause :> Situation {
-            attribute occurs : Real [0..1];
+            attribute occurs[0..1]: Real;
         }
 
-        abstract occurrence causes : Cause [*] nonunique;
+        abstract occurrence causes : Cause[*] nonunique;
 
         occurrence def FailureMode :> Situation {
-            attribute detected : Real [0..1];
+            attribute detected[0..1]: Real;
         }
 
-        abstract occurrence failureModes : FailureMode [*] nonunique;
+        abstract occurrence failureModes : FailureMode[*] nonunique;
 
         occurrence def Effect :> Situation {
-            attribute severity : String [0..1];
+            attribute severity[0..1]: String;
         }
 
-        abstract occurrence effects : Effect [*] nonunique;
+        abstract occurrence effects : Effect[*] nonunique;
 
         item def FMEAItem :> Situation {
-            attribute RPN : Real [0..1];
+            attribute RPN: Real[0..1];
 
             occurrence :>> causes;
             occurrence :>> failureModes;
             occurrence :>> effects;
         }
 
-        abstract item fmeaItems : FMEAItem [*] nonunique;
+        abstract item fmeaItems : FMEAItem[*] nonunique;
 
         connection def Causation :> Occurrences::HappensBefore {
-            end [*] cause : Situation;
-            end [*] effect : Situation;
+            end [*] ref cause: Situation;
+            end [*] ref effect: Situation;
         }
 
-        abstract connection causations : Causation [*];
+        abstract connection causations : Causation[*] nonunique;
 
         requirement def FMEARequirement;
 
-        abstract requirement fmeaRequirements : FMEARequirement [*] nonunique;
+        abstract requirement fmeaRequirements : FMEARequirement[*] nonunique;
 
         requirement def RequirementWithSIL :> FMEARequirement {
-            attribute sil : SIL;
+            attribute sil: SIL;
         }
 
-        enum def SIL {
-            enum A;
-            enum B;
-            enum C;
-        }
+        enum def SIL { A; B; C; }
 
         connection def Violation {
-            end [*] sit : Situation;
-            end [*] req : FMEARequirement;
+            end [*] ref sit: Situation;
+            end [*] ref req: FMEARequirement;
         }
 
-        abstract connection violations : Violation [*];
+        abstract connection violations : Violation[*] nonunique;
 
         abstract connection def ControllingMeasure {
-            end [*] sit : Situation;
-            end [*] req : FMEARequirement;
+            end [*] ref sit: Situation;
+            end [*] ref req: FMEARequirement;
         }
 
         connection def Prevention :> ControllingMeasure;
 
-        abstract connection preventions : Prevention [*];
+        abstract connection preventions : Prevention[*] nonunique;
 
         connection def Mitigation :> ControllingMeasure;
 
-        abstract connection mitigations : Mitigation [*];
+        abstract connection mitigations : Mitigation[*] nonunique;
+
     }
 
     library package FMEAMetadata {
@@ -578,16 +576,16 @@ package '14c-Language-Extensions' {
         private import FMEALibrary::*;
 
         enum def Status {
-            enum Approved;
-            enum NotApproved;
+            Approved;
+            NotApproved;
         }
 
         metadata def StatusHolder {
-            status : Status;
+            status: Status;
         }
 
         metadata def <situation> SituationMetadata :> SemanticMetadata {
-            :>> baseType default = situations meta SysML::Usage;
+            :>> baseType default situations meta SysML::Usage;
         }
 
         metadata def <cause> CauseMetadata :> SituationMetadata {
@@ -634,6 +632,7 @@ package '14c-Language-Extensions' {
         metadata def <mitigation> MitigationMetadata :> ControllingMeasureMetadata {
             :>> baseType = mitigations meta SysML::Usage;
         }
+
     }
 
     package FMEAUserModel {
@@ -648,10 +647,8 @@ package '14c-Language-Extensions' {
             doc /* Device working for 1 week without the need to replace batteries */
         }
 
-        #fmeaspec requirement req3 : RequirementWithSIL {
-            @StatusHolder {
-                status = Status::Approved;
-            }
+        #fmeaspec requirement req3: RequirementWithSIL {
+            @StatusHolder { status = Status::Approved; }
 
             doc /* Alarm when battery has sank */
 
@@ -659,6 +656,7 @@ package '14c-Language-Extensions' {
         }
 
         #fmea item def 'Glucose FMEA Item' {
+
             #prevention connect 'battery depleted' to req1;
 
             #cause occurrence 'battery depleted' {
@@ -680,28 +678,32 @@ package '14c-Language-Extensions' {
             #effect occurrence 'therapy delay' {
                 :>> severity = "High";
             }
+
         }
 
         #violation connect 'Glucose Meter in Use' to req2;
         #mitigation connect 'Glucose Meter in Use' to req3;
 
         #fmea item 'Glucose Meter in Use' : 'Glucose FMEA Item' {
+
             part 'glucose meter' {
-                event occurrence 'glucose level undetected' [*];
+                event 'glucose level undetected'[*];
                 part battery {
-                    event occurrence 'battery depleted' [*];
-                    event occurrence 'battery cannot be charged' [*];
+                    event 'battery depleted'[*];
+                    event 'battery cannot be charged'[*];
                 }
                 part pump;
                 part reservoir;
             }
 
             part patient {
-                event occurrence 'therapy delay' [*];
+                event 'therapy delay'[*];
             }
         }
+
     }
 }
+
 ~~~
 # EXPECTED
 ~~~

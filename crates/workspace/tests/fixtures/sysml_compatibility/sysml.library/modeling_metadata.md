@@ -303,127 +303,147 @@ CloseCurly,EndOfFile,
 # FORMAT
 ~~~sysml
 standard library package ModelingMetadata {
-    doc /*
+	doc
+	/*
 	 * This package contains definitions of metadata generally useful for annotating models.
 	 */
 
-    private import Base::Anything;
-    private import ScalarValues::String;
-    private import RiskMetadata::Risk;
-
-    enum def StatusKind {
-        doc /*
+	private import Base::Anything;
+	private import ScalarValues::String;
+	private import RiskMetadata::Risk;
+	
+	enum def StatusKind {
+		doc
+		/*
 		 * StatusKind enumerates the possible statuses of work on a model element.
 		 */
-
-        enum open {
-            doc /*
+	
+		open {
+			doc
+			/*
 			 * Status is open.
 			 */
-        }
-
-        enum tbd {
-            doc /*
+		}
+		
+		tbd {
+			doc
+			/*
 			 * Status is to be determined.
 			 */
-        }
-
-        enum tbr {
-            doc /*
+		}
+		
+		tbr {
+			doc
+			/*
 			 * Status is to be resolved.
 			 */
-        }
-
-        enum tbc {
-            doc /*
+		}
+		
+		tbc {
+			doc
+			/*
 			 * Status is to be confirmed.
 			 */
-        }
-
-        enum done {
-            doc /*
+		}
+		
+		done {
+			doc
+			/*
 			 * Status is done.
 			 */
-        }
-
-        enum closed {
-            doc /*
+		}
+		
+		closed {
+			doc
+			/*
 			 * Status is closed.
 			 */
-        }
-    }
-
-    metadata def StatusInfo {
-        doc /*
+		}
+	}
+	
+	metadata def StatusInfo {
+		doc
+		/*
 		 * StatusInfo is used to annotate a model element with status information.
 		 */
-
-        attribute originator : String [0..1] {
-            doc /*
+	
+		attribute originator : String [0..1] {
+			doc
+			/*
 			 * The originator of the annotated element.
 			 */
-        }
-
-        attribute owner : String [0..1] {
-            doc /*
+		}
+		
+		attribute owner : String [0..1] {
+			doc
+			/*
 			 * The current owner of the annotated element.
 			 */
-        }
-
-        attribute status : StatusKind {
-            doc /*
+		}
+		
+		attribute status : StatusKind {
+			doc
+			/*
 			 * The current status of work on the annotated element (required).
 			 */
-        }
-
-        item risk : Risk [0..1] {
-            doc /*
+		}
+		
+		item risk : Risk [0..1] {
+			doc
+			/*
 			 * An assessment of risk for the annotated element.
 			 */
-        }
-    }
-
-    metadata def Rationale {
-        doc /*
+		}
+	}
+	
+	metadata def Rationale {
+		doc
+		/*
 		 * Rationale is used to explain a choice or other decision made related to the
 		 * annotated element.
 		 */
-
-        attribute text : String {
-            doc /*
+	
+		attribute text : String {
+			doc
+			/*
 			 * A textual description of the rationale (required).
 			 */
-        }
-
-        ref explanation : Anything [0..1] {
-            doc /*
+		}
+		
+		ref explanation : Anything [0..1] {
+			doc
+			/*
 			 * A reference to a feature that provides a formal explanation of the rationale.
 			 * (For example, a trade study whose result explains the choice of a certain alternative).
 			 */
-        }
-    }
-
-    metadata def Issue {
-        doc /*
+		}
+	}
+	
+	metadata def Issue {
+		doc
+		/*
 		 * Issue is used to record some issue concerning the annotated element.
 		 */
-
-        attribute text : String {
-            doc /*
+	
+		attribute text : String {
+		doc
+		/*
 		 * A textual description of the issue.
 		 */
-        }
-    }
-
-    metadata def <refinement> Refinement {
-        doc /*
+		}
+	}
+	
+	metadata def <refinement> Refinement {
+		doc
+		/*
 		 * Refinement is used to identify a dependency as modeling a refinement relationship.
 		 * In such a relationship, the source elements of the relationship provide a more precise and/or 
 		 * accurate representation than the target elements.
 		 */
-
-        :>> annotatedElement : SysML::Dependency;
-    }
+	
+		:>> annotatedElement : SysML::Dependency;
+	}
+	
 }
 ~~~
 # SMG

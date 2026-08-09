@@ -144,7 +144,8 @@ CloseCurly,EndOfFile,
 # FORMAT
 ~~~sysml
 package VehicleDefinitions {
-    doc /*
+    doc
+    /*
 	 * Example vehicle definitions model.
 	 */
 
@@ -162,11 +163,11 @@ package VehicleDefinitions {
     part def Transmission;
     part def AxleAssembly;
     part def Axle {
-        port leftMountingPoint : AxleMountIF;
-        port rightMountingPoint : AxleMountIF;
+        port leftMountingPoint: AxleMountIF;
+        port rightMountingPoint: AxleMountIF;
     }
     part def Wheel {
-        port hub : WheelHubIF;
+        port hub: WheelHubIF;
     }
     part def Lugbolt {
         attribute tighteningTorque :> ISQ::torque;
@@ -190,12 +191,13 @@ package VehicleDefinitions {
 
     interface def Mounting {
         doc /* The definition of the interface for mounting a Wheel to an Axle. */
-        end axleMount : AxleMountIF;
-        end hub : WheelHubIF;
+        end axleMount: AxleMountIF;
+        end hub: WheelHubIF;
 
-        flow axleMount;
+        flow axleMount.transferredTorque to hub.appliedTorque;
     }
 }
+
 ~~~
 # EXPECTED
 ~~~

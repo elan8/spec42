@@ -129,6 +129,7 @@ package OccurrenceTest {
         occurrence o2;
     }
 }
+
 ~~~
 # EXPECTED
 ~~~

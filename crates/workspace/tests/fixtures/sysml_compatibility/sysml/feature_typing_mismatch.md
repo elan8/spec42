@@ -31,8 +31,9 @@ KwPart,Ident,Colon,Ident,Semicolon,EndOfFile,
 ~~~
 # FORMAT
 ~~~sysml
-attribute def Foo { }
+attribute def Foo {}
 part p : Foo;
+
 ~~~
 # SMG
 ~~~

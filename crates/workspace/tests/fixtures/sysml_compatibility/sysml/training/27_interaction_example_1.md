@@ -86,15 +86,19 @@ package 'Interaction Example-1' {
         ref part :>> driver;
         ref part :>> vehicle;
 
-        message setSpeedMessage of SetSpeed from driver.setSpeedSent to vehicle.cruiseController.setSpeedReceived;
+        message setSpeedMessage of SetSpeed
+        from driver.setSpeedSent to vehicle.cruiseController.setSpeedReceived;
 
-        message sensedSpeedMessage of SensedSpeed from vehicle.speedometer.sensedSpeedSent to vehicle.cruiseController.sensedSpeedReceived;
+        message sensedSpeedMessage of SensedSpeed
+        from vehicle.speedometer.sensedSpeedSent to vehicle.cruiseController.sensedSpeedReceived;
 
-        message fuelCommandMessage of FuelCommand from vehicle.cruiseController.fuelCommandSent to vehicle.engine.fuelCommandReceived;
+        message fuelCommandMessage of FuelCommand
+        from vehicle.cruiseController.fuelCommandSent to vehicle.engine.fuelCommandReceived;
 
         first setSpeedMessage then sensedSpeedMessage;
     }
 }
+
 ~~~
 # EXPECTED
 ~~~

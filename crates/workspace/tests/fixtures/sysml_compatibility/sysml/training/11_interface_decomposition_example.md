@@ -75,6 +75,7 @@ CloseCurly,EndOfFile,
 # FORMAT
 ~~~sysml
 package 'Interface Decomposition Example' {
+
     port def SpigotBank;
     port def Spigot;
 
@@ -82,11 +83,11 @@ package 'Interface Decomposition Example' {
     port def FaucetInlet;
 
     interface def WaterDelivery {
-        end [1] suppliedBy : SpigotBank {
+        end [1] port suppliedBy : SpigotBank {
             port hot : Spigot;
             port cold : Spigot;
         }
-        end [1..*] deliveredTo : Faucet {
+        end [1..*] port deliveredTo : Faucet {
             port hot : FaucetInlet;
             port cold : FaucetInlet;
         }
@@ -94,7 +95,9 @@ package 'Interface Decomposition Example' {
         connect suppliedBy.hot to deliveredTo.hot;
         connect suppliedBy.cold to deliveredTo.cold;
     }
+
 }
+
 ~~~
 # EXPECTED
 ~~~

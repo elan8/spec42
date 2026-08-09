@@ -21,6 +21,7 @@ KwImport,Ident,ColonColon,Star,Semicolon,EndOfFile,
 # FORMAT
 ~~~sysml
 import ScalarValues::*;
+
 ~~~
 # EXPECTED
 ~~~

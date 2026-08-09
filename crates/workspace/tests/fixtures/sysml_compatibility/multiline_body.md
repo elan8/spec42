@@ -26,6 +26,7 @@ CloseCurly,EndOfFile,
 package Foo {
     feature x;
 }
+
 ~~~
 # EXPECTED
 ~~~

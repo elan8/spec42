@@ -410,24 +410,25 @@ CloseCurly,EndOfFile,
 # FORMAT
 ~~~sysml
 standard library package OccurrenceFunctions {
-    doc /*
+	doc
+	/*
 	 * This package defines utility functions that operate on occurrences, primarily related to 
 	 * time during which those occurrences exist.
 	 */
-
-    private import Occurrences::Occurrence;
-    private import Occurrences::HappensDuring;
-    private import ScalarValues::Boolean;
-    private import ScalarValues::Positive;
-    private import SequenceFunctions::notEmpty;
-    private import SequenceFunctions::size;
-    private import SequenceFunctions::add;
-    private import SequenceFunctions::addAt;
-    private import SequenceFunctions::remove;
-    private import SequenceFunctions::removeAt;
-    private import ControlFunctions::forAll;
-
-    function '==='  specializes BaseFunctions::'===' { 
+	
+	private import Occurrences::Occurrence;
+	private import Occurrences::HappensDuring;
+	private import ScalarValues::Boolean;
+	private import ScalarValues::Positive;
+	private import SequenceFunctions::notEmpty;
+	private import SequenceFunctions::size;
+	private import SequenceFunctions::add;
+	private import SequenceFunctions::addAt;
+	private import SequenceFunctions::remove;
+	private import SequenceFunctions::removeAt;
+	private import ControlFunctions::forAll;
+	 
+	function '==='  specializes BaseFunctions::'===' { 
 		doc
 		/*
 		 * Test whether two occurrences are portions of the same life. That is, whether they 
@@ -440,8 +441,8 @@ standard library package OccurrenceFunctions {
 		
 		return : Boolean[1] = x.portionOfLife == y.portionOfLife;
 	}
-
-    function isDuring {
+	
+	function isDuring {
 		doc
 		/*
 		 * Test whether a performance of this function happens during the input occurrence.
@@ -453,8 +454,8 @@ standard library package OccurrenceFunctions {
 		
 		return : Boolean[1] = notEmpty(during);
 	}
-
-    function create {
+	
+	function create {
 		doc
 		/*
 		 * Ensure that the start of a given occurrence happens during a performance of this
@@ -467,8 +468,8 @@ standard library package OccurrenceFunctions {
 		
 		return : Occurrence[1] = occ;
 	}
-
-    function destroy {
+	
+	function destroy {
 		doc
 		/*
 		 * Ensure that the end of a given occurrence happens during a performance of this
@@ -481,8 +482,8 @@ standard library package OccurrenceFunctions {
 		
 		return : Occurrence[0..1] = occ;
 	}
-
-    function addNew {
+	
+	function addNew {
 		doc
 		/*
 		 * Add a newly created occurrence to the given group of occurrences and return the
@@ -499,8 +500,8 @@ standard library package OccurrenceFunctions {
 		
 		return : Occurrence[1] = occ;
 	}
-
-    function addNewAt {
+	
+	function addNewAt {
 		doc
 		/*
 		 * Add a newly created occurrence to the given ordered group of occurrences at the given
@@ -519,44 +520,48 @@ standard library package OccurrenceFunctions {
 		
 		return : Occurrence[1] = occ;
 	}
-
-    behavior removeOld {
-        doc /*
+	
+	behavior removeOld {
+		doc
+		/*
 		 * Remove a given occurrence from a group of occurrences and destroy it.
 		 */
 
-        inout group: Occurrence [0..*] nonunique;
-        inout occ: Occurrence [0..1];
-
-        private composite step removeStep : remove {
+		inout group: Occurrence[0..*] nonunique;
+		inout occ: Occurrence[0..1];
+		
+		private composite step removeStep : remove {
 			inout seq = group;
 			in values = occ;
 		}
-        private succession removeStep then destroyStep;
-        private composite step destroyStep : destroy {
+		private succession removeStep then destroyStep;
+		private composite step destroyStep : destroy {
 			inout occ = removeOld::occ;
 		}
-    }
-
-    behavior removeOldAt {
-        doc /*
+		
+	}
+	
+	behavior removeOldAt {
+		doc
+		/*
 		 * Removes the occurrence at a given index in an ordered group of occurrences 
 		 * and destroy it.
 		 */
-        inout group: Occurrence [0..*] ordered nonunique;
-        in index: Positive [1];
-
-        private feature oldOcc = group#(index);
-
-        private composite step removeStep : remove {
+		inout group: Occurrence[0..*] ordered nonunique;
+		in index: Positive[1];
+		
+		private feature oldOcc = group#(index);
+		
+		private composite step removeStep : remove {
 			inout seq = group;
 			in index = removeOldAt::index;
 		}
-        private succession removeStep then destroyStep;
-        private composite step destroyStep : destroy {
+		private succession removeStep then destroyStep;
+		private composite step destroyStep : destroy {
 			inout occ = oldOcc;
 		}
-    }
+		
+	}
 }
 ~~~
 # SMG

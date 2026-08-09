@@ -159,6 +159,7 @@ package Scoping {
         }
     }
 }
+
 ~~~
 # EXPECTED
 ~~~

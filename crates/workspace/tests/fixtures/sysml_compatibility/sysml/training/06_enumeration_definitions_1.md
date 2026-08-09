@@ -73,6 +73,7 @@ package 'Enumeration Definitions-1' {
         attribute redefines currentColor = TrafficLightColor::green;
     }
 }
+
 ~~~
 # EXPECTED
 ~~~

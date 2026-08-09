@@ -3644,7 +3644,8 @@ CloseCurly,EndOfFile,
 # FORMAT
 ~~~sysml
 standard library package ISQThermodynamics {
-    doc /*
+    doc
+    /*
      * International System of Quantities and Units
      * Generated on 2025-03-13T15:00:05Z from standard ISO-80000-5:2019 "Thermodynamics"
      * see also https://www.iso.org/standard/64976.html
@@ -3672,7 +3673,8 @@ standard library package ISQThermodynamics {
 
     /* ISO-80000-5 item 5-2 Celsius temperature */
     attribute def CelsiusTemperatureValue :> ScalarQuantityValue {
-        doc /*
+        doc
+        /*
          * source: item 5-2 Celsius temperature
          * symbol(s): `t`, `θ`
          * application domain: generic
@@ -3683,25 +3685,21 @@ standard library package ISQThermodynamics {
          * definition: temperature difference from the thermodynamic temperature of the ice point is called the Celsius temperature t, which is defined by the quantity equation: `t = T - T_0` where `T` is thermodynamic temperature (item 5-1) and `T_0 = 273,15 K`
          * remarks: The unit degree Celsius is a special name for the kelvin for use in stating values of Celsius temperature. The unit degree Celsius is by definition equal in magnitude to the kelvin. A difference or interval of temperature may be expressed in kelvin or in degrees Celsius. The thermodynamic temperature `T_0` is 0,01 K below the thermodynamic temperature of the triple point of water. The symbol °C for the degree Celsius shall be preceded by a space (see ISO 80000-1). Prefixes are not allowed in combination with the unit °C.
          */
-        attribute :>> num : Real;
-        attribute :>> mRef : CelsiusTemperatureUnit [1];
+        attribute :>> num: Real;
+        attribute :>> mRef: CelsiusTemperatureUnit[1];
     }
 
-    attribute celsiusTemperature : CelsiusTemperatureValue :> scalarQuantities [*] nonunique;
+    attribute celsiusTemperature: CelsiusTemperatureValue[*] nonunique :> scalarQuantities;
 
     attribute def CelsiusTemperatureUnit :> DerivedUnit {
-        private attribute thermodynamicTemperaturePF : QuantityPowerFactor [1] {
-            :>> quantity = isq.'Θ';
-            :>> exponent = 1;
-        }
-        attribute :>> quantityDimension {
-            :>> quantityPowerFactors = thermodynamicTemperaturePF;
-        }
+        private attribute thermodynamicTemperaturePF: QuantityPowerFactor[1] { :>> quantity = isq.'Θ'; :>> exponent = 1; }
+        attribute :>> quantityDimension { :>> quantityPowerFactors = thermodynamicTemperaturePF; }
     }
 
     /* ISO-80000-5 item 5-3.1 linear expansion coefficient */
     attribute def LinearExpansionCoefficientValue :> ScalarQuantityValue {
-        doc /*
+        doc
+        /*
          * source: item 5-3.1 linear expansion coefficient
          * symbol(s): `α_l`
          * application domain: generic
@@ -3712,25 +3710,21 @@ standard library package ISQThermodynamics {
          * definition: relative change of length with temperature: `α_l = 1/l * (dl)/(dT)` where l is length (ISO 80000-3) and `T` is thermodynamic temperature (item 5-1)
          * remarks: The subscripts in the symbols may be omitted when there is no risk of confusion.
          */
-        attribute :>> num : Real;
-        attribute :>> mRef : LinearExpansionCoefficientUnit [1];
+        attribute :>> num: Real;
+        attribute :>> mRef: LinearExpansionCoefficientUnit[1];
     }
 
-    attribute linearExpansionCoefficient : LinearExpansionCoefficientValue :> scalarQuantities [*] nonunique;
+    attribute linearExpansionCoefficient: LinearExpansionCoefficientValue[*] nonunique :> scalarQuantities;
 
     attribute def LinearExpansionCoefficientUnit :> DerivedUnit {
-        private attribute thermodynamicTemperaturePF : QuantityPowerFactor [1] {
-            :>> quantity = isq.'Θ';
-            :>> exponent = -1;
-        }
-        attribute :>> quantityDimension {
-            :>> quantityPowerFactors = thermodynamicTemperaturePF;
-        }
+        private attribute thermodynamicTemperaturePF: QuantityPowerFactor[1] { :>> quantity = isq.'Θ'; :>> exponent = -1; }
+        attribute :>> quantityDimension { :>> quantityPowerFactors = thermodynamicTemperaturePF; }
     }
 
     /* ISO-80000-5 item 5-3.2 cubic expansion coefficient */
     attribute def CubicExpansionCoefficientValue :> ScalarQuantityValue {
-        doc /*
+        doc
+        /*
          * source: item 5-3.2 cubic expansion coefficient
          * symbol(s): `α_V`, `γ`
          * application domain: generic
@@ -3741,25 +3735,21 @@ standard library package ISQThermodynamics {
          * definition: relative change of volume with temperature: `α_V = 1/V * (dV)/(dT)` where `V` is volume (ISO 80000-3) and `T` is thermodynamic temperature (item 5-1)
          * remarks: Also called volumetric expansion coefficient. The subscripts in the symbols may be omitted when there is no risk of confusion.
          */
-        attribute :>> num : Real;
-        attribute :>> mRef : CubicExpansionCoefficientUnit [1];
+        attribute :>> num: Real;
+        attribute :>> mRef: CubicExpansionCoefficientUnit[1];
     }
 
-    attribute cubicExpansionCoefficient : CubicExpansionCoefficientValue :> scalarQuantities [*] nonunique;
+    attribute cubicExpansionCoefficient: CubicExpansionCoefficientValue[*] nonunique :> scalarQuantities;
 
     attribute def CubicExpansionCoefficientUnit :> DerivedUnit {
-        private attribute thermodynamicTemperaturePF : QuantityPowerFactor [1] {
-            :>> quantity = isq.'Θ';
-            :>> exponent = -1;
-        }
-        attribute :>> quantityDimension {
-            :>> quantityPowerFactors = thermodynamicTemperaturePF;
-        }
+        private attribute thermodynamicTemperaturePF: QuantityPowerFactor[1] { :>> quantity = isq.'Θ'; :>> exponent = -1; }
+        attribute :>> quantityDimension { :>> quantityPowerFactors = thermodynamicTemperaturePF; }
     }
 
     /* ISO-80000-5 item 5-3.3 relative pressure coefficient */
     attribute def RelativePressureCoefficientValue :> ScalarQuantityValue {
-        doc /*
+        doc
+        /*
          * source: item 5-3.3 relative pressure coefficient
          * symbol(s): `α_p`
          * application domain: generic
@@ -3770,25 +3760,21 @@ standard library package ISQThermodynamics {
          * definition: relative change of pressure with temperature at constant volume: `α_p = 1/p * ((partial p)/(partial T))_V` where `p` is pressure (ISO 80000-4), `T` is thermodynamic temperature (item 5-1), and `V` is volume (ISO 80000-3)
          * remarks: The subscripts in the symbols may be omitted when there is no risk of confusion.
          */
-        attribute :>> num : Real;
-        attribute :>> mRef : RelativePressureCoefficientUnit [1];
+        attribute :>> num: Real;
+        attribute :>> mRef: RelativePressureCoefficientUnit[1];
     }
 
-    attribute relativePressureCoefficient : RelativePressureCoefficientValue :> scalarQuantities [*] nonunique;
+    attribute relativePressureCoefficient: RelativePressureCoefficientValue[*] nonunique :> scalarQuantities;
 
     attribute def RelativePressureCoefficientUnit :> DerivedUnit {
-        private attribute thermodynamicTemperaturePF : QuantityPowerFactor [1] {
-            :>> quantity = isq.'Θ';
-            :>> exponent = -1;
-        }
-        attribute :>> quantityDimension {
-            :>> quantityPowerFactors = thermodynamicTemperaturePF;
-        }
+        private attribute thermodynamicTemperaturePF: QuantityPowerFactor[1] { :>> quantity = isq.'Θ'; :>> exponent = -1; }
+        attribute :>> quantityDimension { :>> quantityPowerFactors = thermodynamicTemperaturePF; }
     }
 
     /* ISO-80000-5 item 5-4 pressure coefficient */
     attribute def PressureCoefficientValue :> ScalarQuantityValue {
-        doc /*
+        doc
+        /*
          * source: item 5-4 pressure coefficient
          * symbol(s): `β`
          * application domain: generic
@@ -3799,37 +3785,24 @@ standard library package ISQThermodynamics {
          * definition: change of pressure with temperature at constant volume: `β = ((partial p)/(partial T))_V` where `p` is pressure (ISO 80000-4), `T` is thermodynamic temperature (item 5-1), and `V` is volume (ISO 80000-3)
          * remarks: None.
          */
-        attribute :>> num : Real;
-        attribute :>> mRef : PressureCoefficientUnit [1];
+        attribute :>> num: Real;
+        attribute :>> mRef: PressureCoefficientUnit[1];
     }
 
-    attribute pressureCoefficient : PressureCoefficientValue :> scalarQuantities [*] nonunique;
+    attribute pressureCoefficient: PressureCoefficientValue[*] nonunique :> scalarQuantities;
 
     attribute def PressureCoefficientUnit :> DerivedUnit {
-        private attribute lengthPF : QuantityPowerFactor [1] {
-            :>> quantity = isq.L;
-            :>> exponent = -1;
-        }
-        private attribute massPF : QuantityPowerFactor [1] {
-            :>> quantity = isq.M;
-            :>> exponent = 1;
-        }
-        private attribute durationPF : QuantityPowerFactor [1] {
-            :>> quantity = isq.T;
-            :>> exponent = -2;
-        }
-        private attribute thermodynamicTemperaturePF : QuantityPowerFactor [1] {
-            :>> quantity = isq.'Θ';
-            :>> exponent = -1;
-        }
-        attribute :>> quantityDimension {
-            :>> quantityPowerFactors = (lengthPF, massPF, durationPF, thermodynamicTemperaturePF);
-        }
+        private attribute lengthPF: QuantityPowerFactor[1] { :>> quantity = isq.L; :>> exponent = -1; }
+        private attribute massPF: QuantityPowerFactor[1] { :>> quantity = isq.M; :>> exponent = 1; }
+        private attribute durationPF: QuantityPowerFactor[1] { :>> quantity = isq.T; :>> exponent = -2; }
+        private attribute thermodynamicTemperaturePF: QuantityPowerFactor[1] { :>> quantity = isq.'Θ'; :>> exponent = -1; }
+        attribute :>> quantityDimension { :>> quantityPowerFactors = (lengthPF, massPF, durationPF, thermodynamicTemperaturePF); }
     }
 
     /* ISO-80000-5 item 5-5.1 isothermal compressibility */
     attribute def IsothermalCompressibilityValue :> ScalarQuantityValue {
-        doc /*
+        doc
+        /*
          * source: item 5-5.1 isothermal compressibility
          * symbol(s): `ϰ_T`
          * application domain: generic
@@ -3840,33 +3813,23 @@ standard library package ISQThermodynamics {
          * definition: negative relative change of volume with pressure at constant temperature: `ϰ_T = -1/V * ((partial V)/(partial p))_T` where `V` is volume (ISO 80000-3), `p` is pressure (ISO 80000-4), and `T` is thermodynamic temperature (item 5-1)
          * remarks: The subscripts in the symbols may be omitted when there is no risk of confusion.
          */
-        attribute :>> num : Real;
-        attribute :>> mRef : IsothermalCompressibilityUnit [1];
+        attribute :>> num: Real;
+        attribute :>> mRef: IsothermalCompressibilityUnit[1];
     }
 
-    attribute isothermalCompressibility : IsothermalCompressibilityValue :> scalarQuantities [*] nonunique;
+    attribute isothermalCompressibility: IsothermalCompressibilityValue[*] nonunique :> scalarQuantities;
 
     attribute def IsothermalCompressibilityUnit :> DerivedUnit {
-        private attribute lengthPF : QuantityPowerFactor [1] {
-            :>> quantity = isq.L;
-            :>> exponent = 1;
-        }
-        private attribute massPF : QuantityPowerFactor [1] {
-            :>> quantity = isq.M;
-            :>> exponent = -1;
-        }
-        private attribute durationPF : QuantityPowerFactor [1] {
-            :>> quantity = isq.T;
-            :>> exponent = 2;
-        }
-        attribute :>> quantityDimension {
-            :>> quantityPowerFactors = (lengthPF, massPF, durationPF);
-        }
+        private attribute lengthPF: QuantityPowerFactor[1] { :>> quantity = isq.L; :>> exponent = 1; }
+        private attribute massPF: QuantityPowerFactor[1] { :>> quantity = isq.M; :>> exponent = -1; }
+        private attribute durationPF: QuantityPowerFactor[1] { :>> quantity = isq.T; :>> exponent = 2; }
+        attribute :>> quantityDimension { :>> quantityPowerFactors = (lengthPF, massPF, durationPF); }
     }
 
     /* ISO-80000-5 item 5-5.2 isentropic compressibility */
     attribute def IsentropicCompressibilityValue :> ScalarQuantityValue {
-        doc /*
+        doc
+        /*
          * source: item 5-5.2 isentropic compressibility
          * symbol(s): `ϰ_S`
          * application domain: generic
@@ -3877,33 +3840,23 @@ standard library package ISQThermodynamics {
          * definition: negative relative change of volume with pressure at constant entropy: `ϰ_S = -1/V * ((partial V)/(partial p))_S` where `V` is volume (ISO 80000-3), `p` is pressure (ISO 80000-4), and `S` is entropy (item 5-18)
          * remarks: The subscripts in the symbols may be omitted when there is no risk of confusion.
          */
-        attribute :>> num : Real;
-        attribute :>> mRef : IsentropicCompressibilityUnit [1];
+        attribute :>> num: Real;
+        attribute :>> mRef: IsentropicCompressibilityUnit[1];
     }
 
-    attribute isentropicCompressibility : IsentropicCompressibilityValue :> scalarQuantities [*] nonunique;
+    attribute isentropicCompressibility: IsentropicCompressibilityValue[*] nonunique :> scalarQuantities;
 
     attribute def IsentropicCompressibilityUnit :> DerivedUnit {
-        private attribute lengthPF : QuantityPowerFactor [1] {
-            :>> quantity = isq.L;
-            :>> exponent = 1;
-        }
-        private attribute massPF : QuantityPowerFactor [1] {
-            :>> quantity = isq.M;
-            :>> exponent = -1;
-        }
-        private attribute durationPF : QuantityPowerFactor [1] {
-            :>> quantity = isq.T;
-            :>> exponent = 2;
-        }
-        attribute :>> quantityDimension {
-            :>> quantityPowerFactors = (lengthPF, massPF, durationPF);
-        }
+        private attribute lengthPF: QuantityPowerFactor[1] { :>> quantity = isq.L; :>> exponent = 1; }
+        private attribute massPF: QuantityPowerFactor[1] { :>> quantity = isq.M; :>> exponent = -1; }
+        private attribute durationPF: QuantityPowerFactor[1] { :>> quantity = isq.T; :>> exponent = 2; }
+        attribute :>> quantityDimension { :>> quantityPowerFactors = (lengthPF, massPF, durationPF); }
     }
 
     /* ISO-80000-5 item 5-6.1 heat, amount of heat */
-    attribute heat : EnergyValue :> scalarQuantities {
-        doc /*
+    attribute heat: EnergyValue :> scalarQuantities {
+        doc
+        /*
          * source: item 5-6.1 heat, amount of heat
          * symbol(s): `Q`
          * application domain: generic
@@ -3919,8 +3872,9 @@ standard library package ISQThermodynamics {
     alias amountOfHeat for heat;
 
     /* ISO-80000-5 item 5-6.2 latent heat */
-    attribute latentHeat : EnergyValue :> scalarQuantities {
-        doc /*
+    attribute latentHeat: EnergyValue :> scalarQuantities {
+        doc
+        /*
          * source: item 5-6.2 latent heat
          * symbol(s): `Q`
          * application domain: generic
@@ -3935,7 +3889,8 @@ standard library package ISQThermodynamics {
 
     /* ISO-80000-5 item 5-7 heat flow rate */
     attribute def HeatFlowRateValue :> ScalarQuantityValue {
-        doc /*
+        doc
+        /*
          * source: item 5-7 heat flow rate
          * symbol(s): `dot(Q)`
          * application domain: generic
@@ -3946,33 +3901,23 @@ standard library package ISQThermodynamics {
          * definition: time rate at which heat (item 5-6.1) crosses a given surface
          * remarks: None.
          */
-        attribute :>> num : Real;
-        attribute :>> mRef : HeatFlowRateUnit [1];
+        attribute :>> num: Real;
+        attribute :>> mRef: HeatFlowRateUnit[1];
     }
 
-    attribute heatFlowRate : HeatFlowRateValue :> scalarQuantities [*] nonunique;
+    attribute heatFlowRate: HeatFlowRateValue[*] nonunique :> scalarQuantities;
 
     attribute def HeatFlowRateUnit :> DerivedUnit {
-        private attribute lengthPF : QuantityPowerFactor [1] {
-            :>> quantity = isq.L;
-            :>> exponent = 2;
-        }
-        private attribute massPF : QuantityPowerFactor [1] {
-            :>> quantity = isq.M;
-            :>> exponent = 1;
-        }
-        private attribute durationPF : QuantityPowerFactor [1] {
-            :>> quantity = isq.T;
-            :>> exponent = -3;
-        }
-        attribute :>> quantityDimension {
-            :>> quantityPowerFactors = (lengthPF, massPF, durationPF);
-        }
+        private attribute lengthPF: QuantityPowerFactor[1] { :>> quantity = isq.L; :>> exponent = 2; }
+        private attribute massPF: QuantityPowerFactor[1] { :>> quantity = isq.M; :>> exponent = 1; }
+        private attribute durationPF: QuantityPowerFactor[1] { :>> quantity = isq.T; :>> exponent = -3; }
+        attribute :>> quantityDimension { :>> quantityPowerFactors = (lengthPF, massPF, durationPF); }
     }
 
     /* ISO-80000-5 item 5-8 density of heat flow rate */
     attribute def DensityOfHeatFlowRateValue :> ScalarQuantityValue {
-        doc /*
+        doc
+        /*
          * source: item 5-8 density of heat flow rate
          * symbol(s): `q`, `φ`
          * application domain: generic
@@ -3983,29 +3928,22 @@ standard library package ISQThermodynamics {
          * definition: quotient of heat flow rate and area: `q = dot Q / A` where `dot Q` is heat flow rate (item 5-7) and A is area (ISO 80000-3) of a given surface
          * remarks: None.
          */
-        attribute :>> num : Real;
-        attribute :>> mRef : DensityOfHeatFlowRateUnit [1];
+        attribute :>> num: Real;
+        attribute :>> mRef: DensityOfHeatFlowRateUnit[1];
     }
 
-    attribute densityOfHeatFlowRate : DensityOfHeatFlowRateValue :> scalarQuantities [*] nonunique;
+    attribute densityOfHeatFlowRate: DensityOfHeatFlowRateValue[*] nonunique :> scalarQuantities;
 
     attribute def DensityOfHeatFlowRateUnit :> DerivedUnit {
-        private attribute massPF : QuantityPowerFactor [1] {
-            :>> quantity = isq.M;
-            :>> exponent = 1;
-        }
-        private attribute durationPF : QuantityPowerFactor [1] {
-            :>> quantity = isq.T;
-            :>> exponent = -3;
-        }
-        attribute :>> quantityDimension {
-            :>> quantityPowerFactors = (massPF, durationPF);
-        }
+        private attribute massPF: QuantityPowerFactor[1] { :>> quantity = isq.M; :>> exponent = 1; }
+        private attribute durationPF: QuantityPowerFactor[1] { :>> quantity = isq.T; :>> exponent = -3; }
+        attribute :>> quantityDimension { :>> quantityPowerFactors = (massPF, durationPF); }
     }
 
     /* ISO-80000-5 item 5-9 thermal conductivity */
     attribute def ThermalConductivityValue :> ScalarQuantityValue {
-        doc /*
+        doc
+        /*
          * source: item 5-9 thermal conductivity
          * symbol(s): `λ_l`, `(ϰ)`
          * application domain: generic
@@ -4016,37 +3954,24 @@ standard library package ISQThermodynamics {
          * definition: quotient of density of heat flow rate (item 5-8) and thermodynamic temperature gradient that has the same direction as the heat flow
          * remarks: None.
          */
-        attribute :>> num : Real;
-        attribute :>> mRef : ThermalConductivityUnit [1];
+        attribute :>> num: Real;
+        attribute :>> mRef: ThermalConductivityUnit[1];
     }
 
-    attribute thermalConductivity : ThermalConductivityValue :> scalarQuantities [*] nonunique;
+    attribute thermalConductivity: ThermalConductivityValue[*] nonunique :> scalarQuantities;
 
     attribute def ThermalConductivityUnit :> DerivedUnit {
-        private attribute lengthPF : QuantityPowerFactor [1] {
-            :>> quantity = isq.L;
-            :>> exponent = 1;
-        }
-        private attribute massPF : QuantityPowerFactor [1] {
-            :>> quantity = isq.M;
-            :>> exponent = 1;
-        }
-        private attribute durationPF : QuantityPowerFactor [1] {
-            :>> quantity = isq.T;
-            :>> exponent = -3;
-        }
-        private attribute thermodynamicTemperaturePF : QuantityPowerFactor [1] {
-            :>> quantity = isq.'Θ';
-            :>> exponent = -1;
-        }
-        attribute :>> quantityDimension {
-            :>> quantityPowerFactors = (lengthPF, massPF, durationPF, thermodynamicTemperaturePF);
-        }
+        private attribute lengthPF: QuantityPowerFactor[1] { :>> quantity = isq.L; :>> exponent = 1; }
+        private attribute massPF: QuantityPowerFactor[1] { :>> quantity = isq.M; :>> exponent = 1; }
+        private attribute durationPF: QuantityPowerFactor[1] { :>> quantity = isq.T; :>> exponent = -3; }
+        private attribute thermodynamicTemperaturePF: QuantityPowerFactor[1] { :>> quantity = isq.'Θ'; :>> exponent = -1; }
+        attribute :>> quantityDimension { :>> quantityPowerFactors = (lengthPF, massPF, durationPF, thermodynamicTemperaturePF); }
     }
 
     /* ISO-80000-5 item 5-10.1 coefficient of heat transfer */
     attribute def CoefficientOfHeatTransferValue :> ScalarQuantityValue {
-        doc /*
+        doc
+        /*
          * source: item 5-10.1 coefficient of heat transfer
          * symbol(s): `K`, `(k)`
          * application domain: generic
@@ -4057,33 +3982,23 @@ standard library package ISQThermodynamics {
          * definition: quotient of density of heat flow rate (item 5-8) and thermodynamic temperature (item 5-1) difference
          * remarks: In building technology, the coefficient of heat transfer is often called thermal transmittance, with the symbol U (no longer recommended). See remark to item 5-13.
          */
-        attribute :>> num : Real;
-        attribute :>> mRef : CoefficientOfHeatTransferUnit [1];
+        attribute :>> num: Real;
+        attribute :>> mRef: CoefficientOfHeatTransferUnit[1];
     }
 
-    attribute coefficientOfHeatTransfer : CoefficientOfHeatTransferValue :> scalarQuantities [*] nonunique;
+    attribute coefficientOfHeatTransfer: CoefficientOfHeatTransferValue[*] nonunique :> scalarQuantities;
 
     attribute def CoefficientOfHeatTransferUnit :> DerivedUnit {
-        private attribute massPF : QuantityPowerFactor [1] {
-            :>> quantity = isq.M;
-            :>> exponent = 1;
-        }
-        private attribute durationPF : QuantityPowerFactor [1] {
-            :>> quantity = isq.T;
-            :>> exponent = -3;
-        }
-        private attribute thermodynamicTemperaturePF : QuantityPowerFactor [1] {
-            :>> quantity = isq.'Θ';
-            :>> exponent = -1;
-        }
-        attribute :>> quantityDimension {
-            :>> quantityPowerFactors = (massPF, durationPF, thermodynamicTemperaturePF);
-        }
+        private attribute massPF: QuantityPowerFactor[1] { :>> quantity = isq.M; :>> exponent = 1; }
+        private attribute durationPF: QuantityPowerFactor[1] { :>> quantity = isq.T; :>> exponent = -3; }
+        private attribute thermodynamicTemperaturePF: QuantityPowerFactor[1] { :>> quantity = isq.'Θ'; :>> exponent = -1; }
+        attribute :>> quantityDimension { :>> quantityPowerFactors = (massPF, durationPF, thermodynamicTemperaturePF); }
     }
 
     /* ISO-80000-5 item 5-10.2 surface coefficient of heat transfer */
     attribute def SurfaceCoefficientOfHeatTransferValue :> ScalarQuantityValue {
-        doc /*
+        doc
+        /*
          * source: item 5-10.2 surface coefficient of heat transfer
          * symbol(s): `h`, `(α)`
          * application domain: generic
@@ -4094,33 +4009,23 @@ standard library package ISQThermodynamics {
          * definition: quotient of density of heat flow rate and the difference of the temperature at the surface and a reference temperature: `h = q / (T_s - T_r)` where q is density of heat flow rate (item 5-8), `T_s` is the thermodynamic temperature (item 5-1) at the surface, and `T_r` is a reference thermodynamic temperature characterizing the adjacent surroundings
          * remarks: None.
          */
-        attribute :>> num : Real;
-        attribute :>> mRef : SurfaceCoefficientOfHeatTransferUnit [1];
+        attribute :>> num: Real;
+        attribute :>> mRef: SurfaceCoefficientOfHeatTransferUnit[1];
     }
 
-    attribute surfaceCoefficientOfHeatTransfer : SurfaceCoefficientOfHeatTransferValue :> scalarQuantities [*] nonunique;
+    attribute surfaceCoefficientOfHeatTransfer: SurfaceCoefficientOfHeatTransferValue[*] nonunique :> scalarQuantities;
 
     attribute def SurfaceCoefficientOfHeatTransferUnit :> DerivedUnit {
-        private attribute massPF : QuantityPowerFactor [1] {
-            :>> quantity = isq.M;
-            :>> exponent = 1;
-        }
-        private attribute durationPF : QuantityPowerFactor [1] {
-            :>> quantity = isq.T;
-            :>> exponent = -3;
-        }
-        private attribute thermodynamicTemperaturePF : QuantityPowerFactor [1] {
-            :>> quantity = isq.'Θ';
-            :>> exponent = -1;
-        }
-        attribute :>> quantityDimension {
-            :>> quantityPowerFactors = (massPF, durationPF, thermodynamicTemperaturePF);
-        }
+        private attribute massPF: QuantityPowerFactor[1] { :>> quantity = isq.M; :>> exponent = 1; }
+        private attribute durationPF: QuantityPowerFactor[1] { :>> quantity = isq.T; :>> exponent = -3; }
+        private attribute thermodynamicTemperaturePF: QuantityPowerFactor[1] { :>> quantity = isq.'Θ'; :>> exponent = -1; }
+        attribute :>> quantityDimension { :>> quantityPowerFactors = (massPF, durationPF, thermodynamicTemperaturePF); }
     }
 
     /* ISO-80000-5 item 5-11 thermal insulance, coefficient of thermal insulance */
     attribute def ThermalInsulanceValue :> ScalarQuantityValue {
-        doc /*
+        doc
+        /*
          * source: item 5-11 thermal insulance, coefficient of thermal insulance
          * symbol(s): `M`
          * application domain: generic
@@ -4131,28 +4036,17 @@ standard library package ISQThermodynamics {
          * definition: inverse of coefficient of heat transfer `K`: `M = 1/K` where `K` is coefficient of heat transfer (item 5-10.1)
          * remarks: In building technology, this quantity is often called thermal resistance, with the symbol R.
          */
-        attribute :>> num : Real;
-        attribute :>> mRef : ThermalInsulanceUnit [1];
+        attribute :>> num: Real;
+        attribute :>> mRef: ThermalInsulanceUnit[1];
     }
 
-    attribute thermalInsulance : ThermalInsulanceValue :> scalarQuantities [*] nonunique;
+    attribute thermalInsulance: ThermalInsulanceValue[*] nonunique :> scalarQuantities;
 
     attribute def ThermalInsulanceUnit :> DerivedUnit {
-        private attribute massPF : QuantityPowerFactor [1] {
-            :>> quantity = isq.M;
-            :>> exponent = -1;
-        }
-        private attribute durationPF : QuantityPowerFactor [1] {
-            :>> quantity = isq.T;
-            :>> exponent = 3;
-        }
-        private attribute thermodynamicTemperaturePF : QuantityPowerFactor [1] {
-            :>> quantity = isq.'Θ';
-            :>> exponent = 1;
-        }
-        attribute :>> quantityDimension {
-            :>> quantityPowerFactors = (massPF, durationPF, thermodynamicTemperaturePF);
-        }
+        private attribute massPF: QuantityPowerFactor[1] { :>> quantity = isq.M; :>> exponent = -1; }
+        private attribute durationPF: QuantityPowerFactor[1] { :>> quantity = isq.T; :>> exponent = 3; }
+        private attribute thermodynamicTemperaturePF: QuantityPowerFactor[1] { :>> quantity = isq.'Θ'; :>> exponent = 1; }
+        attribute :>> quantityDimension { :>> quantityPowerFactors = (massPF, durationPF, thermodynamicTemperaturePF); }
     }
 
     alias CoefficientOfThermalInsulanceUnit for ThermalInsulanceUnit;
@@ -4161,7 +4055,8 @@ standard library package ISQThermodynamics {
 
     /* ISO-80000-5 item 5-12 thermal resistance */
     attribute def ThermalResistanceValue :> ScalarQuantityValue {
-        doc /*
+        doc
+        /*
          * source: item 5-12 thermal resistance
          * symbol(s): `R`
          * application domain: generic
@@ -4172,37 +4067,24 @@ standard library package ISQThermodynamics {
          * definition: quotient of thermodynamic temperature (item 5-1) difference and heat flow rate (item 5-7)
          * remarks: See remark to item 5-11.
          */
-        attribute :>> num : Real;
-        attribute :>> mRef : ThermalResistanceUnit [1];
+        attribute :>> num: Real;
+        attribute :>> mRef: ThermalResistanceUnit[1];
     }
 
-    attribute thermalResistance : ThermalResistanceValue :> scalarQuantities [*] nonunique;
+    attribute thermalResistance: ThermalResistanceValue[*] nonunique :> scalarQuantities;
 
     attribute def ThermalResistanceUnit :> DerivedUnit {
-        private attribute lengthPF : QuantityPowerFactor [1] {
-            :>> quantity = isq.L;
-            :>> exponent = -2;
-        }
-        private attribute massPF : QuantityPowerFactor [1] {
-            :>> quantity = isq.M;
-            :>> exponent = -1;
-        }
-        private attribute durationPF : QuantityPowerFactor [1] {
-            :>> quantity = isq.T;
-            :>> exponent = 3;
-        }
-        private attribute thermodynamicTemperaturePF : QuantityPowerFactor [1] {
-            :>> quantity = isq.'Θ';
-            :>> exponent = 1;
-        }
-        attribute :>> quantityDimension {
-            :>> quantityPowerFactors = (lengthPF, massPF, durationPF, thermodynamicTemperaturePF);
-        }
+        private attribute lengthPF: QuantityPowerFactor[1] { :>> quantity = isq.L; :>> exponent = -2; }
+        private attribute massPF: QuantityPowerFactor[1] { :>> quantity = isq.M; :>> exponent = -1; }
+        private attribute durationPF: QuantityPowerFactor[1] { :>> quantity = isq.T; :>> exponent = 3; }
+        private attribute thermodynamicTemperaturePF: QuantityPowerFactor[1] { :>> quantity = isq.'Θ'; :>> exponent = 1; }
+        attribute :>> quantityDimension { :>> quantityPowerFactors = (lengthPF, massPF, durationPF, thermodynamicTemperaturePF); }
     }
 
     /* ISO-80000-5 item 5-13 thermal conductance */
     attribute def ThermalConductanceValue :> ScalarQuantityValue {
-        doc /*
+        doc
+        /*
          * source: item 5-13 thermal conductance
          * symbol(s): `G`, `(H)`
          * application domain: generic
@@ -4213,37 +4095,24 @@ standard library package ISQThermodynamics {
          * definition: inverse of thermal resistance `R`: `G = 1/R` where `R` is thermal resistance (item 5-12)
          * remarks: See remark to item 5-11. This quantity is also called heat transfer coefficient. See item 5-10.1.
          */
-        attribute :>> num : Real;
-        attribute :>> mRef : ThermalConductanceUnit [1];
+        attribute :>> num: Real;
+        attribute :>> mRef: ThermalConductanceUnit[1];
     }
 
-    attribute thermalConductance : ThermalConductanceValue :> scalarQuantities [*] nonunique;
+    attribute thermalConductance: ThermalConductanceValue[*] nonunique :> scalarQuantities;
 
     attribute def ThermalConductanceUnit :> DerivedUnit {
-        private attribute lengthPF : QuantityPowerFactor [1] {
-            :>> quantity = isq.L;
-            :>> exponent = 2;
-        }
-        private attribute massPF : QuantityPowerFactor [1] {
-            :>> quantity = isq.M;
-            :>> exponent = 1;
-        }
-        private attribute durationPF : QuantityPowerFactor [1] {
-            :>> quantity = isq.T;
-            :>> exponent = -3;
-        }
-        private attribute thermodynamicTemperaturePF : QuantityPowerFactor [1] {
-            :>> quantity = isq.'Θ';
-            :>> exponent = -1;
-        }
-        attribute :>> quantityDimension {
-            :>> quantityPowerFactors = (lengthPF, massPF, durationPF, thermodynamicTemperaturePF);
-        }
+        private attribute lengthPF: QuantityPowerFactor[1] { :>> quantity = isq.L; :>> exponent = 2; }
+        private attribute massPF: QuantityPowerFactor[1] { :>> quantity = isq.M; :>> exponent = 1; }
+        private attribute durationPF: QuantityPowerFactor[1] { :>> quantity = isq.T; :>> exponent = -3; }
+        private attribute thermodynamicTemperaturePF: QuantityPowerFactor[1] { :>> quantity = isq.'Θ'; :>> exponent = -1; }
+        attribute :>> quantityDimension { :>> quantityPowerFactors = (lengthPF, massPF, durationPF, thermodynamicTemperaturePF); }
     }
 
     /* ISO-80000-5 item 5-14 thermal diffusivity */
     attribute def ThermalDiffusivityValue :> ScalarQuantityValue {
-        doc /*
+        doc
+        /*
          * source: item 5-14 thermal diffusivity
          * symbol(s): `a`
          * application domain: generic
@@ -4254,29 +4123,22 @@ standard library package ISQThermodynamics {
          * definition: quotient of thermal conductivity and the product of mass density and specific heat capacity: `a = λ / (ρ C_p)` where `λ` is thermal conductivity (item 5-9), `ρ` is mass density (ISO 80000-4), and `c_p` is specific heat capacity at constant pressure (item 5-16.2)
          * remarks: None.
          */
-        attribute :>> num : Real;
-        attribute :>> mRef : ThermalDiffusivityUnit [1];
+        attribute :>> num: Real;
+        attribute :>> mRef: ThermalDiffusivityUnit[1];
     }
 
-    attribute thermalDiffusivity : ThermalDiffusivityValue :> scalarQuantities [*] nonunique;
+    attribute thermalDiffusivity: ThermalDiffusivityValue[*] nonunique :> scalarQuantities;
 
     attribute def ThermalDiffusivityUnit :> DerivedUnit {
-        private attribute lengthPF : QuantityPowerFactor [1] {
-            :>> quantity = isq.L;
-            :>> exponent = 2;
-        }
-        private attribute durationPF : QuantityPowerFactor [1] {
-            :>> quantity = isq.T;
-            :>> exponent = -1;
-        }
-        attribute :>> quantityDimension {
-            :>> quantityPowerFactors = (lengthPF, durationPF);
-        }
+        private attribute lengthPF: QuantityPowerFactor[1] { :>> quantity = isq.L; :>> exponent = 2; }
+        private attribute durationPF: QuantityPowerFactor[1] { :>> quantity = isq.T; :>> exponent = -1; }
+        attribute :>> quantityDimension { :>> quantityPowerFactors = (lengthPF, durationPF); }
     }
 
     /* ISO-80000-5 item 5-15 heat capacity */
     attribute def HeatCapacityValue :> ScalarQuantityValue {
-        doc /*
+        doc
+        /*
          * source: item 5-15 heat capacity
          * symbol(s): `C`
          * application domain: generic
@@ -4287,37 +4149,24 @@ standard library package ISQThermodynamics {
          * definition: derivative of added heat with respect to thermodynamic temperature of a system: `C = (dQ)/(dT)` where `Q` is amount of heat (item 5-6.1) and `T` is thermodynamic temperature (item 5-1)
          * remarks: Heat capacity is not completely defined unless specified as seen in items 5-16.2, 5-16.3 and 5-16.4.
          */
-        attribute :>> num : Real;
-        attribute :>> mRef : HeatCapacityUnit [1];
+        attribute :>> num: Real;
+        attribute :>> mRef: HeatCapacityUnit[1];
     }
 
-    attribute heatCapacity : HeatCapacityValue :> scalarQuantities [*] nonunique;
+    attribute heatCapacity: HeatCapacityValue[*] nonunique :> scalarQuantities;
 
     attribute def HeatCapacityUnit :> DerivedUnit {
-        private attribute lengthPF : QuantityPowerFactor [1] {
-            :>> quantity = isq.L;
-            :>> exponent = 2;
-        }
-        private attribute massPF : QuantityPowerFactor [1] {
-            :>> quantity = isq.M;
-            :>> exponent = 1;
-        }
-        private attribute durationPF : QuantityPowerFactor [1] {
-            :>> quantity = isq.T;
-            :>> exponent = -2;
-        }
-        private attribute thermodynamicTemperaturePF : QuantityPowerFactor [1] {
-            :>> quantity = isq.'Θ';
-            :>> exponent = -1;
-        }
-        attribute :>> quantityDimension {
-            :>> quantityPowerFactors = (lengthPF, massPF, durationPF, thermodynamicTemperaturePF);
-        }
+        private attribute lengthPF: QuantityPowerFactor[1] { :>> quantity = isq.L; :>> exponent = 2; }
+        private attribute massPF: QuantityPowerFactor[1] { :>> quantity = isq.M; :>> exponent = 1; }
+        private attribute durationPF: QuantityPowerFactor[1] { :>> quantity = isq.T; :>> exponent = -2; }
+        private attribute thermodynamicTemperaturePF: QuantityPowerFactor[1] { :>> quantity = isq.'Θ'; :>> exponent = -1; }
+        attribute :>> quantityDimension { :>> quantityPowerFactors = (lengthPF, massPF, durationPF, thermodynamicTemperaturePF); }
     }
 
     /* ISO-80000-5 item 5-16.1 specific heat capacity */
     attribute def SpecificHeatCapacityValue :> ScalarQuantityValue {
-        doc /*
+        doc
+        /*
          * source: item 5-16.1 specific heat capacity
          * symbol(s): `c`
          * application domain: generic
@@ -4328,33 +4177,23 @@ standard library package ISQThermodynamics {
          * definition: quotient of heat capacity and mass: `c = C/m` where `C` is heat capacity (item 5-15) and `m` is mass (ISO 80000-4)
          * remarks: For the corresponding quantities related to the amount of substance, see ISO 80000-9.
          */
-        attribute :>> num : Real;
-        attribute :>> mRef : SpecificHeatCapacityUnit [1];
+        attribute :>> num: Real;
+        attribute :>> mRef: SpecificHeatCapacityUnit[1];
     }
 
-    attribute specificHeatCapacity : SpecificHeatCapacityValue :> scalarQuantities [*] nonunique;
+    attribute specificHeatCapacity: SpecificHeatCapacityValue[*] nonunique :> scalarQuantities;
 
     attribute def SpecificHeatCapacityUnit :> DerivedUnit {
-        private attribute lengthPF : QuantityPowerFactor [1] {
-            :>> quantity = isq.L;
-            :>> exponent = 2;
-        }
-        private attribute durationPF : QuantityPowerFactor [1] {
-            :>> quantity = isq.T;
-            :>> exponent = -2;
-        }
-        private attribute thermodynamicTemperaturePF : QuantityPowerFactor [1] {
-            :>> quantity = isq.'Θ';
-            :>> exponent = -1;
-        }
-        attribute :>> quantityDimension {
-            :>> quantityPowerFactors = (lengthPF, durationPF, thermodynamicTemperaturePF);
-        }
+        private attribute lengthPF: QuantityPowerFactor[1] { :>> quantity = isq.L; :>> exponent = 2; }
+        private attribute durationPF: QuantityPowerFactor[1] { :>> quantity = isq.T; :>> exponent = -2; }
+        private attribute thermodynamicTemperaturePF: QuantityPowerFactor[1] { :>> quantity = isq.'Θ'; :>> exponent = -1; }
+        attribute :>> quantityDimension { :>> quantityPowerFactors = (lengthPF, durationPF, thermodynamicTemperaturePF); }
     }
 
     /* ISO-80000-5 item 5-16.2 specific heat capacity at constant pressure */
     attribute def SpecificHeatCapacityAtConstantPressureValue :> ScalarQuantityValue {
-        doc /*
+        doc
+        /*
          * source: item 5-16.2 specific heat capacity at constant pressure
          * symbol(s): `c_p`
          * application domain: generic
@@ -4365,33 +4204,23 @@ standard library package ISQThermodynamics {
          * definition: specific heat capacity (item 5-16.1) at constant pressure (ISO 80000-4)
          * remarks: Also called specific isobaric heat capacity.
          */
-        attribute :>> num : Real;
-        attribute :>> mRef : SpecificHeatCapacityAtConstantPressureUnit [1];
+        attribute :>> num: Real;
+        attribute :>> mRef: SpecificHeatCapacityAtConstantPressureUnit[1];
     }
 
-    attribute specificHeatCapacityAtConstantPressure : SpecificHeatCapacityAtConstantPressureValue :> scalarQuantities [*] nonunique;
+    attribute specificHeatCapacityAtConstantPressure: SpecificHeatCapacityAtConstantPressureValue[*] nonunique :> scalarQuantities;
 
     attribute def SpecificHeatCapacityAtConstantPressureUnit :> DerivedUnit {
-        private attribute lengthPF : QuantityPowerFactor [1] {
-            :>> quantity = isq.L;
-            :>> exponent = 2;
-        }
-        private attribute durationPF : QuantityPowerFactor [1] {
-            :>> quantity = isq.T;
-            :>> exponent = -2;
-        }
-        private attribute thermodynamicTemperaturePF : QuantityPowerFactor [1] {
-            :>> quantity = isq.'Θ';
-            :>> exponent = -1;
-        }
-        attribute :>> quantityDimension {
-            :>> quantityPowerFactors = (lengthPF, durationPF, thermodynamicTemperaturePF);
-        }
+        private attribute lengthPF: QuantityPowerFactor[1] { :>> quantity = isq.L; :>> exponent = 2; }
+        private attribute durationPF: QuantityPowerFactor[1] { :>> quantity = isq.T; :>> exponent = -2; }
+        private attribute thermodynamicTemperaturePF: QuantityPowerFactor[1] { :>> quantity = isq.'Θ'; :>> exponent = -1; }
+        attribute :>> quantityDimension { :>> quantityPowerFactors = (lengthPF, durationPF, thermodynamicTemperaturePF); }
     }
 
     /* ISO-80000-5 item 5-16.3 specific heat capacity at constant volume */
     attribute def SpecificHeatCapacityAtConstantVolumeValue :> ScalarQuantityValue {
-        doc /*
+        doc
+        /*
          * source: item 5-16.3 specific heat capacity at constant volume
          * symbol(s): `c_V`
          * application domain: generic
@@ -4402,33 +4231,23 @@ standard library package ISQThermodynamics {
          * definition: specific heat capacity (item 5-16.1) at constant volume (ISO 80000-3)
          * remarks: Also called specific isochoric heat capacity.
          */
-        attribute :>> num : Real;
-        attribute :>> mRef : SpecificHeatCapacityAtConstantVolumeUnit [1];
+        attribute :>> num: Real;
+        attribute :>> mRef: SpecificHeatCapacityAtConstantVolumeUnit[1];
     }
 
-    attribute specificHeatCapacityAtConstantVolume : SpecificHeatCapacityAtConstantVolumeValue :> scalarQuantities [*] nonunique;
+    attribute specificHeatCapacityAtConstantVolume: SpecificHeatCapacityAtConstantVolumeValue[*] nonunique :> scalarQuantities;
 
     attribute def SpecificHeatCapacityAtConstantVolumeUnit :> DerivedUnit {
-        private attribute lengthPF : QuantityPowerFactor [1] {
-            :>> quantity = isq.L;
-            :>> exponent = 2;
-        }
-        private attribute durationPF : QuantityPowerFactor [1] {
-            :>> quantity = isq.T;
-            :>> exponent = -2;
-        }
-        private attribute thermodynamicTemperaturePF : QuantityPowerFactor [1] {
-            :>> quantity = isq.'Θ';
-            :>> exponent = -1;
-        }
-        attribute :>> quantityDimension {
-            :>> quantityPowerFactors = (lengthPF, durationPF, thermodynamicTemperaturePF);
-        }
+        private attribute lengthPF: QuantityPowerFactor[1] { :>> quantity = isq.L; :>> exponent = 2; }
+        private attribute durationPF: QuantityPowerFactor[1] { :>> quantity = isq.T; :>> exponent = -2; }
+        private attribute thermodynamicTemperaturePF: QuantityPowerFactor[1] { :>> quantity = isq.'Θ'; :>> exponent = -1; }
+        attribute :>> quantityDimension { :>> quantityPowerFactors = (lengthPF, durationPF, thermodynamicTemperaturePF); }
     }
 
     /* ISO-80000-5 item 5-16.4 specific heat capacity at saturated vapour pressure */
     attribute def SpecificHeatCapacityAtSaturatedVapourPressureValue :> ScalarQuantityValue {
-        doc /*
+        doc
+        /*
          * source: item 5-16.4 specific heat capacity at saturated vapour pressure
          * symbol(s): `c_"sat"`
          * application domain: generic
@@ -4439,33 +4258,23 @@ standard library package ISQThermodynamics {
          * definition: specific heat capacity (item 5-16.1) at saturated vapour pressure (ISO 80000-4)
          * remarks: None.
          */
-        attribute :>> num : Real;
-        attribute :>> mRef : SpecificHeatCapacityAtSaturatedVapourPressureUnit [1];
+        attribute :>> num: Real;
+        attribute :>> mRef: SpecificHeatCapacityAtSaturatedVapourPressureUnit[1];
     }
 
-    attribute specificHeatCapacityAtSaturatedVapourPressure : SpecificHeatCapacityAtSaturatedVapourPressureValue :> scalarQuantities [*] nonunique;
+    attribute specificHeatCapacityAtSaturatedVapourPressure: SpecificHeatCapacityAtSaturatedVapourPressureValue[*] nonunique :> scalarQuantities;
 
     attribute def SpecificHeatCapacityAtSaturatedVapourPressureUnit :> DerivedUnit {
-        private attribute lengthPF : QuantityPowerFactor [1] {
-            :>> quantity = isq.L;
-            :>> exponent = 2;
-        }
-        private attribute durationPF : QuantityPowerFactor [1] {
-            :>> quantity = isq.T;
-            :>> exponent = -2;
-        }
-        private attribute thermodynamicTemperaturePF : QuantityPowerFactor [1] {
-            :>> quantity = isq.'Θ';
-            :>> exponent = -1;
-        }
-        attribute :>> quantityDimension {
-            :>> quantityPowerFactors = (lengthPF, durationPF, thermodynamicTemperaturePF);
-        }
+        private attribute lengthPF: QuantityPowerFactor[1] { :>> quantity = isq.L; :>> exponent = 2; }
+        private attribute durationPF: QuantityPowerFactor[1] { :>> quantity = isq.T; :>> exponent = -2; }
+        private attribute thermodynamicTemperaturePF: QuantityPowerFactor[1] { :>> quantity = isq.'Θ'; :>> exponent = -1; }
+        attribute :>> quantityDimension { :>> quantityPowerFactors = (lengthPF, durationPF, thermodynamicTemperaturePF); }
     }
 
     /* ISO-80000-5 item 5-17.1 ratio of specific heat capacities */
     attribute def RatioOfSpecificHeatCapacitiesValue :> DimensionOneValue {
-        doc /*
+        doc
+        /*
          * source: item 5-17.1 ratio of specific heat capacities
          * symbol(s): `γ`
          * application domain: generic
@@ -4477,11 +4286,12 @@ standard library package ISQThermodynamics {
          * remarks: This quantity can also be expressed by `γ = C_p/C_V` where `C_p` is heat capacity at constant pressure and `C_V` is heat capacity at constant volume.
          */
     }
-    attribute ratioOfSpecificHeatCapacities : RatioOfSpecificHeatCapacitiesValue :> scalarQuantities;
+    attribute ratioOfSpecificHeatCapacities: RatioOfSpecificHeatCapacitiesValue :> scalarQuantities;
 
     /* ISO-80000-5 item 5-17.2 isentropic exponent, isentropic expansion factor */
     attribute def IsentropicExponentValue :> DimensionOneValue {
-        doc /*
+        doc
+        /*
          * source: item 5-17.2 isentropic exponent, isentropic expansion factor
          * symbol(s): `ϰ`
          * application domain: generic
@@ -4493,13 +4303,14 @@ standard library package ISQThermodynamics {
          * remarks: For an ideal gas, `ϰ` is equal to `γ` (item 5-17.1).
          */
     }
-    attribute isentropicExponent : IsentropicExponentValue :> scalarQuantities;
+    attribute isentropicExponent: IsentropicExponentValue :> scalarQuantities;
 
     alias isentropicExpansionFactor for isentropicExponent;
 
     /* ISO-80000-5 item 5-18 entropy */
     attribute def EntropyValue :> ScalarQuantityValue {
-        doc /*
+        doc
+        /*
          * source: item 5-18 entropy
          * symbol(s): `S`
          * application domain: generic
@@ -4510,37 +4321,24 @@ standard library package ISQThermodynamics {
          * definition: natural logarithm of number of equally probable microscopic configurations in a macroscopic system, multiplied by the Boltzmann constant: `S = k lnW` where `W` is number of configurations and `k` is the Boltzmann constant (ISO 80000-1)
          * remarks: None.
          */
-        attribute :>> num : Real;
-        attribute :>> mRef : EntropyUnit [1];
+        attribute :>> num: Real;
+        attribute :>> mRef: EntropyUnit[1];
     }
 
-    attribute entropy : EntropyValue :> scalarQuantities [*] nonunique;
+    attribute entropy: EntropyValue[*] nonunique :> scalarQuantities;
 
     attribute def EntropyUnit :> DerivedUnit {
-        private attribute lengthPF : QuantityPowerFactor [1] {
-            :>> quantity = isq.L;
-            :>> exponent = 2;
-        }
-        private attribute massPF : QuantityPowerFactor [1] {
-            :>> quantity = isq.M;
-            :>> exponent = 1;
-        }
-        private attribute durationPF : QuantityPowerFactor [1] {
-            :>> quantity = isq.T;
-            :>> exponent = -2;
-        }
-        private attribute thermodynamicTemperaturePF : QuantityPowerFactor [1] {
-            :>> quantity = isq.'Θ';
-            :>> exponent = -1;
-        }
-        attribute :>> quantityDimension {
-            :>> quantityPowerFactors = (lengthPF, massPF, durationPF, thermodynamicTemperaturePF);
-        }
+        private attribute lengthPF: QuantityPowerFactor[1] { :>> quantity = isq.L; :>> exponent = 2; }
+        private attribute massPF: QuantityPowerFactor[1] { :>> quantity = isq.M; :>> exponent = 1; }
+        private attribute durationPF: QuantityPowerFactor[1] { :>> quantity = isq.T; :>> exponent = -2; }
+        private attribute thermodynamicTemperaturePF: QuantityPowerFactor[1] { :>> quantity = isq.'Θ'; :>> exponent = -1; }
+        attribute :>> quantityDimension { :>> quantityPowerFactors = (lengthPF, massPF, durationPF, thermodynamicTemperaturePF); }
     }
 
     /* ISO-80000-5 item 5-19 specific entropy */
     attribute def SpecificEntropyValue :> ScalarQuantityValue {
-        doc /*
+        doc
+        /*
          * source: item 5-19 specific entropy
          * symbol(s): `s`
          * application domain: generic
@@ -4551,33 +4349,23 @@ standard library package ISQThermodynamics {
          * definition: quotient of entropy and mass: `s = S/m` where `S` is entropy (item 5-18) and `m` is mass (ISO 80000-4)
          * remarks: For the corresponding quantity related to amount of substance, see ISO 80000-9.
          */
-        attribute :>> num : Real;
-        attribute :>> mRef : SpecificEntropyUnit [1];
+        attribute :>> num: Real;
+        attribute :>> mRef: SpecificEntropyUnit[1];
     }
 
-    attribute specificEntropy : SpecificEntropyValue :> scalarQuantities [*] nonunique;
+    attribute specificEntropy: SpecificEntropyValue[*] nonunique :> scalarQuantities;
 
     attribute def SpecificEntropyUnit :> DerivedUnit {
-        private attribute lengthPF : QuantityPowerFactor [1] {
-            :>> quantity = isq.L;
-            :>> exponent = 2;
-        }
-        private attribute durationPF : QuantityPowerFactor [1] {
-            :>> quantity = isq.T;
-            :>> exponent = -2;
-        }
-        private attribute thermodynamicTemperaturePF : QuantityPowerFactor [1] {
-            :>> quantity = isq.'Θ';
-            :>> exponent = -1;
-        }
-        attribute :>> quantityDimension {
-            :>> quantityPowerFactors = (lengthPF, durationPF, thermodynamicTemperaturePF);
-        }
+        private attribute lengthPF: QuantityPowerFactor[1] { :>> quantity = isq.L; :>> exponent = 2; }
+        private attribute durationPF: QuantityPowerFactor[1] { :>> quantity = isq.T; :>> exponent = -2; }
+        private attribute thermodynamicTemperaturePF: QuantityPowerFactor[1] { :>> quantity = isq.'Θ'; :>> exponent = -1; }
+        attribute :>> quantityDimension { :>> quantityPowerFactors = (lengthPF, durationPF, thermodynamicTemperaturePF); }
     }
 
     /* ISO-80000-5 item 5-20.1 energy */
     attribute def EnergyValue :> ScalarQuantityValue {
-        doc /*
+        doc
+        /*
          * source: item 5-20.1 energy
          * symbol(s): `E`
          * application domain: thermodynamics
@@ -4588,33 +4376,23 @@ standard library package ISQThermodynamics {
          * definition: ability of a system to do work (ISO 80000-4)
          * remarks: Energy exists in different forms that are mutually transformable into each other, either totally or partially. In contrast to internal energy (item 5-20.2), energy is not a state function.
          */
-        attribute :>> num : Real;
-        attribute :>> mRef : EnergyUnit [1];
+        attribute :>> num: Real;
+        attribute :>> mRef: EnergyUnit[1];
     }
 
-    attribute energy : EnergyValue :> scalarQuantities [*] nonunique;
+    attribute energy: EnergyValue[*] nonunique :> scalarQuantities;
 
     attribute def EnergyUnit :> DerivedUnit {
-        private attribute lengthPF : QuantityPowerFactor [1] {
-            :>> quantity = isq.L;
-            :>> exponent = 2;
-        }
-        private attribute massPF : QuantityPowerFactor [1] {
-            :>> quantity = isq.M;
-            :>> exponent = 1;
-        }
-        private attribute durationPF : QuantityPowerFactor [1] {
-            :>> quantity = isq.T;
-            :>> exponent = -2;
-        }
-        attribute :>> quantityDimension {
-            :>> quantityPowerFactors = (lengthPF, massPF, durationPF);
-        }
+        private attribute lengthPF: QuantityPowerFactor[1] { :>> quantity = isq.L; :>> exponent = 2; }
+        private attribute massPF: QuantityPowerFactor[1] { :>> quantity = isq.M; :>> exponent = 1; }
+        private attribute durationPF: QuantityPowerFactor[1] { :>> quantity = isq.T; :>> exponent = -2; }
+        attribute :>> quantityDimension { :>> quantityPowerFactors = (lengthPF, massPF, durationPF); }
     }
 
     /* ISO-80000-5 item 5-20.2 internal energy, thermodynamic energy */
-    attribute internalEnergy : EnergyValue :> scalarQuantities {
-        doc /*
+    attribute internalEnergy: EnergyValue :> scalarQuantities {
+        doc
+        /*
          * source: item 5-20.2 internal energy, thermodynamic energy
          * symbol(s): `U`
          * application domain: generic
@@ -4630,8 +4408,9 @@ standard library package ISQThermodynamics {
     alias thermodynamicEnergy for internalEnergy;
 
     /* ISO-80000-5 item 5-20.3 enthalpy */
-    attribute enthalpy : EnergyValue :> scalarQuantities {
-        doc /*
+    attribute enthalpy: EnergyValue :> scalarQuantities {
+        doc
+        /*
          * source: item 5-20.3 enthalpy
          * symbol(s): `H`
          * application domain: generic
@@ -4645,8 +4424,9 @@ standard library package ISQThermodynamics {
     }
 
     /* ISO-80000-5 item 5-20.4 Helmholtz energy, Helmholtz function */
-    attribute helmholtzEnergy : EnergyValue :> scalarQuantities {
-        doc /*
+    attribute helmholtzEnergy: EnergyValue :> scalarQuantities {
+        doc
+        /*
          * source: item 5-20.4 Helmholtz energy, Helmholtz function
          * symbol(s): `A`, `F`
          * application domain: generic
@@ -4662,8 +4442,9 @@ standard library package ISQThermodynamics {
     alias helmholtzFunction for helmholtzEnergy;
 
     /* ISO-80000-5 item 5-20.5 Gibbs energy, Gibbs function */
-    attribute gibbsEnergy : EnergyValue :> scalarQuantities {
-        doc /*
+    attribute gibbsEnergy: EnergyValue :> scalarQuantities {
+        doc
+        /*
          * source: item 5-20.5 Gibbs energy, Gibbs function
          * symbol(s): `G`
          * application domain: generic
@@ -4680,7 +4461,8 @@ standard library package ISQThermodynamics {
 
     /* ISO-80000-5 item 5-21.1 specific energy */
     attribute def SpecificEnergyValue :> ScalarQuantityValue {
-        doc /*
+        doc
+        /*
          * source: item 5-21.1 specific energy
          * symbol(s): `e`
          * application domain: generic
@@ -4691,29 +4473,22 @@ standard library package ISQThermodynamics {
          * definition: quotient of energy and mass: `e = E/m` where `E` is energy (item 5-20.1) and `m` is mass (ISO 80000-4)
          * remarks: None.
          */
-        attribute :>> num : Real;
-        attribute :>> mRef : SpecificEnergyUnit [1];
+        attribute :>> num: Real;
+        attribute :>> mRef: SpecificEnergyUnit[1];
     }
 
-    attribute specificEnergy : SpecificEnergyValue :> scalarQuantities [*] nonunique;
+    attribute specificEnergy: SpecificEnergyValue[*] nonunique :> scalarQuantities;
 
     attribute def SpecificEnergyUnit :> DerivedUnit {
-        private attribute lengthPF : QuantityPowerFactor [1] {
-            :>> quantity = isq.L;
-            :>> exponent = 2;
-        }
-        private attribute durationPF : QuantityPowerFactor [1] {
-            :>> quantity = isq.T;
-            :>> exponent = -2;
-        }
-        attribute :>> quantityDimension {
-            :>> quantityPowerFactors = (lengthPF, durationPF);
-        }
+        private attribute lengthPF: QuantityPowerFactor[1] { :>> quantity = isq.L; :>> exponent = 2; }
+        private attribute durationPF: QuantityPowerFactor[1] { :>> quantity = isq.T; :>> exponent = -2; }
+        attribute :>> quantityDimension { :>> quantityPowerFactors = (lengthPF, durationPF); }
     }
 
     /* ISO-80000-5 item 5-21.2 specific internal energy, specific thermodynamic energy */
-    attribute specificInternalEnergy : SpecificEnergyValue :> scalarQuantities {
-        doc /*
+    attribute specificInternalEnergy: SpecificEnergyValue :> scalarQuantities {
+        doc
+        /*
          * source: item 5-21.2 specific internal energy, specific thermodynamic energy
          * symbol(s): `u`
          * application domain: generic
@@ -4730,7 +4505,8 @@ standard library package ISQThermodynamics {
 
     /* ISO-80000-5 item 5-21.3 specific enthalpy */
     attribute def SpecificEnthalpyValue :> ScalarQuantityValue {
-        doc /*
+        doc
+        /*
          * source: item 5-21.3 specific enthalpy
          * symbol(s): `h`
          * application domain: generic
@@ -4741,29 +4517,22 @@ standard library package ISQThermodynamics {
          * definition: quotient of enthalpy and mass: `h = H/m` where `H` is enthalpy (item 5-20.3) and `m` is mass (ISO 80000-4)
          * remarks: None.
          */
-        attribute :>> num : Real;
-        attribute :>> mRef : SpecificEnthalpyUnit [1];
+        attribute :>> num: Real;
+        attribute :>> mRef: SpecificEnthalpyUnit[1];
     }
 
-    attribute specificEnthalpy : SpecificEnthalpyValue :> scalarQuantities [*] nonunique;
+    attribute specificEnthalpy: SpecificEnthalpyValue[*] nonunique :> scalarQuantities;
 
     attribute def SpecificEnthalpyUnit :> DerivedUnit {
-        private attribute lengthPF : QuantityPowerFactor [1] {
-            :>> quantity = isq.L;
-            :>> exponent = 2;
-        }
-        private attribute durationPF : QuantityPowerFactor [1] {
-            :>> quantity = isq.T;
-            :>> exponent = -2;
-        }
-        attribute :>> quantityDimension {
-            :>> quantityPowerFactors = (lengthPF, durationPF);
-        }
+        private attribute lengthPF: QuantityPowerFactor[1] { :>> quantity = isq.L; :>> exponent = 2; }
+        private attribute durationPF: QuantityPowerFactor[1] { :>> quantity = isq.T; :>> exponent = -2; }
+        attribute :>> quantityDimension { :>> quantityPowerFactors = (lengthPF, durationPF); }
     }
 
     /* ISO-80000-5 item 5-21.4 specific Helmholtz energy, specific Helmholtz function */
-    attribute specificHelmholtzEnergy : SpecificEnergyValue :> scalarQuantities {
-        doc /*
+    attribute specificHelmholtzEnergy: SpecificEnergyValue :> scalarQuantities {
+        doc
+        /*
          * source: item 5-21.4 specific Helmholtz energy, specific Helmholtz function
          * symbol(s): `a`, `f`
          * application domain: generic
@@ -4779,8 +4548,9 @@ standard library package ISQThermodynamics {
     alias specificHelmholtzFunction for specificHelmholtzEnergy;
 
     /* ISO-80000-5 item 5-21.5 specific Gibbs energy, specific Gibbs function */
-    attribute specificGibbsEnergy : SpecificEnergyValue :> scalarQuantities {
-        doc /*
+    attribute specificGibbsEnergy: SpecificEnergyValue :> scalarQuantities {
+        doc
+        /*
          * source: item 5-21.5 specific Gibbs energy, specific Gibbs function
          * symbol(s): `g`
          * application domain: generic
@@ -4797,7 +4567,8 @@ standard library package ISQThermodynamics {
 
     /* ISO-80000-5 item 5-22 Massieu function */
     attribute def MassieuFunctionValue :> ScalarQuantityValue {
-        doc /*
+        doc
+        /*
          * source: item 5-22 Massieu function
          * symbol(s): `J`
          * application domain: generic
@@ -4808,37 +4579,24 @@ standard library package ISQThermodynamics {
          * definition: quotient of the negative of Helmholtz energy and temperature: `J = -A/T` where `A` is Helmholtz energy (item 5-20.4) and `T` is thermodynamic temperature (item 5-1)
          * remarks: None.
          */
-        attribute :>> num : Real;
-        attribute :>> mRef : MassieuFunctionUnit [1];
+        attribute :>> num: Real;
+        attribute :>> mRef: MassieuFunctionUnit[1];
     }
 
-    attribute massieuFunction : MassieuFunctionValue :> scalarQuantities [*] nonunique;
+    attribute massieuFunction: MassieuFunctionValue[*] nonunique :> scalarQuantities;
 
     attribute def MassieuFunctionUnit :> DerivedUnit {
-        private attribute lengthPF : QuantityPowerFactor [1] {
-            :>> quantity = isq.L;
-            :>> exponent = 2;
-        }
-        private attribute massPF : QuantityPowerFactor [1] {
-            :>> quantity = isq.M;
-            :>> exponent = 1;
-        }
-        private attribute durationPF : QuantityPowerFactor [1] {
-            :>> quantity = isq.T;
-            :>> exponent = -2;
-        }
-        private attribute thermodynamicTemperaturePF : QuantityPowerFactor [1] {
-            :>> quantity = isq.'Θ';
-            :>> exponent = -1;
-        }
-        attribute :>> quantityDimension {
-            :>> quantityPowerFactors = (lengthPF, massPF, durationPF, thermodynamicTemperaturePF);
-        }
+        private attribute lengthPF: QuantityPowerFactor[1] { :>> quantity = isq.L; :>> exponent = 2; }
+        private attribute massPF: QuantityPowerFactor[1] { :>> quantity = isq.M; :>> exponent = 1; }
+        private attribute durationPF: QuantityPowerFactor[1] { :>> quantity = isq.T; :>> exponent = -2; }
+        private attribute thermodynamicTemperaturePF: QuantityPowerFactor[1] { :>> quantity = isq.'Θ'; :>> exponent = -1; }
+        attribute :>> quantityDimension { :>> quantityPowerFactors = (lengthPF, massPF, durationPF, thermodynamicTemperaturePF); }
     }
 
     /* ISO-80000-5 item 5-23 Planck function */
     attribute def PlanckFunctionValue :> ScalarQuantityValue {
-        doc /*
+        doc
+        /*
          * source: item 5-23 Planck function
          * symbol(s): `Y`
          * application domain: generic
@@ -4849,37 +4607,24 @@ standard library package ISQThermodynamics {
          * definition: quotient of the negative of Gibbs energy and temperature: `Y = -G/T` where G is Gibbs energy (item 5-20.5) and `T` is thermodynamic temperature (item 5-1)
          * remarks: None.
          */
-        attribute :>> num : Real;
-        attribute :>> mRef : PlanckFunctionUnit [1];
+        attribute :>> num: Real;
+        attribute :>> mRef: PlanckFunctionUnit[1];
     }
 
-    attribute planckFunction : PlanckFunctionValue :> scalarQuantities [*] nonunique;
+    attribute planckFunction: PlanckFunctionValue[*] nonunique :> scalarQuantities;
 
     attribute def PlanckFunctionUnit :> DerivedUnit {
-        private attribute lengthPF : QuantityPowerFactor [1] {
-            :>> quantity = isq.L;
-            :>> exponent = 2;
-        }
-        private attribute massPF : QuantityPowerFactor [1] {
-            :>> quantity = isq.M;
-            :>> exponent = 1;
-        }
-        private attribute durationPF : QuantityPowerFactor [1] {
-            :>> quantity = isq.T;
-            :>> exponent = -2;
-        }
-        private attribute thermodynamicTemperaturePF : QuantityPowerFactor [1] {
-            :>> quantity = isq.'Θ';
-            :>> exponent = -1;
-        }
-        attribute :>> quantityDimension {
-            :>> quantityPowerFactors = (lengthPF, massPF, durationPF, thermodynamicTemperaturePF);
-        }
+        private attribute lengthPF: QuantityPowerFactor[1] { :>> quantity = isq.L; :>> exponent = 2; }
+        private attribute massPF: QuantityPowerFactor[1] { :>> quantity = isq.M; :>> exponent = 1; }
+        private attribute durationPF: QuantityPowerFactor[1] { :>> quantity = isq.T; :>> exponent = -2; }
+        private attribute thermodynamicTemperaturePF: QuantityPowerFactor[1] { :>> quantity = isq.'Θ'; :>> exponent = -1; }
+        attribute :>> quantityDimension { :>> quantityPowerFactors = (lengthPF, massPF, durationPF, thermodynamicTemperaturePF); }
     }
 
     /* ISO-80000-5 item 5-24 Joule-Thomson coefficient */
     attribute def JouleThomsonCoefficientValue :> ScalarQuantityValue {
-        doc /*
+        doc
+        /*
          * source: item 5-24 Joule-Thomson coefficient
          * symbol(s): `μ_"JT"`
          * application domain: generic
@@ -4890,37 +4635,24 @@ standard library package ISQThermodynamics {
          * definition: change of thermodynamic temperature with respect to pressure in a Joule-Thomson process at constant enthalpy: `μ_(JT) = ((partial T)/(partial p))_H` where `T` is thermodynamic temperature (item 5-1), `p` is pressure (ISO 80000-4) and H is enthalpy (item 5-20.3)
          * remarks: None.
          */
-        attribute :>> num : Real;
-        attribute :>> mRef : JouleThomsonCoefficientUnit [1];
+        attribute :>> num: Real;
+        attribute :>> mRef: JouleThomsonCoefficientUnit[1];
     }
 
-    attribute jouleThomsonCoefficient : JouleThomsonCoefficientValue :> scalarQuantities [*] nonunique;
+    attribute jouleThomsonCoefficient: JouleThomsonCoefficientValue[*] nonunique :> scalarQuantities;
 
     attribute def JouleThomsonCoefficientUnit :> DerivedUnit {
-        private attribute lengthPF : QuantityPowerFactor [1] {
-            :>> quantity = isq.L;
-            :>> exponent = 1;
-        }
-        private attribute massPF : QuantityPowerFactor [1] {
-            :>> quantity = isq.M;
-            :>> exponent = -1;
-        }
-        private attribute durationPF : QuantityPowerFactor [1] {
-            :>> quantity = isq.T;
-            :>> exponent = 2;
-        }
-        private attribute thermodynamicTemperaturePF : QuantityPowerFactor [1] {
-            :>> quantity = isq.'Θ';
-            :>> exponent = 1;
-        }
-        attribute :>> quantityDimension {
-            :>> quantityPowerFactors = (lengthPF, massPF, durationPF, thermodynamicTemperaturePF);
-        }
+        private attribute lengthPF: QuantityPowerFactor[1] { :>> quantity = isq.L; :>> exponent = 1; }
+        private attribute massPF: QuantityPowerFactor[1] { :>> quantity = isq.M; :>> exponent = -1; }
+        private attribute durationPF: QuantityPowerFactor[1] { :>> quantity = isq.T; :>> exponent = 2; }
+        private attribute thermodynamicTemperaturePF: QuantityPowerFactor[1] { :>> quantity = isq.'Θ'; :>> exponent = 1; }
+        attribute :>> quantityDimension { :>> quantityPowerFactors = (lengthPF, massPF, durationPF, thermodynamicTemperaturePF); }
     }
 
     /* ISO-80000-5 item 5-25.1 thermal efficiency */
     attribute def ThermalEfficiencyValue :> DimensionOneValue {
-        doc /*
+        doc
+        /*
          * source: item 5-25.1 thermal efficiency
          * symbol(s): `η`
          * application domain: thermodynamics
@@ -4932,11 +4664,12 @@ standard library package ISQThermodynamics {
          * remarks: None.
          */
     }
-    attribute thermalEfficiency : ThermalEfficiencyValue :> scalarQuantities;
+    attribute thermalEfficiency: ThermalEfficiencyValue :> scalarQuantities;
 
     /* ISO-80000-5 item 5-25.2 maximum thermal efficiency */
     attribute def MaximumThermalEfficiencyValue :> DimensionOneValue {
-        doc /*
+        doc
+        /*
          * source: item 5-25.2 maximum thermal efficiency
          * symbol(s): `η_"max"`
          * application domain: generic
@@ -4948,11 +4681,12 @@ standard library package ISQThermodynamics {
          * remarks: An ideal heat engine operating according to the Carnot process is delivering the maximum efficiency.
          */
     }
-    attribute maximumThermalEfficiency : MaximumThermalEfficiencyValue :> scalarQuantities;
+    attribute maximumThermalEfficiency: MaximumThermalEfficiencyValue :> scalarQuantities;
 
     /* ISO-80000-5 item 5-26 specific gas constant */
     attribute def SpecificGasConstantValue :> ScalarQuantityValue {
-        doc /*
+        doc
+        /*
          * source: item 5-26 specific gas constant
          * symbol(s): `R_s`
          * application domain: generic
@@ -4963,33 +4697,23 @@ standard library package ISQThermodynamics {
          * definition: quotient of the Boltzmann constant `k` (ISO 80000-1) and the mass `m` (ISO 80000-4) of the gas particle
          * remarks: None.
          */
-        attribute :>> num : Real;
-        attribute :>> mRef : SpecificGasConstantUnit [1];
+        attribute :>> num: Real;
+        attribute :>> mRef: SpecificGasConstantUnit[1];
     }
 
-    attribute specificGasConstant : SpecificGasConstantValue :> scalarQuantities [*] nonunique;
+    attribute specificGasConstant: SpecificGasConstantValue[*] nonunique :> scalarQuantities;
 
     attribute def SpecificGasConstantUnit :> DerivedUnit {
-        private attribute lengthPF : QuantityPowerFactor [1] {
-            :>> quantity = isq.L;
-            :>> exponent = 2;
-        }
-        private attribute durationPF : QuantityPowerFactor [1] {
-            :>> quantity = isq.T;
-            :>> exponent = -2;
-        }
-        private attribute thermodynamicTemperaturePF : QuantityPowerFactor [1] {
-            :>> quantity = isq.'Θ';
-            :>> exponent = -1;
-        }
-        attribute :>> quantityDimension {
-            :>> quantityPowerFactors = (lengthPF, durationPF, thermodynamicTemperaturePF);
-        }
+        private attribute lengthPF: QuantityPowerFactor[1] { :>> quantity = isq.L; :>> exponent = 2; }
+        private attribute durationPF: QuantityPowerFactor[1] { :>> quantity = isq.T; :>> exponent = -2; }
+        private attribute thermodynamicTemperaturePF: QuantityPowerFactor[1] { :>> quantity = isq.'Θ'; :>> exponent = -1; }
+        attribute :>> quantityDimension { :>> quantityPowerFactors = (lengthPF, durationPF, thermodynamicTemperaturePF); }
     }
 
     /* ISO-80000-5 item 5-27 mass concentration of water */
     attribute def MassConcentrationOfWaterValue :> ScalarQuantityValue {
-        doc /*
+        doc
+        /*
          * source: item 5-27 mass concentration of water
          * symbol(s): `w`
          * application domain: generic
@@ -5000,29 +4724,22 @@ standard library package ISQThermodynamics {
          * definition: quotient of mass of water and a specified volume: `w = m/V` where `m` is mass (ISO 80000-4) of water, irrespective of the form of aggregation state, and `V` is volume (ISO 80000-3)
          * remarks: Mass concentration of water at saturation is denoted `w_"sat"`.
          */
-        attribute :>> num : Real;
-        attribute :>> mRef : MassConcentrationOfWaterUnit [1];
+        attribute :>> num: Real;
+        attribute :>> mRef: MassConcentrationOfWaterUnit[1];
     }
 
-    attribute massConcentrationOfWater : MassConcentrationOfWaterValue :> scalarQuantities [*] nonunique;
+    attribute massConcentrationOfWater: MassConcentrationOfWaterValue[*] nonunique :> scalarQuantities;
 
     attribute def MassConcentrationOfWaterUnit :> DerivedUnit {
-        private attribute lengthPF : QuantityPowerFactor [1] {
-            :>> quantity = isq.L;
-            :>> exponent = -3;
-        }
-        private attribute massPF : QuantityPowerFactor [1] {
-            :>> quantity = isq.M;
-            :>> exponent = 1;
-        }
-        attribute :>> quantityDimension {
-            :>> quantityPowerFactors = (lengthPF, massPF);
-        }
+        private attribute lengthPF: QuantityPowerFactor[1] { :>> quantity = isq.L; :>> exponent = -3; }
+        private attribute massPF: QuantityPowerFactor[1] { :>> quantity = isq.M; :>> exponent = 1; }
+        attribute :>> quantityDimension { :>> quantityPowerFactors = (lengthPF, massPF); }
     }
 
     /* ISO-80000-5 item 5-28 mass concentration of water vapour absolute humidity */
     attribute def MassConcentrationOfWaterVapourAbsoluteHumidityValue :> ScalarQuantityValue {
-        doc /*
+        doc
+        /*
          * source: item 5-28 mass concentration of water vapour absolute humidity
          * symbol(s): `v`
          * application domain: generic
@@ -5033,29 +4750,22 @@ standard library package ISQThermodynamics {
          * definition: quotient of mass of water vapour and a specified volume: `v = m/V` where m is mass (ISO 80000-4) of water vapour and `V` is volume (ISO 80000-3)
          * remarks: Mass concentration of water vapour at saturation is denoted `v_"sat"`.
          */
-        attribute :>> num : Real;
-        attribute :>> mRef : MassConcentrationOfWaterVapourAbsoluteHumidityUnit [1];
+        attribute :>> num: Real;
+        attribute :>> mRef: MassConcentrationOfWaterVapourAbsoluteHumidityUnit[1];
     }
 
-    attribute massConcentrationOfWaterVapourAbsoluteHumidity : MassConcentrationOfWaterVapourAbsoluteHumidityValue :> scalarQuantities [*] nonunique;
+    attribute massConcentrationOfWaterVapourAbsoluteHumidity: MassConcentrationOfWaterVapourAbsoluteHumidityValue[*] nonunique :> scalarQuantities;
 
     attribute def MassConcentrationOfWaterVapourAbsoluteHumidityUnit :> DerivedUnit {
-        private attribute lengthPF : QuantityPowerFactor [1] {
-            :>> quantity = isq.L;
-            :>> exponent = -3;
-        }
-        private attribute massPF : QuantityPowerFactor [1] {
-            :>> quantity = isq.M;
-            :>> exponent = 1;
-        }
-        attribute :>> quantityDimension {
-            :>> quantityPowerFactors = (lengthPF, massPF);
-        }
+        private attribute lengthPF: QuantityPowerFactor[1] { :>> quantity = isq.L; :>> exponent = -3; }
+        private attribute massPF: QuantityPowerFactor[1] { :>> quantity = isq.M; :>> exponent = 1; }
+        attribute :>> quantityDimension { :>> quantityPowerFactors = (lengthPF, massPF); }
     }
 
     /* ISO-80000-5 item 5-29 mass ratio of water to dry matter */
     attribute def MassRatioOfWaterToDryMatterValue :> DimensionOneValue {
-        doc /*
+        doc
+        /*
          * source: item 5-29 mass ratio of water to dry matter
          * symbol(s): `u`
          * application domain: generic
@@ -5067,11 +4777,12 @@ standard library package ISQThermodynamics {
          * remarks: Mass ratio of water to dry matter at saturation is denoted `u_"sat"`.
          */
     }
-    attribute massRatioOfWaterToDryMatter : MassRatioOfWaterToDryMatterValue :> scalarQuantities;
+    attribute massRatioOfWaterToDryMatter: MassRatioOfWaterToDryMatterValue :> scalarQuantities;
 
     /* ISO-80000-5 item 5-30 mass ratio of water vapour to dry gas */
     attribute def MassRatioOfWaterVapourToDryGasValue :> DimensionOneValue {
-        doc /*
+        doc
+        /*
          * source: item 5-30 mass ratio of water vapour to dry gas
          * symbol(s): `r`, `(x)`
          * application domain: generic
@@ -5083,11 +4794,12 @@ standard library package ISQThermodynamics {
          * remarks: Mass ratio of water vapour to dry gas at saturation is denoted `r_"sat"`. Mass ratio of water vapour to dry gas is also called mixing ratio.
          */
     }
-    attribute massRatioOfWaterVapourToDryGas : MassRatioOfWaterVapourToDryGasValue :> scalarQuantities;
+    attribute massRatioOfWaterVapourToDryGas: MassRatioOfWaterVapourToDryGasValue :> scalarQuantities;
 
     /* ISO-80000-5 item 5-31 mass fraction of water */
     attribute def MassFractionOfWaterValue :> DimensionOneValue {
-        doc /*
+        doc
+        /*
          * source: item 5-31 mass fraction of water
          * symbol(s): `w_(H_(2)O)`
          * application domain: generic
@@ -5099,11 +4811,12 @@ standard library package ISQThermodynamics {
          * remarks: None.
          */
     }
-    attribute massFractionOfWater : MassFractionOfWaterValue :> scalarQuantities;
+    attribute massFractionOfWater: MassFractionOfWaterValue :> scalarQuantities;
 
     /* ISO-80000-5 item 5-32 mass fraction of dry matter */
     attribute def MassFractionOfDryMatterValue :> DimensionOneValue {
-        doc /*
+        doc
+        /*
          * source: item 5-32 mass fraction of dry matter
          * symbol(s): `w_d`
          * application domain: generic
@@ -5115,11 +4828,12 @@ standard library package ISQThermodynamics {
          * remarks: None.
          */
     }
-    attribute massFractionOfDryMatter : MassFractionOfDryMatterValue :> scalarQuantities;
+    attribute massFractionOfDryMatter: MassFractionOfDryMatterValue :> scalarQuantities;
 
     /* ISO-80000-5 item 5-33 relative humidity */
     attribute def RelativeHumidityValue :> DimensionOneValue {
-        doc /*
+        doc
+        /*
          * source: item 5-33 relative humidity
          * symbol(s): `φ`
          * application domain: generic
@@ -5131,11 +4845,12 @@ standard library package ISQThermodynamics {
          * remarks: Relative humidity is often referred to as RH and expressed in percent. See also remark in item 5-35.
          */
     }
-    attribute relativeHumidity : RelativeHumidityValue :> scalarQuantities;
+    attribute relativeHumidity: RelativeHumidityValue :> scalarQuantities;
 
     /* ISO-80000-5 item 5-34 relative mass concentration of vapour */
     attribute def RelativeMassConcentrationOfVapourValue :> DimensionOneValue {
-        doc /*
+        doc
+        /*
          * source: item 5-34 relative mass concentration of vapour
          * symbol(s): `φ`
          * application domain: generic
@@ -5147,11 +4862,12 @@ standard library package ISQThermodynamics {
          * remarks: For water vapour concentrations up to 1 kg/m^3, the relative humidity (item 5-33) is assumed to be equal to relative mass concentration of vapour. For details see Reference [8].
          */
     }
-    attribute relativeMassConcentrationOfVapour : RelativeMassConcentrationOfVapourValue :> scalarQuantities;
+    attribute relativeMassConcentrationOfVapour: RelativeMassConcentrationOfVapourValue :> scalarQuantities;
 
     /* ISO-80000-5 item 5-35 relative mass ratio of vapour */
     attribute def RelativeMassRatioOfVapourValue :> DimensionOneValue {
-        doc /*
+        doc
+        /*
          * source: item 5-35 relative mass ratio of vapour
          * symbol(s): `ψ`
          * application domain: generic
@@ -5163,11 +4879,12 @@ standard library package ISQThermodynamics {
          * remarks: This quantity is also used as an approximation of relative humidity (item 5-33).
          */
     }
-    attribute relativeMassRatioOfVapour : RelativeMassRatioOfVapourValue :> scalarQuantities;
+    attribute relativeMassRatioOfVapour: RelativeMassRatioOfVapourValue :> scalarQuantities;
 
     /* ISO-80000-5 item 5-36 dew-point temperature */
-    attribute dewPointTemperature : ThermodynamicTemperatureValue :> scalarQuantities {
-        doc /*
+    attribute dewPointTemperature: ThermodynamicTemperatureValue :> scalarQuantities {
+        doc
+        /*
          * source: item 5-36 dew-point temperature
          * symbol(s): `T_d`
          * application domain: generic
@@ -5179,7 +4896,9 @@ standard library package ISQThermodynamics {
          * remarks: The corresponding Celsius temperature, denoted `t_d`, is still called dew-point temperature. The unit for the corresponding Celsius temperature is degree Celsius, symbol °C.
          */
     }
+
 }
+
 ~~~
 # SMG
 ~~~

@@ -354,7 +354,8 @@ CloseCurly,EndOfFile,
 # FORMAT
 ~~~sysml
 standard library package Flows {
-    doc /*
+    doc
+    /*
      * This package defines the base types for flows and related behavioral elements 
      * in the SysML language.
      */
@@ -372,98 +373,110 @@ standard library package Flows {
     private import Actions::Action;
     private import Actions::actions;
     private import ScalarValues::Natural;
-
+    
     abstract flow def MessageAction :> Action, Link {
-        doc /*
+        doc
+        /*
          * MessageAction is the most general class of actions that represent
          * interactions between linked things. It is the base type of all
          * FlowDefinitions.
          */
-
-        ref payload [0..*] {
-            doc /*
+         
+         ref payload [0..*] {
+         	doc
+         	/*
          	 * A payload that may be transferred during the interaction.
          	 */
-        }
+         }
     }
 
     abstract flow def Message :> MessageAction, Transfer {
-        doc /*
+        doc
+        /*
          * Message is the subclass of message connections that represent 
          * a transfer of objects or values between two occurrences. It is 
          * the base type of all FlowUsages.
          */
-
+        
         ref payload :>> MessageAction::payload, Transfer::payload;
-
+        
         private ref action thisConnection = self;
-
-        in event occurrence sourceEvent [1] default = thisConnection.start {
-            doc /* 
+        
+        in event occurrence sourceEvent [1] default thisConnection.start {
+            doc
+            /* 
              * An occurrence happening during the source of this message
              * that is either the start of the mssage or happens before it.
              */
         }
-        in event occurrence targetEvent [1] default = thisConnection.done {
-            doc /* 
+        in event occurrence targetEvent [1] default thisConnection.done {
+            doc
+            /* 
              * An occurrence happening during the target of this message
              * that is either the end of the message or happens after it.
              */
         }
-
-        connection : HappensDuring connect sourceEvent to [1] source;
-        connection : HappensDuring connect targetEvent to [1] target;
-
-        private attribute seBeforeNum : Natural [1] = if sourceEvent==thisConnection.start ? 0 else 1;
-        private attribute teAfterNum : Natural [1] = if targetEvent==thisConnection.done ? 0 else 1;
+        
+        connection :HappensDuring connect sourceEvent to [1] source;
+        connection :HappensDuring connect targetEvent to [1] target;
+        
+        private attribute seBeforeNum: Natural[1] = if sourceEvent==thisConnection.start ? 0 else 1;
+        private attribute teAfterNum: Natural[1] = if targetEvent==thisConnection.done ? 0 else 1;
         succession [seBeforeNum] first [0..1] sourceEvent then [0..1] self;
         succession [teAfterNum] first [0..1] self then [0..1] targetEvent;
     }
-
+    
     abstract flow def Flow :> Message, FlowTransfer {
-        doc /*
+        doc
+        /*
          * Flow is a subclass of messages that are also flow transfers.
          * It is the base type for FlowUsages that identify their source output and
          * target input.
          */
-
-        end source : Occurrence :>> Message::source, FlowTransfer::source;
-        end target : Occurrence :>> Message::target, FlowTransfer::target;
+         
+        end occurrence source: Occurrence :>> Message::source, FlowTransfer::source;
+        end occurrence target: Occurrence :>> Message::target, FlowTransfer::target;
     }
-
+    
     abstract flow def SuccessionFlow :> Flow, FlowTransferBefore {
-        doc /*
+        doc
+        /*
          * SuccessionFlow is a subclass of flowss that appen after their source and 
          * before their target. It is the base type for all SuccessionFlowUsages.
          */
-
+         
         ref self : SuccessionFlow :>> Flow::self, FlowTransferBefore::self;
-
-        end source : Occurrence :>> Flow::source, FlowTransferBefore::source;
-        end target : Occurrence :>> Flow::target, FlowTransferBefore::target;
+    
+        end occurrence source: Occurrence :>> Flow::source, FlowTransferBefore::source;
+        end occurrence target: Occurrence :>> Flow::target, FlowTransferBefore::target;
     }
-
-    abstract message messages : Message :> transfers, actions [0..*] {
-        doc /*
+    
+    abstract message messages: Message[0..*] nonunique :> transfers, actions {
+        doc
+        /*
          * messages is the base feature of all FlowUsages.
          */
     }
-
-    abstract flow flows : Flow :> messages, flowTransfers [0..*] {
-        doc /*
+    
+    abstract flow flows: Flow[0..*] nonunique :> messages, flowTransfers {
+        doc
+        /*
          * flows is the base feature for FlowUsages that identify their source output
          * and target input.
          */
-        end source : Occurrence :>> Flow::source, messages::source, flowTransfers::source;
-        end target : Occurrence :>> Flow::target, messages::target, flowTransfers::target;
+    
+        end occurrence source: Occurrence :>> Flow::source, messages::source, flowTransfers::source;
+        end occurrence target: Occurrence :>> Flow::target, messages::target, flowTransfers::target;
     }
-
-    abstract flow successionFlows : SuccessionFlow :> flows, flowTransfersBefore [0..*] {
-        doc /*
+    
+    abstract flow successionFlows: SuccessionFlow[0..*] nonunique :> flows, flowTransfersBefore {
+        doc
+        /*
          * successionFlows is the base feature of all SuccessionFlowUsages.
          */
-        end source : Occurrence :>> SuccessionFlow::source, flows::source, flowTransfersBefore::source;
-        end target : Occurrence :>> SuccessionFlow::target, flows::target, flowTransfersBefore::target;
+    
+        end occurrence source: Occurrence :>> SuccessionFlow::source, flows::source, flowTransfersBefore::source;
+        end occurrence target: Occurrence :>> SuccessionFlow::target, flows::target, flowTransfersBefore::target;
     }
 }
 ~~~

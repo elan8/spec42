@@ -92,7 +92,7 @@ package ExpressionCoverage {
     feature n = null;
     feature inf = *;
 
-    feature items : Item [*];
+    feature items : Item[*];
     feature arr = items[0];
     feature h = items#(0);
     feature all_v = all Vehicle;
@@ -106,6 +106,7 @@ package ExpressionCoverage {
 
     feature meta_access = Vehicle.metadata;
 }
+
 ~~~
 # SMG
 ~~~

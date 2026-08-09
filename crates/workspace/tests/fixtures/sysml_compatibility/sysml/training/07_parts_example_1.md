@@ -80,6 +80,7 @@ CloseCurly,EndOfFile,
 # FORMAT
 ~~~sysml
 package 'Parts Example-1' {
+
     // Definitions
 
     part def Vehicle {
@@ -87,7 +88,7 @@ package 'Parts Example-1' {
     }
 
     part def Engine {
-        part cyl : Cylinder [4..6];
+        part cyl : Cylinder[4..6];
     }
 
     part def Cylinder;
@@ -96,16 +97,18 @@ package 'Parts Example-1' {
 
     part smallVehicle : Vehicle {
         part redefines eng {
-            part redefines cyl [4];
+            part redefines cyl[4];
         }
     }
 
     part bigVehicle : Vehicle {
         part redefines eng {
-            part redefines cyl [6];
+            part redefines cyl[6];
         }
     }
+
 }
+
 ~~~
 # EXPECTED
 ~~~

@@ -103,7 +103,7 @@ package PrivateImportTest {
         private import P1::*;
     }
 
-    part x : P1::A;
+    part x: P1::A;
 
     public import P2::*;
     // This should fail.
@@ -119,15 +119,16 @@ package PrivateImportTest {
 
     // This should not fail.
     // Private import only restricts visibility outside the package.
-    part z : B;
+    part z: B;
 
     package P4 {
         public import all P2::*;
 
         // This should not fail because "import all" overrides private import.
-        part z1 : A;
+        part z1: A;
     }
 }
+
 ~~~
 # EXPECTED
 ~~~

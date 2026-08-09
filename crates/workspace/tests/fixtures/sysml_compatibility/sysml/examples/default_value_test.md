@@ -56,6 +56,7 @@ CloseCurly,EndOfFile,
 # FORMAT
 ~~~sysml
 package DefaultValueTest {
+
     part def V {
         attribute m default = 10;
         attribute n = 20;
@@ -70,7 +71,9 @@ package DefaultValueTest {
     }
 
     part v2 = new W();
+
 }
+
 ~~~
 # EXPECTED
 ~~~

@@ -86,7 +86,7 @@ package RationaleMetadataExample {
     }
 
     private import TradeStudies::*;
-    analysis engineTradeOffAnalysis : TradeStudy {
+    analysis engineTradeOffAnalysis:TradeStudy{
         subject alternatives :> engine [2] = (engine4cyl, engine6cyl);
 
         /* ... */
@@ -94,6 +94,7 @@ package RationaleMetadataExample {
         return selectedEngine :> engine;
     }
 }
+
 ~~~
 # EXPECTED
 ~~~

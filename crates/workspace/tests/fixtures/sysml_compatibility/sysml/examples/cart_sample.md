@@ -210,13 +210,13 @@ package CartSample {
                 :>> stateSpace : CartState;
 
                 calc :>> getDerivative {
-                    in input : CartInput;
-                    in stateSpace : CartState;
-                    = new CartStateDerivative(input.force / mass);
+                    in input: CartInput;
+                    in stateSpace: CartState;
+                    new CartStateDerivative(input.force / mass)
                 }
                 calc :>> getOutput {
                     in :>> stateSpace : CartState;
-                    = new CartOutput(stateSpace.velocity);
+                    new CartOutput(stateSpace.velocity)
                 }
             }
         }
@@ -227,14 +227,15 @@ package CartSample {
                 in input;
                 out output : PusherOutput;
                 calc :>> getOutput {
-                    = new PusherOutput(pusherForce);
+                    new PusherOutput(pusherForce)
                 }
             }
         }
 
-        flow pusher;
+        flow pusher.pusherBehavior.output to cart.cartBehavior.input;
     }
 }
+
 ~~~
 # EXPECTED
 ~~~

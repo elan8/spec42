@@ -49,11 +49,12 @@ CloseCurly,EndOfFile,
 # FORMAT
 ~~~sysml
 package BindingNamedMult {
-    binding instant [instantNum] of startShot = endShot;
+    binding instant[instantNum] of startShot = endShot;
     binding all startShot = endShot;
     binding x bind a = b;
     binding [0..1] a = b;
 }
+
 ~~~
 # SMG
 ~~~

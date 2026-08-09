@@ -78,6 +78,7 @@ CloseCurly,EndOfFile,
 # FORMAT
 ~~~sysml
 package 'Dependency Example' {
+
     part 'System Assembly' {
         part 'Computer Subsystem' {
             // ...
@@ -99,8 +100,11 @@ package 'Dependency Example' {
 
     dependency from 'System Assembly'::'Computer Subsystem' to 'Software Design';
 
-    dependency Schemata from 'System Assembly'::'Storage Subsystem' to 'Software Design'::MessageSchema, 'Software Design'::DataSchema;
+    dependency Schemata
+    from 'System Assembly'::'Storage Subsystem'
+    to 'Software Design'::MessageSchema, 'Software Design'::DataSchema;
 }
+
 ~~~
 # EXPECTED
 ~~~

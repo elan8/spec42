@@ -117,11 +117,11 @@ package MetadataTest {
     private import 'User Defined Extensions'::*;
 
     library package 'User Defined Extensions' {
+
         #Security enum def ClassificationLevel :> ScalarValues::Natural {
-            enum uncl : ClassificationLevel = 0;
-            enum conf : ClassificationLevel = 1;
-            #Security
-            enum secret : ClassificationLevel = 2;
+            uncl : ClassificationLevel = 0;
+            conf : ClassificationLevel = 1;
+            #Security enum secret : ClassificationLevel = 2;
         }
 
         metadata def Classified {
@@ -133,7 +133,7 @@ package MetadataTest {
     }
 
     ref x {
-        @Classified {
+        metadata Classified {
             classificationLevel = ClassificationLevel::conf;
         }
     }
@@ -149,11 +149,13 @@ package MetadataTest {
     abstract #Classified z2;
 
     ref z {
-        Classified {
-	        classificationLevel = ClassificationLevel::secret;
-	    }
+        #Security #Classified metadata Classified {
+            classificationLevel = ClassificationLevel::secret;
+        }
     }
+
 }
+
 ~~~
 # EXPECTED
 ~~~

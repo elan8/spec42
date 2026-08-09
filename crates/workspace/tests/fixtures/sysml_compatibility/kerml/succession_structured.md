@@ -59,11 +59,12 @@ CloseCurly,EndOfFile,
 package SuccessionStructured {
     succession all [*] trigger then [*] guard;
     succession [1] entry then [*] middle;
-    first X then Y;
+    succession first X then Y;
     succession s first A then B;
     succession all [*] acceptable then [1] exit;
     succession x;
 }
+
 ~~~
 # SMG
 ~~~

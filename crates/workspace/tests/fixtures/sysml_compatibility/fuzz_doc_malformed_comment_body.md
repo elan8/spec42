@@ -25,7 +25,7 @@ KwDoc,MalformedRegularComment,EndOfFile,
 # FORMAT
 ~~~sysml
 alias Foo for Bar {
-    doc /* unclosed comment */
+    doc /* unclosed comment
 }
 ~~~
 # EXPECTED

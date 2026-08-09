@@ -21,6 +21,7 @@ KwFeature,Ident,Colon,Ident,Semicolon,EndOfFile,
 # FORMAT
 ~~~sysml
 feature x : Integer;
+
 ~~~
 # EXPECTED
 ~~~

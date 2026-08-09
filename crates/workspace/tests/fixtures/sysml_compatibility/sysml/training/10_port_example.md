@@ -77,6 +77,7 @@ CloseCurly,EndOfFile,
 # FORMAT
 ~~~sysml
 package 'Port Example' {
+
     attribute def Temp;
 
     part def Fuel;
@@ -101,6 +102,7 @@ package 'Port Example' {
         port engineFuelPort : FuelInPort;
     }
 }
+
 ~~~
 # EXPECTED
 ~~~

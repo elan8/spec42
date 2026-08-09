@@ -153,34 +153,34 @@ CloseCurly,EndOfFile,
 # FORMAT
 ~~~sysml
 package PartTest {
-    part f : A;
+
+    part f: A;
 
     public part def A {
-        part <'1'> b : B;
-        protected port c : C;
-        const attribute x [0..2];
-        derived const ref attribute y :> x;
+        part <'1'> b: B;
+        protected port c: C;
+        constant attribute x[0..2];
+        derived constant ref attribute y :> x;
         ref z : ScalarValues::Integer;
     }
 
     item def S;
 
     abstract part def <xx> B {
-        public abstract part a : A [1..2];
+        public abstract part a: A[1..2];
         public abstract part b subsets a;
-        public abstract part c subsets a [0..1];
-        port x : ~C {
+        public abstract part c[0..1] subsets a;
+        port x: ~C {
             port p;
             ref port q;
         }
         package P { }
 
-        succession flow x;
+        succession flow x.p to a1.aa.receiver;
 
         action a1 {
             accept S via x;
-            action aa;
-            accept S;
+            action aa accept S;
         }
         perform action a2;
 
@@ -189,7 +189,7 @@ package PartTest {
     }
 
     private port def C {
-        private in ref y : A, B {
+        private in ref y: A, B {
             part B_b redefines B::b;
             part B_c redefines B::c;
             port B_x redefines B::x;
@@ -205,7 +205,9 @@ package PartTest {
     part p3 :> p1;
 
     part p4 :> p4;
+
 }
+
 ~~~
 # EXPECTED
 ~~~

@@ -232,7 +232,8 @@ CloseCurly,EndOfFile,
 # FORMAT
 ~~~sysml
 package 'Wheel Package' {
-    doc /*
+    doc
+    /*
 	 * Example from the SysML 1.6 spec, subclause 8.4.1 Wheel Hub Assembly.
 	 */
 
@@ -241,21 +242,21 @@ package 'Wheel Package' {
     pressure = force / length^2;
 
     part def WheelHubAssembly {
-        part wheel : WheelAssembly [1];
-        part lugBoltJoints : LugBoltJoint [5] {
-            ref  redefines threadedHole subsets hub.h;
-            ref  redefines mountingHole subsets wheel.w.mountingHoles;
+        part wheel: WheelAssembly[1];
+        part lugBoltJoints: LugBoltJoint[5] {
+            ref redefines threadedHole subsets hub.h;
+            ref redefines mountingHole subsets wheel.w.mountingHoles;
         }
-        part hub : Hub [1];
+        part hub: Hub[1];
     }
 
     part def WheelAssembly {
         inflationPressure :> pressure;
 
-        part t : Tire [1] {
+        part t: Tire[1] {
             part bead redefines Tire::bead;
         }
-        part w : Wheel [1] {
+        part w: Wheel[1] {
             part rim redefines Wheel::rim;
         }
 
@@ -265,7 +266,7 @@ package 'Wheel Package' {
     part def Tire {
         tireSpecification : ScalarValues::String;
 
-        part bead : TireBead [2];
+        part bead : TireBead[2];
 
         action mountTire;
     }
@@ -273,23 +274,23 @@ package 'Wheel Package' {
     part def TireBead;
 
     connection def PressureSeat {
-        end : TireBead;
-        end : TireMountingRim;
+        end : TireBead[1];
+        end : TireMountingRim[1];
     }
 
     part def Wheel {
         diameter :> length;
         width :> length;
 
-        part rim : TireMountingRim [2];
-        part v : InflationValve [1];
-        part weight : BalanceWeight [0..6];
-        part mountingHoles : LugBoltMountingHole [5];
+        part rim : TireMountingRim[2];
+        part v : InflationValve[1];
+        part weight : BalanceWeight[0..6];
+        part mountingHoles : LugBoltMountingHole[5];
     }
 
     connection def BandMount {
-        end : Wheel;
-        end : WirelessTirePressureMonitor;
+        end : Wheel[1];
+        end : WirelessTirePressureMonitor[1];
     }
 
     part def WirelessTirePressureMonitor {
@@ -310,19 +311,21 @@ package 'Wheel Package' {
         torque :> ISQ::torque;
         boltTension :> force;
 
-        ref mountingHole : LugBoltMountingHole [1];
-        ref threadedHole : LugBoltThreadableHole [1];
+        ref mountingHole: LugBoltMountingHole[1];
+        ref threadedHole: LugBoltThreadableHole[1];
     }
 
     part def Hub {
-        part h : LugBoltThreadableHole [5];
+        part h: LugBoltThreadableHole[5];
     }
 
     part def LugBoltThreadableHole {
         lugBoltSize :> length;
         threadSize :> length;
     }
+
 }
+
 ~~~
 # EXPECTED
 ~~~

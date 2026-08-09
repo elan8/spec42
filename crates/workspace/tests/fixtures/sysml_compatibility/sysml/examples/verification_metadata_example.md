@@ -59,18 +59,17 @@ package VerificationMetadataExample {
     private import VerificationMethodKind::*;
 
     verification def MassTest;
-    verification massTests : MassTest {
-        @VerificationMethod {
-            kind = (test,demo);
+    verification massTests:MassTest {
+        @VerificationMethod{ kind = (test,demo); }
+        objective {
         }
-        objective { }
         action weighVehicle {
-            @VerificationMethod {
-                kind = analyze;
-            }
+            @VerificationMethod{ kind = analyze; }
         }
     }
+
 }
+
 ~~~
 # EXPECTED
 ~~~

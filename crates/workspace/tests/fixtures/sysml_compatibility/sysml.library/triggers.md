@@ -400,38 +400,42 @@ CloseCurly,EndOfFile,
 # FORMAT
 ~~~sysml
 standard library package Triggers {
-    doc /*
+	doc
+	/*
 	 * This package contains functions that return ChangeSignals for triggering
 	 * when a Boolean condition changes from false to true, at a specific time
 	 * or after a specific time delay.
 	 */
 
-    private import ScalarValues::Boolean;
-    private import ScalarValues::NumericalValue;
-    private import Occurrences::Occurrence;
-
-    public import Clocks::*;
-    public import Observation::*;
-
-    struct TimeSignal :> ChangeSignal {
-        doc /*
+	private import ScalarValues::Boolean;
+	private import ScalarValues::NumericalValue;
+	private import Occurrences::Occurrence;
+	
+	public import Clocks::*;
+	public import Observation::*;
+	
+	struct TimeSignal :> ChangeSignal {
+		doc
+		/*
 		 * A TimeSignal is a ChangeSignal whose condition is the currentTime
 		 * of a given Clock reaching a specific signalTime.
 		 */
-
-        feature signalTime : NumericalValue [1] {
-            doc /*
+	
+		feature signalTime : NumericalValue[1] {
+			doc
+			/*
 			 * The time at which the TimeSignal should be sent.
 			 */
-        }
-
-        feature signalClock : Clock [1] {
-            doc /*
+		}
+		
+		feature signalClock : Clock[1] {
+			doc
+			/*
 			 * The Clock whose currentTime is being monitored.
 			 */
-        }
-
-        private bool :>> signalCondition {
+		}
+		
+		private bool :>> signalCondition {
 			doc
 			/*
 			 * The Boolean condition of the currentTime of the signalClock being
@@ -440,9 +444,9 @@ standard library package Triggers {
 		
 			signalClock.currentTime == signalTime
 		}
-    }
-
-    function TriggerWhen {
+	}
+	
+	function TriggerWhen {
 		doc
 		/*
 		 * TriggerWhen returns a monitored ChangeSignal for a given condition,
@@ -484,8 +488,8 @@ standard library package Triggers {
 			in signal = changeSignal;
 		}		
 	}
-
-    function TriggerAt {
+	
+	function TriggerAt {
 		doc
 		/*
 		 * TriggerAt returns a monitored TimeSignal to be sent to a receiver when
@@ -534,8 +538,8 @@ standard library package Triggers {
 			in signal = timeSignal;
 		}
 	}
-
-    function TriggerAfter {
+	
+	function TriggerAfter {
 		doc
 		/*
 		 * TriggerAfter returns a monitored TimeSignal to be sent to a receiver after
@@ -580,7 +584,8 @@ standard library package Triggers {
 			 * plus the given time delay, as monitored by the monitor.
 			 */
 		}
-	}
+	}	
+	
 }
 ~~~
 # SMG

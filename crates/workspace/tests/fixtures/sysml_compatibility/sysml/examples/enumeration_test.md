@@ -134,12 +134,14 @@ CloseCurly,EndOfFile,
 # FORMAT
 ~~~sysml
 package EnumerationTest {
+
     attribute def Color {
         attribute val : ScalarValues::Natural;
     }
 
     enum def ColorKind :> Color {
-        doc /*
+        doc
+        /*
 		 * An EnumerationDefinition can contain only EnumerationUsages. However,
 		 * it can specialize an AttributeDefinition in order to inherit
 		 * common features for its enumeration values.
@@ -157,15 +159,12 @@ package EnumerationTest {
     }
 
     enum color : ColorKind;
-    enum color1 = ColorKind::blue;
-    // Implicitly typed by ColorKind.
+    enum color1 = ColorKind::blue;	// Implicitly typed by ColorKind.
     attribute color2 : ColorKind = color1;
 
-    enum def E1 {
-        enum a;
-        enum b;
-        enum c;
-        doc /*
+    enum def E1 { a; b; c;
+        doc
+        /*
 		 * The "enum" keyword is optional for EnumerationUsages used to define the
 		 * enumerated values of an EnumerationDefinition.
 		 */
@@ -174,7 +173,8 @@ package EnumerationTest {
     enum def E2;
 
     attribute def Size :> ScalarValues::Real {
-        doc /*
+        doc
+        /*
 		 * An EnumerationDefinition can also be used to restrict a supertype to
 		 * specific values.
 		 */
@@ -184,8 +184,10 @@ package EnumerationTest {
         = 70.0;
         = 80.0;
     }
-    enum size : SizeChoice = 60.0;
+    enum size: SizeChoice = 60.0;
+
 }
+
 ~~~
 # EXPECTED
 ~~~

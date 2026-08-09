@@ -75,6 +75,7 @@ CloseCurly,EndOfFile,
 # FORMAT
 ~~~sysml
 package 'Redefinition Example' {
+
     part def Vehicle {
         part eng : Engine;
     }
@@ -86,17 +87,18 @@ package 'Redefinition Example' {
     }
 
     part def Engine {
-        part cyl : Cylinder [4..6];
+        part cyl : Cylinder[4..6];
     }
     part def SmallEngine :> Engine {
-        part redefines cyl [4];
+        part redefines cyl[4];
     }
     part def BigEngine :> Engine {
-        part redefines cyl [6];
+        part redefines cyl[6];
     }
 
     part def Cylinder;
 }
+
 ~~~
 # EXPECTED
 ~~~

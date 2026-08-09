@@ -21,6 +21,7 @@ Ident,MalformedUnknownToken,Ident,EndOfFile,
 # FORMAT
 ~~~sysml
 x ` y
+
 ~~~
 # EXPECTED
 ~~~

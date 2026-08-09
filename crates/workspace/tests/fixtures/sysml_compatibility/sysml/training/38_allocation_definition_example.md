@@ -118,8 +118,9 @@ package 'Allocation Definition Example' {
         }
 
         part torqueGenerator : TorqueGenerator {
-            perform :>> providePower.generateTorque;
+            perform providePower.generateTorque;
         }
+
     }
 
     package PhysicalModel {
@@ -130,7 +131,7 @@ package 'Allocation Definition Example' {
 
         part powerTrain : PowerTrain {
             part engine {
-                perform :>> providePower.generateTorque;
+                perform providePower.generateTorque;
             }
         }
 
@@ -142,6 +143,7 @@ package 'Allocation Definition Example' {
         allocation torqueGenAlloc : LogicalToPhysical allocate torqueGenerator to powerTrain;
     }
 }
+
 ~~~
 # EXPECTED
 ~~~

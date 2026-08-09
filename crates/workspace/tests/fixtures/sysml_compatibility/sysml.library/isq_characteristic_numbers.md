@@ -3657,7 +3657,8 @@ CloseCurly,EndOfFile,
 # FORMAT
 ~~~sysml
 standard library package ISQCharacteristicNumbers {
-    doc /*
+    doc
+    /*
      * International System of Quantities and Units
      * Generated on 2025-03-13T15:00:05Z from standard ISO-80000-11:2019 "Characteristic numbers"
      * see also https://www.iso.org/standard/64982.html
@@ -3676,7 +3677,8 @@ standard library package ISQCharacteristicNumbers {
 
     /* ISO-80000-11 item 11-4.1 Reynolds number */
     attribute def ReynoldsNumberValue :> DimensionOneValue {
-        doc /*
+        doc
+        /*
          * source: item 11-4.1 Reynolds number
          * symbol(s): `Re`
          * application domain: generic
@@ -3688,11 +3690,12 @@ standard library package ISQCharacteristicNumbers {
          * remarks: The value of the Reynolds number gives an estimate on the flow state: laminar flow or turbulent flow. In rotating movement, the speed `v = ω*l`, where `l` is the distance from the rotation axis and `ω` is the angular velocity.
          */
     }
-    attribute reynoldsNumber : ReynoldsNumberValue :> scalarQuantities;
+    attribute reynoldsNumber: ReynoldsNumberValue :> scalarQuantities;
 
     /* ISO-80000-11 item 11-4.2 Euler number */
     attribute def EulerNumberValue :> DimensionOneValue {
-        doc /*
+        doc
+        /*
          * source: item 11-4.2 Euler number
          * symbol(s): `Eu`
          * application domain: generic
@@ -3704,11 +3707,12 @@ standard library package ISQCharacteristicNumbers {
          * remarks: The Euler number is used to characterize losses in the flow. A modification of the Euler number is considering the dimensions of the containment (pipe): `Eu^"'" = d/l*Eu`, where `d` is inner diameter (ISO 80000-3) of the pipe, and `l` is length (ISO 80000-3).
          */
     }
-    attribute eulerNumber : EulerNumberValue :> scalarQuantities;
+    attribute eulerNumber: EulerNumberValue :> scalarQuantities;
 
     /* ISO-80000-11 item 11-4.3 Froude number */
     attribute def FroudeNumberValue :> DimensionOneValue {
-        doc /*
+        doc
+        /*
          * source: item 11-4.3 Froude number
          * symbol(s): `Fr`
          * application domain: generic
@@ -3720,11 +3724,12 @@ standard library package ISQCharacteristicNumbers {
          * remarks: The Froude number can be modified by buoyancy. Sometimes the square and sometimes the inverse of the Froude number as defined here is wrongly used.
          */
     }
-    attribute froudeNumber : FroudeNumberValue :> scalarQuantities;
+    attribute froudeNumber: FroudeNumberValue :> scalarQuantities;
 
     /* ISO-80000-11 item 11-4.4 Grashof number */
     attribute def GrashofNumberValue :> DimensionOneValue {
-        doc /*
+        doc
+        /*
          * source: item 11-4.4 Grashof number
          * symbol(s): `Gr`
          * application domain: generic
@@ -3736,11 +3741,12 @@ standard library package ISQCharacteristicNumbers {
          * remarks: Heating can occur near hot vertical walls, in pipes, or by a bluff body. The characteristic length can be the vertical height of a hot plate, the diameter of a pipe, or the effective length of a body. See also Rayleigh number (item 11-5.3).
          */
     }
-    attribute grashofNumber : GrashofNumberValue :> scalarQuantities;
+    attribute grashofNumber: GrashofNumberValue :> scalarQuantities;
 
     /* ISO-80000-11 item 11-4.5 Weber number */
     attribute def WeberNumberValue :> DimensionOneValue {
-        doc /*
+        doc
+        /*
          * source: item 11-4.5 Weber number
          * symbol(s): `We`
          * application domain: generic
@@ -3752,11 +3758,12 @@ standard library package ISQCharacteristicNumbers {
          * remarks: The fluids can be gases or liquids. The different fluids often are drops moving in a gas or bubbles in a liquid. The characteristic length is commonly the diameter of bubbles or drops. The square root of the Weber number is called Rayleigh number. Sometimes the square root of the Weber number as defined here is called the Weber number. That definition is deprecated. Interfaces only exist between two fluids which are not miscible.
          */
     }
-    attribute weberNumber : WeberNumberValue :> scalarQuantities;
+    attribute weberNumber: WeberNumberValue :> scalarQuantities;
 
     /* ISO-80000-11 item 11-4.6 Mach number */
     attribute def MachNumberValue :> DimensionOneValue {
-        doc /*
+        doc
+        /*
          * source: item 11-4.6 Mach number
          * symbol(s): `Ma`
          * application domain: generic
@@ -3768,11 +3775,12 @@ standard library package ISQCharacteristicNumbers {
          * remarks: The Mach number represents the relationship of inertial forces compared to compression forces. For an ideal gas `c = sqrt(γ p/rho) = sqrt(γ (RT)/M) = sqrt(γ (kT)/m)`, where `γ` is ratio of the specific heat capacity (ISO 80000-5).
          */
     }
-    attribute machNumber : MachNumberValue :> scalarQuantities;
+    attribute machNumber: MachNumberValue :> scalarQuantities;
 
     /* ISO-80000-11 item 11-4.7 Knudsen number */
     attribute def KnudsenNumberValue :> DimensionOneValue {
-        doc /*
+        doc
+        /*
          * source: item 11-4.7 Knudsen number
          * symbol(s): `Kn`
          * application domain: generic
@@ -3784,11 +3792,12 @@ standard library package ISQCharacteristicNumbers {
          * remarks: The Knudsen number is a measure to estimate whether the gas in flow behaves like a continuum. The characteristic length, `l`, can be a characteristic size of the gas flow region like a pipe diameter.
          */
     }
-    attribute knudsenNumber : KnudsenNumberValue :> scalarQuantities;
+    attribute knudsenNumber: KnudsenNumberValue :> scalarQuantities;
 
     /* ISO-80000-11 item 11-4.8 Strouhal number, Thomson number */
     attribute def StrouhalNumberValue :> DimensionOneValue {
-        doc /*
+        doc
+        /*
          * source: item 11-4.8 Strouhal number, Thomson number
          * symbol(s): `Sr`, `Sh`
          * application domain: generic
@@ -3800,7 +3809,7 @@ standard library package ISQCharacteristicNumbers {
          * remarks: The characteristic length, `l`, can be the diameter of an obstacle in the flow which can cause vortex shedding, or the length of it.
          */
     }
-    attribute strouhalNumber : StrouhalNumberValue :> scalarQuantities;
+    attribute strouhalNumber: StrouhalNumberValue :> scalarQuantities;
 
     alias thomsonNumber for strouhalNumber;
 
@@ -3809,7 +3818,8 @@ standard library package ISQCharacteristicNumbers {
 
     /* ISO-80000-11 item 11-4.10 Bagnold number */
     attribute def BagnoldNumberValue :> DimensionOneValue {
-        doc /*
+        doc
+        /*
          * source: item 11-4.10 Bagnold number
          * symbol(s): `Bg`
          * application domain: generic
@@ -3821,11 +3831,12 @@ standard library package ISQCharacteristicNumbers {
          * remarks: The characteristic length, `l`, is the body’s volume divided by its cross-sectional area.
          */
     }
-    attribute bagnoldNumber : BagnoldNumberValue :> scalarQuantities;
+    attribute bagnoldNumber: BagnoldNumberValue :> scalarQuantities;
 
     /* ISO-80000-11 item 11-4.11 Bagnold number */
     attribute def BagnoldNumberForSolidParticlesValue :> DimensionOneValue {
-        doc /*
+        doc
+        /*
          * source: item 11-4.11 Bagnold number
          * symbol(s): `Ba_2`
          * application domain: solid particles
@@ -3837,11 +3848,12 @@ standard library package ISQCharacteristicNumbers {
          * remarks: None.
          */
     }
-    attribute bagnoldNumberForSolidParticles : BagnoldNumberForSolidParticlesValue :> scalarQuantities;
+    attribute bagnoldNumberForSolidParticles: BagnoldNumberForSolidParticlesValue :> scalarQuantities;
 
     /* ISO-80000-11 item 11-4.12 lift coefficient */
     attribute def LiftCoefficientValue :> DimensionOneValue {
-        doc /*
+        doc
+        /*
          * source: item 11-4.12 lift coefficient
          * symbol(s): `c_l`, `c_A`
          * application domain: generic
@@ -3853,11 +3865,12 @@ standard library package ISQCharacteristicNumbers {
          * remarks: The lift coefficient is dependant on the shape of the wing.
          */
     }
-    attribute liftCoefficient : LiftCoefficientValue :> scalarQuantities;
+    attribute liftCoefficient: LiftCoefficientValue :> scalarQuantities;
 
     /* ISO-80000-11 item 11-4.13 thrust coefficient */
     attribute def ThrustCoefficientValue :> DimensionOneValue {
-        doc /*
+        doc
+        /*
          * source: item 11-4.13 thrust coefficient
          * symbol(s): `c_t`
          * application domain: generic
@@ -3869,11 +3882,12 @@ standard library package ISQCharacteristicNumbers {
          * remarks: The thrust coefficient is dependant on the shape of the propeller.
          */
     }
-    attribute thrustCoefficient : ThrustCoefficientValue :> scalarQuantities;
+    attribute thrustCoefficient: ThrustCoefficientValue :> scalarQuantities;
 
     /* ISO-80000-11 item 11-4.14 Dean number */
     attribute def DeanNumberValue :> DimensionOneValue {
-        doc /*
+        doc
+        /*
          * source: item 11-4.14 Dean number
          * symbol(s): `Dn`
          * application domain: generic
@@ -3885,11 +3899,12 @@ standard library package ISQCharacteristicNumbers {
          * remarks: None.
          */
     }
-    attribute deanNumber : DeanNumberValue :> scalarQuantities;
+    attribute deanNumber: DeanNumberValue :> scalarQuantities;
 
     /* ISO-80000-11 item 11-4.15 Bejan number */
     attribute def BejanNumberValue :> DimensionOneValue {
-        doc /*
+        doc
+        /*
          * source: item 11-4.15 Bejan number
          * symbol(s): `Be`
          * application domain: generic
@@ -3901,11 +3916,12 @@ standard library package ISQCharacteristicNumbers {
          * remarks: A similar number exists for heat transfer (item 11-5.9). The kinematic viscosity is also called momentum diffusivity.
          */
     }
-    attribute bejanNumber : BejanNumberValue :> scalarQuantities;
+    attribute bejanNumber: BejanNumberValue :> scalarQuantities;
 
     /* ISO-80000-11 item 11-4.16 Lagrange number */
     attribute def LagrangeNumberValue :> DimensionOneValue {
-        doc /*
+        doc
+        /*
          * source: item 11-4.16 Lagrange number
          * symbol(s): `Lg`
          * application domain: generic
@@ -3917,11 +3933,12 @@ standard library package ISQCharacteristicNumbers {
          * remarks: The Lagrange number is also given by `Lg = Re*Eu`, where `Re` is the Reynolds number (item 11-4.1), and `Eu` is the Euler number (item 11-4.2).
          */
     }
-    attribute lagrangeNumber : LagrangeNumberValue :> scalarQuantities;
+    attribute lagrangeNumber: LagrangeNumberValue :> scalarQuantities;
 
     /* ISO-80000-11 item 11-4.17 Bingham number, plasticity number */
     attribute def BinghamNumberValue :> DimensionOneValue {
-        doc /*
+        doc
+        /*
          * source: item 11-4.17 Bingham number, plasticity number
          * symbol(s): `Bm`, `Bn`
          * application domain: generic
@@ -3933,13 +3950,14 @@ standard library package ISQCharacteristicNumbers {
          * remarks: None.
          */
     }
-    attribute binghamNumber : BinghamNumberValue :> scalarQuantities;
+    attribute binghamNumber: BinghamNumberValue :> scalarQuantities;
 
     alias plasticityNumber for binghamNumber;
 
     /* ISO-80000-11 item 11-4.18 Hedström number */
     attribute def 'HedströmNumberValue' :> DimensionOneValue {
-        doc /*
+        doc
+        /*
          * source: item 11-4.18 Hedström number
          * symbol(s): `He`, `Hd`
          * application domain: generic
@@ -3951,11 +3969,12 @@ standard library package ISQCharacteristicNumbers {
          * remarks: None.
          */
     }
-    attribute 'hedströmNumber' : 'HedströmNumberValue' :> scalarQuantities;
+    attribute 'hedströmNumber': 'HedströmNumberValue' :> scalarQuantities;
 
     /* ISO-80000-11 item 11-4.19 Bodenstein number */
     attribute def BodensteinNumberValue :> DimensionOneValue {
-        doc /*
+        doc
+        /*
          * source: item 11-4.19 Bodenstein number
          * symbol(s): `Bd`
          * application domain: generic
@@ -3967,11 +3986,12 @@ standard library package ISQCharacteristicNumbers {
          * remarks: The Bodenstein number is also given by `Bd = Pe^"*" = Re*Sc`, where `Pe^"*"` is the Péclet number for mass transfer (item 11-6.2), `Re` is the Reynolds number (item 11-4.1), and `Sc = η/(ρ*D) = ν/D` is the Schmidt number (item 11-7.2).
          */
     }
-    attribute bodensteinNumber : BodensteinNumberValue :> scalarQuantities;
+    attribute bodensteinNumber: BodensteinNumberValue :> scalarQuantities;
 
     /* ISO-80000-11 item 11-4.20 Rossby number, Kiebel number */
     attribute def RossbyNumberValue :> DimensionOneValue {
-        doc /*
+        doc
+        /*
          * source: item 11-4.20 Rossby number, Kiebel number
          * symbol(s): `Ro`
          * application domain: generic
@@ -3983,13 +4003,14 @@ standard library package ISQCharacteristicNumbers {
          * remarks: The Rossby number represents the effect of Earth's rotation on flow in pipes, rivers, ocean currents, tornadoes, etc. The quantity `ω_E*sin(φ)` is called Coriolis frequency.
          */
     }
-    attribute rossbyNumber : RossbyNumberValue :> scalarQuantities;
+    attribute rossbyNumber: RossbyNumberValue :> scalarQuantities;
 
     alias kiebelNumber for rossbyNumber;
 
     /* ISO-80000-11 item 11-4.21 Ekman number */
     attribute def EkmanNumberValue :> DimensionOneValue {
-        doc /*
+        doc
+        /*
          * source: item 11-4.21 Ekman number
          * symbol(s): `Ek`
          * application domain: generic
@@ -4001,11 +4022,12 @@ standard library package ISQCharacteristicNumbers {
          * remarks: In plasma physics, the square root of this number is used. The Ekman number is also given by `Ek = (Ro)/(Re)`, where `Ro` is the Rossby number (item 11-4.20), and `Re` is the Reynolds number (item 11-4.1).
          */
     }
-    attribute ekmanNumber : EkmanNumberValue :> scalarQuantities;
+    attribute ekmanNumber: EkmanNumberValue :> scalarQuantities;
 
     /* ISO-80000-11 item 11-4.22 elasticity number */
     attribute def ElasticityNumberValue :> DimensionOneValue {
-        doc /*
+        doc
+        /*
          * source: item 11-4.22 elasticity number
          * symbol(s): `El`
          * application domain: generic
@@ -4017,11 +4039,12 @@ standard library package ISQCharacteristicNumbers {
          * remarks: See also Deborah number (item 11-7.8).
          */
     }
-    attribute elasticityNumber : ElasticityNumberValue :> scalarQuantities;
+    attribute elasticityNumber: ElasticityNumberValue :> scalarQuantities;
 
     /* ISO-80000-11 item 11-4.23 Darcy friction factor, Moody friction factor */
     attribute def DarcyFrictionFactorValue :> DimensionOneValue {
-        doc /*
+        doc
+        /*
          * source: item 11-4.23 Darcy friction factor, Moody friction factor
          * symbol(s): `f_D`
          * application domain: generic
@@ -4033,13 +4056,14 @@ standard library package ISQCharacteristicNumbers {
          * remarks: None.
          */
     }
-    attribute darcyFrictionFactor : DarcyFrictionFactorValue :> scalarQuantities;
+    attribute darcyFrictionFactor: DarcyFrictionFactorValue :> scalarQuantities;
 
     alias moodyFrictionFactor for darcyFrictionFactor;
 
     /* ISO-80000-11 item 11-4.24 Fanning number */
     attribute def FanningNumberValue :> DimensionOneValue {
-        doc /*
+        doc
+        /*
          * source: item 11-4.24 Fanning number
          * symbol(s): `f_n`, `f`
          * application domain: generic
@@ -4051,11 +4075,12 @@ standard library package ISQCharacteristicNumbers {
          * remarks: The Fanning number describes the flow of fluids in a pipe with friction at the walls represented by its shear stress. Symbol `f` may be used where no conflicts are possible.
          */
     }
-    attribute fanningNumber : FanningNumberValue :> scalarQuantities;
+    attribute fanningNumber: FanningNumberValue :> scalarQuantities;
 
     /* ISO-80000-11 item 11-4.25 Goertler number, Goertler parameter */
     attribute def GoertlerNumberValue :> DimensionOneValue {
-        doc /*
+        doc
+        /*
          * source: item 11-4.25 Goertler number, Goertler parameter
          * symbol(s): `Go`
          * application domain: generic
@@ -4067,13 +4092,14 @@ standard library package ISQCharacteristicNumbers {
          * remarks: The Goertler number represents the ratio of centrifugal effects to viscous effects.
          */
     }
-    attribute goertlerNumber : GoertlerNumberValue :> scalarQuantities;
+    attribute goertlerNumber: GoertlerNumberValue :> scalarQuantities;
 
     alias goertlerParameter for goertlerNumber;
 
     /* ISO-80000-11 item 11-4.26 Hagen number */
     attribute def HagenNumberValue :> DimensionOneValue {
-        doc /*
+        doc
+        /*
          * source: item 11-4.26 Hagen number
          * symbol(s): `Hg`, `Ha`
          * application domain: generic
@@ -4085,11 +4111,12 @@ standard library package ISQCharacteristicNumbers {
          * remarks: For free thermal convection with `(dp)/(dx) = ρ*g*α_V*ΔT`, the Hagen number then coincides with the Grashof number (item 11-4.4). See also the Poiseuille number (item 11-4.28).
          */
     }
-    attribute hagenNumber : HagenNumberValue :> scalarQuantities;
+    attribute hagenNumber: HagenNumberValue :> scalarQuantities;
 
     /* ISO-80000-11 item 11-4.27 Laval number */
     attribute def LavalNumberValue :> DimensionOneValue {
-        doc /*
+        doc
+        /*
          * source: item 11-4.27 Laval number
          * symbol(s): `La`
          * application domain: generic
@@ -4101,11 +4128,12 @@ standard library package ISQCharacteristicNumbers {
          * remarks: The Laval number is a specific kind of Mach number (item 11-4.6).
          */
     }
-    attribute lavalNumber : LavalNumberValue :> scalarQuantities;
+    attribute lavalNumber: LavalNumberValue :> scalarQuantities;
 
     /* ISO-80000-11 item 11-4.28 Poiseuille number */
     attribute def PoiseuilleNumberValue :> DimensionOneValue {
-        doc /*
+        doc
+        /*
          * source: item 11-4.28 Poiseuille number
          * symbol(s): `Poi`
          * application domain: generic
@@ -4117,11 +4145,12 @@ standard library package ISQCharacteristicNumbers {
          * remarks: The Poiseuille number is `Poi=32` for laminar flow in a round pipe. See also the Hagen number (item 11-4.26).
          */
     }
-    attribute poiseuilleNumber : PoiseuilleNumberValue :> scalarQuantities;
+    attribute poiseuilleNumber: PoiseuilleNumberValue :> scalarQuantities;
 
     /* ISO-80000-11 item 11-4.29 power number */
     attribute def PowerNumberValue :> DimensionOneValue {
-        doc /*
+        doc
+        /*
          * source: item 11-4.29 power number
          * symbol(s): `Pn`
          * application domain: generic
@@ -4133,11 +4162,12 @@ standard library package ISQCharacteristicNumbers {
          * remarks: None.
          */
     }
-    attribute powerNumber : PowerNumberValue :> scalarQuantities;
+    attribute powerNumber: PowerNumberValue :> scalarQuantities;
 
     /* ISO-80000-11 item 11-4.30 Richardson number */
     attribute def RichardsonNumberValue :> DimensionOneValue {
-        doc /*
+        doc
+        /*
          * source: item 11-4.30 Richardson number
          * symbol(s): `Ri`
          * application domain: generic
@@ -4149,11 +4179,12 @@ standard library package ISQCharacteristicNumbers {
          * remarks: In geophysics differences of these quantities are of interest.
          */
     }
-    attribute richardsonNumber : RichardsonNumberValue :> scalarQuantities;
+    attribute richardsonNumber: RichardsonNumberValue :> scalarQuantities;
 
     /* ISO-80000-11 item 11-4.31 Reech number */
     attribute def ReechNumberValue :> DimensionOneValue {
-        doc /*
+        doc
+        /*
          * source: item 11-4.31 Reech number
          * symbol(s): `Ree`
          * application domain: generic
@@ -4165,11 +4196,12 @@ standard library package ISQCharacteristicNumbers {
          * remarks: The Reech number can be used to determine the resistance of a partially submerged object (e.g. a ship) of length `l` (in direction of the motion) moving through water. A similar quantity is defined as the Boussinesq number `Bs = v/sqrt(2*g*l)` .
          */
     }
-    attribute reechNumber : ReechNumberValue :> scalarQuantities;
+    attribute reechNumber: ReechNumberValue :> scalarQuantities;
 
     /* ISO-80000-11 item 11-4.32 Stokes number */
     attribute def StokesNumberValue :> DimensionOneValue {
-        doc /*
+        doc
+        /*
          * source: item 11-4.32 Stokes number
          * symbol(s): `Stk`
          * application domain: time-related
@@ -4181,11 +4213,12 @@ standard library package ISQCharacteristicNumbers {
          * remarks: In most cases `t_r = l/v`, where `l` is characteristic length, and `v` is speed of fluid. The characteristic length can be the diameter of an obstacle or hole.
          */
     }
-    attribute stokesNumber : StokesNumberValue :> scalarQuantities;
+    attribute stokesNumber: StokesNumberValue :> scalarQuantities;
 
     /* ISO-80000-11 item 11-4.33 Stokes number */
     attribute def StokesNumberForVibratingParticlesValue :> DimensionOneValue {
-        doc /*
+        doc
+        /*
          * source: item 11-4.33 Stokes number
          * symbol(s): `Stk_1`
          * application domain: vibrating particles
@@ -4197,11 +4230,12 @@ standard library package ISQCharacteristicNumbers {
          * remarks: Sometimes the inverse of this number is wrongly used.
          */
     }
-    attribute stokesNumberForVibratingParticles : StokesNumberForVibratingParticlesValue :> scalarQuantities;
+    attribute stokesNumberForVibratingParticles: StokesNumberForVibratingParticlesValue :> scalarQuantities;
 
     /* ISO-80000-11 item 11-4.34 Stokes number, power coefficient */
     attribute def StokesNumberForRotameterValue :> DimensionOneValue {
-        doc /*
+        doc
+        /*
          * source: item 11-4.34 Stokes number, power coefficient
          * symbol(s): `Stk_2`
          * application domain: rotameter
@@ -4213,13 +4247,14 @@ standard library package ISQCharacteristicNumbers {
          * remarks: In general use, this value is multiplied by 1,042. See also the Archimedes number (item 11-6.12).
          */
     }
-    attribute stokesNumberForRotameter : StokesNumberForRotameterValue :> scalarQuantities;
+    attribute stokesNumberForRotameter: StokesNumberForRotameterValue :> scalarQuantities;
 
     alias powerCoefficient for stokesNumber;
 
     /* ISO-80000-11 item 11-4.35 Stokes number */
     attribute def StokesNumberForGravityValue :> DimensionOneValue {
-        doc /*
+        doc
+        /*
          * source: item 11-4.35 Stokes number
          * symbol(s): `Stk_3`
          * application domain: gravity
@@ -4231,11 +4266,12 @@ standard library package ISQCharacteristicNumbers {
          * remarks: None.
          */
     }
-    attribute stokesNumberForGravity : StokesNumberForGravityValue :> scalarQuantities;
+    attribute stokesNumberForGravity: StokesNumberForGravityValue :> scalarQuantities;
 
     /* ISO-80000-11 item 11-4.36 Stokes number */
     attribute def StokesNumberForDragValue :> DimensionOneValue {
-        doc /*
+        doc
+        /*
          * source: item 11-4.36 Stokes number
          * symbol(s): `Stk_4`
          * application domain: drag
@@ -4247,11 +4283,12 @@ standard library package ISQCharacteristicNumbers {
          * remarks: None.
          */
     }
-    attribute stokesNumberForDrag : StokesNumberForDragValue :> scalarQuantities;
+    attribute stokesNumberForDrag: StokesNumberForDragValue :> scalarQuantities;
 
     /* ISO-80000-11 item 11-4.37 Laplace number, Suratman number */
     attribute def LaplaceNumberValue :> DimensionOneValue {
-        doc /*
+        doc
+        /*
          * source: item 11-4.37 Laplace number, Suratman number
          * symbol(s): `La`, `Su`
          * application domain: generic
@@ -4263,13 +4300,14 @@ standard library package ISQCharacteristicNumbers {
          * remarks: The Laplace number is also the ratio of surface tension to momentum transfer, especially dissipation, inside a fluid. The Laplace number is also given by `La = Su = 1/(Oh)^2 = (Re)^2/(We)`, where `Oh` is the Ohnesorge number (item 11-7.4), `Re` is the Reynolds number (item 11-4.1), and `We` is the Weber number (item 11-4.5).
          */
     }
-    attribute laplaceNumber : LaplaceNumberValue :> scalarQuantities;
+    attribute laplaceNumber: LaplaceNumberValue :> scalarQuantities;
 
     alias suratmanNumber for laplaceNumber;
 
     /* ISO-80000-11 item 11-4.38 Blake number */
     attribute def BlakeNumberValue :> DimensionOneValue {
-        doc /*
+        doc
+        /*
          * source: item 11-4.38 Blake number
          * symbol(s): `Bl`
          * application domain: generic
@@ -4281,11 +4319,12 @@ standard library package ISQCharacteristicNumbers {
          * remarks: The Blake number can be interpreted as a Reynolds number for flow in porous material.
          */
     }
-    attribute blakeNumber : BlakeNumberValue :> scalarQuantities;
+    attribute blakeNumber: BlakeNumberValue :> scalarQuantities;
 
     /* ISO-80000-11 item 11-4.39 Sommerfeld number */
     attribute def SommerfeldNumberValue :> DimensionOneValue {
-        doc /*
+        doc
+        /*
          * source: item 11-4.39 Sommerfeld number
          * symbol(s): `So`, `Sm`
          * application domain: generic
@@ -4297,11 +4336,12 @@ standard library package ISQCharacteristicNumbers {
          * remarks: Sometimes the inverse of this number is wrongly used.
          */
     }
-    attribute sommerfeldNumber : SommerfeldNumberValue :> scalarQuantities;
+    attribute sommerfeldNumber: SommerfeldNumberValue :> scalarQuantities;
 
     /* ISO-80000-11 item 11-4.40 Taylor number */
     attribute def TaylorNumberValue :> DimensionOneValue {
-        doc /*
+        doc
+        /*
          * source: item 11-4.40 Taylor number
          * symbol(s): `Ta`
          * application domain: momentum transfer
@@ -4313,11 +4353,12 @@ standard library package ISQCharacteristicNumbers {
          * remarks: Sometimes the square root of this quantity is wrongly used. The Taylor number for a rotating shaft relative to an annulus is given by `Ta_a = (ω/nu)^2*r*a^3`, where `ω` is angular velocity (ISO 80000-3) of the shaft, `nu` is kinematic viscosity (ISO 80000-4), `r = (r_2+r_1)/2` is mean radius (ISO 80000-3) of the annulus, and `a = (r_2 - r_1)` is width of the annulus, where `r_1` is inner radius of the annulus, and `r_2` is outer radius of the annulus. Sometimes the square root of this quantity is used; this use is deprecated.
          */
     }
-    attribute taylorNumber : TaylorNumberValue :> scalarQuantities;
+    attribute taylorNumber: TaylorNumberValue :> scalarQuantities;
 
     /* ISO-80000-11 item 11-4.41 Galilei number */
     attribute def GalileiNumberValue :> DimensionOneValue {
-        doc /*
+        doc
+        /*
          * source: item 11-4.41 Galilei number
          * symbol(s): `Ga`
          * application domain: generic
@@ -4329,11 +4370,12 @@ standard library package ISQCharacteristicNumbers {
          * remarks: The Galilei number is also given by `Ga = Re^2*Ri` or `Ga = {:Re:}^2/{:Fr:}^2`, where `Re` is the Reynolds number (item 11-4.1), `Ri` is the Richardson number (item 11-4.30), and `Fr` is the Froude number (item 11-4.3).
          */
     }
-    attribute galileiNumber : GalileiNumberValue :> scalarQuantities;
+    attribute galileiNumber: GalileiNumberValue :> scalarQuantities;
 
     /* ISO-80000-11 item 11-4.42 Womersley number */
     attribute def WomersleyNumberValue :> DimensionOneValue {
-        doc /*
+        doc
+        /*
          * source: item 11-4.42 Womersley number
          * symbol(s): `Wo`, `α`
          * application domain: generic
@@ -4345,11 +4387,12 @@ standard library package ISQCharacteristicNumbers {
          * remarks: The Womersley number is used for pulsating flows e.g. in blood flow.
          */
     }
-    attribute womersleyNumber : WomersleyNumberValue :> scalarQuantities;
+    attribute womersleyNumber: WomersleyNumberValue :> scalarQuantities;
 
     /* ISO-80000-11 item 11-5.1 Fourier number */
     attribute def FourierNumberValue :> DimensionOneValue {
-        doc /*
+        doc
+        /*
          * source: item 11-5.1 Fourier number
          * symbol(s): `Fo`
          * application domain: heat transfer
@@ -4361,11 +4404,12 @@ standard library package ISQCharacteristicNumbers {
          * remarks: The characteristic length `l` of the body is often defined as the quotient of the body’s volume and its heated surface. Sometimes the reciprocal of this number is wrongly used.
          */
     }
-    attribute fourierNumber : FourierNumberValue :> scalarQuantities;
+    attribute fourierNumber: FourierNumberValue :> scalarQuantities;
 
     /* ISO-80000-11 item 11-5.2 Péclet number */
     attribute def 'PécletNumberValue' :> DimensionOneValue {
-        doc /*
+        doc
+        /*
          * source: item 11-5.2 Péclet number
          * symbol(s): `Pe`
          * application domain: heat transfer
@@ -4377,11 +4421,12 @@ standard library package ISQCharacteristicNumbers {
          * remarks: The thermal Péclet number is also given by `Pe = Re*Pr`, where `Re` is the Reynolds number (item 11-4.1), and `Pr` is the Prandtl number (item 11-7.1). Compare with item 11-6.2, Péclet number for mass transfer.
          */
     }
-    attribute 'pécletNumber' : 'PécletNumberValue' :> scalarQuantities;
+    attribute 'pécletNumber': 'PécletNumberValue' :> scalarQuantities;
 
     /* ISO-80000-11 item 11-5.3 Rayleigh number */
     attribute def RayleighNumberValue :> DimensionOneValue {
-        doc /*
+        doc
+        /*
          * source: item 11-5.3 Rayleigh number
          * symbol(s): `Ra`
          * application domain: generic
@@ -4393,11 +4438,12 @@ standard library package ISQCharacteristicNumbers {
          * remarks: The Rayleigh number is also given by `Ra = Gr*Pr`, where `Gr` is the Grashof number (item 11-4.4), and `Pr` is the Prandtl number (item 11-7.1).
          */
     }
-    attribute rayleighNumber : RayleighNumberValue :> scalarQuantities;
+    attribute rayleighNumber: RayleighNumberValue :> scalarQuantities;
 
     /* ISO-80000-11 item 11-5.4 Froude number */
     attribute def FroudeNumberForHeatTransferValue :> DimensionOneValue {
-        doc /*
+        doc
+        /*
          * source: item 11-5.4 Froude number
          * symbol(s): `Fr^"*"`
          * application domain: heat transfer
@@ -4409,11 +4455,12 @@ standard library package ISQCharacteristicNumbers {
          * remarks: None.
          */
     }
-    attribute froudeNumberForHeatTransfer : FroudeNumberForHeatTransferValue :> scalarQuantities;
+    attribute froudeNumberForHeatTransfer: FroudeNumberForHeatTransferValue :> scalarQuantities;
 
     /* ISO-80000-11 item 11-5.5 Nusselt number */
     attribute def NusseltNumberValue :> DimensionOneValue {
-        doc /*
+        doc
+        /*
          * source: item 11-5.5 Nusselt number
          * symbol(s): `Nu`
          * application domain: heat transfer
@@ -4425,11 +4472,12 @@ standard library package ISQCharacteristicNumbers {
          * remarks: The body under consideration can be a solid body, a fluid, or their combination, and additional heat transfer due to convective motion can occur. In case of merely conductive heat transfer especially in a solid body, the "Biot number for heat transfer" (item 11-5.6) is used.
          */
     }
-    attribute nusseltNumber : NusseltNumberValue :> scalarQuantities;
+    attribute nusseltNumber: NusseltNumberValue :> scalarQuantities;
 
     /* ISO-80000-11 item 11-5.6 Biot number */
     attribute def BiotNumberValue :> DimensionOneValue {
-        doc /*
+        doc
+        /*
          * source: item 11-5.6 Biot number
          * symbol(s): `Bi`
          * application domain: heat transfer
@@ -4441,11 +4489,12 @@ standard library package ISQCharacteristicNumbers {
          * remarks: The characteristic length is commonly defined as the volume of the body divided by its surface area.
          */
     }
-    attribute biotNumber : BiotNumberValue :> scalarQuantities;
+    attribute biotNumber: BiotNumberValue :> scalarQuantities;
 
     /* ISO-80000-11 item 11-5.7 Stanton number */
     attribute def StantonNumberValue :> DimensionOneValue {
-        doc /*
+        doc
+        /*
          * source: item 11-5.7 Stanton number
          * symbol(s): `St`
          * application domain: heat transfer
@@ -4457,11 +4506,12 @@ standard library package ISQCharacteristicNumbers {
          * remarks: The Stanton number is also given by `St = (Nu)/(Re*Pr) = (Nu)/(Pe)`, where `Nu` is Nusselt number for heat transfer (item 11-5.5), `Re` is the Reynolds number (item 11-4.1), `Pr` is the Prandtl number (item 11-7.1), and Pe  is the Péclet number (item 11-5.2). Sometimes this quantity is called Margoulis number, symbol `Ms` or `Mg`.
          */
     }
-    attribute stantonNumber : StantonNumberValue :> scalarQuantities;
+    attribute stantonNumber: StantonNumberValue :> scalarQuantities;
 
     /* ISO-80000-11 item 11-5.8 j-factor, heat transfer factor, Colburn number */
     attribute def JFactorValue :> DimensionOneValue {
-        doc /*
+        doc
+        /*
          * source: item 11-5.8 j-factor, heat transfer factor, Colburn number
          * symbol(s): `j`, `Co`, `Jq`
          * application domain: heat transfer
@@ -4473,7 +4523,7 @@ standard library package ISQCharacteristicNumbers {
          * remarks: The heat transfer factor is also given by `j = St*Pr^(2/3)`, where `St` is the Stanton number for heat transfer (item 11-5.7), and `Pr` is the Prandtl number (item 11-7.1). See also mass transfer factor (item 11-6.7).
          */
     }
-    attribute jFactor : JFactorValue :> scalarQuantities;
+    attribute jFactor: JFactorValue :> scalarQuantities;
 
     alias heatTransferFactor for jFactor;
 
@@ -4481,7 +4531,8 @@ standard library package ISQCharacteristicNumbers {
 
     /* ISO-80000-11 item 11-5.9 Bejan number */
     attribute def BejanNumberForHeatTransferValue :> DimensionOneValue {
-        doc /*
+        doc
+        /*
          * source: item 11-5.9 Bejan number
          * symbol(s): `Be_1`
          * application domain: heat transfer
@@ -4493,11 +4544,12 @@ standard library package ISQCharacteristicNumbers {
          * remarks: None.
          */
     }
-    attribute bejanNumberForHeatTransfer : BejanNumberForHeatTransferValue :> scalarQuantities;
+    attribute bejanNumberForHeatTransfer: BejanNumberForHeatTransferValue :> scalarQuantities;
 
     /* ISO-80000-11 item 11-5.10 Bejan number */
     attribute def BejanNumberForEntropyValue :> DimensionOneValue {
-        doc /*
+        doc
+        /*
          * source: item 11-5.10 Bejan number
          * symbol(s): `Be_S`
          * application domain: entropy
@@ -4509,11 +4561,12 @@ standard library package ISQCharacteristicNumbers {
          * remarks: None.
          */
     }
-    attribute bejanNumberForEntropy : BejanNumberForEntropyValue :> scalarQuantities;
+    attribute bejanNumberForEntropy: BejanNumberForEntropyValue :> scalarQuantities;
 
     /* ISO-80000-11 item 11-5.11 Stefan number */
     attribute def StefanNumberValue :> DimensionOneValue {
-        doc /*
+        doc
+        /*
          * source: item 11-5.11 Stefan number
          * symbol(s): `Ste`, `Stf`
          * application domain: phase transition
@@ -4525,11 +4578,12 @@ standard library package ISQCharacteristicNumbers {
          * remarks: None.
          */
     }
-    attribute stefanNumber : StefanNumberValue :> scalarQuantities;
+    attribute stefanNumber: StefanNumberValue :> scalarQuantities;
 
     /* ISO-80000-11 item 11-5.12 Brinkman number */
     attribute def BrinkmanNumberValue :> DimensionOneValue {
-        doc /*
+        doc
+        /*
          * source: item 11-5.12 Brinkman number
          * symbol(s): `Br`, `N_(Br)`
          * application domain: generic
@@ -4541,11 +4595,12 @@ standard library package ISQCharacteristicNumbers {
          * remarks: None.
          */
     }
-    attribute brinkmanNumber : BrinkmanNumberValue :> scalarQuantities;
+    attribute brinkmanNumber: BrinkmanNumberValue :> scalarQuantities;
 
     /* ISO-80000-11 item 11-5.13 Clausius number */
     attribute def ClausiusNumberValue :> DimensionOneValue {
-        doc /*
+        doc
+        /*
          * source: item 11-5.13 Clausius number
          * symbol(s): `Cl`
          * application domain: generic
@@ -4557,11 +4612,12 @@ standard library package ISQCharacteristicNumbers {
          * remarks: None.
          */
     }
-    attribute clausiusNumber : ClausiusNumberValue :> scalarQuantities;
+    attribute clausiusNumber: ClausiusNumberValue :> scalarQuantities;
 
     /* ISO-80000-11 item 11-5.14 Carnot number */
     attribute def CarnotNumberValue :> DimensionOneValue {
-        doc /*
+        doc
+        /*
          * source: item 11-5.14 Carnot number
          * symbol(s): `Ca`
          * application domain: generic
@@ -4573,11 +4629,12 @@ standard library package ISQCharacteristicNumbers {
          * remarks: None.
          */
     }
-    attribute carnotNumber : CarnotNumberValue :> scalarQuantities;
+    attribute carnotNumber: CarnotNumberValue :> scalarQuantities;
 
     /* ISO-80000-11 item 11-5.15 Eckert number, Dulong number */
     attribute def EckertNumberValue :> DimensionOneValue {
-        doc /*
+        doc
+        /*
          * source: item 11-5.15 Eckert number, Dulong number
          * symbol(s): `Ec`
          * application domain: generic
@@ -4589,13 +4646,14 @@ standard library package ISQCharacteristicNumbers {
          * remarks: None.
          */
     }
-    attribute eckertNumber : EckertNumberValue :> scalarQuantities;
+    attribute eckertNumber: EckertNumberValue :> scalarQuantities;
 
     alias dulongNumber for eckertNumber;
 
     /* ISO-80000-11 item 11-5.16 Graetz number */
     attribute def GraetzNumberValue :> DimensionOneValue {
-        doc /*
+        doc
+        /*
          * source: item 11-5.16 Graetz number
          * symbol(s): `Gz`
          * application domain: heat transfer
@@ -4607,11 +4665,12 @@ standard library package ISQCharacteristicNumbers {
          * remarks: None.
          */
     }
-    attribute graetzNumber : GraetzNumberValue :> scalarQuantities;
+    attribute graetzNumber: GraetzNumberValue :> scalarQuantities;
 
     /* ISO-80000-11 item 11-5.17 heat transfer number */
     attribute def HeatTransferNumberValue :> DimensionOneValue {
-        doc /*
+        doc
+        /*
          * source: item 11-5.17 heat transfer number
          * symbol(s): `K_Q`
          * application domain: generic
@@ -4623,11 +4682,12 @@ standard library package ISQCharacteristicNumbers {
          * remarks: None.
          */
     }
-    attribute heatTransferNumber : HeatTransferNumberValue :> scalarQuantities;
+    attribute heatTransferNumber: HeatTransferNumberValue :> scalarQuantities;
 
     /* ISO-80000-11 item 11-5.18 Pomerantsev number */
     attribute def PomerantsevNumberValue :> DimensionOneValue {
-        doc /*
+        doc
+        /*
          * source: item 11-5.18 Pomerantsev number
          * symbol(s): `Po`, `Pov`
          * application domain: heat transfer
@@ -4639,11 +4699,12 @@ standard library package ISQCharacteristicNumbers {
          * remarks: Similar numbers are known for areic, lineic and point sources of heat, each with decreasing power of length `l` respectively.
          */
     }
-    attribute pomerantsevNumber : PomerantsevNumberValue :> scalarQuantities;
+    attribute pomerantsevNumber: PomerantsevNumberValue :> scalarQuantities;
 
     /* ISO-80000-11 item 11-5.19 Boltzmann number */
     attribute def BoltzmannNumberValue :> DimensionOneValue {
-        doc /*
+        doc
+        /*
          * source: item 11-5.19 Boltzmann number
          * symbol(s): `Bz`, `Bol`, `Bo`
          * application domain: generic
@@ -4655,11 +4716,12 @@ standard library package ISQCharacteristicNumbers {
          * remarks: None.
          */
     }
-    attribute boltzmannNumber : BoltzmannNumberValue :> scalarQuantities;
+    attribute boltzmannNumber: BoltzmannNumberValue :> scalarQuantities;
 
     /* ISO-80000-11 item 11-5.20 Stark number */
     attribute def StarkNumberValue :> DimensionOneValue {
-        doc /*
+        doc
+        /*
          * source: item 11-5.20 Stark number
          * symbol(s): `Sk`
          * application domain: generic
@@ -4671,11 +4733,12 @@ standard library package ISQCharacteristicNumbers {
          * remarks: The relative temperature difference is defined by `(ΔT)/T`, where `ΔT = T_s - T_l` is the difference of the temperature at the surface, `T_s`, and the temperature at a layer at a distance `l` from the surface, `T_l`. Sometimes this characteristic number is wrongly defined without the factor `ε`. Deprecated names are: Stefan number and Biot radiation number.
          */
     }
-    attribute starkNumber : StarkNumberValue :> scalarQuantities;
+    attribute starkNumber: StarkNumberValue :> scalarQuantities;
 
     /* ISO-80000-11 item 11-6.1 Fourier number */
     attribute def FourierNumberForMassTransferValue :> DimensionOneValue {
-        doc /*
+        doc
+        /*
          * source: item 11-6.1 Fourier number
          * symbol(s): `Fo^"*"`
          * application domain: mass transfer
@@ -4687,11 +4750,12 @@ standard library package ISQCharacteristicNumbers {
          * remarks: The Fourier number for mass transfer is also given by `Fo^*" = (Fo)/(Le)`, where `Fo` is the Fourier number for heat transfer (item 11-5.1), and `Le` is the Lewis number (item 11-7.3). See also the Fourier number for heat transfer (item 11-5.1)."
          */
     }
-    attribute fourierNumberForMassTransfer : FourierNumberForMassTransferValue :> scalarQuantities;
+    attribute fourierNumberForMassTransfer: FourierNumberForMassTransferValue :> scalarQuantities;
 
     /* ISO-80000-11 item 11-6.2 Péclet number */
     attribute def 'PécletNumberForMassTransferValue' :> DimensionOneValue {
-        doc /*
+        doc
+        /*
          * source: item 11-6.2 Péclet number
          * symbol(s): `Pe^"*"`, `Bd`, `Bod`
          * application domain: mass transfer
@@ -4703,11 +4767,12 @@ standard library package ISQCharacteristicNumbers {
          * remarks: The Péclet number for mass transfer is also given by `Pe^"*" = Pe*Le = Re*Sc`, where `Pe` is the Péclet number for heat transfer, `Le` is the Lewis number (item 11-7.3), `Re` is the Reynolds number (item 11-4.1), and `Sc` is the Schmidt number (item 11-7.2). Compare with item 11-5.2, the Péclet number for heat transfer.
          */
     }
-    attribute 'pécletNumberForMassTransfer' : 'PécletNumberForMassTransferValue' :> scalarQuantities;
+    attribute 'pécletNumberForMassTransfer': 'PécletNumberForMassTransferValue' :> scalarQuantities;
 
     /* ISO-80000-11 item 11-6.3 Grashof number */
     attribute def GrashofNumberForMassTransferValue :> DimensionOneValue {
-        doc /*
+        doc
+        /*
          * source: item 11-6.3 Grashof number
          * symbol(s): `Gr^"*"`
          * application domain: mass transfer
@@ -4719,11 +4784,12 @@ standard library package ISQCharacteristicNumbers {
          * remarks: Instead of "amount-of-substance fraction" the "amount-of-substance concentration" (ISO 80000-9) is used also. Compare with item 11-4.4, the Grashof number.
          */
     }
-    attribute grashofNumberForMassTransfer : GrashofNumberForMassTransferValue :> scalarQuantities;
+    attribute grashofNumberForMassTransfer: GrashofNumberForMassTransferValue :> scalarQuantities;
 
     /* ISO-80000-11 item 11-6.4 Nusselt number */
     attribute def NusseltNumberForMassTransferValue :> DimensionOneValue {
-        doc /*
+        doc
+        /*
          * source: item 11-6.4 Nusselt number
          * symbol(s): `Nu^"*"`
          * application domain: mass transfer
@@ -4735,11 +4801,12 @@ standard library package ISQCharacteristicNumbers {
          * remarks: Sometimes this quantity is called the Sherwood number, `Sh`. Compare with item 11-5.5, Nusselt number for heat transfer.
          */
     }
-    attribute nusseltNumberForMassTransfer : NusseltNumberForMassTransferValue :> scalarQuantities;
+    attribute nusseltNumberForMassTransfer: NusseltNumberForMassTransferValue :> scalarQuantities;
 
     /* ISO-80000-11 item 11-6.5 Stanton number */
     attribute def StantonNumberForMassTransferValue :> DimensionOneValue {
-        doc /*
+        doc
+        /*
          * source: item 11-6.5 Stanton number
          * symbol(s): `St^"*"`
          * application domain: mass transfer
@@ -4751,11 +4818,12 @@ standard library package ISQCharacteristicNumbers {
          * remarks: The Stanton number for mass transfer is also given by `St^*" = (Nu^"*")/(Pe^"*"*)`, where `Nu^"*"` is the Nusselt number for mass transfer (item 11-6.4), and `Pe^"*"` is the Péclet number for mass transfer (item 11-6.2). Compare with item 11-5.7, the Stanton number for heat transfer."
          */
     }
-    attribute stantonNumberForMassTransfer : StantonNumberForMassTransferValue :> scalarQuantities;
+    attribute stantonNumberForMassTransfer: StantonNumberForMassTransferValue :> scalarQuantities;
 
     /* ISO-80000-11 item 11-6.6 Graetz number */
     attribute def GraetzNumberForMassTransferValue :> DimensionOneValue {
-        doc /*
+        doc
+        /*
          * source: item 11-6.6 Graetz number
          * symbol(s): `Gz^"*"`
          * application domain: mass transfer
@@ -4767,11 +4835,12 @@ standard library package ISQCharacteristicNumbers {
          * remarks: None.
          */
     }
-    attribute graetzNumberForMassTransfer : GraetzNumberForMassTransferValue :> scalarQuantities;
+    attribute graetzNumberForMassTransfer: GraetzNumberForMassTransferValue :> scalarQuantities;
 
     /* ISO-80000-11 item 11-6.7 mass transfer factor */
     attribute def MassTransferFactorValue :> DimensionOneValue {
-        doc /*
+        doc
+        /*
          * source: item 11-6.7 mass transfer factor
          * symbol(s): `j^"*"`
          * application domain: mass transfer
@@ -4783,11 +4852,12 @@ standard library package ISQCharacteristicNumbers {
          * remarks: The mass transfer factor is also given by `j_m = j^*" = St^"*" * (Sc)^(2/3)` where `St^"*"` is the Stanton number for mass transfer (item 11-6.5), and `Sc` is the Schmidt number (item 11-7.2). See also heat transfer factor (item 11-5.17)."
          */
     }
-    attribute massTransferFactor : MassTransferFactorValue :> scalarQuantities;
+    attribute massTransferFactor: MassTransferFactorValue :> scalarQuantities;
 
     /* ISO-80000-11 item 11-6.8 Atwood number */
     attribute def AtwoodNumberValue :> DimensionOneValue {
-        doc /*
+        doc
+        /*
          * source: item 11-6.8 Atwood number
          * symbol(s): `At`
          * application domain: generic
@@ -4799,11 +4869,12 @@ standard library package ISQCharacteristicNumbers {
          * remarks: The Atwood number is used in the study of hydrodynamic instabilities in density stratified flows.
          */
     }
-    attribute atwoodNumber : AtwoodNumberValue :> scalarQuantities;
+    attribute atwoodNumber: AtwoodNumberValue :> scalarQuantities;
 
     /* ISO-80000-11 item 11-6.9 Biot number */
     attribute def BiotNumberForMassTransferValue :> DimensionOneValue {
-        doc /*
+        doc
+        /*
          * source: item 11-6.9 Biot number
          * symbol(s): `Bi^"*"`
          * application domain: mass transfer
@@ -4815,11 +4886,12 @@ standard library package ISQCharacteristicNumbers {
          * remarks: None.
          */
     }
-    attribute biotNumberForMassTransfer : BiotNumberForMassTransferValue :> scalarQuantities;
+    attribute biotNumberForMassTransfer: BiotNumberForMassTransferValue :> scalarQuantities;
 
     /* ISO-80000-11 item 11-6.10 Morton number */
     attribute def MortonNumberValue :> DimensionOneValue {
-        doc /*
+        doc
+        /*
          * source: item 11-6.10 Morton number
          * symbol(s): `Mo`
          * application domain: generic
@@ -4831,11 +4903,12 @@ standard library package ISQCharacteristicNumbers {
          * remarks: The Morton number is used to determine the shape of bubbles or drops. The Morton number is also given by `Mo = We^3*Fr^-2*Re^-4`, where `We` is the Weber number (item 11-4.5), `Fr` is the Froude number (item 11-4.3), and `Re` is the Reynolds number (item 11-4.1). 
          */
     }
-    attribute mortonNumber : MortonNumberValue :> scalarQuantities;
+    attribute mortonNumber: MortonNumberValue :> scalarQuantities;
 
     /* ISO-80000-11 item 11-6.11 Bond number, Eötvös number */
     attribute def BondNumberValue :> DimensionOneValue {
-        doc /*
+        doc
+        /*
          * source: item 11-6.11 Bond number, Eötvös number
          * symbol(s): `Bo`, `Eo`
          * application domain: generic
@@ -4847,13 +4920,14 @@ standard library package ISQCharacteristicNumbers {
          * remarks: In the case of gravity `a = g` acceleration of free fall (ISO 80000-3), the name Eötvös number is mostly used. The Bond number is also given by `Bo = (We)/(Fr)`, where `We` is the Weber number (item 11-4.5), and `Fr` is the Froude number (item11-4.3). The Bond number is also used for capillary action driven by buoyancy.
          */
     }
-    attribute bondNumber : BondNumberValue :> scalarQuantities;
+    attribute bondNumber: BondNumberValue :> scalarQuantities;
 
     alias 'eötvösNumber' for bondNumber;
 
     /* ISO-80000-11 item 11-6.12 Archimedes number */
     attribute def ArchimedesNumberValue :> DimensionOneValue {
-        doc /*
+        doc
+        /*
          * source: item 11-6.12 Archimedes number
          * symbol(s): `Ar`
          * application domain: generic
@@ -4865,11 +4939,12 @@ standard library package ISQCharacteristicNumbers {
          * remarks: In this definition, the body can be replaced by an immiscible fluid. See also Stokes number <rotameter> (item 11-4.34).
          */
     }
-    attribute archimedesNumber : ArchimedesNumberValue :> scalarQuantities;
+    attribute archimedesNumber: ArchimedesNumberValue :> scalarQuantities;
 
     /* ISO-80000-11 item 11-6.13 expansion number */
     attribute def ExpansionNumberValue :> DimensionOneValue {
-        doc /*
+        doc
+        /*
          * source: item 11-6.13 expansion number
          * symbol(s): `Ex`
          * application domain: generic
@@ -4881,11 +4956,12 @@ standard library package ISQCharacteristicNumbers {
          * remarks: None.
          */
     }
-    attribute expansionNumber : ExpansionNumberValue :> scalarQuantities;
+    attribute expansionNumber: ExpansionNumberValue :> scalarQuantities;
 
     /* ISO-80000-11 item 11-6.14 Marangoni number */
     attribute def MarangoniNumberValue :> DimensionOneValue {
-        doc /*
+        doc
+        /*
          * source: item 11-6.14 Marangoni number
          * symbol(s): `Mg`, `Mar`
          * application domain: generic
@@ -4897,11 +4973,12 @@ standard library package ISQCharacteristicNumbers {
          * remarks: The Marangoni convection is free surface flow due to different surface tensions caused by a temperature gradient. This quantity is sometimes called Thompson number.
          */
     }
-    attribute marangoniNumber : MarangoniNumberValue :> scalarQuantities;
+    attribute marangoniNumber: MarangoniNumberValue :> scalarQuantities;
 
     /* ISO-80000-11 item 11-6.15 Lockhart-Martinelli parameter */
     attribute def LockhartMartinelliParameterValue :> DimensionOneValue {
-        doc /*
+        doc
+        /*
          * source: item 11-6.15 Lockhart-Martinelli parameter
          * symbol(s): `Lp`
          * application domain: generic
@@ -4913,11 +4990,12 @@ standard library package ISQCharacteristicNumbers {
          * remarks: The Lockhart-Martinelli parameter is used, for example, in boiling or condensing.
          */
     }
-    attribute lockhartMartinelliParameter : LockhartMartinelliParameterValue :> scalarQuantities;
+    attribute lockhartMartinelliParameter: LockhartMartinelliParameterValue :> scalarQuantities;
 
     /* ISO-80000-11 item 11-6.16 Bejan number */
     attribute def BejanNumberForMassTransferValue :> DimensionOneValue {
-        doc /*
+        doc
+        /*
          * source: item 11-6.16 Bejan number
          * symbol(s): `Be^"*"`, `Be_2`
          * application domain: mass transfer
@@ -4929,11 +5007,12 @@ standard library package ISQCharacteristicNumbers {
          * remarks: A similar quantity exists for heat transfer (item 11-5.9).
          */
     }
-    attribute bejanNumberForMassTransfer : BejanNumberForMassTransferValue :> scalarQuantities;
+    attribute bejanNumberForMassTransfer: BejanNumberForMassTransferValue :> scalarQuantities;
 
     /* ISO-80000-11 item 11-6.17 cavitation number */
     attribute def CavitationNumberValue :> DimensionOneValue {
-        doc /*
+        doc
+        /*
          * source: item 11-6.17 cavitation number
          * symbol(s): `Ca`, `Cn`
          * application domain: generic
@@ -4945,11 +5024,12 @@ standard library package ISQCharacteristicNumbers {
          * remarks: The cavitation number represents the ratio of the excess of local static head over vapour pressure head to velocity head.
          */
     }
-    attribute cavitationNumber : CavitationNumberValue :> scalarQuantities;
+    attribute cavitationNumber: CavitationNumberValue :> scalarQuantities;
 
     /* ISO-80000-11 item 11-6.18 absorption number */
     attribute def AbsorptionNumberValue :> DimensionOneValue {
-        doc /*
+        doc
+        /*
          * source: item 11-6.18 absorption number
          * symbol(s): `Ab`
          * application domain: generic
@@ -4961,11 +5041,12 @@ standard library package ISQCharacteristicNumbers {
          * remarks: None.
          */
     }
-    attribute absorptionNumber : AbsorptionNumberValue :> scalarQuantities;
+    attribute absorptionNumber: AbsorptionNumberValue :> scalarQuantities;
 
     /* ISO-80000-11 item 11-6.19 capillary number */
     attribute def CapillaryNumberValue :> DimensionOneValue {
-        doc /*
+        doc
+        /*
          * source: item 11-6.19 capillary number
          * symbol(s): `Ca`
          * application domain: generic
@@ -4977,11 +5058,12 @@ standard library package ISQCharacteristicNumbers {
          * remarks: None.
          */
     }
-    attribute capillaryNumber : CapillaryNumberValue :> scalarQuantities;
+    attribute capillaryNumber: CapillaryNumberValue :> scalarQuantities;
 
     /* ISO-80000-11 item 11-6.20 dynamic capillary number */
     attribute def DynamicCapillaryNumberValue :> DimensionOneValue {
-        doc /*
+        doc
+        /*
          * source: item 11-6.20 dynamic capillary number
          * symbol(s): `Ca^"*"`, `Cn`
          * application domain: generic
@@ -4993,11 +5075,12 @@ standard library package ISQCharacteristicNumbers {
          * remarks: The dynamic capillary number is also given by the quotient of the Weber number and the Reynolds number.
          */
     }
-    attribute dynamicCapillaryNumber : DynamicCapillaryNumberValue :> scalarQuantities;
+    attribute dynamicCapillaryNumber: DynamicCapillaryNumberValue :> scalarQuantities;
 
     /* ISO-80000-11 item 11-7.1 Prandtl number */
     attribute def PrandtlNumberValue :> DimensionOneValue {
-        doc /*
+        doc
+        /*
          * source: item 11-7.1 Prandtl number
          * symbol(s): `Pr`
          * application domain: generic
@@ -5009,11 +5092,12 @@ standard library package ISQCharacteristicNumbers {
          * remarks: The Prandtl number also represents the quotient of heat produced by viscosity and heat transferred by thermal diffusivity. The mass transfer analogue of the Prandtl number is the Schmidt number (item 11-7.2). The Prandtl number is also given by `Pr = (Pe)/(Re)`; where `Pe` is the Péclet number (item 11-5.2), and `Re` is the Reynolds number (item 11-4.1). 
          */
     }
-    attribute prandtlNumber : PrandtlNumberValue :> scalarQuantities;
+    attribute prandtlNumber: PrandtlNumberValue :> scalarQuantities;
 
     /* ISO-80000-11 item 11-7.2 Schmidt number */
     attribute def SchmidtNumberValue :> DimensionOneValue {
-        doc /*
+        doc
+        /*
          * source: item 11-7.2 Schmidt number
          * symbol(s): `Sc`
          * application domain: generic
@@ -5025,11 +5109,12 @@ standard library package ISQCharacteristicNumbers {
          * remarks: The heat transfer analogue of the Schmidt number is the Prandtl number (item 11-7.1). A deprecated name is Colburn number.
          */
     }
-    attribute schmidtNumber : SchmidtNumberValue :> scalarQuantities;
+    attribute schmidtNumber: SchmidtNumberValue :> scalarQuantities;
 
     /* ISO-80000-11 item 11-7.3 Lewis number */
     attribute def LewisNumberValue :> DimensionOneValue {
-        doc /*
+        doc
+        /*
          * source: item 11-7.3 Lewis number
          * symbol(s): `Le`
          * application domain: generic
@@ -5041,11 +5126,12 @@ standard library package ISQCharacteristicNumbers {
          * remarks: The Lewis number is also given by `Le = (Sc)/(Pr)`, where `Sc` is the Schmidt number (item 11-7.2), and `Pr` is the Prandtl number (item 11-7.1). Compare with item 11-5.2. The Lewis number is sometimes defined as reciprocal of this quantity. 
          */
     }
-    attribute lewisNumber : LewisNumberValue :> scalarQuantities;
+    attribute lewisNumber: LewisNumberValue :> scalarQuantities;
 
     /* ISO-80000-11 item 11-7.4 Ohnesorge number */
     attribute def OhnesorgeNumberValue :> DimensionOneValue {
-        doc /*
+        doc
+        /*
          * source: item 11-7.4 Ohnesorge number
          * symbol(s): `Oh`
          * application domain: generic
@@ -5057,11 +5143,12 @@ standard library package ISQCharacteristicNumbers {
          * remarks: The Ohnesorge number is also given by `Oh = sqrt(We)/(Re)` where `We` is the Weber number (item 11-4.5), and `Re` is the Reynolds number (item 11-4.1). See also Laplace number (item 11-4.37). The characteristic length typically is the drop diameter.
          */
     }
-    attribute ohnesorgeNumber : OhnesorgeNumberValue :> scalarQuantities;
+    attribute ohnesorgeNumber: OhnesorgeNumberValue :> scalarQuantities;
 
     /* ISO-80000-11 item 11-7.5 Cauchy number, aeroelasticity parameter */
     attribute def CauchyNumberValue :> DimensionOneValue {
-        doc /*
+        doc
+        /*
          * source: item 11-7.5 Cauchy number, aeroelasticity parameter
          * symbol(s): `Cy`
          * application domain: generic
@@ -5073,13 +5160,14 @@ standard library package ISQCharacteristicNumbers {
          * remarks: None.
          */
     }
-    attribute cauchyNumber : CauchyNumberValue :> scalarQuantities;
+    attribute cauchyNumber: CauchyNumberValue :> scalarQuantities;
 
     alias aeroelasticityParameter for cauchyNumber;
 
     /* ISO-80000-11 item 11-7.6 Hooke number */
     attribute def HookeNumberValue :> DimensionOneValue {
-        doc /*
+        doc
+        /*
          * source: item 11-7.6 Hooke number
          * symbol(s): `Ho_2`
          * application domain: generic
@@ -5091,11 +5179,12 @@ standard library package ISQCharacteristicNumbers {
          * remarks: None.
          */
     }
-    attribute hookeNumber : HookeNumberValue :> scalarQuantities;
+    attribute hookeNumber: HookeNumberValue :> scalarQuantities;
 
     /* ISO-80000-11 item 11-7.7 Weissenberg number */
     attribute def WeissenbergNumberValue :> DimensionOneValue {
-        doc /*
+        doc
+        /*
          * source: item 11-7.7 Weissenberg number
          * symbol(s): `Wi`
          * application domain: generic
@@ -5107,11 +5196,12 @@ standard library package ISQCharacteristicNumbers {
          * remarks: The Weissenberg number represents the relative importance of viscous forces when compared to elastic forces. The time derivative of shear strain is sometimes called the shear rate.
          */
     }
-    attribute weissenbergNumber : WeissenbergNumberValue :> scalarQuantities;
+    attribute weissenbergNumber: WeissenbergNumberValue :> scalarQuantities;
 
     /* ISO-80000-11 item 11-7.8 Deborah number */
     attribute def DeborahNumberValue :> DimensionOneValue {
-        doc /*
+        doc
+        /*
          * source: item 11-7.8 Deborah number
          * symbol(s): `De`
          * application domain: generic
@@ -5123,11 +5213,12 @@ standard library package ISQCharacteristicNumbers {
          * remarks: The stress relaxation time is sometimes called the Maxwell relaxation time.
          */
     }
-    attribute deborahNumber : DeborahNumberValue :> scalarQuantities;
+    attribute deborahNumber: DeborahNumberValue :> scalarQuantities;
 
     /* ISO-80000-11 item 11-7.9 Lorentz number */
     attribute def LorentzNumberValue :> DimensionOneValue {
-        doc /*
+        doc
+        /*
          * source: item 11-7.9 Lorentz number
          * symbol(s): `Lo`
          * application domain: generic
@@ -5139,11 +5230,12 @@ standard library package ISQCharacteristicNumbers {
          * remarks: None.
          */
     }
-    attribute lorentzNumber : LorentzNumberValue :> scalarQuantities;
+    attribute lorentzNumber: LorentzNumberValue :> scalarQuantities;
 
     /* ISO-80000-11 item 11-7.10 compressibility number */
     attribute def CompressibilityNumberValue :> DimensionOneValue {
-        doc /*
+        doc
+        /*
          * source: item 11-7.10 compressibility number
          * symbol(s): `Z`
          * application domain: generic
@@ -5155,11 +5247,12 @@ standard library package ISQCharacteristicNumbers {
          * remarks: None.
          */
     }
-    attribute compressibilityNumber : CompressibilityNumberValue :> scalarQuantities;
+    attribute compressibilityNumber: CompressibilityNumberValue :> scalarQuantities;
 
     /* ISO-80000-11 item 11-8.1 Reynolds magnetic number */
     attribute def ReynoldsMagneticNumberValue :> DimensionOneValue {
-        doc /*
+        doc
+        /*
          * source: item 11-8.1 Reynolds magnetic number
          * symbol(s): `Rm`
          * application domain: generic
@@ -5171,11 +5264,12 @@ standard library package ISQCharacteristicNumbers {
          * remarks: This number is also called magnetic Reynolds number. The Reynolds magnetic number is also given by `Rm = Re*Pr_m`, where `Re` is the Reynolds number (item 11-4.1), and `Pr_m` is the Prandtl magnetic number (item 11-8.10).
          */
     }
-    attribute reynoldsMagneticNumber : ReynoldsMagneticNumberValue :> scalarQuantities;
+    attribute reynoldsMagneticNumber: ReynoldsMagneticNumberValue :> scalarQuantities;
 
     /* ISO-80000-11 item 11-8.2 Batchelor number */
     attribute def BatchelorNumberValue :> DimensionOneValue {
-        doc /*
+        doc
+        /*
          * source: item 11-8.2 Batchelor number
          * symbol(s): `Bt`
          * application domain: generic
@@ -5187,11 +5281,12 @@ standard library package ISQCharacteristicNumbers {
          * remarks: None.
          */
     }
-    attribute batchelorNumber : BatchelorNumberValue :> scalarQuantities;
+    attribute batchelorNumber: BatchelorNumberValue :> scalarQuantities;
 
     /* ISO-80000-11 item 11-8.3 Nusselt electric number */
     attribute def NusseltElectricNumberValue :> DimensionOneValue {
-        doc /*
+        doc
+        /*
          * source: item 11-8.3 Nusselt electric number
          * symbol(s): `Ne`
          * application domain: generic
@@ -5203,11 +5298,12 @@ standard library package ISQCharacteristicNumbers {
          * remarks: This number is also called electric Nusselt number. Sometimes this quantity is called the Reynolds electric number.
          */
     }
-    attribute nusseltElectricNumber : NusseltElectricNumberValue :> scalarQuantities;
+    attribute nusseltElectricNumber: NusseltElectricNumberValue :> scalarQuantities;
 
     /* ISO-80000-11 item 11-8.4 Alfvén number, Mach magnetic number, Kárman number */
     attribute def 'AlfvénNumberValue' :> DimensionOneValue {
-        doc /*
+        doc
+        /*
          * source: item 11-8.4 Alfvén number, Mach magnetic number, Kárman number
          * symbol(s): `Al`
          * application domain: generic
@@ -5219,7 +5315,7 @@ standard library package ISQCharacteristicNumbers {
          * remarks: Often, the inverse of this number is wrongly used. The name "Alfvén Mach number" is used in investigations on the solar wind. The quantity `v_A = B/sqrt(ρ*μ)` is called Alfvén wave speed, where `B` is magnetic flux density (IEC 80000-6), `ρ` is mass density (ISO 80000-4), and `μ` is magnetic permeability (IEC 80000-6).
          */
     }
-    attribute 'alfvénNumber' : 'AlfvénNumberValue' :> scalarQuantities;
+    attribute 'alfvénNumber': 'AlfvénNumberValue' :> scalarQuantities;
 
     alias machMagneticNumber for 'alfvénNumber';
 
@@ -5227,7 +5323,8 @@ standard library package ISQCharacteristicNumbers {
 
     /* ISO-80000-11 item 11-8.5 Hartmann number */
     attribute def HartmannNumberValue :> DimensionOneValue {
-        doc /*
+        doc
+        /*
          * source: item 11-8.5 Hartmann number
          * symbol(s): `Ha`
          * application domain: generic
@@ -5239,11 +5336,12 @@ standard library package ISQCharacteristicNumbers {
          * remarks: The Hartmann number represents also the ratio of magnetic force to viscous force.
          */
     }
-    attribute hartmannNumber : HartmannNumberValue :> scalarQuantities;
+    attribute hartmannNumber: HartmannNumberValue :> scalarQuantities;
 
     /* ISO-80000-11 item 11-8.6 Cowling number, Euler magnetic number */
     attribute def CowlingNumberValue :> DimensionOneValue {
-        doc /*
+        doc
+        /*
          * source: item 11-8.6 Cowling number, Euler magnetic number
          * symbol(s): `Co`
          * application domain: magnetism
@@ -5255,13 +5353,14 @@ standard library package ISQCharacteristicNumbers {
          * remarks: The Cowling number also represents the ratio of magnetic to dynamic pressure. This quantity is equal to the square of the inverse of the Alfvén number. This quantity is often called the second Cowling number, `Co_2`. The first Cowling number is then defined as `Co_1 = Co*Rm`, where `Rm` is the Reynolds magnetic number (item 11-8.1).
          */
     }
-    attribute cowlingNumber : CowlingNumberValue :> scalarQuantities;
+    attribute cowlingNumber: CowlingNumberValue :> scalarQuantities;
 
     alias eulerMagneticNumber for cowlingNumber;
 
     /* ISO-80000-11 item 11-8.7 Stuart electrical number */
     attribute def StuartElectricalNumberValue :> DimensionOneValue {
-        doc /*
+        doc
+        /*
          * source: item 11-8.7 Stuart electrical number
          * symbol(s): `Se`
          * application domain: generic
@@ -5273,11 +5372,12 @@ standard library package ISQCharacteristicNumbers {
          * remarks: The Stuart electrical number is the electrical counterpart of the Cowling number (item 11-8.6).
          */
     }
-    attribute stuartElectricalNumber : StuartElectricalNumberValue :> scalarQuantities;
+    attribute stuartElectricalNumber: StuartElectricalNumberValue :> scalarQuantities;
 
     /* ISO-80000-11 item 11-8.8 magnetic pressure number */
     attribute def MagneticPressureNumberValue :> DimensionOneValue {
-        doc /*
+        doc
+        /*
          * source: item 11-8.8 magnetic pressure number
          * symbol(s): `N_(mp)`
          * application domain: generic
@@ -5289,11 +5389,12 @@ standard library package ISQCharacteristicNumbers {
          * remarks: The quantity `p_m = B^2/(2*μ)` is called magnetic pressure, where `B` is magnetic flux density (IEC 80000-6), and `μ` is magnetic permeability (IEC 80000-6).
          */
     }
-    attribute magneticPressureNumber : MagneticPressureNumberValue :> scalarQuantities;
+    attribute magneticPressureNumber: MagneticPressureNumberValue :> scalarQuantities;
 
     /* ISO-80000-11 item 11-8.9 Chandrasekhar number */
     attribute def ChandrasekharNumberValue :> DimensionOneValue {
-        doc /*
+        doc
+        /*
          * source: item 11-8.9 Chandrasekhar number
          * symbol(s): `Q`, `Ch`
          * application domain: generic
@@ -5305,11 +5406,12 @@ standard library package ISQCharacteristicNumbers {
          * remarks: The Chandrasekhar number is also given by `Q = Ha^2` where `Ha` is the Hartmann number (item 11-8.5).
          */
     }
-    attribute chandrasekharNumber : ChandrasekharNumberValue :> scalarQuantities;
+    attribute chandrasekharNumber: ChandrasekharNumberValue :> scalarQuantities;
 
     /* ISO-80000-11 item 11-8.10 Prandtl magnetic number */
     attribute def PrandtlMagneticNumberValue :> DimensionOneValue {
-        doc /*
+        doc
+        /*
          * source: item 11-8.10 Prandtl magnetic number
          * symbol(s): `Pr_m`
          * application domain: generic
@@ -5321,11 +5423,12 @@ standard library package ISQCharacteristicNumbers {
          * remarks: The quantity `ν_m = 1/(μ*σ)` is called magnetic viscosity or magnetic diffusivity. See item 11-8.11. The Prandtl magnetic number is also given by `Pr_m = (Rm)/(Re)`, where `Rm` is the Reynolds magnetic number (item 11-8.1), and `Re` is the Reynolds number (item 11-4.1). This number is also called magnetic Prandtl number.
          */
     }
-    attribute prandtlMagneticNumber : PrandtlMagneticNumberValue :> scalarQuantities;
+    attribute prandtlMagneticNumber: PrandtlMagneticNumberValue :> scalarQuantities;
 
     /* ISO-80000-11 item 11-8.11 Roberts number */
     attribute def RobertsNumberValue :> DimensionOneValue {
-        doc /*
+        doc
+        /*
          * source: item 11-8.11 Roberts number
          * symbol(s): `Ro`
          * application domain: generic
@@ -5337,11 +5440,12 @@ standard library package ISQCharacteristicNumbers {
          * remarks: The quantity `ν_m = 1/(μ*σ)` is called magnetic viscosity or magnetic diffusivity; where `μ` is magnetic permeability (IEC 80000-6), and `σ` is electrical conductivity (IEC 80000-6).
          */
     }
-    attribute robertsNumber : RobertsNumberValue :> scalarQuantities;
+    attribute robertsNumber: RobertsNumberValue :> scalarQuantities;
 
     /* ISO-80000-11 item 11-8.12 Stuart number */
     attribute def StuartNumberValue :> DimensionOneValue {
-        doc /*
+        doc
+        /*
          * source: item 11-8.12 Stuart number
          * symbol(s): `Stw`
          * application domain: generic
@@ -5353,11 +5457,12 @@ standard library package ISQCharacteristicNumbers {
          * remarks: The Stuart number sometimes is called magnetic force parameter. Sometimes the square root is wrongly used. The Stuart number is also given by `Stw = (Ha^2)/(Re)`, where `Ha` is the Hartmann number, and `Re` is the Reynolds number. 
          */
     }
-    attribute stuartNumber : StuartNumberValue :> scalarQuantities;
+    attribute stuartNumber: StuartNumberValue :> scalarQuantities;
 
     /* ISO-80000-11 item 11-8.13 magnetic number */
     attribute def MagneticNumberValue :> DimensionOneValue {
-        doc /*
+        doc
+        /*
          * source: item 11-8.13 magnetic number
          * symbol(s): `N_(mg)`
          * application domain: generic
@@ -5369,11 +5474,12 @@ standard library package ISQCharacteristicNumbers {
          * remarks: None.
          */
     }
-    attribute magneticNumber : MagneticNumberValue :> scalarQuantities;
+    attribute magneticNumber: MagneticNumberValue :> scalarQuantities;
 
     /* ISO-80000-11 item 11-8.14 electric field parameter */
     attribute def ElectricFieldParameterValue :> DimensionOneValue {
-        doc /*
+        doc
+        /*
          * source: item 11-8.14 electric field parameter
          * symbol(s): `Ef`
          * application domain: generic
@@ -5385,11 +5491,12 @@ standard library package ISQCharacteristicNumbers {
          * remarks: None.
          */
     }
-    attribute electricFieldParameter : ElectricFieldParameterValue :> scalarQuantities;
+    attribute electricFieldParameter: ElectricFieldParameterValue :> scalarQuantities;
 
     /* ISO-80000-11 item 11-8.15 Hall number */
     attribute def HallNumberValue :> DimensionOneValue {
-        doc /*
+        doc
+        /*
          * source: item 11-8.15 Hall number
          * symbol(s): `Hc`, `CH`
          * application domain: generic
@@ -5401,11 +5508,12 @@ standard library package ISQCharacteristicNumbers {
          * remarks: Sometimes the inverse of this number is wrongly used. `2*π` times this quantity is called the Hall parameter.
          */
     }
-    attribute hallNumber : HallNumberValue :> scalarQuantities;
+    attribute hallNumber: HallNumberValue :> scalarQuantities;
 
     /* ISO-80000-11 item 11-8.16 Lundquist number */
     attribute def LundquistNumberValue :> DimensionOneValue {
-        doc /*
+        doc
+        /*
          * source: item 11-8.16 Lundquist number
          * symbol(s): `Lu`
          * application domain: generic
@@ -5417,11 +5525,12 @@ standard library package ISQCharacteristicNumbers {
          * remarks: The quantity `v_A = B/sqrt(ρ*μ)` is called Alfvén wave speed. See item 11-8.4. The quantity `v_m = 1/(l*σ*μ)` is called magneto dynamic speed, where `l` is characteristic length (ISO 80000-3), `σ` is electrical conductivity (IEC 80000-6), and `μ` is magnetic permeability (IEC 80000-6). The Lundquist number is also given by `Lu = (Rm)/(Al)`, where `Rm` is the Reynolds magnetic number (item 11-8.1), and `Al` is the Alfvén number (item 11-8.4). See also Hartmann number (item 11-8.5).
          */
     }
-    attribute lundquistNumber : LundquistNumberValue :> scalarQuantities;
+    attribute lundquistNumber: LundquistNumberValue :> scalarQuantities;
 
     /* ISO-80000-11 item 11-8.17 Joule magnetic number */
     attribute def JouleMagneticNumberValue :> DimensionOneValue {
-        doc /*
+        doc
+        /*
          * source: item 11-8.17 Joule magnetic number
          * symbol(s): `Jo_m`
          * application domain: generic
@@ -5433,11 +5542,12 @@ standard library package ISQCharacteristicNumbers {
          * remarks: This number is also called magnetic Joule number.
          */
     }
-    attribute jouleMagneticNumber : JouleMagneticNumberValue :> scalarQuantities;
+    attribute jouleMagneticNumber: JouleMagneticNumberValue :> scalarQuantities;
 
     /* ISO-80000-11 item 11-8.18 Grashof magnetic number */
     attribute def GrashofMagneticNumberValue :> DimensionOneValue {
-        doc /*
+        doc
+        /*
          * source: item 11-8.18 Grashof magnetic number
          * symbol(s): `Gr_m`
          * application domain: generic
@@ -5449,11 +5559,12 @@ standard library package ISQCharacteristicNumbers {
          * remarks: This number is also called magnetic Grashof number. See also Grashof number (item 11-4.4).
          */
     }
-    attribute grashofMagneticNumber : GrashofMagneticNumberValue :> scalarQuantities;
+    attribute grashofMagneticNumber: GrashofMagneticNumberValue :> scalarQuantities;
 
     /* ISO-80000-11 item 11-8.19 Naze number */
     attribute def NazeNumberValue :> DimensionOneValue {
-        doc /*
+        doc
+        /*
          * source: item 11-8.19 Naze number
          * symbol(s): `Na`
          * application domain: generic
@@ -5465,11 +5576,12 @@ standard library package ISQCharacteristicNumbers {
          * remarks: The quantity `v_A = B/sqrt(ρ*μ)` is called Alfvén wave speed. See item 11-8.4.
          */
     }
-    attribute nazeNumber : NazeNumberValue :> scalarQuantities;
+    attribute nazeNumber: NazeNumberValue :> scalarQuantities;
 
     /* ISO-80000-11 item 11-8.20 Reynolds electric number */
     attribute def ReynoldsElectricNumberValue :> DimensionOneValue {
-        doc /*
+        doc
+        /*
          * source: item 11-8.20 Reynolds electric number
          * symbol(s): `Re_e`
          * application domain: generic
@@ -5481,11 +5593,12 @@ standard library package ISQCharacteristicNumbers {
          * remarks: This number is also called electrical Reynolds number. The drift speed of the charged particles in an electric field is given by `v_d = 1/(μ*E)`, where `E` is electric field strength (IEC 80000-6), and `μ` is mobility (ISO 80000-10) of charge carriers.
          */
     }
-    attribute reynoldsElectricNumber : ReynoldsElectricNumberValue :> scalarQuantities;
+    attribute reynoldsElectricNumber: ReynoldsElectricNumberValue :> scalarQuantities;
 
     /* ISO-80000-11 item 11-8.21 Ampère number */
     attribute def 'AmpèreNumberValue' :> DimensionOneValue {
-        doc /*
+        doc
+        /*
          * source: item 11-8.21 Ampère number
          * symbol(s): `Am`
          * application domain: generic
@@ -5497,11 +5610,12 @@ standard library package ISQCharacteristicNumbers {
          * remarks: This number is also called magnetic field number. The electric surface current is given by `I_A = ρ_A*l*µ*E`, where `ρ_A` is surface density of electric charge (IEC 80000-6), `l` is characteristic length (ISO 80000-3), `µ` is mobility (ISO 80000-10) of charge carriers, and `E` is electric field strength (IEC 80000-6).
          */
     }
-    attribute 'ampèreNumber' : 'AmpèreNumberValue' :> scalarQuantities;
+    attribute 'ampèreNumber': 'AmpèreNumberValue' :> scalarQuantities;
 
     /* ISO-80000-11 item 11-9.1 Arrhenius number */
     attribute def ArrheniusNumberValue :> DimensionOneValue {
-        doc /*
+        doc
+        /*
          * source: item 11-9.1 Arrhenius number
          * symbol(s): `α`
          * application domain: generic
@@ -5513,11 +5627,12 @@ standard library package ISQCharacteristicNumbers {
          * remarks: None.
          */
     }
-    attribute arrheniusNumber : ArrheniusNumberValue :> scalarQuantities;
+    attribute arrheniusNumber: ArrheniusNumberValue :> scalarQuantities;
 
     /* ISO-80000-11 item 11-9.2 Landau-Ginzburg number */
     attribute def LandauGinzburgNumberValue :> DimensionOneValue {
-        doc /*
+        doc
+        /*
          * source: item 11-9.2 Landau-Ginzburg number
          * symbol(s): `κ`
          * application domain: generic
@@ -5529,8 +5644,10 @@ standard library package ISQCharacteristicNumbers {
          * remarks: None.
          */
     }
-    attribute landauGinzburgNumber : LandauGinzburgNumberValue :> scalarQuantities;
+    attribute landauGinzburgNumber: LandauGinzburgNumberValue :> scalarQuantities;
+
 }
+
 ~~~
 # SMG
 ~~~

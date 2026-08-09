@@ -104,9 +104,9 @@ package 'Terminate Actions Example-1' {
         then waitForTimeOut;
 
         action performCriticalActivity {
-            perform :>> monitorCriticalActivity;
+            perform monitorCriticalActivity;
 
-            perform :>> criticalActivity;
+            perform criticalActivity;
             then terminate;
         }
         then stop;
@@ -114,10 +114,10 @@ package 'Terminate Actions Example-1' {
         action waitForTimeOut;
         then stop;
 
-        action stop;
-        terminate;
+        action stop terminate;
     }
 }
+
 ~~~
 # EXPECTED
 ~~~

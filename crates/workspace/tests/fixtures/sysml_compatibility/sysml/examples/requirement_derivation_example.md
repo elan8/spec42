@@ -133,17 +133,20 @@ package RequirementDerivationExample {
     part satisfactionContext {
         ref :>> system;
 
-        satisfy req1 : Req1 by system;
-        satisfy req1_1 : Req1_1 by system.sub1;
-        satisfy req1_2 : Req1_2 by system.sub2;
+        satisfy requirement req1 : Req1 by system;
+        satisfy requirement req1_1 : Req1_1 by system.sub1;
+        satisfy requirement req1_2 : Req1_2 by system.sub2;
 
         #derivation connection : Req1_Derivation {
             end r1 ::> req1;
             end r1_1 ::> req1_1;
             end r1_2 ::> req1_1;
         }
+
     }
+
 }
+
 ~~~
 # EXPECTED
 ~~~

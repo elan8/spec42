@@ -170,16 +170,16 @@ package ExtendedOccurrences {
     class Moment :> Interval;
     class Timeslice {
         feature interval : Interval;
-       :>> self : Timeslice;
+        :>> self : Timeslice;
     }
     class Snapshot :> Timeslice {
         feature moment :>> interval : Moment;
-       :>> self : Snapshot;
+        :>> self : Snapshot;
     }
     class Life :> Timeslice;
     class ExtendedOccurrence :> Life {
-       :>> timeSlices : Timeslice [1..*];
-       :>> snapshots :> timeSlices : Snapshot [1..*];
+        :>> timeSlices : Timeslice [1..*];
+        :>> snapshots :> timeSlices : Snapshot [1..*];
         expr at {
         	:>> that : Timeslice;
             in interval : Interval;
@@ -193,15 +193,15 @@ package ExtendedOccurrences {
             in timeslice : Timeslice;
             return result : Timeslice = at(timeslice.interval);
         }
-
+        
         var feature activeOccurrences :> Occurrences::occurrences {
-            connector : Occurrences::HappensDuring from [1] that to [1] self;
+        	connector : Occurrences::HappensDuring from [1] that to [1] self;
         }
-
+        
         var feature activeSuboccurrences :> Occurrences::occurrences {
-            connector : Occurrences::HappensDuring from [1] that to [1] self;
+        	connector : Occurrences::HappensDuring from [1] that to [1] self;
         }
-
+        
         // occurrences and performances are abstract package-level features.
         // It would be nice to put the variable next to them, but they cannot 
         // be package-level, or featured by Anything. Nevertheless, since
@@ -211,12 +211,13 @@ package ExtendedOccurrences {
         // contain every step in the occurrence, which is the correct domain
         // for the variable.
         var feature activePerformances :> Performances::performances {
-            connector : Occurrences::HappensDuring from [1] that to [1] self;
+        	connector : Occurrences::HappensDuring from [1] that to [1] self;
         }
     }
     struct ExtendedObject :> ExtendedOccurrence {
         feature self : ExtendedObject :>> Objects::Object::self, ExtendedOccurrence::self;
     }
+
 }
 ~~~
 # EXPECTED

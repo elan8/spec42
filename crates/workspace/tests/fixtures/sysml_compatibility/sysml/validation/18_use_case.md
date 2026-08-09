@@ -212,42 +212,44 @@ CloseCurly,EndOfFile,
 # FORMAT
 ~~~sysml
 package '18-Use Case' {
-    part def Vehicle;
-    part def Person;
-    part def Environment;
-    part def 'Fuel Station';
-
-    use case 'provide transportation' {
-        subject vehicle : Vehicle;
-
-        actor driver : Person;
-        actor passengers : Person [0..4];
-        actor environment : Environment;
-
-        objective {
-            doc /* Satisfy mission requirements to transport driver and passengers 
+	
+	part def Vehicle;
+	part def Person;
+	part def Environment;
+	part def 'Fuel Station';
+	
+	use case 'provide transportation' {
+		subject vehicle : Vehicle;
+		
+		actor driver : Person;
+		actor passengers : Person[0..4];
+		actor environment : Environment;
+		
+		objective {
+			doc 
+			/* Satisfy mission requirements to transport driver and passengers 
 			 * from starting location to ending location in conformance with 
 			 * the driving profile and meet the mission requirements for safety, 
 			 * reliability, comfort, and affordability.
 			 */
-        }
-
-        ref :>> start {
-            doc /* Mock-up of a pre-condition. */
-            assert constraint {
-                doc /* Vehicle at starting location */
-            }
-        }
-
-        first start;
-
-        then include 'enter vehicle' {
+		}
+		
+		ref :>> start {
+			doc /* Mock-up of a pre-condition. */
+			assert constraint {
+				doc /* Vehicle at starting location */
+			}
+		}
+		
+		first start;
+		
+		then include 'enter vehicle' {
 		    subject;
 			actor :>> driver = 'provide transportation'::driver;
 			actor :>> passengers = 'provide transportation'::passengers;
 		}
-
-        then use case 'drive vehicle' {
+		
+		then use case 'drive vehicle' {
 			include 'add fuel'[0..*] {
 				doc
 				/*
@@ -262,40 +264,41 @@ package '18-Use Case' {
 				}
 			}
 		}
-
-        then include 'exit vehicle' {
+		
+		then include 'exit vehicle' {
 		    subject;
 			actor :>> driver = 'provide transportation'::driver;
 			actor :>> passengers = 'provide transportation'::passengers;
 		}
-
-        then done;
-
-        ref :>> done {
-            doc /* Mock-up of a post-condition. */
-            assert constraint {
-                doc /* Vehicle at ending location */
-            }
-        }
-    }
-
-    use case 'enter vehicle' {
-        subject vehicle : Vehicle;
-        actor driver : Person;
-        actor passengers : Person [0..4];
-    }
-
-    use case 'exit vehicle' {
-        subject vehicle : Vehicle;
-        actor driver : Person;
-        actor passengers : Person [0..4];
-    }
-
-    use case 'add fuel' {
-        subject vehicle : Vehicle;
-        actor fueler : Person;
-        actor 'fuel station' : 'Fuel Station';
-    }
+		
+		then done;
+		
+		ref :>> done {
+			doc /* Mock-up of a post-condition. */
+			assert constraint {
+				doc /* Vehicle at ending location */
+			}
+		}
+		
+	}
+	
+	use case 'enter vehicle' {
+		subject vehicle : Vehicle;
+		actor driver : Person;
+		actor passengers : Person[0..4];
+	}
+	
+	use case 'exit vehicle' {
+		subject vehicle : Vehicle;
+		actor driver : Person;
+		actor passengers : Person[0..4];
+	}
+		
+	use case 'add fuel' {
+		subject vehicle : Vehicle;
+		actor fueler : Person;
+		actor 'fuel station' : 'Fuel Station';
+	}
 }
 ~~~
 # EXPECTED

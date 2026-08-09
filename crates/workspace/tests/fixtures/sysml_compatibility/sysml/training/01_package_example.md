@@ -46,6 +46,7 @@ package 'Package Example' {
     public alias Car for Automobile;
     alias Torque for ISQ::TorqueValue;
 }
+
 ~~~
 # EXPECTED
 ~~~

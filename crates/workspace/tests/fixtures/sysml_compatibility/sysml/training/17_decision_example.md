@@ -114,12 +114,8 @@ package 'Decision Example' {
     part battery;
     part powerSystem;
 
-    action def MonitorBattery {
-        out charge : Real;
-    }
-    action def AddCharge {
-        in charge : Real;
-    }
+    action def MonitorBattery { out charge : Real; }
+    action def AddCharge { in charge : Real; }
     action def EndCharging;
 
     action def ChargeBattery {
@@ -128,14 +124,12 @@ package 'Decision Example' {
         then merge continueCharging;
 
         then action monitor : MonitorBattery {
-			out batteryCharge : Real;
-		}
+            out batteryCharge : Real;
+        }
 
         then decide;
-        if monitor.batteryCharge < 100;
-        then addCharge;
-        if monitor.batteryCharge >= 100;
-        then endCharging;
+        if monitor.batteryCharge < 100 then addCharge;
+        if monitor.batteryCharge >= 100 then endCharging;
 
         action addCharge : AddCharge {
             in charge = monitor.batteryCharge;
@@ -146,6 +140,7 @@ package 'Decision Example' {
         then done;
     }
 }
+
 ~~~
 # EXPECTED
 ~~~

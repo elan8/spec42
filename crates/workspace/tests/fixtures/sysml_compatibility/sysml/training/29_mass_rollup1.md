@@ -72,10 +72,13 @@ package MassRollup1 {
     }
 
     part compositeThing : MassedThing {
-        part subcomponents : MassedThing [*];
-        attribute :>> totalMass = simpleMass + sum(subcomponents.totalMass);
+        part subcomponents: MassedThing[*];
+        attribute :>> totalMass =
+        simpleMass + sum(subcomponents.totalMass);
     }
+
 }
+
 ~~~
 # EXPECTED
 ~~~

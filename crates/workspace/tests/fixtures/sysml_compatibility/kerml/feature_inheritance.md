@@ -33,11 +33,11 @@ CloseCurly,EndOfFile,
 # FORMAT
 ~~~sysml
 package FeatureInheritance {
-    feature s {
-        feature t : ISQ::TorqueValue;
-    }
-
-    feature u subsets s;
+	feature s {
+		feature t : ISQ::TorqueValue;
+	}
+	
+	feature u subsets s;
 }
 ~~~
 # EXPECTED

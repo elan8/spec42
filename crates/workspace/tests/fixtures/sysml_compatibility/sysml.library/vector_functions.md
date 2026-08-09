@@ -780,27 +780,28 @@ CloseCurly,EndOfFile,
 # FORMAT
 ~~~sysml
 standard library package VectorFunctions {
-    doc /*
+	doc
+	/*
 	 * This package defines abstract functions on VectorValues corresponding to the algebraic operations
 	 * provided by a vector space with inner product. It also includes concrete implementations of these
 	 * functions specifically for CartesianVectorValues.
 	 */
 
-    private import ScalarValues::NumericalValue;
-    private import ScalarValues::Positive;
-    private import ScalarValues::Real;
-    private import ScalarValues::Boolean;
-    private import NumericalFunctions::*;
-    private import RealFunctions::sqrt;
-    private import TrigFunctions::arccos;
-    private import SequenceFunctions::size;
-    private import ControlFunctions::*;
-
-    public import VectorValues::*;
-
-    /* Generic arithmetic functions for all VectorValues. */
-
-    abstract function isZeroVector {
+	private import ScalarValues::NumericalValue;
+	private import ScalarValues::Positive;
+	private import ScalarValues::Real;
+	private import ScalarValues::Boolean;
+	private import NumericalFunctions::*;
+	private import RealFunctions::sqrt;
+	private import TrigFunctions::arccos;
+	private import SequenceFunctions::size;
+	private import ControlFunctions::*;
+	
+	public import VectorValues::*;
+	
+	/* Generic arithmetic functions for all VectorValues. */
+	
+	abstract function isZeroVector {
 		doc
 		/*
 		 * Return whether a VectorValue is a zero vector.
@@ -809,8 +810,8 @@ standard library package VectorFunctions {
 		in v: VectorValue[1]; 
 		return : Boolean[1]; 
 	}
-
-    abstract function '+' specializes DataFunctions::'+' {
+	
+	abstract function '+' specializes DataFunctions::'+' {
 		doc
 		/*
 		 * With two arguments, returns the sum of two VectorValues. With one argument, returns that VectorValue.
@@ -822,8 +823,8 @@ standard library package VectorFunctions {
 		inv zeroAddition { w == null or isZeroVector(w) implies u == w }
 		inv commutivity { w != null implies u == w + v }
 	}
-
-    abstract function '-' specializes DataFunctions::'-' {
+	
+	abstract function '-' specializes DataFunctions::'-' {
 		doc
 		/*
 		 * With two arguments, returns the difference of two VectorValues. With one arguments, returns the inverse
@@ -837,8 +838,8 @@ standard library package VectorFunctions {
 		inv negation { w == null implies isZeroVector(v + u) }
 		inv difference { w != null implies v + u == w }
 	}
-
-    abstract function sum0 {
+	
+	abstract function sum0 {
 		doc
 		/*
 		 * Return the sum of a collection of VectorValues. If the collection is empty, return a given zero vector.
@@ -850,9 +851,9 @@ standard library package VectorFunctions {
 		return s: VectorValue[1] = coll->reduce '+' ?? zero;
 	}
 
-    /* Functions specific to NumericalVectorValues. */
-
-    function VectorOf {
+	/* Functions specific to NumericalVectorValues. */
+	
+	function VectorOf {
 		doc
 		/*
 		 * Construct a NumericalVectorValue whose elements are a non-empty list of component NumericalValues.
@@ -865,8 +866,8 @@ standard library package VectorFunctions {
 			:>> elements = components;
 		}
 	}
-
-    abstract function scalarVectorMult specializes DataFunctions::'*' {
+	
+	abstract function scalarVectorMult specializes DataFunctions::'*' {
 		doc
 		/*
 		 * Scalar product of a NumericalValue and a NumericalVectorValue.
@@ -878,9 +879,9 @@ standard library package VectorFunctions {
 		inv scaling { norm(w) == x * norm(v) }
 		inv zeroLength { isZeroVector(w) implies isZero(norm(w))}
 	}
-    alias '*' for scalarVectorMult;
-
-    abstract function vectorScalarMult specializes DataFunctions::'*' {
+	alias '*' for scalarVectorMult;
+	
+	abstract function vectorScalarMult specializes DataFunctions::'*' {
 		doc
 		/*
 		 * Scalar product of a NumericalVectorValue and a NumericalValue, which has the same value as the scalar product of the
@@ -891,8 +892,8 @@ standard library package VectorFunctions {
 		in x: NumericalValue[1];
 		return w: NumericalVectorValue[1] default scalarVectorMult(x, v);
 	}
-
-    abstract function vectorScalarDiv specializes DataFunctions::'/' {
+	
+	abstract function vectorScalarDiv specializes DataFunctions::'/' {
 		doc
 		/*
 		 * Scalar quotient of a NumericalVectorValue and a NumericalValue, defined as the scalar product of the inverse of the 
@@ -904,7 +905,7 @@ standard library package VectorFunctions {
 		return w: NumericalVectorValue[1] = scalarVectorMult(1.0 / x, v);
 	}
 
-    abstract function inner specializes DataFunctions::'*' {
+	abstract function inner specializes DataFunctions::'*' {
 		doc
 		/*
 		 * Inner product of two NumericalVectorValues.
@@ -916,8 +917,8 @@ standard library package VectorFunctions {
 		inv commmutivity { x == inner(w, v) }
 		inv zeroInner { isZeroVector(v) or isZeroVector(w) implies isZero(x)}
 	}
-
-    abstract function norm {
+	
+	abstract function norm {
 		doc
 		/*
 		 * The norm (magnitude) of a NumericalVectorValue, as a NumericalValue.
@@ -928,8 +929,8 @@ standard library package VectorFunctions {
 		inv squareNorm { l * l == inner(v,v) }
 		inv lengthZero { isZero(l) == isZeroVector(v) }
 	}
-
-    abstract function angle {
+	
+	abstract function angle {
 		doc
 		/*
 		 * The angle between two NumericalVectorValues, as a NumericalValue.
@@ -941,10 +942,10 @@ standard library package VectorFunctions {
 		inv commutivity { theta == angle(w, v) }
 		inv lengthInsensitive { theta == angle(w / norm(w), v / norm(v)) }
 	}
-
-    /* Specialized functions with concrete definitions for CartesianVectorValues. */
-
-    function CartesianVectorOf {
+	
+	/* Specialized functions with concrete definitions for CartesianVectorValues. */
+	
+	function CartesianVectorOf {
 		doc
 		/*
 		 * Construct a CartesianVectorValue whose elements are a non-empty list of Real components.
@@ -957,25 +958,28 @@ standard library package VectorFunctions {
 			:>> elements = components;
 		}
 	}
-    function CartesianThreeVectorOf specializes CartesianVectorOf { 
+	function CartesianThreeVectorOf specializes CartesianVectorOf { 
 		in components: Real[3] ordered nonunique;
 		return : CartesianThreeVectorValue[1] {
 		    feature :>> CartesianVectorOf::result::dimension, CartesianThreeVectorValue::dimension;
 		}
 	}
-
-    feature cartesianZeroVector : CartesianVectorValue [3] = (
+	
+	feature cartesianZeroVector: CartesianVectorValue[3] =
+		(
 			CartesianVectorOf(0.0),
 			CartesianVectorOf((0.0, 0.0)),
 			CartesianThreeVectorOf((0.0, 0.0, 0.0))
 		) {
-        doc /*
+		doc
+		/*
 		 * Cartesian zero vectors of 1, 2 and 3 dimensions.
 		 */
-    }
-    feature cartesian3DZeroVector : CartesianThreeVectorValue [1] = cartesianZeroVector#(3);
-
-    function isCartesianZeroVector specializes isZeroVector {
+	}
+	feature cartesian3DZeroVector: CartesianThreeVectorValue[1] =
+		cartesianZeroVector#(3);
+	
+	function isCartesianZeroVector specializes isZeroVector {
 		doc
 		/*
 		 * A CartesianVectorValue is a zero vector if all its elements are zero.
@@ -984,8 +988,8 @@ standard library package VectorFunctions {
 		in v: CartesianVectorValue[1]; 
 		return : Boolean[1] = v.elements->forAll{in x; x == 0.0};
 	}
-
-    function 'cartesian+' specializes '+' { 
+	
+	function 'cartesian+' specializes '+' { 
 		in v: CartesianVectorValue[1]; 
 		in w: CartesianVectorValue[0..1];
 		inv precondition { w != null implies v.dimension == w.dimension }
@@ -995,8 +999,8 @@ standard library package VectorFunctions {
 				(1..w.dimension)->collect{in i : Positive; v#(i) + w#(i)}
 			);
 	}
-
-    function 'cartesian-' specializes '-' { 
+	
+	function 'cartesian-' specializes '-' { 
 		in v: CartesianVectorValue[1]; 
 		in w: CartesianVectorValue[0..1];
 		inv precondition { w != null implies v.dimension == w.dimension }
@@ -1008,8 +1012,8 @@ standard library package VectorFunctions {
 				)
 			);
 	}
-
-    function cartesianScalarVectorMult specializes scalarVectorMult { 
+	
+	function cartesianScalarVectorMult specializes scalarVectorMult { 
 		in x: Real[1]; 
 		in v: CartesianVectorValue[1];
 		return w: CartesianVectorValue[1] =
@@ -1017,35 +1021,36 @@ standard library package VectorFunctions {
 				v.elements->collect{in y : Real; x * y}
 			);
 	}
-    function cartesianVectorScalarMult specializes vectorScalarMult { 
+	function cartesianVectorScalarMult specializes vectorScalarMult { 
 		in v: CartesianVectorValue[1]; 
 		in x: Real[1]; 
 		return w: CartesianVectorValue[1] = cartesianScalarVectorMult(x, v);
 	}
-
-    function cartesianInner specializes inner { 
+	
+	function cartesianInner specializes inner { 
 		in v: CartesianVectorValue[1]; 
 		in w : CartesianVectorValue[1];
 		inv precondition { v.dimension == w.dimension }
 		return x: Real[1] =
 			(1..v.dimension)->collect{in i : Positive; v#(i) * w#(i)}->reduce RealFunctions::'+';
 	}
-
-    function cartesianNorm specializes norm { 
+	
+	function cartesianNorm specializes norm { 
 		in v: CartesianVectorValue[1];
 		return l : NumericalValue[1] = sqrt(cartesianInner(v, v));
 	}
-
-    function cartesianAngle specializes angle { 
+	
+	function cartesianAngle specializes angle { 
 		in v: CartesianVectorValue[1]; in w: CartesianVectorValue[1];
 		inv precondition { v.dimension == w.dimension }
 		return theta: Real[1] = arccos(cartesianInner(v, w) / (norm(v) * norm(w)));
 	}
-
-    function sum { 
+	
+	function sum { 
 		in coll: CartesianThreeVectorValue[*];
 		return : CartesianThreeVectorValue[1] = sum0(coll, cartesian3DZeroVector);
 	}
+	
 }
 ~~~
 # SMG

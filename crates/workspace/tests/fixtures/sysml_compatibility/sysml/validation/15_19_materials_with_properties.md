@@ -214,26 +214,15 @@ package '15_19-Materials with Properties' {
     attribute def AtomicMassValue :> MassValue;
 
     attribute def TensileStrengthUnit :> DerivedUnit {
-        private attribute lengthPF : QuantityPowerFactor [1] {
-            :>> quantity = isq.L;
-            :>> exponent = -1;
-        }
-        private attribute massPF : QuantityPowerFactor [1] {
-            :>> quantity = isq.M;
-            :>> exponent = 1;
-        }
-        private attribute durationPF : QuantityPowerFactor [1] {
-            :>> quantity = isq.T;
-            :>> exponent = -2;
-        }
-        attribute :>> quantityDimension {
-            :>> quantityPowerFactors = (lengthPF, massPF, durationPF);
-        }
+        private attribute lengthPF: QuantityPowerFactor[1] { :>> quantity = isq.L; :>> exponent = -1; }
+        private attribute massPF: QuantityPowerFactor[1] { :>> quantity = isq.M; :>> exponent = 1; }
+        private attribute durationPF: QuantityPowerFactor[1] { :>> quantity = isq.T; :>> exponent = -2; }
+        attribute :>> quantityDimension { :>> quantityPowerFactors = (lengthPF, massPF, durationPF); }
     }
 
     attribute def TensileStrengthValue :> ScalarQuantityValue {
-        attribute :>> num : Real;
-        attribute :>> mRef : TensileStrengthUnit;
+        attribute :>> num: Real;
+        attribute :>> mRef: TensileStrengthUnit;
     }
 
     attribute <'N/mm²'> 'newton per square millimetre' : TensileStrengthUnit = N / mm^2;
@@ -249,18 +238,18 @@ package '15_19-Materials with Properties' {
 	 */
 
     part def Metal :> Material {
-        attribute atomicMass : AtomicMassValue [1];
+        attribute atomicMass: AtomicMassValue[1];
     }
 
     attribute def MaterialFraction {
-        ref material : Material [1];
-        attribute massFraction : MassFractionValue [1];
+        ref material: Material[1];
+        attribute massFraction: MassFractionValue[1];
     }
 
     attribute def MassFractionValue :> DimensionOneValue;
 
     part def Alloy :> Material {
-        attribute fractions : MaterialFraction [2..*];
+        attribute fractions: MaterialFraction[2..*];
     }
 
     individual def Iron :> Metal {
@@ -295,9 +284,10 @@ package '15_19-Materials with Properties' {
             attribute :>> massFraction = 0.9862[one];
         }
 
-        attribute tensileStrength : TensileStrengthValue = 980['N/mm²'];
+        attribute tensileStrength: TensileStrengthValue = 980['N/mm²'];
     }
 }
+
 ~~~
 # EXPECTED
 ~~~

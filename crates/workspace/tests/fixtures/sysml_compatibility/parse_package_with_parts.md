@@ -30,6 +30,7 @@ package Vehicles {
     part def Car;
     part def Truck;
 }
+
 ~~~
 # EXPECTED
 ~~~

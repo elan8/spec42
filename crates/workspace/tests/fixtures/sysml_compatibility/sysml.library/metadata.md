@@ -94,7 +94,8 @@ CloseCurly,EndOfFile,
 # FORMAT
 ~~~sysml
 standard library package Metadata {
-    doc /*
+    doc
+    /*
  * This package defines the base types for metadata definitions and related 
  * metadata annotations in the SysML language.
  */
@@ -105,7 +106,8 @@ standard library package Metadata {
     private import Items::items;
 
     abstract metadata def MetadataItem :> Metaobject, Item {
-        doc /*
+        doc
+        /*
 		 * MetadataItem is the most general class of Items that represent Metaobjects. 
 		 * MetadataItem is the base type of all MetadataDefinitions.
 		 */
@@ -113,8 +115,9 @@ standard library package Metadata {
         ref self : MetadataItem redefines Metaobject::self, Item::self;
     }
 
-    abstract item metadataItems : MetadataItem :> metaobjects, items [0..*] {
-        doc /*
+    abstract item metadataItems : MetadataItem[0..*] :> metaobjects, items {
+        doc
+        /*
 		 * metadataItems is the base feature of all MetadataUsages.
 		 * 
 		 * Note: It is not itself a MetadataUsage, because it is not being used as an
@@ -122,6 +125,7 @@ standard library package Metadata {
 		 */
     }
 }
+
 ~~~
 # SMG
 ~~~

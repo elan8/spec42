@@ -144,11 +144,7 @@ part def Engine;
 part def DataPort;
 part def Widget;
 part def Color;
-enum def Priority {
-    enum low;
-    enum medium;
-    enum high;
-}
+enum def Priority { enum value low; enum value medium; enum value high; }
 
 part def Vehicle {
     in attribute speed : Integer;
@@ -156,7 +152,7 @@ part def Vehicle {
     inout attribute velocity : Integer;
 
     attribute mass : Integer = 100;
-    attribute weights : Integer [3];
+    attribute weights[3] : Integer;
 
     enum color : Color;
 
@@ -182,6 +178,7 @@ part def Vehicle {
     variant part optionA;
     variant part optionB;
 }
+
 ~~~
 # SMG
 ~~~

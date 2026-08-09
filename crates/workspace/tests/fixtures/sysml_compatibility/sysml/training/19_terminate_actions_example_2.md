@@ -77,7 +77,9 @@ package 'Terminate Actions Example-2' {
 
         terminate processor;
     }
+
 }
+
 ~~~
 # EXPECTED
 ~~~

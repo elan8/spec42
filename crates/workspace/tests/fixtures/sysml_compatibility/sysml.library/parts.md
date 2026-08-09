@@ -223,7 +223,8 @@ CloseCurly,EndOfFile,
 # FORMAT
 ~~~sysml
 standard library package Parts {
-    doc /*
+    doc
+    /*
  * This package defines the base types for parts and related structural elements in the
  * SysML language.
  */
@@ -240,59 +241,69 @@ standard library package Parts {
     private import States::stateActions;
 
     abstract part def Part :> Item {
-        doc /*
+        doc
+        /*
 		 * Part is the most general class of objects that represent all or a part of a system.
 		 * Part is the base type of all PartDefinitions.
 		 */
 
-        ref self : Part :>> Item::self;
+        ref self: Part :>> Item::self;
 
-        part start : Part :>> Item::start;
-        part done : Part :>> Item::done;
+        part start: Part :>> Item::start;
+        part done: Part :>> Item::done;
 
-        abstract port ownedPorts : Port :> ports, timeEnclosedOccurrences [0..*] {
-            doc /*
+        abstract port ownedPorts: Port[0..*] :> ports, timeEnclosedOccurrences {
+            doc
+            /*
 			 * Ports that are owned by this Part.
 			 */
         }
 
-        abstract ref action performedActions : Action [0..*] :> actions, enactedPerformances {
-            doc /*
+        abstract ref action performedActions: Action[0..*] :> actions, enactedPerformances {
+            doc
+            /*
 			 * Actions that are performed by this Part.
 			 */
         }
 
-        abstract action ownedActions : Action [0..*] :> actions, ownedPerformances {
-            doc /*
+        abstract action ownedActions: Action[0..*] :> actions, ownedPerformances {
+            doc
+            /*
 			 * Actions that are owned by this Part.
 			 */
 
             ref part this : Part :>> Action::this, ownedPerformances::this = that as Part {
-                doc /*
+                doc
+                /*
 				 * The "this" reference of an ownedAction is always its owning Part.
 				 */
             }
         }
 
-        abstract ref state exhibitedStates : StateAction :> stateActions, performedActions [0..*] {
-            doc /*
+        abstract ref state exhibitedStates: StateAction[0..*] :> stateActions, performedActions {
+            doc
+            /*
 			 * StateActions that are exhibited by this Part.
 			 */
         }
 
-        abstract state ownedStates : StateAction :> stateActions, ownedActions [0..*] {
-            doc /*
+        abstract state ownedStates: StateAction[0..*] :> stateActions, ownedActions {
+            doc
+            /*
 			 * StateActions that are owned by this Part.
 			 */
         }
     }
 
-    abstract part parts : Part :> items [0..*] nonunique {
-        doc /*
+    abstract part parts: Part[0..*] nonunique :> items {
+        doc
+        /*
 		 * parts is the base feature of all part properties.
 		 */
     }
+
 }
+
 ~~~
 # SMG
 ~~~

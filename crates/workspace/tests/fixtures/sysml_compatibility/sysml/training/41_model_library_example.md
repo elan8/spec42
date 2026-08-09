@@ -101,26 +101,26 @@ library package 'Model Library Example' {
 
     abstract occurrence def Situation;
 
-    abstract occurrence situations : Situation [*] nonunique;
+    abstract occurrence situations : Situation[*] nonunique;
 
     abstract occurrence def Cause {
         attribute probability : Real;
     }
 
-    abstract occurrence causes : Cause :> situations [*] nonunique;
+    abstract occurrence causes : Cause[*] nonunique :> situations;
 
     abstract occurrence def Failure {
         attribute severity : Level;
     }
 
-    abstract occurrence failures : Failure :> situations [*] nonunique;
+    abstract occurrence failures : Failure[*] nonunique :> situations;
 
     abstract connection def Causation :> Occurrences::HappensBefore {
-        end [*] cause : Situation;
-        end [*] effect : Situation;
+        end [*] ref cause : Situation;
+        end [*] ref effect : Situation;
     }
 
-    abstract connection causations : Causation [*];
+    abstract connection causations : Causation[*] nonunique;
 
     item def Scenario {
         occurrence :>> situations;
@@ -128,8 +128,9 @@ library package 'Model Library Example' {
         occurrence :>> failures :> situations;
     }
 
-    item scenarios : Scenario [*] nonunique;
+    item scenarios : Scenario[*] nonunique;
 }
+
 ~~~
 # EXPECTED
 ~~~

@@ -88,16 +88,17 @@ package MedicalDeviceFailure {
             event occurrence therapyDelayed;
         }
 
-        #multicausation
-        connection {
-			end #cause ::> battery.depleted;
-			end #cause ::> battery.cannotBeCharged;
-			end #effect ::> deviceFails;
-		}
+        #multicausation connection {
+            end #cause ::> battery.depleted;
+            end #cause ::> battery.cannotBeCharged;
+            end #effect ::> deviceFails;
+        }
 
         #causation connect deviceFails to patient.therapyDelayed;
     }
+
 }
+
 ~~~
 # EXPECTED
 ~~~

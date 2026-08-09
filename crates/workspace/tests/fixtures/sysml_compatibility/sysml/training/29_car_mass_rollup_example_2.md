@@ -108,13 +108,13 @@ package 'Car Mass Rollup 1' {
     private import MassRollup2::*;
 
     part def CarPart :> MassedThing {
-        attribute serialNumber : String;
+        attribute serialNumber: String;
     }
 
-    part car : CarPart :> compositeThing {
+    part car: CarPart :> compositeThing {
         attribute vin :>> serialNumber;
 
-        part carParts : CarPart :>> subcomponents [*];
+        part carParts: CarPart[*] :>> subcomponents;
 
         part engine :> carParts {
             //...
@@ -141,6 +141,7 @@ package 'Car Mass Rollup 1' {
 
     // c::totalMass --> 1150.0[kg]
 }
+
 ~~~
 # EXPECTED
 ~~~

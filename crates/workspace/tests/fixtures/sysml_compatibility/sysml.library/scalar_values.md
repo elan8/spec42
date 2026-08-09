@@ -96,6 +96,7 @@ standard library package ScalarValues {
     datatype Natural specializes Integer;
     datatype Positive specializes Natural;
 }
+
 ~~~
 # SMG
 ~~~

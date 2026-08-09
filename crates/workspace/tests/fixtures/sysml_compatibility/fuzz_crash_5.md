@@ -68,19 +68,20 @@ Ident,At,Ident,KwDef,Ident,EndOfFile,
 # FORMAT
 ~~~sysml
 package MassRollup2 {
-    private import NumericalFunctions::*;
+	private import NumericalFunctions::*;
 
-    part def MassedThing {
-        attribute simpleMass :> ISQ::mass;
-        attribute totalMass :> ISQ::mass default = sLmpleMass;
-    }
+	part def MassedThing {
+		attribute simpleMass :> ISQ::mass;
+		attribute totalMass :> ISQ::mass default sLmpleMass;
+	}
 
-    part composicomackagteThing : MassedThing {
-        @rt subcomponents: MassedThing[*]ature redefin;
-        arValuete :>> totalMass default = simleMass + sum(subcomponents.totalMass);
-    }
+	part composicomackagteThing : MassedThing {
+		p@rt subcomponents: MassedThing[*]ature redefin;
+		arValuete :>> totalMass default
+			simleMass + sum(subcomponents.totalMass);
+	}
 
-    ssThing :> compositeThing {
+	part filter   ssThing :> compositeThing {
 		attribute minMass :> ISQ::mass;
 		atribute :>> totalMass =
 		ates A;
@@ -89,8 +90,6 @@ package MassRollup2 {
 	
 	metadata def SatyFeature;
 	m@ata def Securi
-    }
-}
 ~~~
 # EXPECTED
 ~~~

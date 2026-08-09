@@ -204,7 +204,7 @@ package '1c-Parts Tree Redefinition' {
             attribute mass :> ISQ::mass;
         }
         part def FrontAxle :> Axle {
-            attribute steeringAngle : ScalarValues::Real;
+            attribute steeringAngle: ScalarValues::Real;
         }
         part def Wheel;
     }
@@ -212,20 +212,21 @@ package '1c-Parts Tree Redefinition' {
     package Usages {
         private import Definitions::*;
 
-        part vehicle1 : Vehicle {
+        part vehicle1: Vehicle {
             attribute mass redefines Vehicle::mass default = 1750 [kg] {
-                doc /*
+                doc
+                /*
 			 * The mass attribute is redefined to give it a default value.
 			 */
             }
 
-            part frontAxleAssembly : AxleAssembly {
-                part frontAxle : Axle;
-                part frontWheel : Wheel [2] ordered;
+            part frontAxleAssembly: AxleAssembly {
+                part frontAxle: Axle;
+                part frontWheel: Wheel[2] ordered;
             }
-            part rearAxleAssembly : AxleAssembly {
-                part rearAxle : Axle;
-                part rearWheel : Wheel [2] ordered;
+            part rearAxleAssembly: AxleAssembly {
+                part rearAxle: Axle;
+                part rearWheel: Wheel[2] ordered;
             }
         }
 
@@ -244,7 +245,7 @@ package '1c-Parts Tree Redefinition' {
             }
 
             part frontAxleAssembly_c1 redefines frontAxleAssembly {
-                part frontAxle_c1 : FrontAxle redefines frontAxle {
+                part frontAxle_c1: FrontAxle redefines frontAxle {
                     /*
 					 * 'frontAxle_c1' redefines 'frontAxleAssembly'::'frontAxle'
 					 * to give it a new name and the specialized type
@@ -274,8 +275,10 @@ package '1c-Parts Tree Redefinition' {
                 part rearWheel_2 subsets rearWheel = rearWheel#(2);
             }
         }
+
     }
 }
+
 ~~~
 # EXPECTED
 ~~~

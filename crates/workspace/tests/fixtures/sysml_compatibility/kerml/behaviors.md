@@ -92,10 +92,11 @@ package Behaviors {
         step a : A;
         step b : B;
         binding z = a.y;
-        flow a;
+        flow a.y to b.x1;
     }
     abstract flow msg of C;
 }
+
 ~~~
 # EXPECTED
 ~~~

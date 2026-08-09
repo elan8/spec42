@@ -65,10 +65,12 @@ package 'Items Example' {
         ref item driver : Person;
 
         part fuelTank {
-            item fuel : Fuel;
+            item fuel: Fuel;
         }
     }
+
 }
+
 ~~~
 # EXPECTED
 ~~~

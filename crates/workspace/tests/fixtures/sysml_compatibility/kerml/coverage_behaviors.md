@@ -157,10 +157,11 @@ package BehaviorCoverage {
         step a1 : Action1;
         step a2 : Action1;
         succession a1 then a2;
-        flow a1;
+        flow a1.y to a2.x;
         succession flow sf from a1.y to a2.x;
     }
 }
+
 ~~~
 # SMG
 ~~~

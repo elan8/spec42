@@ -26,6 +26,7 @@ CloseCurly,EndOfFile,
 package Outer {
     package Inner { }
 }
+
 ~~~
 # EXPECTED
 ~~~

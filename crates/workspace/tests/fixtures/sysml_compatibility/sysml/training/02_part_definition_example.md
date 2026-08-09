@@ -82,6 +82,7 @@ package 'Part Definition Example' {
     part def Engine;
     part def Person;
 }
+
 ~~~
 # EXPECTED
 ~~~

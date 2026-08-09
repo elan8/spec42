@@ -89,7 +89,8 @@ CloseCurly,EndOfFile,
 # FORMAT
 ~~~sysml
 standard library package Allocations {
-    doc /*
+    doc
+    /*
 	 * This package defines the base types for allocations and related structural elements
 	 * in the SysML language.
 	 */
@@ -98,22 +99,25 @@ standard library package Allocations {
     private import Connections::*;
 
     allocation def Allocation :> BinaryConnection {
-        doc /*
+        doc
+        /*
 		 * Allocation is the most general class of allocation, represented as a connection 
 		 * between the source of the allocation and the target. Allocation is the base type 
 		 * of all AllocationDefinitions.
 		 */
 
-        end source : Anything :>> BinaryConnection::source;
-        end target : Anything :>> BinaryConnection::target;
+        end source: Anything :>> BinaryConnection::source;
+        end target: Anything :>> BinaryConnection::target;
     }
 
-    abstract allocation allocations : Allocation :> binaryConnections [0..*] {
-        doc /*
+    abstract allocation allocations: Allocation[0..*] nonunique :> binaryConnections {
+        doc
+        /*
 		 * allocations is the base feature of all AllocationUsages.
 		 */
     }
 }
+
 ~~~
 # SMG
 ~~~

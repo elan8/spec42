@@ -67,7 +67,7 @@ package RiskMetadataExample {
     private import RiskMetadata::*;
     private import RiskLevelEnum::*;
 
-    part engine4cyl {
+    part engine4cyl{
         @Risk {
             totalRisk = high;
             technicalRisk = medium;
@@ -80,7 +80,9 @@ package RiskMetadataExample {
             }
         }
     }
+
 }
+
 ~~~
 # EXPECTED
 ~~~

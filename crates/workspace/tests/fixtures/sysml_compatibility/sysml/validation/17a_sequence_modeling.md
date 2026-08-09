@@ -140,27 +140,28 @@ package '17a-Sequence-Modeling' {
     }
 
     occurrence def PubSubSequence {
-        part producer [1] {
+        part producer[1] {
             event occurrence publish_source_event;
         }
 
-        message publish_message of Publish;
+        message publish_message of Publish[1] from producer.publish_source_event to server.publish_target_event;
 
-        part server [1] {
+        part server[1] {
             event occurrence subscribe_target_event;
             then event occurrence publish_target_event;
             then event occurrence deliver_source_event;
         }
 
-        message subscribe_message of Subscribe;
-        message deliver_message of Deliver;
+        message subscribe_message of Subscribe[1] from consumer.subscribe_source_event to server.subscribe_target_event;
+        message deliver_message of Deliver[1] from server.deliver_source_event to consumer.deliver_target_event;
 
-        part consumer [1] {
+        part consumer[1] {
             event occurrence subscribe_source_event;
             then event occurrence deliver_target_event;
         }
     }
 }
+
 ~~~
 # EXPECTED
 ~~~

@@ -130,34 +130,18 @@ package 'Filtering Example-1' {
     part vehicle {
         part interior {
             part alarm;
-            part seatBelt [2] {
-                @Safety {
-                    isMandatory = true;
-                }
-            }
-            part frontSeat [2];
-            part driverAirBag {
-                @Safety {
-                    isMandatory = false;
-                }
-            }
+            part seatBelt[2] {@Safety{isMandatory = true;}}
+            part frontSeat[2];
+            part driverAirBag {@Safety{isMandatory = false;}}
         }
         part bodyAssy {
             part body;
-            part bumper {
-                @Safety {
-                    isMandatory = true;
-                }
-            }
+            part bumper {@Safety{isMandatory = true;}}
             part keylessEntry;
         }
         part wheelAssy {
-            part wheel [2];
-            part antilockBrakes [2] {
-                @Safety {
-                    isMandatory = false;
-                }
-            }
+            part wheel[2];
+            part antilockBrakes[2] {@Safety{isMandatory = false;}}
         }
     }
 
@@ -173,6 +157,7 @@ package 'Filtering Example-1' {
         filter @Safety and Safety::isMandatory;
     }
 }
+
 ~~~
 # EXPECTED
 ~~~

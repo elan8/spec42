@@ -127,6 +127,7 @@ CloseCurly,EndOfFile,
 # FORMAT
 ~~~sysml
 package 'Connections Example' {
+
     part def WheelHubAssembly;
     part def WheelAssembly;
     part def Tire;
@@ -139,30 +140,35 @@ package 'Connections Example' {
     part def LugBoltJoint;
 
     connection def PressureSeat {
-        end [1] bead : TireBead;
-        end [1] mountingRim : TireMountingRim;
+        end [1] part bead : TireBead;
+        end [1] part mountingRim : TireMountingRim;
     }
 
     part wheelHubAssembly : WheelHubAssembly {
-        part wheel : WheelAssembly [1] {
-            part t : Tire [1] {
-                part bead : TireBead [2];
+
+        part wheel : WheelAssembly[1] {
+            part t : Tire[1] {
+                part bead : TireBead[2];
             }
-            part w : Wheel [1] {
-                part rim : TireMountingRim [2];
-                part mountingHoles : LugBoltMountingHole [5];
+            part w: Wheel[1] {
+                part rim : TireMountingRim[2];
+                part mountingHoles : LugBoltMountingHole[5];
             }
-            connection : PressureSeat connect bead references t.bead to mountingRim references w.rim;
+            connection : PressureSeat
+            connect bead references t.bead
+            to mountingRim references w.rim;
         }
 
-        part lugBoltJoints : LugBoltJoint [0..5];
-        part hub : Hub [1] {
-            part h : LugBoltThreadableHole [5];
+        part lugBoltJoints : LugBoltJoint[0..5];
+        part hub : Hub[1] {
+            part h : LugBoltThreadableHole[5];
         }
         connect [0..1] lugBoltJoints to [1] wheel.w.mountingHoles;
         connect [0..1] lugBoltJoints to [1] hub.h;
     }
+
 }
+
 ~~~
 # EXPECTED
 ~~~

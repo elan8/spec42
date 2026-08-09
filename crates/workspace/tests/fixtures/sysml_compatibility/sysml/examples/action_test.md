@@ -167,16 +167,12 @@ CloseCurly,EndOfFile,
 # FORMAT
 ~~~sysml
 package ActionTest {
-    action def A {
-        in x;
-    }
+    action def A{ in x; }
 
-    action a : A {
+    action a: A {
         first start;
 
-        action b {
-            in y = x;
-        }
+        action b { in y = x; }
 
         bind x = b.y;
     }
@@ -193,8 +189,7 @@ package ActionTest {
         then send new S() to b;
         then accept when b.f;
         then decide;
-        if true;
-        then m;
+        if true then m;
         else done;
     }
 
@@ -203,13 +198,11 @@ package ActionTest {
         action aa {
             out part target;
         }
-        flow aa;
-        action snd;
-        send {
+        flow aa.target to snd.receiver;
+        action snd send {
             in :>> payload = s;
         }
-        action snd2;
-        send via this to aa.target;
+        action snd2 send via this to aa.target;
         bind s = snd2.payload;
     }
 
@@ -221,11 +214,12 @@ package ActionTest {
     action def c {
         first start;
         then action c1 {
-			terminate c1;
-		}
+            terminate c1;
+        }
         then terminate;
     }
 }
+
 ~~~
 # EXPECTED
 ~~~

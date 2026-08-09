@@ -21,6 +21,7 @@ KwPart,KwDef,Ident,OpenCurly,CloseCurly,EndOfFile,
 # FORMAT
 ~~~sysml
 part def Vehicle { }
+
 ~~~
 # EXPECTED
 ~~~

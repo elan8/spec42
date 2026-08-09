@@ -74,14 +74,8 @@ CloseCurly,EndOfFile,
 ~~~
 # FORMAT
 ~~~sysml
-part def A {
-    port p1;
-    port p2;
-}
-part def B {
-    port q1;
-    port q2;
-}
+part def A { port p1; port p2; }
+part def B { port q1; port q2; }
 
 part def System {
     part a : A;
@@ -91,11 +85,12 @@ part def System {
     connector c2 :> c1 from a.p2 to b.q2;
 
     binding b1 of a.p1 = b.q1;
-    binding a.p2 = b.q2;
+    binding of a.p2 = b.q2;
 
     ref part engine : A;
     individual part myA : A;
 }
+
 ~~~
 # SMG
 ~~~

@@ -60,7 +60,9 @@ package 'Variation Configuration' {
         part redefines engine = engine::'6cylEngine';
         part redefines transmission = transmission::manualTransmission;
     }
+
 }
+
 ~~~
 # EXPECTED
 ~~~

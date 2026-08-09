@@ -24,6 +24,7 @@ Ident,EndOfFile,
 ~~~sysml
 x /* comment */ // note
 y
+
 ~~~
 # EXPECTED
 ~~~

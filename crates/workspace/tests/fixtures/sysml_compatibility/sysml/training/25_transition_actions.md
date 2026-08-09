@@ -121,6 +121,7 @@ CloseCurly,EndOfFile,
 # FORMAT
 ~~~sysml
 package 'Transition Actions' {
+
     attribute def VehicleStartSignal;
     attribute def VehicleOnSignal;
     attribute def VehicleOffSignal;
@@ -132,9 +133,7 @@ package 'Transition Actions' {
     }
     part def VehicleController;
 
-    action performSelfTest {
-        in vehicle : Vehicle;
-    }
+    action performSelfTest { in vehicle : Vehicle; }
 
     state def VehicleStates;
 
@@ -142,29 +141,30 @@ package 'Transition Actions' {
         in operatingVehicle : Vehicle;
         in controller : VehicleController;
 
-        entry;
-        then off;
+        entry; then off;
 
         state off;
-        accept VehicleStartSignal then starting;
+        accept VehicleStartSignal
+        then starting;
 
         state starting;
-        accept VehicleOnSignal if operatingVehicle . brakePedalDepressed do send new ControllerStartSignal ( ) to controller then on;
+        accept VehicleOnSignal
+        if operatingVehicle.brakePedalDepressed
+        do send new ControllerStartSignal() to controller
+        then on;
 
         state on {
-            entry performSelfTest {
-                in vehicle = operatingVehicle;
-            }
-            do providePower {
-                /* ... */
-            }
-            exit applyParkingBrake {
-                /* ... */
-            }
+            entry performSelfTest{ in vehicle = operatingVehicle; }
+            do action providePower { /* ... */ }
+            exit action applyParkingBrake { /* ... */ }
         }
-        accept VehicleOffSignal then off;
+        accept VehicleOffSignal
+        then off;
+
     }
+
 }
+
 ~~~
 # EXPECTED
 ~~~

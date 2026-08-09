@@ -498,7 +498,8 @@ CloseCurly,EndOfFile,
 # FORMAT
 ~~~sysml
 standard library package SpatialFrames {
-    doc /*
+    doc
+    /*
      * This package models spatial frames of reference for quantifying the position of points 
      * in a three-dimensional space. 
      */
@@ -513,27 +514,30 @@ standard library package SpatialFrames {
     private import Objects::Point;
     private import ControlFunctions::forAll;
     private import SequenceFunctions::includes;
-
+    
     private struct DefaultFrameLife[1] :> SpatialFrame, Life {
-        doc /*
+        doc
+        /*
          * DefaultFrameLife is the classifier of the singleton Life of the defaultFrame.
          */
     }
-
-    feature defaultFrame : DefaultFrameLife [1] {
-        doc /*
+    
+    feature defaultFrame : DefaultFrameLife[1] {
+        doc
+        /*
          * defaultFrame is a fixed SpatialFrame used as a universal default.
          */
     }
-
+    
     abstract struct SpatialFrame specializes Body {
-        doc /*
+        doc
+        /*
          * A SpatialFrame is a three-dimensional Body that provides a spatial extent that 
          * acts as a frame of reference for defining the physical position and displacement 
          * vectors of Points over time.
          */
     }
-
+    
     abstract function PositionOf {
         doc
         /*
@@ -628,14 +632,15 @@ standard library package SpatialFrames {
         return displacementVector : ThreeVectorValue[1] =
             DisplacementOf(point1, point2, clock.currentTime, 'frame', clock);
     }
-
+    
     abstract struct CartesianSpatialFrame :> SpatialFrame {
-        doc /*
+        doc
+        /*
          * A CartesianSpatialFrame is a SpatialFrame relative to which all position and displacement
          * vectors can be represented as CartesianThreeVectorValues.
          */
     }
-
+    
     abstract function CartesianPositionOf :> PositionOf {
         doc
         /*
@@ -687,6 +692,7 @@ standard library package SpatialFrames {
         in clock : Clock[1] default 'frame'.localClock;
         return displacementVector : CartesianThreeVectorValue[1];
     }
+
 }
 ~~~
 # SMG

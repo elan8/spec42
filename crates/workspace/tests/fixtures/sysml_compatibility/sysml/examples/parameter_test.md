@@ -64,11 +64,7 @@ package ParameterTest {
 
     attribute a : A;
 
-    calc def F {
-        in p : A;
-        in q : ScalarValues::Integer;
-        return :  ScalarValues::Integer;
-    }
+    calc def F { in p : A; in q : ScalarValues::Integer; return :  ScalarValues::Integer; }
 
     attribute f = F(a, 2);
     attribute g = F(q = 1, p = a);
@@ -76,6 +72,7 @@ package ParameterTest {
     attribute b = new A(y=a, x="");
     attribute c = new A("test2");
 }
+
 ~~~
 # EXPECTED
 ~~~

@@ -397,13 +397,12 @@ package '10c-Fuel Economy Analysis' {
     attribute gallon : MeasurementUnit = 231.0 * 'in'^3;
 
     package FuelEconomyRequirementsModel {
+
         requirement def FuelEconomyRequirement {
             attribute actualFuelEconomy :> distancePerVolume;
             attribute requiredFuelEconomy :> distancePerVolume;
 
-            require constraint {
-                = actualFuelEconomy >= requiredFuelEconomy;
-            }
+            require constraint { actualFuelEconomy >= requiredFuelEconomy }
         }
 
         requirement cityFuelEconomyRequirement : FuelEconomyRequirement {
@@ -413,9 +412,11 @@ package '10c-Fuel Economy Analysis' {
         requirement highwayFuelEconomyRequirement : FuelEconomyRequirement {
             :>> requiredFuelEconomy = 30 [mi/gallon];
         }
+
     }
 
     package VehicleDesignModel {
+
         part def Vehicle {
             attribute fuelEconomy_city :> distancePerVolume;
             attribute fuelEconomy_highway :> distancePerVolume;
@@ -430,17 +431,18 @@ package '10c-Fuel Economy Analysis' {
             part engine : Engine;
             part transmission : Transmission {
                 exhibit state transmissionState {
-					entry; then '1stGear';
-					state '1stGear';
-					then '2ndGear';
-					state '2ndGear';
-					then '3rdGear';
-					state '3rdGear';
-					then '4thGear';
-					state '4thGear';
-				}
+                    entry; then '1stGear';
+                    state '1stGear';
+                    then '2ndGear';
+                    state '2ndGear';
+                    then '3rdGear';
+                    state '3rdGear';
+                    then '4thGear';
+                    state '4thGear';
+                }
             }
         }
+
     }
 
     package FuelEconomyAnalysisModel {
@@ -480,7 +482,7 @@ package '10c-Fuel Economy Analysis' {
 				 	     */
                 }
 
-                require constraint fuelEconomyRequirement {
+                require fuelEconomyRequirement {
                     :>> actualFuelEconomy = calculatedFuelEconomy;
                 }
             }
@@ -513,9 +515,7 @@ package '10c-Fuel Economy Analysis' {
 
                 :>> actualFuelEconomy = vehicle.fuelEconomy_city;
 
-                assume constraint {
-                    = vehicle.cargoWeight == 1000[lb];
-                }
+                assume constraint { vehicle.cargoWeight == 1000 [lb] }
             }
 
             requirement vehicleFuelEconomyRequirement_highway :> highwayFuelEconomyRequirement {
@@ -525,13 +525,13 @@ package '10c-Fuel Economy Analysis' {
 
                 :>> actualFuelEconomy = vehicle.fuelEconomy_highway;
 
-                assume constraint {
-                    = vehicle.cargoWeight == 1000[lb];
-                }
+                assume constraint { vehicle.cargoWeight == 1000 [lb] }
             }
+
         }
 
         part analysisContext {
+
             analysis cityFuelEconomyAnalysis : FuelEconomyAnalysis {
                 subject vehicle = vehicle1_c1;
                 in calc scenario = cityScenario;
@@ -551,8 +551,10 @@ package '10c-Fuel Economy Analysis' {
 
             satisfy vehicleFuelEconomyRequirementsGroup by vehicle1_c1_analysized;
         }
+
     }
 }
+
 ~~~
 # EXPECTED
 ~~~

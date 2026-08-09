@@ -645,63 +645,68 @@ CloseCurly,EndOfFile,
 # FORMAT
 ~~~sysml
 standard library package Performances {
-    doc /*
+	doc
+	/*
 	 * This package defines classifiers and features that related to the typing of performances and evaluations.
 	 */
 
-    private import Base::Anything;
-    private import Base::things;
-    private import Occurrences::Occurrence;
-    private import Occurrences::occurrences;
-    private import Occurrences::HappensDuring;
-    private import Objects::Object;
-    private import Links::BinaryLink;
-    private import Metaobjects::Metaobject;
-    private import Transfers::Transfer;
-    private import Transfers::transfers;
-    private import Transfers::TransferBefore;
-    private import Transfers::transfersBefore;
-    private import ScalarValues::*;
-    private import SequenceFunctions::includes;
-
-    abstract behavior Performance specializes Occurrence disjoint from Object {
-        doc /*
+	private import Base::Anything;
+	private import Base::things;
+	private import Occurrences::Occurrence;
+	private import Occurrences::occurrences;
+	private import Occurrences::HappensDuring;
+	private import Objects::Object;
+	private import Links::BinaryLink;
+	private import Metaobjects::Metaobject;
+	private import Transfers::Transfer;
+	private import Transfers::transfers;
+	private import Transfers::TransferBefore;
+	private import Transfers::transfersBefore;
+	private import ScalarValues::*;
+	private import SequenceFunctions::includes;
+	
+	abstract behavior Performance specializes Occurrence disjoint from Object {
+		doc
+		/*
 		 * Performance is the most general class of behavioral Occurrences that may be performed over time.
 		 */
 
-        feature self : Performance redefines Occurrence::self;
-
-        feature involvedObjects : Object [0..*] {
-            doc /*
+		feature self: Performance redefines Occurrence::self;
+		
+		feature involvedObjects: Object[0..*] {
+			doc
+			/*
 			 * Objects that are involved in this Performance.
 			 */
-        }
-
-        feature performers : Object [0..*] subsets involvedObjects {
-            doc /*
+		}
+		
+		feature performers: Object[0..*] subsets involvedObjects {
+			doc
+			/*
 			 * Objects that enact this Performance.
 			 */
-        }
-
-        feature redefines isDispatch default = true;
-        feature redefines dispatchScope default = thisPerformance;
-
-        step enclosedPerformances: Performance[0..*] subsets performances, timeEnclosedOccurrences
+		}
+		
+		feature redefines isDispatch default true;
+  		feature redefines dispatchScope default thisPerformance;
+  		
+		step enclosedPerformances: Performance[0..*] subsets performances, timeEnclosedOccurrences
 			intersects performances, timeEnclosedOccurrences {
 			doc
 			/*
 			 * timeEnclosedOccurrences of this Performance that are also Performances.
 			 */
 		}
-
-        feature thisPerformance : Performance [1] default = self {
-            doc /*
+		
+		feature thisPerformance: Performance [1] default self {
+			doc
+			/*
 			 * Defaults to the root of the subperformance composition tree.
 			 */
-        }
-        connector : HappensDuring from [1] self to [1] thisPerformance;
-
-        composite step subperformances: Performance[0..*] subsets enclosedPerformances, suboccurrences
+		}
+		connector :HappensDuring from [1] self to [1] thisPerformance; 
+		
+		composite step subperformances: Performance[0..*] subsets enclosedPerformances, suboccurrences
 			intersects enclosedPerformances, suboccurrences {
 			doc
 			/*
@@ -719,10 +724,10 @@ standard library package Performances {
 			}
 		
 			feature redefines thisPerformance default (that as Performance).thisPerformance;
-		}
-    }
-
-    abstract function Evaluation specializes Performance {
+		}		
+	}
+	
+	abstract function Evaluation specializes Performance {
 		doc
 		/*
 		 * Evaluation is the most general class of functions that may be evaluated to compute
@@ -731,8 +736,8 @@ standard library package Performances {
 	 
 		return result: Anything[0..*] nonunique;
 	}
-
-    abstract predicate BooleanEvaluation specializes Evaluation {
+	
+	abstract predicate BooleanEvaluation specializes Evaluation {
 		doc
 		/*
 		 * BooleanEvaluation is a specialization of Evaluation that is the most general class of
@@ -741,8 +746,8 @@ standard library package Performances {
 	 
 		return : Boolean[1];
 	}
-
-    abstract function MetadataAccessEvaluation specializes Evaluation {
+	
+	abstract function MetadataAccessEvaluation specializes Evaluation {
 		doc
 		/*
 		 * MetadataAccessEvaluation is a specialization of Evaluation for the case of MetadataAccessExpressions.
@@ -750,8 +755,8 @@ standard library package Performances {
 		
 		return : Metaobject[1..*];
 	}
-
-    abstract function LiteralEvaluation specializes Evaluation {
+	
+	abstract function LiteralEvaluation specializes Evaluation {
 		doc
 		/*
 		 * LiteralEvaluation is a specialization of Evaluation for the case of LiteralExpressions.
@@ -759,8 +764,8 @@ standard library package Performances {
 	 
 		return : ScalarValue[1];
 	}
-
-    abstract predicate LiteralBooleanEvaluation specializes LiteralEvaluation, BooleanEvaluation
+	
+	abstract predicate LiteralBooleanEvaluation specializes LiteralEvaluation, BooleanEvaluation
 		intersects LiteralEvaluation, BooleanEvaluation {
 		doc
 		/*
@@ -770,7 +775,7 @@ standard library package Performances {
 	 
 		return : Boolean[1];
 	}
-    abstract function LiteralIntegerEvaluation specializes LiteralEvaluation {
+	abstract function LiteralIntegerEvaluation specializes LiteralEvaluation {
 		doc
 		/*
 		 * LiteralIntegerEvaluation is a specialization of LiteralEvaluation for the case of LiteralIntegers.
@@ -779,7 +784,7 @@ standard library package Performances {
 		return : Integer[1];
 	}
 
-    abstract function LiteralRationalEvaluation specializes LiteralEvaluation {
+	abstract function LiteralRationalEvaluation specializes LiteralEvaluation {
 		doc
 		/*
 		 * LiteralRationalEvaluation is a specialization of LiteralEvaluation for the case of LiteralRationals.
@@ -788,8 +793,8 @@ standard library package Performances {
 	 
 		return : Real[1];
 	}
-
-    abstract function LiteralStringEvaluation specializes LiteralEvaluation {
+	
+	abstract function LiteralStringEvaluation specializes LiteralEvaluation {
 		doc
 		/*
 		 * LiteralStringEvaluation is a specialization of LiteralEvaluation for the case of LiteralStrings.
@@ -797,8 +802,8 @@ standard library package Performances {
 	 
 		return : String[1];
 	}
-
-    function NullEvaluation specializes Evaluation {
+	
+	function NullEvaluation specializes Evaluation {
 		doc
 		/*
 		 * NullEvaluation is a specialization of Evaluation for the case of NullExpressions.
@@ -807,40 +812,42 @@ standard library package Performances {
 		return : Anything[0..0];
 	}
 
-    assoc all InvolvedIn specializes BinaryLink {
-        doc /*
+	assoc all InvolvedIn specializes BinaryLink { 
+		doc
+		/*
 		 * InvolvedIn asserts that the involvedObject is involved in the Behavior carried out by the 
 		 * involvingPerformance.
 		 */
-
-        end feature involvedObject : Object redefines source crosses involvingPerformance.involvedObjects;
-        end feature involvingPerformance : Performance redefines target crosses involvedObject.involvingPerformances;
-    }
-
-    assoc all Performs specializes InvolvedIn {
-        doc /*
+		 
+		end feature involvedObject: Object redefines source crosses involvingPerformance.involvedObjects;
+		end feature involvingPerformance: Performance redefines target crosses involvedObject.involvingPerformances;
+	}
+	
+	assoc all Performs specializes InvolvedIn {
+		doc
+		/*
 		 * Performs asserts that the performer enacts the Behavior carried out by the performance.
 		 */
+	
+	 	end feature performerObject: Object redefines involvedObject crosses performance.performers;
+	 	end feature performance: Performance redefines involvingPerformance crosses performerObject.enactedPerformances;
+	 }
 
-        end feature performerObject : Object redefines involvedObject crosses performance.performers;
-        end feature performance : Performance redefines involvingPerformance crosses performerObject.enactedPerformances;
-    }
-
-    abstract step performances: Performance[0..*] nonunique subsets occurrences {
+	abstract step performances: Performance[0..*] nonunique subsets occurrences {
 		doc
 		/*
 		 * performances is the most general feature for performances of Behaviors.
 		 */
 	}
-
-    abstract expr evaluations: Evaluation[0..*] nonunique subsets performances {
+	
+	abstract expr evaluations: Evaluation[0..*] nonunique subsets performances {
 		doc
 		/*
 		 * evaluations is a specialization of performances for evaluations of Functions.
 		 */
 	}
-
-    abstract expr constructorEvaluations [0..*] nonunique subsets evaluations  {
+	
+	abstract expr constructorEvaluations [0..*] nonunique subsets evaluations  {
 	    doc
 	    /*
 	     * constructorEvaluations is a specialization of evaluations that restricts the multiplicity 
@@ -849,15 +856,15 @@ standard library package Performances {
 	     
 	     return result [1..1];
 	}
-
-    abstract expr booleanEvaluations: BooleanEvaluation[0..*] nonunique subsets evaluations {
+	
+	abstract expr booleanEvaluations: BooleanEvaluation[0..*] nonunique subsets evaluations {
 		doc
 		/*
 		 * booleanEvaluations is a specialization of evaluations restricted to type BooleanEvaluation.
 		 */
 	}
-
-    abstract expr trueEvaluations subsets booleanEvaluations {
+	
+	abstract expr trueEvaluations subsets booleanEvaluations {
 		doc
 		/*
 		 * trueEvaluations is a subset of booleanEvaluations that result in true. It is the most general
@@ -867,8 +874,8 @@ standard library package Performances {
 		private feature trueValue = true;
 		binding result = trueValue;
 	}
-
-    abstract expr falseEvaluations subsets booleanEvaluations {
+	
+	abstract expr falseEvaluations subsets booleanEvaluations {
 		doc
 		/*
 		 * falseEvaluations is a subset of booleanEvaluations that result in false. It is the most general
@@ -878,22 +885,22 @@ standard library package Performances {
         private feature falseValue = false;
         binding result = falseValue;
 	}
-
-    abstract expr metadataAccessEvaluations: MetadataAccessEvaluation[0..*] nonunique subsets evaluations {
+	
+	abstract expr metadataAccessEvaluations: MetadataAccessEvaluation[0..*] nonunique subsets evaluations {
 		doc
 		/*
 		 * metadataAccessEvaluations is a specialization of evaluations restricted to type MetadataAccessEvaluation. 
 		 */
 	}
-
-    abstract expr literalEvaluations: LiteralEvaluation[0..*] nonunique subsets evaluations {
+	
+	abstract expr literalEvaluations: LiteralEvaluation[0..*] nonunique subsets evaluations {
 		doc
 		/*
 		 * literalEvaluations is a specialization of evaluations restricted to type LiteralEvaluation.
 		 */
 	}
-
-    abstract expr literalBooleanEvaluations: LiteralBooleanEvaluation[0..*] nonunique subsets literalEvaluations, booleanEvaluations
+	
+	abstract expr literalBooleanEvaluations: LiteralBooleanEvaluation[0..*] nonunique subsets literalEvaluations, booleanEvaluations
 		intersects literalEvaluations, booleanEvaluations {
 		doc
 		/*
@@ -901,29 +908,29 @@ standard library package Performances {
 		 * to type LiteralBooleanEvaluation.
 		 */
 	}
-
-    abstract expr literalIntegerEvaluations: LiteralIntegerEvaluation[0..*] nonunique subsets literalEvaluations {
+	
+	abstract expr literalIntegerEvaluations: LiteralIntegerEvaluation[0..*] nonunique subsets literalEvaluations {
 		doc
 		/*
 		 * literalEvaluations is a specialization of evaluations restricted to type LiteralEvaluation.
 		 */
 	}
-
-    abstract expr literalRationalEvaluations: LiteralRationalEvaluation[0..*] nonunique subsets literalEvaluations {
+	
+	abstract expr literalRationalEvaluations: LiteralRationalEvaluation[0..*] nonunique subsets literalEvaluations {
 		doc
 		/*
 		 * literalRationalEvaluations is a specialization of literalEvaluations restricted to type LiteralRationalEvaluation.
 		 */
 	}
-
-    abstract expr literalStringEvaluations: LiteralStringEvaluation[0..*] nonunique subsets literalEvaluations {
+	
+	abstract expr literalStringEvaluations: LiteralStringEvaluation[0..*] nonunique subsets literalEvaluations {
 		doc
 		/*
 		 * literalStringEvaluations is a specialization of literalEvaluations restricted to type LiteralStringEvaluation.
 		 */
 	}
-
-    abstract expr nullEvaluations: NullEvaluation[0..*] nonunique subsets evaluations {
+	
+	abstract expr nullEvaluations: NullEvaluation[0..*] nonunique subsets evaluations {
 		doc
 		/*
 		 * nullEvaluations is a specialization of evaluations restricted to type NullEvaluation.

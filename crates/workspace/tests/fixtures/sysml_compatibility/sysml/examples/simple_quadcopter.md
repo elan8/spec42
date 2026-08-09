@@ -641,11 +641,11 @@ package SimpleQuadcopter {
             :>> height = 30 [mm];
         }
     }
-
+    
     part def Strut :> SpatialItem {
         // By default will get same coordinateFrame.mRefs as owning SpatialItem, i.e.:
         // attribute :>> coordinateFrame { :>> mRefs = (mm, mm, mm); }
-
+        
         /* rawStrut is a construction shape: a rectangular beam */
         part rawStrut :> subSpatialParts {
             item :>> shape : Box {
@@ -657,7 +657,7 @@ package SimpleQuadcopter {
                 :>> transformation : TranslationRotationSequence {
                     :>> elements = (new Translation( (0, shape.width/2, 0)[source]));
                 }
-            }
+            }        
         }
 
         /* motorCutout is a construction shape: a cylinder of the same shape as the  */
@@ -669,13 +669,13 @@ package SimpleQuadcopter {
                 }
             }
         }
-
+        
         /* Strut shape is CSG difference of rawStrut minus motorCutout */
-        attribute :> differencesOf [1] {
+        attribute :> differencesOf[1] {
             item :>> elements = (rawStrut, motorCutout);
-        }
+        }        
     }
-
+    
     part def PropellerMotorAssy :> SpatialItem {
         // By default will get same coordinateFrame.mRefs as owning CompoundSpatialItem, i.e.:
         // attribute :>> coordinateFrame { :>> mRefs = (mm, mm, mm); }
@@ -701,7 +701,7 @@ package SimpleQuadcopter {
                 }
             }
         }
-
+        
         // By default the shape of a PropellerMotorAssy is the union of its owned composite items and parts that are SpatialItems.
     }
 
@@ -731,7 +731,7 @@ package SimpleQuadcopter {
                 }
             }
         }
-
+        
         // By default the shape of a Camera is the union of its owned composite items and parts that are SpatialItems.
     }
 
@@ -746,6 +746,7 @@ package SimpleQuadcopter {
         }
 
         part mainBody :> subSpatialParts {
+
             /* rawBody is a construction shape: the enveloping rectangular box */
             part rawBody :> subSpatialParts {
                 item :>> shape : Box {
@@ -757,9 +758,9 @@ package SimpleQuadcopter {
                     :>> transformation : TranslationRotationSequence {
                         :>> elements = (new Translation( (0, shape.width/2, 0)[source]));
                     }
-                }
+                }        
             }
-
+            
             /* cuttingBox is a construction shape: the enveloping rectangular box */
             part cuttingCornersBox :> subSpatialParts {
                 item :>> shape : Box {
@@ -772,11 +773,11 @@ package SimpleQuadcopter {
                         :>> elements = (new Translation( (0, -shape.length/sqrt(2), -10)[source]), 
                                         new Rotation((0, 0, 1)[source], 45['°']));
                     }
-                }
+                }        
             }
 
             /* Main body shape is the CSG intersection of rawBody and cuttingCornersBox */
-            attribute :> intersectionsOf [1] {
+            attribute :> intersectionsOf[1] {
                 item :>> elements = (rawBody, cuttingCornersBox);
             }
             // Current syntax is not end-user friendly
@@ -796,7 +797,7 @@ package SimpleQuadcopter {
                     :>> elements = (new Translation( (xStrut.num, yStrut.num, zStrut.num)[source]), 
                                     new Rotation((0, 0, 1)[source], 45['°']));
                 }
-            }
+            }        
         }
         part strut2 : Strut :> subSpatialParts {
             attribute :>> coordinateFrame {
@@ -804,7 +805,7 @@ package SimpleQuadcopter {
                     :>> elements = (new Translation( (-xStrut.num, yStrut.num, zStrut.num)[source]), 
                                     new Rotation((0, 0, 1)[source], 135['°']));
                 }
-            }
+            }        
         }
         part strut3 : Strut :> subSpatialParts {
             attribute :>> coordinateFrame {
@@ -812,7 +813,7 @@ package SimpleQuadcopter {
                     :>> elements = (new Translation( (-xStrut.num, -yStrut.num, zStrut.num)[source]), 
                                     new Rotation((0, 0, 1)[source], 225['°']));
                 }
-            }
+            }        
         }
         part strut4 : Strut :> subSpatialParts {
             attribute :>> coordinateFrame {
@@ -820,7 +821,7 @@ package SimpleQuadcopter {
                     :>> elements = (new Translation( (xStrut.num, -yStrut.num, zStrut.num)[source]), 
                                     new Rotation((0, 0, 1)[source], 315['°']));
                 }
-            }
+            }        
         }
 
         part propellerMotorAssy1 : PropellerMotorAssy :> subSpatialParts {
@@ -829,7 +830,7 @@ package SimpleQuadcopter {
                     :>> elements = (new Translation( (xStrut.num, yStrut.num, zPMAssy.num)[source]), 
                                     new Rotation((0, 0, 1)[source], 45['°']));
                 }
-            }
+            }        
         }
         part propellerMotorAssy2 : PropellerMotorAssy :> subSpatialParts {
             attribute :>> coordinateFrame {
@@ -837,7 +838,7 @@ package SimpleQuadcopter {
                     :>> elements = (new Translation( (-xStrut.num, yStrut.num, zPMAssy.num)[source]), 
                                     new Rotation((0, 0, 1)[source], 135['°']));
                 }
-            }
+            }        
         }
         part propellerMotorAssy3 : PropellerMotorAssy :> subSpatialParts {
             attribute :>> coordinateFrame {
@@ -845,7 +846,7 @@ package SimpleQuadcopter {
                     :>> elements = (new Translation( (-xStrut.num, -yStrut.num, zPMAssy.num)[source]), 
                                     new Rotation((0, 0, 1)[source], 225['°']));
                 }
-            }
+            }        
         }
         part propellerMotorAssy4 : PropellerMotorAssy :> subSpatialParts {
             attribute :>> coordinateFrame {
@@ -853,18 +854,19 @@ package SimpleQuadcopter {
                     :>> elements = (new Translation( (xStrut.num, -yStrut.num, zPMAssy.num)[source]), 
                                     new Rotation((0, 0, 1)[source], 315['°']));
                 }
-            }
+            }        
         }
 
         /* The camera is placed protruding from the +X face of the main body, rotated about the +Y axis over 50° downwards */
-        part camera : Camera :> subSpatialParts {
+        part camera : Camera :> subSpatialParts{
             attribute :>> coordinateFrame {
                 :>> transformation : TranslationRotationSequence {
                     :>> elements = (new Translation( (59, 0, 2)[source]), 
                                     new Rotation((0, 1, 0)[source], 50['°']));
                 }
-            }
+            }        
         }
+        
     }
 }
 ~~~

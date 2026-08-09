@@ -67,6 +67,7 @@ package Comments {
         comment about Comments /* Comment about Package */
     }
 }
+
 ~~~
 # EXPECTED
 ~~~

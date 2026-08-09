@@ -395,29 +395,29 @@ package '7b-Variant Configurations' {
 
             bind fuelCmdPort = engine.fuelCmdPort;
 
-            part engine : Engine [1] {
+            part engine : Engine[1] {
                 port fuelCmdPort : FuelCmdPort;
             }
 
-            part transmission : Transmission [1] {
-                part clutch : Clutch [1] {
+            part transmission : Transmission[1] {
+                part clutch: Clutch[1] {
                     port clutchPort : ClutchPort;
                 }
             }
 
-            part driveshaft : Driveshaft [1] {
+            part driveshaft : Driveshaft[1] {
                 port shaftPort_b : ShaftPort_b;
                 port shaftPort_c : ShaftPort_c;
             }
 
             part rearAxleAssembly : RearAxleAssembly {
-                part rearWheels : Wheel [2] {
+                part rearWheels : Wheel[2] {
                     port wheelToRoadPort : WheelToRoadPort;
                 }
             }
 
             port vehicleToRoadPort : VehicleToRoadPort {
-                port wheelToRoadPort : WheelToRoadPort [2];
+                port wheelToRoadPort : WheelToRoadPort[2];
             }
         }
     }
@@ -441,6 +441,7 @@ package '7b-Variant Configurations' {
 
     package VariabilityModel {
         part anyVehicleConfig :> vehicle {
+
             variation requirement engineRqtChoice : EnginePerformanceRequirement {
                 variant highPerformanceRequirement;
                 variant normalPerformanceRequirement;
@@ -454,24 +455,28 @@ package '7b-Variant Configurations' {
             satisfy engineRqtChoice by engineChoice;
 
             assert constraint 'engine choice constraint' {
-                = if engineRqtChoice == engineRqtChoice::highPerformanceRequirement ? engineChoice == engineChoice::'6cylEngine' else engineChoice == engineChoice::'4cylEngine';
+                if engineRqtChoice == engineRqtChoice::highPerformanceRequirement?
+                engineChoice == engineChoice::'6cylEngine'
+                else
+                engineChoice == engineChoice::'4cylEngine'
             }
 
             variation part transmissionChoice :>> transmission {
                 variant part manualTransmission : ManualTransmission {
-					part :>> clutch : ManualClutch {
-						port :>> clutchPort : ManualClutchPort;
-					}
-				}
+                    part :>> clutch : ManualClutch {
+                        port :>> clutchPort : ManualClutchPort;
+                    }
+                }
                 variant part automaticTransmission : AutomaticTransmission {
-					part :>> clutch : AutomaticClutch {
-						port :>> clutchPort : AutomaticClutchPort;
-					}
-				}
+                    part :>> clutch : AutomaticClutch {
+                        port :>> clutchPort : AutomaticClutchPort;
+                    }
+                }
             }
 
             assert constraint 'engine-transmission selection constraint' {
-                = (engineChoice == engineChoice::'4cylEngine' and transmissionChoice == transmissionChoice::manualTransmission) xor (engineChoice == engineChoice::'6cylEngine' and transmissionChoice == transmissionChoice::automaticTransmission);
+                (engineChoice == engineChoice::'4cylEngine' and transmissionChoice == transmissionChoice::manualTransmission) xor
+                (engineChoice == engineChoice::'6cylEngine' and transmissionChoice == transmissionChoice::automaticTransmission)
             }
 
             part :>> rearAxleAssembly {
@@ -481,9 +486,13 @@ package '7b-Variant Configurations' {
                 }
 
                 assert constraint 'engine-wheel selection constraint' {
-                    = (engineChoice == engineChoice::'4cylEngine' and rearWheelChoice->forAll {in ref w; w == rearWheelChoice::narrowRimWheel}) xor (engineChoice == engineChoice::'6cylEngine' and rearWheelChoice->forAll {in ref w; w == rearWheelChoice::wideRimWheel});
+                    (engineChoice == engineChoice::'4cylEngine' and
+                    rearWheelChoice->forAll {in ref w; w == rearWheelChoice::narrowRimWheel}) xor
+                    (engineChoice == engineChoice::'6cylEngine' and
+                    rearWheelChoice->forAll {in ref w; w == rearWheelChoice::wideRimWheel})
                 }
             }
+
         }
 
         variation part vehicleChoice :> anyVehicleConfig {
@@ -492,6 +501,7 @@ package '7b-Variant Configurations' {
         }
     }
 }
+
 ~~~
 # EXPECTED
 ~~~

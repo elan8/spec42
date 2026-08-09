@@ -342,7 +342,8 @@ CloseCurly,EndOfFile,
 # FORMAT
 ~~~sysml
 standard library package StateSpaceRepresentation {
-    doc /*
+    doc
+    /*
 	 * This package provides a model of the foundational state-space system representation, 
 	 * commonly used in control systems.
 	 */
@@ -356,89 +357,94 @@ standard library package StateSpaceRepresentation {
     abstract attribute def Output :> VectorQuantityValue;
 
     abstract calc def GetNextState {
-        in input : Input;
-        in stateSpace : StateSpace;
-        in timeStep : DurationValue;
+        in input: Input;
+        in stateSpace: StateSpace;
+        in timeStep: DurationValue;
         return : StateSpace;
     }
     abstract calc def GetOutput {
-        in input : Input;
-        in stateSpace : StateSpace;
+        in input: Input;
+        in stateSpace: StateSpace;
         return : Output;
     }
 
     abstract action def StateSpaceEventDef {
-        doc /*
+        doc
+        /*
     	 * Events to be received.
     	 */
     }
     action def ZeroCrossingEventDef :> StateSpaceEventDef;
 
     item def StateSpaceItem {
-        doc /*
+        doc
+        /*
     	 * Item for SSR connection
     	 */
     }
 
     abstract action def StateSpaceDynamics {
-        doc /*
+        doc
+        /*
 	     * StateSpaceDynamics is the simplest form of State Space Representation,
 	     * and nextState directly computes the stateSpace of the next timestep. 
 	     */
 
-        in attribute input : Input;
+        in attribute input: Input;
 
-        abstract calc getNextState : GetNextState;
-        abstract calc getOutput : GetOutput;
-        attribute stateSpace : StateSpace;
+        abstract calc getNextState: GetNextState;
+        abstract calc getOutput: GetOutput;
+        attribute stateSpace: StateSpace;
 
-        out attribute output : Output = getOutput(input, stateSpace);
+        out attribute output: Output = getOutput(input, stateSpace);
     }
 
     abstract attribute def StateDerivative :> VectorQuantityValue {
-        doc /*
+        doc
+        /*
 	     * The definition of the time derivative of StateSpace, which means dx/dt, where x is StateSpace
 	     */
 
-        ref stateSpace : StateSpace;
-        constraint {
-            = stateSpace.order == order;
-        }
+        ref stateSpace: StateSpace;
+        constraint { stateSpace.order == order }
     }
 
     abstract calc def GetDerivative {
-        doc /*
+        doc
+        /*
 	     * Computes the time derivative of stateSpace, which corresponds dx/dt = f(u, x), where u is input and x is stateSpace.
 	     */
 
-        in input : Input;
-        in stateSpace : StateSpace;
+        in input: Input;
+        in stateSpace: StateSpace;
         return : StateDerivative;
     }
 
     abstract calc def Integrate {
-        doc /*
+        doc
+        /*
 	     * Integrates stateSpace to compute the next stateSpace, which corresponds to x + int dx/dt dt.
 	     * Its actual implementation should be given by a solver. 
 	     */
 
-        in getDerivative : GetDerivative;
-        in input : Input;
-        in initialState : StateSpace;
-        in timeInterval : DurationValue;
+        in getDerivative: GetDerivative;
+        in input: Input;
+        in initialState: StateSpace;
+        in timeInterval: DurationValue;
         return result: StateSpace;
     }
 
     abstract action def ContinuousStateSpaceDynamics :> StateSpaceDynamics {
-        doc /*
+        doc
+        /*
 	     * ContinuousStateSpaceDynamics represents continuous behavior.
 	     * derivative needs to return a time derivative of stateSpace, i.e. dx/dt.
 	     */
 
-        abstract calc getDerivative : GetDerivative;
-        calc :>> getNextState : GetNextState {
+        abstract calc getDerivative: GetDerivative;
+        calc :>> getNextState: GetNextState {
             /* We compute nextState by Integrate defined above by giving derivative calc. */
-            calc integrate : Integrate {
+            calc integrate: Integrate {
                 in getDerivative = ContinuousStateSpaceDynamics::getDerivative;
                 in input = GetNextState::input;
                 in initialState = GetNextState::stateSpace;
@@ -447,35 +453,38 @@ standard library package StateSpaceRepresentation {
             return result = integrate.result;
         }
 
-        event occurrence zeroCrossingEvents : ZeroCrossingEventDef [0..*] {
+        event occurrence zeroCrossingEvents[0..*] : ZeroCrossingEventDef {
             /* ContinuousStateSpaceDynamics may cause zero crossings anomaly. */
         }
     }
 
     abstract calc def GetDifference {
-        doc /*
+        doc
+        /*
 	     * Computes difference of stateSpace by one timestep, that is x(k+1) - x(k),
 	     * where k is the timestep number. 
 	     */
 
-        in input : Input;
-        in stateSpace : StateSpace;
+        in input: Input;
+        in stateSpace: StateSpace;
         return : StateSpace;
     }
 
     abstract action def DiscreteStateSpaceDynamics :> StateSpaceDynamics {
-        doc /*
+        doc
+        /*
 	     * DiscreteStateSpaceDynamics represents discrete behavior.
 	     * differences needs to return difference of the stateSpace for each timestep.
 	     */
 
-        abstract calc getDifference : GetDifference;
-        calc :>> getNextState : GetNextState {
-            attribute diff : StateSpace = getDifference(input, stateSpace);
+        abstract calc getDifference: GetDifference;
+        calc :>> getNextState: GetNextState {
+            attribute diff: StateSpace = getDifference(input, stateSpace);
             return result = stateSpace + diff;
         }
     }
 }
+
 ~~~
 # SMG
 ~~~

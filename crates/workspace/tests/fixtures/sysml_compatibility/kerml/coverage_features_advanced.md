@@ -138,16 +138,16 @@ package FeatureAdvancedCoverage {
 
     class C {
         end feature port1 : T;
-        const end feature constPort : T;
+        end const feature constPort : T;
         member feature m : T;
     }
 
     namespace NS;
 
-    all
-    import C::*;
+    all import C::*;
     import C::**;
 }
+
 ~~~
 # SMG
 ~~~

@@ -104,21 +104,25 @@ package 'Local Clock Example' {
         port requestPort;
 
         state ServerBehavior {
-            entry;
-            then off;
+            entry; then off;
 
             state off;
-            accept Start via requestPort then waiting;
+            accept Start via requestPort
+            then waiting;
 
             state waiting;
-            accept request : Request via requestPort then responding;
-            accept at new Time :: Iso8601DateTime ( today + "11:59:00" ) then off;
+            accept request : Request via requestPort
+            then responding;
+            accept at new Time::Iso8601DateTime(today + "11:59:00")
+            then off;
 
             state responding;
-            accept after 5 [ SI :: min ] then waiting;
+            accept after 5 [SI::min]
+            then waiting;
         }
     }
 }
+
 ~~~
 # EXPECTED
 ~~~

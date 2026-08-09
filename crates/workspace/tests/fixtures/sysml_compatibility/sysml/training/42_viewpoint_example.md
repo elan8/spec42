@@ -112,7 +112,7 @@ package 'Viewpoint Example' {
 		 * There should be well defined interfaces between the parts of
 		 * a system that allow each part to be understood individually,
 		 * as well as being part of the whole system.
-		 */
+		 */		 
         subject;
         stakeholder se : 'Systems Engineer';
     }
@@ -130,6 +130,7 @@ package 'Viewpoint Example' {
         }
     }
 }
+
 ~~~
 # EXPECTED
 ~~~

@@ -34,6 +34,7 @@ CloseCurly,EndOfFile,
 package P {
     feature g featured by c = 42;
 }
+
 ~~~
 # SMG
 ~~~

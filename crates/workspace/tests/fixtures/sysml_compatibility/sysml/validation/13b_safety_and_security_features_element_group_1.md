@@ -188,39 +188,19 @@ package '13b-Safety and Security Features Element Group-1' {
     package PartsTree {
         part vehicle {
             part interior {
-                part alarm {
-                    @Security;
-                }
-                part seatBelt [2] {
-                    @Safety {
-                        isMandatory = true;
-                    }
-                }
-                part frontSeat [2];
-                part driverAirBag {
-                    @Safety {
-                        isMandatory = false;
-                    }
-                }
+                part alarm {@Security;}
+                part seatBelt[2] {@Safety{isMandatory = true;}}
+                part frontSeat[2];
+                part driverAirBag {@Safety{isMandatory = false;}}
             }
             part bodyAssy {
                 part body;
-                part bumper {
-                    @Safety {
-                        isMandatory = true;
-                    }
-                }
-                part keylessEntry {
-                    @Security;
-                }
+                part bumper {@Safety{isMandatory = true;}}
+                part keylessEntry {@Security;}
             }
             part wheelAssy {
-                part wheel [2];
-                part antilockBrakes [2] {
-                    @Safety {
-                        isMandatory = false;
-                    }
-                }
+                part wheel[2];
+                part antilockBrakes[2] {@Safety{isMandatory = false;}}
             }
         }
     }
@@ -249,6 +229,7 @@ package '13b-Safety and Security Features Element Group-1' {
         filter @Safety and Safety::isMandatory;
     }
 }
+
 ~~~
 # EXPECTED
 ~~~

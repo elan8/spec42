@@ -339,47 +339,52 @@ CloseCurly,EndOfFile,
 # FORMAT
 ~~~sysml
 standard library package Clocks {
-    doc /*
+	doc
+	/*
 	 * This package models Clocks that provide an advancing numerical reference 
 	 * usable for quantifying the time of an Occurrence.
 	 */
 
-    private import ScalarValues::NumericalValue;
-    private import ScalarValues::Real;
-    private import Occurrences::Occurrence;
-    private import Occurrences::Life;
-    private import ControlFunctions::forAll;
-
-    private struct UniversalClockLife[1] :> Clock, Life {
-        doc /*
+	private import ScalarValues::NumericalValue;
+	private import ScalarValues::Real;
+	private import Occurrences::Occurrence;
+	private import Occurrences::Life;
+	private import ControlFunctions::forAll;
+	
+	private struct UniversalClockLife[1] :> Clock, Life {
+	    doc
+	    /*
 	     * UniversalClockLife is the classifier of the singleton Life of the universalClock.
 	     */
-    }
-
-    feature universalClock : UniversalClockLife [1] {
-        doc /*
+	}
+	
+	feature universalClock : UniversalClockLife[1] {
+		doc
+		/*
 		 * universalClock is a single Clock that can be used as a default universal
 		 * time reference.
 		 */
-    }
-
-    abstract struct Clock {
-        doc /*
+	}
+	
+	abstract struct Clock {
+		doc
+		/*
 		 * A Clock provides a numerical currentTime that advances montonically
 		 * over its lifetime. Clock is an abstract base Structure that can be
 		 * specialized for different kinds of time quantification (e.g., discrete
 		 * time, continuous time, time with units, etc.).
 		 */
-
-        private thisClock: Clock :>> self;
-
-        var feature currentTime : NumericalValue [1] {
-            doc /*
+		 
+		private thisClock : Clock :>> self;
+		
+		var feature currentTime : NumericalValue[1] {
+			doc
+			/*
 			 * A scalar time reference that advances over the lifetime of the Clock. 
 			 */
-        }
-
-        inv timeFlowConstraint {
+		}
+						
+		inv timeFlowConstraint {
 			doc
 			/*
 			 * The currentTime of a snapshot of a Clock is equal to
@@ -389,10 +394,10 @@ standard library package Clocks {
 			snapshots->forAll{in s : Clock; 
 				TimeOf(s, thisClock) == s.currentTime
 			}
-		}
-    }
-
-    abstract function TimeOf {
+		}		
+	}
+	
+	abstract function TimeOf {
 		doc
 		/*
 		 * TimeOf returns a numerical timeInstant for a given Occurrence relative to
@@ -440,8 +445,8 @@ standard library package Clocks {
 			}
 		}				
 	}
-
-    function DurationOf {
+	
+	function DurationOf {
 		doc
 		/*
 		 * DurationOf returns the duration of a given Occurrence relative to a
@@ -454,16 +459,17 @@ standard library package Clocks {
 		return duration : NumericalValue =
 			TimeOf(o.endShot, clock) - TimeOf(o.startShot, clock);
 	}
-
-    struct BasicClock :> Clock {
-        doc /*
+	
+	struct BasicClock :> Clock {
+		doc
+		/*
 		 * A BasicClock is a Clock whose currentTime is a Real number.
 		 */
-
-        var feature :>> currentTime : Real;
-    }
-
-    function BasicTimeOf :> TimeOf {
+		
+		var feature :>> currentTime : Real;
+	}
+	
+	function BasicTimeOf :> TimeOf {
 		doc
 		/*
 		 * BasicTimeOf returns the TimeOf an Occurrence as a Real number relative
@@ -474,8 +480,8 @@ standard library package Clocks {
 		in clock : BasicClock[1];
 		return : Real[1];
 	}
-
-    function BasicDurationOf :> DurationOf {
+	
+	function BasicDurationOf :> DurationOf {
 		doc
 		/*
 		 * BasicDurationOf returns the DurationOf an Occurrence as a Real number relative
@@ -486,6 +492,7 @@ standard library package Clocks {
 		in clock : BasicClock[1];
 		return : Real[1];
 	}
+
 }
 ~~~
 # SMG

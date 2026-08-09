@@ -88,7 +88,8 @@ CloseCurly,EndOfFile,
 # FORMAT
 ~~~sysml
 standard library package AnalysisTooling {
-    doc /*
+    doc
+    /*
 	 * This package contains definitions for metadata annotations related
 	 * to analysis tool integration.
 	 */
@@ -96,7 +97,8 @@ standard library package AnalysisTooling {
     private import ScalarValues::*;
 
     metadata def ToolExecution {
-        doc /*
+        doc
+        /*
 		 * ToolExecution metadata identifies an external analysis tool to be
 		 * used to implement the annotated action.
 		 */
@@ -106,7 +108,8 @@ standard library package AnalysisTooling {
     }
 
     metadata def ToolVariable {
-        doc /*
+        doc
+        /*
 		 * ToolVariable metadata is used in the context of an action that has
 		 * been annotated with ToolExecution metadata. It is used to annotate
 		 * a parameter or other feature of the action with the name of the
@@ -116,7 +119,9 @@ standard library package AnalysisTooling {
 
         attribute name : String;
     }
+
 }
+
 ~~~
 # SMG
 ~~~

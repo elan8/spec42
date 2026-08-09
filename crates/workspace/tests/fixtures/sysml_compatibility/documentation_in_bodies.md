@@ -120,6 +120,7 @@ package DocTests {
         doc /* Alias documentation. */
     }
 }
+
 ~~~
 # SMG
 ~~~

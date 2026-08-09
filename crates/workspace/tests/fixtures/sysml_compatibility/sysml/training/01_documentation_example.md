@@ -60,6 +60,7 @@ package 'Documentation Example' {
     }
     alias Torque for ISQ::TorqueValue;
 }
+
 ~~~
 # EXPECTED
 ~~~

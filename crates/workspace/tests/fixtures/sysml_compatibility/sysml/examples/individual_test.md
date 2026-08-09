@@ -148,6 +148,7 @@ package IndividualTest {
         individual action :>> a : IA2;
     }
 }
+
 ~~~
 # EXPECTED
 ~~~

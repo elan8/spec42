@@ -28,6 +28,7 @@ CloseCurly,EndOfFile,
 package P {
     binding b [5] of a = c;
 }
+
 ~~~
 # EXPECTED
 ~~~

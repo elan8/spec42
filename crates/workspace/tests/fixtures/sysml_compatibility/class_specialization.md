@@ -21,6 +21,7 @@ KwClass,Ident,ColonGt,Ident,OpenCurly,CloseCurly,EndOfFile,
 # FORMAT
 ~~~sysml
 class B :> A { }
+
 ~~~
 # EXPECTED
 ~~~

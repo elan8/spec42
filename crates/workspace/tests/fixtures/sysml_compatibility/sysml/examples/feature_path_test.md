@@ -147,7 +147,7 @@ package Q {
             part aa subsets a;
         }
 
-        flow b;
+        flow b.f.a to c.aa;
     }
 
     part e1 {
@@ -162,7 +162,9 @@ package Q {
     }
 
     part g = new A().g.g.g;
+
 }
+
 ~~~
 # EXPECTED
 ~~~

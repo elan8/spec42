@@ -100,10 +100,10 @@ package 'Constraints Example-1' {
     part def Transmission;
 
     constraint def MassConstraint {
-        in partMasses : MassValue [0..*];
+        in partMasses : MassValue[0..*];
         in massLimit : MassValue;
 
-        = sum(partMasses) <= massLimit;
+        sum(partMasses) <= massLimit
     }
 
     part def Vehicle {
@@ -123,6 +123,7 @@ package 'Constraints Example-1' {
         }
     }
 }
+
 ~~~
 # EXPECTED
 ~~~

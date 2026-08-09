@@ -95,8 +95,8 @@ package 'Requirement Groups' {
     private import 'Requirement Usages'::*;
 
     part def Engine {
-        port clutchPort : ClutchPort;
-        perform action generateTorque : GenerateTorque;
+        port clutchPort: ClutchPort;
+        perform action generateTorque: GenerateTorque;
     }
 
     requirement vehicleSpecification {
@@ -104,8 +104,8 @@ package 'Requirement Groups' {
 
         subject vehicle : Vehicle;
 
-        require constraint fullVehicleMassLimit;
-        require constraint emptyVehicleMassLimit;
+        require fullVehicleMassLimit;
+        require emptyVehicleMassLimit;
     }
 
     requirement engineSpecification {
@@ -121,7 +121,9 @@ package 'Requirement Groups' {
             subject = engine.generateTorque;
         }
     }
+
 }
+
 ~~~
 # EXPECTED
 ~~~

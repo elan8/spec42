@@ -129,8 +129,7 @@ package RelationshipCoverage {
     disjoining d1 disjoint A from B;
     disjoint C from D;
 
-    typing t1
-    typing f typed by B;
+    typing t1 typing f typed by B;
     typing g : A;
 
     subset parent subsets f;
@@ -142,6 +141,7 @@ package RelationshipCoverage {
     type InterType intersects A, B;
     type DiffType differences A, B;
 }
+
 ~~~
 # SMG
 ~~~

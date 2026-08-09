@@ -119,6 +119,7 @@ package 'Binding Connectors Example-1' {
         }
     }
 }
+
 ~~~
 # EXPECTED
 ~~~

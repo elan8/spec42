@@ -209,7 +209,8 @@ package '15.10-Primitive Data Types' {
 	 */
 
     private import ScalarValues::Integer {
-        doc /*
+        doc
+        /*
 	 * The unqualified Integer is signed, in line with integer numbers in mathematics.
 	 */
     }
@@ -220,29 +221,31 @@ package '15.10-Primitive Data Types' {
     }
 
     private import ScalarValues::Real {
-        doc /*
+        doc
+        /*
 	 * The unqualified Real is signed, in line with real numbers in mathematics.
 	 */
     }
 
     attribute def UnsignedReal :> Real {
-        doc /*
+        doc
+        /*
 		 * Example of restriction of the base Real datatype.
 		 */
-        attribute x : Real :>> self;
-        assert constraint {
-            = x >= 0.0;
-        }
+        attribute x: Real :>> self;
+        assert constraint { x >= 0.0 }
     }
 
     private import ScalarValues::String {
-        doc /*
+        doc
+        /*
 		 * String attributes are sequences of characters.
 		 */
     }
 
     private import ScalarValues::Boolean {
-        doc /*
+        doc
+        /*
 		 * Boolean type has two legal attributes: true, false.
 		 */
     }
@@ -250,7 +253,8 @@ package '15.10-Primitive Data Types' {
     private import Time::DateTime;
 
     enum def ConditionColor {
-        doc /*
+        doc
+        /*
 		 * Enumerations are defined as an implicit restriction of the extent of the
 		 * enumeration type to the listed enumeration values.
 		 * Note: Enumerations are currently limited to attributes.
@@ -266,25 +270,27 @@ package '15.10-Primitive Data Types' {
     }
 
     enum def SeverityEnum :> ConditionLevel {
-        enum danger {
+        danger {
             :>> associatedColor = ConditionColor::red;
         }
-        enum warning {
+        warning {
             :>> associatedColor = ConditionColor::yellow;
         }
-        enum normal {
+        normal {
             :>> associatedColor = ConditionColor::green;
         }
     }
 
     attribute def Diameter :> ISQ::LengthValue;
     enum def DiameterChoice :> Diameter {
-        enum small = 60 [SI::mm];
-        enum medium = 70 [SI::mm];
-        enum large = 80 [SI::mm];
+        small = 60 [SI::mm];
+        medium = 70 [SI::mm];
+        large = 80 [SI::mm];
     }
-    attribute aperatureDiameter : DiameterChoice = DiameterChoice::small;
+    attribute aperatureDiameter: DiameterChoice = DiameterChoice::small;
+
 }
+
 ~~~
 # EXPECTED
 ~~~

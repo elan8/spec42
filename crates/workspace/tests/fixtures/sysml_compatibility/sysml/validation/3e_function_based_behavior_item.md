@@ -161,17 +161,22 @@ package '3e-Function-based Behavior-item' {
     public import Definitions::*;
 
     package Definitions {
+
         item def VehicleAssembly;
         item def AssembledVehicle :> VehicleAssembly;
 
         part def Vehicle :> AssembledVehicle;
         part def Transmission;
         part def Engine;
+
     }
 
     package Usages {
+
         part AssemblyLine {
+
             perform action 'assemble vehicle' {
+
                 action 'assemble transmission into vehicle' {
                     in item 'vehicle assy without transmission or engine' : VehicleAssembly;
                     in item transmission : Transmission {
@@ -185,7 +190,8 @@ package '3e-Function-based Behavior-item' {
                     }
                 }
 
-                flow 'assemble transmission into vehicle';
+                flow 'assemble transmission into vehicle'.'vehicle assy without engine'
+                to 'assemble engine into vehicle'.'vehicle assy without engine';
 
                 action 'assemble engine into vehicle' {
                     in item 'vehicle assy without engine' : VehicleAssembly {
@@ -206,14 +212,16 @@ package '3e-Function-based Behavior-item' {
 				 * Note: An in item one context can become a part in an other.
 				 */
 
-                part transmission : Transmission;
-                part engine : Engine;
+                part transmission: Transmission;
+                part engine: Engine;
 
                 perform action providePower;
             }
+
         }
     }
 }
+
 ~~~
 # EXPECTED
 ~~~

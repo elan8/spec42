@@ -774,7 +774,7 @@ package EVSample {
     private import SI::*;
     private import StateSpaceRepresentation::*;
 
-    attribute <'A⋅h'> 'ampere hour' : ElectricChargeUnit = A*h;
+    attribute <'A⋅h'> 'ampere hour'  : ElectricChargeUnit = A*h;
 
     part def Vehicle {
         attribute mass :> ISQ::mass;
@@ -797,7 +797,7 @@ package EVSample {
 
     part def Battery {
         attribute baseVoltage :> ISQ::electricPotential;
-        attribute socInit : ScalarValues::Real;
+        attribute socInit: ScalarValues::Real;
         attribute capacity :> ISQ::electricCharge;
         attribute internalResistance :> ISQ::resistance;
 
@@ -810,8 +810,9 @@ package EVSample {
         }
 
         attribute def BatteryState :> StateSpace {
-            attribute soc : ScalarValues::Real;
+            attribute soc: ScalarValues::Real;
         }
+
     }
 
     part def Motor {
@@ -864,9 +865,7 @@ package EVSample {
         attribute actualRange : LengthValue;
         attribute requiredRange : LengthValue;
 
-        require constraint {
-            = actualRange >= requiredRange;
-        }
+        require constraint { actualRange >= requiredRange }
     }
 
     analysis def RangeAnalysis :> VehicleAnalysis {
@@ -878,7 +877,7 @@ package EVSample {
             doc /* This analysis is to estimate the range of
                  * the EV by simulating the vehicle driving under the compact vehicle regulation.
                  */
-            require constraint rangeRequirement {
+            require rangeRequirement {
                 :>> actualRange = simulatedRange;
             }
         }
@@ -889,9 +888,7 @@ package EVSample {
         attribute actualEfficiency;
         attribute requiredEfficiency;
 
-        require constraint {
-            = actualEfficiency >= requiredEfficiency;
-        }
+        require constraint { actualEfficiency >= requiredEfficiency }
     }
 
     analysis def EfficiencyAnalysis :> VehicleAnalysis {
@@ -900,7 +897,7 @@ package EVSample {
         requirement efficiencyRequirement :>> vehicleRequirement : EfficiencyRequirement;
 
         objective efficiencyAnalysisObjective {
-            require constraint efficiencyRequirement {
+            require efficiencyRequirement {
                 attribute :>> actualEfficiency = simulatedEfficiency;
             }
         }
@@ -918,14 +915,14 @@ package EVSample {
         requirement maxSpeedRequirement :>> vehicleRequirement : MaxSpeedRequirement;
 
         objective maxSpeedAnalysisObjective {
-            require constraint maxSpeedRequirement {
+            require maxSpeedRequirement {
                 attribute :>> actualMaxSpeed = simulatedMaxSpeed;
             }
         }
     }
 
     part vehicle : Vehicle {
-        attribute :>> mass default = 1000[kg];
+        attribute :>> mass default 1000[kg];
 
         /* airFrictionCoefficient [kg / m] = 1/2 * rho[kg/m^3] * Cd * S[m^2],
          * where rho is air density, S is front projected area. */
@@ -939,7 +936,7 @@ package EVSample {
             :>> stateSpace : VehicleState;
         }
 
-        part battery : Battery {
+        part battery: Battery {
             :>> baseVoltage = 300[V];
             :>> capacity = 50['A⋅h'];
             :>> socInit = 0.8;
@@ -951,9 +948,9 @@ package EVSample {
             }
         }
 
-        flow battery;
+        flow battery.batteryBehavior.output to motor.motorBehavior.input;
 
-        part motor : Motor {
+        part motor: Motor {
             :>> motR = 4['Ω'];
             :>> motL = 0.2[H];
 
@@ -964,19 +961,19 @@ package EVSample {
             }
         }
 
-        flow motor;
+        flow motor.motorBehavior.output to tire.tireBehavior.input;
 
-        part tire : Tire {
-            :>> moment default = 300['kg⋅m²'];
-            :>> radius default = 0.7[m];
+        part tire: Tire {
+            :>> moment default 300['kg⋅m²'];
+            :>> radius default 0.7[m];
             action tireBehavior : ContinuousStateSpaceDynamics {
                 in input : TireInput;
                 out output : TireOutput;
             }
         }
 
-        flow tire;
-        flow tire;
+        flow tire.tireBehavior.output to motor.motorBehavior.input;
+        flow tire.tireBehavior.output to vehicleBehavior.input;
     }
 
     part vehicle_compact :> vehicle {
@@ -992,9 +989,7 @@ package EVSample {
             doc /* The small EVs must be ligher than 900[kg] */
             subject :>> vehicle = vehicle_compact;
             /*  To comform with the regulation and the battery mass will impact it. */
-            assume constraint {
-                = vehicle.mass < 900[kg];
-            }
+            assume constraint { vehicle.mass < 900[kg] }
         }
 
         analysis smallEVAnalysis : VehicleAnalysis {
@@ -1049,9 +1044,7 @@ package EVSample {
             doc /* The large EVs must be ligher than 900[kg] */
             subject :>> vehicle = vehicle_large;
             /*  To comform with the regulation and the battery mass will impact it. */
-            assume constraint {
-                = vehicle.mass < 1200[kg];
-            }
+            assume constraint { vehicle.mass < 1200[kg] }
         }
 
         analysis largeEVAnalysis : VehicleAnalysis {
@@ -1093,6 +1086,7 @@ package EVSample {
         }
     }
 }
+
 ~~~
 # EXPECTED
 ~~~

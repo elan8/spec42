@@ -58,6 +58,7 @@ package FeatureDeclCoverage {
     inv i :> f;
     step s2 [0..1] = 42;
 }
+
 ~~~
 # SMG
 ~~~

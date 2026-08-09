@@ -54,9 +54,12 @@ package P {
     part vehicle : Vehicle {
         part eng : Engine;
 
-        flow = FuelFlow of Fuel from tank.fuelSupply to eng.engineFuelPort;
+        flow = FuelFlow of Fuel
+        from tank.fuelSupply
+        to eng.engineFuelPort;
     }
 }
+
 ~~~
 # SMG
 ~~~

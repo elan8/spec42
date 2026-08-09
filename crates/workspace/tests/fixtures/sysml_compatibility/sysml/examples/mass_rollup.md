@@ -88,17 +88,21 @@ package MassRollup {
     }
 
     part compositeThing : MassedThing {
-        part subcomponents : MassedThing [*];
+        part subcomponents: MassedThing[*];
 
-        attribute redefines totalMass default = mass + sum(subcomponents.totalMass);
+        attribute redefines totalMass default
+        mass + sum(subcomponents.totalMass);
     }
 
     part filteredMassThing :> compositeThing {
         abstract attribute minMass :> ISQ::mass;
 
-        attribute redefines totalMass = mass + sum(subcomponents.totalMass.?{in p :> ISQ::mass; p > minMass});
+        attribute redefines totalMass =
+        mass + sum(subcomponents.totalMass.?{in p :> ISQ::mass; p > minMass});
     }
+
 }
+
 ~~~
 # EXPECTED
 ~~~

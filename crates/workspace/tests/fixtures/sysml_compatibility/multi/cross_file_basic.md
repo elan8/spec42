@@ -19,6 +19,24 @@ package Usage {
     part v : Vehicle;
 }
 ~~~
+# FORMAT
+## Definitions.sysml
+~~~sysml
+package Definitions {
+    part def Vehicle {
+        attribute mass : ScalarValues::Real;
+    }
+}
+
+~~~
+## Usage.sysml
+~~~sysml
+package Usage {
+    import Definitions::*;
+    part v : Vehicle;
+}
+
+~~~
 # EXPECTED
 ~~~
 NIL
