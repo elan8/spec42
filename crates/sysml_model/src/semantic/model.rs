@@ -117,6 +117,8 @@ pub enum ElementKind {
     ConnectionDef,
     Alias,
     KermlDecl,
+    /// Parser-backed KerML classifier declaration (`class`, `classifier`, etc.).
+    ClassifierDecl,
     // Usages
     Part,
     Port,
@@ -260,6 +262,7 @@ impl ElementKind {
             ElementKind::ConnectionDef => "connection def",
             ElementKind::Alias => "alias",
             ElementKind::KermlDecl => "kermlDecl",
+            ElementKind::ClassifierDecl => "classifier decl",
             ElementKind::Part => "part",
             ElementKind::Port => "port",
             ElementKind::Item => "item",
@@ -369,6 +372,7 @@ impl ElementKind {
             "connection def" => ElementKind::ConnectionDef,
             "alias" => ElementKind::Alias,
             "kermlDecl" => ElementKind::KermlDecl,
+            "classifier decl" => ElementKind::ClassifierDecl,
             "part" => ElementKind::Part,
             "port" => ElementKind::Port,
             "item" => ElementKind::Item,

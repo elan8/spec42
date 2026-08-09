@@ -199,6 +199,8 @@ pub fn is_namespace(element_kind: &ElementKind) -> bool {
     matches!(
         element_kind,
         ElementKind::Package
+            | ElementKind::ClassifierDecl
+            | ElementKind::KermlDecl
             | ElementKind::RequirementDef
             | ElementKind::Requirement
             | ElementKind::UseCaseDef
