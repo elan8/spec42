@@ -276,6 +276,7 @@ semantic.unresolved_name 'Boolean'
 ~~~
 (semantic-graph
   (containment
+    (element (kind "import") (id (node (document "d0") (qualified-name "*"))) (name "*") (declared-name "*"))
     (element (kind "package") (id (node (document "d0") (qualified-name "11b-Safety and Security Feaure Views"))) (name "11b-Safety and Security Feaure Views") (declared-name "11b-Safety and Security Feaure Views")
       (contains
         (element (kind "import") (id (node (document "d0") (qualified-name "11b-Safety and Security Feaure Views::*"))) (name "*") (declared-name "*"))

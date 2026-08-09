@@ -2,8 +2,6 @@
 ~~~ini
 description=step_usage node: step inside a SysML definition body
 type=file
-semantic_graph=skip
-semantic_graph_skip_reason=strictly parsed non-empty source produced no typed semantic graph facts
 ~~~
 # SOURCE
 ~~~kerml
@@ -46,6 +44,7 @@ state def SD {
 ~~~
 (semantic-graph
   (containment
+    (element (kind "state def") (id (node (document "d0") (qualified-name "SD"))) (name "SD") (declared-name "SD"))
   )
   (relationships
   )

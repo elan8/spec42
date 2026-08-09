@@ -710,10 +710,19 @@ fn source_parser_handles_single_and_multi_file_sections() {
 }
 
 #[test]
-fn camera_fixture_has_an_explicit_strict_empty_semantic_graph_skip() {
+fn camera_fixture_keeps_opaque_root_declaration_as_an_explicit_skip() {
     let relative = "kerml/camera.md";
     let fixture = fs::read_to_string(Path::new(FIXTURES).join(relative)).expect("camera fixture");
     let documents = source_documents(&fixture, relative);
+    let parsed = sysml_v2_parser::parse(&documents[0].text).expect("strict parser accepts camera");
+    assert!(matches!(
+        parsed.elements.as_slice(),
+        [root] if matches!(
+            &root.value,
+            sysml_v2_parser::ast::RootElement::Member(member)
+                if matches!(&member.value, sysml_v2_parser::ast::PackageBodyElement::ClassifierDecl(_))
+        )
+    ));
     let semantic_documents = documents
         .iter()
         .map(|document| {
@@ -729,11 +738,11 @@ fn camera_fixture_has_an_explicit_strict_empty_semantic_graph_skip() {
         })
         .collect::<Vec<_>>();
     let (graph, _) = build_and_link_graph(&semantic_documents).expect("semantic graph");
-    assert_eq!(graph.to_semantic_sexpr(), empty_semantic_graph());
     assert_eq!(
         section(&fixture, "SMG").expect("camera SMG section"),
         empty_semantic_graph()
     );
+    assert_eq!(graph.to_semantic_sexpr(), empty_semantic_graph());
     assert_eq!(
         semantic_graph_skip_reason(&fixture),
         Ok(Some(

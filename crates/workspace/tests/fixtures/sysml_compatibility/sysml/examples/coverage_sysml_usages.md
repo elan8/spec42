@@ -2,8 +2,6 @@
 ~~~ini
 description=Coverage: SysML usage variants with direction flags, multiplicity, values, and modifiers
 type=file
-semantic_graph=skip
-semantic_graph_skip_reason=parser recovery for non-empty source produced no typed semantic graph facts
 ~~~
 # SOURCE
 ~~~sysml
@@ -184,8 +182,42 @@ part def Vehicle {
 ~~~
 (semantic-graph
   (containment
+    (element (kind "part def") (id (node (document "d0") (qualified-name "Color"))) (name "Color") (declared-name "Color") (declared))
+    (element (kind "part def") (id (node (document "d0") (qualified-name "DataPort"))) (name "DataPort") (declared-name "DataPort") (declared))
+    (element (kind "part def") (id (node (document "d0") (qualified-name "Engine"))) (name "Engine") (declared-name "Engine") (declared))
+    (element (kind "enum def") (id (node (document "d0") (qualified-name "Priority"))) (name "Priority") (declared-name "Priority"))
+    (element (kind "part def") (id (node (document "d0") (qualified-name "Sensor"))) (name "Sensor") (declared-name "Sensor") (declared))
+    (element (kind "part def") (id (node (document "d0") (qualified-name "Vehicle"))) (name "Vehicle") (declared-name "Vehicle") (declared)
+      (contains
+        (element (kind "opaque member") (id (node (document "d0") (qualified-name "Vehicle::attribute"))) (name "attribute") (declared-name "attribute") (effective (featuring-type (node (document "d0") (qualified-name "Vehicle")))))
+        (element (kind "enumeration") (id (node (document "d0") (qualified-name "Vehicle::color"))) (name "color") (declared-name "color") (effective (featuring-type (node (document "d0") (qualified-name "Vehicle")))))
+        (element (kind "occurrence") (id (node (document "d0") (qualified-name "Vehicle::event1"))) (name "event1") (declared-name "event1") (declared (properties (composite true) (reference false))) (effective (featuring-type (node (document "d0") (qualified-name "Vehicle")))))
+        (element (kind "opaque member") (id (node (document "d0") (qualified-name "Vehicle::item"))) (name "item") (declared-name "item") (effective (featuring-type (node (document "d0") (qualified-name "Vehicle")))))
+        (element (kind "attribute") (id (node (document "d0") (qualified-name "Vehicle::mass"))) (name "mass") (declared-name "mass") (declared (properties (composite true) (reference false) (ordered false) (unique true)) (feature-value (kind bound) (expression (kind "integerLiteral") (literal 100)))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "Vehicle"))) (implied-feature-value-binding (owner (node (document "d0") (qualified-name "Vehicle::mass"))) (role feature-value))))
+        (element (kind "occurrence") (id (node (document "d0") (qualified-name "Vehicle::nextEvent"))) (name "nextEvent") (declared-name "nextEvent") (declared (properties (composite true) (reference false))) (effective (featuring-type (node (document "d0") (qualified-name "Vehicle")))))
+        (element (kind "part") (id (node (document "d0") (qualified-name "Vehicle::optionA"))) (name "optionA") (declared-name "optionA") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "Vehicle")))))
+        (element (kind "part") (id (node (document "d0") (qualified-name "Vehicle::optionB"))) (name "optionB") (declared-name "optionB") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "Vehicle")))))
+        (element (kind "port") (id (node (document "d0") (qualified-name "Vehicle::out1"))) (name "out1") (declared-name "out1") (declared (properties (composite true) (reference false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "Vehicle")))))
+        (element (kind "item") (id (node (document "d0") (qualified-name "Vehicle::payload"))) (name "payload") (declared-name "payload") (declared (properties (composite true) (reference false))) (effective (featuring-type (node (document "d0") (qualified-name "Vehicle")))))
+        (element (kind "occurrence") (id (node (document "d0") (qualified-name "Vehicle::person1"))) (name "person1") (declared-name "person1") (declared (properties (individual true) (composite true) (reference false))) (effective (featuring-type (node (document "d0") (qualified-name "Vehicle")))))
+        (element (kind "ref") (id (node (document "d0") (qualified-name "Vehicle::r1"))) (name "r1") (declared-name "r1") (declared (properties (composite false) (reference true))) (effective (featuring-type (node (document "d0") (qualified-name "Vehicle")))))
+        (element (kind "occurrence") (id (node (document "d0") (qualified-name "Vehicle::refEvent"))) (name "refEvent") (declared-name "refEvent") (declared (properties (composite false) (reference true))) (effective (featuring-type (node (document "d0") (qualified-name "Vehicle")))))
+        (element (kind "ref") (id (node (document "d0") (qualified-name "Vehicle::refPart"))) (name "refPart") (declared-name "refPart") (declared (properties (composite true) (reference false) (ordered false))) (effective (featuring-type (node (document "d0") (qualified-name "Vehicle")))))
+        (element (kind "occurrence") (id (node (document "d0") (qualified-name "Vehicle::s1"))) (name "s1") (declared-name "s1") (declared (properties (portion true) (composite true) (reference false) (portion-kind "snapshot"))) (effective (featuring-type (node (document "d0") (qualified-name "Vehicle")))))
+        (element (kind "occurrence") (id (node (document "d0") (qualified-name "Vehicle::startEvent"))) (name "startEvent") (declared-name "startEvent") (declared (properties (composite true) (reference false))) (effective (featuring-type (node (document "d0") (qualified-name "Vehicle")))))
+        (element (kind "occurrence") (id (node (document "d0") (qualified-name "Vehicle::ts1"))) (name "ts1") (declared-name "ts1") (declared (properties (portion true) (composite true) (reference false) (portion-kind "timeslice"))) (effective (featuring-type (node (document "d0") (qualified-name "Vehicle")))))
+        (element (kind "attribute") (id (node (document "d0") (qualified-name "Vehicle::weights"))) (name "weights") (declared-name "weights") (declared (properties (composite true) (reference false) (ordered false) (unique true)) (multiplicity (lower 3) (upper 3) (ordered false) (provenance authored))) (effective (featuring-type (node (document "d0") (qualified-name "Vehicle")))))
+      )
+    )
+    (element (kind "part def") (id (node (document "d0") (qualified-name "Widget"))) (name "Widget") (declared-name "Widget") (declared))
   )
   (relationships
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Vehicle::color"))) (to (node (document "d0") (qualified-name "Color"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Vehicle::out1"))) (to (node (document "d0") (qualified-name "DataPort"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Vehicle::payload"))) (to (node (document "d0") (qualified-name "Widget"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Vehicle::person1"))) (to (node (document "d0") (qualified-name "Sensor"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Vehicle::r1"))) (to (node (document "d0") (qualified-name "Sensor"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Vehicle::refPart"))) (to (node (document "d0") (qualified-name "Engine"))))
   )
   (pending-relationships
   )

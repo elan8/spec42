@@ -87,11 +87,14 @@ package Annotated {
         (element (kind "metadata usage") (id (node (document "d0") (qualified-name "Annotated::m"))) (name "m") (declared-name "m"))
       )
     )
+    (element (kind "metadata def") (id (node (document "d0") (qualified-name "Approval"))) (name "Approval") (declared-name "Approval"))
+    (element (kind "metadata def") (id (node (document "d0") (qualified-name "Classified"))) (name "Classified") (declared-name "Classified"))
   )
   (relationships
     (annotation (status resolved) (from (node (document "d0") (qualified-name "Annotated::_Classified"))) (to (node (document "d0") (qualified-name "Annotated"))))
     (annotation (status resolved) (from (node (document "d0") (qualified-name "Annotated::m"))) (to (node (document "d0") (qualified-name "Annotated::Engine"))))
     (annotation (status resolved) (from (node (document "d0") (qualified-name "Annotated::m"))) (to (node (document "d0") (qualified-name "Annotated::Vehicle"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Annotated::m"))) (to (node (document "d0") (qualified-name "Classified"))))
   )
   (pending-relationships
   )

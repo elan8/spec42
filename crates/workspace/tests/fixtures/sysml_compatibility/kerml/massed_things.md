@@ -75,6 +75,7 @@ semantic.unresolved_name 'Real'
 ~~~
 (semantic-graph
   (containment
+    (element (kind "import") (id (node (document "d0") (qualified-name "*"))) (name "*") (declared-name "*"))
     (element (kind "package") (id (node (document "d0") (qualified-name "MassedThings"))) (name "MassedThings") (declared-name "MassedThings")
       (contains
         (element (kind "classifier decl") (id (node (document "d0") (qualified-name "MassedThings::MassedThing"))) (name "MassedThing") (declared-name "MassedThing"))

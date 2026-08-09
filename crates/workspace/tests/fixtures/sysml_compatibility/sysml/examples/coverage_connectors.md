@@ -2,8 +2,6 @@
 ~~~ini
 description=Coverage: Connector from/to forms, binding connector variants, connector specializations
 type=file
-semantic_graph=skip
-semantic_graph_skip_reason=parser recovery for non-empty source produced no typed semantic graph facts
 ~~~
 # SOURCE
 ~~~sysml
@@ -96,8 +94,32 @@ part def System {
 ~~~
 (semantic-graph
   (containment
+    (element (kind "part def") (id (node (document "d0") (qualified-name "A"))) (name "A") (declared-name "A") (declared)
+      (contains
+        (element (kind "port") (id (node (document "d0") (qualified-name "A::p1"))) (name "p1") (declared-name "p1") (declared (properties (composite true) (reference false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "A")))))
+        (element (kind "port") (id (node (document "d0") (qualified-name "A::p2"))) (name "p2") (declared-name "p2") (declared (properties (composite true) (reference false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "A")))))
+      )
+    )
+    (element (kind "part def") (id (node (document "d0") (qualified-name "B"))) (name "B") (declared-name "B") (declared)
+      (contains
+        (element (kind "port") (id (node (document "d0") (qualified-name "B::q1"))) (name "q1") (declared-name "q1") (declared (properties (composite true) (reference false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "B")))))
+        (element (kind "port") (id (node (document "d0") (qualified-name "B::q2"))) (name "q2") (declared-name "q2") (declared (properties (composite true) (reference false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "B")))))
+      )
+    )
+    (element (kind "part def") (id (node (document "d0") (qualified-name "System"))) (name "System") (declared-name "System") (declared)
+      (contains
+        (element (kind "part") (id (node (document "d0") (qualified-name "System::a"))) (name "a") (declared-name "a") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "System")))))
+        (element (kind "part") (id (node (document "d0") (qualified-name "System::b"))) (name "b") (declared-name "b") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "System")))))
+        (element (kind "ref") (id (node (document "d0") (qualified-name "System::engine"))) (name "engine") (declared-name "engine") (declared (properties (composite true) (reference false) (ordered false))) (effective (featuring-type (node (document "d0") (qualified-name "System")))))
+        (element (kind "part") (id (node (document "d0") (qualified-name "System::myA"))) (name "myA") (declared-name "myA") (declared (properties (individual true) (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "System")))))
+      )
+    )
   )
   (relationships
+    (typing (status resolved) (from (node (document "d0") (qualified-name "System::a"))) (to (node (document "d0") (qualified-name "A"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "System::b"))) (to (node (document "d0") (qualified-name "B"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "System::engine"))) (to (node (document "d0") (qualified-name "A"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "System::myA"))) (to (node (document "d0") (qualified-name "A"))))
   )
   (pending-relationships
   )

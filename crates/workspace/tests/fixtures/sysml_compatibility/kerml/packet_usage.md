@@ -93,6 +93,7 @@ semantic.unresolved_name 'Real'
 ~~~
 (semantic-graph
   (containment
+    (element (kind "import") (id (node (document "d0") (qualified-name "*"))) (name "*") (declared-name "*"))
     (element (kind "package") (id (node (document "d0") (qualified-name "Packet Usage"))) (name "Packet Usage") (declared-name "Packet Usage")
       (contains
         (element (kind "feature decl") (id (node (document "d0") (qualified-name "Packet Usage::packet1"))) (name "packet1") (declared-name "packet1"))
@@ -100,6 +101,7 @@ semantic.unresolved_name 'Real'
         (element (kind "feature decl") (id (node (document "d0") (qualified-name "Packet Usage::packet3"))) (name "packet3") (declared-name "packet3"))
       )
     )
+    (element (kind "import") (id (node (document "d0") (qualified-name "Real"))) (name "Real") (declared-name "Real"))
   )
   (relationships
   )

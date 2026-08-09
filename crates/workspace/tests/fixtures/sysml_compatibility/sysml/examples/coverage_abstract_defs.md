@@ -2,8 +2,6 @@
 ~~~ini
 description=Coverage: Abstract and variation SysML definitions in body and top-level context
 type=file
-semantic_graph=skip
-semantic_graph_skip_reason=parser recovery for non-empty source produced no typed semantic graph facts
 ~~~
 # SOURCE
 ~~~sysml
@@ -109,8 +107,31 @@ abstract part def Container {
 ~~~
 (semantic-graph
   (containment
+    (element (kind "occurrence def") (id (node (document "d0") (qualified-name "AbstractEvent"))) (name "AbstractEvent") (declared-name "AbstractEvent") (declared (properties (abstract true))))
+    (element (kind "port def") (id (node (document "d0") (qualified-name "AbstractPort"))) (name "AbstractPort") (declared-name "AbstractPort")
+      (contains
+        (element (kind "conjugated port definition") (id (node (document "d0") (qualified-name "AbstractPort::~AbstractPort"))) (name "~AbstractPort") (declared-name "~AbstractPort") (effective (featuring-type (node (document "d0") (qualified-name "AbstractPort")))))
+      )
+    )
+    (element (kind "part def") (id (node (document "d0") (qualified-name "AbstractVehicle"))) (name "AbstractVehicle") (declared-name "AbstractVehicle") (declared (properties (abstract true))))
+    (element (kind "item def") (id (node (document "d0") (qualified-name "AbstractWidget"))) (name "AbstractWidget") (declared-name "AbstractWidget"))
+    (element (kind "part def") (id (node (document "d0") (qualified-name "Container"))) (name "Container") (declared-name "Container") (declared (properties (abstract true)))
+      (contains
+        (element (kind "part def") (id (node (document "d0") (qualified-name "Container::InnerPart"))) (name "InnerPart") (declared-name "InnerPart") (declared (properties (abstract true))) (effective (featuring-type (node (document "d0") (qualified-name "Container")))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "Container::InnerWeight"))) (name "InnerWeight") (declared-name "InnerWeight") (declared (properties (ordered false) (unique true))) (effective (featuring-type (node (document "d0") (qualified-name "Container")))))
+        (element (kind "item def") (id (node (document "d0") (qualified-name "Container::InnerWidget"))) (name "InnerWidget") (declared-name "InnerWidget") (effective (featuring-type (node (document "d0") (qualified-name "Container")))))
+      )
+    )
+    (element (kind "part def") (id (node (document "d0") (qualified-name "EngineChoices"))) (name "EngineChoices") (declared-name "EngineChoices") (declared (properties (variation true)))
+      (contains
+        (element (kind "part") (id (node (document "d0") (qualified-name "EngineChoices::fourCyl"))) (name "fourCyl") (declared-name "fourCyl") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "EngineChoices")))))
+        (element (kind "part") (id (node (document "d0") (qualified-name "EngineChoices::sixCyl"))) (name "sixCyl") (declared-name "sixCyl") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "EngineChoices")))))
+      )
+    )
+    (element (kind "attribute def") (id (node (document "d0") (qualified-name "Weight"))) (name "Weight") (declared-name "Weight") (declared (properties (ordered false) (unique true))))
   )
   (relationships
+    (portConjugation (status resolved) (from (node (document "d0") (qualified-name "AbstractPort::~AbstractPort"))) (to (node (document "d0") (qualified-name "AbstractPort"))))
   )
   (pending-relationships
   )

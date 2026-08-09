@@ -78,12 +78,9 @@ pub fn add_cross_document_edges_for_uri(g: &mut SemanticGraph, uri: &Url) {
     let edges = resolve_cross_document_edges_for_uri(g, uri);
     let mut recorded = Vec::with_capacity(edges.len());
     for (src_id, tgt_id, kind) in edges {
-        if let (Some(&src_idx), Some(&tgt_idx)) = (
-            g.node_index_by_id.get(&src_id),
-            g.node_index_by_id.get(&tgt_id),
-        ) {
-            g.graph
-                .add_edge(src_idx, tgt_idx, SemanticEdge::plain(kind.clone()));
+        if add_semantic_edge_once(g, &src_id, &tgt_id, SemanticEdge::plain(kind.clone()))
+            == AddSemanticEdgeResult::Added
+        {
             recorded.push((src_id, tgt_id, kind));
         }
     }

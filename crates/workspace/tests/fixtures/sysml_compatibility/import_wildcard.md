@@ -2,8 +2,6 @@
 ~~~ini
 description=Wildcard import statement
 type=file
-semantic_graph=skip
-semantic_graph_skip_reason=strictly parsed non-empty source produced no typed semantic graph facts
 ~~~
 # SOURCE
 ~~~sysml
@@ -35,6 +33,7 @@ NIL
 ~~~
 (semantic-graph
   (containment
+    (element (kind "import") (id (node (document "d0") (qualified-name "*"))) (name "*") (declared-name "*"))
   )
   (relationships
   )

@@ -2,8 +2,6 @@
 ~~~ini
 description=Part def with nested part defs
 type=file
-semantic_graph=skip
-semantic_graph_skip_reason=strictly parsed non-empty source produced no typed semantic graph facts
 ~~~
 # SOURCE
 ~~~sysml
@@ -46,6 +44,12 @@ NIL
 ~~~
 (semantic-graph
   (containment
+    (element (kind "part def") (id (node (document "d0") (qualified-name "Vehicle"))) (name "Vehicle") (declared-name "Vehicle") (declared)
+      (contains
+        (element (kind "part def") (id (node (document "d0") (qualified-name "Vehicle::Engine"))) (name "Engine") (declared-name "Engine") (declared) (effective (featuring-type (node (document "d0") (qualified-name "Vehicle")))))
+        (element (kind "part def") (id (node (document "d0") (qualified-name "Vehicle::Wheel"))) (name "Wheel") (declared-name "Wheel") (declared) (effective (featuring-type (node (document "d0") (qualified-name "Vehicle")))))
+      )
+    )
   )
   (relationships
   )

@@ -2,8 +2,6 @@
 ~~~ini
 description=SysML Example (Simple Tests): ControlNodeTest
 type=file
-semantic_graph=skip
-semantic_graph_skip_reason=parser recovery for non-empty source produced no typed semantic graph facts
 ~~~
 # SOURCE
 ~~~sysml
@@ -185,8 +183,40 @@ semantic.invalid_connection_end_count
 ~~~
 (semantic-graph
   (containment
+    (element (kind "action def") (id (node (document "d0") (qualified-name "ControlNodeTest"))) (name "ControlNodeTest") (declared-name "ControlNodeTest")
+      (contains
+        (element (kind "action") (id (node (document "d0") (qualified-name "ControlNodeTest::A1"))) (name "A1") (declared-name "A1") (declared (properties (composite true) (reference false))) (effective (featuring-type (node (document "d0") (qualified-name "ControlNodeTest")))))
+        (element (kind "action") (id (node (document "d0") (qualified-name "ControlNodeTest::A2"))) (name "A2") (declared-name "A2") (declared (properties (composite true) (reference false))) (effective (featuring-type (node (document "d0") (qualified-name "ControlNodeTest"))))
+          (contains
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "ControlNodeTest::A2::a"))) (name "a") (declared-name "a") (effective (featuring-type (node (document "d0") (qualified-name "ControlNodeTest")))))
+          )
+        )
+        (element (kind "action") (id (node (document "d0") (qualified-name "ControlNodeTest::B1"))) (name "B1") (declared-name "B1") (declared (properties (composite true) (reference false))) (effective (featuring-type (node (document "d0") (qualified-name "ControlNodeTest"))))
+          (contains
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "ControlNodeTest::B1::b"))) (name "b") (declared-name "b") (effective (featuring-type (node (document "d0") (qualified-name "ControlNodeTest")))))
+          )
+        )
+        (element (kind "action") (id (node (document "d0") (qualified-name "ControlNodeTest::B2"))) (name "B2") (declared-name "B2") (declared (properties (composite true) (reference false))) (effective (featuring-type (node (document "d0") (qualified-name "ControlNodeTest"))))
+          (contains
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "ControlNodeTest::B2::b"))) (name "b") (declared-name "b") (effective (featuring-type (node (document "d0") (qualified-name "ControlNodeTest")))))
+          )
+        )
+        (element (kind "join") (id (node (document "d0") (qualified-name "ControlNodeTest::J"))) (name "join") (declared-name "join") (effective (featuring-type (node (document "d0") (qualified-name "ControlNodeTest")))))
+        (element (kind "merge") (id (node (document "d0") (qualified-name "ControlNodeTest::M"))) (name "merge") (declared-name "merge") (effective (featuring-type (node (document "d0") (qualified-name "ControlNodeTest")))))
+      )
+    )
   )
   (relationships
+    (flow (status resolved) (from (node (document "d0") (qualified-name "ControlNodeTest"))) (to (node (document "d0") (qualified-name "ControlNodeTest::J"))))
+    (flow (status resolved) (from (node (document "d0") (qualified-name "ControlNodeTest::B1"))) (to (node (document "d0") (qualified-name "ControlNodeTest::B2"))))
+    (flow (status resolved) (from (node (document "d0") (qualified-name "ControlNodeTest::B2"))) (to (node (document "d0") (qualified-name "ControlNodeTest::M"))))
+    (flow (status resolved) (from (node (document "d0") (qualified-name "ControlNodeTest::J"))) (to (node (document "d0") (qualified-name "ControlNodeTest::B1"))))
+    (flow (status resolved) (from (node (document "d0") (qualified-name "ControlNodeTest::J"))) (to (node (document "d0") (qualified-name "ControlNodeTest::J"))))
+    (flow (status resolved) (from (node (document "d0") (qualified-name "ControlNodeTest::M"))) (to (node (document "d0") (qualified-name "ControlNodeTest::M"))))
+    (perform (status resolved) (from (node (document "d0") (qualified-name "ControlNodeTest"))) (to (node (document "d0") (qualified-name "ControlNodeTest::A1"))))
+    (perform (status resolved) (from (node (document "d0") (qualified-name "ControlNodeTest"))) (to (node (document "d0") (qualified-name "ControlNodeTest::A2"))))
+    (perform (status resolved) (from (node (document "d0") (qualified-name "ControlNodeTest"))) (to (node (document "d0") (qualified-name "ControlNodeTest::B1"))))
+    (perform (status resolved) (from (node (document "d0") (qualified-name "ControlNodeTest"))) (to (node (document "d0") (qualified-name "ControlNodeTest::B2"))))
   )
   (pending-relationships
   )

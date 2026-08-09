@@ -1383,16 +1383,13 @@ pub(crate) fn materialize_state_usage(
     }
 }
 
-pub(super) fn materialize_import(
+pub(crate) fn materialize_import(
     g: &mut SemanticGraph,
     uri: &Url,
     container_prefix: Option<&str>,
     parent_id: Option<&NodeId>,
     imp: &Node<Import>,
 ) {
-    let Some(pid) = parent_id else {
-        return;
-    };
     let v = &imp.value;
     let name = import_member_label(&v.target);
     let qualified = qualified_name_for_node(g, uri, container_prefix, &name, "import");
@@ -1409,7 +1406,7 @@ pub(super) fn materialize_import(
         name,
         span_to_range(&imp.span),
         attrs,
-        Some(pid),
+        parent_id,
     );
 }
 

@@ -76,6 +76,7 @@ NIL
 ~~~
 (semantic-graph
   (containment
+    (element (kind "import") (id (node (document "d0") (qualified-name "*"))) (name "*") (declared-name "*"))
     (element (kind "package") (id (node (document "d0") (qualified-name "P1"))) (name "P1") (declared-name "P1")
       (contains
         (element (kind "part def") (id (node (document "d0") (qualified-name "P1::A"))) (name "A") (declared-name "A") (declared))
