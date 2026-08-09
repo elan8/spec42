@@ -185,12 +185,8 @@ pub fn compute_static_dependency_targets(
             .typing
             .iter()
             .chain(node.declared_facts.relationships.specializes.iter())
+            .chain(node.declared_facts.relationships.subject.iter())
             .map(|target| target.reference.as_str())
-            .chain(
-                ["subjectType", "verifiedRequirement"]
-                    .into_iter()
-                    .filter_map(|key| node.attributes.get(key).and_then(|value| value.as_str())),
-            )
         {
             if let Some((prefix, _member)) = raw.rsplit_once("::") {
                 if !prefix.is_empty() {
@@ -344,7 +340,11 @@ pub fn resolve_cross_document_edges_for_uri(
                 prefix.as_deref(),
                 RelationshipKind::Specializes,
             ) {
-                let dedupe_key = (node_id.clone(), target_id.clone(), "specializes");
+                let dedupe_key = (
+                    node_id.clone(),
+                    target_id.clone(),
+                    RelationshipKind::Specializes.as_str(),
+                );
                 if seen_edges.insert(dedupe_key) {
                     resolved_edges.push((
                         node_id.clone(),

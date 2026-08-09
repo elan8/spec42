@@ -75,12 +75,21 @@ fn requirement_verify_member_materializes_verified_requirement_node() {
         .find(|node| node.element_kind == "requirement def")
         .expect("verification requirement def");
 
-    assert!(
-        graph
-            .children_of(verify_def)
+    let verified_requirement = graph
+        .children_of(verify_def)
+        .into_iter()
+        .find(|child| child.element_kind == "verified requirement")
+        .expect("verified requirement child on requirement def");
+    assert_eq!(
+        verified_requirement
+            .declared_facts
+            .relationships
+            .subject
             .iter()
-            .any(|child| child.element_kind == "verified requirement"),
-        "expected verified requirement child on requirement def"
+            .map(|target| (target.reference.as_str(), target.range))
+            .collect::<Vec<_>>(),
+        vec![("BatteryRuntime", None)],
+        "verified requirement target must be an owned declared fact; the parser currently exposes only its string spelling"
     );
 
     let has_subject_to_runtime =

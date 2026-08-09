@@ -274,9 +274,11 @@ pub(crate) fn collect_requirement_case_conformance_diagnostics(
             }
         }
         let Some(requirement_ref) = node
-            .attributes
-            .get("verifiedRequirement")
-            .and_then(|v| v.as_str())
+            .declared_facts
+            .relationships
+            .subject
+            .first()
+            .map(|target| target.reference.as_str())
         else {
             continue;
         };

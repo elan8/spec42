@@ -11,7 +11,7 @@ use url::Url;
 
 use crate::semantic::ast_util::{attach_membership_visibility, span_to_range, text_range_to_json};
 use crate::semantic::graph::SemanticGraph;
-use crate::semantic::model::{ElementKind, NodeId, RelationshipKind};
+use crate::semantic::model::{DeclaredRelationshipTarget, ElementKind, NodeId, RelationshipKind};
 use crate::semantic::relationships::{add_edge_if_both_exist, add_typing_edge_if_exists};
 use crate::semantic::text_span::TextRange;
 
@@ -265,6 +265,17 @@ pub(super) fn add_verified_requirement_node(
         attrs,
         Some(parent_id),
     );
+    if let Some(node) = g.get_node_mut(&NodeId::new(uri, &qualified)) {
+        // The parser currently retains verified-requirement targets as strings,
+        // not target nodes, so the target range is explicitly unavailable.
+        node.declared_facts.relationships.record_target(
+            &RelationshipKind::Subject,
+            DeclaredRelationshipTarget {
+                reference: requirement_ref.to_string(),
+                range: None,
+            },
+        );
+    }
     add_typing_edge_if_exists(g, uri, &qualified, requirement_ref, container_prefix);
 }
 

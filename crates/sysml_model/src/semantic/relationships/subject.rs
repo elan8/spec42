@@ -90,8 +90,8 @@ pub fn add_subject_relationship_to_declared_type_if_resolved(
 /// Verification members are structurally owned by an [`ElementKind::Objective`], while their
 /// resulting subject relationship belongs to the enclosing verification case.  Requirement
 /// cases own their verified-requirement members directly.  Keeping this traversal here lets
-/// every relationship-linking path derive the same case-level fact from the parser-backed
-/// `verifiedRequirement` attribute without re-creating a target name in a builder.
+/// every relationship-linking path derive the same case-level fact from the owned declared
+/// subject target without inspecting a projection attribute.
 pub(crate) fn resolved_verified_requirement_targets_for_case(
     g: &SemanticGraph,
     case_node: &SemanticNode,
@@ -109,9 +109,11 @@ pub(crate) fn resolved_verified_requirement_targets_for_case(
         verified_requirements.filter(|child| child.element_kind == ElementKind::VerifiedRequirement)
     {
         let Some(requirement_ref) = verified_requirement
-            .attributes
-            .get("verifiedRequirement")
-            .and_then(|value| value.as_str())
+            .declared_facts
+            .relationships
+            .subject
+            .first()
+            .map(|target| target.reference.as_str())
         else {
             continue;
         };

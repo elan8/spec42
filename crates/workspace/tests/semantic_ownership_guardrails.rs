@@ -1,14 +1,15 @@
 //! Architectural ownership contracts for post-construction semantic consumers.
 //!
 //! Graph builders are intentionally excluded because they project parser facts into the
-//! semantic graph. Projection and rendering modules are also excluded: they may format an
-//! explicit projection, but must not be used as semantic or diagnostic decision makers.
+//! semantic graph. Only DTO/projection serialization modules are excluded, except the
+//! legacy sequence extractor: it is isolated until an explicit canonical sequence-role/profile
+//! identity provider replaces its existing name-based role classification.
 
 use std::fs;
 use std::path::{Path, PathBuf};
 
 use syn::visit::Visit;
-use syn::{Expr, ExprLit, ExprMethodCall, Lit, Member};
+use syn::LitStr;
 
 const RELATIONSHIP_PROJECTION_KEYS: &[&str] = &[
     "partType",
@@ -71,21 +72,43 @@ fn post_construction_semantic_and_diagnostic_consumers_do_not_read_relationship_
 }
 
 #[test]
-fn visitor_catches_receiver_and_whitespace_variations_without_reading_comments_or_strings() {
-    let source = r#"
-        fn example(node: Node) {
-            let _ = node.attributes . get ( "partType" );
-            let _ = (&node.attributes).contains_key("redefines");
-            let _ = node.attributes.get("typeRef");
-            // node.attributes.get("portType");
-            let text = "node.attributes.get(\\\"actionType\\\")";
-            let _ = text;
-        }
-    "#;
-    let parsed = syn::parse_file(source).expect("parse guardrail fixture");
-    let mut visitor = RelationshipProjectionAttributeVisitor::default();
-    visitor.visit_file(&parsed);
-    assert_eq!(visitor.keys, vec!["partType", "redefines", "typeRef"]);
+fn visitor_catches_direct_helper_const_and_loop_indirection_without_reading_comments_or_strings() {
+    let fixtures = [
+        (
+            "direct",
+            r#"fn example(node: Node) { let _ = node.attributes . get ( "partType" ); }"#,
+            vec!["partType"],
+        ),
+        (
+            "helper and const",
+            r#"
+                const TYPE_KEY: &str = "refType";
+                fn read_attribute(node: Node, key: &str) { let _ = node.attributes.get(key); }
+                fn example(node: Node) { read_attribute(node, TYPE_KEY); }
+            "#,
+            vec!["refType"],
+        ),
+        (
+            "loop",
+            r#"fn example(node: Node) { for key in ["stateType"] { let _ = node.attributes.get(key); } }"#,
+            vec!["stateType"],
+        ),
+        (
+            "comments and encoded code",
+            r#"
+                // node.attributes.get("portType");
+                const TEXT: &str = "node.attributes.get(\\\"actionType\\\")";
+            "#,
+            vec![],
+        ),
+    ];
+    for (name, source, expected) in fixtures {
+        let parsed = syn::parse_file(source)
+            .unwrap_or_else(|error| panic!("parse {name} guardrail fixture: {error}"));
+        let mut visitor = RelationshipProjectionAttributeVisitor::default();
+        visitor.visit_file(&parsed);
+        assert_eq!(visitor.keys, expected, "{name} fixture");
+    }
 }
 
 #[derive(Default)]
@@ -94,43 +117,16 @@ struct RelationshipProjectionAttributeVisitor {
 }
 
 impl<'ast> Visit<'ast> for RelationshipProjectionAttributeVisitor {
-    fn visit_expr_method_call(&mut self, call: &'ast ExprMethodCall) {
-        if !matches!(call.method.to_string().as_str(), "get" | "contains_key")
-            || !receiver_is_attributes(&call.receiver)
+    fn visit_lit_str(&mut self, literal: &'ast LitStr) {
+        let key = literal.value();
+        if RELATIONSHIP_PROJECTION_KEYS
+            .iter()
+            .any(|candidate| *candidate == key)
         {
-            syn::visit::visit_expr_method_call(self, call);
-            return;
+            self.keys.push(key);
         }
-        if let Some(key) = call.args.first().and_then(string_literal) {
-            if RELATIONSHIP_PROJECTION_KEYS
-                .iter()
-                .any(|candidate| *candidate == key)
-            {
-                self.keys.push(key);
-            }
-        }
-        syn::visit::visit_expr_method_call(self, call);
+        syn::visit::visit_lit_str(self, literal);
     }
-}
-
-fn receiver_is_attributes(expr: &Expr) -> bool {
-    match expr {
-        Expr::Field(field) => matches!(&field.member, Member::Named(name) if name == "attributes"),
-        Expr::Paren(paren) => receiver_is_attributes(&paren.expr),
-        Expr::Reference(reference) => receiver_is_attributes(&reference.expr),
-        _ => false,
-    }
-}
-
-fn string_literal(expr: &Expr) -> Option<String> {
-    let Expr::Lit(ExprLit {
-        lit: Lit::Str(value),
-        ..
-    }) = expr
-    else {
-        return None;
-    };
-    Some(value.value())
 }
 
 fn visit_production_modules(root: &Path, visit: &mut impl FnMut(&Path)) {
@@ -153,14 +149,17 @@ fn is_excluded(path: &Path) -> bool {
         "model_projection",
         "visualization",
         "ibd",
+        "prepared_view",
+        // Isolated legacy debt: requires a canonical sequence-role/profile identity provider.
         "sequence_views",
-        "explicit_views",
     ];
     const EXCLUDED_MODULES: &[&str] = &[
         "dto.rs",
         "view_projection.rs",
         "interconnection_projection.rs",
         "component_view.rs",
+        // Owns relationship spelling serialization, not a consumer decision.
+        "model.rs",
     ];
     path.components().any(|component| {
         EXCLUDED_DIRECTORIES

@@ -724,6 +724,11 @@ pub struct DeclaredRelationshipFacts {
     pub reference_subsetting: Vec<DeclaredRelationshipTarget>,
     #[serde(default)]
     pub cross_subsetting: Vec<DeclaredRelationshipTarget>,
+    /// Authored verified-requirement targets whose resolved result is published
+    /// as a case-level `Subject` edge. Case subject declarations themselves
+    /// remain owned by their `typing` facts on `ElementKind::Subject` children.
+    #[serde(default)]
+    pub subject: Vec<DeclaredRelationshipTarget>,
 }
 
 /// A source-level reference carried by a structured parser relationship.
@@ -753,6 +758,7 @@ impl DeclaredRelationshipFacts {
             RelationshipKind::Redefinition => &mut self.redefinition,
             RelationshipKind::ReferenceSubsetting => &mut self.reference_subsetting,
             RelationshipKind::CrossSubsetting => &mut self.cross_subsetting,
+            RelationshipKind::Subject => &mut self.subject,
             _ => return false,
         };
         // Repeated authored clauses are distinct source facts even when they
