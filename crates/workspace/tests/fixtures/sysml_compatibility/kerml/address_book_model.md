@@ -94,6 +94,12 @@ semantic.unresolved_name 'String'
 (fixture-diagnostics
   (document "kerml/address_book_model.md"
     (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 0 0) (end 0 31))
+      )
     )
   )
 )

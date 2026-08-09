@@ -110,6 +110,18 @@ semantic.unresolved_name 'takePicture::shoot'
     (diagnostics
       (diagnostic
         (severity error)
+        (code "unresolved_pending_relationship")
+        (source "semantic")
+        (range (start 0 0) (end 0 0))
+      )
+      (diagnostic
+        (severity error)
+        (code "unresolved_pending_relationship")
+        (source "semantic")
+        (range (start 0 0) (end 0 0))
+      )
+      (diagnostic
+        (severity error)
         (code "recovered_part_def_body_element")
         (source "sysml")
         (range (start 3 1) (end 3 65))

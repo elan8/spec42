@@ -194,6 +194,12 @@ semantic.duplicate_name 'test x'
         (range (start 16 1) (end 16 49))
       )
       (diagnostic
+        (severity warning)
+        (code "succession_endpoint_invalid")
+        (source "semantic")
+        (range (start 19 1) (end 19 10))
+      )
+      (diagnostic
         (severity error)
         (code "recovered_action_body_element")
         (source "sysml")

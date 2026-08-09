@@ -426,6 +426,12 @@ semantic.unresolved_name 'Boolean'
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")
+        (range (start 0 0) (end 0 24))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
         (range (start 2 1) (end 2 32))
       )
       (diagnostic

@@ -54,6 +54,12 @@ part p : Foo;
 (fixture-diagnostics
   (document "sysml/feature_typing_mismatch.md"
     (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "incompatible_type_kind")
+        (source "semantic")
+        (range (start 1 0) (end 1 13))
+      )
     )
   )
 )

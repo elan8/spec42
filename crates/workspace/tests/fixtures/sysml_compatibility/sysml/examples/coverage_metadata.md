@@ -115,18 +115,6 @@ package Annotated {
       )
       (diagnostic
         (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 9 4) (end 9 50))
-      )
-      (diagnostic
-        (severity warning)
-        (code "metadata_keyword_unresolved")
-        (source "semantic")
-        (range (start 11 4) (end 11 16))
-      )
-      (diagnostic
-        (severity warning)
         (code "unsupported_annotation_syntax")
         (source "sysml")
         (range (start 13 4) (end 13 51))

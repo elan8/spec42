@@ -184,6 +184,18 @@ semantic.unresolved_name 'Real'
 (fixture-diagnostics
   (document "kerml/packets.md"
     (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 0 0) (end 0 31))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 1 0) (end 1 30))
+      )
     )
   )
 )

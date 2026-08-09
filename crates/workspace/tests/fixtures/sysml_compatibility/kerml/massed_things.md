@@ -96,6 +96,12 @@ semantic.unresolved_name 'Real'
 (fixture-diagnostics
   (document "kerml/massed_things.md"
     (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 0 0) (end 0 31))
+      )
     )
   )
 )

@@ -230,6 +230,24 @@ semantic.invalid_connection_end_count
   (document "sysml/examples/control_node_test.md"
     (diagnostics
       (diagnostic
+        (severity warning)
+        (code "succession_endpoint_invalid")
+        (source "semantic")
+        (range (start 0 0) (end 0 329))
+      )
+      (diagnostic
+        (severity warning)
+        (code "succession_endpoint_invalid")
+        (source "semantic")
+        (range (start 11 1) (end 11 8))
+      )
+      (diagnostic
+        (severity warning)
+        (code "succession_endpoint_invalid")
+        (source "semantic")
+        (range (start 11 1) (end 11 8))
+      )
+      (diagnostic
         (severity error)
         (code "recovered_action_body_element")
         (source "sysml")
