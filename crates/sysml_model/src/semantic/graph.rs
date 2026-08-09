@@ -13,11 +13,11 @@ use url::Url;
 
 use crate::semantic::model::{
     node_matches_simple_name, ConnectStatementDetail, DeclaredFeatureValueKind,
-    DeclaredMembershipFacts, EffectiveFeatureOwnership, EffectiveMembershipVisibility,
+    DeclaredMembershipFacts, DerivedRelationshipResolution, EffectiveFeatureOwnership, EffectiveMembershipVisibility,
     EffectiveSemanticFacts, ElementKind, ExpressionResultId, ExpressionResultRole,
     FeatureOwnershipProvenance, ImpliedFeatureOwnership, ImpliedFeatureValueBinding,
-    ImpliedMultiplicity, MembershipVisibilityProvenance, NodeId, RelationshipKind, SemanticEdge,
-    SemanticNode, VisibilityKind,
+    ImpliedMultiplicity, ImpliedRelationshipRule, MembershipVisibilityProvenance, NodeId,
+    RelationshipKind, RelationshipProvenance, SemanticEdge, SemanticNode, VisibilityKind,
 };
 
 fn serialize_url<S: Serializer>(url: &Url, s: S) -> Result<S::Ok, S::Error> {
@@ -57,6 +57,11 @@ pub struct SemanticGraphData {
     pub node_index_by_id: HashMap<NodeId, NodeIndex>,
     pub nodes_by_uri: HashMap<Url, Vec<NodeId>>,
     pub node_ids_by_qualified_name: HashMap<String, Vec<NodeId>>,
+    /// Document identities admitted as canonical library sources for universal standard-library
+    /// relationship resolution. A workspace declaration with a matching qualified name is never
+    /// a substitute for one of these targets.
+    #[serde(default)]
+    pub standard_library_uris: HashSet<Url>,
     /// Rebuilt after deserialization via [`SemanticGraphData::rebuild_derived_indexes`].
     #[serde(skip)]
     pub children_by_parent_id: HashMap<NodeId, Vec<NodeId>>,
@@ -70,6 +75,12 @@ pub struct SemanticGraphData {
     /// this is model state: consumers use it instead of re-deriving defaults or closure facts.
     #[serde(default)]
     pub effective_facts_by_node_id: HashMap<NodeId, EffectiveSemanticFacts>,
+    /// Graph-owned resolution outcomes for universal implied relationships. This is semantic
+    /// state, not a host projection cache: absent standard-library prerequisites and ambiguity
+    /// remain observable rather than being collapsed into a missing edge.
+    #[serde(default)]
+    pub derived_relationship_resolution_by_source_id:
+        HashMap<NodeId, DerivedRelationshipResolution>,
     #[serde(skip)]
     pub import_lookup_cache: Mutex<HashMap<(NodeId, String, bool), Vec<NodeId>>>,
     #[serde(skip)]
@@ -113,12 +124,16 @@ impl Clone for SemanticGraphData {
             node_index_by_id: self.node_index_by_id.clone(),
             nodes_by_uri: self.nodes_by_uri.clone(),
             node_ids_by_qualified_name: self.node_ids_by_qualified_name.clone(),
+            standard_library_uris: self.standard_library_uris.clone(),
             children_by_parent_id: self.children_by_parent_id.clone(),
             pending_expression_relationships: self.pending_expression_relationships.clone(),
             pending_relationships: self.pending_relationships.clone(),
             // A cloned/published graph must never inherit an unfinished builder handoff.
             pending_declared_membership_facts: HashMap::new(),
             effective_facts_by_node_id: self.effective_facts_by_node_id.clone(),
+            derived_relationship_resolution_by_source_id: self
+                .derived_relationship_resolution_by_source_id
+                .clone(),
             import_lookup_cache: Mutex::new(HashMap::new()),
             query_indexes: Mutex::new(None),
             shape_cache: Mutex::new(ShapeCache::default()),
@@ -192,6 +207,151 @@ impl SemanticGraph {
                 provenance: MembershipVisibilityProvenance::Implied,
             },
         })
+    /// Returns the graph-published outcome for the universal implied relationship of `node`.
+    /// Non-applicable kinds are explicit, rather than being represented as a successful absence.
+    pub fn universal_relationship_resolution_for(
+        &self,
+        node: &SemanticNode,
+    ) -> DerivedRelationshipResolution {
+        match self
+            .derived_relationship_resolution_by_source_id
+            .get(&node.id)
+        {
+            Some(resolution) => resolution.clone(),
+            None if node
+                .element_kind
+                .universal_standard_library_relationship()
+                .is_some() =>
+            {
+                DerivedRelationshipResolution::NotRun
+            }
+            None => DerivedRelationshipResolution::NotApplicable,
+        }
+    }
+
+    /// Marks document identities that are trusted library sources for the current graph
+    /// publication. This metadata is an input to derived relationship resolution, not a cache.
+    pub fn set_standard_library_uris<I>(&mut self, uris: I)
+    where
+        I: IntoIterator<Item = Url>,
+    {
+        self.standard_library_uris = uris.into_iter().collect();
+        self.derived_relationship_resolution_by_source_id.clear();
+    }
+
+    /// Adds canonical library document identities while preserving any already-merged library
+    /// graph provenance (for example when linking workspace documents onto a cached library).
+    pub fn add_standard_library_uris<I>(&mut self, uris: I)
+    where
+        I: IntoIterator<Item = Url>,
+    {
+        self.standard_library_uris.extend(uris);
+        self.derived_relationship_resolution_by_source_id.clear();
+    }
+
+    /// Recomputes universal standard-library relationships from this coherent graph state.
+    /// It first removes this rule's previous edges and statuses, so merge, patch, and library
+    /// changes cannot publish a stale resolved target.
+    pub fn refresh_universal_standard_library_relationships(&mut self) {
+        let stale_edges = self
+            .graph
+            .edge_references()
+            .filter(|edge| {
+                matches!(
+                    edge.weight().provenance,
+                    RelationshipProvenance::Implied(
+                        ImpliedRelationshipRule::UniversalStandardLibraryRelationship
+                    )
+                )
+            })
+            .map(|edge| edge.id())
+            .collect::<Vec<_>>();
+        for edge in stale_edges {
+            self.graph.remove_edge(edge);
+        }
+        self.derived_relationship_resolution_by_source_id.clear();
+
+        let nodes = self.node_index_by_id.keys().cloned().collect::<Vec<_>>();
+        let mut nodes = nodes;
+        nodes.sort_by(|left, right| {
+            left.uri
+                .as_str()
+                .cmp(right.uri.as_str())
+                .then_with(|| left.qualified_name.cmp(&right.qualified_name))
+        });
+
+        for source_id in nodes {
+            let Some(source) = self.get_node(&source_id) else {
+                continue;
+            };
+            let Some(specification) = source
+                .element_kind
+                .universal_standard_library_relationship()
+            else {
+                continue;
+            };
+            let mut candidates = self
+                .node_ids_for_qualified_name(specification.target.qualified_name())
+                .unwrap_or_default()
+                .to_vec();
+            candidates.retain(|candidate| self.standard_library_uris.contains(&candidate.uri));
+            candidates.sort_by(|left, right| {
+                left.uri
+                    .as_str()
+                    .cmp(right.uri.as_str())
+                    .then_with(|| left.qualified_name.cmp(&right.qualified_name))
+            });
+
+            let non_self_candidates = candidates
+                .iter()
+                .filter(|candidate| **candidate != source_id)
+                .cloned()
+                .collect::<Vec<_>>();
+            let resolution = match non_self_candidates.as_slice() {
+                [] if candidates.iter().any(|candidate| candidate == &source_id) => {
+                    DerivedRelationshipResolution::SelfTargetSuppressed {
+                        target: source_id.clone(),
+                    }
+                }
+                [] => DerivedRelationshipResolution::MissingPrerequisite {
+                    target: specification.target,
+                },
+                [target] => {
+                    let source_index = self.node_index_by_id.get(&source_id).copied();
+                    let target_index = self.node_index_by_id.get(target).copied();
+                    let authored_equivalent_exists = source_index.zip(target_index).is_some_and(
+                        |(source_index, target_index)| {
+                            self.graph
+                                .edges_connecting(source_index, target_index)
+                                .any(|edge| {
+                                    edge.weight().kind == specification.kind
+                                        && edge.weight().provenance
+                                            == RelationshipProvenance::Authored
+                                })
+                        },
+                    );
+                    if !authored_equivalent_exists {
+                        self.insert_workspace_edge(
+                            &source_id,
+                            target,
+                            SemanticEdge::implied(
+                                specification.kind,
+                                ImpliedRelationshipRule::UniversalStandardLibraryRelationship,
+                            ),
+                        );
+                    }
+                    DerivedRelationshipResolution::Resolved {
+                        target: target.clone(),
+                    }
+                }
+                _ => DerivedRelationshipResolution::Ambiguous {
+                    candidates: non_self_candidates,
+                },
+            };
+            self.derived_relationship_resolution_by_source_id
+                .insert(source_id, resolution);
+        }
+        self.invalidate_query_indexes();
     }
 
     /// Returns a feature's ownership after applying its parser-backed modifier or the one
@@ -491,11 +651,13 @@ impl SemanticGraphData {
             node_index_by_id: HashMap::new(),
             nodes_by_uri: HashMap::new(),
             node_ids_by_qualified_name: HashMap::new(),
+            standard_library_uris: HashSet::new(),
             children_by_parent_id: HashMap::new(),
             pending_expression_relationships: Vec::new(),
             pending_relationships: Vec::new(),
             pending_declared_membership_facts: HashMap::new(),
             effective_facts_by_node_id: HashMap::new(),
+            derived_relationship_resolution_by_source_id: HashMap::new(),
             import_lookup_cache: Mutex::new(HashMap::new()),
             query_indexes: Mutex::new(None),
             shape_cache: Mutex::new(ShapeCache::default()),
@@ -693,6 +855,7 @@ impl SemanticGraphData {
             }
         }
         self.effective_facts_by_node_id.clear();
+        self.derived_relationship_resolution_by_source_id.clear();
         self.remove_recorded_cross_document_edges_for_uri(uri);
         self.invalidate_query_indexes();
         self.clear_import_lookup_cache();
@@ -723,6 +886,7 @@ impl SemanticGraphData {
         shadowed_packages: Option<&std::collections::HashSet<String>>,
     ) {
         self.effective_facts_by_node_id.clear();
+        self.derived_relationship_resolution_by_source_id.clear();
         self.pending_relationships
             .extend(other.pending_relationships.iter().cloned());
         self.pending_expression_relationships
@@ -733,8 +897,9 @@ impl SemanticGraphData {
                     .node_ids_by_qualified_name
                     .contains_key(&id.qualified_name);
                 let is_package = matches!(node.element_kind, ElementKind::Package);
+                let is_canonical_library_node = self.standard_library_uris.contains(&id.uri);
                 if Self::qualified_name_under_packages(&id.qualified_name, shadowed)
-                    || (exact_name_exists && !is_package)
+                    || (exact_name_exists && !is_package && !is_canonical_library_node)
                 {
                     continue;
                 }
@@ -1053,6 +1218,27 @@ impl SemanticGraphData {
             }
         }
         targets
+    }
+
+    /// Returns outgoing targets with both relationship kind and provenance selected. This is the
+    /// provenance-aware companion to [`Self::outgoing_targets_by_kind`]; the latter intentionally
+    /// returns authored and implied facts from the one canonical edge store.
+    pub fn outgoing_targets_by_kind_and_provenance(
+        &self,
+        node: &SemanticNode,
+        kind: RelationshipKind,
+        provenance: RelationshipProvenance,
+    ) -> Vec<&SemanticNode> {
+        let Some(&source_index) = self.node_index_by_id.get(&node.id) else {
+            return Vec::new();
+        };
+        let indexes = self.query_indexes();
+        self.graph
+            .edges_directed(source_index, Direction::Outgoing)
+            .filter(|edge| edge.weight().kind == kind && edge.weight().provenance == provenance)
+            .filter_map(|edge| indexes.index_to_node_id.get(&edge.target()))
+            .filter_map(|target_id| self.get_node(target_id))
+            .collect()
     }
 
     /// Returns whether `specific` is identical to, or specializes, `general`.

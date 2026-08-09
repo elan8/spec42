@@ -362,7 +362,9 @@ pub fn add_semantic_edge_once(
             return AddSemanticEdgeResult::Added;
         }
         for existing in g.graph.edges_connecting(src_idx, tgt_idx) {
-            if existing.weight().kind == edge.kind {
+            if existing.weight().kind == edge.kind
+                && existing.weight().provenance == edge.provenance
+            {
                 return AddSemanticEdgeResult::SkippedSameKind;
             }
         }
@@ -370,7 +372,7 @@ pub fn add_semantic_edge_once(
         return AddSemanticEdgeResult::Added;
     }
     for existing in g.graph.edges_connecting(src_idx, tgt_idx) {
-        if existing.weight().kind == edge.kind {
+        if existing.weight().kind == edge.kind && existing.weight().provenance == edge.provenance {
             return AddSemanticEdgeResult::SkippedSameKind;
         }
     }

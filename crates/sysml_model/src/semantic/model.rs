@@ -36,7 +36,7 @@ impl NodeId {
 
 /// SysML v2 relationship kinds (edges in the graph).
 #[allow(dead_code)] // some relationship kinds are staged for upcoming semantic features
-#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub enum RelationshipKind {
     Typing,
@@ -336,6 +336,103 @@ impl ElementKind {
             ElementKind::Purpose => "purpose",
             ElementKind::Verify => "verify",
             ElementKind::Unknown(s) => s.as_str(),
+        }
+    }
+
+    /// Returns the complete universal relationship required by this concrete SysML kind.
+    /// The relationship kind and target are intentionally inseparable: downstream layers must
+    /// not recover the distinction from a generic definition/usage test.
+    pub fn universal_standard_library_relationship(
+        &self,
+    ) -> Option<UniversalStandardLibraryRelationship> {
+        use StandardLibraryElement as Target;
+        use UniversalStandardLibraryRelationship as Relationship;
+        match self {
+            Self::AttributeDef | Self::EnumDef => {
+                Some(Relationship::specializes(Target::BaseDataValue))
+            }
+            Self::Attribute | Self::Enumeration | Self::EnumeratedValue => {
+                Some(Relationship::subsets(Target::BaseDataValues))
+            }
+            Self::IndividualDef => Some(Relationship::specializes(Target::OccurrencesLife)),
+            Self::Occurrence | Self::Individual => {
+                Some(Relationship::subsets(Target::OccurrencesOccurrences))
+            }
+            Self::ItemDef => Some(Relationship::specializes(Target::ItemsItem)),
+            Self::Item => Some(Relationship::subsets(Target::ItemsItems)),
+            Self::PartDef => Some(Relationship::specializes(Target::PartsPart)),
+            Self::Part | Self::Actor | Self::Stakeholder => {
+                Some(Relationship::subsets(Target::PartsParts))
+            }
+            Self::PortDef | Self::ConjugatedPortDefinition => {
+                Some(Relationship::specializes(Target::PortsPort))
+            }
+            Self::Port => Some(Relationship::subsets(Target::PortsPorts)),
+            Self::ConnectionDef => Some(Relationship::specializes(Target::ConnectionsConnection)),
+            Self::Connection => Some(Relationship::subsets(Target::ConnectionsConnections)),
+            Self::InterfaceDef => Some(Relationship::specializes(Target::InterfacesInterface)),
+            Self::Interface => Some(Relationship::subsets(Target::InterfacesInterfaces)),
+            Self::AllocationDef => Some(Relationship::specializes(Target::AllocationsAllocation)),
+            Self::Allocation => Some(Relationship::subsets(Target::AllocationsAllocations)),
+            Self::FlowDef => Some(Relationship::specializes(Target::FlowsMessageAction)),
+            Self::Flow => Some(Relationship::subsets(Target::FlowsMessages)),
+            Self::ActionDef => Some(Relationship::specializes(Target::ActionsAction)),
+            Self::Action | Self::Perform => Some(Relationship::subsets(Target::ActionsActions)),
+            Self::Assign => Some(Relationship::subsets(Target::ActionsAssignmentActions)),
+            Self::ForLoop => Some(Relationship::subsets(Target::ActionsForLoopActions)),
+            Self::Terminate => Some(Relationship::subsets(Target::ActionsTerminateActions)),
+            Self::While => Some(Relationship::subsets(Target::ActionsWhileLoopActions)),
+            Self::If | Self::Else => Some(Relationship::subsets(Target::ActionsIfThenActions)),
+            Self::Transition => Some(Relationship::subsets(Target::ActionsTransitionActions)),
+            Self::TransitionTrigger => Some(Relationship::subsets(Target::ActionsAcceptActions)),
+            Self::TransitionEffect => Some(Relationship::subsets(Target::ActionsActions)),
+            Self::StateDef => Some(Relationship::specializes(Target::StatesStateAction)),
+            Self::State | Self::FinalState => {
+                Some(Relationship::subsets(Target::StatesStateActions))
+            }
+            Self::CalcDef => Some(Relationship::specializes(Target::CalculationsCalculation)),
+            Self::Calc => Some(Relationship::subsets(Target::CalculationsCalculations)),
+            Self::ConstraintDef => Some(Relationship::specializes(
+                Target::ConstraintsConstraintCheck,
+            )),
+            Self::Constraint | Self::Assert | Self::AssertConstraint | Self::RequireConstraint => {
+                Some(Relationship::subsets(Target::ConstraintsConstraintChecks))
+            }
+            Self::RequirementDef => Some(Relationship::specializes(
+                Target::RequirementsRequirementCheck,
+            )),
+            Self::Requirement | Self::VerifiedRequirement | Self::Objective => {
+                Some(Relationship::subsets(Target::RequirementsRequirementChecks))
+            }
+            Self::ConcernDef => Some(Relationship::specializes(Target::RequirementsConcernCheck)),
+            Self::Concern => Some(Relationship::subsets(Target::RequirementsConcernChecks)),
+            Self::CaseDef => Some(Relationship::specializes(Target::CasesCase)),
+            Self::Case => Some(Relationship::subsets(Target::CasesCases)),
+            Self::AnalysisDef => Some(Relationship::specializes(Target::AnalysisCasesAnalysisCase)),
+            Self::Analysis => Some(Relationship::subsets(Target::AnalysisCasesAnalysisCases)),
+            Self::VerificationDef => Some(Relationship::specializes(
+                Target::VerificationCasesVerificationCase,
+            )),
+            Self::Verification => Some(Relationship::subsets(
+                Target::VerificationCasesVerificationCases,
+            )),
+            Self::UseCaseDef => Some(Relationship::specializes(Target::UseCasesUseCase)),
+            Self::UseCase | Self::IncludeUseCase => {
+                Some(Relationship::subsets(Target::UseCasesUseCases))
+            }
+            Self::RenderingDef => Some(Relationship::specializes(Target::ViewsRendering)),
+            Self::Rendering | Self::ViewRendering => {
+                Some(Relationship::subsets(Target::ViewsRenderings))
+            }
+            Self::ViewDef => Some(Relationship::specializes(Target::ViewsView)),
+            Self::View => Some(Relationship::subsets(Target::ViewsViews)),
+            Self::ViewpointDef => Some(Relationship::specializes(Target::ViewsViewpoint)),
+            Self::Viewpoint => Some(Relationship::subsets(Target::ViewsViewpoints)),
+            Self::MetadataDef => Some(Relationship::specializes(Target::MetadataMetadataItem)),
+            Self::MetadataUsage | Self::MetadataKeyword => {
+                Some(Relationship::subsets(Target::MetadataMetadataItems))
+            }
+            _ => None,
         }
     }
 
@@ -644,6 +741,11 @@ pub struct FlowStatementDetail {
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct SemanticEdge {
     pub kind: RelationshipKind,
+    /// Whether this relationship was authored or was published by a named semantic rule.
+    /// The rule is part of the fact's identity: consumers must not infer it from an absent
+    /// source range or from relationship kind.
+    #[serde(default)]
+    pub provenance: RelationshipProvenance,
     /// Set when a structural expression relationship (`connect` or `bind`) was resolved, retaining
     /// its declaring context and endpoint expressions for instance projection.
     pub connect: Option<ConnectStatementDetail>,
@@ -656,6 +758,17 @@ impl SemanticEdge {
     pub fn plain(kind: RelationshipKind) -> Self {
         Self {
             kind,
+            provenance: RelationshipProvenance::Authored,
+            connect: None,
+            flow: None,
+        }
+    }
+
+    /// Constructs a relationship produced by a graph-owned semantic rule.
+    pub fn implied(kind: RelationshipKind, rule: ImpliedRelationshipRule) -> Self {
+        Self {
+            kind,
+            provenance: RelationshipProvenance::Implied(rule),
             connect: None,
             flow: None,
         }
@@ -664,6 +777,7 @@ impl SemanticEdge {
     pub fn connection_with_connect(connect: ConnectStatementDetail) -> Self {
         Self {
             kind: RelationshipKind::Connection,
+            provenance: RelationshipProvenance::Authored,
             connect: Some(connect),
             flow: None,
         }
@@ -675,6 +789,7 @@ impl SemanticEdge {
     ) -> Self {
         Self {
             kind,
+            provenance: RelationshipProvenance::Authored,
             connect: Some(connect),
             flow: None,
         }
@@ -683,10 +798,198 @@ impl SemanticEdge {
     pub fn flow_with_detail(kind: RelationshipKind, flow: FlowStatementDetail) -> Self {
         Self {
             kind,
+            provenance: RelationshipProvenance::Authored,
             connect: None,
             flow: Some(flow),
         }
     }
+}
+
+/// Provenance carried by every resolved relationship edge.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub enum RelationshipProvenance {
+    Authored,
+    Implied(ImpliedRelationshipRule),
+}
+
+impl Default for RelationshipProvenance {
+    fn default() -> Self {
+        Self::Authored
+    }
+}
+
+/// Exhaustive identities of rules that may publish implied relationship facts.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub enum ImpliedRelationshipRule {
+    UniversalStandardLibraryRelationship,
+}
+
+/// The complete relationship published by the universal standard-library rule for an element
+/// kind. Keeping kind and target together prevents consumers from reimplementing the policy.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
+pub struct UniversalStandardLibraryRelationship {
+    pub kind: RelationshipKind,
+    pub target: StandardLibraryElement,
+}
+
+impl UniversalStandardLibraryRelationship {
+    const fn specializes(target: StandardLibraryElement) -> Self {
+        Self {
+            kind: RelationshipKind::Specializes,
+            target,
+        }
+    }
+
+    const fn subsets(target: StandardLibraryElement) -> Self {
+        Self {
+            kind: RelationshipKind::Subsetting,
+            target,
+        }
+    }
+}
+
+/// Closed identities of the standard-library elements used by universal SysML relationships.
+/// Their canonical qualified identity belongs to the semantic model, never to a host projection.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub enum StandardLibraryElement {
+    BaseDataValue,
+    BaseDataValues,
+    OccurrencesLife,
+    OccurrencesOccurrences,
+    ItemsItem,
+    ItemsItems,
+    PartsPart,
+    PartsParts,
+    PortsPort,
+    PortsPorts,
+    ConnectionsConnection,
+    ConnectionsConnections,
+    InterfacesInterface,
+    InterfacesInterfaces,
+    AllocationsAllocation,
+    AllocationsAllocations,
+    FlowsMessageAction,
+    FlowsMessages,
+    ActionsAction,
+    ActionsActions,
+    ActionsAssignmentActions,
+    ActionsForLoopActions,
+    ActionsTerminateActions,
+    ActionsWhileLoopActions,
+    ActionsIfThenActions,
+    ActionsTransitionActions,
+    ActionsAcceptActions,
+    StatesStateAction,
+    StatesStateActions,
+    CalculationsCalculation,
+    CalculationsCalculations,
+    ConstraintsConstraintCheck,
+    ConstraintsConstraintChecks,
+    RequirementsRequirementCheck,
+    RequirementsRequirementChecks,
+    RequirementsConcernCheck,
+    RequirementsConcernChecks,
+    CasesCase,
+    CasesCases,
+    AnalysisCasesAnalysisCase,
+    AnalysisCasesAnalysisCases,
+    VerificationCasesVerificationCase,
+    VerificationCasesVerificationCases,
+    UseCasesUseCase,
+    UseCasesUseCases,
+    ViewsRendering,
+    ViewsRenderings,
+    ViewsView,
+    ViewsViews,
+    ViewsViewpoint,
+    ViewsViewpoints,
+    MetadataMetadataItem,
+    MetadataMetadataItems,
+}
+
+impl StandardLibraryElement {
+    pub fn qualified_name(self) -> &'static str {
+        match self {
+            Self::BaseDataValue => "Base::DataValue",
+            Self::BaseDataValues => "Base::dataValues",
+            Self::OccurrencesLife => "Occurrences::Life",
+            Self::OccurrencesOccurrences => "Occurrences::occurrences",
+            Self::ItemsItem => "Items::Item",
+            Self::ItemsItems => "Items::items",
+            Self::PartsPart => "Parts::Part",
+            Self::PartsParts => "Parts::parts",
+            Self::PortsPort => "Ports::Port",
+            Self::PortsPorts => "Ports::ports",
+            Self::ConnectionsConnection => "Connections::Connection",
+            Self::ConnectionsConnections => "Connections::connections",
+            Self::InterfacesInterface => "Interfaces::Interface",
+            Self::InterfacesInterfaces => "Interfaces::interfaces",
+            Self::AllocationsAllocation => "Allocations::Allocation",
+            Self::AllocationsAllocations => "Allocations::allocations",
+            Self::FlowsMessageAction => "Flows::MessageAction",
+            Self::FlowsMessages => "Flows::messages",
+            Self::ActionsAction => "Actions::Action",
+            Self::ActionsActions => "Actions::actions",
+            Self::ActionsAssignmentActions => "Actions::assignmentActions",
+            Self::ActionsForLoopActions => "Actions::forLoopActions",
+            Self::ActionsTerminateActions => "Actions::terminateActions",
+            Self::ActionsWhileLoopActions => "Actions::whileLoopActions",
+            Self::ActionsIfThenActions => "Actions::ifThenActions",
+            Self::ActionsTransitionActions => "Actions::transitionActions",
+            Self::ActionsAcceptActions => "Actions::acceptActions",
+            Self::StatesStateAction => "States::StateAction",
+            Self::StatesStateActions => "States::stateActions",
+            Self::CalculationsCalculation => "Calculations::Calculation",
+            Self::CalculationsCalculations => "Calculations::calculations",
+            Self::ConstraintsConstraintCheck => "Constraints::ConstraintCheck",
+            Self::ConstraintsConstraintChecks => "Constraints::constraintChecks",
+            Self::RequirementsRequirementCheck => "Requirements::RequirementCheck",
+            Self::RequirementsRequirementChecks => "Requirements::requirementChecks",
+            Self::RequirementsConcernCheck => "Requirements::ConcernCheck",
+            Self::RequirementsConcernChecks => "Requirements::concernChecks",
+            Self::CasesCase => "Cases::Case",
+            Self::CasesCases => "Cases::cases",
+            Self::AnalysisCasesAnalysisCase => "AnalysisCases::AnalysisCase",
+            Self::AnalysisCasesAnalysisCases => "AnalysisCases::analysisCases",
+            Self::VerificationCasesVerificationCase => "VerificationCases::VerificationCase",
+            Self::VerificationCasesVerificationCases => "VerificationCases::verificationCases",
+            Self::UseCasesUseCase => "UseCases::UseCase",
+            Self::UseCasesUseCases => "UseCases::useCases",
+            Self::ViewsRendering => "Views::Rendering",
+            Self::ViewsRenderings => "Views::renderings",
+            Self::ViewsView => "Views::View",
+            Self::ViewsViews => "Views::views",
+            Self::ViewsViewpoint => "Views::Viewpoint",
+            Self::ViewsViewpoints => "Views::viewpoints",
+            Self::MetadataMetadataItem => "Metadata::MetadataItem",
+            Self::MetadataMetadataItems => "Metadata::metadataItems",
+        }
+    }
+}
+
+/// Published outcome of the universal standard-library relationship rule for one source.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub enum DerivedRelationshipResolution {
+    /// The current graph state has not crossed the implied-relationship publication barrier.
+    NotRun,
+    NotApplicable,
+    Resolved {
+        target: NodeId,
+    },
+    MissingPrerequisite {
+        target: StandardLibraryElement,
+    },
+    Ambiguous {
+        candidates: Vec<NodeId>,
+    },
+    SelfTargetSuppressed {
+        target: NodeId,
+    },
+    Unsupported,
 }
 
 impl RelationshipKind {

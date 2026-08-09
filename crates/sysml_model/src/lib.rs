@@ -47,12 +47,12 @@ pub use semantic::model::{
     ConnectStatementDetail, DeclaredExpression, DeclaredFeatureProperties, DeclaredImportFacts,
     DeclaredImportTarget, DeclaredMembershipFacts, DeclaredMembershipKind, DeclaredMultiplicity,
     DeclaredMultiplicityBound, DeclaredMultiplicityBounds, DeclaredRelationshipFacts,
-    DeclaredRelationshipTarget, DeclaredSemanticFacts, EffectiveFeatureOwnership,
-    EffectiveMembershipVisibility, EffectiveSemanticFacts, ElementKind, ExpressionResultId,
+    DeclaredRelationshipTarget, DeclaredSemanticFacts, DerivedRelationshipResolution,
+    EffectiveFeatureOwnership, EffectiveMembershipVisibility, EffectiveSemanticFacts, ElementKind, ExpressionResultId,
     ExpressionResultRole, FeatureOwnershipProvenance, FlowStatementDetail, ImpliedFeatureOwnership,
-    ImpliedFeatureValueBinding, ImpliedMultiplicity, ImportOrigin, ImportShape,
-    MembershipVisibilityProvenance, NodeId, RelationshipKind, SemanticEdge, SemanticNode,
-    VisibilityKind,
+    ImpliedFeatureValueBinding, ImpliedMultiplicity, ImpliedRelationshipRule, ImportOrigin, ImportShape, MembershipVisibilityProvenance, NodeId,
+    RelationshipKind, RelationshipProvenance, SemanticEdge, SemanticNode, StandardLibraryElement,
+    UniversalStandardLibraryRelationship, VisibilityKind,
 };
 pub use semantic::pipeline::{
     build_and_link_graph, build_and_link_graph_parallel, evaluate_workspace_graph,

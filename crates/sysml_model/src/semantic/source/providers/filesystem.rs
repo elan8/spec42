@@ -14,6 +14,7 @@ pub struct FileSystemDocumentProvider {
     target: PathBuf,
     workspace_root: Option<PathBuf>,
     library_paths: Vec<PathBuf>,
+    standard_library_paths: Vec<PathBuf>,
     full_library_scan: bool,
     library_seed_packages: Vec<String>,
 }
@@ -28,6 +29,7 @@ impl FileSystemDocumentProvider {
             target,
             workspace_root,
             library_paths,
+            standard_library_paths: Vec::new(),
             full_library_scan: false,
             library_seed_packages: Vec::new(),
         }
@@ -45,12 +47,24 @@ impl FileSystemDocumentProvider {
         self.library_seed_packages = packages;
         self
     }
+
+    /// Marks which configured library roots are the canonical SysML standard library. Other
+    /// library roots remain dependencies and cannot satisfy universal implied relationships.
+    pub fn with_standard_library_paths(mut self, paths: Vec<PathBuf>) -> Self {
+        self.standard_library_paths = paths;
+        self
+    }
 }
 
 impl SysmlDocumentProvider for FileSystemDocumentProvider {
     fn load_documents(&self) -> Result<Vec<SysmlDocument>, String> {
         let workspace_root = resolve_workspace_root(&self.target, self.workspace_root.as_deref());
         let workspace_root = canonicalize_or_self(&workspace_root);
+        let standard_library_paths = self
+            .standard_library_paths
+            .iter()
+            .map(|path| canonicalize_or_self(path))
+            .collect::<Vec<_>>();
 
         let mut documents = Vec::new();
         let mut workspace_file_contents = Vec::new();
@@ -89,6 +103,7 @@ impl SysmlDocumentProvider for FileSystemDocumentProvider {
         if self.full_library_scan {
             for library_path in &self.library_paths {
                 let library_root = canonicalize_or_self(library_path);
+                let source_kind = library_source_kind(&library_root, &standard_library_paths);
                 if !library_root.exists() {
                     continue;
                 }
@@ -105,7 +120,7 @@ impl SysmlDocumentProvider for FileSystemDocumentProvider {
                         uri,
                         content,
                         path_hint: Some(path_hint),
-                        source_kind: SysmlDocumentSourceKind::Library,
+                        source_kind,
                         sha256: None,
                         byte_size: None,
                     });
@@ -142,7 +157,10 @@ impl SysmlDocumentProvider for FileSystemDocumentProvider {
                         uri,
                         content: file.content,
                         path_hint: Some(file.path.replace('\\', "/")),
-                        source_kind: SysmlDocumentSourceKind::Library,
+                        source_kind: library_source_kind(
+                            &canonicalize_or_self(&PathBuf::from(&file.root)),
+                            &standard_library_paths,
+                        ),
                         sha256: None,
                         byte_size: None,
                     });
@@ -151,6 +169,14 @@ impl SysmlDocumentProvider for FileSystemDocumentProvider {
         }
 
         Ok(documents)
+    }
+}
+
+fn library_source_kind(root: &Path, standard_library_paths: &[PathBuf]) -> SysmlDocumentSourceKind {
+    if standard_library_paths.iter().any(|path| path == root) {
+        SysmlDocumentSourceKind::StandardLibrary
+    } else {
+        SysmlDocumentSourceKind::Library
     }
 }
 

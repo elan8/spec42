@@ -44,6 +44,28 @@ pub enum HostRelationshipMetaclass {
     Relationship,
 }
 
+/// Provenance adapted from the graph-owned relationship fact. `is_implied` remains as a
+/// compatibility convenience, but consumers needing rule identity use this typed field.
+#[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, Eq)]
+#[serde(rename_all = "camelCase")]
+pub enum HostRelationshipProvenance {
+    Authored,
+    Implied(HostImpliedRelationshipRule),
+}
+
+impl Default for HostRelationshipProvenance {
+    fn default() -> Self {
+        Self::Authored
+    }
+}
+
+#[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, Eq)]
+#[serde(rename_all = "camelCase")]
+pub enum HostImpliedRelationshipRule {
+    UniversalStandardLibraryRelationship,
+    EnumerationValueTyping,
+}
+
 /// The KerML membership form used to establish containment.  This is kept
 /// separate from the graph-resolution `RelationshipKind`: a parent/child
 /// relation is a model element in its own right, not merely a display tree.
@@ -258,6 +280,9 @@ pub struct HostSemanticModelRelationship {
     /// Whether this relationship was implied rather than explicitly declared.
     #[serde(default)]
     pub is_implied: bool,
+    /// Typed provenance from the canonical graph relationship fact.
+    #[serde(default)]
+    pub provenance: HostRelationshipProvenance,
     /// Concrete relationship metaclass; `kind` remains the graph-resolution fact.
     #[serde(default)]
     pub metaclass: HostRelationshipMetaclass,

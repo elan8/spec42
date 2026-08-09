@@ -20,10 +20,10 @@ pub use output::Spec42ProjectionOutput;
 pub use projection::{
     HostConnectorEnd, HostElementFacts, HostExpression, HostExpressionArgument,
     HostFeatureOwnership, HostFeatureOwnershipProvenance, HostFeatureProperties, HostFeatureValue,
-    HostImportOrigin, HostImportShape, HostMembershipFacts, HostMembershipKind,
+    HostImpliedRelationshipRule, HostImportOrigin, HostImportShape, HostMembershipFacts, HostMembershipKind,
     HostMembershipVisibilityProvenance, HostMultiplicity, HostRelationshipMetaclass,
-    HostSemanticModelNode, HostSemanticModelRelationship, HostSemanticProjection,
-    HostVisibilityKind,
+    HostRelationshipProvenance, HostSemanticModelNode, HostSemanticModelRelationship,
+    HostSemanticProjection, HostVisibilityKind,
 };
 pub use request::{ValidationTiming, WorkspaceLoadRequest};
 pub use update::update_workspace_snapshot;

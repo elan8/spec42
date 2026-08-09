@@ -140,6 +140,12 @@ fn diff_relationship_fields(
     );
     push_change(
         &mut fields,
+        "provenance",
+        &previous.provenance,
+        &next.provenance,
+    );
+    push_change(
+        &mut fields,
         "metaclass",
         &previous.metaclass,
         &next.metaclass,
@@ -186,7 +192,9 @@ fn push_change<T: serde::Serialize + PartialEq>(
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::snapshot::{HostRelationshipMetaclass, HostSemanticProjection};
+    use crate::snapshot::{
+        HostRelationshipMetaclass, HostRelationshipProvenance, HostSemanticProjection,
+    };
     use sysml_model::RelationshipKind;
 
     fn relationship() -> HostSemanticModelRelationship {
@@ -198,6 +206,7 @@ mod tests {
             related_element_ids: vec!["s42e:source".to_string(), "s42e:target".to_string()],
             range: None,
             is_implied: false,
+            provenance: HostRelationshipProvenance::Authored,
             metaclass: HostRelationshipMetaclass::FeatureTyping,
             membership_kind: None,
             visibility: None,

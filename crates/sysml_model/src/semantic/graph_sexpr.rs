@@ -14,7 +14,8 @@ use url::Url;
 use crate::semantic::graph::{PendingExpressionRelationship, PendingRelationship, SemanticGraph};
 use crate::semantic::model::{
     DeclaredExpression, DeclaredFeatureProperties, DeclaredFeatureValueKind,
-    DeclaredMultiplicityBound, ExpressionResultRole, NodeId, SemanticEdge, SemanticNode,
+    DeclaredMultiplicityBound, DerivedRelationshipResolution, ExpressionResultRole,
+    ImpliedRelationshipRule, NodeId, RelationshipProvenance, SemanticEdge, SemanticNode,
 };
 
 const FORMAT_ROOT: &str = "semantic-graph";
@@ -129,6 +130,7 @@ impl SemanticGraph {
             &self.pending_expression_relationships,
             &mut output,
         );
+        render_derived_relationship_resolutions(self, &identities, &mut output);
         output.push(')');
         output
     }
@@ -421,8 +423,82 @@ fn render_resolved_relationship(
         }
         output.push(')');
     }
+    match edge.provenance {
+        RelationshipProvenance::Authored => output.push_str(" (provenance authored)"),
+        RelationshipProvenance::Implied(rule) => {
+            let rule = match rule {
+                ImpliedRelationshipRule::UniversalStandardLibraryRelationship => {
+                    "universal-standard-library-relationship"
+                }
+            };
+            let _ = write!(output, " (provenance (implied (rule {rule})))");
+        }
+    }
     output.push(')');
     output
+}
+
+fn render_derived_relationship_resolutions(
+    graph: &SemanticGraph,
+    identities: &CanonicalIdentities,
+    output: &mut String,
+) {
+    let mut resolutions = graph
+        .derived_relationship_resolution_by_source_id
+        .iter()
+        .map(|(source, resolution)| (identities.node_id(source), resolution))
+        .collect::<Vec<_>>();
+    resolutions.sort_by(|(left, _), (right, _)| left.cmp(right));
+    if resolutions.is_empty() {
+        return;
+    }
+    write_indent(output, 1);
+    output.push_str("(derived-relationship-resolutions\n");
+    for (source, resolution) in resolutions {
+        write_indent(output, 2);
+        let _ = write!(
+            output,
+            "(universal-standard-library-relationship (from {source}) "
+        );
+        match resolution {
+            DerivedRelationshipResolution::NotRun => output.push_str("(status not-run)"),
+            DerivedRelationshipResolution::NotApplicable => {
+                output.push_str("(status not-applicable)")
+            }
+            DerivedRelationshipResolution::Resolved { target } => {
+                let _ = write!(
+                    output,
+                    "(status resolved) (to {})",
+                    identities.node_id(target)
+                );
+            }
+            DerivedRelationshipResolution::MissingPrerequisite { target } => {
+                let _ = write!(
+                    output,
+                    "(status missing-prerequisite) (target {})",
+                    atom(target.qualified_name())
+                );
+            }
+            DerivedRelationshipResolution::Ambiguous { candidates } => {
+                output.push_str("(status ambiguous) (candidates");
+                for candidate in candidates {
+                    let _ = write!(output, " {}", identities.node_id(candidate));
+                }
+                output.push(')');
+            }
+            DerivedRelationshipResolution::SelfTargetSuppressed { target } => {
+                let _ = write!(
+                    output,
+                    "(status self-target-suppressed) (target {})",
+                    identities.node_id(target)
+                );
+            }
+            DerivedRelationshipResolution::Unsupported => output.push_str("(status unsupported)"),
+        }
+        output.push_str(")\n");
+    }
+    write_indent(output, 1);
+    output.push_str(")\n");
 }
 
 fn render_pending_relationships(

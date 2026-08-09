@@ -1,4 +1,4 @@
-﻿//! Orchestrates semantic graph materialize â†’ link â†’ pending resolve.
+//! Orchestrates semantic graph materialize â†’ link â†’ pending resolve.
 
 use std::collections::HashSet;
 use std::time::Instant;
@@ -48,13 +48,22 @@ pub fn build_and_link_graph(
     documents: &[SysmlDocument],
 ) -> Result<(SemanticGraph, Vec<WorkspaceParsedDocument>), String> {
     let mut graph = SemanticGraph::new();
+    graph.set_standard_library_uris(documents.iter().filter_map(|document| {
+        matches!(
+            document.source_kind,
+            SysmlDocumentSourceKind::StandardLibrary
+        )
+        .then(|| document.uri.clone())
+    }));
     let mut parsed_docs = Vec::new();
 
     let mut workspace_docs = Vec::new();
     let mut library_docs = Vec::new();
     for document in documents {
         match document.source_kind {
-            SysmlDocumentSourceKind::Library => library_docs.push(document),
+            SysmlDocumentSourceKind::StandardLibrary | SysmlDocumentSourceKind::Library => {
+                library_docs.push(document)
+            }
             SysmlDocumentSourceKind::Workspace | SysmlDocumentSourceKind::External => {
                 workspace_docs.push(document)
             }
@@ -170,12 +179,18 @@ pub fn link_parsed_documents_parallel_from(
     let (workspace_entries, library_entries): (
         Vec<SourceTaggedDocument>,
         Vec<SourceTaggedDocument>,
-    ) = documents
-        .into_iter()
-        .partition(|(kind, _)| !matches!(kind, SysmlDocumentSourceKind::Library));
+    ) = documents.into_iter().partition(|(kind, _)| {
+        !matches!(
+            kind,
+            SysmlDocumentSourceKind::StandardLibrary | SysmlDocumentSourceKind::Library
+        )
+    });
 
     let mut uris: Vec<Url> = base_graph.all_uris();
     let mut graph = base_graph;
+    graph.add_standard_library_uris(library_entries.iter().filter_map(|(kind, entry)| {
+        matches!(kind, SysmlDocumentSourceKind::StandardLibrary).then(|| entry.uri.clone())
+    }));
     let mut parsed_docs = Vec::new();
 
     // Phase 1: workspace documents. Must finish (and its declared-package set must be
@@ -232,6 +247,7 @@ pub fn link_parsed_documents_parallel_from(
     link_workspace_derivations(&mut graph);
     prepare_analysis_evaluation_context(&mut graph);
     resolve_workspace_pending_relationships(&mut graph);
+    graph.refresh_universal_standard_library_relationships();
     graph.refresh_effective_facts();
     if evaluate {
         evaluate_expressions(&mut graph);
@@ -260,6 +276,7 @@ pub fn finalize_workspace_graph(graph: &mut SemanticGraph) {
     link_workspace_relationships(graph);
     prepare_analysis_evaluation_context(graph);
     resolve_workspace_pending_relationships(graph);
+    graph.refresh_universal_standard_library_relationships();
     graph.refresh_effective_facts();
     // Edge additions above go via graph.graph.add_edge() directly, bypassing
     // insert_workspace_edge. Invalidate here so the first post-finalization query
@@ -302,6 +319,9 @@ pub fn patch_graph_for_document(
 ) {
     graph.remove_nodes_for_uri(uri);
     let Some(parsed) = parsed else {
+        if evaluate {
+            finalize_and_evaluate(graph);
+        }
         return;
     };
     let doc_graph = build_graph_from_doc(parsed, uri);
@@ -326,6 +346,7 @@ pub fn finalize_and_evaluate_frontier(graph: &mut SemanticGraph, changed_uri: &U
     refresh_relationship_frontier(graph, changed_uri);
     prepare_analysis_evaluation_context(graph);
     resolve_workspace_pending_relationships(graph);
+    graph.refresh_universal_standard_library_relationships();
     graph.refresh_effective_facts();
     graph.invalidate_query_indexes();
     evaluate_expressions(graph);
@@ -347,6 +368,9 @@ pub fn patch_graph_for_document_scoped(
 ) {
     graph.remove_nodes_for_uri(uri);
     let Some(parsed) = parsed else {
+        if evaluate {
+            finalize_and_evaluate_frontier(graph, uri);
+        }
         return;
     };
     let doc_graph = build_graph_from_doc(parsed, uri);

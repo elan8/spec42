@@ -12,10 +12,10 @@ use super::discovery::path_to_file_url;
 use super::projection::{
     HostConnectorEnd, HostElementFacts, HostExpression, HostExpressionArgument,
     HostFeatureOwnership, HostFeatureOwnershipProvenance, HostFeatureProperties, HostFeatureValue,
-    HostImportOrigin, HostImportShape, HostMembershipFacts, HostMembershipKind,
+    HostImpliedRelationshipRule, HostImportOrigin, HostImportShape, HostMembershipFacts, HostMembershipKind,
     HostMembershipVisibilityProvenance, HostMultiplicity, HostRelationshipMetaclass,
-    HostSemanticModelNode, HostSemanticModelRelationship, HostSemanticProjection,
-    HostVisibilityKind,
+    HostRelationshipProvenance, HostSemanticModelNode, HostSemanticModelRelationship,
+    HostSemanticProjection, HostVisibilityKind,
 };
 use super::validation::{HostValidatedDocument, HostValidationReport, HostValidationSummary};
 
@@ -249,48 +249,6 @@ pub(crate) fn project_host_semantic_model(
             ));
         }
     }
-    // Include the exact Systems/Kernel Library elements required by SysML's
-    // semantic specialization constraints, plus their namespace ancestry.
-    let implied_targets = nodes
-        .iter()
-        .filter(|node| !node.facts.is_library_element)
-        .filter_map(|node| implied_library_specialization(&node.element_kind))
-        .collect::<BTreeSet<_>>();
-    for qualified_name in implied_targets {
-        let Some(mut candidate_id) = graph
-            .node_ids_for_qualified_name(qualified_name)
-            .and_then(|ids| {
-                ids.iter().find(|id| {
-                    sysml_model::semantic::workspace_uri::uri_under_any_library(
-                        &id.uri,
-                        library_urls,
-                    )
-                })
-            })
-            .cloned()
-        else {
-            continue;
-        };
-        while let Some(candidate) = graph.get_node(&candidate_id) {
-            if included_ids.insert(candidate_id.clone()) {
-                nodes.push(build_host_semantic_model_node(
-                    graph,
-                    candidate,
-                    library_urls,
-                ));
-            }
-            let Some(parent_id) = candidate.parent_id.clone() else {
-                break;
-            };
-            if !sysml_model::semantic::workspace_uri::uri_under_any_library(
-                &parent_id.uri,
-                library_urls,
-            ) {
-                break;
-            }
-            candidate_id = parent_id;
-        }
-    }
     nodes.sort_by(|a, b| {
         a.uri
             .cmp(&b.uri)
@@ -343,6 +301,7 @@ pub(crate) fn project_host_semantic_model(
             related_element_ids: vec![owner_id.clone(), node.semantic_id.clone()],
             range: Some(node.range),
             is_implied: false,
+            provenance: HostRelationshipProvenance::Authored,
             metaclass: membership_relationship_metaclass(node, membership_kind),
             membership_kind: Some(membership_kind),
             visibility: membership_visibility(node),
@@ -394,7 +353,11 @@ pub(crate) fn project_host_semantic_model(
                 .filter(|id| !id.is_empty())
                 .collect(),
                 range: edge.connect.as_ref().map(|detail| detail.range),
-                is_implied: false,
+                is_implied: matches!(
+                    edge.provenance,
+                    sysml_model::RelationshipProvenance::Implied(_)
+                ),
+                provenance: host_relationship_provenance(edge.provenance),
                 metaclass: relationship_metaclass(&edge.kind),
                 membership_kind: None,
                 visibility: None,
@@ -413,53 +376,6 @@ pub(crate) fn project_host_semantic_model(
                 }),
             });
         }
-    }
-    // Materialize a normative implied specialization only when its library
-    // target was actually resolved; deployments without the standard library
-    // do not receive guessed IDs or placeholder elements.
-    for node in &nodes {
-        if node.facts.is_library_element {
-            continue;
-        }
-        let Some(target_name) = implied_library_specialization(&node.element_kind) else {
-            continue;
-        };
-        let Some(target_id) = semantic_ids.get(target_name) else {
-            continue;
-        };
-        let (kind, metaclass) = if node.element_kind.is_definition() {
-            (
-                sysml_model::RelationshipKind::Specializes,
-                HostRelationshipMetaclass::Subclassification,
-            )
-        } else {
-            (
-                sysml_model::RelationshipKind::Subsetting,
-                HostRelationshipMetaclass::Subsetting,
-            )
-        };
-        relationships.push(HostSemanticModelRelationship {
-            semantic_id: semantic_relationship_id(
-                &kind,
-                &node.semantic_id,
-                target_id,
-                "implied-library-specialization".to_owned(),
-            ),
-            source_id: node.semantic_id.clone(),
-            target_id: target_id.clone(),
-            owner_id: Some(node.semantic_id.clone()),
-            related_element_ids: vec![node.semantic_id.clone(), target_id.clone()],
-            range: None,
-            is_implied: true,
-            metaclass,
-            membership_kind: None,
-            visibility: None,
-            source: node.qualified_name.clone(),
-            target: target_name.to_owned(),
-            kind,
-            connect: None,
-            flow: None,
-        });
     }
     // An enumerated value is normatively an EnumerationUsage typed by its
     // owning EnumerationDefinition (SysML v2 8.3.8.2-8.3.8.3).
@@ -487,6 +403,9 @@ pub(crate) fn project_host_semantic_model(
             related_element_ids: vec![node.semantic_id.clone(), parent_id.clone()],
             range: None,
             is_implied: true,
+            provenance: HostRelationshipProvenance::Implied(
+                HostImpliedRelationshipRule::EnumerationValueTyping,
+            ),
             metaclass: HostRelationshipMetaclass::FeatureTyping,
             membership_kind: None,
             visibility: None,
@@ -758,79 +677,6 @@ fn relationship_metaclass(kind: &sysml_model::RelationshipKind) -> HostRelations
     }
 }
 
-/// Universal semantic-library specialization required for a concrete SysML
-/// kind. Context-specific constraints are additive to these base semantics.
-fn implied_library_specialization(kind: &sysml_model::ElementKind) -> Option<&'static str> {
-    use sysml_model::ElementKind;
-    match kind {
-        ElementKind::AttributeDef | ElementKind::EnumDef => Some("Base::DataValue"),
-        ElementKind::Attribute | ElementKind::Enumeration | ElementKind::EnumeratedValue => {
-            Some("Base::dataValues")
-        }
-        ElementKind::OccurrenceDef => None,
-        ElementKind::IndividualDef => Some("Occurrences::Life"),
-        ElementKind::Occurrence | ElementKind::Individual => Some("Occurrences::occurrences"),
-        ElementKind::ItemDef => Some("Items::Item"),
-        ElementKind::Item => Some("Items::items"),
-        ElementKind::PartDef => Some("Parts::Part"),
-        ElementKind::Part | ElementKind::Actor | ElementKind::Stakeholder => Some("Parts::parts"),
-        ElementKind::PortDef | ElementKind::ConjugatedPortDefinition => Some("Ports::Port"),
-        ElementKind::Port => Some("Ports::ports"),
-        ElementKind::ConnectionDef => Some("Connections::Connection"),
-        ElementKind::Connection => Some("Connections::connections"),
-        ElementKind::InterfaceDef => Some("Interfaces::Interface"),
-        ElementKind::Interface => Some("Interfaces::interfaces"),
-        ElementKind::AllocationDef => Some("Allocations::Allocation"),
-        ElementKind::Allocation => Some("Allocations::allocations"),
-        ElementKind::FlowDef => Some("Flows::MessageAction"),
-        ElementKind::Flow => Some("Flows::messages"),
-        ElementKind::ActionDef => Some("Actions::Action"),
-        ElementKind::Action | ElementKind::Perform => Some("Actions::actions"),
-        ElementKind::Assign => Some("Actions::assignmentActions"),
-        ElementKind::ForLoop => Some("Actions::forLoopActions"),
-        ElementKind::Terminate => Some("Actions::terminateActions"),
-        ElementKind::While => Some("Actions::whileLoopActions"),
-        ElementKind::If | ElementKind::Else => Some("Actions::ifThenActions"),
-        ElementKind::Transition => Some("Actions::transitionActions"),
-        ElementKind::TransitionTrigger => Some("Actions::acceptActions"),
-        ElementKind::TransitionEffect => Some("Actions::actions"),
-        ElementKind::StateDef => Some("States::StateAction"),
-        ElementKind::State | ElementKind::FinalState => Some("States::stateActions"),
-        ElementKind::CalcDef => Some("Calculations::Calculation"),
-        ElementKind::Calc => Some("Calculations::calculations"),
-        ElementKind::ConstraintDef => Some("Constraints::ConstraintCheck"),
-        ElementKind::Constraint
-        | ElementKind::Assert
-        | ElementKind::AssertConstraint
-        | ElementKind::RequireConstraint => Some("Constraints::constraintChecks"),
-        ElementKind::RequirementDef => Some("Requirements::RequirementCheck"),
-        ElementKind::Requirement | ElementKind::VerifiedRequirement | ElementKind::Objective => {
-            Some("Requirements::requirementChecks")
-        }
-        ElementKind::ConcernDef => Some("Requirements::ConcernCheck"),
-        ElementKind::Concern => Some("Requirements::concernChecks"),
-        ElementKind::CaseDef => Some("Cases::Case"),
-        ElementKind::Case => Some("Cases::cases"),
-        ElementKind::AnalysisDef => Some("AnalysisCases::AnalysisCase"),
-        ElementKind::Analysis => Some("AnalysisCases::analysisCases"),
-        ElementKind::VerificationDef => Some("VerificationCases::VerificationCase"),
-        ElementKind::Verification => Some("VerificationCases::verificationCases"),
-        ElementKind::UseCaseDef => Some("UseCases::UseCase"),
-        ElementKind::UseCase | ElementKind::IncludeUseCase => Some("UseCases::useCases"),
-        ElementKind::RenderingDef => Some("Views::Rendering"),
-        ElementKind::Rendering | ElementKind::ViewRendering => Some("Views::renderings"),
-        ElementKind::ViewDef => Some("Views::View"),
-        ElementKind::View => Some("Views::views"),
-        ElementKind::ViewpointDef => Some("Views::Viewpoint"),
-        ElementKind::Viewpoint => Some("Views::viewpoints"),
-        ElementKind::MetadataDef => Some("Metadata::MetadataItem"),
-        ElementKind::MetadataUsage | ElementKind::MetadataKeyword => {
-            Some("Metadata::metadataItems")
-        }
-        _ => None,
-    }
-}
-
 fn membership_kind(
     node: &HostSemanticModelNode,
     owner_kind: Option<&sysml_model::ElementKind>,
@@ -991,7 +837,8 @@ fn host_declared_membership_kind(kind: sysml_model::DeclaredMembershipKind) -> H
 /// would be an ambiguous duplicate either way), so the discriminator no longer breaks identity on
 /// a position-shifting, non-renaming edit.
 fn edge_identity_discriminator(edge: &sysml_model::SemanticEdge) -> String {
-    edge.connect
+    let connect = edge
+        .connect
         .as_ref()
         .map(|detail| {
             format!(
@@ -999,7 +846,35 @@ fn edge_identity_discriminator(edge: &sysml_model::SemanticEdge) -> String {
                 detail.declaring_uri, detail.source_expression, detail.target_expression
             )
         })
-        .unwrap_or_default()
+        .unwrap_or_default();
+    format!(
+        "{connect}:{}",
+        relationship_provenance_discriminator(edge.provenance)
+    )
+}
+
+fn relationship_provenance_discriminator(
+    provenance: sysml_model::RelationshipProvenance,
+) -> &'static str {
+    match provenance {
+        sysml_model::RelationshipProvenance::Authored => "authored",
+        sysml_model::RelationshipProvenance::Implied(
+            sysml_model::ImpliedRelationshipRule::UniversalStandardLibraryRelationship,
+        ) => "implied:universal-standard-library-relationship",
+    }
+}
+
+fn host_relationship_provenance(
+    provenance: sysml_model::RelationshipProvenance,
+) -> HostRelationshipProvenance {
+    match provenance {
+        sysml_model::RelationshipProvenance::Authored => HostRelationshipProvenance::Authored,
+        sysml_model::RelationshipProvenance::Implied(
+            sysml_model::ImpliedRelationshipRule::UniversalStandardLibraryRelationship,
+        ) => HostRelationshipProvenance::Implied(
+            HostImpliedRelationshipRule::UniversalStandardLibraryRelationship,
+        ),
+    }
 }
 
 /// Hashes `(uri, kind, qualified_name)`, not declaration position: `qualified_name` is already

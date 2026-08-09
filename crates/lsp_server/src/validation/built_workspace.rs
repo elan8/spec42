@@ -79,10 +79,11 @@ pub(super) fn validate_paths_with_semantics(
         .cloned()
         .ok_or_else(|| "No target path was provided.".to_string())?;
 
-    let provider = HostFilesystemProvider::from_paths(
+    let provider = HostFilesystemProvider::from_paths_with_standard_library(
         &target,
         workspace_root.as_deref(),
         engine.package_roots(),
+        &engine.library_catalog().stdlib.roots,
     );
     let load_request = WorkspaceLoadRequest::single_target(target)
         .with_workspace_root(workspace_root.clone())
