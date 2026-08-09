@@ -42,9 +42,11 @@ pub fn definition_prefix_flags(prefix: Option<&DefinitionPrefix>) -> (bool, bool
 /// complete. Keeping it out of this AST adapter preserves the distinction between what appeared
 /// in the source and what SysML supplies by default.
 fn usage_ownership_from_ref_flag(is_reference: bool) -> (Option<bool>, Option<bool>) {
-    is_reference
-        .then_some((Some(false), Some(true)))
-        .unwrap_or((None, None))
+    if is_reference {
+        (Some(false), Some(true))
+    } else {
+        (None, None)
+    }
 }
 
 fn visibility_kind(visibility: Visibility) -> VisibilityKind {
