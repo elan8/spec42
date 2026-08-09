@@ -46,7 +46,9 @@ pub(crate) fn collect_view_metadata_conformance_diagnostics(
         let mut renderings: Vec<_> = graph
             .children_of(node)
             .into_iter()
-            .filter(|child| child.element_kind == ElementKind::ViewRendering)
+            .filter(|child| {
+                child.element_kind == ElementKind::ViewRendering && !is_synthetic(child)
+            })
             .collect();
         renderings.sort_by_key(|child| (child.range.start.line, child.range.start.character));
         if renderings.len() <= 1 {

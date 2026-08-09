@@ -667,6 +667,42 @@ fn duplicate_view_rendering_members_emit_role_cardinality_diagnostic() {
 }
 
 #[test]
+fn singular_role_members_and_subject_before_actor_do_not_emit_role_diagnostics() {
+    let doc = workspace_doc(
+        "singular_role_members.sysml",
+        r#"package Demo {
+  part def System;
+  rendering def SummaryStyle;
+  requirement def ReqA;
+  requirement def Range {
+    subject vehicle : System;
+    actor operator : System;
+  }
+  verification def Check {
+    subject subject;
+    objective { verify requirement ReqA; }
+  }
+  view def Summary {
+    render style : SummaryStyle;
+  }
+}"#,
+    );
+    let uri = doc.uri.clone();
+    let (graph, _parsed) = build_semantic_graph_from_documents(&[doc]).expect("graph");
+    let diagnostics = collect_diagnostics_from_graph(&graph, &uri, DiagnosticsOptions::default());
+    for code in ["duplicate_role_member", "subject_member_not_first"] {
+        assert!(
+            !has_code(&diagnostics, code),
+            "unexpected {code}, got: {:?}",
+            diagnostics
+                .iter()
+                .map(|d| (&d.code, &d.message))
+                .collect::<Vec<_>>()
+        );
+    }
+}
+
+#[test]
 #[ignore = "SKIP: verified-requirement graph nodes retain the verification-case parent, not their containing objective, so placement cannot be diagnosed from authoritative graph facts."]
 fn verification_membership_outside_objective_requires_parentage_fact() {
     panic!(

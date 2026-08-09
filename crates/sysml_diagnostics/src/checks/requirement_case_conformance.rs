@@ -108,7 +108,7 @@ pub(crate) fn collect_requirement_case_conformance_diagnostics(
         let mut subjects: Vec<_> = members
             .iter()
             .copied()
-            .filter(|child| child.element_kind == ElementKind::Subject)
+            .filter(|child| child.element_kind == ElementKind::Subject && !is_synthetic(child))
             .collect();
         subjects.sort_by_key(|child| (child.range.start.line, child.range.start.character));
         if subjects.len() > 1 {
@@ -135,7 +135,7 @@ pub(crate) fn collect_requirement_case_conformance_diagnostics(
                 matches!(
                     child.element_kind,
                     ElementKind::Subject | ElementKind::Actor | ElementKind::Stakeholder
-                )
+                ) && !is_synthetic(child)
             })
             .min_by_key(|child| (child.range.start.line, child.range.start.character));
         let first_subject = subjects
@@ -168,7 +168,7 @@ pub(crate) fn collect_requirement_case_conformance_diagnostics(
         let mut objectives: Vec<_> = graph
             .children_of(node)
             .into_iter()
-            .filter(|child| child.element_kind == ElementKind::Objective)
+            .filter(|child| child.element_kind == ElementKind::Objective && !is_synthetic(child))
             .collect();
         objectives.sort_by_key(|child| (child.range.start.line, child.range.start.character));
         if objectives.len() <= 1 {
