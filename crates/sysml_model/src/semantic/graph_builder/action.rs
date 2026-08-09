@@ -9,12 +9,14 @@ use sysml_v2_parser::ast::{
 };
 use url::Url;
 
+use crate::semantic::ast_util::declared_expression;
 use crate::semantic::ast_util::{
     action_usage_feature_properties, attach_short_name_attribute, declared_multiplicity,
     span_to_range, state_usage_feature_properties, subsetting_target, subsetting_targets,
     typing_targets,
 };
 use crate::semantic::graph::SemanticGraph;
+use crate::semantic::model::DeclaredFeatureProperties;
 use crate::semantic::model::{NodeId, RelationshipKind};
 use crate::semantic::relationships::{add_edge_if_both_exist, add_typing_edge_if_exists};
 
@@ -227,6 +229,21 @@ pub(super) fn add_in_out_decl(
         attrs,
         Some(parent_id),
     );
+    let parameter_id = NodeId::new(uri, &child_qualified);
+    if let Some(node) = g.get_node_mut(&parameter_id) {
+        node.declared_facts.feature_properties = Some(DeclaredFeatureProperties {
+            direction: Some(
+                match parameter.direction {
+                    InOut::In => "in",
+                    InOut::Out => "out",
+                    InOut::InOut => "inout",
+                }
+                .to_string(),
+            ),
+            ..Default::default()
+        });
+        node.declared_facts.own_expression = parameter.value.as_ref().map(declared_expression);
+    }
     add_typing_edge_if_exists(
         g,
         uri,

@@ -88,6 +88,59 @@ fn evaluate_true_populates_evaluated_value() {
     );
 }
 
+#[test]
+fn full_and_incremental_typed_expression_evaluation_match() {
+    let uri = Url::parse("file:///typed-evaluation-parity.sysml").expect("uri");
+    let content = r#"
+        package Demo {
+            requirement def Capacity {
+                attribute load = 12;
+                attribute limit = 16;
+                require constraint { load <= limit }
+            }
+        }
+    "#;
+    let document = SysmlDocument {
+        uri: uri.clone(),
+        content: content.to_string(),
+        path_hint: None,
+        source_kind: SysmlDocumentSourceKind::Workspace,
+        sha256: None,
+        byte_size: None,
+    };
+    let (full, _) = build_and_link_graph(&[document]).expect("full graph");
+
+    let parsed = parse(&uri, content);
+    let mut incremental = SemanticGraph::new();
+    patch_graph_for_document(&mut incremental, &uri, Some(&parsed), true);
+
+    let outcomes = |graph: &SemanticGraph| {
+        graph
+            .node_ids_by_qualified_name
+            .get("Demo::Capacity")
+            .and_then(|ids| ids.first())
+            .and_then(|id| graph.get_node(id))
+            .map(|node| {
+                (
+                    node.attributes.get("analysisEvaluationStatus").cloned(),
+                    node.attributes.get("analysisEvaluationValue").cloned(),
+                    node.attributes.get("analysisConstraintPassed").cloned(),
+                )
+            })
+            .expect("capacity requirement")
+    };
+
+    assert_eq!(outcomes(&incremental), outcomes(&full));
+    assert_eq!(
+        outcomes(&full),
+        (
+            Some(serde_json::json!("ok")),
+            Some(serde_json::json!(true)),
+            Some(serde_json::json!(true)),
+        )
+    );
+}
+
 /// Track C: `link_parsed_documents_parallel_from`'s `evaluate` parameter must skip
 /// expression evaluation (but still do structural relink/dependency-index work) when
 /// `false`, and populate `evaluatedValue` when `true` — the same contract

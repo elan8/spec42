@@ -44,16 +44,20 @@ pub use semantic::library_loader::{
     LibraryClosureOptions, LoadedLibraryFile, WorkspaceSource,
 };
 pub use semantic::model::{
-    ConnectStatementDetail, DeclaredExpression, DeclaredFeatureProperties, DeclaredImportFacts,
-    DeclaredImportTarget, DeclaredMembershipFacts, DeclaredMembershipKind, DeclaredMultiplicity,
+    AnalysisEvaluation, ConnectStatementDetail, DeclaredBinaryOperator, DeclaredCollectionOperator,
+    DeclaredExpression, DeclaredExpressionKind, DeclaredExpressionOperator,
+    DeclaredFeatureProperties, DeclaredImportFacts, DeclaredImportTarget, DeclaredLiteral,
+    DeclaredMembershipFacts, DeclaredMembershipKind, DeclaredMultiplicity,
     DeclaredMultiplicityBound, DeclaredMultiplicityBounds, DeclaredRelationshipFacts,
-    DeclaredRelationshipTarget, DeclaredSemanticFacts, DerivedRelationshipResolution,
-    EffectiveFeatureOwnership, EffectiveMembershipVisibility, EffectiveSemanticFacts, ElementKind,
+    DeclaredRelationshipTarget, DeclaredSemanticFacts, DeclaredTypeCheckOperator,
+    DeclaredUnaryOperator, DerivedRelationshipResolution, EffectiveFeatureOwnership,
+    EffectiveMembershipVisibility, EffectiveSemanticFacts, ElementKind, EvaluatedValue,
+    EvaluationPublicationState, EvaluationStatus, ExpressionEvaluation, ExpressionEvaluationQuery,
     ExpressionResultId, ExpressionResultRole, FeatureOwnershipProvenance, FlowStatementDetail,
     ImpliedFeatureOwnership, ImpliedFeatureValueBinding, ImpliedMultiplicity,
-    ImpliedRelationshipRule, ImportOrigin, ImportShape, MembershipVisibilityProvenance, NodeId,
-    RelationshipKind, RelationshipProvenance, SemanticEdge, SemanticNode, StandardLibraryElement,
-    UniversalStandardLibraryRelationship, VisibilityKind,
+    ImpliedRelationshipRule, ImportOrigin, ImportShape, MembershipVisibilityProvenance,
+    NodeEvaluationFacts, NodeId, RelationshipKind, RelationshipProvenance, SemanticEdge,
+    SemanticNode, StandardLibraryElement, UniversalStandardLibraryRelationship, VisibilityKind,
 };
 pub use semantic::pipeline::{
     build_and_link_graph, build_and_link_graph_parallel, evaluate_workspace_graph,

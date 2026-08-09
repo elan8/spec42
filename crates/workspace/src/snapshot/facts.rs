@@ -2139,12 +2139,12 @@ package Demo {
     #[test]
     fn project_expression_handles_deeply_nested_declared_expression_without_overflowing_the_stack()
     {
-        use sysml_model::{DeclaredExpression, TextPosition, TextRange};
+        use sysml_model::{DeclaredExpression, DeclaredExpressionKind, TextPosition, TextRange};
 
         const DEPTH: usize = 200_000;
         let range = TextRange::new(TextPosition::new(0, 0), TextPosition::new(0, 1));
         let mut tree = DeclaredExpression {
-            kind: "integerLiteral".to_string(),
+            kind: DeclaredExpressionKind::IntegerLiteral,
             range,
             literal: Some(serde_json::json!(1)),
             reference: None,
@@ -2154,7 +2154,7 @@ package Demo {
         };
         for _ in 0..DEPTH {
             tree = DeclaredExpression {
-                kind: "parenthesized".to_string(),
+                kind: DeclaredExpressionKind::Parenthesized,
                 range,
                 literal: None,
                 reference: None,

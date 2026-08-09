@@ -1413,7 +1413,7 @@ fn direct_multiplicity_bound(expression: Option<&DeclaredExpression>) -> Declare
     let Some(expression) = expression else {
         return DeclaredMultiplicityBound::Unbounded;
     };
-    if expression.kind == "integerLiteral" {
+    if expression.kind == DeclaredExpressionKind::IntegerLiteral {
         return expression
             .literal
             .as_ref()
@@ -1421,7 +1421,7 @@ fn direct_multiplicity_bound(expression: Option<&DeclaredExpression>) -> Declare
             .map(DeclaredMultiplicityBound::Integer)
             .unwrap_or(DeclaredMultiplicityBound::NonIntegerLiteral);
     }
-    if expression.kind == "unary" && expression.children.len() == 1 {
+    if expression.kind == DeclaredExpressionKind::Unary && expression.children.len() == 1 {
         let child = direct_multiplicity_bound(expression.children.first());
         return match (expression.operator.as_deref(), child) {
             (Some("+"), DeclaredMultiplicityBound::Integer(value)) => {
@@ -1464,7 +1464,7 @@ pub enum DeclaredFeatureValueKind {
 /// original AST stays in the parser layer; this public form has no debug text.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct DeclaredExpression {
-    pub kind: String,
+    pub kind: DeclaredExpressionKind,
     pub range: TextRange,
     #[serde(default)]
     pub literal: Option<serde_json::Value>,
@@ -1476,6 +1476,72 @@ pub struct DeclaredExpression {
     pub children: Vec<DeclaredExpression>,
     #[serde(default)]
     pub arguments: Vec<DeclaredExpressionArgument>,
+}
+
+/// Parser-normalized expression form. This is an exhaustive semantic contract rather than a
+/// string tag so evaluators and other semantic consumers cannot silently drift from the builder.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub enum DeclaredExpressionKind {
+    IntegerLiteral,
+    RealLiteral,
+    StringLiteral,
+    BooleanLiteral,
+    Null,
+    FeatureReference,
+    FeatureChain,
+    Classification,
+    MemberAccess,
+    Select,
+    Collect,
+    MetadataAccess,
+    Parenthesized,
+    Bracket,
+    Unary,
+    Binary,
+    Index,
+    LiteralWithUnit,
+    Tuple,
+    Invocation,
+    Constructor,
+    CollectionOperation,
+    MetaCast,
+    TypeCheck,
+    Conditional,
+    Extent,
+}
+
+impl DeclaredExpressionKind {
+    pub const fn as_str(self) -> &'static str {
+        match self {
+            Self::IntegerLiteral => "integerLiteral",
+            Self::RealLiteral => "realLiteral",
+            Self::StringLiteral => "stringLiteral",
+            Self::BooleanLiteral => "booleanLiteral",
+            Self::Null => "null",
+            Self::FeatureReference => "featureReference",
+            Self::FeatureChain => "featureChain",
+            Self::Classification => "classification",
+            Self::MemberAccess => "memberAccess",
+            Self::Select => "select",
+            Self::Collect => "collect",
+            Self::MetadataAccess => "metadataAccess",
+            Self::Parenthesized => "parenthesized",
+            Self::Bracket => "bracket",
+            Self::Unary => "unary",
+            Self::Binary => "binary",
+            Self::Index => "index",
+            Self::LiteralWithUnit => "literalWithUnit",
+            Self::Tuple => "tuple",
+            Self::Invocation => "invocation",
+            Self::Constructor => "constructor",
+            Self::CollectionOperation => "collectionOperation",
+            Self::MetaCast => "metaCast",
+            Self::TypeCheck => "typeCheck",
+            Self::Conditional => "conditional",
+            Self::Extent => "extent",
+        }
+    }
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]

@@ -9,7 +9,9 @@ use sysml_v2_parser::ast::{
 };
 use url::Url;
 
-use crate::semantic::ast_util::{span_to_range, text_range_to_json};
+use crate::semantic::ast_util::{
+    declared_expression, declared_feature_value, span_to_range, text_range_to_json,
+};
 use crate::semantic::graph::SemanticGraph;
 use crate::semantic::model::{DeclaredRelationshipTarget, ElementKind, NodeId, RelationshipKind};
 use crate::semantic::relationships::{add_edge_if_both_exist, add_typing_edge_if_exists};
@@ -144,6 +146,18 @@ fn require_constraint_display_lines(body: &RequireConstraintBody) -> Vec<String>
             }
         }
     }
+}
+
+fn declared_require_constraint_expression(
+    body: &RequireConstraintBody,
+) -> Option<crate::semantic::model::DeclaredExpression> {
+    let RequireConstraintBody::Brace { elements } = body else {
+        return None;
+    };
+    elements.iter().find_map(|element| match &element.value {
+        ConstraintDefBodyElement::Expression(expression) => Some(declared_expression(expression)),
+        _ => None,
+    })
 }
 
 fn require_constraint_structured(
@@ -490,6 +504,11 @@ pub(super) fn walk_requirement_def_body(
                     Some(parent_id),
                 );
                 let constraint_id = NodeId::new(uri, &qualified);
+                if let Some(expression) = declared_require_constraint_expression(&rc.value.body) {
+                    if let Some(constraint) = g.get_node_mut(&constraint_id) {
+                        constraint.declared_facts.own_expression = Some(expression);
+                    }
+                }
                 super::metadata_def::wire_require_constraint_body_metadata(
                     g,
                     uri,
@@ -592,6 +611,13 @@ pub(super) fn walk_requirement_def_body(
                     attrs,
                     Some(parent_id),
                 );
+                let attribute_id = NodeId::new(uri, &qualified);
+                if let Some(feature_value) = &attr_def.value.value {
+                    if let Some(attribute) = g.get_node_mut(&attribute_id) {
+                        attribute.declared_facts.feature_value =
+                            Some(declared_feature_value(feature_value));
+                    }
+                }
                 for target in
                     crate::semantic::ast_util::typing_targets(attr_def.value.typing.as_deref())
                 {
@@ -640,10 +666,17 @@ pub(super) fn walk_requirement_def_body(
                     attrs,
                     Some(parent_id),
                 );
-                attach_declared_name(g, &NodeId::new(uri, &qualified), &attr_usage.value.name);
+                let attribute_id = NodeId::new(uri, &qualified);
+                attach_declared_name(g, &attribute_id, &attr_usage.value.name);
+                if let Some(feature_value) = &attr_usage.value.value {
+                    if let Some(attribute) = g.get_node_mut(&attribute_id) {
+                        attribute.declared_facts.feature_value =
+                            Some(declared_feature_value(feature_value));
+                    }
+                }
                 attach_declared_subsetting_family(
                     g,
-                    &NodeId::new(uri, &qualified),
+                    &attribute_id,
                     attr_usage.value.subsets.as_deref(),
                     attr_usage.value.redefines.as_deref(),
                     attr_usage.value.references.as_deref(),

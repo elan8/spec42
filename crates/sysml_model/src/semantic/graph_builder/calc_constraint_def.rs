@@ -14,7 +14,9 @@ use super::{
     add_node_and_recurse, insert_def_specialization_attr, qualified_name_for_node,
     resolve_addressable_name, wire_def_specialization_edge,
 };
-use crate::semantic::ast_util::{attach_short_name_attribute, identification_name, span_to_range};
+use crate::semantic::ast_util::{
+    attach_short_name_attribute, declared_expression, identification_name, span_to_range,
+};
 use crate::semantic::graph::SemanticGraph;
 use crate::semantic::graph_builder::expressions;
 use crate::semantic::model::NodeId;
@@ -87,6 +89,18 @@ fn extract_constraint_metadata(
     (params, expression)
 }
 
+fn declared_constraint_expression(
+    body: &ConstraintDefBody,
+) -> Option<crate::semantic::model::DeclaredExpression> {
+    let ConstraintDefBody::Brace { elements } = body else {
+        return None;
+    };
+    elements.iter().find_map(|element| match &element.value {
+        ConstraintDefBodyElement::Expression(expression) => Some(declared_expression(expression)),
+        _ => None,
+    })
+}
+
 fn strip_calc_return_expression(text: &str) -> String {
     text.trim()
         .strip_prefix("return")
@@ -153,6 +167,18 @@ fn extract_calc_metadata(
     (params, return_decl, expression)
 }
 
+fn declared_calc_expression(
+    body: &CalcDefBody,
+) -> Option<crate::semantic::model::DeclaredExpression> {
+    let CalcDefBody::Brace { elements } = body else {
+        return None;
+    };
+    elements.iter().find_map(|element| match &element.value {
+        CalcDefBodyElement::Expression(expression) => Some(declared_expression(expression)),
+        _ => None,
+    })
+}
+
 pub(super) fn build_constraint_def(
     g: &mut SemanticGraph,
     uri: &Url,
@@ -195,6 +221,12 @@ pub(super) fn build_constraint_def(
         attrs,
         parent_id,
     );
+    let constraint_id = NodeId::new(uri, &qualified);
+    if let Some(expression) = declared_constraint_expression(&c_node.value.body) {
+        if let Some(node) = g.get_node_mut(&constraint_id) {
+            node.declared_facts.own_expression = Some(expression);
+        }
+    }
     wire_def_specialization_edge(
         g,
         uri,
@@ -202,7 +234,6 @@ pub(super) fn build_constraint_def(
         container_prefix,
         c_node.value.specializes.as_deref(),
     );
-    let constraint_id = NodeId::new(uri, &qualified);
     super::metadata_def::wire_constraint_body_metadata(
         g,
         uri,
@@ -256,10 +287,15 @@ pub(super) fn build_constraint_usage(
         attrs,
         parent_id,
     );
+    let constraint_id = NodeId::new(uri, &qualified);
+    if let Some(expression) = declared_constraint_expression(&c_node.value.body) {
+        if let Some(node) = g.get_node_mut(&constraint_id) {
+            node.declared_facts.own_expression = Some(expression);
+        }
+    }
     if let Some(ref t) = c_node.value.type_name {
         add_typing_edge_if_exists(g, uri, &qualified, t, container_prefix);
     }
-    let constraint_id = NodeId::new(uri, &qualified);
     super::metadata_def::wire_constraint_body_metadata(
         g,
         uri,
@@ -310,6 +346,11 @@ pub(super) fn build_calc_def(
         parent_id,
     );
     let calc_id = NodeId::new(uri, &qualified);
+    if let Some(expression) = declared_calc_expression(&c_node.value.body) {
+        if let Some(node) = g.get_node_mut(&calc_id) {
+            node.declared_facts.own_expression = Some(expression);
+        }
+    }
     build_calc_def_body_elements(g, uri, container_prefix, &calc_id, &c_node.value.body);
 }
 

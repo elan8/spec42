@@ -4,9 +4,9 @@ use std::collections::HashMap;
 
 use crate::semantic::expression_fold::{fold_expression, ExpressionAlgebra, FoldedChild};
 use crate::semantic::model::{
-    DeclaredExpression, DeclaredExpressionArgument, DeclaredFeatureProperties,
-    DeclaredFeatureValue, DeclaredFeatureValueKind, DeclaredImportFacts, DeclaredImportTarget,
-    DeclaredMembershipFacts, DeclaredMembershipKind, DeclaredMultiplicity,
+    DeclaredExpression, DeclaredExpressionArgument, DeclaredExpressionKind,
+    DeclaredFeatureProperties, DeclaredFeatureValue, DeclaredFeatureValueKind, DeclaredImportFacts,
+    DeclaredImportTarget, DeclaredMembershipFacts, DeclaredMembershipKind, DeclaredMultiplicity,
     DeclaredRelationshipTarget, ImportOrigin, ImportShape, VisibilityKind,
 };
 use crate::semantic::text_span::{TextPosition, TextRange};
@@ -482,7 +482,7 @@ impl ExpressionAlgebra for DeclaredExpressionAlgebra {
         use sysml_v2_parser::ast::Expression as Expr;
         let (subs, arguments) = split_children(children);
         let mut expression = DeclaredExpression {
-            kind: String::new(),
+            kind: DeclaredExpressionKind::Null,
             range: span_to_range(&node.span),
             literal: None,
             reference: None,
@@ -492,108 +492,108 @@ impl ExpressionAlgebra for DeclaredExpressionAlgebra {
         };
         match &node.value {
             Expr::LiteralInteger(value) => {
-                expression.kind = "integerLiteral".into();
+                expression.kind = DeclaredExpressionKind::IntegerLiteral;
                 expression.literal = Some(serde_json::json!(value));
             }
             Expr::LiteralReal(value) => {
-                expression.kind = "realLiteral".into();
+                expression.kind = DeclaredExpressionKind::RealLiteral;
                 expression.literal = Some(serde_json::json!(value));
             }
             Expr::LiteralString(value) => {
-                expression.kind = "stringLiteral".into();
+                expression.kind = DeclaredExpressionKind::StringLiteral;
                 expression.literal = Some(serde_json::json!(value));
             }
             Expr::LiteralBoolean(value) => {
-                expression.kind = "booleanLiteral".into();
+                expression.kind = DeclaredExpressionKind::BooleanLiteral;
                 expression.literal = Some(serde_json::json!(value));
             }
-            Expr::Null => expression.kind = "null".into(),
+            Expr::Null => expression.kind = DeclaredExpressionKind::Null,
             Expr::FeatureRef(value) => {
-                expression.kind = "featureReference".into();
+                expression.kind = DeclaredExpressionKind::FeatureReference;
                 expression.reference = Some(value.clone());
             }
             Expr::FeatureChainRef(value) => {
-                expression.kind = "featureChain".into();
+                expression.kind = DeclaredExpressionKind::FeatureChain;
                 expression.reference = Some(value.segments.join("."));
             }
             Expr::Classification { metaclass } => {
-                expression.kind = "classification".into();
+                expression.kind = DeclaredExpressionKind::Classification;
                 expression.reference = Some(metaclass.clone());
             }
             Expr::MemberAccess(_, member) => {
-                expression.kind = "memberAccess".into();
+                expression.kind = DeclaredExpressionKind::MemberAccess;
                 expression.reference = Some(member.clone());
                 expression.children = subs;
             }
             Expr::Select { selector, .. } => {
-                expression.kind = "select".into();
+                expression.kind = DeclaredExpressionKind::Select;
                 expression.reference = Some(selector.clone());
                 expression.children = subs;
             }
             Expr::Collect { selector, .. } => {
-                expression.kind = "collect".into();
+                expression.kind = DeclaredExpressionKind::Collect;
                 expression.reference = Some(selector.clone());
                 expression.children = subs;
             }
             Expr::MetadataAccess(_) => {
-                expression.kind = "metadataAccess".into();
+                expression.kind = DeclaredExpressionKind::MetadataAccess;
                 expression.children = subs;
             }
             Expr::Parenthesized(_) => {
-                expression.kind = "parenthesized".into();
+                expression.kind = DeclaredExpressionKind::Parenthesized;
                 expression.children = subs;
             }
             Expr::Bracket(_) => {
-                expression.kind = "bracket".into();
+                expression.kind = DeclaredExpressionKind::Bracket;
                 expression.children = subs;
             }
             Expr::UnaryOp { op, .. } => {
-                expression.kind = "unary".into();
+                expression.kind = DeclaredExpressionKind::Unary;
                 expression.operator = Some(op.as_str().into());
                 expression.children = subs;
             }
             Expr::BinaryOp { op, .. } => {
-                expression.kind = "binary".into();
+                expression.kind = DeclaredExpressionKind::Binary;
                 expression.operator = Some(op.as_str().into());
                 expression.children = subs;
             }
             Expr::Index { .. } => {
-                expression.kind = "index".into();
+                expression.kind = DeclaredExpressionKind::Index;
                 expression.children = subs;
             }
             Expr::LiteralWithUnit { .. } => {
-                expression.kind = "literalWithUnit".into();
+                expression.kind = DeclaredExpressionKind::LiteralWithUnit;
                 expression.children = subs;
             }
             Expr::Tuple(_) => {
-                expression.kind = "tuple".into();
+                expression.kind = DeclaredExpressionKind::Tuple;
                 expression.children = subs;
             }
             Expr::Invocation { .. } => {
-                expression.kind = "invocation".into();
+                expression.kind = DeclaredExpressionKind::Invocation;
                 expression.children = subs;
                 expression.arguments = arguments;
             }
             Expr::Constructor { type_name, .. } => {
-                expression.kind = "constructor".into();
+                expression.kind = DeclaredExpressionKind::Constructor;
                 expression.reference = Some(type_name.clone());
                 expression.arguments = arguments;
             }
             Expr::CollectionOp { op, .. } => {
-                expression.kind = "collectionOperation".into();
+                expression.kind = DeclaredExpressionKind::CollectionOperation;
                 expression.operator = Some(op.as_str().into());
                 expression.children = subs;
                 expression.arguments = arguments;
             }
             Expr::MetaCast { metaclass, .. } => {
-                expression.kind = "metaCast".into();
+                expression.kind = DeclaredExpressionKind::MetaCast;
                 expression.reference = Some(metaclass.clone());
                 expression.children = subs;
             }
             Expr::TypeCheck {
                 kind, type_name, ..
             } => {
-                expression.kind = "typeCheck".into();
+                expression.kind = DeclaredExpressionKind::TypeCheck;
                 expression.operator = Some(
                     match kind {
                         sysml_v2_parser::ast::TypeCheckKind::Istype => "istype",
@@ -606,11 +606,11 @@ impl ExpressionAlgebra for DeclaredExpressionAlgebra {
                 expression.children = subs;
             }
             Expr::Conditional { .. } => {
-                expression.kind = "conditional".into();
+                expression.kind = DeclaredExpressionKind::Conditional;
                 expression.children = subs;
             }
             Expr::Extent { target } => {
-                expression.kind = "extent".into();
+                expression.kind = DeclaredExpressionKind::Extent;
                 expression.reference = Some(target.clone());
             }
         }
@@ -769,13 +769,13 @@ mod tests {
         let mut depth = 0usize;
         let mut current = &declared;
         loop {
-            match current.kind.as_str() {
-                "parenthesized" => {
+            match current.kind {
+                DeclaredExpressionKind::Parenthesized => {
                     depth += 1;
                     current = &current.children[0];
                 }
-                "integerLiteral" => break,
-                other => panic!("unexpected kind at depth {depth}: {other}"),
+                DeclaredExpressionKind::IntegerLiteral => break,
+                other => panic!("unexpected kind at depth {depth}: {other:?}"),
             }
         }
         assert_eq!(depth, DEPTH);

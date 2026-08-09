@@ -8,7 +8,9 @@ use sysml_v2_parser::ast::{
 };
 use url::Url;
 
-use crate::semantic::ast_util::{span_to_range, subsetting_target, typing_targets};
+use crate::semantic::ast_util::{
+    declared_expression, declared_feature_value, span_to_range, subsetting_target, typing_targets,
+};
 use crate::semantic::graph::SemanticGraph;
 use crate::semantic::model::{ElementKind, NodeId, RelationshipKind};
 use crate::semantic::relationships::add_typing_edge_if_exists;
@@ -45,6 +47,18 @@ fn constraint_body_expression(body: &ConstraintDefBody) -> Option<String> {
     } else {
         Some(expression)
     }
+}
+
+fn declared_constraint_body_expression(
+    body: &ConstraintDefBody,
+) -> Option<crate::semantic::model::DeclaredExpression> {
+    let ConstraintDefBody::Brace { elements } = body else {
+        return None;
+    };
+    elements.iter().find_map(|element| match &element.value {
+        ConstraintDefBodyElement::Expression(expression) => Some(declared_expression(expression)),
+        _ => None,
+    })
 }
 
 pub(super) fn build_from_occurrence_body_element(
@@ -91,10 +105,17 @@ pub(super) fn build_from_occurrence_body_element(
                 attrs,
                 Some(parent_id),
             );
-            attach_declared_name(g, &NodeId::new(uri, &qualified), &value.name);
+            let node_id = NodeId::new(uri, &qualified);
+            attach_declared_name(g, &node_id, &value.name);
+            if let Some(feature_value) = &value.value {
+                if let Some(attribute) = g.get_node_mut(&node_id) {
+                    attribute.declared_facts.feature_value =
+                        Some(declared_feature_value(feature_value));
+                }
+            }
             attach_declared_subsetting_family(
                 g,
-                &NodeId::new(uri, &qualified),
+                &node_id,
                 value.subsets.as_deref(),
                 value.redefines.as_deref(),
                 value.references.as_deref(),
@@ -236,6 +257,11 @@ fn add_assert_constraint_member(
         Some(parent_id),
     );
     let assert_id = NodeId::new(uri, &qualified);
+    if let Some(expression) = declared_constraint_body_expression(&assert_node.value.body) {
+        if let Some(assertion) = g.get_node_mut(&assert_id) {
+            assertion.declared_facts.own_expression = Some(expression);
+        }
+    }
     super::metadata_def::wire_constraint_body_metadata(
         g,
         uri,

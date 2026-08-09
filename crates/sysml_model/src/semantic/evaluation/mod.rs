@@ -6,7 +6,7 @@ use crate::semantic::analysis_typing::{
     typed_case_definition_scope_prefixes, typed_requirement_definition_scope_prefixes,
 };
 use crate::semantic::graph::SemanticGraph;
-use crate::semantic::model::{ElementKind, NodeId, RelationshipKind, SemanticNode};
+use crate::semantic::model::{ElementKind, NodeId, SemanticNode};
 use crate::semantic::reference_resolution::{resolve_member_via_type, ResolveResult};
 
 mod units;
@@ -14,23 +14,69 @@ mod units;
 use units::UnitError;
 pub use units::UnitRegistry;
 
-mod analysis_constraints;
 mod engine;
-mod invocation_parsing;
 mod outcome;
-mod quantity_parser;
-use analysis_constraints::*;
 use engine::*;
-use invocation_parsing::*;
 use outcome::*;
-use quantity_parser::*;
+
+#[derive(Debug, Clone)]
+pub(crate) struct BoundValue(pub(crate) Quantity);
+
+fn json_value_to_f64(value: &Value) -> Option<f64> {
+    value.as_f64().filter(|value| value.is_finite())
+}
+
+fn number_to_json(value: f64) -> Value {
+    if value.fract() == 0.0 {
+        Value::Number(serde_json::Number::from(value as i64))
+    } else {
+        serde_json::Number::from_f64(value)
+            .map(Value::Number)
+            .unwrap_or(Value::Null)
+    }
+}
+
+fn unit_error(error: UnitError) -> EvalStatus {
+    match error {
+        UnitError::UnknownUnit => EvalStatus::Unresolved,
+        UnitError::IncompatibleDimension => EvalStatus::TypeError,
+        UnitError::UnsupportedConversion | UnitError::AmbiguousMetadata => EvalStatus::Unsupported,
+    }
+}
+
+fn add_quantities(
+    units: &UnitRegistry,
+    left: Quantity,
+    right: Quantity,
+) -> Result<Quantity, EvalStatus> {
+    match (&left.unit, &right.unit) {
+        (None, None) => Ok(Quantity::scalar(left.value + right.value)),
+        (Some(unit), None) | (None, Some(unit)) if units.has_symbol(unit) => {
+            Err(EvalStatus::TypeError)
+        }
+        (Some(_), None) | (None, Some(_)) => Err(EvalStatus::Unresolved),
+        (Some(left_unit), Some(right_unit)) => units
+            .convert_value(right.value, right_unit, left_unit)
+            .map(|value| Quantity {
+                value: left.value + value,
+                unit: Some(left_unit.clone()),
+            })
+            .map_err(unit_error),
+    }
+}
+
+fn is_definition_only_analysis_node(node: &SemanticNode) -> bool {
+    matches!(
+        node.element_kind,
+        ElementKind::ConstraintDef | ElementKind::CalcDef
+    )
+}
 
 pub fn evaluate_expressions(graph: &mut SemanticGraph) {
     evaluate_expressions_with_unit_catalogs(graph);
 }
 
 pub fn evaluate_expressions_with_unit_catalogs(graph: &mut SemanticGraph) {
-    crate::semantic::analysis_typing::prepare_analysis_evaluation_context(graph);
     let units = UnitRegistry::from_graph(graph);
     let outcomes = {
         let mut engine = EvalEngine::new(graph, units.clone());
@@ -38,7 +84,7 @@ pub fn evaluate_expressions_with_unit_catalogs(graph: &mut SemanticGraph) {
             .node_index_by_id
             .keys()
             .filter_map(|node_id| {
-                if engine.node_source_value(node_id).is_some() {
+                if engine.node_expression(node_id).is_some() {
                     Some((node_id.clone(), engine.evaluate_node(node_id)))
                 } else {
                     None
@@ -71,10 +117,15 @@ pub fn evaluate_expressions_with_unit_catalogs(graph: &mut SemanticGraph) {
                 .insert(EVALUATION_ERROR_KEY.to_string(), Value::String(error));
         }
     }
-    evaluate_analysis_constraints(graph, units);
+    evaluate_analysis_results(graph, units);
 }
 
-fn evaluate_analysis_constraints(graph: &mut SemanticGraph, units: UnitRegistry) {
+/// Project analysis results from the same declared expression evaluator used for feature values.
+///
+/// A Boolean result is a constraint verdict. A numeric result is an evaluated analysis value, not
+/// a verdict: assigning pass/fail from its sign would invent a semantic rule that was never
+/// authored.
+fn evaluate_analysis_results(graph: &mut SemanticGraph, units: UnitRegistry) {
     let outcomes = {
         let mut engine = EvalEngine::new(graph, units);
         let node_ids: Vec<NodeId> = graph.node_index_by_id.keys().cloned().collect();
@@ -83,140 +134,70 @@ fn evaluate_analysis_constraints(graph: &mut SemanticGraph, units: UnitRegistry)
             let Some(node) = graph.get_node(&node_id) else {
                 continue;
             };
-            if is_definition_only_analysis_node(node) {
+            let has_declared_constraint = graph.children_of(node).into_iter().any(|child| {
+                matches!(
+                    child.element_kind,
+                    ElementKind::AssertConstraint | ElementKind::RequireConstraint
+                )
+            });
+            if is_definition_only_analysis_node(node)
+                || !matches!(
+                    node.element_kind,
+                    ElementKind::Analysis
+                        | ElementKind::Verification
+                        | ElementKind::Requirement
+                        | ElementKind::RequirementDef
+                ) && !has_declared_constraint
+            {
                 continue;
             }
-            let inline_constraints = node
-                .attributes
-                .get(ANALYSIS_CONSTRAINTS_KEY)
-                .and_then(|value| value.as_array())
-                .cloned()
-                .unwrap_or_default();
-            let single_expression = node
-                .attributes
-                .get(ANALYSIS_EXPRESSION_KEY)
-                .and_then(Value::as_str)
-                .map(str::to_string);
-
-            let mut evaluated = false;
-            let mut status = STATUS_UNKNOWN.to_string();
-            let mut value: Option<Value> = None;
-            let mut error: Option<String> = None;
-            let mut passed: Option<bool> = None;
-            let mut computed: Option<Quantity> = None;
-            let mut limit: Option<Quantity> = None;
-            if !inline_constraints.is_empty() {
-                evaluated = true;
-                for constraint in inline_constraints {
-                    let Some(expr) = constraint
-                        .as_object()
-                        .and_then(|obj| obj.get("expression"))
-                        .and_then(Value::as_str)
-                    else {
-                        continue;
-                    };
-                    match evaluate_analysis_expression(&mut engine, &node_id, expr) {
-                        Ok(bool_value) => {
-                            let all_pass = passed.unwrap_or(true) && bool_value;
-                            passed = Some(all_pass);
-                            status = if all_pass {
-                                STATUS_OK.to_string()
-                            } else {
-                                "failed_constraint".to_string()
-                            };
-                            value = Some(Value::Bool(all_pass));
-                            if computed.is_none() {
-                                computed =
-                                    evaluate_analysis_display_quantity(&mut engine, &node_id, expr);
-                            }
-                            if limit.is_none() {
-                                limit =
-                                    evaluate_analysis_limit_quantity(&mut engine, &node_id, expr);
-                            }
-                        }
-                        Err(err) => {
-                            status = err.status.as_str().to_string();
-                            error = Some(err.message);
-                        }
-                    }
-                }
-            } else if let Some(expr) = single_expression.as_deref() {
-                evaluated = true;
-                let result_mode = node
-                    .attributes
-                    .get("analysisResultMode")
-                    .and_then(Value::as_str);
-                if result_mode == Some("value") {
-                    let outcome = engine.evaluate_expression_text(&node_id, expr);
-                    status = outcome.status.as_str().to_string();
-                    error = outcome.error;
-                    value = outcome.value.clone();
-                    if outcome.status == EvalStatus::Ok {
-                        if let Some(number) = outcome.value.as_ref().and_then(json_value_to_f64) {
-                            let result = Quantity {
-                                value: number,
-                                unit: outcome.unit,
-                            };
-                            computed = Some(result.clone());
-                            match evaluate_numeric_result_objectives(&mut engine, &node_id, &result)
-                            {
-                                Ok(Some((objective_passed, objective_limit))) => {
-                                    passed = Some(objective_passed);
-                                    limit = objective_limit;
-                                    status = if objective_passed {
-                                        STATUS_OK.to_string()
-                                    } else {
-                                        "failed_constraint".to_string()
-                                    };
-                                }
-                                Ok(None) => {}
-                                Err(err) => {
-                                    status = err.status.as_str().to_string();
-                                    error = Some(err.message);
-                                }
-                            }
-                        }
-                    }
-                } else if let Some(verdict_token) =
-                    resolve_verdict_kind_token(graph, &node_id, expr)
-                {
-                    let is_pass = verdict_token == "pass";
-                    status = STATUS_OK.to_string();
-                    value = Some(Value::Bool(is_pass));
-                    passed = Some(is_pass);
-                } else {
-                    limit = evaluate_analysis_limit_quantity(&mut engine, &node_id, expr);
-                    match evaluate_analysis_expression(&mut engine, &node_id, expr) {
-                        Ok(bool_value) => {
-                            status = if bool_value {
-                                STATUS_OK.to_string()
-                            } else {
-                                "failed_constraint".to_string()
-                            };
-                            value = Some(Value::Bool(bool_value));
-                            passed = Some(bool_value);
-                            computed =
-                                evaluate_analysis_display_quantity(&mut engine, &node_id, expr);
-                        }
-                        Err(err) => {
-                            status = err.status.as_str().to_string();
-                            error = Some(err.message);
-                        }
-                    }
-                }
-            }
-
-            if evaluated {
-                outcomes.push((node_id, status, value, error, passed, computed, limit));
-            }
+            let Some(expression) = engine.node_expression(&node_id) else {
+                continue;
+            };
+            let outcome = engine.evaluate_declared_expression(&node_id, &expression);
+            let (status, value, error, passed, computed) = if outcome.status == EvalStatus::Ok {
+                let passed = outcome.value.as_ref().and_then(Value::as_bool);
+                let status = match passed {
+                    Some(false) => "failed_constraint".to_string(),
+                    Some(true) | None => STATUS_OK.to_string(),
+                };
+                let computed = outcome
+                    .value
+                    .as_ref()
+                    .and_then(json_value_to_f64)
+                    .map(|value| Quantity {
+                        value,
+                        unit: outcome.unit.clone(),
+                    });
+                (status, outcome.value, None, passed, computed)
+            } else {
+                (
+                    outcome.status.as_str().to_string(),
+                    None,
+                    outcome.error,
+                    None,
+                    None,
+                )
+            };
+            outcomes.push((node_id, status, value, error, passed, computed));
         }
         outcomes
     };
 
-    for (node_id, status, value, error, passed, computed, limit) in outcomes {
+    for (node_id, status, value, error, passed, computed) in outcomes {
         let Some(node_mut) = graph.get_node_mut(&node_id) else {
             continue;
         };
+        for key in [
+            ANALYSIS_EVAL_STATUS_KEY,
+            ANALYSIS_EVAL_VALUE_KEY,
+            ANALYSIS_EVAL_ERROR_KEY,
+            ANALYSIS_CONSTRAINT_PASSED_KEY,
+            ANALYSIS_COMPUTED_VALUE_KEY,
+            ANALYSIS_COMPUTED_UNIT_KEY,
+        ] {
+            node_mut.attributes.remove(key);
+        }
         node_mut.attributes.insert(
             ANALYSIS_EVAL_STATUS_KEY.to_string(),
             Value::String(status.clone()),
@@ -247,100 +228,7 @@ fn evaluate_analysis_constraints(graph: &mut SemanticGraph, units: UnitRegistry)
                     .insert(ANALYSIS_COMPUTED_UNIT_KEY.to_string(), Value::String(unit));
             }
         }
-        if let Some(quantity) = limit {
-            let display = format_quantity_display(&quantity);
-            node_mut.attributes.insert(
-                ANALYSIS_LIMIT_VALUE_KEY.to_string(),
-                number_to_json(quantity.value),
-            );
-            if let Some(unit) = quantity.unit {
-                node_mut
-                    .attributes
-                    .insert(ANALYSIS_LIMIT_UNIT_KEY.to_string(), Value::String(unit));
-            }
-            node_mut.attributes.insert(
-                ANALYSIS_LIMIT_DISPLAY_KEY.to_string(),
-                Value::String(display),
-            );
-        }
     }
-}
-
-fn evaluate_numeric_result_objectives(
-    engine: &mut EvalEngine<'_>,
-    analysis_id: &NodeId,
-    result: &Quantity,
-) -> Result<Option<(bool, Option<Quantity>)>, AnalysisEvalError> {
-    let Some(analysis) = engine.graph.get_node(analysis_id) else {
-        return Ok(None);
-    };
-    let objectives = engine
-        .graph
-        .children_of(analysis)
-        .into_iter()
-        .filter(|child| child.element_kind == ElementKind::Objective)
-        .cloned()
-        .collect::<Vec<_>>();
-    let mut evaluated_any = false;
-    let mut all_passed = true;
-    let mut first_limit = None;
-
-    for objective in objectives {
-        let requirement_defs = engine
-            .graph
-            .outgoing_targets_by_kind(&objective, RelationshipKind::Typing)
-            .into_iter()
-            .filter(|target| target.element_kind == ElementKind::RequirementDef)
-            .cloned()
-            .collect::<Vec<_>>();
-        for requirement_def in requirement_defs {
-            let constraints = requirement_def
-                .attributes
-                .get(ANALYSIS_CONSTRAINTS_KEY)
-                .and_then(Value::as_array)
-                .cloned()
-                .unwrap_or_default();
-            if constraints.is_empty() {
-                continue;
-            }
-            let subject_name = engine
-                .graph
-                .children_of(&requirement_def)
-                .into_iter()
-                .find(|child| child.element_kind == ElementKind::Subject)
-                .map(|subject| subject.name.clone());
-            let Some(subject_name) = subject_name else {
-                continue;
-            };
-            let mut bindings = HashMap::new();
-            bindings.insert(subject_name, BoundValue::Quantity(result.clone()));
-            engine.parameter_bindings.push(bindings);
-            for constraint in constraints {
-                let Some(expression) = constraint
-                    .as_object()
-                    .and_then(|object| object.get("expression"))
-                    .and_then(Value::as_str)
-                else {
-                    continue;
-                };
-                evaluated_any = true;
-                if first_limit.is_none() {
-                    first_limit =
-                        evaluate_analysis_limit_quantity(engine, &requirement_def.id, expression);
-                }
-                match evaluate_analysis_expression(engine, &requirement_def.id, expression) {
-                    Ok(constraint_passed) => all_passed &= constraint_passed,
-                    Err(err) => {
-                        engine.parameter_bindings.pop();
-                        return Err(err);
-                    }
-                }
-            }
-            engine.parameter_bindings.pop();
-        }
-    }
-
-    Ok(evaluated_any.then_some((all_passed, first_limit)))
 }
 
 #[cfg(test)]

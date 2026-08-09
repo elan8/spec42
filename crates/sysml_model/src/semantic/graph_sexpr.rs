@@ -579,7 +579,11 @@ fn render_block(name: &str, entries: &[String], output: &mut String) {
 }
 
 fn render_expression(expression: &DeclaredExpression, output: &mut String) {
-    let _ = write!(output, "(expression (kind {})", atom(&expression.kind));
+    let _ = write!(
+        output,
+        "(expression (kind {})",
+        atom(expression.kind.as_str())
+    );
     if let Some(literal) = &expression.literal {
         let _ = write!(output, " (literal {})", canonical_json(literal));
     }
